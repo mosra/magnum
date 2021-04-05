@@ -663,7 +663,108 @@ enum class PixelFormat: UnsignedInt {
      * or @m_class{m-doc-external} [MTLPixelFormatRGBA32Float](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatrgba32float?language=objc).
      * @m_keywords{DXGI_FORMAT_R32G32B32A32_FLOAT MTLPixelFormatRGBA32Float}
      */
-    RGBA32F
+    RGBA32F,
+
+    /**
+     * 16-bit unsigned normalized depth.
+     *
+     * Corresponds to @ref GL::PixelFormat::DepthComponent and
+     * @ref GL::PixelType::UnsignedShort,
+     * @ref GL::TextureFormat::DepthComponent16;
+     * @ref Vk::PixelFormat::Depth16Unorm;
+     * @m_class{m-doc-external} [DXGI_FORMAT_D16_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
+     * or @m_class{m-doc-external} [MTLPixelFormatDepth16Unorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatdepth16unorm?language=objc).
+     * @m_keywords{DXGI_FORMAT_D16_UNORM MTLPixelFormatDepth16Unorm}
+     * @m_since_latest
+     */
+    Depth16Unorm,
+
+    /**
+     * 24-bit unsigned normalized depth. Data layout consistent with the
+     * [KTX2 specification](http://github.khronos.org/KTX-Specification/#_depth_and_stencil_formats)
+     * --- aligned to 32 bits with the 8 most significant bits unused.
+     *
+     * Corresponds to @ref GL::PixelFormat::DepthComponent and
+     * @ref GL::PixelType::UnsignedInt,
+     * @ref GL::TextureFormat::DepthComponent24;
+     * @ref Vk::PixelFormat::Depth24Unorm. No direct 24-bit D3D or Metal
+     * equivalent.
+     * @m_since_latest
+     * @todo wait, how GL interprets this? does it discard the top 8 bits? or
+     *      should I use UnsignedInt248 instead?
+     */
+    Depth24Unorm,
+
+    /**
+     * 32-bit float depth.
+     *
+     * Corresponds to @ref GL::PixelFormat::DepthComponent and
+     * @ref GL::PixelType::Float, @ref GL::TextureFormat::DepthComponent32F;
+     * @ref Vk::PixelFormat::Depth32F;
+     * @m_class{m-doc-external} [DXGI_FORMAT_D32_FLOAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
+     * or @m_class{m-doc-external} [MTLPixelFormatDepth32Float](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatdepth32float?language=objc).
+     * @m_keywords{DXGI_FORMAT_D32_FLOAT MTLPixelFormatDepth32Float}
+     * @m_since_latest
+     */
+    Depth32F,
+
+    /**
+     * 8-bit unsigned integral stencil.
+     *
+     * Corresponds to @ref GL::PixelFormat::StencilIndex and
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::StencilIndex8;
+     * @ref Vk::PixelFormat::Stencil8UI
+     * or @m_class{m-doc-external} [MTLPixelFormatStencil8](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatstencil8?language=objc). No direct 8-bit D3D equivalent.
+     * @m_keywords{MTLPixelFormatStencil8}
+     * @m_since_latest
+     */
+    Stencil8UI,
+
+    /**
+     * 16-bit unsigned normalized depth with 8-bit unsigned integral stencil.
+     * Data layout consistent with the [KTX2 specification](http://github.khronos.org/KTX-Specification/#_depth_and_stencil_formats)
+     * --- aligned to 32 bits with depth in the 16 least significant bits and
+     * the 8 most significant bits unused.
+     *
+     * Corresponds to @ref Vk::PixelFormat::Depth16UnormStencil8UI. No direct
+     * 32-bit GL, D3D or Metal equivalent.
+     * @m_since_latest
+     */
+    Depth16UnormStencil8UI,
+
+    /**
+     * 24-bit unsigned normalized depth with 8-bit unsigned integral stencil.
+     * Data layout consistent with the [KTX2 specification](http://github.khronos.org/KTX-Specification/#_depth_and_stencil_formats)
+     * --- packed to 32 bits with depth in the 24 least significant bits
+     * and stencil being in the 8 most significant bits.
+     *
+     * Corresponds to @ref GL::PixelFormat::DepthStencil and
+     * @ref GL::PixelType::UnsignedInt248,
+     * @ref GL::TextureFormat::Depth24Stencil8;
+     * @ref Vk::PixelFormat::Depth24UnormStencil8UI;
+     * @m_class{m-doc-external} [DXGI_FORMAT_D24_UNORM_S8_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
+     * or @m_class{m-doc-external} [MTLPixelFormatDepth24Unorm_Stencil8](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatdepth24unorm_stencil8?language=objc).
+     * @m_keywords{DXGI_FORMAT_D24_UNORM_S8_UINT MTLPixelFormatDepth24Unorm_Stencil8}
+     * @m_since_latest
+     */
+    Depth24UnormStencil8UI,
+
+    /**
+     * 32-bit float depth with 8-bit unsigned integral stencil. Data layout
+     * consistent with the [KTX2 specification](http://github.khronos.org/KTX-Specification/#_depth_and_stencil_formats)
+     * --- packed to 64 bits with the depth in the 32 least significant
+     * bits and the 24 most significant bits unused.
+     *
+     * Corresponds to @ref GL::PixelFormat::DepthStencil and
+     * @ref GL::PixelType::Float32UnsignedInt248Rev,
+     * @ref GL::TextureFormat::Depth32FStencil8;
+     * @ref Vk::PixelFormat::Depth32FStencil8UI;
+     * @m_class{m-doc-external} [DXGI_FORMAT_D32_FLOAT_S8X24_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
+     * or @m_class{m-doc-external} [MTLPixelFormatDepth32Float_Stencil8](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatdepth32float_stencil8?language=objc).
+     * @m_keywords{DXGI_FORMAT_D32_FLOAT_S8X24_UINT MTLPixelFormatDepth32Float_Stencil8}
+     * @m_since_latest
+     */
+    Depth32FStencil8UI
 };
 
 /**

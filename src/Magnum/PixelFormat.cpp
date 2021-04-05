@@ -48,6 +48,7 @@ UnsignedInt pixelSize(const PixelFormat format) {
         case PixelFormat::R8Srgb:
         case PixelFormat::R8UI:
         case PixelFormat::R8I:
+        case PixelFormat::Stencil8UI:
             return 1;
         case PixelFormat::RG8Unorm:
         case PixelFormat::RG8Snorm:
@@ -59,6 +60,7 @@ UnsignedInt pixelSize(const PixelFormat format) {
         case PixelFormat::R16UI:
         case PixelFormat::R16I:
         case PixelFormat::R16F:
+        case PixelFormat::Depth16Unorm:
             return 2;
         case PixelFormat::RGB8Unorm:
         case PixelFormat::RGB8Snorm:
@@ -79,6 +81,10 @@ UnsignedInt pixelSize(const PixelFormat format) {
         case PixelFormat::R32UI:
         case PixelFormat::R32I:
         case PixelFormat::R32F:
+        case PixelFormat::Depth24Unorm:
+        case PixelFormat::Depth32F:
+        case PixelFormat::Depth16UnormStencil8UI:
+        case PixelFormat::Depth24UnormStencil8UI:
             return 4;
         case PixelFormat::RGB16Unorm:
         case PixelFormat::RGB16Snorm:
@@ -94,6 +100,7 @@ UnsignedInt pixelSize(const PixelFormat format) {
         case PixelFormat::RG32UI:
         case PixelFormat::RG32I:
         case PixelFormat::RG32F:
+        case PixelFormat::Depth32FStencil8UI:
             return 8;
         case PixelFormat::RGB32UI:
         case PixelFormat::RGB32I:

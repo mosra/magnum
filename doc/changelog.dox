@@ -41,6 +41,14 @@ See also:
 @subsection changelog-latest-new New features
 
 -   New @ref NoAllocate constructor tag, to be used by the @ref Vk library
+-   New @ref PixelFormat::Depth16Unorm, @relativeref{PixelFormat,Depth24Unorm},
+    @relativeref{PixelFormat,Depth32F}, @relativeref{PixelFormat,Stencil8UI},
+    @relativeref{PixelFormat,Depth16UnormStencil8UI},
+    @relativeref{PixelFormat,Depth24UnormStencil8UI},
+    @relativeref{PixelFormat,Depth32FStencil8UI} generic pixel formats,
+    including mapping to @ref GL::PixelFormat / @ref GL::PixelType,
+    @ref GL::TextureFormat and @ref Vk::PixelFormat and (partial) support in
+    @ref DebugTools::CompareImage
 
 @subsubsection changelog-latest-new-debugtools DebugTools library
 

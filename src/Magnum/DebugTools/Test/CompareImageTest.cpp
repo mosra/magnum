@@ -54,6 +54,7 @@ struct CompareImageTest: TestSuite::Tester {
 
     void formatUnknown();
     void formatHalf();
+    void formatPackedDepthStencil();
     void formatImplementationSpecific();
 
     void calculateDelta();
@@ -125,6 +126,7 @@ struct CompareImageTest: TestSuite::Tester {
 CompareImageTest::CompareImageTest() {
     addTests({&CompareImageTest::formatUnknown,
               &CompareImageTest::formatHalf,
+              &CompareImageTest::formatPackedDepthStencil,
               &CompareImageTest::formatImplementationSpecific,
 
               &CompareImageTest::calculateDelta,
@@ -263,6 +265,20 @@ void CompareImageTest::formatHalf() {
     Implementation::calculateImageDelta(image.format(), image.pixels(), image);
 
     CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: half-float formats are not supported yet\n");
+}
+
+void CompareImageTest::formatPackedDepthStencil() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    ImageView2D image{PixelFormat::Depth24UnormStencil8UI, {}};
+    Implementation::calculateImageDelta(image.format(), image.pixels(), image);
+
+    CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: packed depth/stencil formats are not supported yet\n");
 }
 
 void CompareImageTest::formatImplementationSpecific() {
