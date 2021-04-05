@@ -38,6 +38,7 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Algorithms/KahanSum.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
@@ -166,6 +167,10 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
         _c(RG32I, 2, Int)
         _c(RGB32I, 3, Int)
         _c(RGBA32I, 4, Int)
+        _c(R16F, 1, Half)
+        _c(RG16F, 2, Half)
+        _c(RGB16F, 3, Half)
+        _c(RGBA16F, 4, Half)
         _d(R32F, Depth32F, 1, Float)
         _c(RG32F, 2, Float)
         _c(RGB32F, 3, Float)
@@ -176,11 +181,6 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
         #undef _d
         #undef _c
 
-        case PixelFormat::R16F:
-        case PixelFormat::RG16F:
-        case PixelFormat::RGB16F:
-        case PixelFormat::RGBA16F:
-            CORRADE_ASSERT_UNREACHABLE("DebugTools::CompareImage: half-float formats are not supported yet", {});
         case PixelFormat::Depth16UnormStencil8UI:
         case PixelFormat::Depth24UnormStencil8UI:
         case PixelFormat::Depth32FStencil8UI:
@@ -311,6 +311,10 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
         _c(RG32I, 2, Int)
         _c(RGB32I, 3, Int)
         _c(RGBA32I, 4, Int)
+        _c(R16F, 1, Half)
+        _c(RG16F, 2, Half)
+        _c(RGB16F, 3, Half)
+        _c(RGBA16F, 4, Half)
         _d(R32F, Depth32F, 1, Float)
         _c(RG32F, 2, Float)
         _c(RGB32F, 3, Float)
@@ -331,10 +335,6 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
             out << *reinterpret_cast<const Color4ub*>(pixel);
             break;
 
-        case PixelFormat::R16F:
-        case PixelFormat::RG16F:
-        case PixelFormat::RGB16F:
-        case PixelFormat::RGBA16F:
         case PixelFormat::Depth16UnormStencil8UI:
         case PixelFormat::Depth24UnormStencil8UI:
         case PixelFormat::Depth32FStencil8UI:

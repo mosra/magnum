@@ -40,8 +40,9 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
-#include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractImporter.h"
 
@@ -53,7 +54,6 @@ struct CompareImageTest: TestSuite::Tester {
     explicit CompareImageTest();
 
     void formatUnknown();
-    void formatHalf();
     void formatPackedDepthStencil();
     void formatImplementationSpecific();
 
@@ -70,6 +70,7 @@ struct CompareImageTest: TestSuite::Tester {
     void pixelDelta();
     void pixelDeltaEmpty();
     void pixelDeltaOverflow();
+    void pixelDeltaHalf();
     void pixelDeltaSpecials();
 
     void compareDifferentSize();
@@ -125,7 +126,6 @@ struct CompareImageTest: TestSuite::Tester {
 
 CompareImageTest::CompareImageTest() {
     addTests({&CompareImageTest::formatUnknown,
-              &CompareImageTest::formatHalf,
               &CompareImageTest::formatPackedDepthStencil,
               &CompareImageTest::formatImplementationSpecific,
 
@@ -142,6 +142,7 @@ CompareImageTest::CompareImageTest() {
               &CompareImageTest::pixelDelta,
               &CompareImageTest::pixelDeltaEmpty,
               &CompareImageTest::pixelDeltaOverflow,
+              &CompareImageTest::pixelDeltaHalf,
               &CompareImageTest::pixelDeltaSpecials,
 
               &CompareImageTest::compareDifferentSize,
@@ -218,6 +219,8 @@ CompareImageTest::CompareImageTest() {
        setupExternalPluginManager() function */
 }
 
+using namespace Math::Literals;
+
 const Float ActualRedData[] = {
      0.3f, 1.0f, 0.9f,
      0.9f, 0.6f, 0.2f,
@@ -251,20 +254,6 @@ void CompareImageTest::formatUnknown() {
     Implementation::calculateImageDelta(image.format(), image.pixels(), image);
 
     CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: unknown format PixelFormat(0xdead)\n");
-}
-
-void CompareImageTest::formatHalf() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    ImageView2D image{PixelFormat::RG16F, {}};
-    Implementation::calculateImageDelta(image.format(), image.pixels(), image);
-
-    CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: half-float formats are not supported yet\n");
 }
 
 void CompareImageTest::formatPackedDepthStencil() {
@@ -530,6 +519,36 @@ void CompareImageTest::pixelDeltaOverflow() {
         "          [1,2] Vector(1), expected Vector(0) (Δ = 1)\n"
         "          [0,0] Vector(0.3), expected Vector(0.65) (Δ = 0.35)\n"
         "          [2,0] Vector(0.9), expected Vector(0.6) (Δ = 0.3)");
+}
+
+const Vector2h ActualHalfData[]{
+    {0.3_h, 1.0_h}, { 0.9_h, 0.9_h},
+    {0.6_h, 0.2_h}, {-0.1_h, 1.0_h},
+};
+
+const Vector2h ExpectedHalfData[]{
+    {0.65_h, 1.0_h}, {0.6_h, 0.91_h},
+    {0.6_h, 0.1_h}, {0.02_h, 0.0_h}
+};
+
+const Float DeltaHalf[] {
+    0.35f/2.0f, 0.31f/2.0f,
+    0.01f/2.0f, 0.22f/2.0f
+};
+
+const ImageView2D ActualHalf{PixelFormat::RG16F, {2, 2}, ActualHalfData};
+const ImageView2D ExpectedHalf{PixelFormat::RG16F, {2, 2}, ExpectedHalfData};
+
+void CompareImageTest::pixelDeltaHalf() {
+    std::ostringstream out;
+    Debug d{&out, Debug::Flag::DisableColors};
+    Implementation::printPixelDeltas(d, DeltaHalf, ActualHalf.format(), ActualHalf.pixels(), ExpectedHalf.pixels(), 0.5f, 0.1f, 10);
+
+    CORRADE_COMPARE(out.str(), "\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [0,0] Vector(0.3, 1), expected Vector(0.6499, 1) (Δ = 0.175)\n"
+        "          [1,0] Vector(0.8999, 0.8999), expected Vector(0.6001, 0.9102) (Δ = 0.155)\n"
+        "          [1,1] Vector(-0.09998, 1), expected Vector(0.02, 0) (Δ = 0.11)");
 }
 
 void CompareImageTest::pixelDeltaSpecials() {

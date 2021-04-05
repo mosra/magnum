@@ -236,14 +236,14 @@ Supports the following formats:
     @ref PixelFormat::RGBA32UI and their one-/two-/three-component versions
 -   @ref PixelFormat::RGBA8I, @ref PixelFormat::RGBA16I,
     @ref PixelFormat::RGBA32I and their one-/two-/three-component versions
+-   @ref PixelFormat::RGBA16F and its one-/two-/three-component versions
 -   @ref PixelFormat::RGBA32F and its one-/two-/three-component versions
 
-@ref PixelFormat::RGBA16F and other half-float formats are not supported at the
-moment. Packed depth/stencil formats are not supported at the moment,
-however you can work around that by making separate depth/stencil pixel
-views and @ref DebugTools-CompareImage-pixels "comparing those" to a
-depth/stencil-only ground truth images. Implementation-specific pixel
-formats can't be supported.
+Packed depth/stencil formats are not supported at the moment, however you can
+work around that by making separate depth/stencil pixel views and
+@ref DebugTools-CompareImage-pixels "comparing the views" to a
+depth/stencil-only ground truth images. Implementation-specific pixel formats
+can't be supported.
 
 Supports all @ref PixelStorage parameters. The images don't need to have the
 same pixel storage parameters, meaning you are able to compare different
