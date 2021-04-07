@@ -108,6 +108,22 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <tr><td colspan="6"></td></tr>
 
 <tr>
+<th rowspan="2">OpenEXR (`*.exr`)</th>
+<td rowspan="2">`OpenExrImporter`</td>
+<td>@ref Trade::OpenExrImporter "OpenExrImporter"</td>
+<td class="m-text-center m-warning">@ref Trade-OpenExrImporter-behavior "some"</td>
+<td class="m-text-center m-warning">external, tiny</td>
+<td class="m-text-center m-success">BSD 3-clause</td>
+</tr>
+<tr>
+<td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
+<td class="m-text-center m-danger">@ref Trade-DevIlImageImporter-behavior-exr "severe"</td>
+<td class="m-text-center m-danger">external</td>
+<td class="m-text-center m-warning">LGPLv2.1</td>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
 <th rowspan="2">GIF<br/>(`*.gif`)</th>
 <td rowspan="2">`GifImporter`</td>
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
@@ -284,10 +300,16 @@ Derived from @ref Trade::AbstractImageConverter.
 <tr><td colspan="6"></td></tr>
 
 <tr>
-<th>OpenEXR (`*.exr`)</th>
-<td>`OpenExrImageConverter`</td>
+<th rowspan="2">OpenEXR (`*.exr`)</th>
+<td rowspan="2">`OpenExrImageConverter`</td>
+<td>@ref Trade::OpenExrImageConverter "OpenExrImageConverter"</td>
+<td class="m-text-center m-warning">@ref Trade-OpenExrImageConverter-behavior "some"</td>
+<td class="m-text-center m-warning">external, tiny</td>
+<td class="m-text-center m-success">BSD 3-clause</td>
+</tr>
+<tr>
 <td>@ref Trade::MiniExrImageConverter "MiniExrImageConverter"</td>
-<td class="m-text-center m-success">@ref Trade-MiniExrImageConverter-behavior "minor"</td>
+<td class="m-text-center m-danger">@ref Trade-MiniExrImageConverter-behavior "severe"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public domain</td>
 </tr>
