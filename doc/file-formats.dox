@@ -81,7 +81,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
 <td class="m-text-center m-success">@ref Trade-StbImageImporter-behavior-bmp "minor"</td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr>
 <td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
@@ -129,7 +129,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
 <td class="m-text-center m-success">@ref Trade-StbImageImporter-behavior-animated-gifs "minor"</td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr>
 <td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
@@ -145,7 +145,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
 <td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr>
 <td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
@@ -183,7 +183,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
 <td class="m-text-center m-warning">@ref Trade-StbImageImporter-behavior-arithmetic-jpeg "some"</td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr>
 <td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
@@ -205,7 +205,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
 <td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr>
 <td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
@@ -221,7 +221,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
 <td class="m-text-center m-danger">@ref Trade-StbImageImporter-behavior-psd "severe"</td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr>
 <td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
@@ -243,7 +243,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
 <td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr>
 <td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
@@ -295,7 +295,7 @@ Derived from @ref Trade::AbstractImageConverter.
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
 <td class="m-text-center m-dim">unknown</td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr><td colspan="6"></td></tr>
 
@@ -311,7 +311,7 @@ Derived from @ref Trade::AbstractImageConverter.
 <td>@ref Trade::MiniExrImageConverter "MiniExrImageConverter"</td>
 <td class="m-text-center m-danger">@ref Trade-MiniExrImageConverter-behavior "severe"</td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr><td colspan="6"></td></tr>
 
@@ -321,7 +321,7 @@ Derived from @ref Trade::AbstractImageConverter.
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
 <td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr><td colspan="6"></td></tr>
 
@@ -337,7 +337,7 @@ Derived from @ref Trade::AbstractImageConverter.
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
 <td class="m-text-center m-success">@ref Trade-StbImageConverter-behavior-arithmetic-jpeg "minor"</td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr><td colspan="6"></td></tr>
 
@@ -353,7 +353,7 @@ Derived from @ref Trade::AbstractImageConverter.
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
 <td class="m-text-center m-warning">@ref Trade-StbImageConverter-behavior-16bit-png "some"</td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr><td colspan="6"></td></tr>
 
@@ -369,7 +369,7 @@ Derived from @ref Trade::AbstractImageConverter.
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
 <td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
 <td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-primary">public domain</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 </table>
 
