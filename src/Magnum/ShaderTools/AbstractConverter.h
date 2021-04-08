@@ -765,7 +765,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @see @ref features(), @ref convertDataToData(),
          *      @ref convertFileToData(), @ref convertFileToFile()
          */
-        bool convertDataToFile(Stage stage, Containers::ArrayView<const void> data, Containers::StringView to);
+        bool convertDataToFile(Stage stage, Containers::ArrayView<const void> data, Containers::StringView filename);
 
         /**
          * @brief Convert shader file to a file
@@ -792,7 +792,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @see @ref features(), @ref convertFileToFile(),
          *      @ref convertDataToFile(), @ref convertDataToData()
          */
-        Containers::Array<char> convertFileToData(Stage stage, const Containers::StringView from);
+        Containers::Array<char> convertFileToData(Stage stage, Containers::StringView filename);
 
         /**
          * @brief Link shader data together to a data
@@ -820,10 +820,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @see @ref features(), @ref linkFilesToFile(),
          *      @ref linkFilesToData(), @ref linkDataToData()
          */
-        bool linkDataToFile(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView to);
+        bool linkDataToFile(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView filename);
 
         /** @overload */
-        bool linkDataToFile(std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView to);
+        bool linkDataToFile(std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView filename);
 
         /**
          * @brief Link shader files together to a file
@@ -856,10 +856,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @see @ref features(), @ref linkFilesToFile(), @ref linkDataToFile(),
          *      @ref linkDataToData()
          */
-        Containers::Array<char> linkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from);
+        Containers::Array<char> linkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
 
         /** @overload */
-        Containers::Array<char> linkFilesToData(std::initializer_list<std::pair<Stage, Containers::StringView>> from);
+        Containers::Array<char> linkFilesToData(std::initializer_list<std::pair<Stage, Containers::StringView>> filenames);
 
     protected:
         /**
@@ -911,7 +911,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * is not supported --- instead, file is loaded though the callback and
          * data passed through to @ref doConvertDataToData().
          */
-        virtual Containers::Array<char> doConvertFileToData(Stage stage, Containers::StringView from);
+        virtual Containers::Array<char> doConvertFileToData(Stage stage, Containers::StringView filename);
 
         /**
          * @brief Implementation for @ref linkFilesToFile()
@@ -945,7 +945,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * is not supported --- instead, file is loaded though the callback and
          * data passed through to @ref doConvertDataToData().
          */
-        virtual Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from);
+        virtual Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
 
     private:
         /**
@@ -1056,7 +1056,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
 
         /* Used by convertFileToFile(), doConvertFileToFile(),
            convertFileToData() and doConvertFileToData() */
-        MAGNUM_SHADERTOOLS_LOCAL Containers::Array<char> convertDataToDataUsingInputFileCallbacks(const char* prefix, const Stage stage, Containers::StringView from);
+        MAGNUM_SHADERTOOLS_LOCAL Containers::Array<char> convertDataToDataUsingInputFileCallbacks(const char* prefix, const Stage stage, Containers::StringView filename);
 
         /**
          * @brief Implementation for @ref convertDataToData()
@@ -1070,7 +1070,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
 
         /* Used by linkFilesToFile(), doLinkFilesToFile(), linkFilesToData()
            and doLinkFilesToData() */
-        MAGNUM_SHADERTOOLS_LOCAL Containers::Array<char> linkDataToDataUsingInputFileCallbacks(const char* prefix, Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from);
+        MAGNUM_SHADERTOOLS_LOCAL Containers::Array<char> linkDataToDataUsingInputFileCallbacks(const char* prefix, Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
 
         /**
          * @brief Implementation for @ref linkDataToData()

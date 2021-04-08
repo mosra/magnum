@@ -268,7 +268,7 @@ Containers::Array<char> AbstractConverter::doConvertDataToData(Stage, Containers
     CORRADE_ASSERT_UNREACHABLE("ShaderTools::AbstractConverter::convertDataToData(): feature advertised but not implemented", {});
 }
 
-bool AbstractConverter::convertDataToFile(const Stage stage, const Containers::ArrayView<const void> data, const Containers::StringView to) {
+bool AbstractConverter::convertDataToFile(const Stage stage, const Containers::ArrayView<const void> data, const Containers::StringView filename) {
     CORRADE_ASSERT(features() >= ConverterFeature::ConvertData,
         "ShaderTools::AbstractConverter::convertDataToFile(): feature not supported", {});
 
@@ -278,22 +278,22 @@ bool AbstractConverter::convertDataToFile(const Stage stage, const Containers::A
     Containers::Array<char> out = doConvertDataToData(stage, Containers::arrayCast<const char>(data));
     if(!out) return false;
 
-    if(!Utility::Directory::write(to, out)) {
-        Error{} << "ShaderTools::AbstractConverter::convertDataToFile(): cannot write to file" << to;
+    if(!Utility::Directory::write(filename, out)) {
+        Error{} << "ShaderTools::AbstractConverter::convertDataToFile(): cannot write to file" << filename;
         return false;
     }
 
     return true;
 }
 
-Containers::Array<char> AbstractConverter::convertDataToDataUsingInputFileCallbacks(const char* const prefix, const Stage stage, const Containers::StringView from) {
-    const Containers::Optional<Containers::ArrayView<const char>> data = _inputFileCallback(from, InputFileCallbackPolicy::LoadTemporary, _inputFileCallbackUserData);
+Containers::Array<char> AbstractConverter::convertDataToDataUsingInputFileCallbacks(const char* const prefix, const Stage stage, const Containers::StringView filename) {
+    const Containers::Optional<Containers::ArrayView<const char>> data = _inputFileCallback(filename, InputFileCallbackPolicy::LoadTemporary, _inputFileCallbackUserData);
     if(!data) {
-        Error{} << prefix << "cannot open file" << from;
+        Error{} << prefix << "cannot open file" << filename;
         return {};
     }
     Containers::Array<char> out = doConvertDataToData(stage, *data);
-    _inputFileCallback(from, InputFileCallbackPolicy::Close, _inputFileCallbackUserData);
+    _inputFileCallback(filename, InputFileCallbackPolicy::Close, _inputFileCallbackUserData);
     return out;
 }
 
@@ -367,7 +367,7 @@ bool AbstractConverter::doConvertFileToFile(const Stage stage, const Containers:
     return true;
 }
 
-Containers::Array<char> AbstractConverter::convertFileToData(const Stage stage, const Containers::StringView from) {
+Containers::Array<char> AbstractConverter::convertFileToData(const Stage stage, const Containers::StringView filename) {
     CORRADE_ASSERT(features() >= ConverterFeature::ConvertData,
         "ShaderTools::AbstractConverter::convertFileToData(): feature not supported", {});
 
@@ -376,7 +376,7 @@ Containers::Array<char> AbstractConverter::convertFileToData(const Stage stage, 
     /* If input file callbacks are not set or the converter supports handling
        them directly, call into the implementation */
     if(!_inputFileCallback || (doFeatures() & ConverterFeature::InputFileCallback)) {
-        out = doConvertFileToData(stage, from);
+        out = doConvertFileToData(stage, filename);
 
     /* Otherwise use the callback and pass the data through to
        convertDataToData(). Mark the file as ready to be closed once conversion
@@ -392,7 +392,7 @@ Containers::Array<char> AbstractConverter::convertFileToData(const Stage stage, 
               actual file loading to the default implementation (callback used
               in the base doConvertFileToData() implementation, because this
               branch is never taken in that case) */
-        out = convertDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::convertFileToData():", stage, from);
+        out = convertDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::convertFileToData():", stage, filename);
     }
 
     CORRADE_ASSERT(!out.deleter(),
@@ -400,20 +400,20 @@ Containers::Array<char> AbstractConverter::convertFileToData(const Stage stage, 
     return out;
 }
 
-Containers::Array<char> AbstractConverter::doConvertFileToData(const Stage stage, const Containers::StringView from) {
+Containers::Array<char> AbstractConverter::doConvertFileToData(const Stage stage, const Containers::StringView filename) {
     /* If callbacks are set, use them. This is the same implementation as in
        convertFileToFile(), see the comment there for details. */
     if(_inputFileCallback) {
-        return convertDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::convertFileToData():", stage, from);
+        return convertDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::convertFileToData():", stage, filename);
 
     /* Otherwise open the file directly */
     } else {
-        if(!Utility::Directory::exists(from)) {
-            Error() << "ShaderTools::AbstractConverter::convertFileToData(): cannot open file" << from;
+        if(!Utility::Directory::exists(filename)) {
+            Error() << "ShaderTools::AbstractConverter::convertFileToData(): cannot open file" << filename;
             return {};
         }
 
-        return doConvertDataToData(stage, Utility::Directory::read(from));
+        return doConvertDataToData(stage, Utility::Directory::read(filename));
     }
 }
 
@@ -440,7 +440,7 @@ Containers::Array<char> AbstractConverter::doLinkDataToData(Containers::ArrayVie
     CORRADE_ASSERT_UNREACHABLE("ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented", {});
 }
 
-bool AbstractConverter::linkDataToFile(const Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data, const Containers::StringView to) {
+bool AbstractConverter::linkDataToFile(const Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data, const Containers::StringView filename) {
     CORRADE_ASSERT(features() >= ConverterFeature::LinkData,
         "ShaderTools::AbstractConverter::linkDataToFile(): feature not supported", {});
     CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
@@ -454,45 +454,45 @@ bool AbstractConverter::linkDataToFile(const Containers::ArrayView<const std::pa
     Containers::Array<char> out = doLinkDataToData(Containers::arrayCast<const std::pair<Stage, Containers::ArrayView<const char>>>(data));
     if(!out) return false;
 
-    if(!Utility::Directory::write(to, out)) {
-        Error{} << "ShaderTools::AbstractConverter::linkDataToFile(): cannot write to file" << to;
+    if(!Utility::Directory::write(filename, out)) {
+        Error{} << "ShaderTools::AbstractConverter::linkDataToFile(): cannot write to file" << filename;
         return false;
     }
 
     return true;
 }
 
-bool AbstractConverter::linkDataToFile(const std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data, const Containers::StringView to) {
-    return linkDataToFile(Containers::arrayView(data), to);
+bool AbstractConverter::linkDataToFile(const std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data, const Containers::StringView filename) {
+    return linkDataToFile(Containers::arrayView(data), filename);
 }
 
-Containers::Array<char> AbstractConverter::linkDataToDataUsingInputFileCallbacks(const char* const prefix, const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) {
-    Containers::Array<std::pair<Stage, Containers::ArrayView<const char>>> data{Containers::NoInit, from.size()};
+Containers::Array<char> AbstractConverter::linkDataToDataUsingInputFileCallbacks(const char* const prefix, const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames) {
+    Containers::Array<std::pair<Stage, Containers::ArrayView<const char>>> data{Containers::NoInit, filenames.size()};
 
     /* First load all files. Remember how many of these succeeded so we can
        close them again after */
     std::size_t i;
-    for(i = 0; i != from.size(); ++i) {
-        const Containers::Optional<Containers::ArrayView<const char>> contents = _inputFileCallback(from[i].second, InputFileCallbackPolicy::LoadTemporary, _inputFileCallbackUserData);
+    for(i = 0; i != filenames.size(); ++i) {
+        const Containers::Optional<Containers::ArrayView<const char>> contents = _inputFileCallback(filenames[i].second, InputFileCallbackPolicy::LoadTemporary, _inputFileCallbackUserData);
         if(!contents) break;
 
-        data[i].first = from[i].first;
+        data[i].first = filenames[i].first;
         data[i].second = *contents;
     }
 
     /* If all input files loaded successfully, process */
     Containers::Array<char> out;
-    if(i == from.size()) out = doLinkDataToData(data);
+    if(i == filenames.size()) out = doLinkDataToData(data);
 
     /* Close again all input files that loaded successfully */
     for(std::size_t ii = 0; ii != i; ++ii)
-        _inputFileCallback(from[ii].second, InputFileCallbackPolicy::Close, _inputFileCallbackUserData);
+        _inputFileCallback(filenames[ii].second, InputFileCallbackPolicy::Close, _inputFileCallbackUserData);
 
     /* Now that we have cleaned up correctly, it's time print the error message
        if something didn't go well. IN this case doLinkDataToData() was not
        called at all. */
-    if(i != from.size()) {
-        Error{} << prefix << "cannot open file" << from[i].second;
+    if(i != filenames.size()) {
+        Error{} << prefix << "cannot open file" << filenames[i].second;
         return {};
     }
 
@@ -591,12 +591,12 @@ bool AbstractConverter::doLinkFilesToFile(const Containers::ArrayView<const std:
     return true;
 }
 
-Containers::Array<char> AbstractConverter::linkFilesToData(const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) {
+Containers::Array<char> AbstractConverter::linkFilesToData(const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames) {
     CORRADE_ASSERT(features() >= ConverterFeature::LinkData,
         "ShaderTools::AbstractConverter::linkFilesToData(): feature not supported", {});
     CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
         "ShaderTools::AbstractConverter::linkFilesToData(): PreprocessOnly is not allowed in combination with linking", {});
-    CORRADE_ASSERT(!from.empty(),
+    CORRADE_ASSERT(!filenames.empty(),
         "ShaderTools::AbstractConverter::linkFilesToData(): no files passed", {});
 
     Containers::Array<char> out;
@@ -604,7 +604,7 @@ Containers::Array<char> AbstractConverter::linkFilesToData(const Containers::Arr
     /* If input file callbacks are not set or the converter supports handling
        them directly, call into the implementation */
     if(!_inputFileCallback || (doFeatures() & ConverterFeature::InputFileCallback)) {
-        out = doLinkFilesToData(from);
+        out = doLinkFilesToData(filenames);
 
     /* Otherwise use the callback and pass the data through to
        convertDataToData(). Mark the file as ready to be closed once conversion
@@ -620,7 +620,7 @@ Containers::Array<char> AbstractConverter::linkFilesToData(const Containers::Arr
               actual file loading to the default implementation (callback used
               in the base doLinkFilesToData() implementation, because this
               branch is never taken in that case) */
-        out = linkDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::linkFilesToData():", from);
+        out = linkDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::linkFilesToData():", filenames);
     }
 
     CORRADE_ASSERT(!out.deleter(),
@@ -628,32 +628,32 @@ Containers::Array<char> AbstractConverter::linkFilesToData(const Containers::Arr
     return out;
 }
 
-Containers::Array<char> AbstractConverter::linkFilesToData(const std::initializer_list<std::pair<Stage, Containers::StringView>> from) {
-    return linkFilesToData(Containers::arrayView(from));
+Containers::Array<char> AbstractConverter::linkFilesToData(const std::initializer_list<std::pair<Stage, Containers::StringView>> filenames) {
+    return linkFilesToData(Containers::arrayView(filenames));
 }
 
-Containers::Array<char> AbstractConverter::doLinkFilesToData(const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) {
+Containers::Array<char> AbstractConverter::doLinkFilesToData(const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames) {
     /* If callbacks are set, use them. This is the same implementation as in
        linkFilesToFile(), see the comment there for details. */
     if(_inputFileCallback) {
-        return linkDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::linkFilesToData():", from);
+        return linkDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::linkFilesToData():", filenames);
 
     /* Otherwise open the files directly */
     } else {
-        Containers::Array<Containers::Array<char>> fileData{from.size()};
-        for(std::size_t i = 0; i != from.size(); ++i) {
-            if(!Utility::Directory::exists(from[i].second)) {
-                Error() << "ShaderTools::AbstractConverter::linkFilesToData(): cannot open file" << from[i].second;
+        Containers::Array<Containers::Array<char>> fileData{filenames.size()};
+        for(std::size_t i = 0; i != filenames.size(); ++i) {
+            if(!Utility::Directory::exists(filenames[i].second)) {
+                Error() << "ShaderTools::AbstractConverter::linkFilesToData(): cannot open file" << filenames[i].second;
                 return {};
             }
 
-            fileData[i] = Utility::Directory::read(from[i].second);
+            fileData[i] = Utility::Directory::read(filenames[i].second);
         }
 
         /** @todo merge the allocations once we have an ArrayTuple */
-        Containers::Array<std::pair<Stage, Containers::ArrayView<const char>>> data{Containers::NoInit, from.size()};
-        for(std::size_t i = 0; i != from.size(); ++i)  {
-            data[i].first = from[i].first;
+        Containers::Array<std::pair<Stage, Containers::ArrayView<const char>>> data{Containers::NoInit, filenames.size()};
+        for(std::size_t i = 0; i != filenames.size(); ++i)  {
+            data[i].first = filenames[i].first;
             data[i].second = fileData[i];
         }
 
