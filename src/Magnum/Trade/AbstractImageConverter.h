@@ -161,11 +161,11 @@ The instances returned from various functions *by design* have no dependency on
 the converter instance and neither on the dynamic plugin module. In other
 words, you don't need to keep the converter instance (or the plugin manager
 instance) around in order to have the `*Data` instances valid. Moreover, all
-@ref Corrade::Containers::Array instances returned through @ref Image,
-@ref CompressedImage, @ref MeshData, @ref MaterialData, @ref AnimationData and
-others are only allowed to have default deleters --- this is to avoid potential
-dangling function pointer calls when destructing such instances after the
-plugin module has been unloaded.
+returned @relativeref{Corrade,Containers::Array} instances and
+@relativeref{Corrade,Containers::Array} instances returned through
+@ref ImageData are only allowed to have default deleters --- this is to avoid
+potential dangling function pointer calls when destructing such instances after
+the plugin module has been unloaded.
 
 @section Trade-AbstractImageConverter-subclassing Subclassing
 
