@@ -43,44 +43,106 @@ namespace Magnum { namespace Trade {
 
 @see @ref ImageConverterFeatures, @ref AbstractImageConverter::features()
 */
-enum class ImageConverterFeature: UnsignedByte {
+enum class ImageConverterFeature: UnsignedInt {
     /**
-     * Conversion to image with different format with
-     * @ref AbstractImageConverter::exportToImage()
+     * Convert a 2D image with
+     * @ref AbstractImageConverter::convert(const ImageView2D&)
+     * @m_since_latest
      */
-    ConvertImage = 1 << 0,
+    Convert2D = 1 << 0,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @copydoc ImageConverterFeature::Convert2D
+     * @m_deprecated_since_latest Use @ref ImageConverterFeature::Convert2D
+     *      instead.
+     */
+    ConvertImage CORRADE_DEPRECATED_ENUM("use ImageConverterFeature::Convert2D instead") = Convert2D,
 
     /**
-     * Conversion to compressed image with
-     * @ref AbstractImageConverter::exportToCompressedImage()
+     * @copydoc ImageConverterFeature::Convert2D
+     * @m_deprecated_since_latest Use @ref ImageConverterFeature::Convert2D
+     *      instead. Since @ref AbstractImageConverter::convert() is now
+     *      capable of returning both uncompressed and compressed images, this
+     *      feature is the same as @ref ImageConverterFeature::Convert2D, as
+     *      opposed to @ref ImageConverterFeature::ConvertCompressed2D, which
+     *      is about *input* images.
      */
-    ConvertCompressedImage = 1 << 1,
+    ConvertCompressedImage CORRADE_DEPRECATED_ENUM("use ImageConverterFeature::Convert2D instead") = Convert2D,
+    #endif
 
     /**
-     * Exporting to file with
-     * @ref AbstractImageConverter::exportToFile(const ImageView2D&, const std::string&)
+     * Convert a compressed 2D image with
+     * @ref AbstractImageConverter::convert(const CompressedImageView2D&)
+     * @m_since_latest
      */
-    ConvertFile = 1 << 2,
+    ConvertCompressed2D = 1 << 1,
 
     /**
-     * Exporting to file with
-     * @ref AbstractImageConverter::exportToFile(const CompressedImageView2D&, const std::string&)
+     * Convert a 2D image to a file with
+     * @ref AbstractImageConverter::convertToFile(const ImageView2D&, Containers::StringView)
+     * @m_since_latest
      */
-    ConvertCompressedFile = 1 << 3,
+    Convert2DToFile = 1 << 2,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @copydoc ImageConverterFeature::Convert2DToFile
+     * @m_deprecated_since_latest Use
+     *      @ref ImageConverterFeature::Convert2DToFile instead.
+     */
+    ConvertFile CORRADE_DEPRECATED_ENUM("use ImageConverterFeature::Convert2DToFile instead") = Convert2DToFile,
+    #endif
 
     /**
-     * Exporting to raw data with
-     * @ref AbstractImageConverter::exportToData(const ImageView2D&).
-     * Implies @ref ImageConverterFeature::ConvertFile.
+     * Convert a compressed 2D image to a file with
+     * @ref AbstractImageConverter::convertToFile(const CompressedImageView2D&, Containers::StringView)
+     * @m_since_latest
      */
-    ConvertData = ConvertFile|(1 << 4),
+    ConvertCompressed2DToFile = 1 << 3,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @copydoc ImageConverterFeature::ConvertCompressed2DToFile
+     * @m_deprecated_since_latest Use
+     *      @ref ImageConverterFeature::ConvertCompressed2DToFile instead.
+     */
+    ConvertCompressedFile CORRADE_DEPRECATED_ENUM("use ImageConverterFeature::ConvertCompressed2DToFile instead") = ConvertCompressed2DToFile,
+    #endif
 
     /**
-     * Exporting compressed image to raw data with
-     * @ref AbstractImageConverter::exportToData(const CompressedImageView2D&).
-     * Implies @ref ImageConverterFeature::ConvertCompressedFile.
+     * Convert a 2D image to raw data with
+     * @ref AbstractImageConverter::convertToData(const ImageView2D&).
+     * Implies @ref ImageConverterFeature::Convert2DToFile.
+     * @m_since_latest
      */
-    ConvertCompressedData = ConvertCompressedFile|(1 << 4)
+    Convert2DToData = Convert2DToFile|(1 << 4),
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @copydoc ImageConverterFeature::Convert2DToData
+     * @m_deprecated_since_latest Use
+     *      @ref ImageConverterFeature::Convert2DToData instead.
+     */
+    ConvertData CORRADE_DEPRECATED_ENUM("use ImageConverterFeature::Convert2DToData instead") = Convert2DToData,
+    #endif
+
+    /**
+     * Convert a compressed 2D image to raw data with
+     * @ref AbstractImageConverter::convertToData(const CompressedImageView2D&).
+     * Implies @ref ImageConverterFeature::ConvertCompressed2DToFile.
+     * @m_since_latest
+     */
+    ConvertCompressed2DToData = ConvertCompressed2DToFile|(1 << 4),
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @copydoc ImageConverterFeature::ConvertCompressed2DToData
+     * @m_deprecated_since_latest Use
+     *      @ref ImageConverterFeature::ConvertCompressed2DToData instead.
+     */
+    ConvertCompressedData CORRADE_DEPRECATED_ENUM("use ImageConverterFeature::ConvertCompressed2DToData instead") = ConvertCompressed2DToData,
+    #endif
 };
 
 /**
@@ -170,24 +232,24 @@ the plugin module has been unloaded.
 @section Trade-AbstractImageConverter-subclassing Subclassing
 
 The plugin needs to implement the @ref doFeatures() function and one or more of
-@ref doExportToImage(), @ref doExportToCompressedImage(), @ref doExportToData()
-or @ref doExportToFile() functions based on what features are supported.
+@ref doConvert(), @ref doConvertToData() or @ref doConvertToFile() functions
+based on what features are supported.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   The function @ref doExportToImage() is called only if
-    @ref ImageConverterFeature::ConvertImage is supported.
--   The function @ref doExportToCompressedImage() is called only if
-    @ref ImageConverterFeature::ConvertCompressedImage is supported.
--   The function @ref doExportToData(const ImageView2D&) is called only if
-    @ref ImageConverterFeature::ConvertData is supported.
--   The function @ref doExportToData(const CompressedImageView2D&) is called
-    only if @ref ImageConverterFeature::ConvertCompressedData is supported.
--   The function @ref doExportToFile(const ImageView2D&, const std::string&) is
-    called only if @ref ImageConverterFeature::ConvertFile is supported.
--   The function @ref doExportToFile(const CompressedImageView2D&, const std::string&)
-    is called only if @ref ImageConverterFeature::ConvertCompressedFile is
+-   The function @ref doConvert(const ImageView2D&) is called only if
+    @ref ImageConverterFeature::Convert2D is supported.
+-   The function @ref doConvert(const CompressedImageView2D&) is called only if
+    @ref ImageConverterFeature::ConvertCompressed2D is supported.
+-   The function @ref doConvertToData(const ImageView2D&) is called only if
+    @ref ImageConverterFeature::Convert2DToData is supported.
+-   The function @ref doConvertToData(const CompressedImageView2D&) is called
+    only if @ref ImageConverterFeature::ConvertCompressed2DToData is supported.
+-   The function @ref doConvertToFile(const ImageView2D&, Containers::StringView)
+    is called only if @ref ImageConverterFeature::Convert2DToFile is supported.
+-   The function @ref doConvertToFile(const CompressedImageView2D&, Containers::StringView)
+    is called only if @ref ImageConverterFeature::ConvertCompressed2DToFile is
     supported.
 
 @m_class{m-block m-warning}
@@ -292,86 +354,194 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         void clearFlags(ImageConverterFlags flags);
 
         /**
-         * @brief Convert image to different format
+         * @brief Convert a 2D image
+         * @m_since_latest
          *
-         * Available only if @ref ImageConverterFeature::ConvertImage is
+         * Available only if @ref ImageConverterFeature::Convert2D is
          * supported. Returns converted image on success,
-         * @ref Containers::NullOpt otherwise.
-         * @see @ref features(), @ref exportToData(), @ref exportToFile()
+         * @ref Containers::NullOpt otherwise. The implementation is allowed to
+         * return both a compressed an an uncompressed image, see documentation
+         * of a particular converter for more information.
+         * @see @ref features(), @ref convert(const CompressedImageView2D&),
+         *      @ref convert(const ImageData2D&), @ref convertToData(),
+         *      @ref convertToFile(), @ref ImageData::isCompressed()
          */
-        Containers::Optional<Image2D> exportToImage(const ImageView2D& image);
+        Containers::Optional<ImageData2D> convert(const ImageView2D& image);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief convert(const ImageView2D&)
+         * @m_deprecated_since_latest Use @ref convert(const ImageView2D&)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use convert(const ImageView2D&) instead") Containers::Optional<Image2D> exportToImage(const ImageView2D& image);
 
         /**
-         * @brief Convert image to compressed format
+         * @brief Convert a 2D image to compressed format
+         * @m_deprecated_since_latest Use @ref convert(const ImageView2D&)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use convert(const ImageView2D&) instead") Containers::Optional<CompressedImage2D> exportToCompressedImage(const ImageView2D& image);
+        #endif
+
+        /**
+         * @brief Convert a compressed 2D image
+         * @m_since_latest
          *
-         * Available only if @ref ImageConverterFeature::ConvertCompressedImage
-         * is supported. Returns converted image on success,
-         * @ref Containers::NullOpt otherwise.
-         * @see @ref features(), @ref exportToData(), @ref exportToFile()
+         * Available only if @ref ImageConverterFeature::ConvertCompressed2D is
+         * supported. Returns converted image on success,
+         * @ref Containers::NullOpt otherwise. The implementation is allowed to
+         * return both a compressed an an uncompressed image, see documentation
+         * of a particular converter for more information.
+         * @see @ref features(), @ref convert(const ImageView2D&),
+         *      @ref convert(const ImageData2D&), @ref convertToData(),
+         *      @ref convertToFile(), @ref ImageData::isCompressed()
          */
-        Containers::Optional<CompressedImage2D> exportToCompressedImage(const ImageView2D& image);
+        Containers::Optional<ImageData2D> convert(const CompressedImageView2D& image);
 
         /**
-         * @brief Export image to raw data
-         *
-         * Available only if @ref ImageConverterFeature::ConvertData is
-         * supported. Returns data on success, zero-sized array otherwise.
-         * @see @ref features(), @ref exportToImage(),
-         *      @ref exportToFile(const ImageView2D&, const std::string&)
-         */
-        Containers::Array<char> exportToData(const ImageView2D& image);
-
-        /**
-         * @brief Export compressed image to raw data
-         *
-         * Available only if @ref ImageConverterFeature::ConvertCompressedData
-         * is supported. Returns data on success, zero-sized array otherwise.
-         * @see @ref features(), @ref exportToCompressedImage(),
-         *      @ref exportToFile(const CompressedImageView2D&, const std::string&)
-         */
-        Containers::Array<char> exportToData(const CompressedImageView2D& image);
-
-        /**
-         * @brief Export image to raw data
+         * @brief Convert a 2D image data
+         * @m_since_latest
          *
          * Based on whether the image is compressed or not, calls either
-         * @ref exportToData(const ImageView2D&) or
-         * @ref exportToData(const CompressedImageView2D&). See documentation
-         * of those two functions for details.
+         * @ref convert(const ImageView2D&) or
+         * @ref convert(const CompressedImageView2D&). See documentation of
+         * these two functions for details.
+         * @see @ref ImageData::isCompressed()
          */
-        Containers::Array<char> exportToData(const ImageData2D& image);
+        Containers::Optional<ImageData2D> convert(const ImageData2D& image);
 
         /**
-         * @brief Export image to file
+         * @brief Convert a 2D image to a raw data
+         * @m_since_latest
          *
-         * Available only if @ref ImageConverterFeature::ConvertFile or
-         * @ref ImageConverterFeature::ConvertData is supported. Returns
+         * Available only if @ref ImageConverterFeature::Convert2DToData is
+         * supported. Returns data on success, @cpp nullptr @ce otherwise.
+         * @see @ref features(), @ref convertToData(const CompressedImageView2D&),
+         *      @ref convertToData(const ImageData2D&), @ref convert(),
+         *      @ref convertToFile()
+         */
+        Containers::Array<char> convertToData(const ImageView2D& image);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief convertToData(const ImageView2D&)
+         * @m_deprecated_since_latest Use @ref convertToData(const ImageView2D&)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use convertToData(const ImageView2D&) instead") Containers::Array<char> exportToData(const ImageView2D& image);
+        #endif
+
+        /**
+         * @brief Convert a compressed 2D image to a raw data
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressed2DToData
+         * is supported. Returns data on success, @cpp nullptr @ce otherwise.
+         * @see @ref features(), @ref convertToData(const ImageView2D&),
+         *      @ref convertToData(const ImageData2D&), @ref convert(),
+         *      @ref convertToFile()
+         */
+        Containers::Array<char> convertToData(const CompressedImageView2D& image);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief convertToData(const CompressedImageView2D&)
+         * @m_deprecated_since_latest Use
+         *      @ref convertToData(const CompressedImageView2D&) instead.
+         */
+        CORRADE_DEPRECATED("use convertToData(const CompressedImageView2D&) instead") Containers::Array<char> exportToData(const CompressedImageView2D& image);
+        #endif
+
+        /**
+         * @brief Convert a 2D image data to a raw data
+         * @m_since_latest
+         *
+         * Based on whether the image is compressed or not, calls either
+         * @ref convertToData(const ImageView2D&) or
+         * @ref convertToData(const CompressedImageView2D&). See documentation
+         * of these two functions for details.
+         * @see @ref ImageData::isCompressed()
+         */
+        Containers::Array<char> convertToData(const ImageData2D& image);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief convertToData(const ImageData2D&)
+         * @m_deprecated_since_latest Use @ref convertToData(const ImageData2D&)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use convertToData(const ImageView2D&) instead") Containers::Array<char> exportToData(const ImageData2D& image);
+        #endif
+
+        /**
+         * @brief Convert a 2D image to a file
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::Convert2DToFile or
+         * @ref ImageConverterFeature::Convert2DToData is supported. Returns
          * @cpp true @ce on success, @cpp false @ce otherwise.
-         * @see @ref features(), @ref exportToImage(),
-         *      @ref exportToData(const ImageView2D&)
+         * @see @ref features(), @ref convertToFile(const CompressedImageView2D&, Containers::StringView),
+         *      @ref convertToFile(const ImageData2D&, Containers::StringView),
+         *      @ref convert(), @ref convertToData()
          */
-        bool exportToFile(const ImageView2D& image, const std::string& filename);
+        bool convertToFile(const ImageView2D& image, Containers::StringView filename);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief convertToFile(const ImageView2D&, Containers::StringView)
+         * @m_deprecated_since_latest Use
+         *      @ref convertToFile(const ImageView2D&, Containers::StringView)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use convertToFile(const ImageView2D&, Containers::StringView) instead") bool exportToFile(const ImageView2D& image, const std::string& filename);
+        #endif
 
         /**
-         * @brief Export compressed image to file
+         * @brief Convert a compressed 2D image to a file
+         * @m_since_latest
          *
-         * Available only if @ref ImageConverterFeature::ConvertCompressedFile
-         * or @ref ImageConverterFeature::ConvertCompressedData is supported.
-         * Returns @cpp true @ce on success, @cpp false @ce otherwise.
-         * @see @ref features(), @ref exportToCompressedImage(),
-         *      @ref exportToData(const CompressedImageView2D&)
+         * Available only if @ref ImageConverterFeature::ConvertCompressed2DToFile
+         * or @ref ImageConverterFeature::ConvertCompressed2DToData is
+         * supported. Returns @cpp true @ce on success, @cpp false @ce
+         * otherwise.
+         * @see @ref features(), @ref convertToFile(const ImageView2D&, Containers::StringView),
+         *      @ref convertToFile(const ImageData2D&, Containers::StringView),
+         *      @ref convert(), @ref convertToData()
          */
-        bool exportToFile(const CompressedImageView2D& image, const std::string& filename);
+        bool convertToFile(const CompressedImageView2D& image, Containers::StringView filename);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief convertToFile(const CompressedImageView2D&, Containers::StringView)
+         * @m_deprecated_since_latest Use
+         *      @ref convertToFile(const CompressedImageView2D&, Containers::StringView)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use convertToFile(const CompressedImageView2D&, Containers::StringView) instead") bool exportToFile(const CompressedImageView2D& image, const std::string& filename);
+        #endif
 
         /**
-         * @brief Export image to file
+         * @brief Convert a 2D image data to a file
+         * @m_since_latest
          *
          * Based on whether the image is compressed or not, calls either
-         * @ref exportToFile(const ImageView2D&, const std::string&) or
-         * @ref exportToFile(const CompressedImageView2D&, const std::string&).
-         * See documentation of those two functions for details.
+         * @ref convertToFile(const ImageView2D&, Containers::StringView) or
+         * @ref convertToFile(const CompressedImageView2D&, Containers::StringView).
+         * See documentation of these two functions for details.
+         * @see @ref ImageData::isCompressed()
          */
-        bool exportToFile(const ImageData2D& image, const std::string& filename);
+        bool convertToFile(const ImageData2D& image, Containers::StringView filename);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief convertToFile(const ImageData2D&, Containers::StringView)
+         * @m_deprecated_since_latest Use
+         *      @ref convertToFile(const ImageData2D&, Containers::StringView)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use convertToFile(const ImageData2D&, Containers::StringView) instead") bool exportToFile(const ImageData2D& image, const std::string& filename);
+        #endif
 
     private:
         /** @brief Implementation for @ref features() */
@@ -392,35 +562,49 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          */
         virtual void doSetFlags(ImageConverterFlags flags);
 
-        /** @brief Implementation for @ref exportToImage() */
-        virtual Containers::Optional<Image2D> doExportToImage(const ImageView2D& image);
-
-        /** @brief Implementation for @ref exportToCompressedImage() */
-        virtual Containers::Optional<CompressedImage2D> doExportToCompressedImage(const ImageView2D& image);
-
-        /** @brief Implementation for @ref exportToData(const ImageView2D&) */
-        virtual Containers::Array<char> doExportToData(const ImageView2D& image);
-
-        /** @brief Implementation for @ref exportToData(const CompressedImageView2D&) */
-        virtual Containers::Array<char> doExportToData(const CompressedImageView2D& image);
+        /**
+         * @brief Implementation for @ref convert(const ImageView2D&)
+         * @m_since_latest
+         */
+        virtual Containers::Optional<ImageData2D> doConvert(const ImageView2D& image);
 
         /**
-         * @brief Implementation for @ref exportToFile(const ImageView2D&, const std::string&)
+         * @brief Implementation for @ref convert(const CompressedImageView2D&)
+         * @m_since_latest
+         */
+        virtual Containers::Optional<ImageData2D> doConvert(const CompressedImageView2D& image);
+
+        /**
+         * @brief Implementation for @ref convertToData(const ImageView2D&)
+         * @m_since_latest
+         */
+        virtual Containers::Array<char> doConvertToData(const ImageView2D& image);
+
+        /**
+         * @brief Implementation for @ref convertToData(const CompressedImageView2D&)
+         * @m_since_latest
+         */
+        virtual Containers::Array<char> doConvertToData(const CompressedImageView2D& image);
+
+        /**
+         * @brief Implementation for @ref convertToFile(const ImageView2D&, Containers::StringView)
+         * @m_since_latest
          *
-         * If @ref ImageConverterFeature::ConvertData is supported, default
-         * implementation calls @ref doExportToData(const ImageView2D&) and
+         * If @ref ImageConverterFeature::Convert2DToData is supported, default
+         * implementation calls @ref doConvertToData(const ImageView2D&) and
          * saves the result to given file.
          */
-        virtual bool doExportToFile(const ImageView2D& image, const std::string& filename);
+        virtual bool doConvertToFile(const ImageView2D& image, Containers::StringView filename);
 
         /**
-         * @brief Implementation for @ref exportToFile(const CompressedImageView2D&, const std::string&)
+         * @brief Implementation for @ref convertToFile(const CompressedImageView2D&, Containers::StringView)
+         * @m_since_latest
          *
-         * If @ref ImageConverterFeature::ConvertCompressedData is supported,
-         * default implementation calls @ref doExportToData(const CompressedImageView2D&)
+         * If @ref ImageConverterFeature::ConvertCompressed2DToData is
+         * supported, default implementation calls @ref doConvertToData(const CompressedImageView2D&)
          * and saves the result to given file.
          */
-        virtual bool doExportToFile(const CompressedImageView2D& image, const std::string& filename);
+        virtual bool doConvertToFile(const CompressedImageView2D& image, Containers::StringView filename);
 
         ImageConverterFlags _flags;
 };

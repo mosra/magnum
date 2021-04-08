@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
@@ -121,7 +122,7 @@ void AnyImageConverterTest::convert() {
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
-    CORRADE_VERIFY(converter->exportToFile(Image, filename));
+    CORRADE_VERIFY(converter->convertToFile(Image, filename));
     CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
@@ -133,14 +134,14 @@ void AnyImageConverterTest::detect() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->exportToFile(Image, data.filename));
+    CORRADE_VERIFY(!converter->convertToFile(Image, data.filename));
     /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnyImageConverter::exportToFile(): cannot load the {0} plugin\n", data.plugin));
+"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n", data.plugin));
     #else
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnyImageConverter::exportToFile(): cannot load the {0} plugin\n", data.plugin));
+"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n", data.plugin));
     #endif
 }
 
@@ -149,9 +150,9 @@ void AnyImageConverterTest::unknown() {
     Error redirectError{&output};
 
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
-    CORRADE_VERIFY(!converter->exportToFile(Image, "image.xcf"));
+    CORRADE_VERIFY(!converter->convertToFile(Image, "image.xcf"));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnyImageConverter::exportToFile(): cannot determine the format of image.xcf\n");
+    CORRADE_COMPARE(output.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.xcf\n");
 }
 
 void AnyImageConverterTest::verbose() {
@@ -169,12 +170,12 @@ void AnyImageConverterTest::verbose() {
     std::ostringstream out;
     {
         Debug redirectOutput{&out};
-        CORRADE_VERIFY(converter->exportToFile(Image, filename));
+        CORRADE_VERIFY(converter->convertToFile(Image, filename));
     }
     CORRADE_VERIFY(Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(),
-        "Trade::AnyImageConverter::exportToFile(): using TgaImageConverter\n"
-        "Trade::TgaImageConverter::exportToData(): converting from RGB to BGR\n");
+        "Trade::AnyImageConverter::convertToFile(): using TgaImageConverter\n"
+        "Trade::TgaImageConverter::convertToData(): converting from RGB to BGR\n");
 }
 
 }}}}

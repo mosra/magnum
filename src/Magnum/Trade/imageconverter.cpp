@@ -332,7 +332,7 @@ key=true; configuration subgroups are delimited with /.)")
     Implementation::setOptions(*converter, args.value("converter-options"));
 
     /* Save output file */
-    if(!converter->exportToFile(*image, output)) {
+    if(!converter->convertToFile(*image, output)) {
         Error() << "Cannot save file" << output;
         return 5;
     }

@@ -675,6 +675,7 @@ template<UnsignedInt dimensions> class ImageData {
            the restriction is pointless when used outside of plugin
            implementations. */
         friend AbstractImporter;
+        friend AbstractImageConverter;
 
         explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 

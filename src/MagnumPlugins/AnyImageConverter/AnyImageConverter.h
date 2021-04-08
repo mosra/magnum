@@ -117,8 +117,8 @@ class MAGNUM_ANYIMAGECONVERTER_EXPORT AnyImageConverter: public AbstractImageCon
 
     private:
         MAGNUM_ANYIMAGECONVERTER_LOCAL ImageConverterFeatures doFeatures() const override;
-        MAGNUM_ANYIMAGECONVERTER_LOCAL bool doExportToFile(const ImageView2D& image, const std::string& filename) override;
-        MAGNUM_ANYIMAGECONVERTER_LOCAL bool doExportToFile(const CompressedImageView2D& image, const std::string& filename) override;
+        MAGNUM_ANYIMAGECONVERTER_LOCAL bool doConvertToFile(const ImageView2D& image, Containers::StringView filename) override;
+        MAGNUM_ANYIMAGECONVERTER_LOCAL bool doConvertToFile(const CompressedImageView2D& image, Containers::StringView filename) override;
 };
 
 }}

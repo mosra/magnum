@@ -26,6 +26,7 @@
 #include "Screenshot.h"
 
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 
@@ -78,7 +79,7 @@ bool screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, 
         return false;
 
     Image2D image = framebuffer.read(framebuffer.viewport(), {format});
-    if(!converter->exportToFile(image, filename))
+    if(!converter->convertToFile(image, filename))
         return false;
 
     Debug{} << "DebugTools::screenshot(): saved a" << format << "image of size" << image.size() << "to" << filename;

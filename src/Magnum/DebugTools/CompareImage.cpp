@@ -29,6 +29,7 @@
 #include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/StringStl.h> /* for Directory */
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Comparator.h>
@@ -734,7 +735,7 @@ void ImageComparatorBase::saveDiagnostic(TestSuite::ComparisonStatusFlags, Utili
        we're in the middle of a fail anyway (and everything will print messages
        to the output nevertheless). */
     Containers::Pointer<Trade::AbstractImageConverter> converter = _state->converterManager().loadAndInstantiate("AnyImageConverter");
-    if(converter && converter->exportToFile(image, filename))
+    if(converter && converter->convertToFile(image, filename))
         out << "->" << filename;
 }
 

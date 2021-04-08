@@ -26,6 +26,7 @@
 #include <tuple>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -198,7 +199,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
 
@@ -217,7 +218,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
 
@@ -242,7 +243,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
 
@@ -273,7 +274,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
 
@@ -304,7 +305,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
 
@@ -348,7 +349,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
 
@@ -371,7 +372,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
 
@@ -394,7 +395,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
 

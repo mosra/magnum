@@ -215,7 +215,7 @@ int DistanceFieldConverter::exec() {
     /* Save image */
     Image2D result{PixelFormat::R8Unorm};
     output.image(0, result);
-    if(!converter->exportToFile(result, args.value("output"))) {
+    if(!converter->convertToFile(result, args.value("output"))) {
         Error() << "Cannot save file" << args.value("output");
         return 5;
     }

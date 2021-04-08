@@ -25,6 +25,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/PixelFormat.h"
@@ -62,7 +63,7 @@ int main() {
             {std::size_t(OutputSize.y()), std::size_t(OutputSize.x())}};
         Utility::copy(src, dst);
 
-        if(!converter->exportToFile(ImageView2D{PixelFormat::RGB8Unorm, OutputSize, data}, image.second))
+        if(!converter->convertToFile(ImageView2D{PixelFormat::RGB8Unorm, OutputSize, data}, image.second))
             return 2;
     }
 }

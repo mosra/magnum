@@ -120,7 +120,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
     std::copy(confStr.begin(), confStr.end(), confData.begin());
 
     /* Save cache image */
-    auto tgaData = Trade::TgaImageConverter().exportToData(cache.image());
+    auto tgaData = Trade::TgaImageConverter().convertToData(cache.image());
 
     std::vector<std::pair<std::string, Containers::Array<char>>> out;
     out.emplace_back(filename + ".conf", std::move(confData));

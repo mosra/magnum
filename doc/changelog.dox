@@ -477,6 +477,30 @@ See also:
     @ref MAGNUM_BUILD_DEPRECATED is enabled, the returned type acts as a
     @ref Corrade::Containers::Optional but has (deprecated) implicit conversion
     to a @ref Corrade::Containers::Pointer to avoid breaking user code.
+-   @cpp Trade::ImageConverterFeature::ConvertImage @ce and
+    @cpp Trade::ImageConverterFeature::ConvertCompressedImage @ce;
+    @cpp Trade::AbstractImageConverter::exportToImage() @ce and
+    @cpp Trade::AbstractImageConverter::exportToCompressedImage() @ce are
+    deprecated in favor of an unifying
+    @ref Trade::ImageConverterFeature::Convert2D and a corresponding
+    @ref Trade::AbstractImageConverter::convert() that returns an
+    @ref Trade::ImageData2D and thus can handle both cases and follows a naming
+    scheme used elsewhere
+-   @cpp Trade::ImageConverterFeature::ConvertFile @ce,
+    @cpp Trade::ImageConverterFeature::ConvertCompressedFile @ce,
+    @cpp Trade::ImageConverterFeature::ConvertData @ce and
+    @cpp Trade::ImageConverterFeature::ConvertCompressedData @ce are deprecated
+    in favor of @ref Trade::ImageConverterFeature::Convert2DToFile,
+    @ref Trade::ImageConverterFeature::ConvertCompressed2DToFile,
+    @ref Trade::ImageConverterFeature::Convert2DToData and
+    @ref Trade::ImageConverterFeature::ConvertCompressed2DToData that more
+    clearly imply what's converted to what and make room for 3D image
+    conversion as well
+-   @cpp Trade::AbstractImageConverter::exportToData() @ce and
+    @cpp Trade::AbstractImageConverter::exportToFile() @ce are deprecated in
+    favor of @ref Trade::AbstractImageConverter::convertToData() and
+    @ref Trade::AbstractImageConverter::convertToFile() that follow a naming
+    scheme used elsewhere
 -   The signature of @ref Trade::AbstractSceneConverter::convertToFile() was
     changed to have input first and output second, for consistency with other
     interfaces, together with a switch to @ref Containers::StringView. The
