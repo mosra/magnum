@@ -408,18 +408,17 @@ void AbstractImageConverterTest::exportCompressedToDataCustomDeleter() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::exportToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
+/* Used by convertImageDataToData() and convertImageDataToFile() */
 class ImageDataConverter: public Trade::AbstractImageConverter {
     private:
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertData|ImageConverterFeature::ConvertCompressedData; }
 
         Containers::Array<char> doExportToData(const ImageView2D&) override {
-            Containers::Array<char> out{Containers::InPlaceInit, {'B'}};
-            return out;
+            return Containers::array({'B'});
         };
 
         Containers::Array<char> doExportToData(const CompressedImageView2D&) override {
-            Containers::Array<char> out{Containers::InPlaceInit, {'C'}};
-            return out;
+            return Containers::array({'C'});
         };
 };
 
@@ -430,13 +429,13 @@ void AbstractImageConverterTest::exportImageDataToData() {
         /* Should get "B" when converting uncompressed */
         ImageData2D image{PixelFormat::RGBA8Unorm, {}, nullptr};
         CORRADE_COMPARE_AS(converter.exportToData(image),
-            (Containers::Array<char>{Containers::InPlaceInit, {'B'}}),
+            Containers::arrayView({'B'}),
             TestSuite::Compare::Container);
     } {
         /* Should get "C" when converting compressed */
         ImageData2D image{CompressedPixelFormat::Bc1RGBUnorm, {}, nullptr};
         CORRADE_COMPARE_AS(converter.exportToData(image),
-            (Containers::Array<char>{Containers::InPlaceInit, {'C'}}),
+            Containers::arrayView({'C'}),
             TestSuite::Compare::Container);
     }
 }
