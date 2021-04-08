@@ -275,7 +275,7 @@ bool AbstractConverter::convertDataToFile(const Stage stage, const Containers::A
     /** @todo this needs expansion once output callbacks are supported as well */
 
     /* Cast to a non-void type for more convenience */
-    Containers::Array<char> out = doConvertDataToData(stage, Containers::arrayCast<const char>(data));
+    const Containers::Array<char> out = doConvertDataToData(stage, Containers::arrayCast<const char>(data));
     if(!out) return false;
 
     if(!Utility::Directory::write(filename, out)) {
@@ -322,7 +322,7 @@ bool AbstractConverter::convertFileToFile(const Stage stage, const Containers::S
               actual file loading to the default implementation (callback used
               in the base doConvertFileToFile() implementation, because this
               branch is never taken in that case) */
-        Containers::Array<char> out = convertDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::convertFileToFile():", stage, from);
+        const Containers::Array<char> out = convertDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::convertFileToFile():", stage, from);
         if(!out) return false;
 
         if(!Utility::Directory::write(to, out)) {
@@ -451,7 +451,7 @@ bool AbstractConverter::linkDataToFile(const Containers::ArrayView<const std::pa
     /** @todo this needs expansion once output callbacks are supported as well */
 
     /* Cast to a non-void type for more convenience */
-    Containers::Array<char> out = doLinkDataToData(Containers::arrayCast<const std::pair<Stage, Containers::ArrayView<const char>>>(data));
+    const Containers::Array<char> out = doLinkDataToData(Containers::arrayCast<const std::pair<Stage, Containers::ArrayView<const char>>>(data));
     if(!out) return false;
 
     if(!Utility::Directory::write(filename, out)) {
@@ -530,7 +530,7 @@ bool AbstractConverter::linkFilesToFile(const Containers::ArrayView<const std::p
               actual file loading to the default implementation (callback used
               in the base doLinkFilesToFile() implementation, because this
               branch is never taken in that case) */
-        Containers::Array<char> out = linkDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::linkFilesToFile():", from);
+        const Containers::Array<char> out = linkDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::linkFilesToFile():", from);
         if(!out) return false;
 
         if(!Utility::Directory::write(to, out)) {
