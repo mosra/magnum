@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
@@ -92,7 +93,7 @@ void AnySceneConverterTest::detect() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile(data.filename, MeshData{MeshPrimitive::Triangles, 0}));
+    CORRADE_VERIFY(!converter->convertToFile(MeshData{MeshPrimitive::Triangles, 0}, data.filename));
     /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
@@ -108,7 +109,7 @@ void AnySceneConverterTest::unknown() {
     Error redirectError{&output};
 
     Containers::Pointer<AbstractSceneConverter> converter = _manager.instantiate("AnySceneConverter");
-    CORRADE_VERIFY(!converter->convertToFile("mesh.obj", MeshData{MeshPrimitive::Triangles, 0}));
+    CORRADE_VERIFY(!converter->convertToFile(MeshData{MeshPrimitive::Triangles, 0}, "mesh.obj"));
 
     CORRADE_COMPARE(output.str(), "Trade::AnySceneConverter::convertToFile(): cannot determine the format of mesh.obj\n");
 }

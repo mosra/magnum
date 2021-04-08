@@ -25,6 +25,8 @@
 
 #include "AnySceneConverter.h"
 
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
@@ -45,7 +47,7 @@ SceneConverterFeatures AnySceneConverter::doFeatures() const {
     return SceneConverterFeature::ConvertMeshToFile;
 }
 
-bool AnySceneConverter::doConvertToFile(const std::string& filename, const MeshData& mesh) {
+bool AnySceneConverter::doConvertToFile(const MeshData& mesh, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
     /** @todo lowercase only the extension, once Directory::split() is done */
@@ -80,10 +82,10 @@ bool AnySceneConverter::doConvertToFile(const std::string& filename, const MeshD
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
-    return converter->convertToFile(filename, mesh);
+    return converter->convertToFile(mesh, filename);
 }
 
 }}
 
 CORRADE_PLUGIN_REGISTER(AnySceneConverter, Magnum::Trade::AnySceneConverter,
-    "cz.mosra.magnum.Trade.AbstractSceneConverter/0.1")
+    "cz.mosra.magnum.Trade.AbstractSceneConverter/0.1.1")

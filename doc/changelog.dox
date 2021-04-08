@@ -477,6 +477,10 @@ See also:
     @ref MAGNUM_BUILD_DEPRECATED is enabled, the returned type acts as a
     @ref Corrade::Containers::Optional but has (deprecated) implicit conversion
     to a @ref Corrade::Containers::Pointer to avoid breaking user code.
+-   The signature of @ref Trade::AbstractSceneConverter::convertToFile() was
+    changed to have input first and output second, for consistency with other
+    interfaces, together with a switch to @ref Containers::StringView. The
+    original signature is marked as deprecated.
 -   @cpp Vk::hasVkFormat(Magnum::VertexFormat) @ce,
     @cpp Vk::hasVkFormat(Magnum::PixelFormat) @ce,
     @cpp Vk::hasVkFormat(Magnum::CompressedPixelFormat) @ce,

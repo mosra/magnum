@@ -104,7 +104,7 @@ class MAGNUM_ANYSCENECONVERTER_EXPORT AnySceneConverter: public AbstractSceneCon
 
     private:
         MAGNUM_ANYSCENECONVERTER_LOCAL SceneConverterFeatures doFeatures() const override;
-        MAGNUM_ANYSCENECONVERTER_LOCAL bool doConvertToFile(const std::string& filename, const MeshData& mesh) override;
+        MAGNUM_ANYSCENECONVERTER_LOCAL bool doConvertToFile(const MeshData& mesh, Containers::StringView filename) override;
 };
 
 }}

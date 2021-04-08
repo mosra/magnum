@@ -778,7 +778,7 @@ used.)")
                 Debug{} << "Saving output with" << converterName << Debug::nospace << "...";
 
             Duration d{conversionTime};
-            if(!converter->convertToFile(args.value("output"), *mesh)) {
+            if(!converter->convertToFile(*mesh, args.value("output"))) {
                 Error{} << "Cannot save file" << args.value("output");
                 return 5;
             }

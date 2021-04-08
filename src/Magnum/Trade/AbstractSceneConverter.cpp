@@ -28,6 +28,8 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringStl.h> /* Needed for Directory */
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -43,7 +45,7 @@ namespace Magnum { namespace Trade {
 std::string AbstractSceneConverter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractSceneConverter/0.1"
+"cz.mosra.magnum.Trade.AbstractSceneConverter/0.1.1"
 /* [interface] */
     ;
 }
@@ -139,14 +141,20 @@ Containers::Array<char> AbstractSceneConverter::doConvertToData(const MeshData&)
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::convertToData(): mesh conversion advertised but not implemented", {});
 }
 
-bool AbstractSceneConverter::convertToFile(const std::string& filename, const MeshData& mesh) {
+bool AbstractSceneConverter::convertToFile(const MeshData& mesh, const Containers::StringView filename) {
     CORRADE_ASSERT(features() >= SceneConverterFeature::ConvertMeshToFile,
         "Trade::AbstractSceneConverter::convertToFile(): mesh conversion not supported", {});
 
-    return doConvertToFile(filename, mesh);
+    return doConvertToFile(mesh, filename);
 }
 
-bool AbstractSceneConverter::doConvertToFile(const std::string& filename, const MeshData& mesh) {
+#ifdef MAGNUM_BUILD_DEPRECATED
+bool AbstractSceneConverter::convertToFile(const std::string& filename, const MeshData& mesh) {
+    return convertToFile(mesh, filename);
+}
+#endif
+
+bool AbstractSceneConverter::doConvertToFile(const MeshData& mesh, const Containers::StringView filename) {
     CORRADE_ASSERT(features() >= SceneConverterFeature::ConvertMeshToData, "Trade::AbstractSceneConverter::convertToFile(): mesh conversion advertised but not implemented", false);
 
     const auto data = doConvertToData(mesh);
