@@ -45,11 +45,18 @@ namespace Magnum { namespace Trade {
 */
 enum class ImageConverterFeature: UnsignedInt {
     /**
+     * Convert a 1D image with
+     * @ref AbstractImageConverter::convert(const ImageView1D&)
+     * @m_since_latest
+     */
+    Convert1D = 1 << 0,
+
+    /**
      * Convert a 2D image with
      * @ref AbstractImageConverter::convert(const ImageView2D&)
      * @m_since_latest
      */
-    Convert2D = 1 << 0,
+    Convert2D = 1 << 1,
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /**
@@ -72,18 +79,46 @@ enum class ImageConverterFeature: UnsignedInt {
     #endif
 
     /**
+     * Convert a 3D image with
+     * @ref AbstractImageConverter::convert(const ImageView3D&)
+     * @m_since_latest
+     */
+    Convert3D = 1 << 3,
+
+    /**
+     * Convert a compressed 1D image with
+     * @ref AbstractImageConverter::convert(const CompressedImageView1D&)
+     * @m_since_latest
+     */
+    ConvertCompressed1D = 1 << 4,
+
+    /**
      * Convert a compressed 2D image with
      * @ref AbstractImageConverter::convert(const CompressedImageView2D&)
      * @m_since_latest
      */
-    ConvertCompressed2D = 1 << 1,
+    ConvertCompressed2D = 1 << 5,
+
+    /**
+     * Convert a compressed 3D image with
+     * @ref AbstractImageConverter::convert(const CompressedImageView3D&)
+     * @m_since_latest
+     */
+    ConvertCompressed3D = 1 << 6,
+
+    /**
+     * Convert a 1D image to a file with
+     * @ref AbstractImageConverter::convertToFile(const ImageView1D&, Containers::StringView)
+     * @m_since_latest
+     */
+    Convert1DToFile = 1 << 7,
 
     /**
      * Convert a 2D image to a file with
      * @ref AbstractImageConverter::convertToFile(const ImageView2D&, Containers::StringView)
      * @m_since_latest
      */
-    Convert2DToFile = 1 << 2,
+    Convert2DToFile = 1 << 8,
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /**
@@ -95,11 +130,25 @@ enum class ImageConverterFeature: UnsignedInt {
     #endif
 
     /**
+     * Convert a 3D image to a file with
+     * @ref AbstractImageConverter::convertToFile(const ImageView3D&, Containers::StringView)
+     * @m_since_latest
+     */
+    Convert3DToFile = 1 << 9,
+
+    /**
+     * Convert a compressed 1D image to a file with
+     * @ref AbstractImageConverter::convertToFile(const CompressedImageView1D&, Containers::StringView)
+     * @m_since_latest
+     */
+    ConvertCompressed1DToFile = 1 << 10,
+
+    /**
      * Convert a compressed 2D image to a file with
      * @ref AbstractImageConverter::convertToFile(const CompressedImageView2D&, Containers::StringView)
      * @m_since_latest
      */
-    ConvertCompressed2DToFile = 1 << 3,
+    ConvertCompressed2DToFile = 1 << 11,
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /**
@@ -111,12 +160,27 @@ enum class ImageConverterFeature: UnsignedInt {
     #endif
 
     /**
+     * Convert a compressed 3D image to a file with
+     * @ref AbstractImageConverter::convertToFile(const CompressedImageView3D&, Containers::StringView)
+     * @m_since_latest
+     */
+    ConvertCompressed3DToFile = 1 << 12,
+
+    /**
+     * Convert a 1D image to raw data with
+     * @ref AbstractImageConverter::convertToData(const ImageView1D&).
+     * Implies @ref ImageConverterFeature::Convert1DToFile.
+     * @m_since_latest
+     */
+    Convert1DToData = Convert1DToFile|(1 << 13),
+
+    /**
      * Convert a 2D image to raw data with
      * @ref AbstractImageConverter::convertToData(const ImageView2D&).
      * Implies @ref ImageConverterFeature::Convert2DToFile.
      * @m_since_latest
      */
-    Convert2DToData = Convert2DToFile|(1 << 4),
+    Convert2DToData = Convert2DToFile|(1 << 13),
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /**
@@ -128,12 +192,28 @@ enum class ImageConverterFeature: UnsignedInt {
     #endif
 
     /**
+     * Convert a 3D image to raw data with
+     * @ref AbstractImageConverter::convertToData(const ImageView3D&).
+     * Implies @ref ImageConverterFeature::Convert3DToFile.
+     * @m_since_latest
+     */
+    Convert3DToData = Convert3DToFile|(1 << 13),
+
+    /**
+     * Convert a compressed 1D image to raw data with
+     * @ref AbstractImageConverter::convertToData(const CompressedImageView1D&).
+     * Implies @ref ImageConverterFeature::ConvertCompressed1DToFile.
+     * @m_since_latest
+     */
+    ConvertCompressed1DToData = ConvertCompressed1DToFile|(1 << 13),
+
+    /**
      * Convert a compressed 2D image to raw data with
      * @ref AbstractImageConverter::convertToData(const CompressedImageView2D&).
      * Implies @ref ImageConverterFeature::ConvertCompressed2DToFile.
      * @m_since_latest
      */
-    ConvertCompressed2DToData = ConvertCompressed2DToFile|(1 << 4),
+    ConvertCompressed2DToData = ConvertCompressed2DToFile|(1 << 13),
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /**
@@ -143,6 +223,14 @@ enum class ImageConverterFeature: UnsignedInt {
      */
     ConvertCompressedData CORRADE_DEPRECATED_ENUM("use ImageConverterFeature::ConvertCompressed2DToData instead") = ConvertCompressed2DToData,
     #endif
+
+    /**
+     * Convert a compressed 3D image to raw data with
+     * @ref AbstractImageConverter::convertToData(const CompressedImageView3D&).
+     * Implies @ref ImageConverterFeature::ConvertCompressed3DToFile.
+     * @m_since_latest
+     */
+    ConvertCompressed3DToData = ConvertCompressed3DToFile|(1 << 13)
 };
 
 /**
@@ -354,6 +442,21 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         void clearFlags(ImageConverterFlags flags);
 
         /**
+         * @brief Convert a 1D image
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::Convert1D is
+         * supported. Returns converted image on success,
+         * @ref Containers::NullOpt otherwise. The implementation is allowed to
+         * return both a compressed an an uncompressed image, see documentation
+         * of a particular converter for more information.
+         * @see @ref features(), @ref convert(const CompressedImageView1D&),
+         *      @ref convert(const ImageData1D&), @ref convertToData(),
+         *      @ref convertToFile(), @ref ImageData::isCompressed()
+         */
+        Containers::Optional<ImageData1D> convert(const ImageView1D& image);
+
+        /**
          * @brief Convert a 2D image
          * @m_since_latest
          *
@@ -385,6 +488,36 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         #endif
 
         /**
+         * @brief Convert a 3D image
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::Convert3D is
+         * supported. Returns converted image on success,
+         * @ref Containers::NullOpt otherwise. The implementation is allowed to
+         * return both a compressed an an uncompressed image, see documentation
+         * of a particular converter for more information.
+         * @see @ref features(), @ref convert(const CompressedImageView3D&),
+         *      @ref convert(const ImageData3D&), @ref convertToData(),
+         *      @ref convertToFile(), @ref ImageData::isCompressed()
+         */
+        Containers::Optional<ImageData3D> convert(const ImageView3D& image);
+
+        /**
+         * @brief Convert a compressed 1D image
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressed1D is
+         * supported. Returns converted image on success,
+         * @ref Containers::NullOpt otherwise. The implementation is allowed to
+         * return both a compressed an an uncompressed image, see documentation
+         * of a particular converter for more information.
+         * @see @ref features(), @ref convert(const ImageView1D&),
+         *      @ref convert(const ImageData1D&), @ref convertToData(),
+         *      @ref convertToFile(), @ref ImageData::isCompressed()
+         */
+        Containers::Optional<ImageData1D> convert(const CompressedImageView1D& image);
+
+        /**
          * @brief Convert a compressed 2D image
          * @m_since_latest
          *
@@ -400,6 +533,33 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         Containers::Optional<ImageData2D> convert(const CompressedImageView2D& image);
 
         /**
+         * @brief Convert a compressed 3D image
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressed3D is
+         * supported. Returns converted image on success,
+         * @ref Containers::NullOpt otherwise. The implementation is allowed to
+         * return both a compressed an an uncompressed image, see documentation
+         * of a particular converter for more information.
+         * @see @ref features(), @ref convert(const ImageView3D&),
+         *      @ref convert(const ImageData3D&), @ref convertToData(),
+         *      @ref convertToFile(), @ref ImageData::isCompressed()
+         */
+        Containers::Optional<ImageData3D> convert(const CompressedImageView3D& image);
+
+        /**
+         * @brief Convert a 1D image data
+         * @m_since_latest
+         *
+         * Based on whether the image is compressed or not, calls either
+         * @ref convert(const ImageView1D&) or
+         * @ref convert(const CompressedImageView1D&). See documentation of
+         * these two functions for details.
+         * @see @ref ImageData::isCompressed()
+         */
+        Containers::Optional<ImageData1D> convert(const ImageData1D& image);
+
+        /**
          * @brief Convert a 2D image data
          * @m_since_latest
          *
@@ -410,6 +570,30 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @see @ref ImageData::isCompressed()
          */
         Containers::Optional<ImageData2D> convert(const ImageData2D& image);
+
+        /**
+         * @brief Convert a 3D image data
+         * @m_since_latest
+         *
+         * Based on whether the image is compressed or not, calls either
+         * @ref convert(const ImageView3D&) or
+         * @ref convert(const CompressedImageView3D&). See documentation of
+         * these two functions for details.
+         * @see @ref ImageData::isCompressed()
+         */
+        Containers::Optional<ImageData3D> convert(const ImageData3D& image);
+
+        /**
+         * @brief Convert a 1D image to a raw data
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::Convert1DToData is
+         * supported. Returns data on success, @cpp nullptr @ce otherwise.
+         * @see @ref features(), @ref convertToData(const CompressedImageView1D&),
+         *      @ref convertToData(const ImageData1D&), @ref convert(),
+         *      @ref convertToFile()
+         */
+        Containers::Array<char> convertToData(const ImageView1D& image);
 
         /**
          * @brief Convert a 2D image to a raw data
@@ -433,6 +617,30 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         #endif
 
         /**
+         * @brief Convert a 3D image to a raw data
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::Convert3DToData is
+         * supported. Returns data on success, @cpp nullptr @ce otherwise.
+         * @see @ref features(), @ref convertToData(const CompressedImageView3D&),
+         *      @ref convertToData(const ImageData3D&), @ref convert(),
+         *      @ref convertToFile()
+         */
+        Containers::Array<char> convertToData(const ImageView3D& image);
+
+        /**
+         * @brief Convert a compressed 1D image to a raw data
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressed1DToData
+         * is supported. Returns data on success, @cpp nullptr @ce otherwise.
+         * @see @ref features(), @ref convertToData(const ImageView1D&),
+         *      @ref convertToData(const ImageData1D&), @ref convert(),
+         *      @ref convertToFile()
+         */
+        Containers::Array<char> convertToData(const CompressedImageView1D& image);
+
+        /**
          * @brief Convert a compressed 2D image to a raw data
          * @m_since_latest
          *
@@ -452,6 +660,30 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          */
         CORRADE_DEPRECATED("use convertToData(const CompressedImageView2D&) instead") Containers::Array<char> exportToData(const CompressedImageView2D& image);
         #endif
+
+        /**
+         * @brief Convert a compressed 3D image to a raw data
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressed3DToData
+         * is supported. Returns data on success, @cpp nullptr @ce otherwise.
+         * @see @ref features(), @ref convertToData(const ImageView3D&),
+         *      @ref convertToData(const ImageData3D&), @ref convert()
+         *      @ref convertToFile()
+         */
+        Containers::Array<char> convertToData(const CompressedImageView3D& image);
+
+        /**
+         * @brief Convert a 1D image data to a raw data
+         * @m_since_latest
+         *
+         * Based on whether the image is compressed or not, calls either
+         * @ref convertToData(const ImageView1D&) or
+         * @ref convertToData(const CompressedImageView1D&). See documentation
+         * of these two functions for details.
+         * @see @ref ImageData::isCompressed()
+         */
+        Containers::Array<char> convertToData(const ImageData1D& image);
 
         /**
          * @brief Convert a 2D image data to a raw data
@@ -475,6 +707,31 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         #endif
 
         /**
+         * @brief Convert a 3D image data to a raw data
+         * @m_since_latest
+         *
+         * Based on whether the image is compressed or not, calls either
+         * @ref convertToData(const ImageView3D&) or
+         * @ref convertToData(const CompressedImageView3D&). See documentation
+         * of these two functions for details.
+         * @see @ref ImageData::isCompressed()
+         */
+        Containers::Array<char> convertToData(const ImageData3D& image);
+
+        /**
+         * @brief Convert a 1D image to a file
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::Convert1DToFile or
+         * @ref ImageConverterFeature::Convert1DToData is supported. Returns
+         * @cpp true @ce on success, @cpp false @ce otherwise.
+         * @see @ref features(), @ref convertToFile(const CompressedImageView1D&, Containers::StringView),
+         *      @ref convertToFile(const ImageData1D&, Containers::StringView),
+         *      @ref convert(), @ref convertToData()
+         */
+        bool convertToFile(const ImageView1D& image, Containers::StringView filename);
+
+        /**
          * @brief Convert a 2D image to a file
          * @m_since_latest
          *
@@ -496,6 +753,33 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          */
         CORRADE_DEPRECATED("use convertToFile(const ImageView2D&, Containers::StringView) instead") bool exportToFile(const ImageView2D& image, const std::string& filename);
         #endif
+
+        /**
+         * @brief Convert a 3D image to a file
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::Convert3DToFile or
+         * @ref ImageConverterFeature::Convert3DToData is supported. Returns
+         * @cpp true @ce on success, @cpp false @ce otherwise.
+         * @see @ref features(), @ref convertToFile(const CompressedImageView3D&, Containers::StringView),
+         *      @ref convertToFile(const ImageData3D&, Containers::StringView),
+         *      @ref convert(), @ref convertToData()
+         */
+        bool convertToFile(const ImageView3D& image, Containers::StringView filename);
+
+        /**
+         * @brief Convert a compressed 1D image to a file
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressed1DToFile
+         * or @ref ImageConverterFeature::ConvertCompressed1DToData is
+         * supported. Returns @cpp true @ce on success, @cpp false @ce
+         * otherwise.
+         * @see @ref features(), @ref convertToFile(const ImageView1D&, Containers::StringView),
+         *      @ref convertToFile(const ImageData1D&, Containers::StringView),
+         *      @ref convert(), @ref convertToData()
+         */
+        bool convertToFile(const CompressedImageView1D& image, Containers::StringView filename);
 
         /**
          * @brief Convert a compressed 2D image to a file
@@ -522,6 +806,32 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         #endif
 
         /**
+         * @brief Convert a compressed 3D image to a file
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressed3DToFile
+         * or @ref ImageConverterFeature::ConvertCompressed3DToData is
+         * supported. Returns @cpp true @ce on success, @cpp false @ce
+         * otherwise.
+         * @see @ref features(), @ref convertToFile(const ImageView3D&, Containers::StringView),
+         *      @ref convertToFile(const ImageData3D&, Containers::StringView),
+         *      @ref convert(), @ref convertToData()
+         */
+        bool convertToFile(const CompressedImageView3D& image, Containers::StringView filename);
+
+        /**
+         * @brief Convert a 1D image data to a file
+         * @m_since_latest
+         *
+         * Based on whether the image is compressed or not, calls either
+         * @ref convertToFile(const ImageView1D&, Containers::StringView) or
+         * @ref convertToFile(const CompressedImageView1D&, Containers::StringView).
+         * See documentation of these two functions for details.
+         * @see @ref ImageData::isCompressed()
+         */
+        bool convertToFile(const ImageData1D& image, Containers::StringView filename);
+
+        /**
          * @brief Convert a 2D image data to a file
          * @m_since_latest
          *
@@ -542,6 +852,18 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          */
         CORRADE_DEPRECATED("use convertToFile(const ImageData2D&, Containers::StringView) instead") bool exportToFile(const ImageData2D& image, const std::string& filename);
         #endif
+
+        /**
+         * @brief Convert a 3D image data to a file
+         * @m_since_latest
+         *
+         * Based on whether the image is compressed or not, calls either
+         * @ref convertToFile(const ImageView3D&, Containers::StringView) or
+         * @ref convertToFile(const CompressedImageView3D&, Containers::StringView).
+         * See documentation of these two functions for details.
+         * @see @ref ImageData::isCompressed()
+         */
+        bool convertToFile(const ImageData3D& image, Containers::StringView filename);
 
     private:
         /** @brief Implementation for @ref features() */
@@ -564,10 +886,28 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         virtual void doSetFlags(ImageConverterFlags flags);
 
         /**
+         * @brief Implementation for @ref convert(const ImageView1D&)
+         * @m_since_latest
+         */
+        virtual Containers::Optional<ImageData1D> doConvert(const ImageView1D& image);
+
+        /**
          * @brief Implementation for @ref convert(const ImageView2D&)
          * @m_since_latest
          */
         virtual Containers::Optional<ImageData2D> doConvert(const ImageView2D& image);
+
+        /**
+         * @brief Implementation for @ref convert(const ImageView3D&)
+         * @m_since_latest
+         */
+        virtual Containers::Optional<ImageData3D> doConvert(const ImageView3D& image);
+
+        /**
+         * @brief Implementation for @ref convert(const CompressedImageView1D&)
+         * @m_since_latest
+         */
+        virtual Containers::Optional<ImageData1D> doConvert(const CompressedImageView1D& image);
 
         /**
          * @brief Implementation for @ref convert(const CompressedImageView2D&)
@@ -576,16 +916,56 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         virtual Containers::Optional<ImageData2D> doConvert(const CompressedImageView2D& image);
 
         /**
+         * @brief Implementation for @ref convert(const CompressedImageView3D&)
+         * @m_since_latest
+         */
+        virtual Containers::Optional<ImageData3D> doConvert(const CompressedImageView3D& image);
+
+        /**
+         * @brief Implementation for @ref convertToData(const ImageView1D&)
+         * @m_since_latest
+         */
+        virtual Containers::Array<char> doConvertToData(const ImageView1D& image);
+
+        /**
          * @brief Implementation for @ref convertToData(const ImageView2D&)
          * @m_since_latest
          */
         virtual Containers::Array<char> doConvertToData(const ImageView2D& image);
 
         /**
+         * @brief Implementation for @ref convertToData(const ImageView3D&)
+         * @m_since_latest
+         */
+        virtual Containers::Array<char> doConvertToData(const ImageView3D& image);
+
+        /**
+         * @brief Implementation for @ref convertToData(const CompressedImageView1D&)
+         * @m_since_latest
+         */
+        virtual Containers::Array<char> doConvertToData(const CompressedImageView1D& image);
+
+        /**
          * @brief Implementation for @ref convertToData(const CompressedImageView2D&)
          * @m_since_latest
          */
         virtual Containers::Array<char> doConvertToData(const CompressedImageView2D& image);
+
+        /**
+         * @brief Implementation for @ref convertToData(const CompressedImageView3D&)
+         * @m_since_latest
+         */
+        virtual Containers::Array<char> doConvertToData(const CompressedImageView3D& image);
+
+        /**
+         * @brief Implementation for @ref convertToFile(const ImageView1D&, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::Convert1DToData is supported, default
+         * implementation calls @ref doConvertToData(const ImageView1D&) and
+         * saves the result to given file.
+         */
+        virtual bool doConvertToFile(const ImageView1D& image, Containers::StringView filename);
 
         /**
          * @brief Implementation for @ref convertToFile(const ImageView2D&, Containers::StringView)
@@ -598,6 +978,26 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         virtual bool doConvertToFile(const ImageView2D& image, Containers::StringView filename);
 
         /**
+         * @brief Implementation for @ref convertToFile(const ImageView3D&, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::Convert3DToData is supported, default
+         * implementation calls @ref doConvertToData(const ImageView3D&) and
+         * saves the result to given file.
+         */
+        virtual bool doConvertToFile(const ImageView3D& image, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(const CompressedImageView1D&, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertCompressed1DToData is
+         * supported, default implementation calls @ref doConvertToData(const CompressedImageView1D&)
+         * and saves the result to given file.
+         */
+        virtual bool doConvertToFile(const CompressedImageView1D& image, Containers::StringView filename);
+
+        /**
          * @brief Implementation for @ref convertToFile(const CompressedImageView2D&, Containers::StringView)
          * @m_since_latest
          *
@@ -606,6 +1006,16 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * and saves the result to given file.
          */
         virtual bool doConvertToFile(const CompressedImageView2D& image, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(const CompressedImageView3D&, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertCompressed3DToData is
+         * supported, default implementation calls @ref doConvertToData(const CompressedImageView3D&)
+         * and saves the result to given file.
+         */
+        virtual bool doConvertToFile(const CompressedImageView3D& image, Containers::StringView filename);
 
         ImageConverterFlags _flags;
 };
