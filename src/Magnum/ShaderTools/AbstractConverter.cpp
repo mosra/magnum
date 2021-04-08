@@ -571,7 +571,8 @@ bool AbstractConverter::doLinkFilesToFile(const Containers::ArrayView<const std:
             fileData[i] = Utility::Directory::read(from[i].second);
         }
 
-        /** @todo merge the allocations once we have an ArrayTuple */
+        /** @todo merge the allocations once we have an ArrayTuple (actually,
+            ideally it would merge also the nested allocations, how?) */
         Containers::Array<std::pair<Stage, Containers::ArrayView<const char>>> data{Containers::NoInit, from.size()};
         for(std::size_t i = 0; i != from.size(); ++i)  {
             data[i].first = from[i].first;
