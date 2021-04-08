@@ -549,6 +549,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
 
         /**
          * @brief Implementation for @ref setFlags()
+         * @m_since{2020,06}
          *
          * Useful when the converter needs to modify some internal state on
          * flag setup. Default implementation does nothing and this
