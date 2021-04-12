@@ -327,18 +327,23 @@ You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
 -   The function @ref doConvert(const ImageView2D&) is called only if
-    @ref ImageConverterFeature::Convert2D is supported.
+    @ref ImageConverterFeature::Convert2D is supported and equivalently for the
+    1D and 3D case.
 -   The function @ref doConvert(const CompressedImageView2D&) is called only if
-    @ref ImageConverterFeature::ConvertCompressed2D is supported.
+    @ref ImageConverterFeature::ConvertCompressed2D is supported and
+    equivalently for the 1D and 3D case.
 -   The function @ref doConvertToData(const ImageView2D&) is called only if
-    @ref ImageConverterFeature::Convert2DToData is supported.
+    @ref ImageConverterFeature::Convert2DToData is supported and equivalently
+    for the 1D and 3D case.
 -   The function @ref doConvertToData(const CompressedImageView2D&) is called
-    only if @ref ImageConverterFeature::ConvertCompressed2DToData is supported.
+    only if @ref ImageConverterFeature::ConvertCompressed2DToData is supported
+    and equivalently for the 1D and 3D case.
 -   The function @ref doConvertToFile(const ImageView2D&, Containers::StringView)
-    is called only if @ref ImageConverterFeature::Convert2DToFile is supported.
+    is called only if @ref ImageConverterFeature::Convert2DToFile is supported
+    and equivalently for the 1D and 3D case.
 -   The function @ref doConvertToFile(const CompressedImageView2D&, Containers::StringView)
     is called only if @ref ImageConverterFeature::ConvertCompressed2DToFile is
-    supported.
+    supported and equivalently for the 1D and 3D case.
 
 @m_class{m-block m-warning}
 
