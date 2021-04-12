@@ -348,6 +348,9 @@ TextureState::TextureState(Context& context,
         getCubeImage3DImplementation = &CubeMapTexture::getImageImplementationSliceBySlice;
     else
     #endif
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+        getCubeImage3DImplementation = &CubeMapTexture::getImageImplementationDSA;
+    } else {
         getCubeImage3DImplementation = &CubeMapTexture::getImageImplementationSliceBySlice;
     }
     #endif
@@ -500,14 +503,14 @@ TextureState::TextureState(Context& context,
     /* SVGA3D and Intel workaround for cube map texture upload. Overrides the
        DSA / non-DSA function pointers set above. */
     if((context.detectedDriver() & Context::DetectedDriver::Svga3D) &&
-       !context.isDriverWorkaroundDisabled("svga3d-texture-upload-slice-by-slice"_s)) {
-        if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
-            cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationDSASliceBySlice;
-        } else {
-            cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSliceBySlice;
-        }
+        context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
+        !context.isDriverWorkaroundDisabled("svga3d-texture-upload-slice-by-slice"_s)
+    ) {
+        cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationDSASliceBySlice;
     } else if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
-       !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s)) {
+        context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
+        !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s)
+    ) {
         cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSliceBySlice;
     }
     #ifdef CORRADE_TARGET_WINDOWS
@@ -523,10 +526,10 @@ TextureState::TextureState(Context& context,
     else if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationDSA;
     } else
+    #endif
     {
         cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSliceBySlice;
     }
-    #endif
 
     #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
     if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify"_s)) {

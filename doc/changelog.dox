@@ -220,6 +220,13 @@ See also:
 -   The @ref GL::Context class got significantly optimized in terms of compile
     time, header size and runtime as well, significantly reducing the amount of
     allocations done at startup.
+-   To make working with cube map images easier,
+    @ref GL::CubeMapTexture::setSubImage() and
+    @ref GL::CubeMapTexture::subImage() taking 3D images are now exposed on all
+    platforms, not just desktop OpenGL 4.5+, with a fall back to slice-by-slice
+    upload/download where needed. The compressed variant is still only GL 4.5+,
+    as that needs the @ref CompressedImageView APIs to be aware of compression
+    format properties, which isn't implemented yet.
 -   Added @ref GL::Framebuffer::Status::IncompleteDimensions for ES2. This enum
     isn't available on ES3 or desktop GL, but NVidia drivers are known to emit
     it, which is why it got added.

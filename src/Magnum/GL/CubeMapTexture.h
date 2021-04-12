@@ -559,10 +559,19 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @ref imageSize(). The storage is not reallocated if it is large
          * enough to contain the new data.
          *
-         * The operation is protected from buffer overflow.
-         * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter} with
-         *      @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT}, then
-         *      @fn_gl{PixelStore}, then @fn_gl2_keyword{GetTextureImage,GetTexImage}
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
+         * already) and the image is downloaded slice by slice. If either
+         * @gl_extension{ARB,get_texture_sub_image} or
+         * @gl_extension{ARB,robustness} is available, the operation is
+         * protected from buffer overflow.
+         * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{GetTexLevelParameter} with @def_gl{TEXTURE_WIDTH},
+         *      @def_gl{TEXTURE_HEIGHT}, then @fn_gl{PixelStore}, then
+         *      @fn_gl2_keyword{GetTextureImage,GetTexImage},
+         *      @fn_gl_extension_keyword{GetnTexImage,ARB,robustness},
+         *      eventually @fn_gl_keyword{GetTexImage}
          * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
@@ -1024,7 +1033,6 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         }
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set image subdata
          * @param level             Mip level
@@ -1033,29 +1041,41 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *      @ref Trade::ImageData3D
          * @return Reference to self (for method chaining)
          *
-         * @see @ref setStorage(), @fn_gl2{TextureSubImage3D,TexSubImage3D}
-         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
-         * @requires_gl In OpenGL ES and WebGL you need to set image for each
-         *      face separately.
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
+         * already) and the image is uploaded slice by slice.
+         * @see @ref setStorage(), @fn_gl2{TextureSubImage3D,TexSubImage3D},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl_keyword{TexSubImage2D}
+         * @requires_gles30 Extension @gl_extension{EXT,unpack_subimage}/
+         *      @gl_extension{NV,pack_subimage} in OpenGL ES 2.0 if
+         *      @ref PixelStorage::rowLength() is set to a non-zero value.
+         * @requires_webgl20 Non-zero @ref PixelStorage::rowLength() is not
+         *      supported in WebGL 1.0.
          */
         CubeMapTexture& setSubImage(Int level, const Vector3i& offset, const ImageView3D& image);
 
+        #ifndef MAGNUM_TARGET_GLES2
         /** @overload
-         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
-         * @requires_gl In OpenGL ES and WebGL you need to set image for each
-         *      face separately.
+         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
+         *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
          */
         CubeMapTexture& setSubImage(Int level, const Vector3i& offset, BufferImage3D& image);
 
         /** @overload
-         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
-         * @requires_gl In OpenGL ES and WebGL you need to set image for each
-         *      face separately.
+         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
+         *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
          */
         CubeMapTexture& setSubImage(Int level, const Vector3i& offset, BufferImage3D&& image) {
             return setSubImage(level, offset, image);
         }
+        #endif
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set compressed image subdata
          * @param level             Mip level
@@ -1248,8 +1268,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL subImageImplementationDSA(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
         void MAGNUM_GL_LOCAL subImageImplementationDSASliceBySlice(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
-        void MAGNUM_GL_LOCAL subImageImplementationSliceBySlice(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
         #endif
+        void MAGNUM_GL_LOCAL subImageImplementationSliceBySlice(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
 
         void MAGNUM_GL_LOCAL subImageImplementationDefault(CubeMapCoordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES
