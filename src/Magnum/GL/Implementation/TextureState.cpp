@@ -326,14 +326,14 @@ TextureState::TextureState(Context& context,
         getCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDefault;
     }
 
-    /* Full compressed cubemap image query implementation (extensions added
+    /* 3D compressed cubemap image query implementation (extensions added
        above) */
     if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
         context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
         !context.isDriverWorkaroundDisabled("nv-cubemap-broken-full-compressed-image-query"_s))
-        getFullCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSASingleSliceWorkaround;
+        getCompressedCubeImage3DImplementation = &CubeMapTexture::getCompressedImageImplementationDSASingleSliceWorkaround;
     else
-        getFullCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSA;
+        getCompressedCubeImage3DImplementation = &CubeMapTexture::getCompressedImageImplementationDSA;
 
     #ifdef CORRADE_TARGET_WINDOWS
     /** @todo those *might* be happening with the proprietary AMD driver on
@@ -341,15 +341,14 @@ TextureState::TextureState(Context& context,
     if((context.detectedDriver() & Context::DetectedDriver::Amd) &&
         context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
         !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice"_s))
-        getFullCubeImageImplementation = &CubeMapTexture::getImageImplementationDSAAmdSliceBySlice;
+        getCubeImage3DImplementation = &CubeMapTexture::getImageImplementationDSAAmdSliceBySlice;
     else if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
         context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
         !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s))
-        getFullCubeImageImplementation = &CubeMapTexture::getImageImplementationSliceBySlice;
+        getCubeImage3DImplementation = &CubeMapTexture::getImageImplementationSliceBySlice;
     else
     #endif
-    {
-        getFullCubeImageImplementation = &CubeMapTexture::getImageImplementationDSA;
+        getCubeImage3DImplementation = &CubeMapTexture::getImageImplementationSliceBySlice;
     }
     #endif
 

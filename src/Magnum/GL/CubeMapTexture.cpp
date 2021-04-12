@@ -76,7 +76,7 @@ void CubeMapTexture::image(const Int level, Image3D& image) {
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
-    (this->*Context::current().state().texture.getFullCubeImageImplementation)(level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data, image.storage());
+    (this->*Context::current().state().texture.getCubeImage3DImplementation)(level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data, image.storage());
     image = Image3D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data)};
 }
 
@@ -94,7 +94,7 @@ void CubeMapTexture::image(const Int level, const MutableImageView3D& image) {
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
-    (this->*Context::current().state().texture.getFullCubeImageImplementation)(level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data(), image.storage());
+    (this->*Context::current().state().texture.getCubeImage3DImplementation)(level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data(), image.storage());
 }
 
 void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUsage usage) {
@@ -111,7 +111,7 @@ void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUs
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
-    (this->*Context::current().state().texture.getFullCubeImageImplementation)(level, size, image.format(), image.type(), dataSize, nullptr, image.storage());
+    (this->*Context::current().state().texture.getCubeImage3DImplementation)(level, size, image.format(), image.type(), dataSize, nullptr, image.storage());
 }
 
 BufferImage3D CubeMapTexture::image(const Int level, BufferImage3D&& image, const BufferUsage usage) {
@@ -147,7 +147,7 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
-    (this->*Context::current().state().texture.getFullCompressedCubeImageImplementation)(level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, data);
+    (this->*Context::current().state().texture.getCompressedCubeImage3DImplementation)(level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, data);
     image = CompressedImage3D{image.storage(), CompressedPixelFormat(format), size, std::move(data)};
 }
 
@@ -190,7 +190,7 @@ void CubeMapTexture::compressedImage(const Int level, const MutableCompressedIma
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
-    (this->*Context::current().state().texture.getFullCompressedCubeImageImplementation)(level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, image.data());
+    (this->*Context::current().state().texture.getCompressedCubeImage3DImplementation)(level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, image.data());
 }
 
 void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& image, const BufferUsage usage) {
@@ -222,7 +222,7 @@ void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& i
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
-    (this->*Context::current().state().texture.getFullCompressedCubeImageImplementation)(level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, nullptr);
+    (this->*Context::current().state().texture.getCompressedCubeImage3DImplementation)(level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, nullptr);
 }
 
 CompressedBufferImage3D CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D&& image, const BufferUsage usage) {
