@@ -446,19 +446,19 @@ See @ref building, @ref cmake and @ref shaders for more information.
 
 @m_div{m-col-m-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html shaders-flat.png width=256px
-@ref Flat @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
+@ref FlatGL @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
 @m_enddiv
 
 @m_div{m-col-m-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html shaders-phong.png width=256px
-@ref Phong @m_class{m-label m-primary} **3D**
+@ref PhongGL @m_class{m-label m-primary} **3D**
 @m_enddiv
 
 @m_div{m-clearfix-t} @m_enddiv
 
 @m_div{m-col-m-4 m-push-t-3 m-push-m-0 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html shaders-vertexcolor.png width=256px
-@ref VertexColor @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
+@ref VertexColorGL @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
 @m_enddiv
 
 @endparblock
@@ -471,22 +471,22 @@ See @ref building, @ref cmake and @ref shaders for more information.
 
 @m_div{m-col-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html shaders-meshvisualizer2d.png width=256px
-@ref MeshVisualizer2D "MeshVisualizer2D" @m_class{m-label m-success} **2D**
+@ref MeshVisualizerGL2D @m_class{m-label m-success} **2D**
 @m_enddiv
 
 @m_div{m-col-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html shaders-meshvisualizer3d.png width=256px
-@ref MeshVisualizer3D "MeshVisualizer3D" @m_class{m-label m-primary} **3D**
+@ref MeshVisualizerGL3D @m_class{m-label m-primary} **3D**
 @m_enddiv
 
 @m_div{m-col-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html shaders-vector.png width=256px
-@ref Vector @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
+@ref VectorGL @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
 @m_enddiv
 
 @m_div{m-col-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html shaders-distancefieldvector.png width=256px
-@ref DistanceFieldVector @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
+@ref DistanceFieldVectorGL @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
 @m_enddiv
 
 @endparblock

@@ -32,7 +32,7 @@
 #include "Magnum/FileCallback.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
-#include "Magnum/Shaders/Vector.h"
+#include "Magnum/Shaders/VectorGL.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/DistanceFieldGlyphCache.h"
 #include "Magnum/Text/Renderer.h"
@@ -144,7 +144,7 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");
 
-Shaders::Vector2D shader;
+Shaders::VectorGL2D shader;
 GL::Buffer vertexBuffer, indexBuffer;
 GL::Mesh mesh;
 

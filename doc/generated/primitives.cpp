@@ -71,10 +71,10 @@
 #include <Magnum/Primitives/Plane.h>
 #include <Magnum/Primitives/Square.h>
 #include <Magnum/Primitives/UVSphere.h>
-#include <Magnum/Shaders/Flat.h>
-#include <Magnum/Shaders/MeshVisualizer.h>
-#include <Magnum/Shaders/Phong.h>
-#include <Magnum/Shaders/VertexColor.h>
+#include <Magnum/Shaders/FlatGL.h>
+#include <Magnum/Shaders/MeshVisualizerGL.h>
+#include <Magnum/Shaders/PhongGL.h>
+#include <Magnum/Shaders/VertexColorGL.h>
 #include <Magnum/Trade/AbstractImageConverter.h>
 #include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData.h>
@@ -185,7 +185,7 @@ int PrimitiveVisualizer::exec() {
     GL::Renderer::setLineWidth(2.0f);
 
     {
-        Shaders::VertexColor2D shader;
+        Shaders::VertexColorGL2D shader;
         shader.setTransformationProjectionMatrix(Projection2D*Transformation2D);
 
         for(auto fun: {&PrimitiveVisualizer::axis2D}) {
@@ -204,7 +204,7 @@ int PrimitiveVisualizer::exec() {
     }
 
     {
-        Shaders::VertexColor3D shader;
+        Shaders::VertexColorGL3D shader;
         shader.setTransformationProjectionMatrix(Projection3D*Transformation3D);
 
         for(auto fun: {&PrimitiveVisualizer::axis3D}) {
@@ -223,7 +223,7 @@ int PrimitiveVisualizer::exec() {
     }
 
     {
-        Shaders::Flat2D shader;
+        Shaders::FlatGL2D shader;
         shader.setColor(OutlineColor)
             .setTransformationProjectionMatrix(Projection2D*Transformation2D);
 
@@ -248,7 +248,7 @@ int PrimitiveVisualizer::exec() {
     }
 
     {
-        Shaders::Flat3D shader;
+        Shaders::FlatGL3D shader;
         shader.setColor(OutlineColor)
             .setTransformationProjectionMatrix(Projection3D*Transformation3D);
 
@@ -278,7 +278,7 @@ int PrimitiveVisualizer::exec() {
         }
     }
 
-    Shaders::MeshVisualizer2D wireframe2D{Shaders::MeshVisualizer2D::Flag::Wireframe};
+    Shaders::MeshVisualizerGL2D wireframe2D{Shaders::MeshVisualizerGL2D::Flag::Wireframe};
     wireframe2D.setColor(0x00000000_srgbaf)
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)
@@ -286,7 +286,7 @@ int PrimitiveVisualizer::exec() {
         .setTransformationProjectionMatrix(Projection2D*Transformation2D);
 
     {
-        Shaders::Flat2D flat;
+        Shaders::FlatGL2D flat;
         flat.setColor(BaseColor)
             .setTransformationProjectionMatrix(Projection2D*Transformation2D);
 
@@ -309,7 +309,7 @@ int PrimitiveVisualizer::exec() {
         }
     }
 
-    Shaders::MeshVisualizer3D wireframe3D{Shaders::MeshVisualizer3D::Flag::Wireframe};
+    Shaders::MeshVisualizerGL3D wireframe3D{Shaders::MeshVisualizerGL3D::Flag::Wireframe};
     wireframe3D.setColor(0x00000000_srgbaf)
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)
@@ -318,7 +318,7 @@ int PrimitiveVisualizer::exec() {
         .setProjectionMatrix(Projection3D);
 
     {
-        Shaders::Phong phong;
+        Shaders::PhongGL phong;
         phong.setAmbientColor(0x22272e_srgbf)
             .setDiffuseColor(BaseColor)
             .setSpecularColor(0x000000_srgbf)
@@ -354,7 +354,7 @@ int PrimitiveVisualizer::exec() {
     }
 
     {
-        Shaders::VertexColor2D shader;
+        Shaders::VertexColorGL2D shader;
         shader.setTransformationProjectionMatrix(Projection2D*Transformation2D);
 
         for(auto fun: {&PrimitiveVisualizer::gradient2D,
@@ -377,7 +377,7 @@ int PrimitiveVisualizer::exec() {
     }
 
     {
-        Shaders::VertexColor3D shader;
+        Shaders::VertexColorGL3D shader;
         shader.setTransformationProjectionMatrix(Projection3D*Transformation3D);
 
         for(auto fun: {&PrimitiveVisualizer::gradient3D,

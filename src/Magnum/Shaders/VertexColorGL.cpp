@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "VertexColor.h"
+#include "VertexColorGL.h"
 
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
@@ -39,13 +39,13 @@
 
 namespace Magnum { namespace Shaders {
 
-template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL() {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumShaders"))
+    if(!Utility::Resource::hasGroup("MagnumShadersGL"))
         importShaderResources();
     #endif
-    Utility::Resource rs("MagnumShaders");
+    Utility::Resource rs("MagnumShadersGL");
 
     #ifndef MAGNUM_TARGET_GLES
     const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
@@ -92,12 +92,12 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
     #endif
 }
 
-template<UnsignedInt dimensions> VertexColor<dimensions>& VertexColor<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
+template<UnsignedInt dimensions> VertexColorGL<dimensions>& VertexColorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     setUniform(_transformationProjectionMatrixUniform, matrix);
     return *this;
 }
 
-template class VertexColor<2>;
-template class VertexColor<3>;
+template class VertexColorGL<2>;
+template class VertexColorGL<3>;
 
 }}

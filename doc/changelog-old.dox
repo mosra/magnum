@@ -316,10 +316,12 @@ Released 2018-05-01, tagged as
     are deprecated because texture binding (a global state) is confused there
     with uniform setup (a shader-local state). That can lead to accidental
     state mismatches where a texture is forgotten to be rebound. Use
-    @ref Shaders::AbstractVector::bindVectorTexture() "Shaders::*Vector::bindVectorTexture()",
-    @ref Shaders::Flat::bindTexture(), @ref Shaders::Phong::bindAmbientTexture(),
-    @ref Shaders::Phong::bindDiffuseTexture(), @ref Shaders::Phong::bindSpecularTexture()
-    and @ref Shaders::Phong::bindTextures() instead.
+    @cpp Shaders::*Vector::bindVectorTexture() @ce,
+    @cpp Shaders::Flat::bindTexture() @ce,
+    @cpp Shaders::Phong::bindAmbientTexture() @ce,
+    @cpp Shaders::Phong::bindDiffuseTexture() @ce,
+    @cpp Shaders::Phong::bindSpecularTexture() @ce
+    and @cpp Shaders::Phong::bindTextures() @ce instead.
 
 @subsection changelog-2018-04-compatibility Potential compatibility breakages, removed APIs
 
@@ -919,9 +921,10 @@ a high-level overview.
 
 @subsubsection changelog-2018-02-changes-shaders Shaders library
 
--   @ref Shaders::Flat now sets default color to white only in textured version
--   @ref Shaders::Phong gained the ability to have both color and texture
--   @ref Shaders::Phong is now able to do alpha-masking (see
+-   @cpp Shaders::Flat @ce now sets default color to white only in textured
+    version
+-   @cpp Shaders::Phong @ce gained the ability to have both color and texture
+-   @cpp Shaders::Phong @ce is now able to do alpha-masking (see
     [mosra/magnum#112](https://github.com/mosra/magnum/issues/112),
     [mosra/magnum-examples#29](https://github.com/mosra/magnum-examples/issues/29))
 
@@ -1307,8 +1310,8 @@ for a high-level overview.
 
 -   Fixed @cpp TextureTools::distanceField() @ce to work in GLSL < 4.20 (see
     [mosra/magnum#62](https://github.com/mosra/magnum/issues/62)).
--   Fixed @ref Shaders::MeshVisualizer to work in GLSL ES.
--   Fixed @ref Shaders::Vector "Shaders::*Vector" on Intel GPUs.
+-   Fixed @cpp Shaders::MeshVisualizer @ce to work in GLSL ES.
+-   Fixed @cpp Shaders::*Vector @ce on Intel GPUs.
 -   Fixed assertion on contexts without default framebuffer (see
     [mosra/magnum#93](https://github.com/mosra/magnum/issues/93)).
 -   Fixed cases where shader would use extension that is not advertised by the
@@ -1528,8 +1531,8 @@ for a high-level overview.
 
 -   Fixed usage with OpenGL ES 3.1 contexts (it complained about invalid
     version)
--   Fixed compilation of Shaders::MeshVisualizer under WebGL and with ANGLE,
-    see [mosra/magnum#56](https://github.com/mosra/magnum/issues/56)
+-   Fixed compilation of @cpp Shaders::MeshVisualizer @ce under WebGL and with
+    ANGLE, see [mosra/magnum#56](https://github.com/mosra/magnum/issues/56)
 -   Fixed various build issues on Mac OS X, see
     [mosra/magnum#51](https://github.com/mosra/magnum/issues/51) and
     [mosra/magnum#54](https://github.com/mosra/magnum/issues/54)
@@ -1672,10 +1675,10 @@ No dependency changes in this release.
     preserve source compatibility with other application classes.
 -   @ref SceneGraph::Drawable::drawables() function as a non-ambiguous
     alternative to @cpp group() @ce
--   Ability to specify background color color in @ref Shaders::Vector,
+-   Ability to specify background color color in @cpp Shaders::Vector @ce,
     allowing it to use without blending enabled (fully transparent black was
     used previously)
--   New @ref Shaders::Generic class with common definitions, so you can
+-   New @cpp Shaders::Generic @ce class with common definitions, so you can
     configure mesh for the generic shader and render it with any other
     compatible shader
 -   Convenience @cpp hasNormals() @ce, @cpp hasTextureCoords2D() @ce functions
@@ -1707,7 +1710,7 @@ No dependency changes in this release.
 -   Implementation of @ref Platform::Sdl2Application::viewportEvent() "Platform::*Application::viewportEvent()"
     is not required anymore, because in many cases the application doesn't need
     to react to window resize events at all
--   Textured @ref Shaders::Flat now multiplies texture with the specified
+-   Textured @cpp Shaders::Flat @ce now multiplies texture with the specified
     color instead of ignoring it. See also [mosra/magnum#34](https://github.com/mosra/magnum/issues/34)
 -   All deprecated functions and types are now emitting compiler warnings to
     encourage updating the code
@@ -1724,7 +1727,7 @@ No dependency changes in this release.
 -   @cpp Mesh::addVertexBuffer() @ce now properly computes offsets for matrix
     attributes
 -   Taking index buffer offset into account in @cpp MeshView @ce class
--   Fixed various issues with textured @ref Shaders::Flat shader (actually
+-   Fixed various issues with textured @cpp Shaders::Flat @ce shader (actually
     the textured version was not working at all)
 -   Various OS X-related fixes in @ref Shaders library. See also
     [mosra/magnum#27](https://github.com/mosra/magnum/issues/27).
@@ -1840,7 +1843,7 @@ for a high-level overview.
 -   New translation-only transformation in @ref SceneGraph supporting also
     purely integral coordinates, useful e.g. for UI or 2D platformers.
 -   Detailed collision queries and new `InvertedSphere` shape in Shapes library
--   Texture support in @ref Shaders::Flat
+-   Texture support in @cpp Shaders::Flat @ce
 -   Mouse button queries in @ref Platform::Sdl2Application::MouseMoveEvent "Platform::*Application::MouseMoveEvent"
 
 @subsection changelog-2013-10-changes Changes

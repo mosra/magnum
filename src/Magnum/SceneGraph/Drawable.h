@@ -55,8 +55,8 @@ by multiple objects, and pass only references around.
 The @p transformationMatrix parameter in the @ref draw() function contains
 transformation of the object (to which the drawable is attached) relative to
 @p camera. The camera contains the projection matrix. Some shaders (like the
-@ref Shaders::Phong used in the snippet) have separate functions for setting
-transformation and projection matrix, but some (such as @ref Shaders::Flat)
+@ref Shaders::PhongGL used in the snippet) have separate functions for setting
+transformation and projection matrix, but some (such as @ref Shaders::FlatGL)
 have a single function to set composite transformation and projection matrix.
 In that case you need to combine the two matrices manually like in the
 following code. Some shaders might have additional requirements, see their

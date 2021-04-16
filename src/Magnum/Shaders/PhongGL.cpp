@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Phong.h"
+#include "PhongGL.h"
 
 #if defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_BUILD_DEPRECATED)
 #include <Corrade/Containers/Array.h>
@@ -55,16 +55,16 @@ namespace {
     };
 }
 
-Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _lightCount{lightCount}, _lightColorsUniform{_lightPositionsUniform + Int(lightCount)}, _lightSpecularColorsUniform{_lightPositionsUniform + 2*Int(lightCount)}, _lightRangesUniform{_lightPositionsUniform + 3*Int(lightCount)} {
+PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _lightCount{lightCount}, _lightColorsUniform{_lightPositionsUniform + Int(lightCount)}, _lightSpecularColorsUniform{_lightPositionsUniform + 2*Int(lightCount)}, _lightRangesUniform{_lightPositionsUniform + 3*Int(lightCount)} {
     CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)),
-        "Shaders::Phong: texture transformation enabled but the shader is not textured", );
+        "Shaders::PhongGL: texture transformation enabled but the shader is not textured", );
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumShaders"))
+    if(!Utility::Resource::hasGroup("MagnumShadersGL"))
         importShaderResources();
     #endif
-    Utility::Resource rs("MagnumShaders");
+    Utility::Resource rs("MagnumShadersGL");
 
     #ifndef MAGNUM_TARGET_GLES
     const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
@@ -275,121 +275,121 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     #endif
 }
 
-Phong& Phong::setAmbientColor(const Magnum::Color4& color) {
+PhongGL& PhongGL::setAmbientColor(const Magnum::Color4& color) {
     setUniform(_ambientColorUniform, color);
     return *this;
 }
 
-Phong& Phong::bindAmbientTexture(GL::Texture2D& texture) {
+PhongGL& PhongGL::bindAmbientTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::AmbientTexture,
-        "Shaders::Phong::bindAmbientTexture(): the shader was not created with ambient texture enabled", *this);
+        "Shaders::PhongGL::bindAmbientTexture(): the shader was not created with ambient texture enabled", *this);
     texture.bind(AmbientTextureUnit);
     return *this;
 }
 
-Phong& Phong::setDiffuseColor(const Magnum::Color4& color) {
+PhongGL& PhongGL::setDiffuseColor(const Magnum::Color4& color) {
     if(_lightCount) setUniform(_diffuseColorUniform, color);
     return *this;
 }
 
-Phong& Phong::bindDiffuseTexture(GL::Texture2D& texture) {
+PhongGL& PhongGL::bindDiffuseTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::DiffuseTexture,
-        "Shaders::Phong::bindDiffuseTexture(): the shader was not created with diffuse texture enabled", *this);
+        "Shaders::PhongGL::bindDiffuseTexture(): the shader was not created with diffuse texture enabled", *this);
     if(_lightCount) texture.bind(DiffuseTextureUnit);
     return *this;
 }
 
-Phong& Phong::setSpecularColor(const Magnum::Color4& color) {
+PhongGL& PhongGL::setSpecularColor(const Magnum::Color4& color) {
     if(_lightCount) setUniform(_specularColorUniform, color);
     return *this;
 }
 
-Phong& Phong::bindSpecularTexture(GL::Texture2D& texture) {
+PhongGL& PhongGL::bindSpecularTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::SpecularTexture,
-        "Shaders::Phong::bindSpecularTexture(): the shader was not created with specular texture enabled", *this);
+        "Shaders::PhongGL::bindSpecularTexture(): the shader was not created with specular texture enabled", *this);
     if(_lightCount) texture.bind(SpecularTextureUnit);
     return *this;
 }
 
-Phong& Phong::bindNormalTexture(GL::Texture2D& texture) {
+PhongGL& PhongGL::bindNormalTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::NormalTexture,
-        "Shaders::Phong::bindNormalTexture(): the shader was not created with normal texture enabled", *this);
+        "Shaders::PhongGL::bindNormalTexture(): the shader was not created with normal texture enabled", *this);
     if(_lightCount) texture.bind(NormalTextureUnit);
     return *this;
 }
 
-Phong& Phong::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular, GL::Texture2D* normal) {
+PhongGL& PhongGL::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular, GL::Texture2D* normal) {
     CORRADE_ASSERT(_flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture),
-        "Shaders::Phong::bindTextures(): the shader was not created with any textures enabled", *this);
+        "Shaders::PhongGL::bindTextures(): the shader was not created with any textures enabled", *this);
     GL::AbstractTexture::bind(AmbientTextureUnit, {ambient, diffuse, specular, normal});
     return *this;
 }
 
-Phong& Phong::setShininess(Float shininess) {
+PhongGL& PhongGL::setShininess(Float shininess) {
     if(_lightCount) setUniform(_shininessUniform, shininess);
     return *this;
 }
 
-Phong& Phong::setNormalTextureScale(const Float scale) {
+PhongGL& PhongGL::setNormalTextureScale(const Float scale) {
     CORRADE_ASSERT(_flags & Flag::NormalTexture,
-        "Shaders::Phong::setNormalTextureScale(): the shader was not created with normal texture enabled", *this);
+        "Shaders::PhongGL::setNormalTextureScale(): the shader was not created with normal texture enabled", *this);
     if(_lightCount) setUniform(_normalTextureScaleUniform, scale);
     return *this;
 }
 
-Phong& Phong::setAlphaMask(Float mask) {
+PhongGL& PhongGL::setAlphaMask(Float mask) {
     CORRADE_ASSERT(_flags & Flag::AlphaMask,
-        "Shaders::Phong::setAlphaMask(): the shader was not created with alpha mask enabled", *this);
+        "Shaders::PhongGL::setAlphaMask(): the shader was not created with alpha mask enabled", *this);
     setUniform(_alphaMaskUniform, mask);
     return *this;
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-Phong& Phong::setObjectId(UnsignedInt id) {
+PhongGL& PhongGL::setObjectId(UnsignedInt id) {
     CORRADE_ASSERT(_flags & Flag::ObjectId,
-        "Shaders::Phong::setObjectId(): the shader was not created with object ID enabled", *this);
+        "Shaders::PhongGL::setObjectId(): the shader was not created with object ID enabled", *this);
     setUniform(_objectIdUniform, id);
     return *this;
 }
 #endif
 
-Phong& Phong::setTransformationMatrix(const Matrix4& matrix) {
+PhongGL& PhongGL::setTransformationMatrix(const Matrix4& matrix) {
     setUniform(_transformationMatrixUniform, matrix);
     return *this;
 }
 
-Phong& Phong::setNormalMatrix(const Matrix3x3& matrix) {
+PhongGL& PhongGL::setNormalMatrix(const Matrix3x3& matrix) {
     if(_lightCount) setUniform(_normalMatrixUniform, matrix);
     return *this;
 }
 
-Phong& Phong::setProjectionMatrix(const Matrix4& matrix) {
+PhongGL& PhongGL::setProjectionMatrix(const Matrix4& matrix) {
     setUniform(_projectionMatrixUniform, matrix);
     return *this;
 }
 
-Phong& Phong::setTextureMatrix(const Matrix3& matrix) {
+PhongGL& PhongGL::setTextureMatrix(const Matrix3& matrix) {
     CORRADE_ASSERT(_flags & Flag::TextureTransformation,
-        "Shaders::Phong::setTextureMatrix(): the shader was not created with texture transformation enabled", *this);
+        "Shaders::PhongGL::setTextureMatrix(): the shader was not created with texture transformation enabled", *this);
     setUniform(_textureMatrixUniform, matrix);
     return *this;
 }
 
-Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector4> positions) {
+PhongGL& PhongGL::setLightPositions(const Containers::ArrayView<const Vector4> positions) {
     CORRADE_ASSERT(_lightCount == positions.size(),
-        "Shaders::Phong::setLightPositions(): expected" << _lightCount << "items but got" << positions.size(), *this);
+        "Shaders::PhongGL::setLightPositions(): expected" << _lightCount << "items but got" << positions.size(), *this);
     if(_lightCount) setUniform(_lightPositionsUniform, positions);
     return *this;
 }
 
 /* It's light, but can't be in the header because MSVC needs to know the size
    of Vector3 for the initializer list use */
-Phong& Phong::setLightPositions(const std::initializer_list<Vector4> positions) {
+PhongGL& PhongGL::setLightPositions(const std::initializer_list<Vector4> positions) {
     return setLightPositions(Containers::arrayView(positions));
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector3> positions) {
+PhongGL& PhongGL::setLightPositions(const Containers::ArrayView<const Vector3> positions) {
     Containers::Array<Vector4> fourComponent{NoInit, positions.size()};
     for(std::size_t i = 0; i != positions.size(); ++i)
         fourComponent[i] = Vector4{positions[i], 0.0f};
@@ -397,40 +397,40 @@ Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector3> posit
     return *this;
 }
 
-Phong& Phong::setLightPositions(const std::initializer_list<Vector3> positions) {
+PhongGL& PhongGL::setLightPositions(const std::initializer_list<Vector3> positions) {
     CORRADE_IGNORE_DEPRECATED_PUSH
     return setLightPositions(Containers::arrayView(positions));
     CORRADE_IGNORE_DEPRECATED_POP
 }
 #endif
 
-Phong& Phong::setLightPosition(const UnsignedInt id, const Vector4& position) {
+PhongGL& PhongGL::setLightPosition(const UnsignedInt id, const Vector4& position) {
     CORRADE_ASSERT(id < _lightCount,
-        "Shaders::Phong::setLightPosition(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+        "Shaders::PhongGL::setLightPosition(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
     setUniform(_lightPositionsUniform + id, position);
     return *this;
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-Phong& Phong::setLightPosition(UnsignedInt id, const Vector3& position) {
+PhongGL& PhongGL::setLightPosition(UnsignedInt id, const Vector3& position) {
     return setLightPosition(id, Vector4{position, 0.0f});
 }
 
-Phong& Phong::setLightPosition(const Vector3& position) {
+PhongGL& PhongGL::setLightPosition(const Vector3& position) {
     /* Use the list variant to check the shader really has just one light */
     return setLightPositions({Vector4{position, 0.0f}});
 }
 #endif
 
-Phong& Phong::setLightColors(const Containers::ArrayView<const Magnum::Color3> colors) {
+PhongGL& PhongGL::setLightColors(const Containers::ArrayView<const Magnum::Color3> colors) {
     CORRADE_ASSERT(_lightCount == colors.size(),
-        "Shaders::Phong::setLightColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
+        "Shaders::PhongGL::setLightColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
     if(_lightCount) setUniform(_lightColorsUniform, colors);
     return *this;
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-Phong& Phong::setLightColors(const Containers::ArrayView<const Magnum::Color4> colors) {
+PhongGL& PhongGL::setLightColors(const Containers::ArrayView<const Magnum::Color4> colors) {
     Containers::Array<Magnum::Color3> threeComponent{NoInit, colors.size()};
     for(std::size_t i = 0; i != colors.size(); ++i)
         threeComponent[i] = colors[i].rgb();
@@ -438,77 +438,77 @@ Phong& Phong::setLightColors(const Containers::ArrayView<const Magnum::Color4> c
     return *this;
 }
 
-Phong& Phong::setLightColors(const std::initializer_list<Magnum::Color4> colors) {
+PhongGL& PhongGL::setLightColors(const std::initializer_list<Magnum::Color4> colors) {
     CORRADE_IGNORE_DEPRECATED_PUSH
     return setLightColors(Containers::arrayView(colors));
     CORRADE_IGNORE_DEPRECATED_POP
 }
 #endif
 
-Phong& Phong::setLightColors(const std::initializer_list<Magnum::Color3> colors) {
+PhongGL& PhongGL::setLightColors(const std::initializer_list<Magnum::Color3> colors) {
     return setLightColors(Containers::arrayView(colors));
 }
 
-Phong& Phong::setLightColor(const UnsignedInt id, const Magnum::Color3& color) {
+PhongGL& PhongGL::setLightColor(const UnsignedInt id, const Magnum::Color3& color) {
     CORRADE_ASSERT(id < _lightCount,
-        "Shaders::Phong::setLightColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+        "Shaders::PhongGL::setLightColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
     setUniform(_lightColorsUniform + id, color);
     return *this;
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-Phong& Phong::setLightColor(UnsignedInt id, const Magnum::Color4& color) {
+PhongGL& PhongGL::setLightColor(UnsignedInt id, const Magnum::Color4& color) {
     return setLightColor(id, color.rgb());
 }
 
-Phong& Phong::setLightColor(const Magnum::Color4& color) {
+PhongGL& PhongGL::setLightColor(const Magnum::Color4& color) {
     /* Use the list variant to check the shader really has just one light */
     return setLightColors({color.rgb()});
 }
 #endif
 
-Phong& Phong::setLightSpecularColors(const Containers::ArrayView<const Magnum::Color3> colors) {
+PhongGL& PhongGL::setLightSpecularColors(const Containers::ArrayView<const Magnum::Color3> colors) {
     CORRADE_ASSERT(_lightCount == colors.size(),
-        "Shaders::Phong::setLightSpecularColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
+        "Shaders::PhongGL::setLightSpecularColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
     if(_lightCount) setUniform(_lightSpecularColorsUniform, colors);
     return *this;
 }
 
-Phong& Phong::setLightSpecularColors(const std::initializer_list<Magnum::Color3> colors) {
+PhongGL& PhongGL::setLightSpecularColors(const std::initializer_list<Magnum::Color3> colors) {
     return setLightSpecularColors(Containers::arrayView(colors));
 }
 
-Phong& Phong::setLightSpecularColor(const UnsignedInt id, const Magnum::Color3& color) {
+PhongGL& PhongGL::setLightSpecularColor(const UnsignedInt id, const Magnum::Color3& color) {
     CORRADE_ASSERT(id < _lightCount,
-        "Shaders::Phong::setLightSpecularColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+        "Shaders::PhongGL::setLightSpecularColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
     setUniform(_lightSpecularColorsUniform + id, color);
     return *this;
 }
 
-Phong& Phong::setLightRanges(const Containers::ArrayView<const Float> ranges) {
+PhongGL& PhongGL::setLightRanges(const Containers::ArrayView<const Float> ranges) {
     CORRADE_ASSERT(_lightCount == ranges.size(),
-        "Shaders::Phong::setLightRanges(): expected" << _lightCount << "items but got" << ranges.size(), *this);
+        "Shaders::PhongGL::setLightRanges(): expected" << _lightCount << "items but got" << ranges.size(), *this);
     if(_lightCount) setUniform(_lightRangesUniform, ranges);
     return *this;
 }
 
-Phong& Phong::setLightRanges(const std::initializer_list<Float> ranges) {
+PhongGL& PhongGL::setLightRanges(const std::initializer_list<Float> ranges) {
     return setLightRanges(Containers::arrayView(ranges));
 }
 
-Phong& Phong::setLightRange(const UnsignedInt id, const Float range) {
+PhongGL& PhongGL::setLightRange(const UnsignedInt id, const Float range) {
     CORRADE_ASSERT(id < _lightCount,
-        "Shaders::Phong::setLightRange(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+        "Shaders::PhongGL::setLightRange(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
     setUniform(_lightRangesUniform + id, range);
     return *this;
 }
 
-Debug& operator<<(Debug& debug, const Phong::Flag value) {
-    debug << "Shaders::Phong::Flag" << Debug::nospace;
+Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
+    debug << "Shaders::PhongGL::Flag" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case Phong::Flag::v: return debug << "::" #v;
+        #define _c(v) case PhongGL::Flag::v: return debug << "::" #v;
         _c(AmbientTexture)
         _c(DiffuseTexture)
         _c(SpecularTexture)
@@ -530,22 +530,22 @@ Debug& operator<<(Debug& debug, const Phong::Flag value) {
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, const Phong::Flags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Shaders::Phong::Flags{}", {
-        Phong::Flag::AmbientTexture,
-        Phong::Flag::DiffuseTexture,
-        Phong::Flag::SpecularTexture,
-        Phong::Flag::NormalTexture,
-        Phong::Flag::Bitangent,
-        Phong::Flag::AlphaMask,
-        Phong::Flag::VertexColor,
-        Phong::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */
-        Phong::Flag::TextureTransformation,
+Debug& operator<<(Debug& debug, const PhongGL::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::PhongGL::Flags{}", {
+        PhongGL::Flag::AmbientTexture,
+        PhongGL::Flag::DiffuseTexture,
+        PhongGL::Flag::SpecularTexture,
+        PhongGL::Flag::NormalTexture,
+        PhongGL::Flag::Bitangent,
+        PhongGL::Flag::AlphaMask,
+        PhongGL::Flag::VertexColor,
+        PhongGL::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */
+        PhongGL::Flag::TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2
-        Phong::Flag::InstancedObjectId, /* Superset of ObjectId */
-        Phong::Flag::ObjectId,
+        PhongGL::Flag::InstancedObjectId, /* Superset of ObjectId */
+        PhongGL::Flag::ObjectId,
         #endif
-        Phong::Flag::InstancedTransformation});
+        PhongGL::Flag::InstancedTransformation});
 }
 
 }}

@@ -27,12 +27,14 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/Shaders/DistanceFieldVector.h"
+#include "Magnum/Shaders/VectorGL.h"
 
 namespace Magnum { namespace Shaders { namespace Test { namespace {
 
-struct DistanceFieldVectorTest: TestSuite::Tester {
-    explicit DistanceFieldVectorTest();
+/* There's an underscore between GL and Test to disambiguate from GLTest, which
+   is a common suffix used to mark tests that need a GL context. Ugly, I know. */
+struct VectorGL_Test: TestSuite::Tester {
+    explicit VectorGL_Test();
 
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
@@ -41,50 +43,50 @@ struct DistanceFieldVectorTest: TestSuite::Tester {
     void debugFlags();
 };
 
-DistanceFieldVectorTest::DistanceFieldVectorTest() {
-    addTests({&DistanceFieldVectorTest::constructNoCreate<2>,
-              &DistanceFieldVectorTest::constructNoCreate<3>,
+VectorGL_Test::VectorGL_Test() {
+    addTests({&VectorGL_Test::constructNoCreate<2>,
+              &VectorGL_Test::constructNoCreate<3>,
 
-              &DistanceFieldVectorTest::constructCopy<2>,
-              &DistanceFieldVectorTest::constructCopy<3>,
+              &VectorGL_Test::constructCopy<2>,
+              &VectorGL_Test::constructCopy<3>,
 
-              &DistanceFieldVectorTest::debugFlag,
-              &DistanceFieldVectorTest::debugFlags});
+              &VectorGL_Test::debugFlag,
+              &VectorGL_Test::debugFlags});
 }
 
-template<UnsignedInt dimensions> void DistanceFieldVectorTest::constructNoCreate() {
+template<UnsignedInt dimensions> void VectorGL_Test::constructNoCreate() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
     {
-        DistanceFieldVector<dimensions> shader{NoCreate};
+        VectorGL<dimensions> shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
-        CORRADE_COMPARE(shader.flags(), typename DistanceFieldVector<dimensions>::Flags{});
+        CORRADE_COMPARE(shader.flags(), typename VectorGL<dimensions>::Flags{});
     }
 
     CORRADE_VERIFY(true);
 }
 
-template<UnsignedInt dimensions> void DistanceFieldVectorTest::constructCopy() {
+template<UnsignedInt dimensions> void VectorGL_Test::constructCopy() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    CORRADE_VERIFY(!std::is_copy_constructible<DistanceFieldVector<dimensions>>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<DistanceFieldVector<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_constructible<VectorGL<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<VectorGL<dimensions>>{});
 }
 
-void DistanceFieldVectorTest::debugFlag() {
+void VectorGL_Test::debugFlag() {
     std::ostringstream out;
 
-    Debug{&out} << DistanceFieldVector2D::Flag::TextureTransformation << DistanceFieldVector2D::Flag(0xf0);
-    CORRADE_COMPARE(out.str(), "Shaders::DistanceFieldVector::Flag::TextureTransformation Shaders::DistanceFieldVector::Flag(0xf0)\n");
+    Debug{&out} << VectorGL2D::Flag::TextureTransformation << VectorGL2D::Flag(0xf0);
+    CORRADE_COMPARE(out.str(), "Shaders::VectorGL::Flag::TextureTransformation Shaders::VectorGL::Flag(0xf0)\n");
 }
 
-void DistanceFieldVectorTest::debugFlags() {
+void VectorGL_Test::debugFlags() {
     std::ostringstream out;
 
-    Debug{&out} << DistanceFieldVector3D::Flags{DistanceFieldVector3D::Flag::TextureTransformation|DistanceFieldVector3D::Flag(0xf0)} << DistanceFieldVector3D::Flags{};
-    CORRADE_COMPARE(out.str(), "Shaders::DistanceFieldVector::Flag::TextureTransformation|Shaders::DistanceFieldVector::Flag(0xf0) Shaders::DistanceFieldVector::Flags{}\n");
+    Debug{&out} << VectorGL3D::Flags{VectorGL3D::Flag::TextureTransformation|VectorGL3D::Flag(0xf0)} << VectorGL3D::Flags{};
+    CORRADE_COMPARE(out.str(), "Shaders::VectorGL::Flag::TextureTransformation|Shaders::VectorGL::Flag(0xf0) Shaders::VectorGL::Flags{}\n");
 }
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::DistanceFieldVectorTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::VectorGL_Test)

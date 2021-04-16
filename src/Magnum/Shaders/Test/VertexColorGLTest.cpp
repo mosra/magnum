@@ -42,7 +42,7 @@
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/Primitives/Circle.h"
 #include "Magnum/Primitives/UVSphere.h"
-#include "Magnum/Shaders/VertexColor.h"
+#include "Magnum/Shaders/VertexColorGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -135,7 +135,7 @@ VertexColorGLTest::VertexColorGLTest() {
 template<UnsignedInt dimensions> void VertexColorGLTest::construct() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    VertexColor<dimensions> shader;
+    VertexColorGL<dimensions> shader;
     CORRADE_VERIFY(shader.id());
     {
         #ifdef CORRADE_TARGET_APPLE
@@ -150,17 +150,17 @@ template<UnsignedInt dimensions> void VertexColorGLTest::construct() {
 template<UnsignedInt dimensions> void VertexColorGLTest::constructMove() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    VertexColor<dimensions> a;
+    VertexColorGL<dimensions> a;
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    VertexColor<dimensions> b{std::move(a)};
+    VertexColorGL<dimensions> b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_VERIFY(!a.id());
 
-    VertexColor<dimensions> c{NoCreate};
+    VertexColorGL<dimensions> c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_VERIFY(!b.id());
@@ -205,9 +205,9 @@ template<class T> void VertexColorGLTest::renderDefaults2D() {
     GL::Buffer colors;
     colors.setData(colorData);
     GL::Mesh circle = MeshTools::compile(circleData);
-    circle.addVertexBuffer(colors, 0, GL::Attribute<Shaders::VertexColor2D::Color3::Location, T>{});
+    circle.addVertexBuffer(colors, 0, GL::Attribute<VertexColorGL2D::Color3::Location, T>{});
 
-    VertexColor2D{}
+    VertexColorGL2D{}
         .draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -246,9 +246,9 @@ template<class T> void VertexColorGLTest::renderDefaults3D() {
     GL::Buffer colors;
     colors.setData(colorData);
     GL::Mesh sphere = MeshTools::compile(sphereData);
-    sphere.addVertexBuffer(colors, 0, GL::Attribute<Shaders::VertexColor2D::Color4::Location, T>{});
+    sphere.addVertexBuffer(colors, 0, GL::Attribute<VertexColorGL3D::Color4::Location, T>{});
 
-    VertexColor3D{}
+    VertexColorGL3D{}
         .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -281,9 +281,9 @@ template<class T> void VertexColorGLTest::render2D() {
     GL::Buffer colors;
     colors.setData(colorData);
     GL::Mesh circle = MeshTools::compile(circleData);
-    circle.addVertexBuffer(colors, 0, GL::Attribute<Shaders::VertexColor2D::Color3::Location, T>{});
+    circle.addVertexBuffer(colors, 0, GL::Attribute<VertexColorGL2D::Color3::Location, T>{});
 
-    VertexColor2D{}
+    VertexColorGL2D{}
         .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
         .draw(circle);
 
@@ -326,9 +326,9 @@ template<class T> void VertexColorGLTest::render3D() {
     GL::Buffer colors;
     colors.setData(colorData);
     GL::Mesh sphere = MeshTools::compile(sphereData);
-    sphere.addVertexBuffer(colors, 0, GL::Attribute<Shaders::VertexColor2D::Color4::Location, T>{});
+    sphere.addVertexBuffer(colors, 0, GL::Attribute<VertexColorGL3D::Color4::Location, T>{});
 
-    VertexColor3D{}
+    VertexColorGL3D{}
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*

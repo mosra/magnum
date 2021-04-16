@@ -51,7 +51,7 @@
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/Primitives/Circle.h"
 #include "Magnum/Primitives/UVSphere.h"
-#include "Magnum/Shaders/Flat.h"
+#include "Magnum/Shaders/FlatGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/MeshData.h"
@@ -138,33 +138,33 @@ using namespace Math::Literals;
 
 constexpr struct {
     const char* name;
-    Flat2D::Flags flags;
+    FlatGL2D::Flags flags;
 } ConstructData[]{
     {"", {}},
-    {"textured", Flat2D::Flag::Textured},
-    {"textured + texture transformation", Flat2D::Flag::Textured|Flat2D::Flag::TextureTransformation},
-    {"alpha mask", Flat2D::Flag::AlphaMask},
-    {"alpha mask + textured", Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured},
-    {"vertex colors", Flat2D::Flag::VertexColor},
-    {"vertex colors + textured", Flat2D::Flag::VertexColor|Flat2D::Flag::Textured},
+    {"textured", FlatGL2D::Flag::Textured},
+    {"textured + texture transformation", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation},
+    {"alpha mask", FlatGL2D::Flag::AlphaMask},
+    {"alpha mask + textured", FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::Textured},
+    {"vertex colors", FlatGL2D::Flag::VertexColor},
+    {"vertex colors + textured", FlatGL2D::Flag::VertexColor|FlatGL2D::Flag::Textured},
     #ifndef MAGNUM_TARGET_GLES2
-    {"object ID", Flat2D::Flag::ObjectId},
-    {"instanced object ID", Flat2D::Flag::InstancedObjectId},
-    {"object ID + alpha mask + textured", Flat2D::Flag::ObjectId|Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured},
+    {"object ID", FlatGL2D::Flag::ObjectId},
+    {"instanced object ID", FlatGL2D::Flag::InstancedObjectId},
+    {"object ID + alpha mask + textured", FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::Textured},
     #endif
-    {"instanced transformation", Flat2D::Flag::InstancedTransformation},
-    {"instanced texture offset", Flat2D::Flag::Textured|Flat2D::Flag::InstancedTextureOffset}
+    {"instanced transformation", FlatGL2D::Flag::InstancedTransformation},
+    {"instanced texture offset", FlatGL2D::Flag::Textured|FlatGL2D::Flag::InstancedTextureOffset}
 };
 
 const struct {
     const char* name;
-    Flat2D::Flags flags;
+    FlatGL2D::Flags flags;
     Matrix3 textureTransformation;
     bool flip;
 } RenderTexturedData[]{
-    {"", Flat2D::Flag::Textured, {}, false},
+    {"", FlatGL2D::Flag::Textured, {}, false},
     {"texture transformation",
-        Flat2D::Flag::Textured|Flat2D::Flag::TextureTransformation,
+        FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation,
         Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
         true},
 };
@@ -174,37 +174,37 @@ const struct {
     const char* expected2D;
     const char* expected3D;
     bool blending;
-    Flat2D::Flags flags;
+    FlatGL2D::Flags flags;
     Float threshold;
 } RenderAlphaData[] {
     /* All those deliberately have a non-white diffuse in order to match the
        expected data from textured() */
     {"none", "FlatTestFiles/textured2D.tga", "FlatTestFiles/textured3D.tga", false,
-        Flat2D::Flag::Textured, 0.0f},
+        FlatGL2D::Flag::Textured, 0.0f},
     {"blending", "FlatTestFiles/textured2D-alpha.tga", "FlatTestFiles/textured3D-alpha.tga", true,
-        Flat2D::Flag::Textured, 0.0f},
+        FlatGL2D::Flag::Textured, 0.0f},
     {"masking 0.0", "FlatTestFiles/textured2D.tga", "FlatTestFiles/textured3D.tga", false,
-        Flat2D::Flag::Textured, 0.0f},
+        FlatGL2D::Flag::Textured, 0.0f},
     {"masking 0.5", "FlatTestFiles/textured2D-alpha-mask0.5.tga", "FlatTestFiles/textured3D-alpha-mask0.5.tga", false,
-        Flat2D::Flag::Textured|Flat2D::Flag::AlphaMask, 0.5f},
+        FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask, 0.5f},
     {"masking 1.0", "TestFiles/alpha-mask1.0.tga", "TestFiles/alpha-mask1.0.tga", false,
-        Flat2D::Flag::Textured|Flat2D::Flag::AlphaMask, 1.0f}
+        FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask, 1.0f}
 };
 
 #ifndef MAGNUM_TARGET_GLES2
 constexpr struct {
     const char* name;
-    Flat2D::Flags flags;
+    FlatGL2D::Flags flags;
     UnsignedInt uniformId;
     UnsignedInt instanceCount;
     UnsignedInt expected;
 } RenderObjectIdData[] {
     {"", /* Verify that it can hold 16 bits at least */
-        Flat2D::Flag::ObjectId, 48526, 0, 48526},
+        FlatGL2D::Flag::ObjectId, 48526, 0, 48526},
     {"instanced, first instance",
-        Flat2D::Flag::InstancedObjectId, 13524, 1, 24526},
+        FlatGL2D::Flag::InstancedObjectId, 13524, 1, 24526},
     {"instanced, second instance",
-        Flat2D::Flag::InstancedObjectId, 13524, 2, 62347}
+        FlatGL2D::Flag::InstancedObjectId, 13524, 2, 62347}
 };
 #endif
 
@@ -305,11 +305,11 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if((data.flags & Flat2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
-    Flat<dimensions> shader{data.flags};
+    FlatGL<dimensions> shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
@@ -325,21 +325,21 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
 template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    Flat<dimensions> a{Flat<dimensions>::Flag::Textured};
+    FlatGL<dimensions> a{FlatGL<dimensions>::Flag::Textured};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Flat<dimensions> b{std::move(a)};
+    FlatGL<dimensions> b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
-    CORRADE_COMPARE(b.flags(), Flat<dimensions>::Flag::Textured);
+    CORRADE_COMPARE(b.flags(), FlatGL<dimensions>::Flag::Textured);
     CORRADE_VERIFY(!a.id());
 
-    Flat<dimensions> c{NoCreate};
+    FlatGL<dimensions> c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
-    CORRADE_COMPARE(c.flags(), Flat<dimensions>::Flag::Textured);
+    CORRADE_COMPARE(c.flags(), FlatGL<dimensions>::Flag::Textured);
     CORRADE_VERIFY(!b.id());
 }
 
@@ -352,9 +352,9 @@ template<UnsignedInt dimensions> void FlatGLTest::constructTextureTransformation
 
     std::ostringstream out;
     Error redirectError{&out};
-    Flat<dimensions>{Flat<dimensions>::Flag::TextureTransformation};
+    FlatGL<dimensions>{FlatGL<dimensions>::Flag::TextureTransformation};
     CORRADE_COMPARE(out.str(),
-        "Shaders::Flat: texture transformation enabled but the shader is not textured\n");
+        "Shaders::FlatGL: texture transformation enabled but the shader is not textured\n");
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::bindTextureNotEnabled() {
@@ -368,10 +368,10 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTextureNotEnabled() {
     Error redirectError{&out};
 
     GL::Texture2D texture;
-    Flat<dimensions> shader;
+    FlatGL<dimensions> shader;
     shader.bindTexture(texture);
 
-    CORRADE_COMPARE(out.str(), "Shaders::Flat::bindTexture(): the shader was not created with texturing enabled\n");
+    CORRADE_COMPARE(out.str(), "Shaders::FlatGL::bindTexture(): the shader was not created with texturing enabled\n");
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::setAlphaMaskNotEnabled() {
@@ -384,11 +384,11 @@ template<UnsignedInt dimensions> void FlatGLTest::setAlphaMaskNotEnabled() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Flat<dimensions> shader;
+    FlatGL<dimensions> shader;
     shader.setAlphaMask(0.75f);
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::Flat::setAlphaMask(): the shader was not created with alpha mask enabled\n");
+        "Shaders::FlatGL::setAlphaMask(): the shader was not created with alpha mask enabled\n");
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::setTextureMatrixNotEnabled() {
@@ -401,11 +401,11 @@ template<UnsignedInt dimensions> void FlatGLTest::setTextureMatrixNotEnabled() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Flat<dimensions> shader;
+    FlatGL<dimensions> shader;
     shader.setTextureMatrix({});
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::Flat::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
+        "Shaders::FlatGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -419,11 +419,11 @@ template<UnsignedInt dimensions> void FlatGLTest::setObjectIdNotEnabled() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Flat<dimensions> shader;
+    FlatGL<dimensions> shader;
     shader.setObjectId(33376);
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::Flat::setObjectId(): the shader was not created with object ID enabled\n");
+        "Shaders::FlatGL::setObjectId(): the shader was not created with object ID enabled\n");
 }
 #endif
 
@@ -457,7 +457,7 @@ void FlatGLTest::renderTeardown() {
 void FlatGLTest::renderDefaults2D() {
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
 
-    Flat2D{}
+    FlatGL2D{}
         .draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -477,7 +477,7 @@ void FlatGLTest::renderDefaults2D() {
 void FlatGLTest::renderDefaults3D() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Flat3D{}
+    FlatGL3D{}
         .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -497,7 +497,7 @@ void FlatGLTest::renderDefaults3D() {
 void FlatGLTest::renderColored2D() {
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
 
-    Flat2D{}
+    FlatGL2D{}
         .setColor(0x9999ff_rgbf)
         .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
         .draw(circle);
@@ -524,7 +524,7 @@ void FlatGLTest::renderColored2D() {
 void FlatGLTest::renderColored3D() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Flat3D{}
+    FlatGL3D{}
         .setColor(0x9999ff_rgbf)
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
@@ -581,7 +581,7 @@ void FlatGLTest::renderSinglePixelTextured2D() {
         .setStorage(1, TextureFormatRGBA, Vector2i{1})
         .setSubImage(0, {}, diffuseImage);
 
-    Flat2D{Flat3D::Flag::Textured}
+    FlatGL2D{FlatGL3D::Flag::Textured}
         .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
         .bindTexture(texture)
         .draw(circle);
@@ -619,7 +619,7 @@ void FlatGLTest::renderSinglePixelTextured3D() {
         .setStorage(1, TextureFormatRGBA, Vector2i{1})
         .setSubImage(0, {}, diffuseImage);
 
-    Flat3D{Flat3D::Flag::Textured}
+    FlatGL3D{FlatGL3D::Flag::Textured}
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
@@ -671,7 +671,7 @@ void FlatGLTest::renderTextured2D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Flat2D shader{data.flags};
+    FlatGL2D shader{data.flags};
     shader
         .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
         /* Colorized. Case without a color (where it should be white) is tested
@@ -727,7 +727,7 @@ void FlatGLTest::renderTextured3D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Flat3D shader{data.flags};
+    FlatGL3D shader{data.flags};
     shader
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
@@ -782,7 +782,7 @@ template<class T> void FlatGLTest::renderVertexColor2D() {
     GL::Buffer colors;
     colors.setData(colorData);
     GL::Mesh circle = MeshTools::compile(circleData);
-    circle.addVertexBuffer(colors, 0, GL::Attribute<Shaders::Flat2D::Color3::Location, T>{});
+    circle.addVertexBuffer(colors, 0, GL::Attribute<Shaders::FlatGL2D::Color3::Location, T>{});
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -796,7 +796,7 @@ template<class T> void FlatGLTest::renderVertexColor2D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Flat2D{Flat2D::Flag::Textured|Flat2D::Flag::VertexColor}
+    FlatGL2D{FlatGL2D::Flag::Textured|FlatGL2D::Flag::VertexColor}
         .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
         .setColor(0x9999ff_rgbf)
         .bindTexture(texture)
@@ -836,7 +836,7 @@ template<class T> void FlatGLTest::renderVertexColor3D() {
     GL::Buffer colors;
     colors.setData(colorData);
     GL::Mesh sphere = MeshTools::compile(sphereData);
-    sphere.addVertexBuffer(colors, 0, GL::Attribute<Shaders::Flat3D::Color4::Location, T>{});
+    sphere.addVertexBuffer(colors, 0, GL::Attribute<Shaders::FlatGL3D::Color4::Location, T>{});
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -850,7 +850,7 @@ template<class T> void FlatGLTest::renderVertexColor3D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Flat3D{Flat3D::Flag::Textured|Flat3D::Flag::VertexColor}
+    FlatGL3D{FlatGL3D::Flag::Textured|FlatGL3D::Flag::VertexColor}
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
@@ -915,12 +915,12 @@ void FlatGLTest::renderAlpha2D() {
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32,
         Primitives::Circle2DFlag::TextureCoordinates));
 
-    Flat2D shader{data.flags};
+    FlatGL2D shader{data.flags};
     shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
         .setColor(0x9999ff_rgbf)
         .bindTexture(texture);
 
-    if(data.flags & Flat3D::Flag::AlphaMask)
+    if(data.flags & FlatGL3D::Flag::AlphaMask)
         shader.setAlphaMask(data.threshold);
 
     shader.draw(circle);
@@ -966,7 +966,7 @@ void FlatGLTest::renderAlpha3D() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
-    Flat3D shader{data.flags};
+    FlatGL3D shader{data.flags};
     shader.setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
@@ -975,7 +975,7 @@ void FlatGLTest::renderAlpha3D() {
         .setColor(0x9999ff_rgbf)
         .bindTexture(texture);
 
-    if(data.flags & Flat3D::Flag::AlphaMask)
+    if(data.flags & FlatGL3D::Flag::AlphaMask)
         shader.setAlphaMask(data.threshold);
 
     /* For proper Z order draw back faces first and then front faces */
@@ -1026,8 +1026,8 @@ void FlatGLTest::renderObjectIdSetup() {
         _objectId.setStorage(GL::RenderbufferFormat::R32UI, RenderSize);
         _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
             .mapForDraw({
-                {Flat2D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
-                {Flat2D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+                {FlatGL2D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+                {FlatGL2D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
             })
             .clearColor(1, Vector4ui{27});
     }
@@ -1056,9 +1056,9 @@ void FlatGLTest::renderObjectId2D() {
         .setInstanceCount(data.instanceCount)
         .addVertexBufferInstanced(
             GL::Buffer{Containers::arrayView({11002u, 48823u})},
-            1, 0, Flat2D::ObjectId{});
+            1, 0, FlatGL2D::ObjectId{});
 
-    Flat2D{data.flags}
+    FlatGL2D{data.flags}
         .setColor(0x9999ff_rgbf)
         .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
         .setObjectId(data.uniformId)
@@ -1114,9 +1114,9 @@ void FlatGLTest::renderObjectId3D() {
         .setInstanceCount(data.instanceCount)
         .addVertexBufferInstanced(
             GL::Buffer{Containers::arrayView({11002u, 48823u})},
-            1, 0, Flat2D::ObjectId{});
+            1, 0, FlatGL2D::ObjectId{});
 
-    Flat3D{data.flags}
+    FlatGL3D{data.flags}
         .setColor(0x9999ff_rgbf)
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
@@ -1202,9 +1202,9 @@ void FlatGLTest::renderInstanced2D() {
 
     circle
         .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
-            Flat2D::TransformationMatrix{},
-            Flat2D::Color3{},
-            Flat2D::TextureOffset{})
+            FlatGL2D::TransformationMatrix{},
+            FlatGL2D::Color3{},
+            FlatGL2D::TextureOffset{})
         .setInstanceCount(3);
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
@@ -1219,10 +1219,10 @@ void FlatGLTest::renderInstanced2D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Flat2D{Flat2D::Flag::Textured|
-           Flat2D::Flag::VertexColor|
-           Flat2D::Flag::InstancedTransformation|
-           Flat2D::Flag::InstancedTextureOffset}
+    FlatGL2D{FlatGL2D::Flag::Textured|
+           FlatGL2D::Flag::VertexColor|
+           FlatGL2D::Flag::InstancedTransformation|
+           FlatGL2D::Flag::InstancedTextureOffset}
         .setColor(0xffff99_rgbf)
         .setTransformationProjectionMatrix(
             Matrix3::projection({2.1f, 2.1f})*
@@ -1286,9 +1286,9 @@ void FlatGLTest::renderInstanced3D() {
 
     sphere
         .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
-            Flat3D::TransformationMatrix{},
-            Flat3D::Color3{},
-            Flat3D::TextureOffset{})
+            FlatGL3D::TransformationMatrix{},
+            FlatGL3D::Color3{},
+            FlatGL3D::TextureOffset{})
         .setInstanceCount(3);
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
@@ -1303,10 +1303,10 @@ void FlatGLTest::renderInstanced3D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Flat3D{Flat3D::Flag::Textured|
-           Flat3D::Flag::VertexColor|
-           Flat3D::Flag::InstancedTransformation|
-           Flat3D::Flag::InstancedTextureOffset}
+    FlatGL3D{FlatGL3D::Flag::Textured|
+           FlatGL3D::Flag::VertexColor|
+           FlatGL3D::Flag::InstancedTransformation|
+           FlatGL3D::Flag::InstancedTextureOffset}
         .setColor(0xffff99_rgbf)
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*

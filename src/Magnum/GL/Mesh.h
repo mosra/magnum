@@ -697,7 +697,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * buffer with 76 bytes of some other data at the beginning (possibly
          * material configuration) and then the interleaved vertex array. Each
          * vertex consists of a weight, position, texture coordinate and
-         * a normal. You want to draw it with @ref Shaders::Phong, but it
+         * a normal. You want to draw it with @ref Shaders::PhongGL, but it
          * accepts only a position and a normal, so you have to skip the weight
          * and the texture coordinate in each vertex:
          *

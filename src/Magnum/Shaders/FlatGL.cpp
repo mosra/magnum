@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Flat.h"
+#include "FlatGL.h"
 
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Reference.h>
@@ -45,16 +45,16 @@ namespace {
     enum: Int { TextureUnit = 0 };
 }
 
-template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _flags(flags) {
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags): _flags(flags) {
     CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & Flag::Textured),
-        "Shaders::Flat: texture transformation enabled but the shader is not textured", );
+        "Shaders::FlatGL: texture transformation enabled but the shader is not textured", );
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumShaders"))
+    if(!Utility::Resource::hasGroup("MagnumShadersGL"))
         importShaderResources();
     #endif
-    Utility::Resource rs("MagnumShaders");
+    Utility::Resource rs("MagnumShadersGL");
 
     #ifndef MAGNUM_TARGET_GLES
     const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
@@ -151,57 +151,57 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
     #endif
 }
 
-template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     setUniform(_transformationProjectionMatrixUniform, matrix);
     return *this;
 }
 
-template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setTextureMatrix(const Matrix3& matrix) {
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setTextureMatrix(const Matrix3& matrix) {
     CORRADE_ASSERT(_flags & Flag::TextureTransformation,
-        "Shaders::Flat::setTextureMatrix(): the shader was not created with texture transformation enabled", *this);
+        "Shaders::FlatGL::setTextureMatrix(): the shader was not created with texture transformation enabled", *this);
     setUniform(_textureMatrixUniform, matrix);
     return *this;
 }
 
-template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setColor(const Magnum::Color4& color) {
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setColor(const Magnum::Color4& color) {
     setUniform(_colorUniform, color);
     return *this;
 }
 
-template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::bindTexture(GL::Texture2D& texture) {
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::Textured,
-        "Shaders::Flat::bindTexture(): the shader was not created with texturing enabled", *this);
+        "Shaders::FlatGL::bindTexture(): the shader was not created with texturing enabled", *this);
     texture.bind(TextureUnit);
     return *this;
 }
 
-template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setAlphaMask(Float mask) {
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setAlphaMask(Float mask) {
     CORRADE_ASSERT(_flags & Flag::AlphaMask,
-        "Shaders::Flat::setAlphaMask(): the shader was not created with alpha mask enabled", *this);
+        "Shaders::FlatGL::setAlphaMask(): the shader was not created with alpha mask enabled", *this);
     setUniform(_alphaMaskUniform, mask);
     return *this;
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setObjectId(UnsignedInt id) {
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setObjectId(UnsignedInt id) {
     CORRADE_ASSERT(_flags & Flag::ObjectId,
-        "Shaders::Flat::setObjectId(): the shader was not created with object ID enabled", *this);
+        "Shaders::FlatGL::setObjectId(): the shader was not created with object ID enabled", *this);
     setUniform(_objectIdUniform, id);
     return *this;
 }
 #endif
 
-template class Flat<2>;
-template class Flat<3>;
+template class FlatGL<2>;
+template class FlatGL<3>;
 
 namespace Implementation {
 
-Debug& operator<<(Debug& debug, const FlatFlag value) {
-    debug << "Shaders::Flat::Flag" << Debug::nospace;
+Debug& operator<<(Debug& debug, const FlatGLFlag value) {
+    debug << "Shaders::FlatGL::Flag" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case FlatFlag::v: return debug << "::" #v;
+        #define _c(v) case FlatGLFlag::v: return debug << "::" #v;
         _c(Textured)
         _c(AlphaMask)
         _c(VertexColor)
@@ -219,18 +219,18 @@ Debug& operator<<(Debug& debug, const FlatFlag value) {
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, const FlatFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Shaders::Flat::Flags{}", {
-        FlatFlag::Textured,
-        FlatFlag::AlphaMask,
-        FlatFlag::VertexColor,
-        FlatFlag::InstancedTextureOffset, /* Superset of TextureTransformation */
-        FlatFlag::TextureTransformation,
+Debug& operator<<(Debug& debug, const FlatGLFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::FlatGL::Flags{}", {
+        FlatGLFlag::Textured,
+        FlatGLFlag::AlphaMask,
+        FlatGLFlag::VertexColor,
+        FlatGLFlag::InstancedTextureOffset, /* Superset of TextureTransformation */
+        FlatGLFlag::TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2
-        FlatFlag::InstancedObjectId, /* Superset of ObjectId */
-        FlatFlag::ObjectId,
+        FlatGLFlag::InstancedObjectId, /* Superset of ObjectId */
+        FlatGLFlag::ObjectId,
         #endif
-        FlatFlag::InstancedTransformation});
+        FlatGLFlag::InstancedTransformation});
 }
 
 }

@@ -1674,9 +1674,10 @@ class MAGNUM_GL_EXPORT Renderer {
          *
          * Note that in 3D you need to sort and render transparent objects
          * back-to-front after all opaque objects in order for them to appear
-         * correctly. Alternatively, builtin shaders such as @ref Shaders::Flat
-         * or @ref Shaders::Phong support alpha masking, which works without
-         * alpha blending enabled and doesn't require depth sorting.
+         * correctly. Alternatively, builtin shaders such as
+         * @ref Shaders::FlatGL or @ref Shaders::PhongGL support alpha masking,
+         * which works without alpha blending enabled and doesn't require depth
+         * sorting.
          * @see @ref Feature::Blending, @ref setBlendFunction(BlendFunction, BlendFunction, BlendFunction, BlendFunction),
          *      @ref setBlendEquation(), @ref setBlendColor(),
          *      @fn_gl_keyword{BlendFunc}

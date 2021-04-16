@@ -25,44 +25,46 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Shaders/VertexColor.h"
+#include "Magnum/Shaders/VertexColorGL.h"
 
 namespace Magnum { namespace Shaders { namespace Test { namespace {
 
-struct VertexColorTest: TestSuite::Tester {
-    explicit VertexColorTest();
+/* There's an underscore between GL and Test to disambiguate from GLTest, which
+   is a common suffix used to mark tests that need a GL context. Ugly, I know. */
+struct VertexColorGL_Test: TestSuite::Tester {
+    explicit VertexColorGL_Test();
 
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
 };
 
-VertexColorTest::VertexColorTest() {
-    addTests<VertexColorTest>({
-        &VertexColorTest::constructNoCreate<2>,
-        &VertexColorTest::constructNoCreate<3>,
+VertexColorGL_Test::VertexColorGL_Test() {
+    addTests<VertexColorGL_Test>({
+        &VertexColorGL_Test::constructNoCreate<2>,
+        &VertexColorGL_Test::constructNoCreate<3>,
 
-        &VertexColorTest::constructCopy<2>,
-        &VertexColorTest::constructCopy<3>});
+        &VertexColorGL_Test::constructCopy<2>,
+        &VertexColorGL_Test::constructCopy<3>});
 }
 
-template<UnsignedInt dimensions> void VertexColorTest::constructNoCreate() {
+template<UnsignedInt dimensions> void VertexColorGL_Test::constructNoCreate() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
     {
-        VertexColor<dimensions> shader{NoCreate};
+        VertexColorGL<dimensions> shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
     CORRADE_VERIFY(true);
 }
 
-template<UnsignedInt dimensions> void VertexColorTest::constructCopy() {
+template<UnsignedInt dimensions> void VertexColorGL_Test::constructCopy() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    CORRADE_VERIFY(!std::is_copy_constructible<VertexColor<dimensions>>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<VertexColor<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_constructible<VertexColorGL<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<VertexColorGL<dimensions>>{});
 }
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::VertexColorTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::VertexColorGL_Test)

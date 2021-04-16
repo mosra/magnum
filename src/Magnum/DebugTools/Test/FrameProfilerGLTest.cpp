@@ -36,7 +36,7 @@
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/Primitives/Cube.h"
-#include "Magnum/Shaders/Flat.h"
+#include "Magnum/Shaders/FlatGL.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace DebugTools { namespace Test { namespace {
@@ -109,7 +109,7 @@ void FrameProfilerGLTest::test() {
     fb.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, color)
       .bind();
 
-    Shaders::Flat3D shader;
+    Shaders::FlatGL3D shader;
     GL::Mesh mesh = MeshTools::compile(Primitives::cubeSolid());
 
     FrameProfilerGL profiler{data.values, 4};

@@ -23,21 +23,21 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "AbstractVector.h"
+#include "AbstractVectorGL.h"
 
 #include "Magnum/GL/Texture.h"
 #include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders {
 
-template<UnsignedInt dimensions> AbstractVector<dimensions>& AbstractVector<dimensions>::bindVectorTexture(GL::Texture2D& texture) {
+template<UnsignedInt dimensions> AbstractVectorGL<dimensions>& AbstractVectorGL<dimensions>::bindVectorTexture(GL::Texture2D& texture) {
     texture.bind(VectorTextureUnit);
     return *this;
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_SHADERS_EXPORT AbstractVector<2>;
-template class MAGNUM_SHADERS_EXPORT AbstractVector<3>;
+template class MAGNUM_SHADERS_EXPORT AbstractVectorGL<2>;
+template class MAGNUM_SHADERS_EXPORT AbstractVectorGL<3>;
 #endif
 
 }}

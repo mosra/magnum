@@ -27,12 +27,14 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/Shaders/Flat.h"
+#include "Magnum/Shaders/FlatGL.h"
 
 namespace Magnum { namespace Shaders { namespace Test { namespace {
 
-struct FlatTest: TestSuite::Tester {
-    explicit FlatTest();
+/* There's an underscore between GL and Test to disambiguate from GLTest, which
+   is a common suffix used to mark tests that need a GL context. Ugly, I know. */
+struct FlatGL_Test: TestSuite::Tester {
+    explicit FlatGL_Test();
 
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
@@ -42,69 +44,69 @@ struct FlatTest: TestSuite::Tester {
     void debugFlagsSupersets();
 };
 
-FlatTest::FlatTest() {
-    addTests({&FlatTest::constructNoCreate<2>,
-              &FlatTest::constructNoCreate<3>,
+FlatGL_Test::FlatGL_Test() {
+    addTests({&FlatGL_Test::constructNoCreate<2>,
+              &FlatGL_Test::constructNoCreate<3>,
 
-              &FlatTest::constructCopy<2>,
-              &FlatTest::constructCopy<3>,
+              &FlatGL_Test::constructCopy<2>,
+              &FlatGL_Test::constructCopy<3>,
 
-              &FlatTest::debugFlag,
-              &FlatTest::debugFlags,
-              &FlatTest::debugFlagsSupersets});
+              &FlatGL_Test::debugFlag,
+              &FlatGL_Test::debugFlags,
+              &FlatGL_Test::debugFlagsSupersets});
 }
 
-template<UnsignedInt dimensions> void FlatTest::constructNoCreate() {
+template<UnsignedInt dimensions> void FlatGL_Test::constructNoCreate() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
     {
-        Flat<dimensions> shader{NoCreate};
+        FlatGL<dimensions> shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
-        CORRADE_COMPARE(shader.flags(), typename Flat<dimensions>::Flags{});
+        CORRADE_COMPARE(shader.flags(), typename FlatGL<dimensions>::Flags{});
     }
 
     CORRADE_VERIFY(true);
 }
 
-template<UnsignedInt dimensions> void FlatTest::constructCopy() {
+template<UnsignedInt dimensions> void FlatGL_Test::constructCopy() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    CORRADE_VERIFY(!std::is_copy_constructible<Flat<dimensions>>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<Flat<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_constructible<FlatGL<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<FlatGL<dimensions>>{});
 }
 
-void FlatTest::debugFlag() {
+void FlatGL_Test::debugFlag() {
     std::ostringstream out;
 
-    Debug{&out} << Flat3D::Flag::Textured << Flat3D::Flag(0xf0);
-    CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::Textured Shaders::Flat::Flag(0xf0)\n");
+    Debug{&out} << FlatGL3D::Flag::Textured << FlatGL3D::Flag(0xf0);
+    CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::Textured Shaders::FlatGL::Flag(0xf0)\n");
 }
 
-void FlatTest::debugFlags() {
+void FlatGL_Test::debugFlags() {
     std::ostringstream out;
 
-    Debug{&out} << (Flat3D::Flag::Textured|Flat3D::Flag::AlphaMask) << Flat3D::Flags{};
-    CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::Textured|Shaders::Flat::Flag::AlphaMask Shaders::Flat::Flags{}\n");
+    Debug{&out} << (FlatGL3D::Flag::Textured|FlatGL3D::Flag::AlphaMask) << FlatGL3D::Flags{};
+    CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::Textured|Shaders::FlatGL::Flag::AlphaMask Shaders::FlatGL::Flags{}\n");
 }
 
-void FlatTest::debugFlagsSupersets() {
+void FlatGL_Test::debugFlagsSupersets() {
     #ifndef MAGNUM_TARGET_GLES2
     /* InstancedObjectId is a superset of ObjectId so only one should be
        printed */
     {
         std::ostringstream out;
-        Debug{&out} << (Flat3D::Flag::ObjectId|Flat3D::Flag::InstancedObjectId);
-        CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::InstancedObjectId\n");
+        Debug{&out} << (FlatGL3D::Flag::ObjectId|FlatGL3D::Flag::InstancedObjectId);
+        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::InstancedObjectId\n");
     }
     #endif
 
     /* InstancedTextureOffset is a superset of TextureTransformation so only
        one should be printed */
     std::ostringstream out;
-    Debug{&out} << (Flat3D::Flag::InstancedTextureOffset|Flat3D::Flag::TextureTransformation);
-    CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::InstancedTextureOffset\n");
+    Debug{&out} << (FlatGL3D::Flag::InstancedTextureOffset|FlatGL3D::Flag::TextureTransformation);
+    CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::InstancedTextureOffset\n");
 }
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::FlatTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::FlatGL_Test)
