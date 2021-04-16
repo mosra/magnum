@@ -44,7 +44,10 @@ class CORRADE_DEPRECATED("use FrameProfiler instead") Profiler;
 class FrameProfiler;
 
 #ifdef MAGNUM_TARGET_GL
-class GLFrameProfiler;
+class FrameProfilerGL;
+#ifdef MAGNUM_BUILD_DEPRECATED
+typedef CORRADE_DEPRECATED("use FrameProfilerGL instead") FrameProfilerGL GLFrameProfiler;
+#endif
 
 template<UnsignedInt> class ForceRenderer;
 typedef ForceRenderer<2> ForceRenderer2D;

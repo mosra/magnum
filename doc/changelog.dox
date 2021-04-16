@@ -437,6 +437,10 @@ See also:
     the canvas and status elements from the JS `Module`. See
     @ref platforms-html5-apps and [mosra/magnum#481](https://github.com/mosra/magnum/pull/481)
     for details.
+-   @cpp DebugTools::GLFrameProfiler @ce is deprecated in favor of
+    @ref DebugTools::FrameProfilerGL. The new name plays better with IDE
+    autocompletion and makes the GL-specific class appear next to the
+    API-independent base in alphabetically sorted lists.
 -   @ref Shaders::Phong::setLightPositions() and
     @ref Shaders::Phong::setLightPosition() taking three-component vectors are
     deprecated in favor of variants taking four-component vectors, where the

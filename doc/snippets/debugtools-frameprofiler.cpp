@@ -43,12 +43,12 @@ class FrameProfiler: public Platform::WindowlessApplication {
 FrameProfiler::FrameProfiler(const Arguments& arguments): Platform::WindowlessApplication{arguments} {
     /* Enable everything in the GL profiler and then introspect it to fake
        its output 1:1 */
-    DebugTools::GLFrameProfiler glProfiler{
-        DebugTools::GLFrameProfiler::Value::FrameTime|
-        DebugTools::GLFrameProfiler::Value::CpuDuration|
-        DebugTools::GLFrameProfiler::Value::GpuDuration|
-        DebugTools::GLFrameProfiler::Value::VertexFetchRatio|
-        DebugTools::GLFrameProfiler::Value::PrimitiveClipRatio
+    DebugTools::FrameProfilerGL glProfiler{
+        DebugTools::FrameProfilerGL::Value::FrameTime|
+        DebugTools::FrameProfilerGL::Value::CpuDuration|
+        DebugTools::FrameProfilerGL::Value::GpuDuration|
+        DebugTools::FrameProfilerGL::Value::VertexFetchRatio|
+        DebugTools::FrameProfilerGL::Value::PrimitiveClipRatio
     , 50};
 
     DebugTools::FrameProfiler profiler{{
