@@ -145,8 +145,8 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFiel
     return *this;
 }
 
-template class DistanceFieldVectorGL<2>;
-template class DistanceFieldVectorGL<3>;
+template class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL<2>;
+template class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL<3>;
 
 namespace Implementation {
 

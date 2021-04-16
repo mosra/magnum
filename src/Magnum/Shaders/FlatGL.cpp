@@ -191,8 +191,8 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setObje
 }
 #endif
 
-template class FlatGL<2>;
-template class FlatGL<3>;
+template class MAGNUM_SHADERS_EXPORT FlatGL<2>;
+template class MAGNUM_SHADERS_EXPORT FlatGL<3>;
 
 namespace Implementation {
 

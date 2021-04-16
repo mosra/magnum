@@ -130,8 +130,8 @@ template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::set
     return *this;
 }
 
-template class VectorGL<2>;
-template class VectorGL<3>;
+template class MAGNUM_SHADERS_EXPORT VectorGL<2>;
+template class MAGNUM_SHADERS_EXPORT VectorGL<3>;
 
 namespace Implementation {
 

@@ -97,7 +97,7 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>& VertexColorGL<dimens
     return *this;
 }
 
-template class VertexColorGL<2>;
-template class VertexColorGL<3>;
+template class MAGNUM_SHADERS_EXPORT VertexColorGL<2>;
+template class MAGNUM_SHADERS_EXPORT VertexColorGL<3>;
 
 }}
