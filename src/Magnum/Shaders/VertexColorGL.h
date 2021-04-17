@@ -135,6 +135,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
         /** @brief Move assignment */
         VertexColorGL<dimensions>& operator=(VertexColorGL<dimensions>&&) noexcept = default;
 
+        /** @{
+         * @name Uniform setters
+         */
+
         /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
@@ -142,6 +146,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          * Default is an identity matrix.
          */
         VertexColorGL<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix);
+
+        /**
+         * @}
+         */
 
     private:
         /* Prevent accidentally calling irrelevant functions */

@@ -168,13 +168,6 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setColo
     return *this;
 }
 
-template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindTexture(GL::Texture2D& texture) {
-    CORRADE_ASSERT(_flags & Flag::Textured,
-        "Shaders::FlatGL::bindTexture(): the shader was not created with texturing enabled", *this);
-    texture.bind(TextureUnit);
-    return *this;
-}
-
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setAlphaMask(Float mask) {
     CORRADE_ASSERT(_flags & Flag::AlphaMask,
         "Shaders::FlatGL::setAlphaMask(): the shader was not created with alpha mask enabled", *this);
@@ -190,6 +183,13 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setObje
     return *this;
 }
 #endif
+
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindTexture(GL::Texture2D& texture) {
+    CORRADE_ASSERT(_flags & Flag::Textured,
+        "Shaders::FlatGL::bindTexture(): the shader was not created with texturing enabled", *this);
+    texture.bind(TextureUnit);
+    return *this;
+}
 
 template class MAGNUM_SHADERS_EXPORT FlatGL<2>;
 template class MAGNUM_SHADERS_EXPORT FlatGL<3>;

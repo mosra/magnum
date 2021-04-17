@@ -82,6 +82,10 @@ template<UnsignedInt dimensions> class AbstractVectorGL: public GL::AbstractShad
         /** @brief Move assignment */
         AbstractVectorGL<dimensions>& operator=(AbstractVectorGL<dimensions>&&) noexcept = default;
 
+        /** @{
+         * @name Texture binding
+         */
+
         /**
          * @brief Bind vector texture
          * @return Reference to self (for method chaining)
@@ -92,6 +96,10 @@ template<UnsignedInt dimensions> class AbstractVectorGL: public GL::AbstractShad
          *      @ref VectorGL::setTextureMatrix()
          */
         AbstractVectorGL<dimensions>& bindVectorTexture(GL::Texture2D& texture);
+
+        /**
+         * @}
+         */
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:

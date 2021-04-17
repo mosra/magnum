@@ -416,6 +416,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         /** @brief Flags */
         Flags flags() const { return _flags; }
 
+        /** @{
+         * @name Uniform setters
+         */
+
         /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
@@ -445,17 +449,6 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @see @ref bindTexture()
          */
         FlatGL<dimensions>& setColor(const Magnum::Color4& color);
-
-        /**
-         * @brief Bind a color texture
-         * @return Reference to self (for method chaining)
-         *
-         * Expects that the shader was created with @ref Flag::Textured
-         * enabled.
-         * @see @ref setColor(), @ref Flag::TextureTransformation,
-         *      @ref setTextureMatrix()
-         */
-        FlatGL<dimensions>& bindTexture(GL::Texture2D& texture);
 
         /**
          * @brief Set alpha mask value
@@ -488,6 +481,29 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          */
         FlatGL<dimensions>& setObjectId(UnsignedInt id);
         #endif
+
+        /**
+         * @}
+         */
+
+        /** @{
+         * @name Texture binding
+         */
+
+        /**
+         * @brief Bind a color texture
+         * @return Reference to self (for method chaining)
+         *
+         * Expects that the shader was created with @ref Flag::Textured
+         * enabled.
+         * @see @ref setColor(), @ref Flag::TextureTransformation,
+         *      @ref setTextureMatrix()
+         */
+        FlatGL<dimensions>& bindTexture(GL::Texture2D& texture);
+
+        /**
+         * @}
+         */
 
     private:
         /* Prevent accidentally calling irrelevant functions */

@@ -154,6 +154,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          */
         Flags flags() const { return _flags; }
 
+        /** @{
+         * @name Uniform setters
+         */
+
         /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
@@ -217,6 +221,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * aliased). Initial value is @cpp 0.04f @ce.
          */
         DistanceFieldVectorGL<dimensions>& setSmoothness(Float value);
+
+        /**
+         * @}
+         */
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Overloads to remove WTF-factor from method chaining order */

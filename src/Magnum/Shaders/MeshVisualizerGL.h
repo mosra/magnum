@@ -249,6 +249,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
             return Flag(UnsignedShort(Implementation::MeshVisualizerGLBase::_flags));
         }
 
+        /** @{
+         * @name Uniform setters
+         */
+
         /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
@@ -309,11 +313,6 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         MeshVisualizerGL2D& setColorMapTransformation(Float offset, Float scale) {
             return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::setColorMapTransformation(offset, scale));
         }
-
-        /** @copydoc MeshVisualizerGL3D::bindColorMapTexture() */
-        MeshVisualizerGL2D& bindColorMapTexture(GL::Texture2D& texture) {
-            return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::bindColorMapTexture(texture));
-        }
         #endif
 
         /**
@@ -325,6 +324,25 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * enabled.
          */
         MeshVisualizerGL2D& setSmoothness(Float smoothness);
+
+        /**
+         * @}
+         */
+
+        /** @{
+         * @name Texture binding
+         */
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc MeshVisualizerGL3D::bindColorMapTexture() */
+        MeshVisualizerGL2D& bindColorMapTexture(GL::Texture2D& texture) {
+            return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::bindColorMapTexture(texture));
+        }
+        #endif
+
+        /**
+         * @}
+         */
 
     private:
         Int _transformationProjectionMatrixUniform{0};
@@ -801,6 +819,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
             return Flag(UnsignedShort(Implementation::MeshVisualizerGLBase::_flags));
         }
 
+        /** @{
+         * @name Uniform setters
+         */
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set transformation and projection matrix
@@ -933,27 +955,6 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         MeshVisualizerGL3D& setColorMapTransformation(Float offset, Float scale) {
             return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::setColorMapTransformation(offset, scale));
         }
-
-        /**
-         * @brief Bind a color map texture
-         * @return Reference to self (for method chaining)
-         * @m_since{2020,06}
-         *
-         * See also @ref setColorMapTransformation(). Expects that either
-         * @ref Flag::InstancedObjectId or @ref Flag::PrimitiveId /
-         * @ref Flag::PrimitiveIdFromVertexId is enabled.
-         * @requires_gles30 Object ID visualization requires integer attributes
-         *      while primitive ID visualization requires the `gl_VertexID` /
-         *      `gl_PrimitiveID` builtins, neither of which is available in
-         *      OpenGL ES 2.0.
-         * @requires_webgl20 Object ID visualization requires integer
-         *      attributes while primitive ID visualization requires at least
-         *      the `gl_VertexID` builtin, neither of which is available in
-         *      WebGL 1.
-         */
-        MeshVisualizerGL3D& bindColorMapTexture(GL::Texture2D& texture) {
-            return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::bindColorMapTexture(texture));
-        }
         #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -1007,6 +1008,41 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * enabled.
          */
         MeshVisualizerGL3D& setSmoothness(Float smoothness);
+
+        /**
+         * @}
+         */
+
+        /** @{
+         * @name Texture binding
+         */
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Bind a color map texture
+         * @return Reference to self (for method chaining)
+         * @m_since{2020,06}
+         *
+         * See also @ref setColorMapTransformation(). Expects that either
+         * @ref Flag::InstancedObjectId or @ref Flag::PrimitiveId /
+         * @ref Flag::PrimitiveIdFromVertexId is enabled.
+         * @requires_gles30 Object ID visualization requires integer attributes
+         *      while primitive ID visualization requires the `gl_VertexID` /
+         *      `gl_PrimitiveID` builtins, neither of which is available in
+         *      OpenGL ES 2.0.
+         * @requires_webgl20 Object ID visualization requires integer
+         *      attributes while primitive ID visualization requires at least
+         *      the `gl_VertexID` builtin, neither of which is available in
+         *      WebGL 1.
+         */
+        MeshVisualizerGL3D& bindColorMapTexture(GL::Texture2D& texture) {
+            return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::bindColorMapTexture(texture));
+        }
+        #endif
+
+        /**
+         * @}
+         */
 
     private:
         Int _transformationMatrixUniform{0},

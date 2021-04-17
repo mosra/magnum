@@ -604,6 +604,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         /** @brief Light count */
         UnsignedInt lightCount() const { return _lightCount; }
 
+        /** @{
+         * @name Uniform setters
+         */
+
         /**
          * @brief Set ambient color
          * @return Reference to self (for method chaining)
@@ -616,17 +620,6 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& setAmbientColor(const Magnum::Color4& color);
 
         /**
-         * @brief Bind an ambient texture
-         * @return Reference to self (for method chaining)
-         *
-         * Expects that the shader was created with @ref Flag::AmbientTexture
-         * enabled.
-         * @see @ref bindTextures(), @ref setAmbientColor(),
-         *      @ref Shaders-PhongGL-lights-ambient
-         */
-        PhongGL& bindAmbientTexture(GL::Texture2D& texture);
-
-        /**
          * @brief Set diffuse color
          * @return Reference to self (for method chaining)
          *
@@ -636,17 +629,6 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @see @ref bindDiffuseTexture()
          */
         PhongGL& setDiffuseColor(const Magnum::Color4& color);
-
-        /**
-         * @brief Bind a diffuse texture
-         * @return Reference to self (for method chaining)
-         *
-         * Expects that the shader was created with @ref Flag::DiffuseTexture
-         * enabled. If @ref lightCount() is zero, this function is a no-op, as
-         * diffuse color doesn't contribute to the output in that case.
-         * @see @ref bindTextures(), @ref setDiffuseColor()
-         */
-        PhongGL& bindDiffuseTexture(GL::Texture2D& texture);
 
         /**
          * @brief Set normal texture scale
@@ -667,20 +649,6 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& setNormalTextureScale(Float scale);
 
         /**
-         * @brief Bind a normal texture
-         * @return Reference to self (for method chaining)
-         * @m_since{2019,10}
-         *
-         * Expects that the shader was created with @ref Flag::NormalTexture
-         * enabled and the @ref Tangent attribute was supplied. If
-         * @ref lightCount() is zero, this function is a no-op, as normals
-         * don't contribute to the output in that case.
-         * @see @ref Shaders-PhongGL-normal-mapping,
-         *      @ref bindTextures(), @ref setNormalTextureScale()
-         */
-        PhongGL& bindNormalTexture(GL::Texture2D& texture);
-
-        /**
          * @brief Set specular color
          * @return Reference to self (for method chaining)
          *
@@ -693,36 +661,6 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @see @ref bindSpecularTexture()
          */
         PhongGL& setSpecularColor(const Magnum::Color4& color);
-
-        /**
-         * @brief Bind a specular texture
-         * @return Reference to self (for method chaining)
-         *
-         * Expects that the shader was created with @ref Flag::SpecularTexture
-         * enabled. If @ref lightCount() is zero, this function is a no-op, as
-         * specular color doesn't contribute to the output in that case.
-         * @see @ref bindTextures(), @ref setSpecularColor()
-         */
-        PhongGL& bindSpecularTexture(GL::Texture2D& texture);
-
-        /**
-         * @brief Bind textures
-         * @return Reference to self (for method chaining)
-         *
-         * A particular texture has effect only if particular texture flag from
-         * @ref PhongGL::Flag "Flag" is set, you can use @cpp nullptr @ce for
-         * the rest. Expects that the shader was created with at least one of
-         * @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture,
-         * @ref Flag::SpecularTexture or @ref Flag::NormalTexture enabled. More
-         * efficient than setting each texture separately.
-         * @see @ref bindAmbientTexture(), @ref bindDiffuseTexture(),
-         *      @ref bindSpecularTexture(), @ref bindNormalTexture()
-         */
-        PhongGL& bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular, GL::Texture2D* normal
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            = nullptr
-            #endif
-        );
 
         /**
          * @brief Set shininess
@@ -1008,6 +946,84 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @ref lightCount().
          */
         PhongGL& setLightRange(UnsignedInt id, Float range);
+
+        /**
+         * @}
+         */
+
+        /** @{
+         * @name Texture binding
+         */
+
+        /**
+         * @brief Bind a diffuse texture
+         * @return Reference to self (for method chaining)
+         *
+         * Expects that the shader was created with @ref Flag::DiffuseTexture
+         * enabled. If @ref lightCount() is zero, this function is a no-op, as
+         * diffuse color doesn't contribute to the output in that case.
+         * @see @ref bindTextures(), @ref setDiffuseColor()
+         */
+        PhongGL& bindDiffuseTexture(GL::Texture2D& texture);
+
+        /**
+         * @brief Bind an ambient texture
+         * @return Reference to self (for method chaining)
+         *
+         * Expects that the shader was created with @ref Flag::AmbientTexture
+         * enabled.
+         * @see @ref bindTextures(), @ref setAmbientColor(),
+         *      @ref Shaders-PhongGL-lights-ambient
+         */
+        PhongGL& bindAmbientTexture(GL::Texture2D& texture);
+
+        /**
+         * @brief Bind a normal texture
+         * @return Reference to self (for method chaining)
+         * @m_since{2019,10}
+         *
+         * Expects that the shader was created with @ref Flag::NormalTexture
+         * enabled and the @ref Tangent attribute was supplied. If
+         * @ref lightCount() is zero, this function is a no-op, as normals
+         * don't contribute to the output in that case.
+         * @see @ref Shaders-PhongGL-normal-mapping,
+         *      @ref bindTextures(), @ref setNormalTextureScale()
+         */
+        PhongGL& bindNormalTexture(GL::Texture2D& texture);
+
+        /**
+         * @brief Bind a specular texture
+         * @return Reference to self (for method chaining)
+         *
+         * Expects that the shader was created with @ref Flag::SpecularTexture
+         * enabled. If @ref lightCount() is zero, this function is a no-op, as
+         * specular color doesn't contribute to the output in that case.
+         * @see @ref bindTextures(), @ref setSpecularColor()
+         */
+        PhongGL& bindSpecularTexture(GL::Texture2D& texture);
+
+        /**
+         * @brief Bind textures
+         * @return Reference to self (for method chaining)
+         *
+         * A particular texture has effect only if particular texture flag from
+         * @ref PhongGL::Flag "Flag" is set, you can use @cpp nullptr @ce for
+         * the rest. Expects that the shader was created with at least one of
+         * @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture,
+         * @ref Flag::SpecularTexture or @ref Flag::NormalTexture enabled. More
+         * efficient than setting each texture separately.
+         * @see @ref bindAmbientTexture(), @ref bindDiffuseTexture(),
+         *      @ref bindSpecularTexture(), @ref bindNormalTexture()
+         */
+        PhongGL& bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular, GL::Texture2D* normal
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            = nullptr
+            #endif
+        );
+
+        /**
+         * @}
+         */
 
     private:
         /* Prevent accidentally calling irrelevant functions */

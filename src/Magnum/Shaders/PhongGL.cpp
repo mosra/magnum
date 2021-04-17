@@ -280,48 +280,13 @@ PhongGL& PhongGL::setAmbientColor(const Magnum::Color4& color) {
     return *this;
 }
 
-PhongGL& PhongGL::bindAmbientTexture(GL::Texture2D& texture) {
-    CORRADE_ASSERT(_flags & Flag::AmbientTexture,
-        "Shaders::PhongGL::bindAmbientTexture(): the shader was not created with ambient texture enabled", *this);
-    texture.bind(AmbientTextureUnit);
-    return *this;
-}
-
 PhongGL& PhongGL::setDiffuseColor(const Magnum::Color4& color) {
     if(_lightCount) setUniform(_diffuseColorUniform, color);
     return *this;
 }
 
-PhongGL& PhongGL::bindDiffuseTexture(GL::Texture2D& texture) {
-    CORRADE_ASSERT(_flags & Flag::DiffuseTexture,
-        "Shaders::PhongGL::bindDiffuseTexture(): the shader was not created with diffuse texture enabled", *this);
-    if(_lightCount) texture.bind(DiffuseTextureUnit);
-    return *this;
-}
-
 PhongGL& PhongGL::setSpecularColor(const Magnum::Color4& color) {
     if(_lightCount) setUniform(_specularColorUniform, color);
-    return *this;
-}
-
-PhongGL& PhongGL::bindSpecularTexture(GL::Texture2D& texture) {
-    CORRADE_ASSERT(_flags & Flag::SpecularTexture,
-        "Shaders::PhongGL::bindSpecularTexture(): the shader was not created with specular texture enabled", *this);
-    if(_lightCount) texture.bind(SpecularTextureUnit);
-    return *this;
-}
-
-PhongGL& PhongGL::bindNormalTexture(GL::Texture2D& texture) {
-    CORRADE_ASSERT(_flags & Flag::NormalTexture,
-        "Shaders::PhongGL::bindNormalTexture(): the shader was not created with normal texture enabled", *this);
-    if(_lightCount) texture.bind(NormalTextureUnit);
-    return *this;
-}
-
-PhongGL& PhongGL::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular, GL::Texture2D* normal) {
-    CORRADE_ASSERT(_flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture),
-        "Shaders::PhongGL::bindTextures(): the shader was not created with any textures enabled", *this);
-    GL::AbstractTexture::bind(AmbientTextureUnit, {ambient, diffuse, specular, normal});
     return *this;
 }
 
@@ -500,6 +465,41 @@ PhongGL& PhongGL::setLightRange(const UnsignedInt id, const Float range) {
     CORRADE_ASSERT(id < _lightCount,
         "Shaders::PhongGL::setLightRange(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
     setUniform(_lightRangesUniform + id, range);
+    return *this;
+}
+
+PhongGL& PhongGL::bindAmbientTexture(GL::Texture2D& texture) {
+    CORRADE_ASSERT(_flags & Flag::AmbientTexture,
+        "Shaders::PhongGL::bindAmbientTexture(): the shader was not created with ambient texture enabled", *this);
+    texture.bind(AmbientTextureUnit);
+    return *this;
+}
+
+PhongGL& PhongGL::bindDiffuseTexture(GL::Texture2D& texture) {
+    CORRADE_ASSERT(_flags & Flag::DiffuseTexture,
+        "Shaders::PhongGL::bindDiffuseTexture(): the shader was not created with diffuse texture enabled", *this);
+    if(_lightCount) texture.bind(DiffuseTextureUnit);
+    return *this;
+}
+
+PhongGL& PhongGL::bindSpecularTexture(GL::Texture2D& texture) {
+    CORRADE_ASSERT(_flags & Flag::SpecularTexture,
+        "Shaders::PhongGL::bindSpecularTexture(): the shader was not created with specular texture enabled", *this);
+    if(_lightCount) texture.bind(SpecularTextureUnit);
+    return *this;
+}
+
+PhongGL& PhongGL::bindNormalTexture(GL::Texture2D& texture) {
+    CORRADE_ASSERT(_flags & Flag::NormalTexture,
+        "Shaders::PhongGL::bindNormalTexture(): the shader was not created with normal texture enabled", *this);
+    if(_lightCount) texture.bind(NormalTextureUnit);
+    return *this;
+}
+
+PhongGL& PhongGL::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular, GL::Texture2D* normal) {
+    CORRADE_ASSERT(_flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture),
+        "Shaders::PhongGL::bindTextures(): the shader was not created with any textures enabled", *this);
+    GL::AbstractTexture::bind(AmbientTextureUnit, {ambient, diffuse, specular, normal});
     return *this;
 }
 
