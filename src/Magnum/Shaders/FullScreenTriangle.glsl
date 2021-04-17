@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* Inputs */
+
 #if !defined(NEW_GLSL) || defined(DISABLE_GL_MAGNUM_shader_vertex_id)
 #ifndef NEW_GLSL
 #define in attribute

@@ -32,6 +32,8 @@
 #define out varying
 #endif
 
+/* Uniforms */
+
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -83,6 +85,8 @@ uniform highp vec4 lightPositions[LIGHT_COUNT]
     #endif
     ;
 #endif
+
+/* Inputs */
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = POSITION_ATTRIBUTE_LOCATION)
@@ -161,6 +165,8 @@ layout(location = TEXTURE_OFFSET_ATTRIBUTE_LOCATION)
 #endif
 in mediump vec2 instancedTextureOffset;
 #endif
+
+/* Outputs */
 
 #if LIGHT_COUNT
 out mediump vec3 transformedNormal;

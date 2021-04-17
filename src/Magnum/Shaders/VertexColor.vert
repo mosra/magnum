@@ -28,6 +28,8 @@
 #define out varying
 #endif
 
+/* Uniforms */
+
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -47,6 +49,8 @@ uniform highp mat4 transformationProjectionMatrix
 #error
 #endif
 
+/* Inputs */
+
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
@@ -62,6 +66,8 @@ in highp vec4 position;
 layout(location = COLOR_ATTRIBUTE_LOCATION)
 #endif
 in lowp vec4 color;
+
+/* Outputs */
 
 out lowp vec4 interpolatedColor;
 

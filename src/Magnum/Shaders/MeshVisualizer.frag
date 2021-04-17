@@ -44,6 +44,8 @@
 #extension GL_NV_shader_noperspective_interpolation: require
 #endif
 
+/* Uniforms */
+
 #if (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)) && !defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
@@ -95,13 +97,6 @@ uniform lowp float smoothness
     ;
 #endif
 
-#if defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
-#ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 4)
-#endif
-uniform lowp sampler2D colorMapTexture;
-#endif
-
 #if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 6)
@@ -114,6 +109,17 @@ uniform lowp vec2 colorMapOffsetScale
 #define colorMapOffset colorMapOffsetScale.x
 #define colorMapScale colorMapOffsetScale.y
 #endif
+
+/* Textures */
+
+#if defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+#ifdef EXPLICIT_TEXTURE_LAYER
+layout(binding = 4)
+#endif
+uniform lowp sampler2D colorMapTexture;
+#endif
+
+/* Inputs */
 
 #if defined(WIREFRAME_RENDERING) || defined(TBN_DIRECTION)
 #ifndef NO_GEOMETRY_SHADER
@@ -140,6 +146,8 @@ flat in highp uint interpolatedPrimitiveId;
 in lowp vec4 backgroundColor;
 in lowp vec4 lineColor;
 #endif
+
+/* Outputs */
 
 #ifdef NEW_GLSL
 #ifdef EXPLICIT_ATTRIB_LOCATION

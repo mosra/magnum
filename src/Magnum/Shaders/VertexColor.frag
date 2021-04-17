@@ -28,7 +28,11 @@
 #define fragmentColor gl_FragColor
 #endif
 
+/* Inputs */
+
 in lowp vec4 interpolatedColor;
+
+/* Outputs */
 
 #ifdef NEW_GLSL
 #ifdef EXPLICIT_ATTRIB_LOCATION

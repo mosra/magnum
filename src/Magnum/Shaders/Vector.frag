@@ -29,6 +29,8 @@
 #define texture texture2D
 #endif
 
+/* Uniforms */
+
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2)
 #endif
@@ -49,7 +51,11 @@ layout(binding = 6)
 #endif
 uniform lowp sampler2D vectorTexture;
 
+/* Inputs */
+
 in mediump vec2 interpolatedTextureCoordinates;
+
+/* Outputs */
 
 #ifdef NEW_GLSL
 #ifdef EXPLICIT_ATTRIB_LOCATION

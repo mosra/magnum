@@ -29,6 +29,8 @@
 #define texture texture2D
 #endif
 
+/* Uniforms */
+
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2)
 #endif
@@ -61,13 +63,19 @@ uniform lowp float smoothness
     #endif
     ;
 
+/* Textures */
+
 #ifdef EXPLICIT_TEXTURE_LAYER
 /* See AbstractVector.h for details about the ID */
 layout(binding = 6)
 #endif
 uniform lowp sampler2D vectorTexture;
 
+/* Inputs */
+
 in mediump vec2 interpolatedTextureCoordinates;
+
+/* OUtput */
 
 #ifdef NEW_GLSL
 #ifdef EXPLICIT_ATTRIB_LOCATION
