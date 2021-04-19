@@ -31,6 +31,7 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Resource.h>
 
@@ -94,9 +95,9 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount): _flags{flags}
             lightPositionInitializerPreamble.size() +
             lightCount*(lightPositionInitializerItem.size()));
 
-        lightInitializerVertex.append(lightPositionInitializerPreamble.data(), lightPositionInitializerPreamble.size());
+        lightInitializerVertex.append(lightPositionInitializerPreamble);
         for(std::size_t i = 0; i != lightCount; ++i)
-            lightInitializerVertex.append(lightPositionInitializerItem.data(), lightPositionInitializerItem.size());
+            lightInitializerVertex.append(lightPositionInitializerItem);
 
         /* Drop the last comma and add a newline at the end */
         lightInitializerVertex[lightInitializerVertex.size() - 2] = '\n';
@@ -108,17 +109,17 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount): _flags{flags}
             lightCount*(lightColorInitializerItem.size() +
                         lightRangeInitializerItem.size()));
 
-        lightInitializerFragment.append(lightColorInitializerPreamble.data(), lightColorInitializerPreamble.size());
+        lightInitializerFragment.append(lightColorInitializerPreamble);
         for(std::size_t i = 0; i != lightCount; ++i)
-            lightInitializerFragment.append(lightColorInitializerItem.data(), lightColorInitializerItem.size());
+            lightInitializerFragment.append(lightColorInitializerItem);
 
         /* Drop the last comma and add a newline at the end */
         lightInitializerFragment[lightInitializerFragment.size() - 2] = '\n';
         lightInitializerFragment.resize(lightInitializerFragment.size() - 1);
 
-        lightInitializerFragment.append(lightRangeInitializerPreamble.data(), lightRangeInitializerPreamble.size());
+        lightInitializerFragment.append(lightRangeInitializerPreamble);
         for(std::size_t i = 0; i != lightCount; ++i)
-            lightInitializerFragment.append(lightRangeInitializerItem.data(), lightRangeInitializerItem.size());
+            lightInitializerFragment.append(lightRangeInitializerItem);
 
         /* Drop the last comma and add a newline at the end */
         lightInitializerFragment[lightInitializerFragment.size() - 2] = '\n';
