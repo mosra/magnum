@@ -47,10 +47,12 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL() {
     #endif
     Utility::Resource rs("MagnumShadersGL");
 
+    const GL::Context& context = GL::Context::current();
+
     #ifndef MAGNUM_TARGET_GLES
-    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
+    const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
     #else
-    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
+    const GL::Version version = context.supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
@@ -69,7 +71,7 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL() {
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
@@ -80,7 +82,7 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");

@@ -96,16 +96,18 @@ MeshVisualizerGLBase::MeshVisualizerGLBase(FlagsBase flags): _flags{flags} {
 }
 
 GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs) const {
+    GL::Context& context = GL::Context::current();
+
     #ifndef MAGNUM_TARGET_GLES
-    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
+    const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
     /* Extended in MeshVisualizer3D for TBN visualization */
     CORRADE_INTERNAL_ASSERT(!(_flags & FlagBase::Wireframe) || _flags & FlagBase::NoGeometryShader || version >= GL::Version::GL320);
     #elif !defined(MAGNUM_TARGET_WEBGL)
-    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES310, GL::Version::GLES300, GL::Version::GLES200});
+    const GL::Version version = context.supportedVersion({GL::Version::GLES310, GL::Version::GLES300, GL::Version::GLES200});
     /* Extended in MeshVisualizer3D for TBN visualization */
     CORRADE_INTERNAL_ASSERT(!(_flags & FlagBase::Wireframe) || _flags & FlagBase::NoGeometryShader || version >= GL::Version::GLES310);
     #else
-    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
+    const GL::Version version = context.supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
     vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
@@ -120,7 +122,7 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         #ifdef MAGNUM_TARGET_WEBGL
         .addSource("#define SUBSCRIPTING_WORKAROUND\n")
         #elif defined(MAGNUM_TARGET_GLES2)
-        .addSource(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Angle ?
+        .addSource(context.detectedDriver() & GL::Context::DetectedDriver::Angle ?
             "#define SUBSCRIPTING_WORKAROUND\n" : "")
         #endif
         ;
@@ -191,6 +193,10 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags): Implementation::MeshV
         "Shaders::MeshVisualizerGL2D: at least Flag::Wireframe has to be enabled", );
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    const GL::Context& context = GL::Context::current();
+    #endif
+
     Utility::Resource rs{"MagnumShadersGL"};
     GL::Shader vert{NoCreate};
     GL::Shader frag{NoCreate};
@@ -245,7 +251,7 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags): Implementation::MeshV
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
@@ -255,7 +261,7 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags): Implementation::MeshV
         #endif
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         #ifndef MAGNUM_TARGET_GLES
-        if(!GL::Context::current().isVersionSupported(GL::Version::GL310))
+        if(!context.isVersionSupported(GL::Version::GL310))
         #endif
         {
             bindAttributeLocation(VertexIndex::Location, "vertexIndex");
@@ -267,7 +273,7 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags): Implementation::MeshV
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
@@ -350,6 +356,10 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags): Implementation::MeshV
     #else
     CORRADE_ASSERT(flags & (Flag::Wireframe & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizerGL3D: at least Flag::Wireframe has to be enabled", );
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    const GL::Context& context = GL::Context::current();
     #endif
 
     Utility::Resource rs{"MagnumShadersGL"};
@@ -439,7 +449,7 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags): Implementation::MeshV
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
@@ -460,7 +470,7 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags): Implementation::MeshV
 
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         #ifndef MAGNUM_TARGET_GLES
-        if(!GL::Context::current().isVersionSupported(GL::Version::GL310))
+        if(!context.isVersionSupported(GL::Version::GL310))
         #endif
         {
             bindAttributeLocation(VertexIndex::Location, "vertexIndex");
@@ -472,7 +482,7 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags): Implementation::MeshV
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         _transformationMatrixUniform = uniformLocation("transformationMatrix");

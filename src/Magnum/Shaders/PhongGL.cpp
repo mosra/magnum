@@ -67,10 +67,12 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount): _flags{flags}
     #endif
     Utility::Resource rs("MagnumShadersGL");
 
+    const GL::Context& context = GL::Context::current();
+
     #ifndef MAGNUM_TARGET_GLES
-    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
+    const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
     #else
-    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
+    const GL::Version version = context.supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
@@ -177,7 +179,7 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount): _flags{flags}
        bindFragmentDataLocation() */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
@@ -210,7 +212,7 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount): _flags{flags}
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         _transformationMatrixUniform = uniformLocation("transformationMatrix");
@@ -237,7 +239,7 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount): _flags{flags}
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(flags && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
+    if(flags && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
     #endif
     {
         if(flags & Flag::AmbientTexture) setUniform(uniformLocation("ambientTexture"), AmbientTextureUnit);

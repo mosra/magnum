@@ -56,10 +56,12 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags): 
     #endif
     Utility::Resource rs("MagnumShadersGL");
 
+    const GL::Context& context = GL::Context::current();
+
     #ifndef MAGNUM_TARGET_GLES
-    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
+    const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
     #else
-    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
+    const GL::Version version = context.supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
@@ -94,7 +96,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags): 
        bindFragmentDataLocation() */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
@@ -120,7 +122,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags): 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
@@ -134,7 +136,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags): 
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
     #endif
     {
         if(flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureUnit);
