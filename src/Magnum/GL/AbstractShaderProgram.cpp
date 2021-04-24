@@ -386,9 +386,9 @@ void AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Referen
     use();
 
     #ifndef CORRADE_NO_ASSERT
-    const Mesh* original = &meshes.begin()->get()._original.get();
-    for(MeshView& mesh: meshes)
-        CORRADE_ASSERT(&mesh._original.get() == original, "GL::AbstractShaderProgram::draw(): all meshes must be views of the same original mesh", );
+    const Mesh* original = &*meshes.front()->_original;
+    for(std::size_t i = 0; i != meshes.size(); ++i)
+        CORRADE_ASSERT(&*meshes[i]->_original == original, "GL::AbstractShaderProgram::draw(): all meshes must be views of the same original mesh, expected" << original << "but got" << &*meshes[i]->_original << "at index" << i, );
     #endif
 
     #ifndef MAGNUM_TARGET_GLES

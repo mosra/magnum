@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/Mesh.h"
@@ -189,6 +190,7 @@ struct MeshGLTest: OpenGLTester {
     #ifdef MAGNUM_TARGET_GLES
     void multiDrawBaseVertexNoExtensionAvailable();
     #endif
+    void multiDrawDifferentMeshes();
 };
 
 MeshGLTest::MeshGLTest() {
@@ -335,9 +337,9 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::multiDrawBaseVertex,
               #endif
               #ifdef MAGNUM_TARGET_GLES
-              &MeshGLTest::multiDrawBaseVertexNoExtensionAvailable
+              &MeshGLTest::multiDrawBaseVertexNoExtensionAvailable,
               #endif
-              });
+              &MeshGLTest::multiDrawDifferentMeshes});
 }
 
 using namespace Math::Literals;
@@ -3455,6 +3457,20 @@ void MeshGLTest::multiDrawBaseVertexNoExtensionAvailable() {
     #endif
 }
 #endif
+
+void MeshGLTest::multiDrawDifferentMeshes() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Mesh a, b;
+    MeshView viewA{a}, viewB{b};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MultipleShader{}.draw({viewA, viewB});
+    CORRADE_COMPARE(out.str(), Utility::formatString("GL::AbstractShaderProgram::draw(): all meshes must be views of the same original mesh, expected 0x{:x} but got 0x{:x} at index 1\n", reinterpret_cast<std::uintptr_t>(&a), reinterpret_cast<std::uintptr_t>(&b)));
+}
 
 }}}}
 
