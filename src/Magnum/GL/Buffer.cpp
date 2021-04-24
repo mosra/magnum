@@ -310,6 +310,10 @@ Buffer& Buffer::setStorage(const Containers::ArrayView<const void> data, const S
     (this->*Context::current().state().buffer.storageImplementation)(data, flags);
     return *this;
 }
+
+Buffer& Buffer::setStorage(const std::size_t size, const StorageFlags flags) {
+    return setStorage({nullptr, size}, flags);
+}
 #endif
 
 Int Buffer::size() {

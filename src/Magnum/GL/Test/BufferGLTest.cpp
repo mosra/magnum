@@ -56,6 +56,7 @@ struct BufferGLTest: OpenGLTester {
 
     #ifndef MAGNUM_TARGET_GLES
     void storage();
+    void storagePreinitialized();
     #endif
 
     void data();
@@ -87,6 +88,7 @@ BufferGLTest::BufferGLTest() {
 
               #ifndef MAGNUM_TARGET_GLES
               &BufferGLTest::storage,
+              &BufferGLTest::storagePreinitialized,
               #endif
 
               &BufferGLTest::data,
@@ -254,6 +256,26 @@ void BufferGLTest::bindRange() {
 
 #ifndef MAGNUM_TARGET_GLES
 void BufferGLTest::storage() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::buffer_storage>())
+        CORRADE_SKIP(Extensions::ARB::buffer_storage::string() << "is not supported.");
+
+    Buffer buffer;
+
+    constexpr Int data[] = {2, 7, 5, 13, 25};
+
+    buffer.setStorage(sizeof(data), Buffer::StorageFlag::DynamicStorage)
+        .setSubData(0, data);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(buffer.data()),
+        Containers::arrayView(data),
+        TestSuite::Compare::Container);
+}
+
+void BufferGLTest::storagePreinitialized() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::buffer_storage>())
+        CORRADE_SKIP(Extensions::ARB::buffer_storage::string() << "is not supported.");
+
     Buffer buffer;
 
     constexpr Int data[] = {2, 7, 5, 13, 25};
