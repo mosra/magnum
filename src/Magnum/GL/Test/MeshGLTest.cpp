@@ -3364,6 +3364,10 @@ void MeshGLTest::multiDrawIndexed() {
 }
 
 void MeshGLTest::multiDrawInstanced() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Mesh mesh;
     MeshView view{mesh};
     view.setCount(3)
