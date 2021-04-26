@@ -43,11 +43,47 @@ namespace Magnum {
 /* Bring whole Corrade namespace */
 using namespace Corrade;
 
-/* Bring debugging facility from Corrade::Utility namespace */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+/**
+@brief Alias for debug output
+
+A shorthand for the fully-qualified name in Corrade.
+@see @ref Warning, @ref Error, @ref Fatal,
+    @ref Corrade::TestSuite::Tester::Debug
+*/
+typedef Corrade::Utility::Debug Debug;
+
+/**
+@brief Alias for warning output
+
+A shorthand for the fully-qualified name in Corrade.
+@see @ref Debug, @ref Error, @ref Fatal,
+    @ref Corrade::TestSuite::Tester::Warning
+*/
+typedef Corrade::Utility::Warning Warning;
+
+/**
+@brief Alias for error output
+
+A shorthand for the fully-qualified name in Corrade.
+@see @ref Debug, @ref Warning, @ref Fatal,
+    @ref Corrade::TestSuite::Tester::Error
+*/
+typedef Corrade::Utility::Error Error;
+
+/**
+@brief Alias for fatal output
+
+A shorthand for the fully-qualified name in Corrade.
+@see @ref Debug, @ref Warning, @ref Error
+*/
+typedef Corrade::Utility::Fatal Fatal;
+#else
 using Corrade::Utility::Debug;
 using Corrade::Utility::Warning;
 using Corrade::Utility::Error;
 using Corrade::Utility::Fatal;
+#endif
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
 /**
