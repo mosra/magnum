@@ -41,10 +41,6 @@ if(TARGET_GL)
             COMPILE_DEFINITIONS
                 "CORRADE_AUTOMATIC_INITIALIZER=CORRADE_NOOP"
                 "CORRADE_AUTOMATIC_FINALIZER=CORRADE_NOOP")
-        # Avoid warning when using AUTOGEN for Qt
-        if(NOT (${CMAKE_VERSION} VERSION_LESS "3.8.0"))
-            set_property(SOURCE ${MagnumTextureTools_RCS} PROPERTY SKIP_AUTOGEN ON)
-        endif()
     endif()
 
     list(APPEND MagnumTextureTools_SRCS

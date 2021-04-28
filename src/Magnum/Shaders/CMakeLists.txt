@@ -69,10 +69,6 @@ if(BUILD_STATIC)
     set_property(SOURCE ${MagnumShaders_RCS} APPEND PROPERTY COMPILE_DEFINITIONS
         "CORRADE_AUTOMATIC_INITIALIZER=CORRADE_NOOP"
         "CORRADE_AUTOMATIC_FINALIZER=CORRADE_NOOP")
-    # Avoid warning when using AUTOGEN for Qt
-    if(NOT (${CMAKE_VERSION} VERSION_LESS "3.8.0"))
-        set_property(SOURCE ${MagnumShaders_RCS} PROPERTY SKIP_AUTOGEN ON)
-    endif()
 endif()
 target_include_directories(MagnumShadersObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
