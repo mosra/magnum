@@ -30,6 +30,12 @@ if(HUNTER_ENABLED)
     include(${CMAKE_CURRENT_LIST_DIR}/package/hunter/HunterInit.cmake)
 endif()
 
+# If CMAKE_AUTOMOC is set, all uses of corrade_add_resource() would otherwise
+# complain on 3.10 that AUTOMOC is not processing GENERATED files
+if(POLICY CMP0071)
+    cmake_policy(SET CMP0071 NEW)
+endif()
+
 project(Magnum CXX)
 
 if(HUNTER_ENABLED)
