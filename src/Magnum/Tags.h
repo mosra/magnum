@@ -36,6 +36,21 @@
 namespace Magnum {
 
 /**
+@brief Default initialization tag type
+@m_since_latest
+
+Used to distinguish construction with default initialization. The actual
+meaning of "default" may vary, see documentation of a particular API using this
+tag for a detailed behavior description.
+@see @ref DefaultInit
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+typedef Corrade::DefaultInitT DefaultInitT;
+#else
+using Corrade::DefaultInitT;
+#endif
+
+/**
 @brief No initialization tag type
 @m_since{2020,06}
 
@@ -75,6 +90,20 @@ struct NoAllocateT {
     constexpr explicit NoAllocateT(Init) {}
     #endif
 };
+
+/**
+@brief Default initialization tag
+@m_since_latest
+
+Use for construction with default initialization. The actual meaning of
+"default" may vary, see documentation of a particular API using this tag for
+a detailed behavior description.
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+constexpr DefaultInitT DefaultInit{};
+#else
+using Corrade::DefaultInit;
+#endif
 
 /**
 @brief No initialization tag

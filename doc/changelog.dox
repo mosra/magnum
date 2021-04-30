@@ -41,6 +41,8 @@ See also:
 @subsection changelog-latest-new New features
 
 -   New @ref NoAllocate constructor tag, to be used by the @ref Vk library
+-   New @ref DefaultInit constructor tag, simply an alias to the existing
+    @ref Corrade::DefaultInit tag
 -   New @ref PixelFormat::Depth16Unorm, @relativeref{PixelFormat,Depth24Unorm},
     @relativeref{PixelFormat,Depth32F}, @relativeref{PixelFormat,Stencil8UI},
     @relativeref{PixelFormat,Depth16UnormStencil8UI},
