@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Tag type @ref Magnum::NoInitT, @ref Magnum::NoCreateT, tag @ref Magnum::NoInit, @ref Magnum::NoCreate
+ * @brief Tag type @ref Magnum::NoInitT, @ref Magnum::NoCreateT, @ref Magnum::NoAllocateT, tag @ref Magnum::NoInit, @ref Magnum::NoCreate, @ref Magnum::NoAllocate
  */
 
 #include <Corrade/Tags.h>
