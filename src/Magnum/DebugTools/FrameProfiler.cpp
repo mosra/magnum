@@ -181,7 +181,7 @@ void FrameProfiler::endFrame() {
 
     /* If we don't have all frames yet, enlarge the array */
     if(++_measuredFrameCount <= _maxFrameCount)
-        arrayAppend(_data, Containers::NoInit, _measurements.size());
+        arrayAppend(_data, NoInit, _measurements.size());
 
     /* Wrap up measurements for this frame  */
     for(std::size_t i = 0; i != _measurements.size(); ++i) {
@@ -448,7 +448,7 @@ struct GLFrameProfiler::State {
     #endif
 };
 
-GLFrameProfiler::GLFrameProfiler(): _state{Containers::InPlaceInit} {}
+GLFrameProfiler::GLFrameProfiler(): _state{InPlaceInit} {}
 
 GLFrameProfiler::GLFrameProfiler(const Values values, const UnsignedInt maxFrameCount): GLFrameProfiler{}
 {
@@ -468,7 +468,7 @@ void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount
         /* Fucking hell, STL. When I first saw std::chrono back in 2010 I
            should have flipped the table and learn carpentry instead. BUT NO,
            I'm still suffering this abomination a decade later! */
-        arrayAppend(measurements, Containers::InPlaceInit,
+        arrayAppend(measurements, InPlaceInit,
             "Frame time", Units::Nanoseconds, UnsignedInt(Containers::arraySize(_state->frameTimeStartFrame)),
             [](void* state, UnsignedInt current) {
                 static_cast<State*>(state)->frameTimeStartFrame[current] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
@@ -482,7 +482,7 @@ void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount
         _state->frameTimeIndex = index++;
     }
     if(values & Value::CpuDuration) {
-        arrayAppend(measurements, Containers::InPlaceInit,
+        arrayAppend(measurements, InPlaceInit,
             "CPU duration", Units::Nanoseconds,
             [](void* state) {
                 static_cast<State*>(state)->cpuDurationStartFrame = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
@@ -496,7 +496,7 @@ void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount
     if(values & Value::GpuDuration) {
         for(GL::TimeQuery& q: _state->timeQueries)
             q = GL::TimeQuery{GL::TimeQuery::Target::TimeElapsed};
-        arrayAppend(measurements, Containers::InPlaceInit,
+        arrayAppend(measurements, InPlaceInit,
             "GPU duration", Units::Nanoseconds,
             UnsignedInt(Containers::arraySize(_state->timeQueries)),
             [](void* state, UnsignedInt current) {
@@ -516,7 +516,7 @@ void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount
             q = GL::PipelineStatisticsQuery{GL::PipelineStatisticsQuery::Target::VerticesSubmitted};
         for(GL::PipelineStatisticsQuery& q: _state->vertexShaderInvocationsQueries)
             q = GL::PipelineStatisticsQuery{GL::PipelineStatisticsQuery::Target::VertexShaderInvocations};
-        arrayAppend(measurements, Containers::InPlaceInit,
+        arrayAppend(measurements, InPlaceInit,
             "Vertex fetch ratio", Units::RatioThousandths,
             UnsignedInt(Containers::arraySize(_state->verticesSubmittedQueries)),
             [](void* state, UnsignedInt current) {
@@ -541,7 +541,7 @@ void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount
             q = GL::PipelineStatisticsQuery{GL::PipelineStatisticsQuery::Target::ClippingInputPrimitives};
         for(GL::PipelineStatisticsQuery& q: _state->clippingOutputPrimitivesQueries)
             q = GL::PipelineStatisticsQuery{GL::PipelineStatisticsQuery::Target::ClippingOutputPrimitives};
-        arrayAppend(measurements, Containers::InPlaceInit,
+        arrayAppend(measurements, InPlaceInit,
             "Primitives clipped", Units::PercentageThousandths,
             UnsignedInt(Containers::arraySize(_state->clippingInputPrimitivesQueries)),
             [](void* state, UnsignedInt current) {

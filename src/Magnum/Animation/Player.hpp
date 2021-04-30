@@ -106,7 +106,7 @@ template<class T, class K> Player<T, K>& Player<T, K>::addInternal(const TrackVi
         _duration = track.duration();
     else
         _duration = Math::join(track.duration(), _duration);
-    arrayAppend(_tracks, Containers::InPlaceInit, track, advancer, destination, userCallback, userCallbackData, 0u);
+    arrayAppend(_tracks, InPlaceInit, track, advancer, destination, userCallback, userCallbackData, 0u);
     return *this;
 }
 
@@ -252,7 +252,7 @@ template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playe
         }
     }
 
-    return {Containers::InPlaceInit, playIteration, key};
+    return {InPlaceInit, playIteration, key};
 }
 
 }

@@ -429,7 +429,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
 
     /* Merge index arrays. If any of the attributes was not there, the whole
        index array has zeros, not affecting the uniqueness in any way. */
-    Containers::Array<char> indexData{Containers::NoInit, indices.size()*sizeof(UnsignedInt)};
+    Containers::Array<char> indexData{NoInit, indices.size()*sizeof(UnsignedInt)};
     const auto indexDataI = Containers::arrayCast<UnsignedInt>(indexData);
     const std::size_t vertexCount = MeshTools::removeDuplicatesInPlaceInto(
         Containers::arrayCast<2, char>(arrayView(indices)), indexDataI);
@@ -446,7 +446,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
         stride += sizeof(Vector2);
     }
     Containers::Array<MeshAttributeData> attributeData{attributeCount};
-    Containers::Array<char> vertexData{Containers::NoInit, vertexCount*stride};
+    Containers::Array<char> vertexData{NoInit, vertexCount*stride};
 
     /* Duplicate the vertices into the output */
     const auto indicesPerAttribute = Containers::arrayCast<2, const UnsignedInt>(stridedArrayView(indices)).transposed<0, 1>();

@@ -306,11 +306,11 @@ void PipelineTest::rasterizationCreateInfoConstructMove() {
 
     MeshLayout meshLayout{MeshPrimitive::Triangles};
 
-    Containers::Pointer<RasterizationPipelineCreateInfo> a{Containers::InPlaceInit, shaderSet, meshLayout, VkPipelineLayout{}, VkRenderPass{}, 0u, 3u};
+    Containers::Pointer<RasterizationPipelineCreateInfo> a{InPlaceInit, shaderSet, meshLayout, VkPipelineLayout{}, VkRenderPass{}, 0u, 3u};
     (*a).setViewport(Range3D{})
         .setDynamicStates(DynamicRasterizationState::CullMode);
 
-    Containers::Pointer<RasterizationPipelineCreateInfo> b{Containers::InPlaceInit, std::move(*a)};
+    Containers::Pointer<RasterizationPipelineCreateInfo> b{InPlaceInit, std::move(*a)};
     CORRADE_COMPARE((**a).stageCount, 0);
     CORRADE_VERIFY(!(**a).pStages);
     CORRADE_VERIFY(!(**a).pVertexInputState);
@@ -344,7 +344,7 @@ void PipelineTest::rasterizationCreateInfoConstructMove() {
     CORRADE_VERIFY((**b).pDynamicState);
     CORRADE_COMPARE((**b).pDynamicState->sType, VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO);
 
-    Containers::Pointer<RasterizationPipelineCreateInfo> c{Containers::InPlaceInit, VkGraphicsPipelineCreateInfo{}};
+    Containers::Pointer<RasterizationPipelineCreateInfo> c{InPlaceInit, VkGraphicsPipelineCreateInfo{}};
     *c = std::move(*b);
     CORRADE_COMPARE((**b).stageCount, 0);
     CORRADE_VERIFY(!(**b).pStages);

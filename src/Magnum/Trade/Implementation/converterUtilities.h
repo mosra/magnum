@@ -57,7 +57,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                 error = true;
                 continue;
             }
-            arrayAppend(infos, Containers::InPlaceInit, i, j,
+            arrayAppend(infos, InPlaceInit, i, j,
                 image->isCompressed(),
                 image->isCompressed() ?
                     PixelFormat{} : image->format(),
@@ -78,7 +78,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                 error = true;
                 continue;
             }
-            arrayAppend(infos, Containers::InPlaceInit, i, j,
+            arrayAppend(infos, InPlaceInit, i, j,
                 image->isCompressed(),
                 image->isCompressed() ?
                     PixelFormat{} : image->format(),
@@ -99,7 +99,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                 error = true;
                 continue;
             }
-            arrayAppend(infos, Containers::InPlaceInit, i, j,
+            arrayAppend(infos, InPlaceInit, i, j,
                 image->isCompressed(),
                 image->isCompressed() ?
                     PixelFormat{} : image->format(),

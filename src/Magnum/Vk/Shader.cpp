@@ -137,7 +137,7 @@ VkResult Shader::createImplementationSwiftShaderMultiEntryPointPatching(Device& 
        might not need to copy it, the owned code may also be read-only for
        whatever reason (memory-mapped location etc). Thus, to prevent issues,
        we go the safe route and copy always. */
-    Containers::Array<char> mutableCode{Containers::NoInit, info.codeSize};
+    Containers::Array<char> mutableCode{NoInit, info.codeSize};
     Utility::copy(Containers::arrayView(reinterpret_cast<const char*>(info.pCode), info.codeSize), mutableCode);
 
     /* If the code looks like SPIR-V, patch it. If not, supply the original and

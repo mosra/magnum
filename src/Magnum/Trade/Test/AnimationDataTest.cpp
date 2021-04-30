@@ -116,7 +116,7 @@ void AnimationDataTest::constructTrackData() {
             nullptr,
             Animation::Interpolation::Linear,
             animationInterpolatorFor<Vector3>(Animation::Interpolation::Linear)}};
-    AnimationData data{nullptr, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {trackData}}};
+    AnimationData data{nullptr, Containers::Array<AnimationTrackData>{InPlaceInit, {trackData}}};
     CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Vector3);
     CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Vector3);
     CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType::Translation3D);
@@ -133,7 +133,7 @@ void AnimationDataTest::constructTrackDataResultType() {
             nullptr,
             Animation::Interpolation::Linear,
             animationInterpolatorFor<CubicHermite3D>(Animation::Interpolation::Linear)}};
-    AnimationData data{nullptr, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {trackData}}};
+    AnimationData data{nullptr, Containers::Array<AnimationTrackData>{InPlaceInit, {trackData}}};
     CORRADE_COMPARE(data.trackType(0), AnimationTrackType::CubicHermite3D);
     CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Vector3);
     CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType::Translation3D);
@@ -148,7 +148,7 @@ void AnimationDataTest::constructTrackDataTemplate() {
             nullptr,
             Animation::Interpolation::Linear,
             animationInterpolatorFor<CubicHermite3D>(Animation::Interpolation::Linear)}};
-    AnimationData data{nullptr, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {trackData}}};
+    AnimationData data{nullptr, Containers::Array<AnimationTrackData>{InPlaceInit, {trackData}}};
     CORRADE_COMPARE(data.trackType(0), AnimationTrackType::CubicHermite3D);
     CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Vector3);
     CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType::Translation3D);

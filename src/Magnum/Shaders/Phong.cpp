@@ -260,11 +260,11 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         setShininess(80.0f);
         if(flags & Flag::NormalTexture)
             setNormalTextureScale(1.0f);
-        setLightPositions(Containers::Array<Vector4>{Containers::DirectInit, lightCount, Vector4{0.0f, 0.0f, 1.0f, 0.0f}});
-        Containers::Array<Magnum::Color3> colors{Containers::DirectInit, lightCount, Magnum::Color3{1.0f}};
+        setLightPositions(Containers::Array<Vector4>{DirectInit, lightCount, Vector4{0.0f, 0.0f, 1.0f, 0.0f}});
+        Containers::Array<Magnum::Color3> colors{DirectInit, lightCount, Magnum::Color3{1.0f}};
         setLightColors(colors);
         setLightSpecularColors(colors);
-        setLightRanges(Containers::Array<Float>{Containers::DirectInit, lightCount, Constants::inf()});
+        setLightRanges(Containers::Array<Float>{DirectInit, lightCount, Constants::inf()});
         /* Light position is zero by default */
         setNormalMatrix(Matrix3x3{Math::IdentityInit});
     }
@@ -390,7 +390,7 @@ Phong& Phong::setLightPositions(const std::initializer_list<Vector4> positions) 
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector3> positions) {
-    Containers::Array<Vector4> fourComponent{Containers::NoInit, positions.size()};
+    Containers::Array<Vector4> fourComponent{NoInit, positions.size()};
     for(std::size_t i = 0; i != positions.size(); ++i)
         fourComponent[i] = Vector4{positions[i], 0.0f};
     setLightPositions(fourComponent);
@@ -431,7 +431,7 @@ Phong& Phong::setLightColors(const Containers::ArrayView<const Magnum::Color3> c
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 Phong& Phong::setLightColors(const Containers::ArrayView<const Magnum::Color4> colors) {
-    Containers::Array<Magnum::Color3> threeComponent{Containers::NoInit, colors.size()};
+    Containers::Array<Magnum::Color3> threeComponent{NoInit, colors.size()};
     for(std::size_t i = 0; i != colors.size(); ++i)
         threeComponent[i] = colors[i].rgb();
     setLightColors(threeComponent);

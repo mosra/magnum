@@ -67,7 +67,7 @@ Trade::MeshData owned(Trade::MeshData&& data) {
     /* Otherwise copy them, if the mesh is indexed. If not, the
        default-constructed instances are fine. */
     } else if(data.isIndexed()) {
-        indexData = Containers::Array<char>{Containers::NoInit, data.indexData().size()};
+        indexData = Containers::Array<char>{NoInit, data.indexData().size()};
         indices = Trade::MeshIndexData{data.indexType(), indexData.slice(data.indexOffset(), data.indexOffset() + data.indexCount()*meshIndexTypeSize(data.indexType()))};
         Utility::copy(data.indexData(), indexData);
     }
@@ -83,7 +83,7 @@ Trade::MeshData owned(Trade::MeshData&& data) {
 
     /* Otherwise copy them */
     } else {
-        vertexData = Containers::Array<char>{Containers::NoInit, originalVertexData.size()};
+        vertexData = Containers::Array<char>{NoInit, originalVertexData.size()};
         Utility::copy(originalVertexData, vertexData);
     }
 

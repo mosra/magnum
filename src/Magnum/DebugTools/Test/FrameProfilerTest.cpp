@@ -1114,8 +1114,7 @@ void FrameProfilerTest::gl() {
     setTestCaseDescription(data.name);
 
     /* Test that we use the right state pointers to survive a move */
-    Containers::Pointer<GLFrameProfiler> profiler_{Containers::InPlaceInit,
-        data.values, 4u};
+    Containers::Pointer<GLFrameProfiler> profiler_{InPlaceInit, data.values, 4u};
     GLFrameProfiler profiler = std::move(*profiler_);
     profiler_ = nullptr;
     CORRADE_COMPARE(profiler.values(), data.values);

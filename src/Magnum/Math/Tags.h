@@ -29,8 +29,6 @@
  * @brief Tag type @ref Magnum::Math::ZeroInitT, @ref Magnum::Math::IdentityInitT, tag @ref Magnum::Math::ZeroInit, @ref Magnum::Math::IdentityInit
  */
 
-#include <Corrade/Containers/Tags.h>
-
 #include "Magnum/Tags.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED

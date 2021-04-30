@@ -796,7 +796,7 @@ bool Context::tryCreate(const Configuration& configuration) {
     /* Driver workarounds get merged. Not using disableDriverWorkaround() here
        since the Configuration already contains the internal string views. */
     for(const Containers::StringView workaround: configuration.disabledWorkarounds())
-        arrayAppend(_driverWorkarounds, Containers::InPlaceInit, workaround, true);
+        arrayAppend(_driverWorkarounds, InPlaceInit, workaround, true);
 
     /* Extensions get merged also. Here we had the chance to force users to
        give us the predefined extension types so no need to search for their
@@ -1208,7 +1208,7 @@ Context::Configuration& Context::Configuration::operator=(const Configuration& o
     _flags = other._flags;
     arrayResize(_disabledWorkarounds, 0);
     /** @todo arrayClear(), ffs */
-    arrayResize(_disabledExtensions, Containers::NoInit, 0);
+    arrayResize(_disabledExtensions, NoInit, 0);
     addDisabledWorkarounds(other._disabledWorkarounds);
     addDisabledExtensions(other._disabledExtensions);
     return *this;

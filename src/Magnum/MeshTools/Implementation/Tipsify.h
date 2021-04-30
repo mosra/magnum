@@ -45,7 +45,7 @@ template<class T> void buildAdjacency(const Containers::StridedArrayView1D<const
        the end be in interval neighbors[neighborOffset[i]] ;
        neighbors[neighborOffset[i+1]]. Currently the values are shifted to
        right, because the next loop will shift them back left. */
-    neighborOffset = Containers::Array<UnsignedInt>{Containers::NoInit, vertexCount + 1};
+    neighborOffset = Containers::Array<UnsignedInt>{NoInit, vertexCount + 1};
     neighborOffset[0] = 0;
     UnsignedInt sum = 0;
     for(std::size_t i = 0; i != vertexCount; ++i) {
@@ -55,7 +55,7 @@ template<class T> void buildAdjacency(const Containers::StridedArrayView1D<const
 
     /* Array of neighbors, using (and changing) neighborOffset array for
        positioning */
-    neighbors = Containers::Array<UnsignedInt>{Containers::NoInit, sum};
+    neighbors = Containers::Array<UnsignedInt>{NoInit, sum};
     for(std::size_t i = 0; i != indices.size(); ++i)
         neighbors[neighborOffset[indices[i]+1]++] = i/3;
 }

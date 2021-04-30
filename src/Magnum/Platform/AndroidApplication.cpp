@@ -70,7 +70,7 @@ AndroidApplication::AndroidApplication(const Arguments& arguments, const Configu
     create(configuration, glConfiguration);
 }
 
-AndroidApplication::AndroidApplication(const Arguments& arguments, NoCreateT): _state{arguments}, _context{Containers::InPlaceInit, NoCreate} {
+AndroidApplication::AndroidApplication(const Arguments& arguments, NoCreateT): _state{arguments}, _context{InPlaceInit, NoCreate} {
     /* Redirect debug output to Android log */
     _logOutput.reset(new LogOutput);
 }

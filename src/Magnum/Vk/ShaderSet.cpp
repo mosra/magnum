@@ -82,7 +82,7 @@ ShaderSet& ShaderSet::addShader(const ShaderStage stage, const VkShaderModule sh
         if(!_state) _state.emplace();
         /* Ensure the data are never SSO'd and so when the array reallocates we
            don't need to rewire existing name pointers */
-        _stages[_stageCount].pName = arrayAppend(_state->entrypointNames, Containers::InPlaceInit, Containers::AllocatedInit, entrypoint).data();
+        _stages[_stageCount].pName = arrayAppend(_state->entrypointNames, InPlaceInit, Containers::AllocatedInit, entrypoint).data();
     }
 
     /* Specialization, also only if there are any to avoid allocating the state
@@ -98,8 +98,8 @@ ShaderSet& ShaderSet::addShader(const ShaderStage stage, const VkShaderModule sh
         /* The data is (currently) always four bytes, so we don't need to do
            any extra work to calculate the total data size over all
            specializations */
-        const Containers::ArrayView<char> newSpecializationData = arrayAppend(_state->specializationData, Containers::NoInit, specializations.size()*4);
-        const Containers::ArrayView<VkSpecializationMapEntry> newSpecializations = arrayAppend(_state->specializations, Containers::NoInit, specializations.size());
+        const Containers::ArrayView<char> newSpecializationData = arrayAppend(_state->specializationData, NoInit, specializations.size()*4);
+        const Containers::ArrayView<VkSpecializationMapEntry> newSpecializations = arrayAppend(_state->specializations, NoInit, specializations.size());
 
         /* Reroute the existing structures for possible reallocations */
         for(std::size_t i = 0; i != _stageCount; ++i) {

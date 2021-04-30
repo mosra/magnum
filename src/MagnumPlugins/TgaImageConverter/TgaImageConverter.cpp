@@ -48,7 +48,7 @@ ImageConverterFeatures TgaImageConverter::doFeatures() const { return ImageConve
 Containers::Array<char> TgaImageConverter::doConvertToData(const ImageView2D& image) {
     /* Initialize data buffer */
     const auto pixelSize = UnsignedByte(image.pixelSize());
-    Containers::Array<char> data{Containers::ValueInit, sizeof(Implementation::TgaHeader) + pixelSize*image.size().product()};
+    Containers::Array<char> data{ValueInit, sizeof(Implementation::TgaHeader) + pixelSize*image.size().product()};
 
     /* Fill header */
     auto header = reinterpret_cast<Implementation::TgaHeader*>(data.begin());

@@ -125,7 +125,7 @@ void MagnumFontConverterTest::exportFont() {
         GlyphCacheFeatures doFeatures() const override { return GlyphCacheFeature::ImageDownload; }
         void doSetImage(const Vector2i&, const ImageView2D&) override {}
         Image2D doImage() override {
-            return Image2D{PixelFormat::R8Unorm, Vector2i{256}, Containers::Array<char>{Containers::ValueInit, 256*256}};
+            return Image2D{PixelFormat::R8Unorm, Vector2i{256}, Containers::Array<char>{ValueInit, 256*256}};
         }
     } cache;
     cache.insert(font.glyphId(U'W'), {25, 34}, {{0, 8}, {16, 128}});

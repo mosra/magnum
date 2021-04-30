@@ -743,7 +743,7 @@ void ImageTest::pixels1D() {
             .setAlignment(1) /** @todo alignment 4 expects 17 bytes. what */
             .setSkip({3, 0, 0}),
         PixelFormat::RGB8Unorm, 2,
-        Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::Array<char>{InPlaceInit, {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 5, 6, 7, 8
         }}};
     const Image1D& cimage = image;
@@ -772,7 +772,7 @@ void ImageTest::pixels2D() {
             .setSkip({3, 2, 0})
             .setRowLength(6),
         PixelFormat::RGB8Unorm, {2, 4},
-        Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::Array<char>{InPlaceInit, {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 0, 0, 0, 0, 0,
@@ -807,7 +807,7 @@ void ImageTest::pixels3D() {
             .setRowLength(6)
             .setImageHeight(7),
         PixelFormat::RGB8Unorm, {2, 4, 3},
-        Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::Array<char>{InPlaceInit, {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

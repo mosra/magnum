@@ -888,7 +888,7 @@ void MaterialDataTest::constructDuplicateAttribute() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    auto attributes = Containers::Array<MaterialAttributeData>{Containers::InPlaceInit, {
+    Containers::Array<MaterialAttributeData> attributes{InPlaceInit, {
         {MaterialAttribute::DoubleSided, true},
         {MaterialAttribute::DiffuseTextureCoordinates, 5u},
         {"highlightColor", 0x335566ff_rgbaf},

@@ -775,7 +775,7 @@ template<class T> void FlatGLTest::renderVertexColor2D() {
         Primitives::Circle2DFlag::TextureCoordinates);
 
     /* Highlight a quarter */
-    Containers::Array<T> colorData{Containers::DirectInit, circleData.vertexCount(), 0x999999_rgbf};
+    Containers::Array<T> colorData{DirectInit, circleData.vertexCount(), 0x999999_rgbf};
     for(std::size_t i = 8; i != 16; ++i)
         colorData[i + 1] = 0xffff99_rgbf*1.5f;
 
@@ -829,7 +829,7 @@ template<class T> void FlatGLTest::renderVertexColor3D() {
         Primitives::UVSphereFlag::TextureCoordinates);
 
     /* Highlight the middle rings */
-    Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0x999999_rgbf};
+    Containers::Array<T> colorData{DirectInit, sphereData.vertexCount(), 0x999999_rgbf};
     for(std::size_t i = 6*33; i != 9*33; ++i)
         colorData[i + 1] = 0xffff99_rgbf*1.5f;
 

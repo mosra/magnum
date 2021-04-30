@@ -366,11 +366,11 @@ void GenerateNormalsTest::smoothZeroAreaTriangle() {
     };
 
     CORRADE_COMPARE_AS(generateSmoothNormals(indices, positions),
-        (Containers::Array<Vector3>{Containers::InPlaceInit, {
+        Containers::arrayView<Vector3>({
             Vector3::zAxis(),
             Vector3::zAxis(),
             Vector3::zAxis()
-        }}), TestSuite::Compare::Container);
+        }), TestSuite::Compare::Container);
 }
 
 void GenerateNormalsTest::smoothNanPosition() {
@@ -442,7 +442,7 @@ void GenerateNormalsTest::benchmarkFlat() {
         Containers::stridedArrayView(BeveledCubeIndices),
         Containers::stridedArrayView(BeveledCubePositions));
 
-    Containers::Array<Vector3> normals{Containers::NoInit, positions.size()};
+    Containers::Array<Vector3> normals{NoInit, positions.size()};
     CORRADE_BENCHMARK(10) {
         generateFlatNormalsInto(positions, normals);
     }
@@ -451,7 +451,7 @@ void GenerateNormalsTest::benchmarkFlat() {
 }
 
 void GenerateNormalsTest::benchmarkSmooth() {
-    Containers::Array<Vector3> normals{Containers::NoInit, Containers::arraySize(BeveledCubePositions)};
+    Containers::Array<Vector3> normals{NoInit, Containers::arraySize(BeveledCubePositions)};
     CORRADE_BENCHMARK(10) {
         generateSmoothNormalsInto(BeveledCubeIndices, BeveledCubePositions, normals);
     }

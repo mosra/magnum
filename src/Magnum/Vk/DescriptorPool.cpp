@@ -48,7 +48,7 @@ DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(const UnsignedInt maxSets, co
 
     Containers::ArrayView<VkDescriptorPoolSize> poolSizesCopy;
     _data = Containers::ArrayTuple{
-        {Containers::NoInit, poolSizes.size(), poolSizesCopy}
+        {NoInit, poolSizes.size(), poolSizesCopy}
     };
     for(std::size_t i = 0; i != poolSizes.size(); ++i) {
         CORRADE_ASSERT(poolSizes[i].second,

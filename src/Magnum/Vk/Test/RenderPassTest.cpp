@@ -242,7 +242,7 @@ template<class> struct Traits;
         static const char* name() { return #type "2"; }                     \
         /* So we have the same interface in both cases */                   \
         static Containers::Array<Vk ## type ## 2> convert(const type& instance) { \
-            return {Containers::InPlaceInit, {*instance}};                  \
+            return {InPlaceInit, {*instance}};                              \
         }                                                                   \
     };
 _c(AttachmentDescription)

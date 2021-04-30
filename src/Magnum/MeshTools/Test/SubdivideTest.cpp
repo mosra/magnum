@@ -173,11 +173,11 @@ void SubdivideTest::benchmark() {
 
     CORRADE_BENCHMARK(3) {
         Containers::Array<UnsignedInt> indices;
-        arrayResize(indices, Containers::NoInit, icosphere.indexCount());
+        arrayResize(indices, NoInit, icosphere.indexCount());
         Utility::copy(icosphere.indices<UnsignedInt>(), indices);
 
         Containers::Array<Vector3> positions;
-        arrayResize(positions, Containers::NoInit, icosphere.vertexCount());
+        arrayResize(positions, NoInit, icosphere.vertexCount());
         Utility::copy(icosphere.attribute<Vector3>(Trade::MeshAttribute::Position), positions);
 
         /* Subdivide 5 times */

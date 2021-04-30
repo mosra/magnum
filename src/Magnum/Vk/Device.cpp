@@ -120,7 +120,7 @@ struct DeviceCreateInfo::State {
     DeviceProperties properties{NoCreate};
 };
 
-DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const ExtensionProperties* extensionProperties, const Flags flags): _physicalDevice{deviceProperties}, _info{}, _state{Containers::InPlaceInit} {
+DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const ExtensionProperties* extensionProperties, const Flags flags): _physicalDevice{deviceProperties}, _info{}, _state{InPlaceInit} {
     Utility::Arguments args = Implementation::arguments();
     args.parse(deviceProperties._instance->state().argc, deviceProperties._instance->state().argv);
 
@@ -307,7 +307,7 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::Array
            don't get invalidated when the array gets reallocated. */
         const char* data;
         if(!(extension.flags() >= (Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global)))
-            data = arrayAppend(_state->ownedStrings, Containers::InPlaceInit,
+            data = arrayAppend(_state->ownedStrings, InPlaceInit,
                 Containers::AllocatedInit, extension).data();
         else data = extension.data();
 

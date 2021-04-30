@@ -46,7 +46,7 @@ DescriptorSetLayoutBinding::DescriptorSetLayoutBinding(const UnsignedInt binding
 DescriptorSetLayoutBinding::DescriptorSetLayoutBinding(const UnsignedInt binding, const DescriptorType descriptorType, const Containers::ArrayView<const VkSampler> immutableSamplers, const ShaderStages stages, Flags flags): _binding{}, _flags{VkDescriptorBindingFlags(flags)} {
     Containers::ArrayView<VkSampler> immutableSamplersCopy;
     _data = Containers::ArrayTuple{
-        {Containers::NoInit, immutableSamplers.size(), immutableSamplersCopy}
+        {NoInit, immutableSamplers.size(), immutableSamplersCopy}
     };
     Utility::copy(immutableSamplers, immutableSamplersCopy);
 
@@ -109,10 +109,10 @@ DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const Containers::A
     Containers::ArrayView<VkDescriptorSetLayoutBindingFlagsCreateInfo> bindingsCreateInfoView;
     Containers::ArrayView<VkSampler> immutableSamplersCopy;
     _data = Containers::ArrayTuple{
-        {Containers::NoInit, bindings.size(), bindingsCopy},
-        {Containers::NoInit, hasBindingFlags ? bindings.size() : 0, bindingFlagsCopy},
-        {Containers::ValueInit, hasBindingFlags ? 1u : 0u, bindingsCreateInfoView},
-        {Containers::NoInit, immutableSamplerCount, immutableSamplersCopy}
+        {NoInit, bindings.size(), bindingsCopy},
+        {NoInit, hasBindingFlags ? bindings.size() : 0, bindingFlagsCopy},
+        {ValueInit, hasBindingFlags ? 1u : 0u, bindingsCreateInfoView},
+        {NoInit, immutableSamplerCount, immutableSamplersCopy}
     };
 
     /* Copy the binding and then for each manually copy and reroute the

@@ -76,7 +76,7 @@ void generateLineStripIndicesInto(const UnsignedInt vertexCount, const Container
 }
 
 Containers::Array<UnsignedInt> generateLineStripIndices(const UnsignedInt vertexCount) {
-    Containers::Array<UnsignedInt> indices{Containers::NoInit, 2*(vertexCount - 1)};
+    Containers::Array<UnsignedInt> indices{NoInit, 2*(vertexCount - 1)};
     generateLineStripIndicesInto(vertexCount, indices);
     return indices;
 }
@@ -105,7 +105,7 @@ void generateLineLoopIndicesInto(const UnsignedInt vertexCount, const Containers
 }
 
 Containers::Array<UnsignedInt> generateLineLoopIndices(const UnsignedInt vertexCount) {
-    Containers::Array<UnsignedInt> indices{Containers::NoInit, 2*vertexCount};
+    Containers::Array<UnsignedInt> indices{NoInit, 2*vertexCount};
     generateLineLoopIndicesInto(vertexCount, indices);
     return indices;
 }
@@ -134,7 +134,7 @@ void generateTriangleStripIndicesInto(const UnsignedInt vertexCount, const Conta
 }
 
 Containers::Array<UnsignedInt> generateTriangleStripIndices(const UnsignedInt vertexCount) {
-    Containers::Array<UnsignedInt> indices{Containers::NoInit, 3*(vertexCount - 2)};
+    Containers::Array<UnsignedInt> indices{NoInit, 3*(vertexCount - 2)};
     generateTriangleStripIndicesInto(vertexCount, indices);
     return indices;
 }
@@ -164,7 +164,7 @@ void generateTriangleFanIndicesInto(const UnsignedInt vertexCount, const Contain
 }
 
 Containers::Array<UnsignedInt> generateTriangleFanIndices(const UnsignedInt vertexCount) {
-    Containers::Array<UnsignedInt> indices{Containers::NoInit, 3*(vertexCount - 2)};
+    Containers::Array<UnsignedInt> indices{NoInit, 3*(vertexCount - 2)};
     generateTriangleFanIndicesInto(vertexCount, indices);
     return indices;
 }
@@ -216,14 +216,14 @@ template<class T> inline void generateQuadIndicesIntoImplementation(const Contai
 
 Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedInt>& quads) {
     /* We can skip zero-initialization here */
-    Containers::Array<UnsignedInt> out{Containers::NoInit, quads.size()*6/4};
+    Containers::Array<UnsignedInt> out{NoInit, quads.size()*6/4};
     generateQuadIndicesIntoImplementation(positions, quads, Containers::stridedArrayView(out));
     return out;
 }
 
 Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedShort>& quads) {
     /* Explicitly ensure we have the unused bytes zeroed out */
-    Containers::Array<UnsignedInt> out{Containers::ValueInit, quads.size()*6/4};
+    Containers::Array<UnsignedInt> out{ValueInit, quads.size()*6/4};
     generateQuadIndicesIntoImplementation(positions, quads,
         /* Could be just arrayCast<UnsignedShort>(stridedArrayView(out) on LE,
            but I want to be sure as much as possible that this compiles on BE
@@ -241,7 +241,7 @@ Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArra
 
 Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads) {
     /* Explicitly ensure we have the unused bytes zeroed out */
-    Containers::Array<UnsignedInt> out{Containers::ValueInit, quads.size()*6/4};
+    Containers::Array<UnsignedInt> out{ValueInit, quads.size()*6/4};
     generateQuadIndicesIntoImplementation(positions, quads,
         /* Could be just arrayCast<UnsignedShort>(stridedArrayView(out) on LE,
            but I want to be sure as much as possible that this compiles on BE
@@ -281,7 +281,7 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
     if(data.vertexDataFlags() & Trade::DataFlag::Owned)
         vertexData = data.releaseVertexData();
     else {
-        vertexData = Containers::Array<char>{Containers::NoInit, data.vertexData().size()};
+        vertexData = Containers::Array<char>{NoInit, data.vertexData().size()};
         Utility::copy(data.vertexData(), vertexData);
     }
 
@@ -301,19 +301,19 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
     Containers::Array<char> indexData;
     if(data.primitive() == MeshPrimitive::LineStrip) {
         primitive = MeshPrimitive::Lines;
-        indexData = Containers::Array<char>{Containers::NoInit, 2*(vertexCount - 1)*sizeof(UnsignedInt)};
+        indexData = Containers::Array<char>{NoInit, 2*(vertexCount - 1)*sizeof(UnsignedInt)};
         generateLineStripIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else if(data.primitive() == MeshPrimitive::LineLoop) {
         primitive = MeshPrimitive::Lines;
-        indexData = Containers::Array<char>{Containers::NoInit, 2*vertexCount*sizeof(UnsignedInt)};
+        indexData = Containers::Array<char>{NoInit, 2*vertexCount*sizeof(UnsignedInt)};
         generateLineLoopIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else if(data.primitive() == MeshPrimitive::TriangleStrip) {
         primitive = MeshPrimitive::Triangles;
-        indexData = Containers::Array<char>{Containers::NoInit, 3*(vertexCount - 2)*sizeof(UnsignedInt)};
+        indexData = Containers::Array<char>{NoInit, 3*(vertexCount - 2)*sizeof(UnsignedInt)};
         generateTriangleStripIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else if(data.primitive() == MeshPrimitive::TriangleFan) {
         primitive = MeshPrimitive::Triangles;
-        indexData = Containers::Array<char>{Containers::NoInit, 3*(vertexCount - 2)*sizeof(UnsignedInt)};
+        indexData = Containers::Array<char>{NoInit, 3*(vertexCount - 2)*sizeof(UnsignedInt)};
         generateTriangleFanIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateIndices(): invalid primitive" << data.primitive(),
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));

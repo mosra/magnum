@@ -54,7 +54,7 @@ struct RasterizationPipelineCreateInfo::State {
     VkRect2D scissor;
 };
 
-RasterizationPipelineCreateInfo::RasterizationPipelineCreateInfo(const ShaderSet& shaderSet, const MeshLayout& meshLayout, const VkPipelineLayout pipelineLayout, const VkRenderPass renderPass, const UnsignedInt subpass, const UnsignedInt subpassColorAttachmentCount, Flags flags): _info{}, _viewportInfo{}, _rasterizationInfo{}, _multisampleInfo{}, _depthStencilInfo{}, _colorBlendInfo{}, _dynamicInfo{}, _state{Containers::InPlaceInit} {
+RasterizationPipelineCreateInfo::RasterizationPipelineCreateInfo(const ShaderSet& shaderSet, const MeshLayout& meshLayout, const VkPipelineLayout pipelineLayout, const VkRenderPass renderPass, const UnsignedInt subpass, const UnsignedInt subpassColorAttachmentCount, Flags flags): _info{}, _viewportInfo{}, _rasterizationInfo{}, _multisampleInfo{}, _depthStencilInfo{}, _colorBlendInfo{}, _dynamicInfo{}, _state{InPlaceInit} {
     _info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     _info.flags = VkPipelineCreateFlags(flags);
     _info.stageCount = shaderSet.stages().size();
@@ -82,7 +82,7 @@ RasterizationPipelineCreateInfo::RasterizationPipelineCreateInfo(const ShaderSet
     _depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     _info.pDepthStencilState = &_depthStencilInfo;
 
-    _state->colorBlendAttachments = Containers::Array<VkPipelineColorBlendAttachmentState>{Containers::ValueInit, subpassColorAttachmentCount};
+    _state->colorBlendAttachments = Containers::Array<VkPipelineColorBlendAttachmentState>{ValueInit, subpassColorAttachmentCount};
     for(VkPipelineColorBlendAttachmentState& i: _state->colorBlendAttachments) {
         i.colorWriteMask = VK_COLOR_COMPONENT_R_BIT|
                            VK_COLOR_COMPONENT_G_BIT|
@@ -254,7 +254,7 @@ RasterizationPipelineCreateInfo& RasterizationPipelineCreateInfo::setDynamicStat
     std::size_t count = 0;
     for(std::size_t i = 0; i != DynamicRasterizationStates::Size; ++i)
         count += Math::popcount(states.data()[i]);
-    _state->dynamicStateList = Containers::Array<VkDynamicState>{Containers::NoInit, count};
+    _state->dynamicStateList = Containers::Array<VkDynamicState>{NoInit, count};
 
     std::size_t offset = 0;
     for(std::uint64_t i = 0; i != Containers::arraySize(DynamicRasterizationStateMapping); ++i)

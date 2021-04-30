@@ -467,7 +467,7 @@ bool AbstractConverter::linkDataToFile(const std::initializer_list<std::pair<Sta
 }
 
 Containers::Array<char> AbstractConverter::linkDataToDataUsingInputFileCallbacks(const char* const prefix, const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames) {
-    Containers::Array<std::pair<Stage, Containers::ArrayView<const char>>> data{Containers::NoInit, filenames.size()};
+    Containers::Array<std::pair<Stage, Containers::ArrayView<const char>>> data{NoInit, filenames.size()};
 
     /* First load all files. Remember how many of these succeeded so we can
        close them again after */
@@ -573,7 +573,7 @@ bool AbstractConverter::doLinkFilesToFile(const Containers::ArrayView<const std:
 
         /** @todo merge the allocations once we have an ArrayTuple (actually,
             ideally it would merge also the nested allocations, how?) */
-        Containers::Array<std::pair<Stage, Containers::ArrayView<const char>>> data{Containers::NoInit, from.size()};
+        Containers::Array<std::pair<Stage, Containers::ArrayView<const char>>> data{NoInit, from.size()};
         for(std::size_t i = 0; i != from.size(); ++i)  {
             data[i].first = from[i].first;
             data[i].second = fileData[i];
@@ -652,7 +652,7 @@ Containers::Array<char> AbstractConverter::doLinkFilesToData(const Containers::A
         }
 
         /** @todo merge the allocations once we have an ArrayTuple */
-        Containers::Array<std::pair<Stage, Containers::ArrayView<const char>>> data{Containers::NoInit, filenames.size()};
+        Containers::Array<std::pair<Stage, Containers::ArrayView<const char>>> data{NoInit, filenames.size()};
         for(std::size_t i = 0; i != filenames.size(); ++i)  {
             data[i].first = filenames[i].first;
             data[i].second = fileData[i];

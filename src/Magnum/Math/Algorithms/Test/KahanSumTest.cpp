@@ -143,7 +143,7 @@ void KahanSumTest::iterative() {
 }
 
 void KahanSumTest::accumulate100kFloats() {
-    Containers::Array<Float> data(Containers::DirectInit, 100000, 1.0f);
+    Containers::Array<Float> data(DirectInit, 100000, 1.0f);
 
     volatile Float a; /* to avoid optimizing the loop out */
     CORRADE_BENCHMARK(10) {
@@ -154,7 +154,7 @@ void KahanSumTest::accumulate100kFloats() {
 }
 
 void KahanSumTest::accumulate100kDoubles() {
-    Containers::Array<Double> data(Containers::DirectInit, 100000, 1.0);
+    Containers::Array<Double> data(DirectInit, 100000, 1.0);
 
     volatile Double a; /* to avoid optimizing the loop out */
     CORRADE_BENCHMARK(10) {
@@ -165,7 +165,7 @@ void KahanSumTest::accumulate100kDoubles() {
 }
 
 void KahanSumTest::kahan100kFloats() {
-    Containers::Array<Float> data(Containers::DirectInit, 100000, 1.0f);
+    Containers::Array<Float> data(DirectInit, 100000, 1.0f);
 
     volatile Float a; /* to avoid optimizing the loop out */
     CORRADE_BENCHMARK(10) {

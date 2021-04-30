@@ -125,8 +125,8 @@ void SkinDataTest::constructMove() {
 }
 
 void SkinDataTest::release() {
-    Containers::Array<UnsignedInt> joints{Containers::InPlaceInit, {0, 2, 3}};
-    Containers::Array<Matrix3> inverseBindMatrices{Containers::InPlaceInit, {
+    Containers::Array<UnsignedInt> joints{InPlaceInit, {0, 2, 3}};
+    Containers::Array<Matrix3> inverseBindMatrices{InPlaceInit, {
         Matrix3::translation(Vector2::yAxis(0.0f)),
         Matrix3::translation(Vector2::yAxis(2.0f)),
         Matrix3::translation(Vector2::yAxis(4.0f))

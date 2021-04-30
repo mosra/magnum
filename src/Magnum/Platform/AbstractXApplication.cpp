@@ -41,7 +41,7 @@ AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandle
     create(configuration, glConfiguration);
 }
 
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT): _contextHandler{contextHandler}, _context{Containers::InPlaceInit, NoCreate, arguments.argc, arguments.argv}, _flags{Flag::Redraw} {}
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT): _contextHandler{contextHandler}, _context{InPlaceInit, NoCreate, arguments.argc, arguments.argv}, _flags{Flag::Redraw} {}
 
 void AbstractXApplication::create() { create({}); }
 

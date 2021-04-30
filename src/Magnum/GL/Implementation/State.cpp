@@ -92,25 +92,25 @@ std::pair<Containers::ArrayTuple, State&> State::allocate(Context& context, std:
     Containers::ArrayView<TransformFeedbackState> transformFeedbackStateView;
     #endif
     Containers::ArrayTuple data{
-        {Containers::NoInit, 1, stateView},
-        {Containers::NoInit, 1, bufferStateView},
-        {Containers::NoInit, 1, contextStateView},
+        {NoInit, 1, stateView},
+        {NoInit, 1, bufferStateView},
+        {NoInit, 1, contextStateView},
         #ifndef MAGNUM_TARGET_WEBGL
-        {Containers::NoInit, 1, debugStateView},
+        {NoInit, 1, debugStateView},
         #endif
-        {Containers::NoInit, 1, framebufferStateView},
-        {Containers::NoInit, 1, meshStateView},
-        {Containers::NoInit, 1, queryStateView},
-        {Containers::NoInit, 1, rendererStateView},
-        {Containers::NoInit, 1, shaderStateView},
-        {Containers::NoInit, 1, shaderProgramStateView},
-        {Containers::NoInit, 1, textureStateView},
-        {Containers::ValueInit, std::size_t(maxTextureUnits), textureBindings},
+        {NoInit, 1, framebufferStateView},
+        {NoInit, 1, meshStateView},
+        {NoInit, 1, queryStateView},
+        {NoInit, 1, rendererStateView},
+        {NoInit, 1, shaderStateView},
+        {NoInit, 1, shaderProgramStateView},
+        {NoInit, 1, textureStateView},
+        {ValueInit, std::size_t(maxTextureUnits), textureBindings},
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        {Containers::ValueInit, std::size_t(maxImageUnits), imageBindings},
+        {ValueInit, std::size_t(maxImageUnits), imageBindings},
         #endif
         #ifndef MAGNUM_TARGET_GLES2
-        {Containers::NoInit, 1, transformFeedbackStateView}
+        {NoInit, 1, transformFeedbackStateView}
         #endif
     };
 

@@ -106,7 +106,7 @@ template<template<class> class Allocator = Containers::ArrayAllocator> void conc
         indexData = destination.releaseIndexData();
         /* Everything is overwritten here so we don't need to zero-out the
            memory */
-        Containers::arrayResize<Allocator>(indexData, Containers::NoInit, indexVertexCount.first*sizeof(UnsignedInt));
+        Containers::arrayResize<Allocator>(indexData, NoInit, indexVertexCount.first*sizeof(UnsignedInt));
     }
 
     Containers::Array<Trade::MeshAttributeData> attributeData = Implementation::interleavedLayout(std::move(destination), {});
@@ -118,7 +118,7 @@ template<template<class> class Allocator = Containers::ArrayAllocator> void conc
            there, otherwise attributes that are not present in `meshes` would
            be garbage */
         Containers::arrayResize<Allocator>(vertexData, 0);
-        Containers::arrayResize<Allocator>(vertexData, Containers::ValueInit, attributeStride*indexVertexCount.second);
+        Containers::arrayResize<Allocator>(vertexData, ValueInit, attributeStride*indexVertexCount.second);
     }
 
     destination = Implementation::concatenate(std::move(indexData), indexVertexCount.second, std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenateInto():");

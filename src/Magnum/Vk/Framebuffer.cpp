@@ -40,7 +40,7 @@ struct FramebufferCreateInfo::State {
     Containers::Array<VkImageView> attachments;
 };
 
-FramebufferCreateInfo::FramebufferCreateInfo(const VkRenderPass renderPass, const Containers::ArrayView<const Containers::Reference<ImageView>> attachments, const Vector3i& size, const Flags flags): _info{}, _state{Containers::InPlaceInit} {
+FramebufferCreateInfo::FramebufferCreateInfo(const VkRenderPass renderPass, const Containers::ArrayView<const Containers::Reference<ImageView>> attachments, const Vector3i& size, const Flags flags): _info{}, _state{InPlaceInit} {
     _info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
     _info.flags = VkFramebufferCreateFlags(flags);
     _info.renderPass = renderPass;
@@ -52,7 +52,7 @@ FramebufferCreateInfo::FramebufferCreateInfo(const VkRenderPass renderPass, cons
     /** @todo combine the state and array allocations into one (could use
         ArrayTuple, however that one includes ArrayView so not much better than
         including Array directly in the header which I don't want to do) */
-    _state->attachments = Containers::Array<VkImageView>{Containers::NoInit, attachments.size()};
+    _state->attachments = Containers::Array<VkImageView>{NoInit, attachments.size()};
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _state->attachments[i] = *attachments[i];
     _info.attachmentCount = _state->attachments.size();

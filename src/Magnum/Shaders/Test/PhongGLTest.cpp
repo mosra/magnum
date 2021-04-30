@@ -353,7 +353,7 @@ const struct {
     {"directional", "light-directional.tga",
         {1.0f, -1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, Constants::inf(),
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* Ambient isn't affected by light direction, otherwise it's a
                dot product of a normalized direction */
             {{40, 40}, 0x222222_rgb + 0xff8080_rgb*dot(Vector3{1.0f, -1.5f, 0.5f}.normalized(), Vector3::zAxis())},
@@ -380,7 +380,7 @@ const struct {
     {"directional, from back", "light-none.tga",
         {-1.0f, 1.5f, -0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, Constants::inf(),
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* Only ambient color left */
             {{40, 40}, 0x222222_rgb}
         }}},
@@ -389,13 +389,13 @@ const struct {
     {"directional, intensity=2", "light-directional-intensity2.tga",
         {1.0f, -1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
         2.0f, 1.0f,
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             {{40, 40}, 0x222222_rgb + 0xff8080_rgb*dot(Vector3{1.0f, -1.5f, 0.5f}.normalized(), Vector3::zAxis())*2.0f}
         }}},
     {"point", "light-point.tga",
         {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, Constants::inf(),
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* The range is inf, so it doesn't get fully ambient even at the
                edge */
             {{8, 71}, 0x2c2727_rgb},
@@ -407,21 +407,21 @@ const struct {
     {"point, specular material color", "light-point-specular-color.tga",
         {0.75f, -0.75f, -0.75f, 1.0f}, 0x80ff80_rgbf, Color3{1.0f},
         1.0f, Constants::inf(),
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* Colored specular highlight */
             {{60, 19}, 0xc27573_rgb}
         }}},
     {"point, specular light color", "light-point-specular-color.tga",
         {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, 0x80ff80_rgbf,
         1.0f, Constants::inf(),
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* Colored specular highlight */
             {{60, 19}, 0xc27573_rgb}
         }}},
     {"point, attenuated specular", "light-point-attenuated-specular.tga",
         {1.0f, -1.0f, -0.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, 2.5f,
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* Specular highlight shouldn't be brighter than the attenuated
                intensity */
             {{57, 22}, 0xa68787_rgb}
@@ -429,7 +429,7 @@ const struct {
     {"point, range=1.5, specular color", "light-point-range1.5.tga",
         {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, 0x80ff80_rgbf,
         1.0f, 1.5f,
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* Color goes back to ambient at distance = 1.5 */
             {{59, 60}, 0x222222_rgb},
             {{29, 50}, 0x222222_rgb},
@@ -1071,7 +1071,7 @@ void PhongGLTest::renderTexturedNormal() {
         Vector3 bitangent;
     } tangentBitangent{data.tangent, data.bitangent};
     GL::Buffer tangents;
-    tangents.setData(Containers::Array<TangentBitangent>{Containers::DirectInit, 4, tangentBitangent});
+    tangents.setData(Containers::Array<TangentBitangent>{DirectInit, 4, tangentBitangent});
     plane.addVertexBuffer(tangents, 0, sizeof(TangentBitangent),
         GL::DynamicAttribute{Shaders::Phong::Tangent4{data.tangentComponents}});
     plane.addVertexBuffer(std::move(tangents), sizeof(Vector4),
@@ -1148,7 +1148,7 @@ template<class T> void PhongGLTest::renderVertexColor() {
         Primitives::UVSphereFlag::TextureCoordinates);
 
     /* Highlight the pole vertices and the middle rings */
-    Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0x999999_rgbf};
+    Containers::Array<T> colorData{DirectInit, sphereData.vertexCount(), 0x999999_rgbf};
     for(std::size_t i = 0; i != 3*33 + 1; ++i)
         colorData[sphereData.vertexCount()  - i - 1] = 0xff0000_rgbf*5.0f;
     for(std::size_t i = 6*33; i != 9*33; ++i)

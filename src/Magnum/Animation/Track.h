@@ -164,7 +164,7 @@ template<class K, class V, class R
         explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: _data{std::move(data)}, _interpolator{interpolator}, _interpolation{Interpolation::Custom}, _before{before}, _after{after} {}
 
         /** @overload */
-        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolator interpolator, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolator, before, after} {}
+        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolator interpolator, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{InPlaceInit, data}, interpolator, before, after} {}
 
         /** @overload
          * Equivalent to calling @ref Track(Containers::Array<std::pair<K, V>>&&, Interpolator, Extrapolation, Extrapolation)
@@ -173,7 +173,7 @@ template<class K, class V, class R
         explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V, R>{std::move(data), interpolator, extrapolation, extrapolation} {}
 
         /** @overload */
-        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolator, extrapolation, extrapolation} {}
+        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{InPlaceInit, data}, interpolator, extrapolation, extrapolation} {}
 
         /**
          * @brief Construct with both generic and custom interpolator
@@ -192,7 +192,7 @@ template<class K, class V, class R
         explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: _data{std::move(data)}, _interpolator{interpolator}, _interpolation{interpolation}, _before{before}, _after{after} {}
 
         /** @overload */
-        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolation, interpolator, before, after} {}
+        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{InPlaceInit, data}, interpolation, interpolator, before, after} {}
 
         /** @overload
          * Equivalent to calling @ref Track(Containers::Array<std::pair<K, V>>&&, Interpolation, Interpolator, Extrapolation, Extrapolation)
@@ -201,7 +201,7 @@ template<class K, class V, class R
         explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V, R>{std::move(data), interpolation, interpolator, extrapolation, extrapolation} {}
 
         /** @overload */
-        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolation, interpolator, extrapolation} {}
+        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{InPlaceInit, data}, interpolation, interpolator, extrapolation} {}
 
         /**
          * @brief Construct with generic interpolation behavior
@@ -219,7 +219,7 @@ template<class K, class V, class R
         explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Extrapolation before, Extrapolation after) noexcept: _data{std::move(data)}, _interpolator{interpolatorFor<V, R>(interpolation)}, _interpolation{interpolation}, _before{before}, _after{after} {}
 
         /** @overload */
-        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolation, before, after} {}
+        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{InPlaceInit, data}, interpolation, before, after} {}
 
         /** @overload
          * Equivalent to calling @ref Track(Containers::Array<std::pair<K, V>>&&, Interpolation, Extrapolation, Extrapolation)
@@ -228,7 +228,7 @@ template<class K, class V, class R
         explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V, R>{std::move(data), interpolation, extrapolation, extrapolation} {}
 
         /** @overload */
-        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolation, extrapolation, extrapolation} {}
+        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{InPlaceInit, data}, interpolation, extrapolation, extrapolation} {}
 
         /** @brief Copying is not allowed */
         Track(const Track<K, V, R>&) = delete;

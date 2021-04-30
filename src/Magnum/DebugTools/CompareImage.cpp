@@ -95,7 +95,7 @@ template<std::size_t size, class T> Float calculateImageDelta(const Containers::
 
 std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected) {
     /* Calculate a delta image */
-    Containers::Array<Float> deltaData{Containers::NoInit,
+    Containers::Array<Float> deltaData{NoInit,
         std::size_t(expected.size().product())};
     Containers::StridedArrayView2D<Float> delta{deltaData,
         {std::size_t(expected.size().y()), std::size_t(expected.size().x())}};
@@ -446,7 +446,7 @@ class ImageComparatorBase::State {
         Containers::Array<Float> delta;
 };
 
-ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* importerManager, PluginManager::Manager<Trade::AbstractImageConverter>* converterManager, Float maxThreshold, Float meanThreshold): _state{Containers::InPlaceInit, importerManager, converterManager, maxThreshold, meanThreshold} {
+ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* importerManager, PluginManager::Manager<Trade::AbstractImageConverter>* converterManager, Float maxThreshold, Float meanThreshold): _state{InPlaceInit, importerManager, converterManager, maxThreshold, meanThreshold} {
     CORRADE_ASSERT(!Math::isNan(maxThreshold) && !Math::isInf(maxThreshold) &&
                    !Math::isNan(meanThreshold) && !Math::isInf(meanThreshold),
         "DebugTools::CompareImage: thresholds can't be NaN or infinity", );

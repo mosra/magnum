@@ -441,7 +441,7 @@ template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceInto() 
         {T(1.0), T(5.0)}
     };
 
-    Containers::Array<UnsignedInt> indices{Containers::NoInit, Containers::arraySize(data)};
+    Containers::Array<UnsignedInt> indices{NoInit, Containers::arraySize(data)};
     std::size_t result = MeshTools::removeDuplicatesFuzzyInPlaceInto(
             Containers::arrayCast<2, T>(Containers::stridedArrayView(data)),
             indices, T(2.0));

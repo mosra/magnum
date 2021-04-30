@@ -164,7 +164,7 @@ void ObjectRendererGLTest::render3D() {
        the bottom blue line to be on a different place (but the rest is
        okay and the 2D case matches exactly), however to avoid false negatives
        elsewhere I'm making it conditional. */
-    Containers::Optional<CompareImageToFile> comparator{Containers::InPlaceInit, _manager,  71.6f, 0.018f};
+    Containers::Optional<CompareImageToFile> comparator{InPlaceInit, _manager,  71.6f, 0.018f};
     #ifdef CORRADE_TARGET_ANDROID
     if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::ArmMali)
         comparator.emplace(_manager, 127.6f, 0.54f);

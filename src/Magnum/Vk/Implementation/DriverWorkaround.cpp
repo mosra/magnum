@@ -100,13 +100,13 @@ void disableWorkaround(Containers::Array<std::pair<Containers::StringView, bool>
         return;
     }
 
-    arrayAppend(encounteredWorkarounds, Containers::InPlaceInit, found, true);
+    arrayAppend(encounteredWorkarounds, InPlaceInit, found, true);
 }
 
 Containers::Array<std::pair<Containers::StringView, bool>> disableAllWorkarounds() {
     Containers::Array<std::pair<Containers::StringView, bool>> encounteredWorkarounds;
     for(const Containers::StringView i: KnownWorkarounds)
-        arrayAppend(encounteredWorkarounds, Containers::InPlaceInit, i, true);
+        arrayAppend(encounteredWorkarounds, InPlaceInit, i, true);
     return encounteredWorkarounds;
 }
 
@@ -123,7 +123,7 @@ bool isDriverWorkaroundDisabled(Containers::Array<std::pair<Containers::StringVi
        the views in the KnownWorkarounds list. */
     for(const auto& i: encounteredWorkarounds)
         if(i.first.data() == found.data()) return i.second;
-    arrayAppend(encounteredWorkarounds, Containers::InPlaceInit, found, false);
+    arrayAppend(encounteredWorkarounds, InPlaceInit, found, false);
     return false;
 }
 

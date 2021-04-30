@@ -98,7 +98,7 @@ std::size_t removeDuplicatesInto(const Containers::StridedArrayView2D<const char
 }
 
 std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicates(const Containers::StridedArrayView2D<const char>& data) {
-    Containers::Array<UnsignedInt> indices{Containers::NoInit, data.size()[0]};
+    Containers::Array<UnsignedInt> indices{NoInit, data.size()[0]};
     const std::size_t size = removeDuplicatesInto(data, indices);
     return {std::move(indices), size};
 }
@@ -156,7 +156,7 @@ std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<cha
 }
 
 std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data) {
-    Containers::Array<UnsignedInt> indices{Containers::NoInit, data.size()[0]};
+    Containers::Array<UnsignedInt> indices{NoInit, data.size()[0]};
     const std::size_t size = removeDuplicatesInPlaceInto(data, indices);
     return {std::move(indices), size};
 }
@@ -223,7 +223,7 @@ template<class IndexType, class T> std::size_t removeDuplicatesFuzzyIndexedInPla
        to be robust. */
     const std::size_t vectorSize = data.size()[1];
     T range = T(0.0);
-    Containers::Array<T> offsets{Containers::NoInit, vectorSize};
+    Containers::Array<T> offsets{NoInit, vectorSize};
     {
         /** @todo this isn't really cache-efficient, do differently */
         std::size_t i = 0;
@@ -249,8 +249,8 @@ template<class IndexType, class T> std::size_t removeDuplicatesFuzzyIndexedInPla
 
     /* Index array that'll be filled in each pass and then used for remapping
        the `indices`; discretized storage for all map keys. */
-    Containers::Array<UnsignedInt> remapping{Containers::NoInit, dataSize};
-    Containers::Array<std::size_t> discretized{Containers::NoInit, dataSize*vectorSize};
+    Containers::Array<UnsignedInt> remapping{NoInit, dataSize};
+    Containers::Array<std::size_t> discretized{NoInit, dataSize*vectorSize};
 
     /* First go with original coordinates, then move them by epsilon/2 in each
        dimension. */
@@ -349,7 +349,7 @@ template<class T> std::size_t removeDuplicatesFuzzyInPlaceIntoImplementation(con
 }
 
 template<class T> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlaceImplementation(const Containers::StridedArrayView2D<T>& data, const T epsilon) {
-    Containers::Array<UnsignedInt> indices{Containers::NoInit, data.size()[0]};
+    Containers::Array<UnsignedInt> indices{NoInit, data.size()[0]};
     const std::size_t size = removeDuplicatesFuzzyInPlaceIntoImplementation(data, indices, epsilon);
     return {std::move(indices), size};
 }
@@ -425,7 +425,7 @@ Trade::MeshData removeDuplicates(Trade::MeshData&& data) {
         indexData = ownedInterleaved.releaseIndexData();
         indexType = ownedInterleaved.indexType();
     } else {
-        indexData = Containers::Array<char>{Containers::NoInit, ownedInterleaved.vertexCount()*sizeof(UnsignedInt)};
+        indexData = Containers::Array<char>{NoInit, ownedInterleaved.vertexCount()*sizeof(UnsignedInt)};
         uniqueVertexCount = removeDuplicatesInPlaceInto(vertexData, Containers::arrayCast<UnsignedInt>(indexData));
         indexType = MeshIndexType::UnsignedInt;
     }
@@ -435,7 +435,7 @@ Trade::MeshData removeDuplicates(Trade::MeshData&& data) {
         or interleave() above, arrayResize() wouldn't release the excessive
         memory in any way. This is basically equivalent to STL's
         shrink_to_fit(), which also copies */
-    Containers::Array<char> uniqueVertexData{Containers::NoInit, uniqueVertexCount*vertexData.size()[1]};
+    Containers::Array<char> uniqueVertexData{NoInit, uniqueVertexCount*vertexData.size()[1]};
     Utility::copy(vertexData.prefix(uniqueVertexCount),
         Containers::StridedArrayView2D<char>{uniqueVertexData, {uniqueVertexCount, vertexData.size()[1]}});
 

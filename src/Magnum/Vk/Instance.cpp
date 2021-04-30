@@ -189,7 +189,7 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledLayers(const Containers::Array
            don't get invalidated when the array gets reallocated. */
         const char* data;
         if(!(layer.flags() >= (Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global)))
-            data = arrayAppend(_state->ownedStrings, Containers::InPlaceInit,
+            data = arrayAppend(_state->ownedStrings, InPlaceInit,
                 Containers::AllocatedInit, layer).data();
         else data = layer.data();
 
@@ -223,7 +223,7 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const Containers::A
            don't get invalidated when the array gets reallocated. */
         const char* data;
         if(!(extension.flags() >= (Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global)))
-            data = arrayAppend(_state->ownedStrings, Containers::InPlaceInit,
+            data = arrayAppend(_state->ownedStrings, InPlaceInit,
                 Containers::AllocatedInit, extension).data();
         else data = extension.data();
 

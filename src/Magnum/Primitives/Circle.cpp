@@ -132,7 +132,7 @@ Trade::MeshData circle3DSolid(const UnsignedInt segments, const Circle3DFlags fl
     }
 
     /* Set up the layout */
-    Containers::Array<char> vertexData{Containers::NoInit, (segments + 2)*stride};
+    Containers::Array<char> vertexData{NoInit, (segments + 2)*stride};
     Containers::Array<Trade::MeshAttributeData> attributeData{attributeCount};
     std::size_t attributeIndex = 0;
     std::size_t attributeOffset = 0;

@@ -317,10 +317,10 @@ void CompareImageTest::calculateDeltaStorage() {
     Float max, mean;
     std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualRgb.format(), ActualRgb.pixels(), ExpectedRgb);
 
-    CORRADE_COMPARE_AS(delta, (Containers::Array<Float>{Containers::InPlaceInit, {
+    CORRADE_COMPARE_AS(delta, Containers::arrayView<Float>({
         1.0f/3.0f, (55.0f + 1.0f)/3.0f,
         48.0f/3.0f, 117.0f/3.0f
-    }}), TestSuite::Compare::Container);
+    }), TestSuite::Compare::Container);
     CORRADE_COMPARE(max, 117.0f/3.0f);
     CORRADE_COMPARE(mean, 18.5f);
 }
@@ -381,9 +381,9 @@ void CompareImageTest::calculateDeltaSpecials3() {
     Containers::Array<Float> delta;
     Float max, mean;
     std::tie(delta, max, mean) = Implementation::calculateImageDelta(actualSpecials3.format(), actualSpecials3.pixels(), expectedSpecials3);
-    CORRADE_COMPARE_AS(delta, (Containers::Array<Float>{Containers::InPlaceInit, {
+    CORRADE_COMPARE_AS(delta, Containers::arrayView<Float>({
         Constants::nan(), Constants::nan(), 1.15f
-    }}), TestSuite::Compare::Container);
+    }), TestSuite::Compare::Container);
     /* Max and mean should be calculated *without* the specials because
        otherwise every other potential difference will be zero compared to
        infinity */

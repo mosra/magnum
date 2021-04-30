@@ -49,7 +49,7 @@ template<class T> void tipsifyInPlaceImplementation(const Containers::StridedArr
     Containers::Array<UnsignedInt> deadEndStack;
 
     /* Output index buffer */
-    Containers::Array<T> outputIndices{Containers::NoInit, indices.size()};
+    Containers::Array<T> outputIndices{NoInit, indices.size()};
     std::size_t outputIndex = 0;
 
     /* Array with candidates for next fanning vertex (in 1-ring around

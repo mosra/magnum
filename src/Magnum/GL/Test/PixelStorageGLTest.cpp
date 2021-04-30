@@ -120,7 +120,7 @@ void PixelStorageGLTest::unpack2D() {
     /* Read into zero-initialized array to avoid comparing random memory in
        padding bytes (confirmed on NVidia 355.11, AMD 15.300.1025.0) */
     Image2D actual{PixelFormat::RGB, PixelType::UnsignedByte, {},
-        Containers::Array<char>{Containers::ValueInit, sizeof(ActualData)}};
+        Containers::Array<char>{ValueInit, sizeof(ActualData)}};
 
     #ifndef MAGNUM_TARGET_GLES
     texture.image(0, actual);
@@ -158,7 +158,7 @@ void PixelStorageGLTest::pack2D() {
         .setAlignment(2)
         .setRowLength(3)
         .setSkip({1, 3, 0}),
-        PixelFormat::RGB, PixelType::UnsignedByte, {}, Containers::Array<char>{Containers::ValueInit, sizeof(Data2D)}};
+        PixelFormat::RGB, PixelType::UnsignedByte, {}, Containers::Array<char>{ValueInit, sizeof(Data2D)}};
 
     #ifndef MAGNUM_TARGET_GLES
     texture.image(0, image);
@@ -218,7 +218,7 @@ void PixelStorageGLTest::unpack3D() {
     /* Read into zero-initialized array to avoid comparing random memory in
        padding bytes (confirmed on AMD 15.300.1025.0) */
     Image3D actual{PixelFormat::RGB, PixelType::UnsignedByte, {},
-        Containers::Array<char>{Containers::ValueInit, sizeof(ActualData)}};
+        Containers::Array<char>{ValueInit, sizeof(ActualData)}};
 
     texture.image(0, actual);
 
@@ -252,7 +252,7 @@ void PixelStorageGLTest::pack3D() {
         .setRowLength(3)
         .setImageHeight(5)
         .setSkip({1, 2, 1}),
-        PixelFormat::RGB, PixelType::UnsignedByte, {}, Containers::Array<char>{Containers::ValueInit, sizeof(Data3D)}};
+        PixelFormat::RGB, PixelType::UnsignedByte, {}, Containers::Array<char>{ValueInit, sizeof(Data3D)}};
     texture.image(0, image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -330,7 +330,7 @@ void PixelStorageGLTest::packCompressed2D() {
         .setCompressedBlockDataSize(16)
         .setRowLength(12)
         .setSkip({4, 4, 0}),
-        CompressedPixelFormat::RGBAS3tcDxt3, {}, Containers::Array<char>{Containers::ValueInit, sizeof(CompressedData2D)}};
+        CompressedPixelFormat::RGBAS3tcDxt3, {}, Containers::Array<char>{ValueInit, sizeof(CompressedData2D)}};
     texture.compressedImage(0, image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -438,7 +438,7 @@ void PixelStorageGLTest::packCompressed3D() {
         .setRowLength(8)
         .setImageHeight(8)
         .setSkip({4, 4, 4}),
-        CompressedPixelFormat::RGBAS3tcDxt3, {}, Containers::Array<char>{Containers::ValueInit, sizeof(CompressedData3D)}};
+        CompressedPixelFormat::RGBAS3tcDxt3, {}, Containers::Array<char>{ValueInit, sizeof(CompressedData3D)}};
     texture.compressedImage(0, image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();

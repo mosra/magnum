@@ -39,7 +39,7 @@ PipelineLayoutCreateInfo::PipelineLayoutCreateInfo(const Containers::ArrayView<c
     /* Make a copy of the descriptor set layout list */
     Containers::ArrayView<VkDescriptorSetLayout> descriptorSetLayoutsCopy;
     _data = Containers::ArrayTuple{
-        {Containers::NoInit, descriptorSetLayouts.size(), descriptorSetLayoutsCopy}
+        {NoInit, descriptorSetLayouts.size(), descriptorSetLayoutsCopy}
     };
     Utility::copy(descriptorSetLayouts, descriptorSetLayoutsCopy);
 

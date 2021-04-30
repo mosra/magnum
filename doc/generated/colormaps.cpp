@@ -56,7 +56,7 @@ int main() {
         constexpr Vector2i OutputSize{256, 12};
         CORRADE_INTERNAL_ASSERT(image.first.size() == std::size_t(OutputSize.x()));
 
-        Containers::Array<Vector3ub> data{Containers::NoInit, std::size_t(OutputSize.product())};
+        Containers::Array<Vector3ub> data{NoInit, std::size_t(OutputSize.product())};
         Containers::StridedArrayView2D<const Vector3ub> src{image.first,
             {std::size_t(OutputSize.y()), std::size_t(OutputSize.x())}, {0, 3}};
         Containers::StridedArrayView2D<Vector3ub> dst{data,

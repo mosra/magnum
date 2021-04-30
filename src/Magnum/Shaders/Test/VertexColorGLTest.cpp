@@ -200,7 +200,7 @@ template<class T> void VertexColorGLTest::renderDefaults2D() {
         Primitives::Circle2DFlag::TextureCoordinates);
 
     /* All a single color */
-    Containers::Array<T> colorData{Containers::DirectInit, circleData.vertexCount(), 0xffffff_rgbf};
+    Containers::Array<T> colorData{DirectInit, circleData.vertexCount(), 0xffffff_rgbf};
 
     GL::Buffer colors;
     colors.setData(colorData);
@@ -241,7 +241,7 @@ template<class T> void VertexColorGLTest::renderDefaults3D() {
         Primitives::UVSphereFlag::TextureCoordinates);
 
     /* All a single color */
-    Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0xffffff_rgbf};
+    Containers::Array<T> colorData{DirectInit, sphereData.vertexCount(), 0xffffff_rgbf};
 
     GL::Buffer colors;
     colors.setData(colorData);
@@ -274,7 +274,7 @@ template<class T> void VertexColorGLTest::render2D() {
         Primitives::Circle2DFlag::TextureCoordinates);
 
     /* Highlight a quarter */
-    Containers::Array<T> colorData{Containers::DirectInit, circleData.vertexCount(), 0x9999ff_rgbf};
+    Containers::Array<T> colorData{DirectInit, circleData.vertexCount(), 0x9999ff_rgbf};
     for(std::size_t i = 8; i != 16; ++i)
         colorData[i + 1] = 0xffff99_rgbf;
 
@@ -319,7 +319,7 @@ template<class T> void VertexColorGLTest::render3D() {
         Primitives::UVSphereFlag::TextureCoordinates);
 
     /* Highlight the middle rings */
-    Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0x9999ff_rgbf};
+    Containers::Array<T> colorData{DirectInit, sphereData.vertexCount(), 0x9999ff_rgbf};
     for(std::size_t i = 6*33; i != 9*33; ++i)
         colorData[i + 1] = 0xffff99_rgbf;
 

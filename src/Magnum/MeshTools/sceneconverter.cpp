@@ -468,7 +468,7 @@ used.)")
                             break;
                     }
 
-                    arrayAppend(info.attributes, Containers::InPlaceInit,
+                    arrayAppend(info.attributes, InPlaceInit,
                         mesh->attributeOffset(k),
                         mesh->attributeStride(k),
                         mesh->attributeArraySize(k),

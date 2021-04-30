@@ -208,7 +208,7 @@ void printSpirvInfo(Containers::ArrayView<const UnsignedInt> data) {
         Debug d;
         d << "Entrypoint" << entrypoint->name << "(" << Debug::nospace << spvExecutionModelToStage(entrypoint->executionModel) << Debug::nospace << ")" << Debug::newline;
 
-        Containers::Array<ShaderTools::Implementation::SpirvEntrypointInterface> interface{Containers::ValueInit, entrypoint->interfaces.size()};
+        Containers::Array<ShaderTools::Implementation::SpirvEntrypointInterface> interface{ValueInit, entrypoint->interfaces.size()};
         ShaderTools::Implementation::spirvEntrypointInterface(data, *entrypoint, interface);
         for(const ShaderTools::Implementation::SpirvEntrypointInterface& i: interface) {
             d << "   ";
@@ -433,11 +433,11 @@ see documentation of a particular converter for more information.)")
                 for(std::size_t i = 0; i != args.arrayValueCount("define"); ++i) {
                     const Containers::Array3<Containers::StringView> define =
                     args.arrayValue<Containers::StringView>("define", i).partition('=');
-                    arrayAppend(definitions, Containers::InPlaceInit,
+                    arrayAppend(definitions, InPlaceInit,
                         define[0], define[2]);
                 }
                 for(std::size_t i = 0; i != args.arrayValueCount("undefine"); ++i) {
-                    arrayAppend(definitions, Containers::InPlaceInit,
+                    arrayAppend(definitions, InPlaceInit,
                         args.arrayValue<Containers::StringView>("undefine", i), nullptr);
                 }
 
@@ -465,7 +465,7 @@ see documentation of a particular converter for more information.)")
             if(args.isSet("link")) {
                 arrayReserve(linkInputs, args.arrayValueCount("input"));
                 for(std::size_t i = 0; i != args.arrayValueCount("input"); ++i)
-                    arrayAppend(linkInputs, Containers::InPlaceInit,
+                    arrayAppend(linkInputs, InPlaceInit,
                         ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", i));
             }
         }
