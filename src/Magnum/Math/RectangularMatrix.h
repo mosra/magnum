@@ -497,20 +497,15 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return *reinterpret_cast<const Vector<rows*cols, T>*>(data());
         }
 
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
-    private:
-    #endif
-        /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(T) and Matrix<size, T>(T) */
-        /* MSVC 2015 can't handle {} here */
-        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Corrade::Containers::Implementation::Sequence<sequence...>, T value) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), value))...} {}
-
     private:
         /* These two needed to access _data to speed up debug builds,
            Matrix::ij() needs access to different Matrix sizes */
         template<std::size_t, class> friend class Matrix;
         template<std::size_t, class> friend struct Implementation::MatrixDeterminant;
+
+        /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(T) and Matrix<size, T>(T) */
+        /* MSVC 2015 can't handle {} here */
+        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Corrade::Containers::Implementation::Sequence<sequence...>, T value) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), value))...} {}
 
         /* Implementation for RectangularMatrix<cols, rows, T>::fromDiagonal() and RectangularMatrix<cols, rows, T>(IdentityInitT, T) */
         template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Corrade::Containers::Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal);

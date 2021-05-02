@@ -83,7 +83,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         template<class ...U> constexpr /*implicit*/ Matrix(const Vector<size, T>& first, const U&... next) noexcept: RectangularMatrix<size, size, T>(first, next...) {}
 
         /** @brief Construct with one value for all elements */
-        constexpr explicit Matrix(T value) noexcept: RectangularMatrix<size, size, T>{typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{}, value} {}
+        constexpr explicit Matrix(T value) noexcept: RectangularMatrix<size, size, T>{value} {}
 
         /**
          * @brief Construct from a matrix of a different type
