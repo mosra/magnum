@@ -59,7 +59,8 @@ struct RectangularMatrixTest: Corrade::TestSuite::Tester {
     explicit RectangularMatrixTest();
 
     void construct();
-    void constructDefault();
+    void constructZero();
+    void constructIdentity();
     void constructNoInit();
     void constructOneValue();
     void constructOneComponent();
@@ -112,7 +113,8 @@ typedef Vector<2, Int> Vector2i;
 
 RectangularMatrixTest::RectangularMatrixTest() {
     addTests({&RectangularMatrixTest::construct,
-              &RectangularMatrixTest::constructDefault,
+              &RectangularMatrixTest::constructZero,
+              &RectangularMatrixTest::constructIdentity,
               &RectangularMatrixTest::constructNoInit,
               &RectangularMatrixTest::constructOneValue,
               &RectangularMatrixTest::constructOneComponent,
@@ -160,7 +162,7 @@ void RectangularMatrixTest::construct() {
     CORRADE_VERIFY(std::is_nothrow_constructible<Matrix3x4, Vector4, Vector4, Vector4>::value);
 }
 
-void RectangularMatrixTest::constructDefault() {
+void RectangularMatrixTest::constructZero() {
     constexpr Matrix4x3 a;
     constexpr Matrix4x3 b{ZeroInit};
     CORRADE_COMPARE(a, Matrix4x3(Vector3(0.0f, 0.0f, 0.0f),
@@ -177,6 +179,24 @@ void RectangularMatrixTest::constructDefault() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Matrix4x3>::value);
+}
+
+void RectangularMatrixTest::constructIdentity() {
+    constexpr Matrix4x3 a{IdentityInit};
+    constexpr Matrix4x3 b{IdentityInit, 4.0f};
+    CORRADE_COMPARE(a, (Matrix4x3{Vector3{1.0f, 0.0f, 0.0f},
+                                  Vector3{0.0f, 1.0f, 0.0f},
+                                  Vector3{0.0f, 0.0f, 1.0f},
+                                  Vector3{0.0f, 0.0f, 0.0f}}));
+    CORRADE_COMPARE(b, (Matrix4x3{Vector3{4.0f, 0.0f, 0.0f},
+                                  Vector3{0.0f, 4.0f, 0.0f},
+                                  Vector3{0.0f, 0.0f, 4.0f},
+                                  Vector3{0.0f, 0.0f, 0.0f}}));
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4x3, IdentityInitT>::value);
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<IdentityInitT, Matrix4x3>::value);
 }
 
 void RectangularMatrixTest::constructNoInit() {

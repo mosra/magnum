@@ -80,7 +80,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * The @p value allows you to specify a value on diagonal.
          * @see @ref Matrix(ZeroInitT), @ref fromDiagonal()
          */
-        constexpr explicit Matrix(IdentityInitT, T value = T(1)) noexcept: RectangularMatrix<size, size, T>{typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{}, Vector<size, T>(value)} {}
+        constexpr explicit Matrix(IdentityInitT, T value = T(1)) noexcept: RectangularMatrix<size, size, T>{IdentityInit, value} {}
 
         /** @copydoc RectangularMatrix::RectangularMatrix(ZeroInitT) */
         constexpr explicit Matrix(ZeroInitT) noexcept: RectangularMatrix<size, size, T>{ZeroInit} {}

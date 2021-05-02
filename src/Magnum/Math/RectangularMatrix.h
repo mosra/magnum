@@ -124,8 +124,22 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          */
         constexpr /*implicit*/ RectangularMatrix() noexcept: RectangularMatrix<cols, rows, T>{typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, ZeroInit} {}
 
-        /** @brief Construct a zero-filled matrix */
+        /**
+         * @brief Construct a zero-filled matrix
+         *
+         * @see @ref RectangularMatrix(IdentityInitT, T)
+         */
         constexpr explicit RectangularMatrix(ZeroInitT) noexcept: RectangularMatrix<cols, rows, T>{typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, ZeroInit} {}
+
+        /**
+         * @brief Construct an identity matrix
+         * @m_since_latest
+         *
+         * For non-square matrices, the diagonal has @ref DiagonalSize
+         * elements. The @p value allows you to specify a value on diagonal.
+         * @see @ref RectangularMatrix(ZeroInitT), @ref fromDiagonal()
+         */
+        constexpr explicit RectangularMatrix(IdentityInitT, T value = T(1)) noexcept: RectangularMatrix<cols, rows, T>{typename Corrade::Containers::Implementation::GenerateSequence<DiagonalSize>::Type{}, Vector<DiagonalSize, T>(value)} {}
 
         /** @brief Construct without initializing the contents */
         explicit RectangularMatrix(Magnum::NoInitT) noexcept: RectangularMatrix<cols, rows, T>{typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, Magnum::NoInit} {}
@@ -442,9 +456,6 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
     #else
     private:
     #endif
-        /* Implementation for RectangularMatrix<cols, rows, T>::fromDiagonal() and Matrix<size, T>(IdentityInitT, T) */
-        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Corrade::Containers::Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal);
-
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(T) and Matrix<size, T>(T) */
         /* MSVC 2015 can't handle {} here */
         template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Corrade::Containers::Implementation::Sequence<sequence...>, T value) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), value))...} {}
@@ -454,6 +465,9 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
            Matrix::ij() needs access to different Matrix sizes */
         template<std::size_t, class> friend class Matrix;
         template<std::size_t, class> friend struct Implementation::MatrixDeterminant;
+
+        /* Implementation for RectangularMatrix<cols, rows, T>::fromDiagonal() and RectangularMatrix<cols, rows, T>(IdentityInitT, T) */
+        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Corrade::Containers::Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal);
 
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
         template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Corrade::Containers::Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix) noexcept: _data{Vector<rows, T>(matrix[sequence])...} {}

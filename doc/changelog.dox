@@ -119,6 +119,9 @@ See also:
     create a transformation from a rotation and translation part (see
     [mosra/magnum#471](https://github.com/mosra/magnum/pull/471))
 -   Added @ref Math::Intersection::rayRange() (see [mosra/magnum#484](https://github.com/mosra/magnum/pull/484))
+-   Added @ref Math::RectangularMatrix::RectangularMatrix(IdentityInitT, T)
+    constructor as it might be useful to create non-square identity matrices as
+    well
 
 @subsubsection changelog-latest-new-meshtools MeshTools library
 
