@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Dual.h"
 #include "Magnum/Math/Quaternion.h"
@@ -184,6 +185,10 @@ void DualTest::constructCopy() {
     constexpr Dual b(a);
     CORRADE_COMPARE(b, Dual(2.0f, 3.0f));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Dual>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Dual>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Dual>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Dual>::value);
 }

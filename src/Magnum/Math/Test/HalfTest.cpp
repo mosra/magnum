@@ -32,6 +32,7 @@
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Corrade/Utility/Tweakable.h>
 #endif
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Packing.h"
@@ -562,6 +563,10 @@ void HalfTest::constructCopy() {
 
     CORRADE_COMPARE(b, Half{3.5f});
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Half>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Half>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Half>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Half>::value);
 }

@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Complex.h"
 #include "Magnum/Math/Matrix3.h"
@@ -253,6 +254,10 @@ void ComplexTest::constructCopy() {
     constexpr Complex b(a);
     CORRADE_COMPARE(b, Complex(2.5f, -5.0f));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Complex>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Complex>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Complex>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Complex>::value);
 }

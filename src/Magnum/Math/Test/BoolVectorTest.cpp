@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/BoolVector.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -176,6 +177,10 @@ void BoolVectorTest::constructCopy() {
     constexpr BoolVector19 b(a);
     CORRADE_COMPARE(b, BoolVector19(0xa5, 0x5f, 0x07));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<BoolVector19>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<BoolVector19>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<BoolVector19>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<BoolVector19>::value);
 }

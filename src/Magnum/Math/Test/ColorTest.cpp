@@ -32,6 +32,7 @@
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Tweakable.h>
 #endif
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Half.h"
@@ -429,6 +430,12 @@ void ColorTest::constructCopy() {
     Color4 d(c);
     CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 0.25f));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Color3>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Color4>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Color3>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Color4>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Color3>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Color4>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Color3>::value);

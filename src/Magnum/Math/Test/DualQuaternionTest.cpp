@@ -27,6 +27,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -275,6 +276,10 @@ void DualQuaternionTest::constructCopy() {
     DualQuaternion b(a);
     CORRADE_COMPARE(b, DualQuaternion({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f}));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<DualQuaternion>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<DualQuaternion>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<DualQuaternion>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<DualQuaternion>::value);
 }

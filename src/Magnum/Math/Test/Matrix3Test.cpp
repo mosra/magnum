@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -288,6 +289,10 @@ void Matrix3Test::constructCopy() {
                                {4.5f,  4.0f, 7.0f},
                                {7.9f, -1.0f, 8.0f}));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Matrix3>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Matrix3>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Matrix3>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Matrix3>::value);
 }

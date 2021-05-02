@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -197,6 +198,10 @@ void Vector4Test::constructCopy() {
     Vector4 b(a);
     CORRADE_COMPARE(b, Vector4(1.0f, -2.5f, 3.0f, 4.1f));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Vector4>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Vector4>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Vector4>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Vector4>::value);
 }

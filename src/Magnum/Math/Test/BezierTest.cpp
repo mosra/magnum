@@ -27,6 +27,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/CubicHermite.h"
@@ -185,6 +186,10 @@ void BezierTest::constructCopy() {
     constexpr QuadraticBezier2D b{a};
     CORRADE_COMPARE(b, (QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<QuadraticBezier2D>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<QuadraticBezier2D>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<QuadraticBezier2D>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<QuadraticBezier2D>::value);
 }

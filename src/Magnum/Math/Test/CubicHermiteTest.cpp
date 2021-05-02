@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/CubicHermite.h"
@@ -588,6 +589,10 @@ void CubicHermiteTest::constructCopyScalar() {
 
     CORRADE_COMPARE(b, (CubicHermite1D{2.0f, -2.0f, -0.5f}));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<CubicHermite1D>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<CubicHermite1D>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<CubicHermite1D>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<CubicHermite1D>::value);
 }
@@ -598,6 +603,10 @@ void CubicHermiteTest::constructCopyVector() {
 
     CORRADE_COMPARE(b, (CubicHermite2D{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}}));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<CubicHermite2D>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<CubicHermite2D>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<CubicHermite2D>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<CubicHermite2D>::value);
 }
@@ -608,6 +617,10 @@ void CubicHermiteTest::constructCopyComplex() {
 
     CORRADE_COMPARE(b, (CubicHermiteComplex{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}}));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<CubicHermiteComplex>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<CubicHermiteComplex>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<CubicHermiteComplex>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<CubicHermiteComplex>::value);
 }
@@ -624,8 +637,12 @@ void CubicHermiteTest::constructCopyQuaternion() {
         {{1.5f, -2.0f, 0.1f}, 1.1f},
         {{3.0f, -0.5f, 1.2f}, 0.3f}}));
 
-    CORRADE_VERIFY(std::is_nothrow_copy_constructible<CubicHermiteComplex>::value);
-    CORRADE_VERIFY(std::is_nothrow_copy_assignable<CubicHermiteComplex>::value);
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<CubicHermiteQuaternion>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<CubicHermiteQuaternion>::value);
+    #endif
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<CubicHermiteQuaternion>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<CubicHermiteQuaternion>::value);
 }
 
 void CubicHermiteTest::dataScalar() {
