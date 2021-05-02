@@ -139,7 +139,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         constexpr explicit RectangularMatrix(T value) noexcept: RectangularMatrix{typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, value} {}
 
         /**
-         * @brief Construct matrix from another of different type
+         * @brief Construct from a matrix of a different type
          *
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
@@ -148,13 +148,13 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          */
         template<class U> constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other) noexcept: RectangularMatrix(typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, other) {}
 
-        /** @brief Construct matrix from external representation */
+        /** @brief Construct a matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
         constexpr /*implicit*/ RectangularMatrix(const RectangularMatrix<cols, rows, T>&) noexcept = default;
 
-        /** @brief Convert matrix to external representation */
+        /** @brief Convert a matrix to external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> constexpr explicit operator U() const {
             return Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(*this);
         }
@@ -212,7 +212,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
-         * @brief Non-equality operator
+         * @brief Non-equality comparison
          *
          * @see @ref Vector::operator<(), @ref Vector::operator<=(),
          *      @ref Vector::operator>=(), @ref Vector::operator>()

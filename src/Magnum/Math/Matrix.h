@@ -78,7 +78,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * @brief Construct an identity matrix
          *
          * The @p value allows you to specify a value on diagonal.
-         * @see @ref fromDiagonal()
+         * @see @ref Matrix(ZeroInitT), @ref fromDiagonal()
          */
         constexpr explicit Matrix(IdentityInitT, T value = T(1)) noexcept: RectangularMatrix<size, size, T>{typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{}, Vector<size, T>(value)} {}
 
@@ -95,7 +95,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         constexpr explicit Matrix(T value) noexcept: RectangularMatrix<size, size, T>{typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{}, value} {}
 
         /**
-         * @brief Construct from a matrix of adifferent type
+         * @brief Construct from a matrix of a different type
          *
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:

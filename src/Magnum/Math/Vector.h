@@ -170,7 +170,7 @@ template<std::size_t size, class T> class Vector {
         }
 
         /**
-         * @brief Pad vector
+         * @brief Pad a vector
          *
          * If size of @p a is smaller than @ref Size, it is padded from right
          * with @p value, otherwise it's cut.
