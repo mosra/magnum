@@ -65,6 +65,7 @@ struct RectangularMatrixTest: Corrade::TestSuite::Tester {
     void constructOneValue();
     void constructOneComponent();
     void constructConversion();
+    void constructFromDifferentSize();
     void constructFromData();
     void constructFromDiagonal();
     void constructCopy();
@@ -98,8 +99,13 @@ struct RectangularMatrixTest: Corrade::TestSuite::Tester {
 };
 
 typedef RectangularMatrix<4, 3, Float> Matrix4x3;
+typedef RectangularMatrix<4, 2, Float> Matrix4x2;
 typedef RectangularMatrix<3, 4, Float> Matrix3x4;
+typedef RectangularMatrix<3, 3, Float> Matrix3x3;
+typedef RectangularMatrix<3, 2, Float> Matrix3x2;
 typedef RectangularMatrix<2, 2, Float> Matrix2x2;
+typedef RectangularMatrix<2, 3, Float> Matrix2x3;
+typedef RectangularMatrix<2, 4, Float> Matrix2x4;
 typedef RectangularMatrix<2, 2, Int> Matrix2x2i;
 typedef Vector<4, Float> Vector4;
 typedef Vector<3, Float> Vector3;
@@ -119,6 +125,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::constructOneValue,
               &RectangularMatrixTest::constructOneComponent,
               &RectangularMatrixTest::constructConversion,
+              &RectangularMatrixTest::constructFromDifferentSize,
               &RectangularMatrixTest::constructFromData,
               &RectangularMatrixTest::constructFromDiagonal,
               &RectangularMatrixTest::constructCopy,
@@ -258,6 +265,65 @@ void RectangularMatrixTest::constructConversion() {
     CORRADE_VERIFY(!std::is_convertible<Matrix2x2, Matrix2x2i>::value);
 
     CORRADE_VERIFY(std::is_nothrow_constructible<Matrix2x2, Matrix2x2i>::value);
+}
+
+void RectangularMatrixTest::constructFromDifferentSize() {
+    /* Test converting to more columns, less rows */
+    constexpr Matrix2x4 a{Vector4{3.0f,  5.0f, 8.0f, -3.0f},
+                          Vector4{4.5f,  4.0f, 7.0f,  2.0f}};
+    constexpr Matrix3x2 aExpected{Vector2{3.0f, 5.0f},
+                                  Vector2{4.5f, 4.0f},
+                                  Vector2{0.0f, 0.0f}};
+    constexpr Matrix3x3 aExpectedZero{Vector3{3.0f, 5.0f, 8.0f},
+                                      Vector3{4.5f, 4.0f, 7.0f},
+                                      Vector3{0.0f, 0.0f, 0.0f}};
+    constexpr Matrix3x3 aExpectedIdentity{Vector3{3.0f, 5.0f, 8.0f},
+                                          Vector3{4.5f, 4.0f, 7.0f},
+                                          Vector3{0.0f, 0.0f, 0.5f}};
+
+    constexpr Matrix3x2 a2{a};
+    CORRADE_COMPARE(a2, aExpected);
+    CORRADE_COMPARE(Matrix3x2{a}, aExpected);
+
+    constexpr Matrix3x3 aZero1{a};
+    constexpr Matrix3x3 aZero2{ZeroInit, a};
+    CORRADE_COMPARE(aZero1, aExpectedZero);
+    CORRADE_COMPARE(aZero2, aExpectedZero);
+    CORRADE_COMPARE(Matrix3x3{a}, aExpectedZero);
+    CORRADE_COMPARE((Matrix3x3{ZeroInit, a}), aExpectedZero);
+
+    constexpr Matrix3x3 aIdentity{IdentityInit, a, 0.5f};
+    CORRADE_COMPARE(aIdentity, aExpectedIdentity);
+    CORRADE_COMPARE((Matrix3x3{IdentityInit, aIdentity, 0.5f}), aExpectedIdentity);
+
+    /* Test converting to less columns, more rows */
+    constexpr Matrix4x2 b{Vector2{3.0f,  5.0f},
+                          Vector2{8.0f, -3.0f},
+                          Vector2{4.5f,  4.0f},
+                          Vector2{7.0f,  2.0f}};
+    constexpr Matrix2x3 bExpected{Vector3{3.0f,  5.0f, 0.0f},
+                                  Vector3{8.0f, -3.0f, 0.0f}};
+    constexpr Matrix3x3 bExpectedZero{Vector3{3.0f,  5.0f, 0.0f},
+                                      Vector3{8.0f, -3.0f, 0.0f},
+                                      Vector3{4.5f,  4.0f, 0.0f}};
+    constexpr Matrix3x3 bExpectedIdentity{Vector3{3.0f,  5.0f, 0.0f},
+                                          Vector3{8.0f, -3.0f, 0.0f},
+                                          Vector3{4.5f,  4.0f, 0.5f}};
+
+    constexpr Matrix2x3 b2{b};
+    CORRADE_COMPARE(b2, bExpected);
+    CORRADE_COMPARE(Matrix2x3{b}, bExpected);
+
+    constexpr Matrix3x3 bZero1{b};
+    constexpr Matrix3x3 bZero2{ZeroInit, b};
+    CORRADE_COMPARE(bZero1, bExpectedZero);
+    CORRADE_COMPARE(bZero2, bExpectedZero);
+    CORRADE_COMPARE(Matrix3x3{b}, bExpectedZero);
+    CORRADE_COMPARE((Matrix3x3{ZeroInit, b}), bExpectedZero);
+
+    constexpr Matrix3x3 bIdentity{IdentityInit, b, 0.5f};
+    CORRADE_COMPARE(bIdentity, bExpectedIdentity);
+    CORRADE_COMPARE((Matrix3x3{IdentityInit, bIdentity}), bExpectedIdentity);
 }
 
 void RectangularMatrixTest::constructFromData() {

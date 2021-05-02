@@ -253,6 +253,14 @@ See also:
 -   Added @ref Math::castInto() overloads for casting between @ref UnsignedByte
     and @ref UnsignedShort or @ref Byte and @ref Short, and for casting between
     @ref Float and @ref Double
+-   @ref Math::RectangularMatrix is now explicitly convertible from matrices of
+    different sizes, with a possibility to specify whether to fill the diagonal
+    or leave it as zeros. This was originally available only on (square)
+    @ref Math::Matrix from other square matrices where it implicitly filled the
+    diagonal to an identity, but is now generalized for arbitrary rectangular
+    matrices, and with the default on @ref Math::RectangularMatrix being
+    zero-fill while @ref Math::Matrix stays with the identity for consistency
+    with other constructors.
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 

@@ -89,14 +89,15 @@ struct MatrixTest: Corrade::TestSuite::Tester {
     void debug();
 };
 
-typedef Matrix<2, Float> Matrix2x2;
-typedef Matrix<3, Float> Matrix3x3;
-typedef Matrix<4, Float> Matrix4x4;
-typedef Matrix<4, Int> Matrix4x4i;
-typedef Vector<2, Float> Vector2;
-typedef Vector<3, Float> Vector3;
-typedef Vector<4, Float> Vector4;
-typedef Vector<4, Int> Vector4i;
+typedef Math::Matrix2x2<Float> Matrix2x2;
+typedef Math::Matrix2x3<Float> Matrix2x3;
+typedef Math::Matrix3x3<Float> Matrix3x3;
+typedef Math::Matrix4x4<Float> Matrix4x4;
+typedef Math::Matrix4x4<Int> Matrix4x4i;
+typedef Math::Vector<2, Float> Vector2;
+typedef Math::Vector<3, Float> Vector3;
+typedef Math::Vector<4, Float> Vector4;
+typedef Math::Vector<4, Int> Vector4i;
 typedef Math::Constants<Float> Constants;
 
 MatrixTest::MatrixTest() {
@@ -248,24 +249,29 @@ void MatrixTest::constructConversion() {
 }
 
 void MatrixTest::constructFromDifferentSize() {
-    constexpr Matrix4x4 a{Vector4{3.0f,  5.0f, 8.0f, -3.0f},
-                          Vector4{4.5f,  4.0f, 7.0f,  2.0f},
-                          Vector4{1.0f,  2.0f, 3.0f, -1.0f},
-                          Vector4{7.9f, -1.0f, 8.0f, -1.5f}};
-    constexpr Matrix2x2 b{Vector2{3.0f,  5.0f},
-                          Vector2{4.5f,  4.0f}};
-    constexpr Matrix4x4 c{Vector4{3.0f, 5.0f, 0.0f, 0.0f},
-                          Vector4{4.5f, 4.0f, 0.0f, 0.0f},
-                          Vector4{0.0f, 0.0f, 1.0f, 0.0f},
-                          Vector4{0.0f, 0.0f, 0.0f, 1.0f}};
+    /* Tested thoroughly in RectangularMatrixTest, verify just that the args
+       are propagated correctly (cols, rows, zero/identity, identity value) */
+    constexpr Matrix2x3 a{Vector3{3.0f,  5.0f, 8.0f},
+                          Vector3{4.5f,  4.0f, 7.0f}};
+    constexpr Matrix4x4 expectedIdentity{Vector4{3.0f, 5.0f, 8.0f, 0.0f},
+                                         Vector4{4.5f, 4.0f, 7.0f, 0.0f},
+                                         Vector4{0.0f, 0.0f, 0.5f, 0.0f},
+                                         Vector4{0.0f, 0.0f, 0.0f, 0.5f}};
+    constexpr Matrix4x4 expectedZero{Vector4{3.0f, 5.0f, 8.0f, 0.0f},
+                                     Vector4{4.5f, 4.0f, 7.0f, 0.0f},
+                                     Vector4{0.0f, 0.0f, 0.0f, 0.0f},
+                                     Vector4{0.0f, 0.0f, 0.0f, 0.0f}};
 
-    constexpr Matrix4x4 larger{b};
-    CORRADE_COMPARE(larger, c);
-    CORRADE_COMPARE(Matrix4x4{b}, c);
+    constexpr Matrix4x4 identity1{a, 0.5f};
+    constexpr Matrix4x4 identity2{IdentityInit, a, 0.5f};
+    CORRADE_COMPARE(identity1, expectedIdentity);
+    CORRADE_COMPARE(identity2, expectedIdentity);
+    CORRADE_COMPARE((Matrix4x4{a, 0.5f}), expectedIdentity);
+    CORRADE_COMPARE((Matrix4x4{IdentityInit, a, 0.5f}), expectedIdentity);
 
-    constexpr Matrix2x2 smaller{a};
-    CORRADE_COMPARE(smaller, b);
-    CORRADE_COMPARE(Matrix2x2{a}, b);
+    constexpr Matrix4x4 zero{ZeroInit, a};
+    CORRADE_COMPARE(zero, expectedZero);
+    CORRADE_COMPARE((Matrix4x4{ZeroInit, a}), expectedZero);
 }
 
 void MatrixTest::constructCopy() {
