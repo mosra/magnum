@@ -204,8 +204,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * outline starts. Initial value is @cpp 0.5f @ce, larger values will
          * make the vector art look thinner, smaller will make it look thicker.
          *
-         * The @p end parameter describes where outline ends. If set to value
-         * larger than @p start the outline is not drawn. Initial value is
+         * The @p end parameter describes where outline ends. If set to a value
+         * larger than @p start, the outline is not drawn. Initial value is
          * @cpp 1.0f @ce.
          *
          * @see @ref setOutlineColor()

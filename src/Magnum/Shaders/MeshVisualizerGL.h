@@ -277,9 +277,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          *
          * Initial value is @cpp 0xffffffff_rgbaf @ce. Expects that either
          * @ref Flag::Wireframe or @ref Flag::InstancedObjectId /
-         * @ref Flag::PrimitiveId is enabled. In case of the latter, the color
-         * is multiplied with the color map coming from
-         * @ref bindColorMapTexture().
+         * @ref Flag::PrimitiveId / @ref Flag::PrimitiveIdFromVertexId is
+         * enabled. In case of the latter, the color is multiplied with the
+         * color map coming from @ref bindColorMapTexture().
          */
         MeshVisualizerGL2D& setColor(const Color4& color) {
             return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::setColor(color));
@@ -300,7 +300,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @brief Set wireframe width
          * @return Reference to self (for method chaining)
          *
-         * Value is in screen space (depending on @ref setViewportSize()),
+         * The value is in screen space (depending on @ref setViewportSize()),
          * initial value is @cpp 1.0f @ce. Expects that @ref Flag::Wireframe is
          * enabled.
          */
@@ -891,9 +891,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          *
          * Initial value is @cpp 0xffffffff_rgbaf @ce. Expects that either
          * @ref Flag::Wireframe or @ref Flag::InstancedObjectId /
-         * @ref Flag::PrimitiveId is enabled. In case of the latter, the color
-         * is multiplied with the color map coming from
-         * @ref bindColorMapTexture().
+         * @ref Flag::PrimitiveId / @ref Flag::PrimitiveIdFromVertexId is
+         * enabled. In case of the latter, the color is multiplied with the
+         * color map coming from @ref bindColorMapTexture().
          */
         MeshVisualizerGL3D& setColor(const Color4& color) {
             return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::setColor(color));
@@ -914,7 +914,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief Set wireframe width
          * @return Reference to self (for method chaining)
          *
-         * Value is in screen space (depending on @ref setViewportSize()),
+         * The value is in screen space (depending on @ref setViewportSize()),
          * initial value is @cpp 1.0f @ce. Expects that @ref Flag::Wireframe is
          * enabled.
          */
@@ -963,7 +963,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @return Reference to self (for method chaining)
          * @m_since{2020,06}
          *
-         * Value is in screen space (depending on @ref setViewportSize()),
+         * The value is in screen space (depending on @ref setViewportSize()),
          * initial value is @cpp 1.0f @ce. Expects that
          * @ref Flag::TangentDirection,
          * @ref Flag::BitangentFromTangentDirection,
@@ -982,8 +982,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @return Reference to self (for method chaining)
          * @m_since{2020,06}
          *
-         * Value is in object space, initial value is @cpp 1.0f @ce. Expects
-         * that @ref Flag::TangentDirection,
+         * The value is in object space, initial value is @cpp 1.0f @ce.
+         * Expects that @ref Flag::TangentDirection,
          * @ref Flag::BitangentFromTangentDirection,
          * @ref Flag::BitangentDirection or @ref Flag::NormalDirection is
          * enabled.
@@ -1000,7 +1000,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief Set line smoothness
          * @return Reference to self (for method chaining)
          *
-         * Value is in screen space (depending on @ref setViewportSize()),
+         * The value is in screen space (depending on @ref setViewportSize()),
          * initial value is @cpp 2.0f @ce. Expects that @ref Flag::Wireframe,
          * @ref Flag::TangentDirection,
          * @ref Flag::BitangentFromTangentDirection,

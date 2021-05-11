@@ -158,7 +158,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public Ab
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
          *
-         * Default is an identity matrix.
+         * Initial value is an identity matrix.
          */
         VectorGL<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix);
 
@@ -177,7 +177,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public Ab
          * @brief Set background color
          * @return Reference to self (for method chaining)
          *
-         * Default is @cpp 0x00000000_rgbaf @ce.
+         * Initial value is @cpp 0x00000000_rgbaf @ce.
          * @see @ref setColor()
          */
         VectorGL<dimensions>& setBackgroundColor(const Color4& color);
@@ -186,7 +186,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public Ab
          * @brief Set fill color
          * @return Reference to self (for method chaining)
          *
-         * Default is @cpp 0xffffffff_rgbaf @ce.
+         * Initial value is @cpp 0xffffffff_rgbaf @ce.
          * @see @ref setBackgroundColor()
          */
         VectorGL<dimensions>& setColor(const Color4& color);

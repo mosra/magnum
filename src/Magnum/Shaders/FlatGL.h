@@ -443,9 +443,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief Set color
          * @return Reference to self (for method chaining)
          *
-         * If @ref Flag::Textured is set, initial value is
-         * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with the
-         * texture.
+         * Initial value is @cpp 0xffffffff_rgbaf @ce. If @ref Flag::Textured
+         * is set, the color will be multiplied with the texture.
          * @see @ref bindTexture()
          */
         FlatGL<dimensions>& setColor(const Magnum::Color4& color);
