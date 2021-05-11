@@ -36,6 +36,7 @@ corrade_add_test(ShadersVertexColorGL_Test VertexColorGL_Test.cpp LIBRARIES Magn
 set_target_properties(
     ShadersDistanceFieldVectorGL_Test
     ShadersFlatGL_Test
+    ShadersGenericGL_Test
     ShadersMeshVisualizerGL_Test
     ShadersPhongGL_Test
     ShadersVectorGL_Test
