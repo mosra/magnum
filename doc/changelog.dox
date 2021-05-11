@@ -266,8 +266,8 @@ See also:
 
 -   Added a `--bounds` option to @ref magnum-sceneconverter "magnum-sceneconverter",
     showing data ranges of known attributes
--   @ref magnum-sceneconverter "magnum-sceneconverter" now lists also lights,
-    materials and textures in `--info`
+-   @ref magnum-sceneconverter "magnum-sceneconverter" now lists also
+    animations, lights, materials and textures in `--info`
 
 @subsubsection changelog-latest-changes-platform Platform libraries
 

@@ -40,6 +40,7 @@
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/LightData.h"
 #include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
@@ -282,6 +283,12 @@ used.)")
             return 0;
         }
 
+        struct AnimationInfo {
+            UnsignedInt animation;
+            Trade::AnimationData data{{}, {}};
+            std::string name;
+        };
+
         struct LightInfo {
             UnsignedInt light;
             UnsignedInt references;
@@ -346,8 +353,28 @@ used.)")
             }
         }
 
-        /* Light properties */
+        /* Animation properties */
         bool error = false;
+        Containers::Array<AnimationInfo> animationInfos;
+        for(UnsignedInt i = 0; i != importer->animationCount(); ++i) {
+            Containers::Optional<Trade::AnimationData> animation;
+            {
+                Duration d{importTime};
+                if(!(animation = importer->animation(i))) {
+                    error = true;
+                    continue;
+                }
+            }
+
+            AnimationInfo info{};
+            info.animation = i;
+            info.name = importer->animationName(i);
+            info.data = *std::move(animation);
+
+            arrayAppend(animationInfos, std::move(info));
+        }
+
+        /* Light properties */
         Containers::Array<LightInfo> lightInfos;
         for(UnsignedInt i = 0; i != importer->lightCount(); ++i) {
             Containers::Optional<Trade::LightData> light;
@@ -514,6 +541,34 @@ used.)")
         Containers::Array<Trade::Implementation::ImageInfo> imageInfos =
             Trade::Implementation::imageInfo(*importer, error, compactImages);
 
+        for(const AnimationInfo& info: animationInfos) {
+            Debug d;
+            d << "Animation" << info.animation << Debug::nospace << ":";
+            if(!info.name.empty()) d << info.name;
+
+            d << Debug::newline << "  Duration:" << info.data.duration();
+
+            for(UnsignedInt i = 0; i != info.data.trackCount(); ++i) {
+                d << Debug::newline << "  Track" << i << Debug::nospace << ":"
+                    << info.data.trackType(i);
+                if(info.data.trackType(i) != info.data.trackResultType(i))
+                    d << "->" << info.data.trackResultType(i);
+                d << Debug::nospace << "," << info.data.track(i).size()
+                    << "keyframes";
+                if(info.data.track(i).duration() != info.data.duration())
+                    d << Debug::nospace << "," << info.data.track(i).duration();
+                d << Debug::newline << "   "
+                    << info.data.track(i).interpolation();
+                d << Debug::newline << "   "
+                    << info.data.track(i).before() << Debug::nospace << ","
+                    << info.data.track(i).after();
+                d << Debug::newline << "    Target: object"
+                    << info.data.trackTarget(i) << Debug::nospace << ","
+                    << info.data.trackTargetType(i);
+                /** @todo might be useful to show bounds here as well, though
+                    not so much for things like complex numbers or quats */
+            }
+        }
         for(const LightInfo& info: lightInfos) {
             Debug d;
             d << "Light" << info.light;
