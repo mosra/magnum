@@ -67,7 +67,7 @@ cmake .. \
     -DBUILD_PLUGINS_STATIC=$BUILD_STATIC \
     -G Ninja
 ninja $NINJA_JOBS
-ASAN_OPTIONS="color=always" LSAN_OPTIONS="color=always suppressions=$(pwd)/../package/ci/leaksanitizer.conf" TSAN_OPTIONS="color=always" CORRADE_TEST_COLOR=ON ctest -V -E "(GL|Vk)Test"
+ASAN_OPTIONS="color=always" LSAN_OPTIONS="color=always suppressions=$(pwd)/../package/ci/leaksanitizer.conf" TSAN_OPTIONS="color=always" CORRADE_TEST_COLOR=ON ctest -V -E "GLTest|GLBenchmark|VkTest"
 
 # Test install, after running the tests as for them it shouldn't be needed
 ninja install

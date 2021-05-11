@@ -317,6 +317,25 @@ if(BUILD_GL_TESTS)
         endif()
     endif()
 
+    corrade_add_test(ShadersGLBenchmark ShadersGLBenchmark.cpp
+        LIBRARIES
+            MagnumDebugTools
+            MagnumMeshTools
+            MagnumPrimitives
+            MagnumShaders
+            MagnumOpenGLTester
+        FILES
+            BenchmarkFiles/trivial.tga)
+    target_include_directories(ShadersGLBenchmark PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(BUILD_PLUGINS_STATIC)
+        if(WITH_ANYIMAGEIMPORTER)
+            target_link_libraries(ShadersGLBenchmark PRIVATE AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            target_link_libraries(ShadersGLBenchmark PRIVATE TgaImporter)
+        endif()
+    endif()
+
     if(CORRADE_TARGET_IOS)
         set_source_files_properties(
             TestFiles
@@ -336,5 +355,6 @@ if(BUILD_GL_TESTS)
         ShadersPhongGLTest
         ShadersVectorGLTest
         ShadersVertexColorGLTest
+        ShadersGLBenchmark
         PROPERTIES FOLDER "Magnum/Shaders/Test")
 endif()

@@ -69,7 +69,7 @@ cmake --build . || exit /b
 
 rem Test
 set CORRADE_TEST_COLOR=ON
-ctest -V -E "(GL|Vk)Test" || exit /b
+ctest -V -E "GLTest|GLBenchmark|VkTest" || exit /b
 
 rem Test install, after running the tests as for them it shouldn't be needed
 cmake --build . --target install || exit /b
