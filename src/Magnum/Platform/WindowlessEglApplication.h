@@ -556,10 +556,8 @@ same can be also specified via via @ref Configuration::setCudaDevice().
 
 @par No EGL devices found
 @parblock
-Systems running Mesa 19.2 (which has the above extensions) that also have
-`libEGL_nvidia.so` installed (for example as a CUDA dependency) may fail
-to create the context with the following error (with additional output
-produced when the `--magnum-gpu-validation`
+With GLVND versions 1.3.2 and older, EGL context creation may fail with the
+following error (with additional output produced when the `--magnum-gpu-validation`
 @ref GL-Context-usage-command-line "command-line option" is enabled):
 
 @m_class{m-console-wrap}
@@ -570,12 +568,15 @@ eglQueryDevicesEXT(): EGL_BAD_ALLOC error: In function eglQueryDevicesEXT(), bac
 Platform::WindowlessEglApplication::tryCreateContext(): no EGL devices found
 @endcode
 
-This is due to the NVidia's EGL implementation failing to enumerate devices
-(because there aren't any), which then causes the GLVND wrapper to stop
-instead of enumerating the Mesa devices as well. The solution is
-whitelisting all EGL implementations except the NVidia one
-<a href="https://github.com/NVIDIA/libglvnd/blob/master/src/EGL/icd_enumeration.md">as described in the libglvnd documentation</a>
-using the `__EGL_VENDOR_LIBRARY_FILENAMES` environment variable, for example:
+This is due to some driver implementations failing to enumerate devices (for
+example when the system has NVidia drivers installed as a dependency of CUDA
+but there actually isn't any NVidia card) and the GLVND treats that as a fatal
+error. This is [fixed in version 1.3.3](https://github.com/NVIDIA/libglvnd/commit/a527411da713b2068974c46d7129326520dc5923)
+where it just skips that particular vendor and continues. A workaround on older
+versions might be filtering out the bad devices manually using the
+`__EGL_VENDOR_LIBRARY_FILENAMES` environment variable
+<a href="https://github.com/NVIDIA/libglvnd/blob/master/src/EGL/icd_enumeration.md">as described in the libglvnd documentation</a>, for
+example:
 
 @m_class{m-console-wrap}
 
