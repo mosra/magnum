@@ -381,6 +381,10 @@ See also:
 -   @ref GL::Context move constructor was not marked @cpp noexcept @ce by
     accident and it was also not really moving everything properly, especially
     when delayed creation was done on the moved-to object
+-   @ref GL::OpenGLTester::addBenchmarks() taking a setup/teardown function
+    passed the arguments to the base @relativeref{Corrade,TestSuite::Tester}
+    implementation in a wrong order, failing to compile if this function was
+    used in a test
 -   @ref GL::Renderer::MemoryBarrier::ShaderStorage had an incorrect value
 -   @ref GL::Shader limit queries for a particular shader stage on desktop were
     out-of-bounds array accesses, causing wrong or random values being returned

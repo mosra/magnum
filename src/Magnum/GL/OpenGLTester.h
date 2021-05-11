@@ -245,7 +245,7 @@ class OpenGLTester: public TestSuite::Tester {
          */
         template<class Derived> void addBenchmarks(std::initializer_list<void(Derived::*)()> benchmarks, std::size_t batchCount, void(Derived::*setup)(), void(Derived::*teardown)(), BenchmarkType benchmarkType = BenchmarkType::Default) {
             if(benchmarkType == BenchmarkType::GpuTime)
-                addCustomBenchmarks<Derived>(benchmarks, batchCount, &OpenGLTester::gpuTimeBenchmarkBegin, &OpenGLTester::gpuTimeBenchmarkEnd, setup, teardown, BenchmarkUnits::Nanoseconds);
+                addCustomBenchmarks<Derived>(benchmarks, batchCount, setup, teardown, &OpenGLTester::gpuTimeBenchmarkBegin, &OpenGLTester::gpuTimeBenchmarkEnd, BenchmarkUnits::Nanoseconds);
             else
                 Tester::addBenchmarks(benchmarks, batchCount, setup, teardown, Tester::BenchmarkType(Int(benchmarkType)));
         }
