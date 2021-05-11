@@ -312,13 +312,19 @@ void Matrix4Test::constructFromDifferentSize() {
                                    {0.0f, 0.0f, 0.0f, 0.0f}};
 
     constexpr Matrix4 identity1{a, 0.5f};
-    constexpr Matrix4 identity2{IdentityInit, a, 0.5f};
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* It ICEs, haha */
+    constexpr
+    #endif
+    Matrix4 identity2{IdentityInit, a, 0.5f};
     CORRADE_COMPARE(identity1, expectedIdentity);
     CORRADE_COMPARE(identity2, expectedIdentity);
     CORRADE_COMPARE((Matrix4{a, 0.5f}), expectedIdentity);
     CORRADE_COMPARE((Matrix4{IdentityInit, a, 0.5f}), expectedIdentity);
 
-    constexpr Matrix4 zero{ZeroInit, a};
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* It ICEs, haha */
+    constexpr
+    #endif
+    Matrix4 zero{ZeroInit, a};
     CORRADE_COMPARE(zero, expectedZero);
     CORRADE_COMPARE((Matrix4{ZeroInit, a}), expectedZero);
 }
