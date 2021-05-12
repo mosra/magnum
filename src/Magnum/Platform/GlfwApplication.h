@@ -116,6 +116,10 @@ the first part and point `CMAKE_PREFIX_PATH` to its installation dir if
 necessary.
 
 @code{.cmake}
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+# These two will be off-by-default when GLFW 3.4 gets released
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(glfw EXCLUDE_FROM_ALL)
 
 set(WITH_GLFWAPPLICATION ON CACHE BOOL "" FORCE)
