@@ -1669,8 +1669,6 @@ void PhongGLTest::renderZeroLights() {
         .setStorage(1, TextureFormatRGBA, ambientImage->size())
         .setSubImage(0, {}, *ambientImage);
 
-    GL::Texture2D bogus;
-
     shader
         .bindAmbientTexture(ambient)
         .setAmbientColor(0x9999ff_rgbf)
