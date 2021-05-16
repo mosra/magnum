@@ -444,7 +444,10 @@ See also:
     It was also commonly confused with @relativeref{Corrade,Containers::Array},
     which is a type with totally different semantics. To avoid breaking
     existing code, conversion from and to @ref Math::Vector is now provided and
-    this type is included in all places where it was originally used.
+    this type is included in all places where it was originally used. For
+    custom uses, the @relativeref{Corrade,Containers::Array1}, @relativeref{Corrade,Containers::Array2} or
+    @relativeref{Corrade,Containers::Array3} types provide a suitable
+    alternative as well.
 -   Markup styling for Emscripten application was switched to prefer using
     CSS classes instead of the @cb{.css} #container @ce, @cb{.css} #sizer @ce,
     @cb{.css} #expander @ce, @cb{.css} #listener @ce, @cb{.css} #canvas @ce,
