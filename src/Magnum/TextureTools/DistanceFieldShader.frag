@@ -42,7 +42,7 @@ layout(location = 0)
 #endif
 uniform mediump vec2 scaling;
 
-#ifdef EXPLICIT_TEXTURE_LAYER
+#ifdef EXPLICIT_BINDING
 layout(binding = 7)
 #endif
 uniform lowp sampler2D textureData;

@@ -113,7 +113,7 @@ uniform lowp vec2 colorMapOffsetScale
 /* Textures */
 
 #if defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
-#ifdef EXPLICIT_TEXTURE_LAYER
+#ifdef EXPLICIT_BINDING
 layout(binding = 4)
 #endif
 uniform lowp sampler2D colorMapTexture;

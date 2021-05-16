@@ -35,7 +35,7 @@
 #if !defined(GL_ES) && defined(GL_ARB_shading_language_420pack) && !defined(DISABLE_GL_ARB_shading_language_420pack)
     #extension GL_ARB_shading_language_420pack: enable
     #define RUNTIME_CONST
-    #define EXPLICIT_TEXTURE_LAYER
+    #define EXPLICIT_BINDING
 #endif
 
 #if !defined(GL_ES) && defined(GL_ARB_explicit_uniform_location) && !defined(DISABLE_GL_ARB_explicit_uniform_location)
@@ -45,7 +45,7 @@
 
 #if defined(GL_ES) && __VERSION__ >= 300
     #define EXPLICIT_ATTRIB_LOCATION
-    /* EXPLICIT_TEXTURE_LAYER, EXPLICIT_UNIFORM_LOCATION and RUNTIME_CONST is not
+    /* EXPLICIT_BINDING, EXPLICIT_UNIFORM_LOCATION and RUNTIME_CONST is not
        available in OpenGL ES */
 #endif
 

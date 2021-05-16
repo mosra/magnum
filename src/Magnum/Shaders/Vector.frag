@@ -45,7 +45,7 @@ uniform lowp vec4 color
     #endif
     ;
 
-#ifdef EXPLICIT_TEXTURE_LAYER
+#ifdef EXPLICIT_BINDING
 /* See AbstractVector.h for details about the ID */
 layout(binding = 6)
 #endif

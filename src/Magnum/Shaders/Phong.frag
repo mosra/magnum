@@ -148,7 +148,7 @@ uniform lowp float lightRanges[LIGHT_COUNT]
 /* Textures */
 
 #ifdef AMBIENT_TEXTURE
-#ifdef EXPLICIT_TEXTURE_LAYER
+#ifdef EXPLICIT_BINDING
 layout(binding = 0)
 #endif
 uniform lowp sampler2D ambientTexture;
@@ -156,21 +156,21 @@ uniform lowp sampler2D ambientTexture;
 
 #if LIGHT_COUNT
 #ifdef DIFFUSE_TEXTURE
-#ifdef EXPLICIT_TEXTURE_LAYER
+#ifdef EXPLICIT_BINDING
 layout(binding = 1)
 #endif
 uniform lowp sampler2D diffuseTexture;
 #endif
 
 #ifdef SPECULAR_TEXTURE
-#ifdef EXPLICIT_TEXTURE_LAYER
+#ifdef EXPLICIT_BINDING
 layout(binding = 2)
 #endif
 uniform lowp sampler2D specularTexture;
 #endif
 
 #ifdef NORMAL_TEXTURE
-#ifdef EXPLICIT_TEXTURE_LAYER
+#ifdef EXPLICIT_BINDING
 layout(binding = 3)
 #endif
 uniform lowp sampler2D normalTexture;

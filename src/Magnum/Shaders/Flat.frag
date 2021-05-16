@@ -66,7 +66,7 @@ uniform highp uint objectId; /* defaults to zero */
 /* Textures */
 
 #ifdef TEXTURED
-#ifdef EXPLICIT_TEXTURE_LAYER
+#ifdef EXPLICIT_BINDING
 layout(binding = 0)
 #endif
 uniform lowp sampler2D textureData;
