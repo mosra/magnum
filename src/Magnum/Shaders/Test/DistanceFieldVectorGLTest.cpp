@@ -349,7 +349,7 @@ void DistanceFieldVectorGLTest::renderDefaults3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVectorGL2D{}
+    DistanceFieldVectorGL3D{}
         .bindVectorTexture(texture)
         .draw(plane);
 
