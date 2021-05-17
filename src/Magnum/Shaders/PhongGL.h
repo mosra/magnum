@@ -467,8 +467,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
             AlphaMask = 1 << 3,
 
             /**
-             * Multiply diffuse color with a vertex color. Requires either
-             * the @ref Color3 or @ref Color4 attribute to be present.
+             * Multiply the diffuse and ambient color with a vertex color.
+             * Requires either the @ref Color3 or @ref Color4 attribute to be
+             * present.
              * @m_since{2019,10}
              */
             VertexColor = 1 << 5,
@@ -615,6 +616,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * If @ref Flag::AmbientTexture is set, default value is
          * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with
          * ambient texture, otherwise default value is @cpp 0x00000000_rgbaf @ce.
+         * If @ref Flag::VertexColor is set, the color is multiplied with a
+         * color coming from the @ref Color3 / @ref Color4 attribute.
          * @see @ref bindAmbientTexture(), @ref Shaders-PhongGL-lights-ambient
          */
         PhongGL& setAmbientColor(const Magnum::Color4& color);
@@ -623,9 +626,12 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Set diffuse color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 0xffffffff_rgbaf @ce. If @ref lightCount() is
-         * zero, this function is a no-op, as diffuse color doesn't contribute
-         * to the output in that case.
+         * Initial value is @cpp 0xffffffff_rgbaf @ce. If
+         * @ref Flag::DiffuseTexture is set, the color will be multiplied with
+         * the texture. If @ref lightCount() is zero, this function is a no-op,
+         * as diffuse color doesn't contribute to the output in that case.
+         * If @ref Flag::VertexColor is set, the color is multiplied with a
+         * color coming from the @ref Color3 / @ref Color4 attribute.
          * @see @ref bindDiffuseTexture()
          */
         PhongGL& setDiffuseColor(const Magnum::Color4& color);
@@ -652,12 +658,12 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Set specular color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 0xffffff00_rgbaf @ce. Color will be multiplied
-         * with specular texture if @ref Flag::SpecularTexture is set. If you
-         * want to have a fully diffuse material, set specular color to
-         * @cpp 0x00000000_rgbaf @ce. If @ref lightCount() is zero, this
-         * function is a no-op, as specular color doesn't contribute to the
-         * output in that case.
+         * Initial value is @cpp 0xffffff00_rgbaf @ce. If
+         * @ref Flag::SpecularTexture is set, the color will be multiplied with
+         * the texture. If you want to have a fully diffuse material, set
+         * the specular color to @cpp 0x00000000_rgbaf @ce. If
+         * @ref lightCount() is zero, this function is a no-op, as specular
+         * color doesn't contribute to the output in that case.
          * @see @ref bindSpecularTexture()
          */
         PhongGL& setSpecularColor(const Magnum::Color4& color);
@@ -696,7 +702,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * Expects that the shader was created with @ref Flag::ObjectId
          * enabled. Value set here is written to the @ref ObjectIdOutput, see
          * @ref Shaders-PhongGL-object-id for more information. Default is
-         * @cpp 0 @ce.
+         * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
+         * value is added to the ID coming from the @ref ObjectId attribute.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
          *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
@@ -709,7 +716,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * You need to set also @ref setNormalMatrix() with a corresponding
-         * value. Initial value is an identity matrix.
+         * value. Initial value is an identity matrix. If
+         * @ref Flag::InstancedTransformation is set, the per-instance
+         * transformation coming from the @ref TransformationMatrix attribute
+         * is applied first, before this one.
          */
         PhongGL& setTransformationMatrix(const Matrix4& matrix);
 
@@ -722,7 +732,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @ref setTransformationMatrix() with a corresponding value. Initial
          * value is an identity matrix. If @ref lightCount() is zero, this
          * function is a no-op, as normals don't contribute to the output in
-         * that case.
+         * that case. If @ref Flag::InstancedTransformation is set, the
+         * per-instance normal matrix coming from the @ref NormalMatrix
+         * attribute is applied first, before this one.
          * @see @ref Math::Matrix4::normalMatrix()
          */
         PhongGL& setNormalMatrix(const Matrix3x3& matrix);
@@ -744,7 +756,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * Expects that the shader was created with
          * @ref Flag::TextureTransformation enabled. Initial value is an
-         * identity matrix.
+         * identity matrix. If @ref Flag::InstancedTextureOffset is set, the
+         * per-instance offset coming from the @ref TextureOffset atttribute is
+         * applied first, before this matrix.
          */
         PhongGL& setTextureMatrix(const Matrix3& matrix);
 
@@ -754,8 +768,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @m_since_latest
          *
          * Depending on the fourth component, the value is treated as either a
-         *camera-relative position of a point light, if the fourth component is
-         * @cpp 1.0f @ce; or a direction *to* a directional light, if the
+         * camera-relative position of a point light, if the fourth component
+         * is @cpp 1.0f @ce; or a direction *to* a directional light, if the
          * fourth component is @cpp 0.0f @ce. Expects that the size of the
          * @p positions array is the same as @ref lightCount(). Initial values
          * are @cpp {0.0f, 0.0f, 1.0f, 0.0f} @ce --- a directional "fill" light

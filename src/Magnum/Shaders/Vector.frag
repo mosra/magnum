@@ -45,6 +45,8 @@ uniform lowp vec4 color
     #endif
     ;
 
+/* Textures */
+
 #ifdef EXPLICIT_BINDING
 layout(binding = 6)
 #endif

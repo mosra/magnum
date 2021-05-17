@@ -290,8 +290,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
             AlphaMask = 1 << 1,
 
             /**
-             * Multiply diffuse color with a vertex color. Requires either
-             * the @ref Color3 or @ref Color4 attribute to be present.
+             * Multiply the color with a vertex color. Requires either the
+             * @ref Color3 or @ref Color4 attribute to be present.
              * @m_since{2019,10}
              */
             VertexColor = 1 << 2,
@@ -424,7 +424,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
          *
-         * Initial value is an identity matrix.
+         * Initial value is an identity matrix. If
+         * @ref Flag::InstancedTransformation is set, the per-instance
+         * transformation matrix coming from the @ref TransformationMatrix
+         * attribute is applied first, before this one.
          */
         FlatGL<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix);
 
@@ -435,7 +438,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          *
          * Expects that the shader was created with
          * @ref Flag::TextureTransformation enabled. Initial value is an
-         * identity matrix.
+         * identity matrix. If @ref Flag::InstancedTextureOffset is set, the
+         * per-instance offset coming from the @ref TextureOffset attribute is
+         * applied first, before this matrix.
          */
         FlatGL<dimensions>& setTextureMatrix(const Matrix3& matrix);
 
@@ -444,7 +449,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @return Reference to self (for method chaining)
          *
          * Initial value is @cpp 0xffffffff_rgbaf @ce. If @ref Flag::Textured
-         * is set, the color will be multiplied with the texture.
+         * is set, the color is multiplied with the texture. If
+         * @ref Flag::VertexColor is set, the color is multiplied with a color
+         * coming from the @ref Color3 / @ref Color4 attribute.
          * @see @ref bindTexture()
          */
         FlatGL<dimensions>& setColor(const Magnum::Color4& color);
@@ -473,7 +480,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * enabled. Value set here is written to the @ref ObjectIdOutput, see
          * @ref Shaders-FlatGL-object-id for more information. Default is
          * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
-         * value is combined with ID coming from the @ref ObjectId attribute.
+         * value is added to the ID coming from the @ref ObjectId attribute.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
          *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
