@@ -311,10 +311,6 @@ template<class T> void VertexColorGLTest::render2D() {
 template<class T> void VertexColorGLTest::render3D() {
     setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
 
-    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
-       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
-
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates);
 
@@ -337,6 +333,10 @@ template<class T> void VertexColorGLTest::render3D() {
         .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* AMD has one different pixel compared to Intel, SwiftShader has
