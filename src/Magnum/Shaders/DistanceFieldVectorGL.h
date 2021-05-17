@@ -31,7 +31,8 @@
  */
 
 #include "Magnum/DimensionTraits.h"
-#include "Magnum/Shaders/AbstractVectorGL.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders {
@@ -48,9 +49,10 @@ namespace Implementation {
 @m_since_latest
 
 Renders vector graphics in a form of signed distance field. See
-@ref TextureTools::DistanceField for more information. Note that the final
-rendered outlook will greatly depend on radius of input distance field and
-value passed to @ref setSmoothness(). You need to provide @ref Position and
+@ref TextureTools::DistanceField for more information and @ref VectorGL for a
+simpler variant of this shader. Note that the final rendered outlook will
+greatly depend on radius of input distance field and value passed to
+@ref setSmoothness(). You need to provide @ref Position and
 @ref TextureCoordinates attributes in your triangle mesh and call at least
 @ref bindVectorTexture(). By default, the shader renders the distance field
 texture with a white color in an identity transformation, use
@@ -79,8 +81,34 @@ Common rendering setup:
     large zoom levels, make it optional as it might have negative performance
     impact
 */
-template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL: public AbstractVectorGL<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL: public GL::AbstractShaderProgram {
     public:
+        /**
+         * @brief Vertex position
+         *
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector2 "Vector2" in 2D, @ref Magnum::Vector3 "Vector3"
+         * in 3D.
+         */
+        typedef typename GenericGL<dimensions>::Position Position;
+
+        /**
+         * @brief 2D texture coordinates
+         *
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector2 "Vector2".
+         */
+        typedef typename GenericGL<dimensions>::TextureCoordinates TextureCoordinates;
+
+        enum: UnsignedInt {
+            /**
+             * Color shader output. @ref shaders-generic "Generic output",
+             * present always. Expects three- or four-component floating-point
+             * or normalized buffer attachment.
+             */
+            ColorOutput = GenericGL<dimensions>::ColorOutput
+        };
+
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
          * @brief Flag
@@ -129,12 +157,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * However note that this is a low-level and a potentially dangerous
          * API, see the documentation of @ref NoCreate for alternatives.
          */
-        explicit DistanceFieldVectorGL(NoCreateT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : AbstractVectorGL<dimensions>{NoCreate}
-            #endif
-            {}
+        explicit DistanceFieldVectorGL(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
 
         /** @brief Copying is not allowed */
         DistanceFieldVectorGL(const DistanceFieldVectorGL<dimensions>&) = delete;
@@ -226,13 +249,24 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @}
          */
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        /* Overloads to remove WTF-factor from method chaining order */
-        DistanceFieldVectorGL<dimensions>& bindVectorTexture(GL::Texture2D& texture) {
-            AbstractVectorGL<dimensions>::bindVectorTexture(texture);
-            return *this;
-        }
-        #endif
+        /** @{
+         * @name Texture binding
+         */
+
+        /**
+         * @brief Bind vector texture
+         * @return Reference to self (for method chaining)
+         *
+         * @see @ref DistanceFieldVectorGL::Flag::TextureTransformation,
+         *      @ref VectorGL::Flag::TextureTransformation,
+         *      @ref DistanceFieldVectorGL::setTextureMatrix(),
+         *      @ref VectorGL::setTextureMatrix()
+         */
+        DistanceFieldVectorGL<dimensions>& bindVectorTexture(GL::Texture2D& texture);
+
+        /**
+         * @}
+         */
 
     private:
         /* Prevent accidentally calling irrelevant functions */

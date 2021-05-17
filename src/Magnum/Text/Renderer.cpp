@@ -33,7 +33,7 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/Math/Functions.h"
-#include "Magnum/Shaders/AbstractVectorGL.h"
+#include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/GlyphCache.h"
 
@@ -255,9 +255,9 @@ template<UnsignedInt dimensions> std::tuple<GL::Mesh, Range2D> Renderer<dimensio
     auto r = renderInternal(font, cache, size, text, vertexBuffer, indexBuffer, usage, alignment);
     GL::Mesh& mesh = std::get<0>(r);
     mesh.addVertexBuffer(vertexBuffer, 0,
-            typename Shaders::AbstractVectorGL<dimensions>::Position(
-                Shaders::AbstractVectorGL<dimensions>::Position::Components::Two),
-            typename Shaders::AbstractVectorGL<dimensions>::TextureCoordinates());
+        typename Shaders::GenericGL<dimensions>::Position(
+            Shaders::GenericGL<dimensions>::Position::Components::Two),
+        typename Shaders::GenericGL<dimensions>::TextureCoordinates());
     return r;
 }
 
@@ -320,8 +320,9 @@ AbstractRenderer::~AbstractRenderer() = default;
 template<UnsignedInt dimensions> Renderer<dimensions>::Renderer(AbstractFont& font, const GlyphCache& cache, const Float size, const Alignment alignment): AbstractRenderer(font, cache, size, alignment) {
     /* Finalize mesh configuration */
     _mesh.addVertexBuffer(_vertexBuffer, 0,
-            typename Shaders::AbstractVectorGL<dimensions>::Position(Shaders::AbstractVectorGL<dimensions>::Position::Components::Two),
-            typename Shaders::AbstractVectorGL<dimensions>::TextureCoordinates());
+        typename Shaders::GenericGL<dimensions>::Position(
+            Shaders::GenericGL<dimensions>::Position::Components::Two),
+        typename Shaders::GenericGL<dimensions>::TextureCoordinates());
 }
 
 void AbstractRenderer::reserve(const uint32_t glyphCount, const GL::BufferUsage vertexBufferUsage, const GL::BufferUsage indexBufferUsage) {

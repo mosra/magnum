@@ -32,6 +32,7 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Shader.h"
+#include "Magnum/GL/Texture.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
@@ -39,6 +40,10 @@
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
 namespace Magnum { namespace Shaders {
+
+namespace {
+    enum: Int { TextureUnit = 6 };
+}
 
 template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags): _flags{flags} {
     #ifdef MAGNUM_BUILD_STATIC
@@ -62,13 +67,13 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
     vert.addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
         .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n")
         .addSource(rs.get("generic.glsl"))
-        .addSource(rs.get("AbstractVector.vert"));
+        .addSource(rs.get("Vector.vert"));
     frag.addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Vector.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
-    GL::AbstractShaderProgram::attachShaders({vert,  frag});
+    attachShaders({vert,  frag});
 
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
@@ -76,29 +81,29 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        GL::AbstractShaderProgram::bindAttributeLocation(AbstractVectorGL<dimensions>::Position::Location, "position");
-        GL::AbstractShaderProgram::bindAttributeLocation(AbstractVectorGL<dimensions>::TextureCoordinates::Location, "textureCoordinates");
+        bindAttributeLocation(Position::Location, "position");
+        bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
     }
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::AbstractShaderProgram::link());
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
-        _transformationProjectionMatrixUniform = GL::AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
+        _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
         if(flags & Flag::TextureTransformation)
-            _textureMatrixUniform = GL::AbstractShaderProgram::uniformLocation("textureMatrix");
-        _backgroundColorUniform = GL::AbstractShaderProgram::uniformLocation("backgroundColor");
-        _colorUniform = GL::AbstractShaderProgram::uniformLocation("color");
+            _textureMatrixUniform = uniformLocation("textureMatrix");
+        _backgroundColorUniform = uniformLocation("backgroundColor");
+        _colorUniform = uniformLocation("color");
     }
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
     #endif
     {
-        GL::AbstractShaderProgram::setUniform(GL::AbstractShaderProgram::uniformLocation("vectorTexture"), AbstractVectorGL<dimensions>::VectorTextureUnit);
+        setUniform(uniformLocation("vectorTexture"), TextureUnit);
     }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
@@ -111,24 +116,29 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
 }
 
 template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
-    GL::AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
+    setUniform(_transformationProjectionMatrixUniform, matrix);
     return *this;
 }
 
 template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::setTextureMatrix(const Matrix3& matrix) {
     CORRADE_ASSERT(_flags & Flag::TextureTransformation,
         "Shaders::VectorGL::setTextureMatrix(): the shader was not created with texture transformation enabled", *this);
-    GL::AbstractShaderProgram::setUniform(_textureMatrixUniform, matrix);
+    setUniform(_textureMatrixUniform, matrix);
     return *this;
 }
 
 template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::setBackgroundColor(const Color4& color) {
-    GL::AbstractShaderProgram::setUniform(_backgroundColorUniform, color);
+    setUniform(_backgroundColorUniform, color);
     return *this;
 }
 
 template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::setColor(const Color4& color) {
-    GL::AbstractShaderProgram::setUniform(_colorUniform, color);
+    setUniform(_colorUniform, color);
+    return *this;
+}
+
+template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::bindVectorTexture(GL::Texture2D& texture) {
+    texture.bind(TextureUnit);
     return *this;
 }
 

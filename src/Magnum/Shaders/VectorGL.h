@@ -31,7 +31,8 @@
  */
 
 #include "Magnum/DimensionTraits.h"
-#include "Magnum/Shaders/AbstractVectorGL.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders {
@@ -75,8 +76,34 @@ Common rendering setup:
 
 @see @ref shaders, @ref VectorGL2D, @ref VectorGL3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public AbstractVectorGL<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL::AbstractShaderProgram {
     public:
+        /**
+         * @brief Vertex position
+         *
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector2 "Vector2" in 2D, @ref Magnum::Vector3 "Vector3"
+         * in 3D.
+         */
+        typedef typename GenericGL<dimensions>::Position Position;
+
+        /**
+         * @brief 2D texture coordinates
+         *
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector2 "Vector2".
+         */
+        typedef typename GenericGL<dimensions>::TextureCoordinates TextureCoordinates;
+
+        enum: UnsignedInt {
+            /**
+             * Color shader output. @ref shaders-generic "Generic output",
+             * present always. Expects three- or four-component floating-point
+             * or normalized buffer attachment.
+             */
+            ColorOutput = GenericGL<dimensions>::ColorOutput
+        };
+
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
          * @brief Flag
@@ -125,12 +152,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public Ab
          * However note that this is a low-level and a potentially dangerous
          * API, see the documentation of @ref NoCreate for alternatives.
          */
-        explicit VectorGL(NoCreateT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : AbstractVectorGL<dimensions>{NoCreate}
-            #endif
-            {}
+        explicit VectorGL(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
 
         /** @brief Copying is not allowed */
         VectorGL(const VectorGL<dimensions>&) = delete;
@@ -195,13 +217,21 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public Ab
          * @}
          */
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        /* Overloads to remove WTF-factor from method chaining order */
-        VectorGL<dimensions>& bindVectorTexture(GL::Texture2D& texture) {
-            AbstractVectorGL<dimensions>::bindVectorTexture(texture);
-            return *this;
-        }
-        #endif
+        /** @{
+         * @name Texture binding
+         */
+
+        /**
+         * @brief Bind vector texture
+         * @return Reference to self (for method chaining)
+         *
+         * @see @ref Flag::TextureTransformation, @ref setTextureMatrix()s
+         */
+        VectorGL<dimensions>& bindVectorTexture(GL::Texture2D& texture);
+
+        /**
+         * @}
+         */
 
     private:
         /* Prevent accidentally calling irrelevant functions */

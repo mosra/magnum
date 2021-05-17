@@ -38,15 +38,6 @@
 namespace Magnum { namespace Shaders {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt> class AbstractVectorGL;
-typedef AbstractVectorGL<2> AbstractVectorGL2D;
-typedef AbstractVectorGL<3> AbstractVectorGL3D;
-#ifdef MAGNUM_BUILD_DEPRECATED
-template<UnsignedInt dimensions> using AbstractVector CORRADE_DEPRECATED_ALIAS("use AbstractVectorGL instead") = AbstractVectorGL<dimensions>;
-typedef CORRADE_DEPRECATED("use AbstractVectorGL2D instead") AbstractVectorGL2D AbstractVector2D;
-typedef CORRADE_DEPRECATED("use AbstractVectorGL3D instead") AbstractVectorGL3D AbstractVector3D;
-#endif
-
 template<UnsignedInt> class DistanceFieldVectorGL;
 typedef DistanceFieldVectorGL<2> DistanceFieldVectorGL2D;
 typedef DistanceFieldVectorGL<3> DistanceFieldVectorGL3D;

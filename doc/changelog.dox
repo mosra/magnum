@@ -462,19 +462,17 @@ See also:
     @ref DebugTools::FrameProfilerGL. The new name plays better with IDE
     autocompletion and makes the GL-specific class appear next to the
     API-independent base in alphabetically sorted lists.
--   @cpp Shaders::AbstractVector @ce, @cpp Shaders::DistanceFieldVector @ce,
-    @cpp Shaders::Flat @ce, @cpp Shaders::Generic @ce,
-    @cpp Shaders::MeshVisualizer2D @ce, @cpp Shaders::MeshVisualizer3D @ce,
-    @cpp Shaders::Phong @ce, @cpp Shaders::Vector @ce,
-    @cpp Shaders::VertexColor @ce and related 2D/3D typedefs are deprecated in
-    favor of @ref Shaders::AbstractVectorGL,
-    @ref Shaders::DistanceFieldVectorGL, @ref Shaders::FlatGL,
-    @ref Shaders::GenericGL, @ref Shaders::MeshVisualizerGL2D,
-    @ref Shaders::MeshVisualizerGL3D, @ref Shaders::PhongGL,
-    @ref Shaders::VectorGL, @ref Shaders::VertexColorGL and correspondingly
-    renamed typedefs to make room for Vulkan shaders and functionality shared
-    between OpenGL and Vulkan implementation such as uniform buffer layout
-    definitions
+-   @cpp Shaders::DistanceFieldVector @ce, @cpp Shaders::Flat @ce,
+    @cpp Shaders::Generic @ce, @cpp Shaders::MeshVisualizer2D @ce,
+    @cpp Shaders::MeshVisualizer3D @ce, @cpp Shaders::Phong @ce,
+    @cpp Shaders::Vector @ce, @cpp Shaders::VertexColor @ce and related 2D/3D
+    typedefs are deprecated in favor of @ref Shaders::DistanceFieldVectorGL,
+    @ref Shaders::FlatGL, @ref Shaders::GenericGL,
+    @ref Shaders::MeshVisualizerGL2D, @ref Shaders::MeshVisualizerGL3D,
+    @ref Shaders::PhongGL, @ref Shaders::VectorGL, @ref Shaders::VertexColorGL
+    and correspondingly renamed typedefs to make room for Vulkan shaders and
+    functionality shared between OpenGL and Vulkan implementation such as
+    uniform buffer layout definitions
 -   @ref Shaders::PhongGL::setLightPositions() and
     @ref Shaders::PhongGL::setLightPosition() taking three-component vectors
     are deprecated in favor of variants taking four-component vectors, where the
@@ -658,6 +656,10 @@ See also:
     isn't available anymore. For backwards compatibility, light positions
     supplied through three-component vectors are now represented as directional
     lights, which is close, but not exactly the same as before.
+-   The @cpp Shaders::AbstractVector @ce base class for @ref Shaders::VectorGL
+    and @ref Shaders::DistanceFieldVectorGL is removed, as its benefits were
+    rather questionable --- on the contrary, it made subclass implementation
+    more verbose and less clear
 -   Mutable access to @ref Trade::PhongMaterialData color and texture
     information, deprecated in 2020.06, is now removed, as it's impossible to
     implement through the redesigned @ref Trade::MaterialData APIs. However

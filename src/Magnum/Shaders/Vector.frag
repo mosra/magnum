@@ -46,7 +46,6 @@ uniform lowp vec4 color
     ;
 
 #ifdef EXPLICIT_BINDING
-/* See AbstractVector.h for details about the ID */
 layout(binding = 6)
 #endif
 uniform lowp sampler2D vectorTexture;

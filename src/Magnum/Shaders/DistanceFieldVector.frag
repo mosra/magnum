@@ -66,7 +66,6 @@ uniform lowp float smoothness
 /* Textures */
 
 #ifdef EXPLICIT_BINDING
-/* See AbstractVector.h for details about the ID */
 layout(binding = 6)
 #endif
 uniform lowp sampler2D vectorTexture;
