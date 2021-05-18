@@ -1109,7 +1109,7 @@ void MeshVisualizerGLTest::renderDefaultsVertexId3D() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         CORRADE_SKIP("gl_VertexID not supported");
 
-    MeshVisualizerGL2D{MeshVisualizerGL2D::Flag::VertexId}
+    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::VertexId}
         .bindColorMapTexture(_colorMapTexture)
         .draw(MeshTools::compile(Primitives::icosphereSolid(0)));
 
@@ -1121,6 +1121,7 @@ void MeshVisualizerGLTest::renderDefaultsVertexId3D() {
         Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-vertexid3D.tga"),
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.012f}));
 }
+
 void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -1191,9 +1192,9 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
     ) CORRADE_SKIP("gl_VertexID not supported.");
     #endif
 
-    MeshVisualizerGL2D::Flags flags;
+    MeshVisualizerGL3D::Flags flags;
     #ifdef MAGNUM_TARGET_WEBGL
-    flags = MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId;
+    flags = MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId;
     #else
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isVersionSupported(GL::Version::GL320))
@@ -1202,16 +1203,16 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
     #endif
     {
         Debug{} << "Using primitive ID from vertex ID";
-        flags = MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId;
+        flags = MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId;
     }
-    else flags = MeshVisualizerGL2D::Flag::PrimitiveId;
+    else flags = MeshVisualizerGL3D::Flag::PrimitiveId;
     #endif
 
     Trade::MeshData icosphereData = Primitives::icosphereSolid(0);
-    if(flags >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId)
+    if(flags >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId)
         icosphereData = MeshTools::duplicate(icosphereData);
 
-    MeshVisualizerGL2D{flags}
+    MeshVisualizerGL3D{flags}
         .bindColorMapTexture(_colorMapTexture)
         .draw(MeshTools::compile(icosphereData));
 
