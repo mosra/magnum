@@ -71,17 +71,8 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     void construct2D();
     void construct3D();
 
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void constructWireframeGeometryShader2D();
-    void constructGeometryShader3D();
-    #endif
-
     void construct2DInvalid();
     void construct3DInvalid();
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void construct3DGeometryShaderDisabledButNeeded();
-    void construct3DConflictingBitangentInput();
-    #endif
 
     void constructMove2D();
     void constructMove3D();
@@ -155,6 +146,9 @@ constexpr struct {
     const char* name;
     MeshVisualizerGL2D::Flags flags;
 } ConstructData2D[] {
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    {"wireframe", MeshVisualizerGL2D::Flag::Wireframe},
+    #endif
     {"wireframe w/o GS", MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader},
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", MeshVisualizerGL2D::Flag::InstancedObjectId},
@@ -170,6 +164,9 @@ constexpr struct {
     const char* name;
     MeshVisualizerGL3D::Flags flags;
 } ConstructData3D[] {
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    {"wireframe", MeshVisualizerGL3D::Flag::Wireframe},
+    #endif
     {"wireframe w/o GS", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader},
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", MeshVisualizerGL3D::Flag::InstancedObjectId},
@@ -177,16 +174,9 @@ constexpr struct {
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizerGL3D::Flag::PrimitiveId},
     #endif
-    {"primitive ID from vertex ID", MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId}
+    {"primitive ID from vertex ID", MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId},
     #endif
-};
-
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-constexpr struct {
-    const char* name;
-    MeshVisualizerGL3D::Flags flags;
-} ConstructGeometryShaderData3D[] {
-    {"wireframe", MeshVisualizerGL3D::Flag::Wireframe},
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"tangent direction", MeshVisualizerGL3D::Flag::TangentDirection},
     {"bitangent direction from tangent", MeshVisualizerGL3D::Flag::BitangentFromTangentDirection},
     {"bitangent direction", MeshVisualizerGL3D::Flag::BitangentDirection},
@@ -197,8 +187,8 @@ constexpr struct {
     {"wireframe + t/n direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
     {"wireframe + object id + t/n direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
     {"wireframe + vertex id + t/b direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection}
+    #endif
 };
-#endif
 
 constexpr struct {
     const char* name;
@@ -242,7 +232,15 @@ constexpr struct {
         ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
     {"both vertex and primitive id",
         MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
-        ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"}
+        ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    {"geometry shader disabled but needed",
+        MeshVisualizerGL3D::Flag::NoGeometryShader|MeshVisualizerGL3D::Flag::NormalDirection,
+        "3D: geometry shader has to be enabled when rendering TBN direction"},
+    {"conflicting bitangent input",
+        MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection,
+        "3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive"}
     #endif
 };
 
@@ -410,25 +408,12 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addInstancedTests({&MeshVisualizerGLTest::construct3D},
         Containers::arraySize(ConstructData3D));
 
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    addTests({&MeshVisualizerGLTest::constructWireframeGeometryShader2D});
-
-    addInstancedTests({&MeshVisualizerGLTest::constructGeometryShader3D},
-        Containers::arraySize(ConstructGeometryShaderData3D));
-    #endif
-
     addInstancedTests({&MeshVisualizerGLTest::construct2DInvalid},
         Containers::arraySize(ConstructInvalidData2D));
     addInstancedTests({&MeshVisualizerGLTest::construct3DInvalid},
         Containers::arraySize(ConstructInvalidData3D));
 
-    addTests({
-              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-              &MeshVisualizerGLTest::construct3DGeometryShaderDisabledButNeeded,
-              &MeshVisualizerGLTest::construct3DConflictingBitangentInput,
-              #endif
-
-              &MeshVisualizerGLTest::constructMove2D,
+    addTests({&MeshVisualizerGLTest::constructMove2D,
               &MeshVisualizerGLTest::constructMove3D,
 
               &MeshVisualizerGLTest::setWireframeNotEnabled2D,
@@ -567,6 +552,23 @@ void MeshVisualizerGLTest::construct2D() {
     ) CORRADE_SKIP("gl_PrimitiveID not supported.");
     #endif
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if((data.flags & MeshVisualizerGL2D::Flag::Wireframe) && !(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES
+        if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+            CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
+        #endif
+    }
+    #endif
+
     MeshVisualizerGL2D shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
@@ -609,6 +611,23 @@ void MeshVisualizerGLTest::construct3D() {
     ) CORRADE_SKIP("gl_PrimitiveID not supported.");
     #endif
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(((data.flags & MeshVisualizerGL3D::Flag::Wireframe) && !(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)) || (data.flags & (MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection))) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES
+        if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+            CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
+        #endif
+    }
+    #endif
+
     MeshVisualizerGL3D shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
@@ -621,61 +640,6 @@ void MeshVisualizerGLTest::construct3D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
-
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void MeshVisualizerGLTest::constructWireframeGeometryShader2D() {
-    #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
-    #else
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
-    #endif
-
-    #ifdef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
-        Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
-    #endif
-
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::Wireframe};
-    CORRADE_COMPARE(shader.flags(), MeshVisualizerGL2D::Flag::Wireframe);
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
-
-void MeshVisualizerGLTest::constructGeometryShader3D() {
-    auto&& data = ConstructGeometryShaderData3D[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
-    #else
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
-    #endif
-
-    #ifdef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
-        Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
-    #endif
-
-    MeshVisualizerGL3D shader{data.flags};
-    CORRADE_COMPARE(shader.flags(), data.flags);
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
-#endif
 
 void MeshVisualizerGLTest::construct2DInvalid() {
     auto&& data = ConstructInvalidData2D[testCaseInstanceId()];
@@ -704,48 +668,6 @@ void MeshVisualizerGLTest::construct3DInvalid() {
     MeshVisualizerGL3D{data.flags};
     CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL{}\n", data.message));
 }
-
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void MeshVisualizerGLTest::construct3DGeometryShaderDisabledButNeeded() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
-    #else
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
-    #endif
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::NoGeometryShader|MeshVisualizerGL3D::Flag::NormalDirection};
-    CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizerGL3D: geometry shader has to be enabled when rendering TBN direction\n");
-}
-
-void MeshVisualizerGLTest::construct3DConflictingBitangentInput() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
-    #else
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
-    #endif
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection};
-    CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizerGL3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive\n");
-}
-#endif
 
 void MeshVisualizerGLTest::constructMove2D() {
     MeshVisualizerGL2D a{MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader};
