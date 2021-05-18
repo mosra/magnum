@@ -41,7 +41,6 @@ layout(location = 5)
 #endif
 uniform lowp vec2 viewportSize; /* defaults to zero */
 
-layout(triangles) in;
 
 #if (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)) && (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID))
 #ifdef EXPLICIT_UNIFORM_LOCATION
@@ -84,6 +83,8 @@ uniform lowp float smoothness
 #endif
 
 /* Inputs */
+
+layout(triangles) in;
 
 #ifdef TANGENT_DIRECTION
 in highp vec4 tangentEndpoint[];
