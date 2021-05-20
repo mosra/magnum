@@ -184,7 +184,7 @@ const struct {
     {"blending", "FlatTestFiles/textured2D-alpha.tga", "FlatTestFiles/textured3D-alpha.tga", true,
         FlatGL2D::Flag::Textured, 0.0f},
     {"masking 0.0", "FlatTestFiles/textured2D.tga", "FlatTestFiles/textured3D.tga", false,
-        FlatGL2D::Flag::Textured, 0.0f},
+        FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask, 0.0f},
     {"masking 0.5", "FlatTestFiles/textured2D-alpha-mask0.5.tga", "FlatTestFiles/textured3D-alpha-mask0.5.tga", false,
         FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask, 0.5f},
     {"masking 1.0", "TestFiles/alpha-mask1.0.tga", "TestFiles/alpha-mask1.0.tga", false,
