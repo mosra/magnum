@@ -100,7 +100,7 @@ uniform lowp float smoothness
 
 #if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 6)
+layout(location = 5)
 #endif
 uniform lowp vec2 colorMapOffsetScale
     #ifndef GL_ES
@@ -115,7 +115,7 @@ uniform lowp vec2 colorMapOffsetScale
 
 #else
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0)
+layout(location = 1)
 #endif
 uniform highp uint drawOffset
     #ifndef GL_ES

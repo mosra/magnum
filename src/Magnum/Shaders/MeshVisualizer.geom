@@ -39,7 +39,7 @@
 /* This one is for both classic and UBOs, as it's usually set globally instead
    of changing per-draw */
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 5)
+layout(location = 0)
 #endif
 uniform lowp vec2 viewportSize; /* defaults to zero */
 
@@ -88,7 +88,7 @@ uniform lowp float smoothness
 
 #else
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0)
+layout(location = 1)
 #endif
 uniform highp uint drawOffset
     #ifndef GL_ES

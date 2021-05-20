@@ -41,7 +41,7 @@
 #ifndef UNIFORM_BUFFERS
 #ifdef TWO_DIMENSIONS
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0)
+layout(location = 6)
 #endif
 uniform highp mat3 transformationProjectionMatrix
     #ifndef GL_ES
@@ -50,7 +50,7 @@ uniform highp mat3 transformationProjectionMatrix
     ;
 #elif defined(THREE_DIMENSIONS)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0)
+layout(location = 6)
 #endif
 uniform highp mat4 transformationMatrix
     #ifndef GL_ES
@@ -71,7 +71,7 @@ uniform highp mat4 projectionMatrix
 
 #ifdef VERTEX_ID
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 6)
+layout(location = 5)
 #endif
 uniform lowp vec2 colorMapOffsetScale
     #ifndef GL_ES
@@ -106,7 +106,7 @@ uniform highp float lineLength
 
 #else
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0)
+layout(location = 1)
 #endif
 uniform highp uint drawOffset
     #ifndef GL_ES

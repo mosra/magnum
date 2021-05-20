@@ -97,16 +97,16 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _materialCount{}, _drawCount{};
         #endif
-        Int _colorUniform{1},
+        Int _viewportSizeUniform{0},
+            _colorUniform{1},
             _wireframeColorUniform{2},
             _wireframeWidthUniform{3},
-            _smoothnessUniform{4},
-            _viewportSizeUniform{5};
+            _smoothnessUniform{4};
         #ifndef MAGNUM_TARGET_GLES2
-        Int _colorMapOffsetScaleUniform{6};
-        /* Used instead of all other uniforms when Flag::UniformBuffers is set,
-           so it can alias them */
-        Int _drawOffsetUniform{0};
+        Int _colorMapOffsetScaleUniform{5};
+        /* Used instead of all other uniforms except viewportSize when
+           Flag::UniformBuffers is set, so it can alias them */
+        Int _drawOffsetUniform{1};
         #endif
 };
 
@@ -565,7 +565,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          */
 
     private:
-        Int _transformationProjectionMatrixUniform{0};
+        Int _transformationProjectionMatrixUniform{6};
 };
 
 /**
@@ -1514,7 +1514,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          */
 
     private:
-        Int _transformationMatrixUniform{0},
+        Int _transformationMatrixUniform{6},
             _projectionMatrixUniform{7};
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         Int _normalMatrixUniform{8},
