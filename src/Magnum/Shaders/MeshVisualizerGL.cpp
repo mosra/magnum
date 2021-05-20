@@ -100,11 +100,11 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
 
     #ifndef MAGNUM_TARGET_GLES
     const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
-    /* Extended in MeshVisualizer3D for TBN visualization */
+    /* Extended in MeshVisualizerGL3D for TBN visualization */
     CORRADE_INTERNAL_ASSERT(!(_flags & FlagBase::Wireframe) || _flags & FlagBase::NoGeometryShader || version >= GL::Version::GL320);
     #elif !defined(MAGNUM_TARGET_WEBGL)
     const GL::Version version = context.supportedVersion({GL::Version::GLES310, GL::Version::GLES300, GL::Version::GLES200});
-    /* Extended in MeshVisualizer3D for TBN visualization */
+    /* Extended in MeshVisualizerGL3D for TBN visualization */
     CORRADE_INTERNAL_ASSERT(!(_flags & FlagBase::Wireframe) || _flags & FlagBase::NoGeometryShader || version >= GL::Version::GLES310);
     #else
     const GL::Version version = context.supportedVersion({GL::Version::GLES300, GL::Version::GLES200});

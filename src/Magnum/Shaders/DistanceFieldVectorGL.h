@@ -300,10 +300,10 @@ typedef DistanceFieldVectorGL<3> DistanceFieldVectorGL3D;
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
 /** @debugoperatorclassenum{DistanceFieldVectorGL,DistanceFieldVectorGL::Flag} */
-template<UnsignedInt dimensions> Debug& operator<<(Debug& debug, DistanceFieldVector<dimensions>::Flag value);
+template<UnsignedInt dimensions> Debug& operator<<(Debug& debug, DistanceFieldVectorGL<dimensions>::Flag value);
 
 /** @debugoperatorclassenum{DistanceFieldVectorGL,DistanceFieldVectorGL::Flags} */
-template<UnsignedInt dimensions> Debug& operator<<(Debug& debug, DistanceFieldVector<dimensions>::Flags value);
+template<UnsignedInt dimensions> Debug& operator<<(Debug& debug, DistanceFieldVectorGL<dimensions>::Flags value);
 #else
 namespace Implementation {
     MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, DistanceFieldVectorGLFlag value);
