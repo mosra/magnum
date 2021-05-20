@@ -101,22 +101,24 @@ build() {
 }
 
 check() {
+    export CORRADE_TEST_SKIP_BENCHMARKS=ON
+    export CORRADE_TEST_COLOR=ON
     for i in build build-release; do
         cd "$_rootdir/$i"
-        CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5
-        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_invalidate_subdata GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_ARB_shading_language_420pack GL_ARB_explicit_uniform_location GL_ARB_explicit_attrib_location GL_ARB_texture_filter_anisotropic" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
-        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
-        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_get_texture_sub_image" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
-        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_vertex_array_object" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
-        MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
+        ctest --output-on-failure -j5
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_invalidate_subdata GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_ARB_shading_language_420pack GL_ARB_explicit_uniform_location GL_ARB_explicit_attrib_location GL_ARB_texture_filter_anisotropic" ctest --output-on-failure -j5 -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" ctest --output-on-failure -j5 -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_get_texture_sub_image" ctest --output-on-failure -j5 -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_vertex_array_object" ctest --output-on-failure -j5 -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" ctest --output-on-failure -j5 -R GLTest
 
         # Run all Vulkan tests with SwiftShader as well
         # Keep in sync with PKGBUILD, PKGBUILD-coverage and
         # package/ci/unix-desktop-vulkan.sh
-        MAGNUM_DEVICE=cpu CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R VkTest
+        MAGNUM_DEVICE=cpu ctest --output-on-failure -j5 -R VkTest
         for device in "" cpu; do
-            MAGNUM_DEVICE=$device MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R VkTest
-            MAGNUM_DEVICE=$device MAGNUM_DISABLE_EXTENSIONS="VK_KHR_get_physical_device_properties2 VK_KHR_get_memory_requirements2 VK_KHR_bind_memory2 VK_KHR_create_renderpass2 VK_KHR_copy_commands2 VK_KHR_maintenance1 VK_KHR_multiview VK_KHR_maintenance2" MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R VkTest
+            MAGNUM_DEVICE=$device MAGNUM_VULKAN_VERSION=1.0 ctest --output-on-failure -j5 -R VkTest
+            MAGNUM_DEVICE=$device MAGNUM_DISABLE_EXTENSIONS="VK_KHR_get_physical_device_properties2 VK_KHR_get_memory_requirements2 VK_KHR_bind_memory2 VK_KHR_create_renderpass2 VK_KHR_copy_commands2 VK_KHR_maintenance1 VK_KHR_multiview VK_KHR_maintenance2" MAGNUM_VULKAN_VERSION=1.0 ctest --output-on-failure -j5 -R VkTest
         done
     done
 }
