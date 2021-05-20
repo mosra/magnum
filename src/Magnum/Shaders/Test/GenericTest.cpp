@@ -154,7 +154,12 @@ void GenericTest::projectionUniform2DConstructNoInit() {
     a.projectionMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
 
     new(&a) ProjectionUniform2D{NoInit};
-    CORRADE_COMPARE(a.projectionMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.projectionMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<ProjectionUniform2D, NoInitT>::value);
 
@@ -215,7 +220,12 @@ void GenericTest::projectionUniform3DConstructNoInit() {
     a.projectionMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
 
     new(&a) ProjectionUniform3D{NoInit};
-    CORRADE_COMPARE(a.projectionMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.projectionMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<ProjectionUniform3D, NoInitT>::value);
 
@@ -268,7 +278,12 @@ void GenericTest::transformationUniform2DConstructNoInit() {
     a.transformationMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
 
     new(&a) TransformationUniform2D{NoInit};
-    CORRADE_COMPARE(a.transformationMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.transformationMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<TransformationUniform2D, NoInitT>::value);
 
@@ -329,7 +344,12 @@ void GenericTest::transformationUniform3DConstructNoInit() {
     a.transformationMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
 
     new(&a) TransformationUniform3D{NoInit};
-    CORRADE_COMPARE(a.transformationMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.transformationMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<TransformationUniform3D, NoInitT>::value);
 
@@ -383,8 +403,13 @@ void GenericTest::textureTransformationUniformConstructNoInit() {
     a.offset = {2.7f, 0.3f};
 
     new(&a) TextureTransformationUniform{NoInit};
-    CORRADE_COMPARE(a.rotationScaling[1], (Vector2{2.5f, -3.0f}));
-    CORRADE_COMPARE(a.offset, (Vector2{2.7f, 0.3f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.rotationScaling[1], (Vector2{2.5f, -3.0f}));
+        CORRADE_COMPARE(a.offset, (Vector2{2.7f, 0.3f}));
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<TextureTransformationUniform, NoInitT>::value);
 

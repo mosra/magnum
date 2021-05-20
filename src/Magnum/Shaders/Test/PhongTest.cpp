@@ -152,9 +152,14 @@ void PhongTest::drawUniformConstructNoInit() {
     a.lightCount = 7;
 
     new(&a) PhongDrawUniform{NoInit};
-    CORRADE_COMPARE(a.normalMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
-    CORRADE_COMPARE(a.materialId, 5);
-    CORRADE_COMPARE(a.lightCount, 7);
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.normalMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+        CORRADE_COMPARE(a.materialId, 5);
+        CORRADE_COMPARE(a.lightCount, 7);
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<PhongDrawUniform, NoInitT>::value);
 
@@ -233,9 +238,14 @@ void PhongTest::materialUniformConstructNoInit() {
     a.alphaMask = 7.0f;
 
     new(&a) PhongMaterialUniform{NoInit};
-    CORRADE_COMPARE(a.diffuseColor, 0x354565fc_rgbaf);
-    CORRADE_COMPARE(a.normalTextureScale, 0.4f);
-    CORRADE_COMPARE(a.alphaMask, 7.0f);
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.diffuseColor, 0x354565fc_rgbaf);
+        CORRADE_COMPARE(a.normalTextureScale, 0.4f);
+        CORRADE_COMPARE(a.alphaMask, 7.0f);
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<PhongMaterialUniform, NoInitT>::value);
 
@@ -296,8 +306,13 @@ void PhongTest::lightUniformConstructNoInit() {
     a.range = 7.0f;
 
     new(&a) PhongLightUniform{NoInit};
-    CORRADE_COMPARE(a.color, 0x354565_rgbf);
-    CORRADE_COMPARE(a.range, 7.0f);
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.color, 0x354565_rgbf);
+        CORRADE_COMPARE(a.range, 7.0f);
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<PhongLightUniform, NoInitT>::value);
 

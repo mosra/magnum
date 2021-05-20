@@ -100,8 +100,13 @@ void FlatTest::drawUniformConstructNoInit() {
     a.alphaMask = 0.7f;
 
     new(&a) FlatDrawUniform{NoInit};
-    CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
-    CORRADE_COMPARE(a.alphaMask, 0.7f);
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
+        CORRADE_COMPARE(a.alphaMask, 0.7f);
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<FlatDrawUniform, NoInitT>::value);
 

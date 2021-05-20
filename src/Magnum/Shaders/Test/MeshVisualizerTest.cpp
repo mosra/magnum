@@ -120,7 +120,12 @@ void MeshVisualizerTest::drawUniform2DConstructNoInit() {
     a.materialId = 73;
 
     new(&a) MeshVisualizerDrawUniform2D{NoInit};
-    CORRADE_COMPARE(a.materialId, 73);
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.materialId, 73);
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<MeshVisualizerDrawUniform2D, NoInitT>::value);
 
@@ -187,8 +192,13 @@ void MeshVisualizerTest::drawUniform3DConstructNoInit() {
     a.materialId = 5;
 
     new(&a) MeshVisualizerDrawUniform3D{NoInit};
-    CORRADE_COMPARE(a.normalMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
-    CORRADE_COMPARE(a.materialId, 5);
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.normalMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+        CORRADE_COMPARE(a.materialId, 5);
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<MeshVisualizerDrawUniform3D, NoInitT>::value);
 
@@ -269,8 +279,13 @@ void MeshVisualizerTest::materialUniformConstructNoInit() {
     a.lineWidth = 0.765f;
 
     new(&a) MeshVisualizerMaterialUniform{NoInit};
-    CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
-    CORRADE_COMPARE(a.lineWidth, 0.765f);
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
+        CORRADE_COMPARE(a.lineWidth, 0.765f);
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<MeshVisualizerMaterialUniform, NoInitT>::value);
 

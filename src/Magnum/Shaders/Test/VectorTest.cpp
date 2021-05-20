@@ -96,8 +96,13 @@ void VectorTest::drawUniformConstructNoInit() {
     a.backgroundColor = 0x98769facb_rgbaf;
 
     new(&a) VectorDrawUniform{NoInit};
-    CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
-    CORRADE_COMPARE(a.backgroundColor, 0x98769facb_rgbaf);
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
+        CORRADE_COMPARE(a.backgroundColor, 0x98769facb_rgbaf);
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<VectorDrawUniform, NoInitT>::value);
 

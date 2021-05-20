@@ -105,7 +105,12 @@ void DistanceFieldVectorTest::drawUniformConstructNoInit() {
     a.materialId = 76;
 
     new(&a) DistanceFieldVectorDrawUniform{NoInit};
-    CORRADE_COMPARE(a.materialId, 76);
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.materialId, 76);
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<DistanceFieldVectorDrawUniform, NoInitT>::value);
 
@@ -168,8 +173,13 @@ void DistanceFieldVectorTest::materialUniformConstructNoInit() {
     a.outlineEnd = 0.37f;
 
     new(&a) DistanceFieldVectorMaterialUniform{NoInit};
-    CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
-    CORRADE_COMPARE(a.outlineEnd, 0.37f);
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
+        CORRADE_COMPARE(a.outlineEnd, 0.37f);
+    }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<DistanceFieldVectorMaterialUniform, NoInitT>::value);
 
