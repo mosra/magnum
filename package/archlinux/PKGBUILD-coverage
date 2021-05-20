@@ -73,6 +73,7 @@ check() {
     MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_ARB_robustness GL_ARB_multi_bind" ctest --output-on-failure -j5 -R GLTest || true
     MAGNUM_DISABLE_EXTENSIONS="GL_ARB_get_texture_sub_image" ctest --output-on-failure -j5 -R GLTest || true
     MAGNUM_DISABLE_EXTENSIONS="GL_ARB_vertex_array_object" ctest --output-on-failure -j5 -R GLTest || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_uniform_buffer_object" ctest --output-on-failure -j5 -R GLTest
     MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" ctest --output-on-failure -j5 -R GLTest || true
 
     # Run all Vulkan tests with SwiftShader as well

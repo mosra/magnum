@@ -1,0 +1,124 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include <new>
+#include <Corrade/TestSuite/Tester.h>
+
+#include "Magnum/Shaders/Flat.h"
+
+namespace Magnum { namespace Shaders { namespace Test { namespace {
+
+struct FlatTest: TestSuite::Tester {
+    explicit FlatTest();
+
+    template<class T> void uniformSize();
+
+    void drawUniformConstructDefault();
+    void drawUniformConstructNoInit();
+    void drawUniformSetters();
+};
+
+FlatTest::FlatTest() {
+    addTests({&FlatTest::uniformSize<FlatDrawUniform>,
+
+              &FlatTest::drawUniformConstructDefault,
+              &FlatTest::drawUniformConstructNoInit,
+              &FlatTest::drawUniformSetters});
+}
+
+using namespace Math::Literals;
+
+template<class> struct UniformTraits;
+template<> struct UniformTraits<FlatDrawUniform> {
+    static const char* name() { return "FlatDrawUniform"; }
+};
+
+template<class T> void FlatTest::uniformSize() {
+    setTestCaseTemplateName(UniformTraits<T>::name());
+
+    CORRADE_FAIL_IF(sizeof(T) % sizeof(Vector4) != 0, sizeof(T) << "is not a multiple of vec4 for UBO alignment.");
+
+    /* 48-byte structures are fine, we'll align them to 768 bytes and not
+       256, but warn about that */
+    CORRADE_FAIL_IF(768 % sizeof(T) != 0, sizeof(T) << "can't fit exactly into 768-byte UBO alignment.");
+    if(256 % sizeof(T) != 0)
+        CORRADE_WARN(sizeof(T) << "can't fit exactly into 256-byte UBO alignment, only 768.");
+}
+
+void FlatTest::drawUniformConstructDefault() {
+    FlatDrawUniform a;
+    FlatDrawUniform b{DefaultInit};
+    CORRADE_COMPARE(a.color, 0xffffffff_rgbaf);
+    CORRADE_COMPARE(b.color, 0xffffffff_rgbaf);
+    CORRADE_COMPARE(a.objectId, 0);
+    CORRADE_COMPARE(b.objectId, 0);
+    CORRADE_COMPARE(a.alphaMask, 0.5f);
+    CORRADE_COMPARE(b.alphaMask, 0.5f);
+
+    constexpr FlatDrawUniform ca;
+    constexpr FlatDrawUniform cb{DefaultInit};
+    CORRADE_COMPARE(ca.color, 0xffffffff_rgbaf);
+    CORRADE_COMPARE(cb.color, 0xffffffff_rgbaf);
+    CORRADE_COMPARE(ca.objectId, 0);
+    CORRADE_COMPARE(cb.objectId, 0);
+    CORRADE_COMPARE(ca.alphaMask, 0.5f);
+    CORRADE_COMPARE(cb.alphaMask, 0.5f);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<FlatDrawUniform>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<FlatDrawUniform, DefaultInitT>::value);
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<DefaultInitT, FlatDrawUniform>::value);
+}
+
+void FlatTest::drawUniformConstructNoInit() {
+    /* Testing only some fields, should be enough */
+    FlatDrawUniform a;
+    a.color = 0x354565fc_rgbaf;
+    a.alphaMask = 0.7f;
+
+    new(&a) FlatDrawUniform{NoInit};
+    CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
+    CORRADE_COMPARE(a.alphaMask, 0.7f);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<FlatDrawUniform, NoInitT>::value);
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, FlatDrawUniform>::value);
+}
+
+void FlatTest::drawUniformSetters() {
+    FlatDrawUniform a;
+    a.setColor(0x354565fc_rgbaf)
+     .setObjectId(7)
+     .setAlphaMask(0.7f);
+    CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
+    CORRADE_COMPARE(a.objectId, 7);
+    CORRADE_COMPARE(a.alphaMask, 0.7f);
+}
+
+}}}}
+
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::FlatTest)

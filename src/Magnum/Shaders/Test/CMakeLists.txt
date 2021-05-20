@@ -23,6 +23,22 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+corrade_add_test(ShadersDistanceFieldVectorTest DistanceFieldVectorTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersFlatTest FlatTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersGenericTest GenericTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersMeshVisualizerTest MeshVisualizerTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersPhongTest PhongTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersVectorTest VectorTest.cpp LIBRARIES MagnumShaders)
+
+set_target_properties(
+    ShadersDistanceFieldVectorTest
+    ShadersFlatTest
+    ShadersGenericTest
+    ShadersMeshVisualizerTest
+    ShadersPhongTest
+    ShadersVectorTest
+    PROPERTIES FOLDER "Magnum/Shaders/Test")
+
 # There's an underscore between GL and Test to disambiguate from GLTest, which
 # is a common suffix used to mark tests that need a GL context. Ugly, I know.
 corrade_add_test(ShadersDistanceFieldVectorGL_Test DistanceFieldVectorGL_Test.cpp LIBRARIES MagnumShaders)
@@ -94,7 +110,9 @@ if(BUILD_GL_TESTS)
             VectorTestFiles/smooth0.2-2D.tga
             VectorTestFiles/smooth0.2-3D.tga
             VectorTestFiles/outline2D.tga
-            VectorTestFiles/outline3D.tga)
+            VectorTestFiles/outline3D.tga
+            VectorTestFiles/multidraw2D-distancefield.tga
+            VectorTestFiles/multidraw3D-distancefield.tga)
     target_include_directories(ShadersDistanceFieldVectorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
@@ -133,7 +151,11 @@ if(BUILD_GL_TESTS)
             FlatTestFiles/textured2D-alpha-mask0.5.tga
             FlatTestFiles/textured3D-alpha-mask0.5.tga
             FlatTestFiles/vertexColor2D.tga
-            FlatTestFiles/vertexColor3D.tga)
+            FlatTestFiles/vertexColor3D.tga
+            FlatTestFiles/multidraw2D.tga
+            FlatTestFiles/multidraw3D.tga
+            FlatTestFiles/multidraw-textured2D.tga
+            FlatTestFiles/multidraw-textured3D.tga)
     target_include_directories(ShadersFlatGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
@@ -189,7 +211,14 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/wireframe-wide2D.tga
             MeshVisualizerTestFiles/wireframe-wide3D.tga
             MeshVisualizerTestFiles/wireframe2D.tga
-            MeshVisualizerTestFiles/wireframe3D.tga)
+            MeshVisualizerTestFiles/wireframe3D.tga
+            MeshVisualizerTestFiles/multidraw-wireframe2D.tga
+            MeshVisualizerTestFiles/multidraw-wireframe3D.tga
+            MeshVisualizerTestFiles/multidraw-wireframe-tbn3D.tga
+            MeshVisualizerTestFiles/multidraw-wireframe-nogeo2D.tga
+            MeshVisualizerTestFiles/multidraw-wireframe-nogeo3D.tga
+            MeshVisualizerTestFiles/multidraw-vertexid2D.tga
+            MeshVisualizerTestFiles/multidraw-vertexid3D.tga)
     target_include_directories(ShadersMeshVisualizerGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
@@ -251,6 +280,8 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/light-point-range1.5.tga
             PhongTestFiles/light-point-specular-color.tga
             PhongTestFiles/light-point.tga
+            PhongTestFiles/multidraw.tga
+            PhongTestFiles/multidraw-textured.tga
 
             # For zero lights test (equivalency to Flat3D)
             FlatTestFiles/textured3D-alpha-mask0.5.tga)
@@ -280,7 +311,9 @@ if(BUILD_GL_TESTS)
 
             VectorTestFiles/defaults.tga
             VectorTestFiles/vector2D.tga
-            VectorTestFiles/vector3D.tga)
+            VectorTestFiles/vector3D.tga
+            VectorTestFiles/multidraw2D.tga
+            VectorTestFiles/multidraw3D.tga)
     target_include_directories(ShadersVectorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
@@ -306,7 +339,9 @@ if(BUILD_GL_TESTS)
             FlatTestFiles/defaults.tga
 
             VertexColorTestFiles/vertexColor2D.tga
-            VertexColorTestFiles/vertexColor3D.tga)
+            VertexColorTestFiles/vertexColor3D.tga
+            VertexColorTestFiles/multidraw2D.tga
+            VertexColorTestFiles/multidraw3D.tga)
     target_include_directories(ShadersVertexColorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)

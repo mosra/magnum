@@ -52,6 +52,21 @@
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/MeshData.h"
 
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/MeshView.h"
+#include "Magnum/MeshTools/Concatenate.h"
+#include "Magnum/MeshTools/GenerateIndices.h"
+#include "Magnum/Primitives/Circle.h"
+#include "Magnum/Primitives/Cone.h"
+#include "Magnum/Primitives/Plane.h"
+#include "Magnum/Primitives/Square.h"
+#include "Magnum/Primitives/UVSphere.h"
+#include "Magnum/Shaders/Generic.h"
+#include "Magnum/Shaders/Generic.h"
+#include "Magnum/Shaders/Vector.h"
+#endif
+
 #include "configure.h"
 
 namespace Magnum { namespace Shaders { namespace Test { namespace {
@@ -60,17 +75,43 @@ struct VectorGLTest: GL::OpenGLTester {
     explicit VectorGLTest();
 
     template<UnsignedInt dimensions> void construct();
-    template<UnsignedInt dimensions> void constructMove();
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void constructUniformBuffers();
+    #endif
 
+    template<UnsignedInt dimensions> void constructMove();
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void constructMoveUniformBuffers();
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void constructUniformBuffersZeroDraws();
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void setUniformUniformBuffersEnabled();
+    template<UnsignedInt dimensions> void bindBufferUniformBuffersNotEnabled();
+    #endif
     template<UnsignedInt dimensions> void setTextureMatrixNotEnabled();
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void bindTextureTransformBufferNotEnabled();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void setWrongDrawOffset();
+    #endif
 
     void renderSetup();
     void renderTeardown();
 
-    void renderDefaults2D();
-    void renderDefaults3D();
-    void render2D();
-    void render3D();
+    template<VectorGL2D::Flag flag = VectorGL2D::Flag{}> void renderDefaults2D();
+    template<VectorGL3D::Flag flag = VectorGL3D::Flag{}> void renderDefaults3D();
+    template<VectorGL2D::Flag flag = VectorGL2D::Flag{}> void render2D();
+    template<VectorGL3D::Flag flag = VectorGL3D::Flag{}> void render3D();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    void renderMulti2D();
+    void renderMulti3D();
+    #endif
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -105,6 +146,19 @@ constexpr struct {
     {"texture transformation", VectorGL2D::Flag::TextureTransformation}
 };
 
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    VectorGL2D::Flags flags;
+    UnsignedInt drawCount;
+} ConstructUniformBuffersData[]{
+    {"classic fallback", {}, 1},
+    {"", VectorGL2D::Flag::UniformBuffers, 1},
+    {"texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1},
+    {"multiple draws", VectorGL2D::Flag::UniformBuffers, 128},
+};
+#endif
+
 const struct {
     const char* name;
     VectorGL2D::Flags flags;
@@ -122,29 +176,101 @@ const struct {
         "vector2D.tga", "vector3D.tga", false}
 };
 
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    const char* expected2D;
+    const char* expected3D;
+    UnsignedInt drawCount;
+    UnsignedInt uniformIncrement;
+    Float maxThreshold, meanThreshold;
+} RenderMultiData[] {
+    {"bind with offset", "multidraw2D.tga", "multidraw3D.tga",
+        1, 16, 0.0f, 0.0f},
+    {"draw offset", "multidraw2D.tga", "multidraw3D.tga",
+        3, 1, 0.0f, 0.0f},
+};
+#endif
+
 VectorGLTest::VectorGLTest() {
     addInstancedTests<VectorGLTest>({
         &VectorGLTest::construct<2>,
         &VectorGLTest::construct<3>},
         Containers::arraySize(ConstructData));
 
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests<VectorGLTest>({
+        &VectorGLTest::constructUniformBuffers<2>,
+        &VectorGLTest::constructUniformBuffers<3>},
+        Containers::arraySize(ConstructUniformBuffersData));
+    #endif
+
     addTests<VectorGLTest>({
         &VectorGLTest::constructMove<2>,
         &VectorGLTest::constructMove<3>,
 
-        &VectorGLTest::setTextureMatrixNotEnabled<2>,
-        &VectorGLTest::setTextureMatrixNotEnabled<3>});
+        #ifndef MAGNUM_TARGET_GLES2
+        &VectorGLTest::constructMoveUniformBuffers<2>,
+        &VectorGLTest::constructMoveUniformBuffers<3>,
+        #endif
 
-    addTests({&VectorGLTest::renderDefaults2D,
-              &VectorGLTest::renderDefaults3D},
+        #ifndef MAGNUM_TARGET_GLES2
+        &VectorGLTest::constructUniformBuffersZeroDraws<2>,
+        &VectorGLTest::constructUniformBuffersZeroDraws<3>,
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        &VectorGLTest::setUniformUniformBuffersEnabled<2>,
+        &VectorGLTest::setUniformUniformBuffersEnabled<3>,
+        &VectorGLTest::bindBufferUniformBuffersNotEnabled<2>,
+        &VectorGLTest::bindBufferUniformBuffersNotEnabled<3>,
+        #endif
+        &VectorGLTest::setTextureMatrixNotEnabled<2>,
+        &VectorGLTest::setTextureMatrixNotEnabled<3>,
+        #ifndef MAGNUM_TARGET_GLES2
+        &VectorGLTest::bindTextureTransformBufferNotEnabled<2>,
+        &VectorGLTest::bindTextureTransformBufferNotEnabled<3>,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        &VectorGLTest::setWrongDrawOffset<2>,
+        &VectorGLTest::setWrongDrawOffset<3>
+        #endif
+        });
+
+    addTests({
+        &VectorGLTest::renderDefaults2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &VectorGLTest::renderDefaults2D<VectorGL2D::Flag::UniformBuffers>,
+        #endif
+        &VectorGLTest::renderDefaults3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &VectorGLTest::renderDefaults3D<VectorGL3D::Flag::UniformBuffers>,
+        #endif
+        },
         &VectorGLTest::renderSetup,
         &VectorGLTest::renderTeardown);
 
-    addInstancedTests({&VectorGLTest::render2D,
-                       &VectorGLTest::render3D},
+    addInstancedTests({
+        &VectorGLTest::render2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &VectorGLTest::render2D<VectorGL2D::Flag::UniformBuffers>,
+        #endif
+        &VectorGLTest::render3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &VectorGLTest::render3D<VectorGL3D::Flag::UniformBuffers>,
+        #endif
+        },
         Containers::arraySize(RenderData),
         &VectorGLTest::renderSetup,
         &VectorGLTest::renderTeardown);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&VectorGLTest::renderMulti2D,
+                       &VectorGLTest::renderMulti3D},
+        Containers::arraySize(RenderMultiData),
+        &VectorGLTest::renderSetup,
+        &VectorGLTest::renderTeardown);
+    #endif
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -189,6 +315,33 @@ template<UnsignedInt dimensions> void VectorGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffers() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    auto&& data = ConstructUniformBuffersData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & VectorGL<dimensions>::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    VectorGL<dimensions> shader{data.flags, data.drawCount};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
+
 template<UnsignedInt dimensions> void VectorGLTest::constructMove() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
@@ -210,6 +363,115 @@ template<UnsignedInt dimensions> void VectorGLTest::constructMove() {
     CORRADE_VERIFY(!b.id());
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void VectorGLTest::constructMoveUniformBuffers() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    VectorGL<dimensions> a{VectorGL<dimensions>::Flag::UniformBuffers, 5};
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    VectorGL<dimensions> b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_COMPARE(b.flags(), VectorGL<dimensions>::Flag::UniformBuffers);
+    CORRADE_COMPARE(b.drawCount(), 5);
+    CORRADE_VERIFY(!a.id());
+
+    VectorGL<dimensions> c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_COMPARE(c.flags(), VectorGL<dimensions>::Flag::UniformBuffers);
+    CORRADE_COMPARE(c.drawCount(), 5);
+    CORRADE_VERIFY(!b.id());
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersZeroDraws() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    VectorGL<dimensions>{VectorGL<dimensions>::Flag::UniformBuffers, 0};
+    CORRADE_COMPARE(out.str(),
+        "Shaders::VectorGL: draw count can't be zero\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void VectorGLTest::setUniformUniformBuffersEnabled() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    VectorGL<dimensions> shader{VectorGL<dimensions>::Flag::UniformBuffers};
+    shader.setTransformationProjectionMatrix({})
+        .setTextureMatrix({})
+        .setBackgroundColor({})
+        .setColor({});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::VectorGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::VectorGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::VectorGL::setBackgroundColor(): the shader was created with uniform buffers enabled\n"
+        "Shaders::VectorGL::setColor(): the shader was created with uniform buffers enabled\n");
+}
+
+template<UnsignedInt dimensions> void VectorGLTest::bindBufferUniformBuffersNotEnabled() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Buffer buffer;
+    VectorGL<dimensions> shader;
+    shader.bindTransformationProjectionBuffer(buffer)
+          .bindTransformationProjectionBuffer(buffer, 0, 16)
+          .bindDrawBuffer(buffer)
+          .bindDrawBuffer(buffer, 0, 16)
+          .bindTextureTransformationBuffer(buffer)
+          .bindTextureTransformationBuffer(buffer, 0, 16)
+          .setDrawOffset(0);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::VectorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::VectorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::VectorGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::VectorGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::VectorGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::VectorGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::VectorGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
+}
+#endif
+
 template<UnsignedInt dimensions> void VectorGLTest::setTextureMatrixNotEnabled() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
@@ -226,6 +488,54 @@ template<UnsignedInt dimensions> void VectorGLTest::setTextureMatrixNotEnabled()
     CORRADE_COMPARE(out.str(),
         "Shaders::VectorGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void VectorGLTest::bindTextureTransformBufferNotEnabled() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
+    VectorGL<dimensions> shader{VectorGL<dimensions>::Flag::UniformBuffers};
+    shader.bindTextureTransformationBuffer(buffer)
+          .bindTextureTransformationBuffer(buffer, 0, 16);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::VectorGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n"
+        "Shaders::VectorGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void VectorGLTest::setWrongDrawOffset() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    VectorGL<dimensions>{VectorGL<dimensions>::Flag::UniformBuffers, 5}
+        .setDrawOffset(5);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::VectorGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
+}
+#endif
 
 constexpr Vector2i RenderSize{80, 80};
 
@@ -262,7 +572,18 @@ constexpr GL::TextureFormat TextureFormatR =
     #endif
     ;
 
-void VectorGLTest::renderDefaults2D() {
+template<VectorGL2D::Flag flag> void VectorGLTest::renderDefaults2D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == VectorGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -288,9 +609,26 @@ void VectorGLTest::renderDefaults2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    VectorGL2D{}
-        .bindVectorTexture(texture)
-        .draw(square);
+    VectorGL2D shader{flag};
+    shader.bindVectorTexture(texture);
+
+    if(flag == VectorGL2D::Flag{}) {
+        shader.draw(square);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == VectorGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            VectorDrawUniform{}
+        }};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(square);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -309,7 +647,18 @@ void VectorGLTest::renderDefaults2D() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void VectorGLTest::renderDefaults3D() {
+template<VectorGL3D::Flag flag> void VectorGLTest::renderDefaults3D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == VectorGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -335,9 +684,26 @@ void VectorGLTest::renderDefaults3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    VectorGL3D{}
-        .bindVectorTexture(texture)
-        .draw(plane);
+    VectorGL3D shader{flag};
+    shader.bindVectorTexture(texture);
+
+    if(flag == VectorGL3D::Flag{}) {
+        shader.draw(plane);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == VectorGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform3D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            VectorDrawUniform{}
+        }};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(plane);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -356,9 +722,20 @@ void VectorGLTest::renderDefaults3D() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void VectorGLTest::render2D() {
+template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
     auto&& data = RenderData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == VectorGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -385,18 +762,46 @@ void VectorGLTest::render2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    VectorGL2D shader{data.flags};
-    shader.setBackgroundColor(data.backgroundColor)
-        .setColor(data.color)
-        .bindVectorTexture(texture);
+    VectorGL2D shader{data.flags|flag};
+    shader.bindVectorTexture(texture);
 
-    if(data.textureTransformation != Matrix3{})
-        shader.setTextureMatrix(data.textureTransformation);
-    else shader.setTransformationProjectionMatrix(
-        Matrix3::projection({2.1f, 2.1f})*
-        Matrix3::rotation(5.0_degf));
-
-    shader.draw(square);
+    if(flag == VectorGL2D::Flag{}) {
+        shader.setBackgroundColor(data.backgroundColor)
+            .setColor(data.color);
+        if(data.textureTransformation != Matrix3{})
+            shader.setTextureMatrix(data.textureTransformation);
+        else shader.setTransformationProjectionMatrix(
+            Matrix3::projection({2.1f, 2.1f})*
+            Matrix3::rotation(5.0_degf));
+        shader.draw(square);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == VectorGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(
+                    data.textureTransformation == Matrix3{} ?
+                        Matrix3::projection({2.1f, 2.1f})*
+                        Matrix3::rotation(5.0_degf) : Matrix3{}
+                )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            VectorDrawUniform{}
+                .setBackgroundColor(data.backgroundColor)
+                .setColor(data.color)
+        }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(data.textureTransformation)
+        }};
+        if(data.flags & VectorGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(square);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -418,9 +823,20 @@ void VectorGLTest::render2D() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void VectorGLTest::render3D() {
+template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
     auto&& data = RenderData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == VectorGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -447,20 +863,50 @@ void VectorGLTest::render3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    VectorGL3D shader{data.flags};
-    shader.setBackgroundColor(data.backgroundColor)
-        .setColor(data.color)
-        .bindVectorTexture(texture);
+    VectorGL3D shader{data.flags|flag};
+    shader.bindVectorTexture(texture);
 
-    if(data.textureTransformation != Matrix3{})
-        shader.setTextureMatrix(data.textureTransformation);
-    else shader.setTransformationProjectionMatrix(
-        Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
-        Matrix4::translation(Vector3::zAxis(-2.15f))*
-        Matrix4::rotationY(-15.0_degf)*
-        Matrix4::rotationZ(15.0_degf));
-
-    shader.draw(plane);
+    if(flag == VectorGL3D::Flag{}) {
+        shader.setBackgroundColor(data.backgroundColor)
+            .setColor(data.color);
+        if(data.textureTransformation != Matrix3{})
+            shader.setTextureMatrix(data.textureTransformation);
+        else shader.setTransformationProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::rotationY(-15.0_degf)*
+            Matrix4::rotationZ(15.0_degf));
+        shader.draw(plane);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == VectorGL3D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform3D{}
+                .setTransformationProjectionMatrix(
+                    data.textureTransformation == Matrix3{} ?
+                        Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                        Matrix4::translation(Vector3::zAxis(-2.15f))*
+                        Matrix4::rotationY(-15.0_degf)*
+                        Matrix4::rotationZ(15.0_degf) : Matrix4{}
+                )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            VectorDrawUniform{}
+                .setBackgroundColor(data.backgroundColor)
+                .setColor(data.color)
+        }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(data.textureTransformation)
+        }};
+        if(data.flags & VectorGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(plane);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -481,6 +927,333 @@ void VectorGLTest::render3D() {
         Utility::Directory::join({_testDir, "VectorTestFiles", data.file3D}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void VectorGLTest::renderMulti2D() {
+    auto&& data = RenderMultiData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer);
+
+    Containers::Optional<Trade::ImageData2D> image;
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
+    GL::Texture2D vector;
+    vector.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, GL::TextureFormat::R8, image->size())
+        .setSubImage(0, {}, *image);
+
+    /* Circle is a fan, plane is a strip, make it indexed first */
+    Trade::MeshData circleData = MeshTools::generateIndices(Primitives::circle2DSolid(32,
+        Primitives::Circle2DFlag::TextureCoordinates));
+    Trade::MeshData squareData = MeshTools::generateIndices(Primitives::squareSolid(
+        Primitives::SquareFlag::TextureCoordinates));
+    Trade::MeshData triangleData = MeshTools::generateIndices(Primitives::circle2DSolid(3,
+        Primitives::Circle2DFlag::TextureCoordinates));
+    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({circleData, squareData, triangleData}));
+    GL::MeshView circle{mesh};
+    circle.setCount(circleData.indexCount());
+    GL::MeshView square{mesh};
+    square.setCount(squareData.indexCount())
+        .setIndexRange(circleData.indexCount());
+    GL::MeshView triangle{mesh};
+    triangle.setCount(triangleData.indexCount())
+        .setIndexRange(circleData.indexCount() + squareData.indexCount());
+
+    /* Some drivers have uniform offset alignment as high as 256, which means
+       the subsequent sets of uniforms have to be aligned to a multiply of it.
+       The data.uniformIncrement is set high enough to ensure that, in the
+       non-offset-bind case this value is 1. */
+
+    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
+    transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::projection({2.1f, 2.1f})*
+            Matrix3::scaling(Vector2{0.4f})*
+            Matrix3::translation({-1.25f, -1.25f})
+        );
+    transformationProjectionData[1*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::projection({2.1f, 2.1f})*
+            Matrix3::scaling(Vector2{0.4f})*
+            Matrix3::translation({ 1.25f, -1.25f})
+        );
+    transformationProjectionData[2*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::projection({2.1f, 2.1f})*
+            Matrix3::scaling(Vector2{0.4f})*
+            Matrix3::translation({ 0.00f,  1.25f})
+        );
+    GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
+
+    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::translation({0.5f, 0.5f})*
+            Matrix3::rotation(180.0_degf)*
+            Matrix3::translation({-0.5f, -0.5f})
+        );
+    textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::translation(Vector2::xAxis(1.0f))*
+            Matrix3::scaling(Vector2::xScale(-1.0f))
+        );
+    textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(Matrix3{});
+    GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
+
+    Containers::Array<VectorDrawUniform> drawData{2*data.uniformIncrement + 1};
+    drawData[0*data.uniformIncrement] = VectorDrawUniform{}
+        .setColor(0x00ff00_rgbf)
+        .setBackgroundColor(0xccffcc_rgbf);
+    drawData[1*data.uniformIncrement] = VectorDrawUniform{}
+        .setColor(0xff0000_rgbf)
+        .setBackgroundColor(0xffcccc_rgbf);
+    drawData[2*data.uniformIncrement] = VectorDrawUniform{}
+        .setColor(0x00ff00_rgbf)
+        .setBackgroundColor(0xccffcc_rgbf);
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    VectorGL2D shader{VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, data.drawCount};
+    shader.bindVectorTexture(vector);
+
+    /* Just one draw, rebinding UBOs each time */
+    if(data.drawCount == 1) {
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            0*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            0*data.uniformIncrement*sizeof(VectorDrawUniform),
+            sizeof(VectorDrawUniform));
+        shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            0*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(circle);
+
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            1*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            1*data.uniformIncrement*sizeof(VectorDrawUniform),
+            sizeof(VectorDrawUniform));
+        shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            1*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(square);
+
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            2*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            2*data.uniformIncrement*sizeof(VectorDrawUniform),
+            sizeof(VectorDrawUniform));
+        shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            2*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(triangle);
+
+    /* Otherwise using the draw offset */
+    } else {
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindTextureTransformationBuffer(textureTransformationUniform);
+        shader.setDrawOffset(0)
+            .draw(circle);
+        shader.setDrawOffset(1)
+            .draw(square);
+        shader.setDrawOffset(2)
+            .draw(triangle);
+    }
+
+    /*
+        -   Circle lower left, green, upside down
+        -   Square lower right, red, mirrored
+        -   Triangle up center, green
+    */
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "VectorTestFiles", data.expected2D}),
+        (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
+}
+
+void VectorGLTest::renderMulti3D() {
+    auto&& data = RenderMultiData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer);
+
+    Containers::Optional<Trade::ImageData2D> image;
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
+    GL::Texture2D vector;
+    vector.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, GL::TextureFormat::R8, image->size())
+        .setSubImage(0, {}, *image);
+
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
+        Primitives::UVSphereFlag::TextureCoordinates);
+    /* Plane is a strip, make it indexed first */
+    Trade::MeshData planeData = MeshTools::generateIndices(Primitives::planeSolid(
+        Primitives::PlaneFlag::TextureCoordinates));
+    Trade::MeshData coneData = Primitives::coneSolid(1, 32, 1.0f,
+        Primitives::ConeFlag::TextureCoordinates);
+    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({sphereData, planeData, coneData}));
+    GL::MeshView sphere{mesh};
+    sphere.setCount(sphereData.indexCount());
+    GL::MeshView plane{mesh};
+    plane.setCount(planeData.indexCount())
+        .setIndexRange(sphereData.indexCount());
+    GL::MeshView cone{mesh};
+    cone.setCount(coneData.indexCount())
+        .setIndexRange(sphereData.indexCount() + planeData.indexCount());
+
+    /* Some drivers have uniform offset alignment as high as 256, which means
+       the subsequent sets of uniforms have to be aligned to a multiply of it.
+       The data.uniformIncrement is set high enough to ensure that, in the
+       non-offset-bind case this value is 1. */
+
+    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{2*data.uniformIncrement + 1};
+    transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform3D{}
+        .setTransformationProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f})*
+            Matrix4::translation({-1.25f, -1.25f, 0.0f})*
+            Matrix4::rotationY(180.0_degf) /* so the texture is visible */
+        );
+    transformationProjectionData[1*data.uniformIncrement] = TransformationProjectionUniform3D{}
+        .setTransformationProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f})*
+            Matrix4::translation({ 1.25f, -1.25f, 0.0f})
+        );
+    transformationProjectionData[2*data.uniformIncrement] = TransformationProjectionUniform3D{}
+        .setTransformationProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f})*
+            Matrix4::translation({  0.0f,  1.0f, 1.0f})*
+            Matrix4::rotationY(180.0_degf) /* so the texture is visible */
+        );
+    GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
+
+    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::translation({0.5f, 0.5f})*
+            Matrix3::rotation(180.0_degf)*
+            Matrix3::translation({-0.5f, -0.5f})
+        );
+    textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::translation(Vector2::xAxis(1.0f))*
+            Matrix3::scaling(Vector2::xScale(-1.0f))
+        );
+    textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(Matrix3{});
+    GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
+
+    Containers::Array<VectorDrawUniform> drawData{2*data.uniformIncrement + 1};
+    drawData[0*data.uniformIncrement] = VectorDrawUniform{}
+        .setColor(0x00ff00_rgbf)
+        .setBackgroundColor(0xccffcc_rgbf);
+    drawData[1*data.uniformIncrement] = VectorDrawUniform{}
+        .setColor(0xff0000_rgbf)
+        .setBackgroundColor(0xffcccc_rgbf);
+    drawData[2*data.uniformIncrement] = VectorDrawUniform{}
+        .setColor(0x00ff00_rgbf)
+        .setBackgroundColor(0xccffcc_rgbf);
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    VectorGL3D shader{VectorGL3D::Flag::UniformBuffers|VectorGL3D::Flag::TextureTransformation, data.drawCount};
+    shader.bindVectorTexture(vector);
+
+    /* Just one draw, rebinding UBOs each time */
+    if(data.drawCount == 1) {
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            0*data.uniformIncrement*sizeof(TransformationProjectionUniform3D),
+            sizeof(TransformationProjectionUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            0*data.uniformIncrement*sizeof(VectorDrawUniform),
+            sizeof(VectorDrawUniform));
+        shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            0*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(sphere);
+
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            1*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            1*data.uniformIncrement*sizeof(VectorDrawUniform),
+            sizeof(VectorDrawUniform));
+        shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            1*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(plane);
+
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            2*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            2*data.uniformIncrement*sizeof(VectorDrawUniform),
+            sizeof(VectorDrawUniform));
+        shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            2*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(cone);
+
+    /* Otherwise using the draw offset */
+    } else {
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindTextureTransformationBuffer(textureTransformationUniform);
+        shader.setDrawOffset(0)
+            .draw(sphere);
+        shader.setDrawOffset(1)
+            .draw(plane);
+        shader.setDrawOffset(2)
+            .draw(cone);
+    }
+
+    /*
+        -   Sphere lower left, green, upside down
+        -   Plane lower right, red, mirrored
+        -   Cone up center, green
+    */
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "VectorTestFiles", data.expected3D}),
+        (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
+}
+#endif
 
 }}}}
 

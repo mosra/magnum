@@ -32,8 +32,13 @@
 #define out varying
 #endif
 
+#ifndef RUNTIME_CONST
+#define const
+#endif
+
 /* Uniforms */
 
+#ifndef UNIFORM_BUFFERS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -62,6 +67,51 @@ uniform mediump mat3 textureMatrix
     = mat3(1.0)
     #endif
     ;
+#endif
+
+/* Uniform buffers */
+
+#else
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform highp uint drawOffset
+    #ifndef GL_ES
+    = 0u
+    #endif
+    ;
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 1
+    #endif
+) uniform TransformationProjection {
+    highp
+        #ifdef TWO_DIMENSIONS
+        mat3
+        #elif defined(THREE_DIMENSIONS)
+        mat4
+        #else
+        #error
+        #endif
+    transformationProjectionMatrices[DRAW_COUNT];
+};
+
+#ifdef TEXTURE_TRANSFORMATION
+struct TextureTransformationUniform {
+    highp vec4 rotationScaling;
+    highp vec4 offsetReservedReserved;
+    #define textureTransformation_offset offsetReservedReserved.xy
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 3
+    #endif
+) uniform TextureTransformation {
+    TextureTransformationUniform textureTransformations[DRAW_COUNT];
+};
+#endif
 #endif
 
 /* Inputs */
@@ -133,6 +183,21 @@ flat out highp uint interpolatedInstanceObjectId;
 #endif
 
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    highp const
+        #ifdef TWO_DIMENSIONS
+        mat3
+        #elif defined(THREE_DIMENSIONS)
+        mat4
+        #else
+        #error
+        #endif
+        transformationProjectionMatrix = transformationProjectionMatrices[drawOffset];
+    #ifdef TEXTURE_TRANSFORMATION
+    mediump const mat3 textureMatrix = mat3(textureTransformations[drawOffset].rotationScaling.xy, 0.0, textureTransformations[drawOffset].rotationScaling.zw, 0.0, textureTransformations[drawOffset].textureTransformation_offset, 1.0);
+    #endif
+    #endif
+
     #ifdef TWO_DIMENSIONS
     gl_Position.xywz = vec4(transformationProjectionMatrix*
         #ifdef INSTANCED_TRANSFORMATION

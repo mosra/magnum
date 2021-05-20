@@ -46,6 +46,7 @@
 
 /* Uniforms */
 
+#ifndef UNIFORM_BUFFERS
 #if (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)) && !defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
@@ -110,6 +111,64 @@ uniform lowp vec2 colorMapOffsetScale
 #define colorMapScale colorMapOffsetScale.y
 #endif
 
+/* Uniform buffers */
+
+#else
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform highp uint drawOffset
+    #ifndef GL_ES
+    = 0u
+    #endif
+    ;
+
+/* Keep in sync with MeshVisualizer.vert and MeshVisualizer.geom. Can't
+   "outsource" to a common file because the extension directives need to be
+   always before any code. */
+struct DrawUniform {
+    #ifdef THREE_DIMENSIONS
+    highp mat3 normalMatrix; /* actually mat3x4 */
+    #elif !defined(TWO_DIMENSIONS)
+    #error
+    #endif
+    highp uvec4 materialIdReservedReservedReservedReserved;
+    #define draw_materialIdReserved materialIdReservedReservedReservedReserved.x
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 2
+    #endif
+) uniform Draw {
+    DrawUniform draws[DRAW_COUNT];
+};
+
+/* Keep in sync with MeshVisualizer.vert and MeshVisualizer.geom. Can't
+   "outsource" to a common file because the extension directives need to be
+   always before any code. */
+struct MaterialUniform {
+    lowp vec4 color;
+    lowp vec4 wireframeColor;
+    lowp vec4 wireframeWidthColorMapOffsetColorMapScaleLineWidth;
+    #define material_wireframeWidth wireframeWidthColorMapOffsetColorMapScaleLineWidth.x
+    #define material_colorMapOffset wireframeWidthColorMapOffsetColorMapScaleLineWidth.y
+    #define material_colorMapScale wireframeWidthColorMapOffsetColorMapScaleLineWidth.z
+    #define material_lineWidth wireframeWidthColorMapOffsetColorMapScaleLineWidth.w
+    lowp vec4 lineLengthSmoothnessReservedReserved;
+    #define material_lineLength lineLengthSmoothnessReservedReserved.x
+    #define material_smoothness lineLengthSmoothnessReservedReserved.y
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 4
+    #endif
+) uniform Material {
+    MaterialUniform materials[MATERIAL_COUNT];
+};
+#endif
+
 /* Textures */
 
 #if defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
@@ -157,6 +216,26 @@ out lowp vec4 fragmentColor;
 #endif
 
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    mediump const uint materialId = draws[drawOffset].draw_materialIdReserved & 0xffffu;
+    #if (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)) && !defined(TBN_DIRECTION)
+    lowp const vec4 color = materials[materialId].color;
+    lowp const vec4 wireframeColor = materials[materialId].wireframeColor;
+    #endif
+    #ifdef WIREFRAME_RENDERING
+    lowp const float wireframeWidth = materials[materialId].material_wireframeWidth;
+    #elif defined(TBN_DIRECTION)
+    lowp const float lineWidth = materials[materialId].material_lineWidth;
+    #endif
+    #if defined(WIREFRAME_RENDERING) || defined(TBN_DIRECTION)
+    lowp const float smoothness = materials[materialId].material_smoothness;
+    #endif
+    #if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    lowp const float colorMapOffset = materials[materialId].material_colorMapOffset;
+    lowp const float colorMapScale = materials[materialId].material_colorMapScale;
+    #endif
+    #endif
+
     /* Map object/vertex/primitive ID to a color. Will be either combined with
        the wireframe background color (if wireframe is enabled), ignored (if
        rendering TBN direction) or used as-is if nothing else is enabled */

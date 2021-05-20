@@ -29,8 +29,13 @@
 #define texture texture2D
 #endif
 
+#ifndef RUNTIME_CONST
+#define const
+#endif
+
 /* Uniforms */
 
+#ifndef UNIFORM_BUFFERS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2)
 #endif
@@ -44,6 +49,33 @@ uniform lowp vec4 color
     = vec4(1.0)
     #endif
     ;
+
+/* Uniform buffers */
+
+#else
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform highp uint drawOffset
+    #ifndef GL_ES
+    = 0u
+    #endif
+    ;
+
+struct DrawUniform {
+    lowp vec4 color;
+    lowp vec4 backgroundColor;
+    lowp uvec4 reserved;
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 2
+    #endif
+) uniform Draw {
+    DrawUniform draws[DRAW_COUNT];
+};
+#endif
 
 /* Textures */
 
@@ -66,6 +98,11 @@ out lowp vec4 fragmentColor;
 #endif
 
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    lowp const vec4 color = draws[drawOffset].color;
+    lowp const vec4 backgroundColor = draws[drawOffset].backgroundColor;
+    #endif
+
     lowp float intensity = texture(vectorTexture, interpolatedTextureCoordinates).r;
     fragmentColor = mix(backgroundColor, color, intensity);
 }

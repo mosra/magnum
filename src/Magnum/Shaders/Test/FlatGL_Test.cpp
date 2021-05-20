@@ -78,8 +78,8 @@ template<UnsignedInt dimensions> void FlatGL_Test::constructCopy() {
 void FlatGL_Test::debugFlag() {
     std::ostringstream out;
 
-    Debug{&out} << FlatGL3D::Flag::Textured << FlatGL3D::Flag(0xf0);
-    CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::Textured Shaders::FlatGL::Flag(0xf0)\n");
+    Debug{&out} << FlatGL3D::Flag::Textured << FlatGL3D::Flag(0xf00d);
+    CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::Textured Shaders::FlatGL::Flag(0xf00d)\n");
 }
 
 void FlatGL_Test::debugFlags() {

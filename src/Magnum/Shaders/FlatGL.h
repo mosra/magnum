@@ -38,7 +38,7 @@
 namespace Magnum { namespace Shaders {
 
 namespace Implementation {
-    enum class FlatGLFlag: UnsignedByte {
+    enum class FlatGLFlag: UnsignedShort {
         Textured = 1 << 0,
         AlphaMask = 1 << 1,
         VertexColor = 1 << 2,
@@ -48,7 +48,10 @@ namespace Implementation {
         InstancedObjectId = (1 << 5)|ObjectId,
         #endif
         InstancedTransformation = 1 << 6,
-        InstancedTextureOffset = (1 << 7)|TextureTransformation
+        InstancedTextureOffset = (1 << 7)|TextureTransformation,
+        #ifndef MAGNUM_TARGET_GLES2
+        UniformBuffers = 1 << 8
+        #endif
     };
     typedef Containers::EnumSet<FlatGLFlag> FlatGLFlags;
 }
@@ -269,7 +272,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          *
          * @see @ref Flags, @ref flags()
          */
-        enum class Flag: UnsignedByte {
+        enum class Flag: UnsignedShort {
             /**
              * Multiply color with a texture.
              * @see @ref setColor(), @ref bindTexture()
@@ -319,9 +322,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
             /**
              * Instanced object ID. Retrieves a per-instance / per-vertex
              * object ID from the @ref ObjectId attribute, outputting a sum of
-             * the per-vertex ID and ID coming from @ref setObjectId().
-             * Implicitly enables @ref Flag::ObjectId. See
-             * @ref Shaders-FlatGL-object-id for more information.
+             * the per-vertex ID and ID coming from @ref setObjectId() or
+             * @ref FlatDrawUniform::objectId. Implicitly enables
+             * @ref Flag::ObjectId. See @ref Shaders-FlatGL-object-id for more
+             * information.
              * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
              * @requires_gles30 Object ID output requires integer support in
              *      shaders, which is not available in OpenGL ES 2.0 or WebGL
@@ -335,8 +339,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
              * Instanced transformation. Retrieves a per-instance
              * transformation matrix from the @ref TransformationMatrix
              * attribute and uses it together with the matrix coming from
-             * @ref setTransformationProjectionMatrix() (first the
-             * per-instance, then the uniform matrix). See
+             * @ref setTransformationProjectionMatrix() or
+             * @ref TransformationProjectionUniform2D::transformationProjectionMatrix
+             * / @ref TransformationProjectionUniform3D::transformationProjectionMatrix
+             * (first the per-instance, then the uniform matrix). See
              * @ref Shaders-FlatGL-instancing for more information.
              * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
              * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
@@ -351,7 +357,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
             /**
              * Instanced texture offset. Retrieves a per-instance offset vector
              * from the @ref TextureOffset attribute and uses it together with
-             * the matrix coming from @ref setTextureMatrix() (first the
+             * the matrix coming from @ref setTextureMatrix() or
+             * @ref TextureTransformationUniform::rotationScaling and
+             * @ref TextureTransformationUniform::offset (first the
              * per-instance vector, then the uniform matrix). Instanced texture
              * scaling and rotation is not supported at the moment, you can
              * specify that only via the uniform @ref setTextureMatrix().
@@ -365,7 +373,23 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
              *      in WebGL 1.0.
              * @m_since{2020,06}
              */
-            InstancedTextureOffset = (1 << 7)|TextureTransformation
+            InstancedTextureOffset = (1 << 7)|TextureTransformation,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Use uniform buffers. Expects that uniform data are supplied via
+             * @ref bindTransformationProjectionBuffer(),
+             * @ref bindDrawBuffer() and @ref bindTextureTransformationBuffer()
+             * instead of direct uniform setters.
+             * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+             * @requires_gles30 Uniform buffers are not available in OpenGL ES
+             *      2.0.
+             * @requires_webgl20 Uniform buffers are not available in WebGL
+             *      1.0.
+             * @m_since_latest
+             */
+            UniformBuffers = 1 << 8
+            #endif
         };
 
         /**
@@ -384,8 +408,36 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         /**
          * @brief Constructor
          * @param flags     Flags
+         *
+         * While this function is meant mainly for the classic uniform
+         * scenario (without @ref Flag::UniformBuffers set), it's equivalent to
+         * @ref FlatGL(Flags, UnsignedInt) with @p drawCount set to @cpp 1 @ce.
          */
         explicit FlatGL(Flags flags = {});
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Construct for a multi-draw scenario
+         * @param flags     Flags
+         * @param drawCount Size of a @ref TransformationProjectionUniform2D /
+         *      @ref TransformationProjectionUniform3D / @ref FlatDrawUniform /
+         *      @ref TextureTransformationUniform buffer bound with
+         *      @ref bindTransformationProjectionBuffer(), @ref bindDrawBuffer()
+         *      and @ref bindTextureTransformationBuffer()
+         *
+         * If @p flags contains @ref Flag::UniformBuffers, @p drawCount
+         * describes the uniform buffer sizes as these are required to have a
+         * statically defined size. The draw offset is then set via
+         * @ref setDrawOffset().
+         *
+         * If @p flags don't contain @ref Flag::UniformBuffers, @p drawCount is
+         * ignored and the constructor behaves the same as @ref FlatGL(Flags).
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        explicit FlatGL(Flags flags, UnsignedInt drawCount);
+        #endif
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -416,8 +468,26 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         /** @brief Flags */
         Flags flags() const { return _flags; }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Draw count
+         * @m_since_latest
+         *
+         * Statically defined size of each of the
+         * @ref TransformationProjectionUniform2D /
+         * @ref TransformationProjectionUniform3D, @ref FlatDrawUniform and
+         * @ref TextureTransformationUniform uniform buffers. Has use only if
+         * @ref Flag::UniformBuffers is set.
+         * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined on WebGL 1.0 builds.
+         */
+        UnsignedInt drawCount() const { return _drawCount; }
+        #endif
+
         /** @{
          * @name Uniform setters
+         *
+         * Used only if @ref Flag::UniformBuffers is not set.
          */
 
         /**
@@ -428,6 +498,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @ref Flag::InstancedTransformation is set, the per-instance
          * transformation matrix coming from the @ref TransformationMatrix
          * attribute is applied first, before this one.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref TransformationProjectionUniform2D::transformationProjectionMatrix /
+         * @ref TransformationProjectionUniform3D::transformationProjectionMatrix
+         * and call @ref bindTransformationProjectionBuffer() instead.
          */
         FlatGL<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix);
 
@@ -441,6 +516,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * identity matrix. If @ref Flag::InstancedTextureOffset is set, the
          * per-instance offset coming from the @ref TextureOffset attribute is
          * applied first, before this matrix.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref TextureTransformationUniform::rotationScaling and
+         * @ref TextureTransformationUniform::offset and call
+         * @ref bindTextureTransformationBuffer() instead.
          */
         FlatGL<dimensions>& setTextureMatrix(const Matrix3& matrix);
 
@@ -452,6 +532,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * is set, the color is multiplied with the texture. If
          * @ref Flag::VertexColor is set, the color is multiplied with a color
          * coming from the @ref Color3 / @ref Color4 attribute.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref FlatDrawUniform::color and call @ref bindDrawBuffer() instead.
          * @see @ref bindTexture()
          */
         FlatGL<dimensions>& setColor(const Magnum::Color4& color);
@@ -467,6 +550,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          *
          * This corresponds to @m_class{m-doc-external} [glAlphaFunc()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glAlphaFunc.xml)
          * in classic OpenGL.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref FlatDrawUniform::alphaMask and call @ref bindDrawBuffer()
+         * instead.
          * @m_keywords{glAlphaFunc()}
          */
         FlatGL<dimensions>& setAlphaMask(Float mask);
@@ -481,6 +568,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @ref Shaders-FlatGL-object-id for more information. Default is
          * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
          * value is added to the ID coming from the @ref ObjectId attribute.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref FlatDrawUniform::objectId and call @ref bindDrawBuffer()
+         * instead.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
          *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
@@ -491,6 +582,97 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         /**
          * @}
          */
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @{
+         * @name Uniform buffer binding and related uniform setters
+         *
+         * Used if @ref Flag::UniformBuffers is set.
+         */
+
+        /**
+         * @brief Set a draw offset
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Specifies which item in the @ref TransformationProjectionUniform2D /
+         * @ref TransformationProjectionUniform3D, @ref FlatDrawUniform and
+         * @ref TextureTransformationUniform buffers bound with
+         * @ref bindTransformationProjectionBuffer(), @ref bindDrawBuffer() and
+         * @ref bindTextureTransformationBuffer() should be used for current
+         * draw. Expects that @ref Flag::UniformBuffers is set and @p offset is
+         * less than @ref drawCount(). Initial value is @cpp 0 @ce.
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& setDrawOffset(UnsignedInt offset);
+
+        /**
+         * @brief Set a transformation and projection uniform buffer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that @ref Flag::UniformBuffers is set. The buffer is
+         * expected to contain @ref drawCount() instances of
+         * @ref TransformationProjectionUniform2D /
+         * @ref TransformationProjectionUniform3D. At the very least you need
+         * to call also @ref bindDrawBuffer().
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& bindTransformationProjectionBuffer(GL::Buffer& buffer);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        FlatGL<dimensions>& bindTransformationProjectionBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /**
+         * @brief Set a draw uniform buffer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that @ref Flag::UniformBuffers is set. The buffer is
+         * expected to contain @ref drawCount() instances of
+         * @ref FlatDrawUniform. At the very least you need to call also
+         * @ref bindTransformationProjectionBuffer().
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& bindDrawBuffer(GL::Buffer& buffer);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        FlatGL<dimensions>& bindDrawBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /**
+         * @brief Set a texture transformation uniform buffer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that both @ref Flag::UniformBuffers and
+         * @ref Flag::TextureTransformation is set. The buffer is expected to
+         * contain @ref drawCount() instances of
+         * @ref TextureTransformationUniform.
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& bindTextureTransformationBuffer(GL::Buffer& buffer);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        FlatGL<dimensions>& bindTextureTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /**
+         * @}
+         */
+        #endif
 
         /** @{
          * @name Texture binding
@@ -521,12 +703,18 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         #endif
 
         Flags _flags;
+        #ifndef MAGNUM_TARGET_GLES2
+        UnsignedInt _drawCount{};
+        #endif
         Int _transformationProjectionMatrixUniform{0},
             _textureMatrixUniform{1},
             _colorUniform{2},
             _alphaMaskUniform{3};
         #ifndef MAGNUM_TARGET_GLES2
         Int _objectIdUniform{4};
+        /* Used instead of all other uniforms when Flag::UniformBuffers is set,
+           so it can alias them */
+        Int _drawOffsetUniform{0};
         #endif
 };
 

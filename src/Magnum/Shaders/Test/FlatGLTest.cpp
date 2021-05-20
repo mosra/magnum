@@ -56,6 +56,17 @@
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/MeshData.h"
 
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/MeshView.h"
+#include "Magnum/MeshTools/Concatenate.h"
+#include "Magnum/MeshTools/GenerateIndices.h"
+#include "Magnum/Primitives/Cone.h"
+#include "Magnum/Primitives/Plane.h"
+#include "Magnum/Primitives/Square.h"
+#include "Magnum/Shaders/Generic.h"
+#include "Magnum/Shaders/Flat.h"
+#endif
+
 #include "configure.h"
 
 namespace Magnum { namespace Shaders { namespace Test { namespace {
@@ -64,49 +75,73 @@ struct FlatGLTest: GL::OpenGLTester {
     explicit FlatGLTest();
 
     template<UnsignedInt dimensions> void construct();
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void constructUniformBuffers();
+    #endif
 
     template<UnsignedInt dimensions> void constructMove();
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void constructMoveUniformBuffers();
+    #endif
 
     template<UnsignedInt dimensions> void constructTextureTransformationNotTextured();
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void constructUniformBuffersZeroDraws();
+    #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void setUniformUniformBuffersEnabled();
+    template<UnsignedInt dimensions> void bindBufferUniformBuffersNotEnabled();
+    #endif
     template<UnsignedInt dimensions> void bindTextureNotEnabled();
     template<UnsignedInt dimensions> void setAlphaMaskNotEnabled();
     template<UnsignedInt dimensions> void setTextureMatrixNotEnabled();
     #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void bindTextureTransformBufferNotEnabled();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void setObjectIdNotEnabled();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void setWrongDrawOffset();
     #endif
 
     void renderSetup();
     void renderTeardown();
 
-    void renderDefaults2D();
-    void renderDefaults3D();
-    void renderColored2D();
-    void renderColored3D();
-    void renderSinglePixelTextured2D();
-    void renderSinglePixelTextured3D();
-    void renderTextured2D();
-    void renderTextured3D();
+    template<FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderDefaults2D();
+    template<FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderDefaults3D();
+    template<FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderColored2D();
+    template<FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderColored3D();
+    template<FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderSinglePixelTextured2D();
+    template<FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderSinglePixelTextured3D();
+    template<FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderTextured2D();
+    template<FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderTextured3D();
 
-    template<class T> void renderVertexColor2D();
-    template<class T> void renderVertexColor3D();
+    template<class T, FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderVertexColor2D();
+    template<class T, FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderVertexColor3D();
 
     void renderAlphaSetup();
     void renderAlphaTeardown();
 
-    void renderAlpha2D();
-    void renderAlpha3D();
+    template<FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderAlpha2D();
+    template<FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderAlpha3D();
 
     #ifndef MAGNUM_TARGET_GLES2
     void renderObjectIdSetup();
     void renderObjectIdTeardown();
 
-    void renderObjectId2D();
-    void renderObjectId3D();
+    template<FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderObjectId2D();
+    template<FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderObjectId3D();
     #endif
 
-    void renderInstanced2D();
-    void renderInstanced3D();
+    template<FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderInstanced2D();
+    template<FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderInstanced3D();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    void renderMulti2D();
+    void renderMulti3D();
+    #endif
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -155,6 +190,21 @@ constexpr struct {
     {"instanced transformation", FlatGL2D::Flag::InstancedTransformation},
     {"instanced texture offset", FlatGL2D::Flag::Textured|FlatGL2D::Flag::InstancedTextureOffset}
 };
+
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    FlatGL2D::Flags flags;
+    UnsignedInt drawCount;
+} ConstructUniformBuffersData[]{
+    {"classic fallback", {}, 1},
+    {"", FlatGL2D::Flag::UniformBuffers, 1},
+    {"multiple draws", FlatGL2D::Flag::UniformBuffers, 128},
+    {"texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1},
+    {"alpha mask", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask, 1},
+    {"object ID", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId, 1}
+};
+#endif
 
 const struct {
     const char* name;
@@ -208,19 +258,64 @@ constexpr struct {
 };
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    const char* expected2D;
+    const char* expected3D;
+    FlatGL2D::Flags flags;
+    UnsignedInt drawCount;
+    UnsignedInt uniformIncrement;
+    Float maxThreshold, meanThreshold;
+} RenderMultiData[] {
+    {"bind with offset, colored", "multidraw2D.tga", "multidraw3D.tga",
+        {}, 1, 16, 0.0f, 0.0f},
+    {"bind with offset, textured", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+        FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
+        1, 16, 0.0f, 0.0f},
+    {"draw offset, colored", "multidraw2D.tga", "multidraw3D.tga",
+        {}, 3, 1, 0.0f, 0.0f},
+    {"draw offset, textured", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+        FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
+        3, 1, 0.0f, 0.0f}
+};
+#endif
+
 FlatGLTest::FlatGLTest() {
     addInstancedTests<FlatGLTest>({
         &FlatGLTest::construct<2>,
         &FlatGLTest::construct<3>},
         Containers::arraySize(ConstructData));
 
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests<FlatGLTest>({
+        &FlatGLTest::constructUniformBuffers<2>,
+        &FlatGLTest::constructUniformBuffers<3>},
+        Containers::arraySize(ConstructUniformBuffersData));
+    #endif
+
     addTests<FlatGLTest>({
         &FlatGLTest::constructMove<2>,
         &FlatGLTest::constructMove<3>,
 
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::constructMoveUniformBuffers<2>,
+        &FlatGLTest::constructMoveUniformBuffers<3>,
+        #endif
+
         &FlatGLTest::constructTextureTransformationNotTextured<2>,
         &FlatGLTest::constructTextureTransformationNotTextured<3>,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::constructUniformBuffersZeroDraws<2>,
+        &FlatGLTest::constructUniformBuffersZeroDraws<3>,
+        #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::setUniformUniformBuffersEnabled<2>,
+        &FlatGLTest::setUniformUniformBuffersEnabled<3>,
+        &FlatGLTest::bindBufferUniformBuffersNotEnabled<2>,
+        &FlatGLTest::bindBufferUniformBuffersNotEnabled<3>,
+        #endif
         &FlatGLTest::bindTextureNotEnabled<2>,
         &FlatGLTest::bindTextureNotEnabled<3>,
         &FlatGLTest::setAlphaMaskNotEnabled<2>,
@@ -228,51 +323,128 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::setTextureMatrixNotEnabled<2>,
         &FlatGLTest::setTextureMatrixNotEnabled<3>,
         #ifndef MAGNUM_TARGET_GLES2
-        &FlatGLTest::setObjectIdNotEnabled<2>,
-        &FlatGLTest::setObjectIdNotEnabled<3>
+        &FlatGLTest::bindTextureTransformBufferNotEnabled<2>,
+        &FlatGLTest::bindTextureTransformBufferNotEnabled<3>,
         #endif
-        });
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::setObjectIdNotEnabled<2>,
+        &FlatGLTest::setObjectIdNotEnabled<3>,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::setWrongDrawOffset<2>,
+        &FlatGLTest::setWrongDrawOffset<3>,
+        #endif
+    });
 
-    addTests({&FlatGLTest::renderDefaults2D,
-              &FlatGLTest::renderDefaults3D,
-              &FlatGLTest::renderColored2D,
-              &FlatGLTest::renderColored3D,
-              &FlatGLTest::renderSinglePixelTextured2D,
-              &FlatGLTest::renderSinglePixelTextured3D},
+    addTests({
+        &FlatGLTest::renderDefaults2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderDefaults2D<FlatGL2D::Flag::UniformBuffers>,
+        #endif
+        &FlatGLTest::renderDefaults3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderDefaults3D<FlatGL3D::Flag::UniformBuffers>,
+        #endif
+        &FlatGLTest::renderColored2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderColored2D<FlatGL2D::Flag::UniformBuffers>,
+        #endif
+        &FlatGLTest::renderColored3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderColored3D<FlatGL3D::Flag::UniformBuffers>,
+        #endif
+        &FlatGLTest::renderSinglePixelTextured2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderSinglePixelTextured2D<FlatGL2D::Flag::UniformBuffers>,
+        #endif
+        &FlatGLTest::renderSinglePixelTextured3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderSinglePixelTextured3D<FlatGL2D::Flag::UniformBuffers>
+        #endif
+        },
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
 
-    addInstancedTests({&FlatGLTest::renderTextured2D,
-                       &FlatGLTest::renderTextured3D},
+    addInstancedTests({
+        &FlatGLTest::renderTextured2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderTextured2D<FlatGL2D::Flag::UniformBuffers>,
+        #endif
+        &FlatGLTest::renderTextured3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderTextured3D<FlatGL3D::Flag::UniformBuffers>
+        #endif
+        },
         Containers::arraySize(RenderTexturedData),
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
 
-    addTests({&FlatGLTest::renderVertexColor2D<Color3>,
-              &FlatGLTest::renderVertexColor2D<Color4>,
-              &FlatGLTest::renderVertexColor3D<Color3>,
-              &FlatGLTest::renderVertexColor3D<Color4>},
+    addTests({
+        &FlatGLTest::renderVertexColor2D<Color3>,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderVertexColor2D<Color3, FlatGL2D::Flag::UniformBuffers>,
+        #endif
+        &FlatGLTest::renderVertexColor2D<Color4>,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderVertexColor2D<Color4, FlatGL2D::Flag::UniformBuffers>,
+        #endif
+        &FlatGLTest::renderVertexColor3D<Color3>,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderVertexColor3D<Color3, FlatGL3D::Flag::UniformBuffers>,
+        #endif
+        &FlatGLTest::renderVertexColor3D<Color4>,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderVertexColor3D<Color4, FlatGL3D::Flag::UniformBuffers>
+        #endif
+        },
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
 
-    addInstancedTests({&FlatGLTest::renderAlpha2D,
-                       &FlatGLTest::renderAlpha3D},
+    addInstancedTests({
+        &FlatGLTest::renderAlpha2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderAlpha2D<FlatGL2D::Flag::UniformBuffers>,
+        #endif
+        &FlatGLTest::renderAlpha3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderAlpha3D<FlatGL3D::Flag::UniformBuffers>
+        #endif
+        },
         Containers::arraySize(RenderAlphaData),
         &FlatGLTest::renderAlphaSetup,
         &FlatGLTest::renderAlphaTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
-    addInstancedTests({&FlatGLTest::renderObjectId2D,
-                       &FlatGLTest::renderObjectId3D},
+    addInstancedTests({
+        &FlatGLTest::renderObjectId2D,
+        &FlatGLTest::renderObjectId2D<FlatGL2D::Flag::UniformBuffers>,
+        &FlatGLTest::renderObjectId3D,
+        &FlatGLTest::renderObjectId3D<FlatGL3D::Flag::UniformBuffers>},
         Containers::arraySize(RenderObjectIdData),
         &FlatGLTest::renderObjectIdSetup,
         &FlatGLTest::renderObjectIdTeardown);
     #endif
 
-    addTests({&FlatGLTest::renderInstanced2D,
-              &FlatGLTest::renderInstanced3D},
+    addTests({
+        &FlatGLTest::renderInstanced2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderInstanced2D<FlatGL2D::Flag::UniformBuffers>,
+        #endif
+        &FlatGLTest::renderInstanced3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderInstanced3D<FlatGL3D::Flag::UniformBuffers>
+        #endif
+        },
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&FlatGLTest::renderMulti2D,
+                       &FlatGLTest::renderMulti3D},
+        Containers::arraySize(RenderMultiData),
+        &FlatGLTest::renderObjectIdSetup,
+        &FlatGLTest::renderObjectIdTeardown);
+    #endif
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -322,6 +494,35 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    auto&& data = ConstructUniformBuffersData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    FlatGL<dimensions> shader{data.flags, data.drawCount};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
+
 template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
@@ -343,6 +544,36 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
     CORRADE_VERIFY(!b.id());
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGLTest::constructMoveUniformBuffers() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    FlatGL<dimensions> a{FlatGL<dimensions>::Flag::UniformBuffers, 5};
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    FlatGL<dimensions> b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_COMPARE(b.flags(), FlatGL<dimensions>::Flag::UniformBuffers);
+    CORRADE_COMPARE(b.drawCount(), 5);
+    CORRADE_VERIFY(!a.id());
+
+    FlatGL<dimensions> c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_COMPARE(c.flags(), FlatGL<dimensions>::Flag::UniformBuffers);
+    CORRADE_COMPARE(c.drawCount(), 5);
+    CORRADE_VERIFY(!b.id());
+}
+#endif
+
 template<UnsignedInt dimensions> void FlatGLTest::constructTextureTransformationNotTextured() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
@@ -356,6 +587,87 @@ template<UnsignedInt dimensions> void FlatGLTest::constructTextureTransformation
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL: texture transformation enabled but the shader is not textured\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersZeroDraws() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    FlatGL<dimensions>{FlatGL<dimensions>::Flag::UniformBuffers, 0};
+    CORRADE_COMPARE(out.str(),
+        "Shaders::FlatGL: draw count can't be zero\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGLTest::setUniformUniformBuffersEnabled() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    FlatGL<dimensions> shader{FlatGL<dimensions>::Flag::UniformBuffers};
+    shader.setTransformationProjectionMatrix({})
+        .setTextureMatrix({})
+        .setColor({})
+        .setAlphaMask({})
+        .setObjectId({});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::FlatGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::FlatGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::FlatGL::setColor(): the shader was created with uniform buffers enabled\n"
+        "Shaders::FlatGL::setAlphaMask(): the shader was created with uniform buffers enabled\n"
+        "Shaders::FlatGL::setObjectId(): the shader was created with uniform buffers enabled\n");
+}
+
+template<UnsignedInt dimensions> void FlatGLTest::bindBufferUniformBuffersNotEnabled() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Buffer buffer;
+    FlatGL<dimensions> shader;
+    shader.bindTransformationProjectionBuffer(buffer)
+          .bindTransformationProjectionBuffer(buffer, 0, 16)
+          .bindDrawBuffer(buffer)
+          .bindDrawBuffer(buffer, 0, 16)
+          .bindTextureTransformationBuffer(buffer)
+          .bindTextureTransformationBuffer(buffer, 0, 16)
+          .setDrawOffset(0);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::FlatGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::FlatGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::FlatGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::FlatGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::FlatGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::FlatGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::FlatGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
+}
+#endif
 
 template<UnsignedInt dimensions> void FlatGLTest::bindTextureNotEnabled() {
     setTestCaseTemplateName(std::to_string(dimensions));
@@ -409,6 +721,32 @@ template<UnsignedInt dimensions> void FlatGLTest::setTextureMatrixNotEnabled() {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGLTest::bindTextureTransformBufferNotEnabled() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
+    FlatGL<dimensions> shader{FlatGL<dimensions>::Flag::UniformBuffers};
+    shader.bindTextureTransformationBuffer(buffer)
+          .bindTextureTransformationBuffer(buffer, 0, 16);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::FlatGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n"
+        "Shaders::FlatGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::setObjectIdNotEnabled() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
@@ -424,6 +762,28 @@ template<UnsignedInt dimensions> void FlatGLTest::setObjectIdNotEnabled() {
 
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::setObjectId(): the shader was not created with object ID enabled\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGLTest::setWrongDrawOffset() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    FlatGL<dimensions>{FlatGL<dimensions>::Flag::UniformBuffers, 5}
+        .setDrawOffset(5);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::FlatGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
 }
 #endif
 
@@ -454,11 +814,40 @@ void FlatGLTest::renderTeardown() {
     _color = GL::Renderbuffer{NoCreate};
 }
 
-void FlatGLTest::renderDefaults2D() {
+template<FlatGL2D::Flag flag> void FlatGLTest::renderDefaults2D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
 
-    FlatGL2D{}
-        .draw(circle);
+    FlatGL2D shader{flag};
+
+    if(flag == FlatGL2D::Flag{}) {
+        shader.draw(circle);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(circle);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -474,11 +863,40 @@ void FlatGLTest::renderDefaults2D() {
         (DebugTools::CompareImageToFile{_manager, 238.0f, 0.2975f}));
 }
 
-void FlatGLTest::renderDefaults3D() {
+template<FlatGL3D::Flag flag> void FlatGLTest::renderDefaults3D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    FlatGL3D{}
-        .draw(sphere);
+    FlatGL3D shader{flag};
+
+    if(flag == FlatGL3D::Flag{}) {
+        shader.draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL3D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform3D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -494,13 +912,45 @@ void FlatGLTest::renderDefaults3D() {
         (DebugTools::CompareImageToFile{_manager, 238.0f, 0.2975f}));
 }
 
-void FlatGLTest::renderColored2D() {
+template<FlatGL2D::Flag flag> void FlatGLTest::renderColored2D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
 
-    FlatGL2D{}
-        .setColor(0x9999ff_rgbf)
-        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        .draw(circle);
+    FlatGL2D shader{flag};
+
+    if(flag == FlatGL2D::Flag{}) {
+        shader
+            .setColor(0x9999ff_rgbf)
+            .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+            .draw(circle);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setColor(0x9999ff_rgbf)
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(circle);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -521,17 +971,54 @@ void FlatGLTest::renderColored2D() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void FlatGLTest::renderColored3D() {
+template<FlatGL3D::Flag flag> void FlatGLTest::renderColored3D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    FlatGL3D{}
-        .setColor(0x9999ff_rgbf)
-        .setTransformationProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
-        .draw(sphere);
+    FlatGL3D shader{flag};
+
+    if(flag == FlatGL3D::Flag{}) {
+        shader
+            .setColor(0x9999ff_rgbf)
+            .setTransformationProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf))
+            .draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL3D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform3D{}
+                .setTransformationProjectionMatrix(
+                    Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                    Matrix4::translation(Vector3::zAxis(-2.15f))*
+                    Matrix4::rotationY(-15.0_degf)*
+                    Matrix4::rotationX(15.0_degf)
+                )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setColor(0x9999ff_rgbf)
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -568,7 +1055,18 @@ constexpr GL::TextureFormat TextureFormatRGBA =
     #endif
     ;
 
-void FlatGLTest::renderSinglePixelTextured2D() {
+template<FlatGL2D::Flag flag> void FlatGLTest::renderSinglePixelTextured2D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32,
         Primitives::Circle2DFlag::TextureCoordinates));
 
@@ -581,10 +1079,28 @@ void FlatGLTest::renderSinglePixelTextured2D() {
         .setStorage(1, TextureFormatRGBA, Vector2i{1})
         .setSubImage(0, {}, diffuseImage);
 
-    FlatGL2D{FlatGL3D::Flag::Textured}
-        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        .bindTexture(texture)
-        .draw(circle);
+    FlatGL2D shader{FlatGL2D::Flag::Textured|flag};
+    shader.bindTexture(texture);
+
+    if(flag == FlatGL2D::Flag{}) {
+        shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+            .draw(circle);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+        }};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(circle);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -606,7 +1122,18 @@ void FlatGLTest::renderSinglePixelTextured2D() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void FlatGLTest::renderSinglePixelTextured3D() {
+template<FlatGL3D::Flag flag> void FlatGLTest::renderSinglePixelTextured3D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
@@ -619,14 +1146,38 @@ void FlatGLTest::renderSinglePixelTextured3D() {
         .setStorage(1, TextureFormatRGBA, Vector2i{1})
         .setSubImage(0, {}, diffuseImage);
 
-    FlatGL3D{FlatGL3D::Flag::Textured}
-        .setTransformationProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
-        .bindTexture(texture)
-        .draw(sphere);
+    FlatGL3D shader{FlatGL3D::Flag::Textured|flag};
+    shader.bindTexture(texture);
+
+    if(flag == FlatGL3D::Flag{}) {
+        shader.setTransformationProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)
+            )
+            .draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL3D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform3D{}
+                .setTransformationProjectionMatrix(
+                    Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                    Matrix4::translation(Vector3::zAxis(-2.15f))*
+                    Matrix4::rotationY(-15.0_degf)*
+                    Matrix4::rotationX(15.0_degf)
+                )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+        }};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -648,9 +1199,20 @@ void FlatGLTest::renderSinglePixelTextured3D() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void FlatGLTest::renderTextured2D() {
+template<FlatGL2D::Flag flag> void FlatGLTest::renderTextured2D() {
     auto&& data = RenderTexturedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -671,18 +1233,40 @@ void FlatGLTest::renderTextured2D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    FlatGL2D shader{data.flags};
-    shader
-        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        /* Colorized. Case without a color (where it should be white) is tested
-           in renderSinglePixelTextured() */
-        .setColor(0x9999ff_rgbf)
-        .bindTexture(texture);
+    FlatGL2D shader{data.flags|flag};
+    shader.bindTexture(texture);
 
-    if(data.textureTransformation != Matrix3{})
-        shader.setTextureMatrix(data.textureTransformation);
-
-    shader.draw(circle);
+    if(flag == FlatGL2D::Flag{}) {
+        if(data.textureTransformation != Matrix3{})
+            shader.setTextureMatrix(data.textureTransformation);
+        shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+            /* Colorized. Case without a color (where it should be white) is
+               tested in renderSinglePixelTextured2D() */
+            .setColor(0x9999ff_rgbf)
+            .draw(circle);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setColor(0x9999ff_rgbf)
+        }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(data.textureTransformation)
+        }};
+        if(data.flags & FlatGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(circle);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -704,9 +1288,20 @@ void FlatGLTest::renderTextured2D() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void FlatGLTest::renderTextured3D() {
+template<FlatGL3D::Flag flag> void FlatGLTest::renderTextured3D() {
     auto&& data = RenderTexturedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -727,22 +1322,50 @@ void FlatGLTest::renderTextured3D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    FlatGL3D shader{data.flags};
-    shader
-        .setTransformationProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(data.flip ? 15.0_degf : -15.0_degf)*
-            Matrix4::rotationX(data.flip ? -15.0_degf : 15.0_degf))
-        /* Colorized. Case without a color (where it should be white) is tested
-           in renderSinglePixelTextured() */
-        .setColor(0x9999ff_rgbf)
-        .bindTexture(texture);
+    FlatGL3D shader{data.flags|flag};
+    shader.bindTexture(texture);
 
-    if(data.textureTransformation != Matrix3{})
-        shader.setTextureMatrix(data.textureTransformation);
-
-    shader.draw(sphere);
+    if(flag == FlatGL3D::Flag{}) {
+        if(data.textureTransformation != Matrix3{})
+            shader.setTextureMatrix(data.textureTransformation);
+        shader
+            .setTransformationProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(data.flip ? 15.0_degf : -15.0_degf)*
+                Matrix4::rotationX(data.flip ? -15.0_degf : 15.0_degf))
+            /* Colorized. Case without a color (where it should be white) is
+               tested in renderSinglePixelTextured3D() */
+            .setColor(0x9999ff_rgbf)
+            .draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL3D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform3D{}
+                .setTransformationProjectionMatrix(
+                    Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                    Matrix4::translation(Vector3::zAxis(-2.15f))*
+                    Matrix4::rotationY(data.flip ? 15.0_degf : -15.0_degf)*
+                    Matrix4::rotationX(data.flip ? -15.0_degf : 15.0_degf)
+                )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setColor(0x9999ff_rgbf)
+        }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(data.textureTransformation)
+        }};
+        if(data.flags & FlatGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -764,8 +1387,20 @@ void FlatGLTest::renderTextured3D() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-template<class T> void FlatGLTest::renderVertexColor2D() {
-    setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
+template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor2D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::UniformBuffers"});
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    } else
+    #endif
+    {
+        setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
+    }
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -796,11 +1431,30 @@ template<class T> void FlatGLTest::renderVertexColor2D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    FlatGL2D{FlatGL2D::Flag::Textured|FlatGL2D::Flag::VertexColor}
-        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        .setColor(0x9999ff_rgbf)
-        .bindTexture(texture)
-        .draw(circle);
+    FlatGL2D shader{FlatGL2D::Flag::Textured|FlatGL2D::Flag::VertexColor|flag};
+    shader.bindTexture(texture);
+
+    if(flag == FlatGL2D::Flag{}) {
+        shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+            .setColor(0x9999ff_rgbf)
+            .draw(circle);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setColor(0x9999ff_rgbf)
+        }};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(circle);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -818,8 +1472,20 @@ template<class T> void FlatGLTest::renderVertexColor2D() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-template<class T> void FlatGLTest::renderVertexColor3D() {
-    setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
+template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor3D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::UniformBuffers"});
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    } else
+    #endif
+    {
+        setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
+    }
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -850,15 +1516,39 @@ template<class T> void FlatGLTest::renderVertexColor3D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    FlatGL3D{FlatGL3D::Flag::Textured|FlatGL3D::Flag::VertexColor}
-        .setTransformationProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
-        .setColor(0x9999ff_rgbf)
-        .bindTexture(texture)
-        .draw(sphere);
+    FlatGL3D shader{FlatGL3D::Flag::Textured|FlatGL3D::Flag::VertexColor|flag};
+    shader.bindTexture(texture);
+
+    if(flag == FlatGL2D::Flag{}) {
+        shader.setTransformationProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf))
+            .setColor(0x9999ff_rgbf)
+            .draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform3D{}
+                .setTransformationProjectionMatrix(
+                    Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                    Matrix4::translation(Vector3::zAxis(-2.15f))*
+                    Matrix4::rotationY(-15.0_degf)*
+                    Matrix4::rotationX(15.0_degf)
+                )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setColor(0x9999ff_rgbf)
+        }};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -890,9 +1580,20 @@ void FlatGLTest::renderAlphaTeardown() {
     renderTeardown();
 }
 
-void FlatGLTest::renderAlpha2D() {
+template<FlatGL2D::Flag flag> void FlatGLTest::renderAlpha2D() {
     auto&& data = RenderAlphaData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -915,15 +1616,35 @@ void FlatGLTest::renderAlpha2D() {
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32,
         Primitives::Circle2DFlag::TextureCoordinates));
 
-    FlatGL2D shader{data.flags};
-    shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        .setColor(0x9999ff_rgbf)
-        .bindTexture(texture);
+    FlatGL2D shader{data.flags|flag};
+    shader.bindTexture(texture);
 
-    if(data.flags & FlatGL3D::Flag::AlphaMask)
-        shader.setAlphaMask(data.threshold);
-
-    shader.draw(circle);
+    if(flag == FlatGL2D::Flag{}) {
+        /* Test that the default is correct by not setting the threshold if
+           it's equal to the default */
+        if(data.flags & FlatGL2D::Flag::AlphaMask && data.threshold != 0.5f)
+            shader.setAlphaMask(data.threshold);
+        shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+            .setColor(0x9999ff_rgbf)
+            .draw(circle);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setColor(0x9999ff_rgbf)
+                .setAlphaMask(data.threshold)
+        }};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(circle);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -941,9 +1662,20 @@ void FlatGLTest::renderAlpha2D() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void FlatGLTest::renderAlpha3D() {
+template<FlatGL3D::Flag flag> void FlatGLTest::renderAlpha3D() {
     auto&& data = RenderAlphaData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -966,23 +1698,55 @@ void FlatGLTest::renderAlpha3D() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
-    FlatGL3D shader{data.flags};
-    shader.setTransformationProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
-        .setColor(0x9999ff_rgbf)
-        .bindTexture(texture);
+    FlatGL3D shader{data.flags|flag};
+    shader.bindTexture(texture);
 
-    if(data.flags & FlatGL3D::Flag::AlphaMask)
-        shader.setAlphaMask(data.threshold);
+    if(flag == FlatGL2D::Flag{}) {
+        shader.setTransformationProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf))
+            .setColor(0x9999ff_rgbf);
 
-    /* For proper Z order draw back faces first and then front faces */
-    GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
-    shader.draw(sphere);
-    GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
-    shader.draw(sphere);
+        /* Test that the default is correct by not setting the threshold if
+           it's equal to the default */
+        if(data.flags & FlatGL3D::Flag::AlphaMask && data.threshold != 0.5f)
+            shader.setAlphaMask(data.threshold);
+
+        /* For proper Z order draw back faces first and then front faces */
+        GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
+        shader.draw(sphere);
+        GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
+        shader.draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL3D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform3D{}
+                .setTransformationProjectionMatrix(
+                    Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                    Matrix4::translation(Vector3::zAxis(-2.15f))*
+                    Matrix4::rotationY(-15.0_degf)*
+                    Matrix4::rotationX(15.0_degf)
+                )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setColor(0x9999ff_rgbf)
+                .setAlphaMask(data.threshold)
+        }};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform);
+
+        /* For proper Z order draw back faces first and then front faces */
+        GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
+        shader.draw(sphere);
+        GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
+        shader.draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1039,9 +1803,20 @@ void FlatGLTest::renderObjectIdTeardown() {
     _framebuffer = GL::Framebuffer{NoCreate};
 }
 
-void FlatGLTest::renderObjectId2D() {
+template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -1058,11 +1833,27 @@ void FlatGLTest::renderObjectId2D() {
             GL::Buffer{Containers::arrayView({11002u, 48823u})},
             1, 0, FlatGL2D::ObjectId{});
 
-    FlatGL2D{data.flags}
-        .setColor(0x9999ff_rgbf)
-        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        .setObjectId(data.uniformId)
-        .draw(circle);
+    FlatGL2D shader{data.flags|flag};
+
+    if(flag == FlatGL2D::Flag{}) {
+        shader.setColor(0x9999ff_rgbf)
+            .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+            .setObjectId(data.uniformId)
+            .draw(circle);
+    } else if(flag == FlatGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setColor(0x9999ff_rgbf)
+                .setObjectId(data.uniformId)
+        }};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(circle);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1097,9 +1888,20 @@ void FlatGLTest::renderObjectId2D() {
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], data.expected);
 }
 
-void FlatGLTest::renderObjectId3D() {
+template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -1116,15 +1918,36 @@ void FlatGLTest::renderObjectId3D() {
             GL::Buffer{Containers::arrayView({11002u, 48823u})},
             1, 0, FlatGL2D::ObjectId{});
 
-    FlatGL3D{data.flags}
-        .setColor(0x9999ff_rgbf)
-        .setTransformationProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
-        .setObjectId(data.uniformId)
-        .draw(sphere);
+    FlatGL3D shader{data.flags|flag};
+
+    if(flag == FlatGL3D::Flag{}) {
+        shader.setColor(0x9999ff_rgbf)
+            .setTransformationProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf))
+            .setObjectId(data.uniformId)
+            .draw(sphere);
+    } else if(flag == FlatGL3D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform3D{}
+                .setTransformationProjectionMatrix(
+                    Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                    Matrix4::translation(Vector3::zAxis(-2.15f))*
+                    Matrix4::rotationY(-15.0_degf)*
+                    Matrix4::rotationX(15.0_degf)
+                )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setColor(0x9999ff_rgbf)
+                .setObjectId(data.uniformId)
+        }};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .draw(sphere);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1163,7 +1986,18 @@ void FlatGLTest::renderObjectId3D() {
 }
 #endif
 
-void FlatGLTest::renderInstanced2D() {
+template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
         CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() << "is not supported.");
@@ -1219,17 +2053,44 @@ void FlatGLTest::renderInstanced2D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    FlatGL2D{FlatGL2D::Flag::Textured|
+    FlatGL2D shader{FlatGL2D::Flag::Textured|
            FlatGL2D::Flag::VertexColor|
            FlatGL2D::Flag::InstancedTransformation|
-           FlatGL2D::Flag::InstancedTextureOffset}
-        .setColor(0xffff99_rgbf)
-        .setTransformationProjectionMatrix(
-            Matrix3::projection({2.1f, 2.1f})*
-            Matrix3::scaling(Vector2{0.4f}))
-        .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
-        .bindTexture(texture)
-        .draw(circle);
+           FlatGL2D::Flag::InstancedTextureOffset|flag};
+    shader.bindTexture(texture);
+
+    if(flag == FlatGL2D::Flag{}) {
+        shader.setColor(0xffff99_rgbf)
+            .setTransformationProjectionMatrix(
+                Matrix3::projection({2.1f, 2.1f})*
+                Matrix3::scaling(Vector2{0.4f}))
+            .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
+            .draw(circle);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(
+                    Matrix3::projection({2.1f, 2.1f})*
+                    Matrix3::scaling(Vector2{0.4f})
+                )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setColor(0xffff99_rgbf)
+        }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
+        }};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindTextureTransformationBuffer(textureTransformationUniform)
+            .draw(circle);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1247,7 +2108,18 @@ void FlatGLTest::renderInstanced2D() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void FlatGLTest::renderInstanced3D() {
+template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
         CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() << "is not supported.");
@@ -1303,18 +2175,46 @@ void FlatGLTest::renderInstanced3D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    FlatGL3D{FlatGL3D::Flag::Textured|
+    FlatGL3D shader{FlatGL3D::Flag::Textured|
            FlatGL3D::Flag::VertexColor|
            FlatGL3D::Flag::InstancedTransformation|
-           FlatGL3D::Flag::InstancedTextureOffset}
-        .setColor(0xffff99_rgbf)
-        .setTransformationProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::scaling(Vector3{0.4f}))
-        .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
-        .bindTexture(texture)
-        .draw(sphere);
+           FlatGL3D::Flag::InstancedTextureOffset|flag};
+    shader.bindTexture(texture);
+
+    if(flag == FlatGL3D::Flag{}) {
+        shader.setColor(0xffff99_rgbf)
+            .setTransformationProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::scaling(Vector3{0.4f}))
+            .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
+            .draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform3D{}
+                .setTransformationProjectionMatrix(
+                    Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+                    Matrix4::translation(Vector3::zAxis(-2.15f))*
+                    Matrix4::scaling(Vector3{0.4f})
+                )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setColor(0xffff99_rgbf)
+        }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
+        }};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindTextureTransformationBuffer(textureTransformationUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1331,6 +2231,421 @@ void FlatGLTest::renderInstanced3D() {
         Utility::Directory::join(_testDir, "FlatTestFiles/instanced3D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void FlatGLTest::renderMulti2D() {
+    auto&& data = RenderMultiData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    GL::Texture2D texture;
+    if(data.flags & FlatGL2D::Flag::Textured) {
+        if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+          !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+            CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+        Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+        CORRADE_VERIFY(importer);
+
+        Containers::Optional<Trade::ImageData2D> image;
+        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+        texture.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::RGB8, image->size())
+            .setSubImage(0, {}, *image);
+    }
+
+    /* Circle is a fan, plane is a strip, make it indexed first */
+    Trade::MeshData circleData = MeshTools::generateIndices(Primitives::circle2DSolid(32,
+        Primitives::Circle2DFlag::TextureCoordinates));
+    Trade::MeshData squareData = MeshTools::generateIndices(Primitives::squareSolid(
+        Primitives::SquareFlag::TextureCoordinates));
+    Trade::MeshData triangleData = MeshTools::generateIndices(Primitives::circle2DSolid(3,
+        Primitives::Circle2DFlag::TextureCoordinates));
+    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({circleData, squareData, triangleData}));
+    GL::MeshView circle{mesh};
+    circle.setCount(circleData.indexCount());
+    GL::MeshView square{mesh};
+    square.setCount(squareData.indexCount())
+        .setIndexRange(circleData.indexCount());
+    GL::MeshView triangle{mesh};
+    triangle.setCount(triangleData.indexCount())
+        .setIndexRange(circleData.indexCount() + squareData.indexCount());
+
+    /* Some drivers have uniform offset alignment as high as 256, which means
+       the subsequent sets of uniforms have to be aligned to a multiply of it.
+       The data.uniformIncrement is set high enough to ensure that, in the
+       non-offset-bind case this value is 1. */
+
+    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
+    transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::projection({2.1f, 2.1f})*
+            Matrix3::scaling(Vector2{0.4f})*
+            Matrix3::translation({-1.25f, -1.25f})
+        );
+    transformationProjectionData[1*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::projection({2.1f, 2.1f})*
+            Matrix3::scaling(Vector2{0.4f})*
+            Matrix3::translation({ 1.25f, -1.25f})
+        );
+    transformationProjectionData[2*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::projection({2.1f, 2.1f})*
+            Matrix3::scaling(Vector2{0.4f})*
+            Matrix3::translation({ 0.00f,  1.25f})
+        );
+    GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
+
+    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::scaling(Vector2{0.5f})*
+            Matrix3::translation({0.0f, 0.0f})
+        );
+    textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::scaling(Vector2{0.5f})*
+            Matrix3::translation({1.0f, 0.0f})
+        );
+    textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::scaling(Vector2{0.5f})*
+            Matrix3::translation({0.5f, 1.0f})
+        );
+    GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
+
+    Containers::Array<FlatDrawUniform> drawData{2*data.uniformIncrement + 1};
+    drawData[0*data.uniformIncrement] = FlatDrawUniform{}
+        .setColor(data.flags & FlatGL2D::Flag::Textured ?
+            0xffffff_rgbf : 0xff0000_rgbf)
+        .setObjectId(1211);
+    drawData[1*data.uniformIncrement] = FlatDrawUniform{}
+        .setColor(data.flags & FlatGL2D::Flag::Textured ?
+            0xffffff_rgbf : 0x0000ff_rgbf)
+        .setObjectId(5627);
+    drawData[2*data.uniformIncrement] = FlatDrawUniform{}
+        .setColor(data.flags & FlatGL2D::Flag::Textured ?
+            0xffffff_rgbf : 0xff0000_rgbf)
+        .setObjectId(36363);
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    FlatGL2D shader{FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId|data.flags, data.drawCount};
+    if(data.flags & FlatGL2D::Flag::Textured)
+        shader.bindTexture(texture);
+
+    /* Just one draw, rebinding UBOs each time */
+    if(data.drawCount == 1) {
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            0*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            0*data.uniformIncrement*sizeof(FlatDrawUniform),
+            sizeof(FlatDrawUniform));
+        if(data.flags & FlatGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            0*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(circle);
+
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            1*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            1*data.uniformIncrement*sizeof(FlatDrawUniform),
+            sizeof(FlatDrawUniform));
+        if(data.flags & FlatGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            1*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(square);
+
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            2*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            2*data.uniformIncrement*sizeof(FlatDrawUniform),
+            sizeof(FlatDrawUniform));
+        if(data.flags & FlatGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            2*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(triangle);
+
+    /* Otherwise using the draw offset */
+    } else {
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform);
+        if(data.flags & FlatGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
+        shader.setDrawOffset(0)
+            .draw(circle);
+        shader.setDrawOffset(1)
+            .draw(square);
+        shader.setDrawOffset(2)
+            .draw(triangle);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    /*
+        Colored case:
+
+        -   Circle should be lower left, red
+        -   Square lower right, blue
+        -   Triangle up center, red
+
+        Textured case:
+
+        -   Circle should have bottom left numbers, so light 7881
+        -   Square bottom right, 1223
+        -   Triangle 6778
+    */
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "FlatTestFiles", data.expected2D}),
+        (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
+
+    /* Object ID -- no need to verify the whole image, just check that pixels
+       on known places have expected values. SwiftShader insists that the read
+       format has to be 32bit, so the renderbuffer format is that too to make
+       it the same (ES3 Mesa complains if these don't match). */
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+        CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+        Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[5][5], 27); /* Outside */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], 1211); /* Circle */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], 5627); /* Square */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], 36363); /* Triangle */
+    }
+}
+
+void FlatGLTest::renderMulti3D() {
+    auto&& data = RenderMultiData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    GL::Texture2D texture;
+    if(data.flags & FlatGL3D::Flag::Textured) {
+        if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+          !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+            CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+        Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+        CORRADE_VERIFY(importer);
+
+        Containers::Optional<Trade::ImageData2D> image;
+        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+        texture.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::RGB8, image->size())
+            .setSubImage(0, {}, *image);
+    }
+
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
+        Primitives::UVSphereFlag::TextureCoordinates);
+    /* Plane is a strip, make it indexed first */
+    Trade::MeshData planeData = MeshTools::generateIndices(Primitives::planeSolid(
+        Primitives::PlaneFlag::TextureCoordinates));
+    Trade::MeshData coneData = Primitives::coneSolid(1, 32, 1.0f,
+        Primitives::ConeFlag::TextureCoordinates);
+    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({sphereData, planeData, coneData}));
+    GL::MeshView sphere{mesh};
+    sphere.setCount(sphereData.indexCount());
+    GL::MeshView plane{mesh};
+    plane.setCount(planeData.indexCount())
+        .setIndexRange(sphereData.indexCount());
+    GL::MeshView cone{mesh};
+    cone.setCount(coneData.indexCount())
+        .setIndexRange(sphereData.indexCount() + planeData.indexCount());
+
+    /* Some drivers have uniform offset alignment as high as 256, which means
+       the subsequent sets of uniforms have to be aligned to a multiply of it.
+       The data.uniformIncrement is set high enough to ensure that, in the
+       non-offset-bind case this value is 1. */
+
+    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{2*data.uniformIncrement + 1};
+    transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform3D{}
+        .setTransformationProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f})*
+            Matrix4::translation({-1.25f, -1.25f, 0.0f})*
+            /* To be consistent with Phong's output where it tests that the
+               normal matrix is applied properly */
+            Matrix4::rotationX(90.0_degf)
+        );
+    transformationProjectionData[1*data.uniformIncrement] = TransformationProjectionUniform3D{}
+        .setTransformationProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f})*
+            Matrix4::translation({ 1.25f, -1.25f, 0.0f})
+        );
+    transformationProjectionData[2*data.uniformIncrement] = TransformationProjectionUniform3D{}
+        .setTransformationProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f})*
+            Matrix4::translation({  0.0f,  1.0f, 1.0f})
+        );
+    GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
+
+    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::scaling(Vector2{0.5f})*
+            Matrix3::translation({0.0f, 0.0f})
+        );
+    textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::scaling(Vector2{0.5f})*
+            Matrix3::translation({1.0f, 0.0f})
+        );
+    textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::scaling(Vector2{0.5f})*
+            Matrix3::translation({0.5f, 1.0f})
+        );
+    GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
+
+    Containers::Array<FlatDrawUniform> drawData{2*data.uniformIncrement + 1};
+    drawData[0*data.uniformIncrement] = FlatDrawUniform{}
+        .setColor(data.flags & FlatGL3D::Flag::Textured ?
+            0xffffff_rgbf : 0xff0000_rgbf)
+        .setObjectId(1211);
+    drawData[1*data.uniformIncrement] = FlatDrawUniform{}
+        .setColor(data.flags & FlatGL3D::Flag::Textured ?
+            0xffffff_rgbf : 0x0000ff_rgbf)
+        .setObjectId(5627);
+    drawData[2*data.uniformIncrement] = FlatDrawUniform{}
+        .setColor(data.flags & FlatGL3D::Flag::Textured ?
+            0xffffff_rgbf : 0xff0000_rgbf)
+        .setObjectId(36363);
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    FlatGL3D shader{FlatGL3D::Flag::UniformBuffers|FlatGL3D::Flag::ObjectId|data.flags, data.drawCount};
+    if(data.flags & FlatGL3D::Flag::Textured)
+        shader.bindTexture(texture);
+
+    /* Just one draw, rebinding UBOs each time */
+    if(data.drawCount == 1) {
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            0*data.uniformIncrement*sizeof(TransformationProjectionUniform3D),
+            sizeof(TransformationProjectionUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            0*data.uniformIncrement*sizeof(FlatDrawUniform),
+            sizeof(FlatDrawUniform));
+        if(data.flags & FlatGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            0*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(sphere);
+
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            1*data.uniformIncrement*sizeof(TransformationProjectionUniform3D),
+            sizeof(TransformationProjectionUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            1*data.uniformIncrement*sizeof(FlatDrawUniform),
+            sizeof(FlatDrawUniform));
+        if(data.flags & FlatGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            1*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(plane);
+
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            2*data.uniformIncrement*sizeof(TransformationProjectionUniform3D),
+            sizeof(TransformationProjectionUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            2*data.uniformIncrement*sizeof(FlatDrawUniform),
+            sizeof(FlatDrawUniform));
+        if(data.flags & FlatGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            2*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(cone);
+
+    /* Otherwise using the draw offset */
+    } else {
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform);
+        if(data.flags & FlatGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
+        shader.setDrawOffset(0)
+            .draw(sphere);
+        shader.setDrawOffset(1)
+            .draw(plane);
+        shader.setDrawOffset(2)
+            .draw(cone);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    /*
+        Colored case:
+
+        -   Sphere should be lower left, red
+        -   Plane lower right, blue
+        -   Cone up center, red
+
+        Textured case:
+
+        -   Sphere should have bottom left numbers, so light 7881, rotated (78
+            visible)
+        -   Plane bottom right, 1223
+        -   Cone 6778
+    */
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "FlatTestFiles", data.expected3D}),
+        (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
+
+    /* Object ID -- no need to verify the whole image, just check that pixels
+       on known places have expected values. SwiftShader insists that the read
+       format has to be 32bit, so the renderbuffer format is that too to make
+       it the same (ES3 Mesa complains if these don't match). */
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+        CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+        Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[5][5], 27); /* Outside */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], 1211); /* Sphere */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], 5627); /* Plane */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], 36363); /* Circle */
+    }
+}
+#endif
 
 }}}}
 

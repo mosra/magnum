@@ -32,8 +32,13 @@
 #define out varying
 #endif
 
+#ifndef RUNTIME_CONST
+#define const
+#endif
+
 /* Uniforms */
 
+#ifndef UNIFORM_BUFFERS
 #ifdef TWO_DIMENSIONS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
@@ -95,6 +100,92 @@ uniform highp float lineLength
     = 1.0
     #endif
     ;
+#endif
+
+/* Uniform buffers */
+
+#else
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform highp uint drawOffset
+    #ifndef GL_ES
+    = 0u
+    #endif
+    ;
+
+#ifdef TWO_DIMENSIONS
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 1
+    #endif
+) uniform TransformationProjection {
+    highp mat3 transformationProjectionMatrices[DRAW_COUNT];
+};
+#elif defined(THREE_DIMENSIONS)
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 0
+    #endif
+) uniform Projection {
+    highp mat4 projectionMatrix;
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 1
+    #endif
+) uniform Transformation {
+    highp mat4 transformationMatrices[DRAW_COUNT];
+};
+#else
+#error
+#endif
+
+/* Keep in sync with MeshVisualizer.geom and MeshVisualizer.frag. Can't
+   "outsource" to a common file because the #extension directives need to be
+   always before any code. */
+struct DrawUniform {
+    #ifdef THREE_DIMENSIONS
+    highp mat3 normalMatrix; /* actually mat3x4 */
+    #elif !defined(TWO_DIMENSIONS)
+    #error
+    #endif
+    highp uvec4 materialIdReservedReservedReservedReserved;
+    #define draw_materialIdReserved materialIdReservedReservedReservedReserved.x
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 2
+    #endif
+) uniform Draw {
+    DrawUniform draws[DRAW_COUNT];
+};
+
+/* Keep in sync with MeshVisualizer.geom and MeshVisualizer.frag. Can't
+   "outsource" to a common file because the #extension directives need to be
+   always before any code. */
+struct MaterialUniform {
+    lowp vec4 color;
+    lowp vec4 wireframeColor;
+    lowp vec4 wireframeWidthColorMapOffsetColorMapScaleLineWidth;
+    #define material_wireframeWidth wireframeWidthColorMapOffsetColorMapScaleLineWidth.x
+    #define material_colorMapOffset wireframeWidthColorMapOffsetColorMapScaleLineWidth.y
+    #define material_colorMapScale wireframeWidthColorMapOffsetColorMapScaleLineWidth.z
+    #define material_lineWidth wireframeWidthColorMapOffsetColorMapScaleLineWidth.w
+    lowp vec4 lineLengthSmoothnessReservedReserved;
+    #define material_lineLength lineLengthSmoothnessReservedReserved.x
+    #define material_smoothness lineLengthSmoothnessReservedReserved.y
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 4
+    #endif
+) uniform Material {
+    MaterialUniform materials[MATERIAL_COUNT];
+};
 #endif
 
 /* Inputs */
@@ -189,6 +280,23 @@ out highp vec4 normalEndpoint;
 #endif
 
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    #ifdef TWO_DIMENSIONS
+    highp const mat3 transformationProjectionMatrix = transformationProjectionMatrices[drawOffset];
+    #elif defined(THREE_DIMENSIONS)
+    highp const mat4 transformationMatrix = transformationMatrices[drawOffset];
+    #else
+    #error
+    #endif
+    #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
+    mediump const mat3 normalMatrix = draws[drawOffset].normalMatrix;
+    #endif
+    mediump const uint materialId = draws[drawOffset].draw_materialIdReserved & 0xffffu;
+    lowp float colorMapOffset = materials[materialId].material_colorMapOffset;
+    lowp float colorMapScale = materials[materialId].material_colorMapScale;
+    highp float lineLength = materials[materialId].material_lineLength;
+    #endif
+
     #ifdef TWO_DIMENSIONS
     gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);
     #elif defined(THREE_DIMENSIONS)

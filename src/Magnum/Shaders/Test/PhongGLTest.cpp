@@ -57,6 +57,17 @@
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/MeshData.h"
 
+#ifndef MAGNUM_TARGET_GLES2
+#include <Corrade/Utility/FormatStl.h>
+
+#include "Magnum/GL/MeshView.h"
+#include "Magnum/MeshTools/Concatenate.h"
+#include "Magnum/MeshTools/GenerateIndices.h"
+#include "Magnum/Primitives/Cone.h"
+#include "Magnum/Shaders/Generic.h"
+#include "Magnum/Shaders/Phong.h"
+#endif
+
 #include "configure.h"
 
 namespace Magnum { namespace Shaders { namespace Test { namespace {
@@ -65,52 +76,79 @@ struct PhongGLTest: GL::OpenGLTester {
     explicit PhongGLTest();
 
     void construct();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructUniformBuffers();
+    #endif
 
     void constructMove();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructMoveUniformBuffers();
+    #endif
 
     void constructTextureTransformationNotTextured();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructUniformBuffersInvalid();
+    #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    void setUniformUniformBuffersEnabled();
+    void bindBufferUniformBuffersNotEnabled();
+    #endif
     void bindTexturesNotEnabled();
     void setAlphaMaskNotEnabled();
     void setTextureMatrixNotEnabled();
+    #ifndef MAGNUM_TARGET_GLES2
+    void bindTextureTransformBufferNotEnabled();
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     void setObjectIdNotEnabled();
     #endif
     void setWrongLightCount();
     void setWrongLightId();
+    #ifndef MAGNUM_TARGET_GLES2
+    void setWrongDrawOffset();
+    #endif
 
     void renderSetup();
     void renderTeardown();
 
-    void renderDefaults();
-    void renderColored();
-    void renderSinglePixelTextured();
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderDefaults();
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderColored();
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderSinglePixelTextured();
 
-    void renderTextured();
-    void renderTexturedNormal();
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderTextured();
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderTexturedNormal();
 
-    template<class T> void renderVertexColor();
+    template<class T, PhongGL::Flag flag = PhongGL::Flag{}> void renderVertexColor();
 
-    void renderShininess();
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderShininess();
 
     void renderAlphaSetup();
     void renderAlphaTeardown();
 
-    void renderAlpha();
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderAlpha();
 
     #ifndef MAGNUM_TARGET_GLES2
     void renderObjectIdSetup();
     void renderObjectIdTeardown();
 
-    void renderObjectId();
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderObjectId();
     #endif
 
-    void renderLights();
-    void renderLightsSetOneByOne();
-    void renderLowLightAngle();
-    void renderZeroLights();
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderLights();
 
-    void renderInstanced();
+    /* This tests something that's irrelevant to UBOs */
+    void renderLightsSetOneByOne();
+    /* This tests just the algorithm, not affected by UBOs */
+    void renderLowLightAngle();
+
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderZeroLights();
+
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderInstanced();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    void renderMulti();
+    #endif
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -171,6 +209,37 @@ constexpr struct {
     {"instanced specular texture offset", PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset, 3},
     {"instanced normal texture offset", PhongGL::Flag::NormalTexture|PhongGL::Flag::InstancedTextureOffset, 3}
 };
+
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    PhongGL::Flags flags;
+    UnsignedInt lightCount, materialCount, drawCount;
+} ConstructUniformBuffersData[]{
+    {"classic fallback", {}, 1, 1, 1},
+    {"", PhongGL::Flag::UniformBuffers, 1, 1, 1},
+    {"multiple lights, materials, draws", PhongGL::Flag::UniformBuffers, 30, 64, 128},
+    {"zero lights", PhongGL::Flag::UniformBuffers, 0, 64, 128},
+    {"ambient + diffuse + specular texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1, 1, 1},
+    {"ambient + diffuse + specular texture + texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1},
+    {"normal texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture, 1, 1, 1},
+    {"normal texture + separate bitangents", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1, 1, 1},
+    {"alpha mask", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AlphaMask, 1, 1, 1},
+    {"object ID", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId, 1, 1, 1}
+};
+
+constexpr struct {
+    const char* name;
+    PhongGL::Flags flags;
+    UnsignedInt lightCount, materialCount, drawCount;
+    const char* message;
+} ConstructUniformBuffersInvalidData[]{
+    {"zero draws", PhongGL::Flag::UniformBuffers, 1, 1, 0,
+        "draw count can't be zero"},
+    {"zero materials", PhongGL::Flag::UniformBuffers, 1, 0, 1,
+        "material count can't be zero"},
+};
+#endif
 
 using namespace Math::Literals;
 
@@ -483,69 +552,171 @@ constexpr struct {
         }
 };
 
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    const char* expected;
+    PhongGL::Flags flags;
+    UnsignedInt lightCount, materialCount, drawCount;
+    UnsignedInt uniformIncrement;
+    Float maxThreshold, meanThreshold;
+} RenderMultiData[] {
+    {"bind with offset, colored", "multidraw.tga",
+        {},
+        2, 1, 1, 16, 0.0f, 0.0f},
+    {"bind with offset, textured", "multidraw-textured.tga",
+        PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
+        2, 1, 1, 16, 0.0f, 0.0f},
+    {"draw offset, colored", "multidraw.tga",
+        {},
+        4, 2, 3, 1, 0.0f, 0.0f},
+    {"draw offset, textured", "multidraw-textured.tga",
+        PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
+        4, 2, 3, 1, 0.0f, 0.0f}
+};
+#endif
+
 PhongGLTest::PhongGLTest() {
-    addInstancedTests({&PhongGLTest::construct}, Containers::arraySize(ConstructData));
+    addInstancedTests({&PhongGLTest::construct},
+        Containers::arraySize(ConstructData));
 
-    addTests({&PhongGLTest::constructMove,
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&PhongGLTest::constructUniformBuffers},
+        Containers::arraySize(ConstructUniformBuffersData));
+    #endif
 
-              &PhongGLTest::constructTextureTransformationNotTextured,
+    addTests({
+        &PhongGLTest::constructMove,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::constructMoveUniformBuffers,
+        #endif
 
-              &PhongGLTest::bindTexturesNotEnabled,
-              &PhongGLTest::setAlphaMaskNotEnabled,
-              &PhongGLTest::setTextureMatrixNotEnabled,
-              #ifndef MAGNUM_TARGET_GLES2
-              &PhongGLTest::setObjectIdNotEnabled,
-              #endif
-              &PhongGLTest::setWrongLightCount,
-              &PhongGLTest::setWrongLightId});
+        &PhongGLTest::constructTextureTransformationNotTextured});
 
-    addTests({&PhongGLTest::renderDefaults},
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({
+        &PhongGLTest::constructUniformBuffersInvalid},
+        Containers::arraySize(ConstructUniformBuffersInvalidData));
+    #endif
+
+    addTests({
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::setUniformUniformBuffersEnabled,
+        &PhongGLTest::bindBufferUniformBuffersNotEnabled,
+        #endif
+        &PhongGLTest::bindTexturesNotEnabled,
+        &PhongGLTest::setAlphaMaskNotEnabled,
+        &PhongGLTest::setTextureMatrixNotEnabled,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::bindTextureTransformBufferNotEnabled,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::setObjectIdNotEnabled,
+        #endif
+        &PhongGLTest::setWrongLightCount,
+        &PhongGLTest::setWrongLightId,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::setWrongDrawOffset
+        #endif
+    });
+
+    addTests({
+        &PhongGLTest::renderDefaults,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderDefaults<PhongGL::Flag::UniformBuffers>
+        #endif
+        },
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addInstancedTests({&PhongGLTest::renderColored},
+    addInstancedTests({
+        &PhongGLTest::renderColored,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderColored<PhongGL::Flag::UniformBuffers>
+        #endif
+        },
         Containers::arraySize(RenderColoredData),
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addInstancedTests({&PhongGLTest::renderSinglePixelTextured},
+    addInstancedTests({
+        &PhongGLTest::renderSinglePixelTextured,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderSinglePixelTextured<PhongGL::Flag::UniformBuffers>
+        #endif
+        },
         Containers::arraySize(RenderSinglePixelTexturedData),
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addInstancedTests({&PhongGLTest::renderTextured},
+    addInstancedTests({
+        &PhongGLTest::renderTextured,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderTextured<PhongGL::Flag::UniformBuffers>
+        #endif
+        },
         Containers::arraySize(RenderTexturedData),
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addInstancedTests({&PhongGLTest::renderTexturedNormal},
+    addInstancedTests({
+        &PhongGLTest::renderTexturedNormal,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderTexturedNormal<PhongGL::Flag::UniformBuffers>
+        #endif
+        },
         Containers::arraySize(RenderTexturedNormalData),
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addTests({&PhongGLTest::renderVertexColor<Color3>,
-              &PhongGLTest::renderVertexColor<Color4>},
+    addTests({
+        &PhongGLTest::renderVertexColor<Color3>,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderVertexColor<Color3, PhongGL::Flag::UniformBuffers>,
+        #endif
+        &PhongGLTest::renderVertexColor<Color4>,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderVertexColor<Color4, PhongGL::Flag::UniformBuffers>,
+        #endif
+        },
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addInstancedTests({&PhongGLTest::renderShininess},
+    addInstancedTests({
+        &PhongGLTest::renderShininess,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderShininess<PhongGL::Flag::UniformBuffers>,
+        #endif
+        },
         Containers::arraySize(RenderShininessData),
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addInstancedTests({&PhongGLTest::renderAlpha},
+    addInstancedTests({
+        &PhongGLTest::renderAlpha,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderAlpha<PhongGL::Flag::UniformBuffers>
+        #endif
+        },
         Containers::arraySize(RenderAlphaData),
         &PhongGLTest::renderAlphaSetup,
         &PhongGLTest::renderAlphaTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
-    addInstancedTests({&PhongGLTest::renderObjectId},
+    addInstancedTests({
+        &PhongGLTest::renderObjectId,
+        &PhongGLTest::renderObjectId<PhongGL::Flag::UniformBuffers>},
         Containers::arraySize(RenderObjectIdData),
         &PhongGLTest::renderObjectIdSetup,
         &PhongGLTest::renderObjectIdTeardown);
     #endif
 
-    addInstancedTests({&PhongGLTest::renderLights},
+    addInstancedTests({
+        &PhongGLTest::renderLights,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderLights<PhongGL::Flag::UniformBuffers>,
+        #endif
+        },
         Containers::arraySize(RenderLightsData),
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
@@ -555,7 +726,12 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addTests({&PhongGLTest::renderZeroLights},
+    addTests({
+        &PhongGLTest::renderZeroLights,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderZeroLights<PhongGL::Flag::UniformBuffers>
+        #endif
+        },
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderObjectIdSetup,
         &PhongGLTest::renderObjectIdTeardown
@@ -565,10 +741,22 @@ PhongGLTest::PhongGLTest() {
         #endif
     );
 
-    addInstancedTests({&PhongGLTest::renderInstanced},
+    addInstancedTests({
+        &PhongGLTest::renderInstanced,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderInstanced<PhongGL::Flag::UniformBuffers>,
+        #endif
+        },
         Containers::arraySize(RenderInstancedData),
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&PhongGLTest::renderMulti},
+        Containers::arraySize(RenderMultiData),
+        &PhongGLTest::renderObjectIdSetup,
+        &PhongGLTest::renderObjectIdTeardown);
+    #endif
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -617,6 +805,35 @@ void PhongGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::constructUniformBuffers() {
+    auto&& data = ConstructUniformBuffersData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & PhongGL::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if((data.flags & PhongGL::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    PhongGL shader{data.flags, data.lightCount, data.materialCount, data.drawCount};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.lightCount(), data.lightCount);
+    CORRADE_COMPARE(shader.materialCount(), data.materialCount);
+    CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
+
 void PhongGLTest::constructMove() {
     PhongGL a{PhongGL::Flag::AlphaMask, 3};
     const GLuint id = a.id();
@@ -638,6 +855,38 @@ void PhongGLTest::constructMove() {
     CORRADE_VERIFY(!b.id());
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::constructMoveUniformBuffers() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    PhongGL a{PhongGL::Flag::UniformBuffers, 3, 2, 5};
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    PhongGL b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_COMPARE(b.flags(), PhongGL::Flag::UniformBuffers);
+    CORRADE_COMPARE(b.lightCount(), 3);
+    CORRADE_COMPARE(b.materialCount(), 2);
+    CORRADE_COMPARE(b.drawCount(), 5);
+    CORRADE_VERIFY(!a.id());
+
+    PhongGL c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_COMPARE(c.flags(), PhongGL::Flag::UniformBuffers);
+    CORRADE_COMPARE(c.lightCount(), 3);
+    CORRADE_COMPARE(c.materialCount(), 2);
+    CORRADE_COMPARE(c.drawCount(), 5);
+    CORRADE_VERIFY(!b.id());
+}
+#endif
+
 void PhongGLTest::constructTextureTransformationNotTextured() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -649,6 +898,124 @@ void PhongGLTest::constructTextureTransformationNotTextured() {
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL: texture transformation enabled but the shader is not textured\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::constructUniformBuffersInvalid() {
+    auto&& data = ConstructUniformBuffersInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    PhongGL{data.flags, data.lightCount, data.materialCount, data.drawCount};
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Shaders::PhongGL: {}\n", data.message));
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::setUniformUniformBuffersEnabled() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    PhongGL shader{PhongGL::Flag::UniformBuffers};
+    shader.setAmbientColor({})
+          .setDiffuseColor({})
+          .setNormalTextureScale({})
+          .setSpecularColor({})
+          .setShininess({})
+          .setAlphaMask({})
+          .setObjectId({})
+          .setTransformationMatrix({})
+          .setNormalMatrix({})
+          .setProjectionMatrix({})
+          .setTextureMatrix({})
+          .setLightPositions(std::initializer_list<Vector4>{})
+          .setLightPosition(0, Vector4{})
+          .setLightColors(std::initializer_list<Color3>{})
+          .setLightColor(0, Color3{})
+          .setLightSpecularColors({})
+          .setLightSpecularColor(0, {})
+          .setLightRanges({})
+          .setLightRange(0, {});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::PhongGL::setAmbientColor(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setDiffuseColor(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setNormalTextureScale(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setSpecularColor(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setShininess(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setAlphaMask(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setObjectId(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setTransformationMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setNormalMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setProjectionMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setLightPositions(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setLightPosition(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setLightColors(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setLightColor(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setLightSpecularColors(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setLightSpecularColor(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setLightRanges(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setLightRange(): the shader was created with uniform buffers enabled\n");
+}
+
+void PhongGLTest::bindBufferUniformBuffersNotEnabled() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Buffer buffer;
+    PhongGL shader;
+    shader.bindProjectionBuffer(buffer)
+          .bindProjectionBuffer(buffer, 0, 16)
+          .bindTransformationBuffer(buffer)
+          .bindTransformationBuffer(buffer, 0, 16)
+          .bindDrawBuffer(buffer)
+          .bindDrawBuffer(buffer, 0, 16)
+          .bindTextureTransformationBuffer(buffer)
+          .bindTextureTransformationBuffer(buffer, 0, 16)
+          .bindMaterialBuffer(buffer)
+          .bindMaterialBuffer(buffer, 0, 16)
+          .bindLightBuffer(buffer)
+          .bindLightBuffer(buffer, 0, 16)
+          .setDrawOffset(0);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::PhongGL::bindProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindLightBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindLightBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
+}
+#endif
 
 void PhongGLTest::bindTexturesNotEnabled() {
     #ifdef CORRADE_NO_ASSERT
@@ -707,6 +1074,30 @@ void PhongGLTest::setTextureMatrixNotEnabled() {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::bindTextureTransformBufferNotEnabled() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
+    PhongGL shader{PhongGL::Flag::UniformBuffers};
+    shader.bindTextureTransformationBuffer(buffer)
+          .bindTextureTransformationBuffer(buffer, 0, 16);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::PhongGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n"
+        "Shaders::PhongGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::setObjectIdNotEnabled() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -757,6 +1148,26 @@ void PhongGLTest::setWrongLightId() {
         "Shaders::PhongGL::setLightRange(): light ID 3 is out of bounds for 3 lights\n");
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::setWrongDrawOffset() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    PhongGL{PhongGL::Flag::UniformBuffers, 1, 2, 5}
+        .setDrawOffset(5);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::PhongGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
+}
+#endif
+
 constexpr Vector2i RenderSize{80, 80};
 
 void PhongGLTest::renderSetup() {
@@ -785,11 +1196,52 @@ void PhongGLTest::renderTeardown() {
     _color = GL::Renderbuffer{NoCreate};
 }
 
-void PhongGLTest::renderDefaults() {
+template<PhongGL::Flag flag> void PhongGLTest::renderDefaults() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    PhongGL{}
-        .draw(sphere);
+    PhongGL shader{flag};
+
+    if(flag == PhongGL::Flag{}) {
+        shader.draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+        }};
+        GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongLightUniform{}
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -812,24 +1264,79 @@ void PhongGLTest::renderDefaults() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void PhongGLTest::renderColored() {
+template<PhongGL::Flag flag> void PhongGLTest::renderColored() {
     auto&& data = RenderColoredData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    PhongGL{{}, 2}
-        .setLightColors({data.lightColor1, data.lightColor2})
-        .setLightPositions({{data.lightPosition1, -3.0f, 2.0f, 0.0f},
-                            {data.lightPosition2, -3.0f, 2.0f, 0.0f}})
-        .setAmbientColor(0x330033_rgbf)
-        .setDiffuseColor(0xccffcc_rgbf)
-        .setSpecularColor(0x6666ff_rgbf)
-        .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f))*
-                                 Matrix4::rotationY(data.rotation))
-        .setNormalMatrix(Matrix4::rotationY(data.rotation).normalMatrix())
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .draw(sphere);
+    PhongGL shader{flag, 2};
+
+    if(flag == PhongGL::Flag{}) {
+        shader
+            .setLightColors({data.lightColor1, data.lightColor2})
+            .setLightPositions({{data.lightPosition1, -3.0f, 2.0f, 0.0f},
+                                {data.lightPosition2, -3.0f, 2.0f, 0.0f}})
+            .setAmbientColor(0x330033_rgbf)
+            .setDiffuseColor(0xccffcc_rgbf)
+            .setSpecularColor(0x6666ff_rgbf)
+            .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f))*
+                                     Matrix4::rotationY(data.rotation))
+            .setNormalMatrix(Matrix4::rotationY(data.rotation).normalMatrix())
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            .draw(sphere);
+
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+                .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+                .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f))*
+                                         Matrix4::rotationY(data.rotation))
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}
+                .setNormalMatrix(Matrix4::rotationY(data.rotation).normalMatrix())
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+                .setAmbientColor(0x330033_rgbf)
+                .setDiffuseColor(0xccffcc_rgbf)
+                .setSpecularColor(0x6666ff_rgbf)
+        }};
+        GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongLightUniform{}
+                .setPosition({data.lightPosition1, -3.0f, 2.0f, 0.0f})
+                .setColor(data.lightColor1),
+            PhongLightUniform{}
+                .setPosition({data.lightPosition2, -3.0f, 2.0f, 0.0f})
+                .setColor(data.lightColor2)
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -867,9 +1374,20 @@ constexpr GL::TextureFormat TextureFormatRGBA =
     #endif
     ;
 
-void PhongGLTest::renderSinglePixelTextured() {
+template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
     auto&& data = RenderSinglePixelTexturedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
@@ -901,13 +1419,7 @@ void PhongGLTest::renderSinglePixelTextured() {
         .setStorage(1, TextureFormatRGBA, Vector2i{1})
         .setSubImage(0, {}, specularImage);
 
-    PhongGL shader{PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 2};
-    shader.setLightColors({0x993366_rgbf, 0x669933_rgbf})
-        .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
-                            { 3.0f, -3.0f, 2.0f, 0.0f}})
-        .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f));
-
+    PhongGL shader{PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|flag, 2};
     if(data.multiBind)
         shader.bindTextures(&ambient, &diffuse, &specular, nullptr);
     else shader
@@ -915,7 +1427,51 @@ void PhongGLTest::renderSinglePixelTextured() {
         .bindDiffuseTexture(diffuse)
         .bindSpecularTexture(specular);
 
-    shader.draw(sphere);
+    if(flag == PhongGL::Flag{}) {
+        shader.setLightColors({0x993366_rgbf, 0x669933_rgbf})
+            .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
+                                { 3.0f, -3.0f, 2.0f, 0.0f}})
+            .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            .draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+                .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+                .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+                /* Has to be set because the default is black regardless of
+                   whether the texture is present or not (it has no way to
+                   know) */
+                .setAmbientColor(0xffffff_rgbf)
+        }};
+        GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongLightUniform{}
+                .setPosition({-3.0f, -3.0f, 2.0f, 0.0f})
+                .setColor(0x993366_rgbf),
+            PhongLightUniform{}
+                .setPosition({ 3.0f, -3.0f, 2.0f, 0.0f})
+                .setColor(0x669933_rgbf)
+        }};
+        shader.bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -938,9 +1494,20 @@ void PhongGLTest::renderSinglePixelTextured() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void PhongGLTest::renderTextured() {
+template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
     auto&& data = RenderTexturedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -949,10 +1516,7 @@ void PhongGLTest::renderTextured() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
-    PhongGL shader{data.flags, 2};
-
-    if(data.textureTransformation != Matrix3{})
-        shader.setTextureMatrix(data.textureTransformation);
+    PhongGL shader{data.flags|flag, 2};
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -966,11 +1530,7 @@ void PhongGLTest::renderTextured() {
             .setWrapping(GL::SamplerWrapping::ClampToEdge)
             .setStorage(1, TextureFormatRGB, image->size())
             .setSubImage(0, {}, *image);
-        shader
-            .bindAmbientTexture(ambient)
-            /* Colorized. Case without a color (where it should be white) is
-               tested in renderSinglePixelTextured() */
-            .setAmbientColor(0xff9999_rgbf);
+        shader.bindAmbientTexture(ambient);
     }
 
     /* If no diffuse texture is present, dial down the default diffuse color
@@ -984,12 +1544,8 @@ void PhongGLTest::renderTextured() {
             .setWrapping(GL::SamplerWrapping::ClampToEdge)
             .setStorage(1, TextureFormatRGB, image->size())
             .setSubImage(0, {}, *image);
-        shader
-            .bindDiffuseTexture(diffuse)
-            /* Colorized. Case without a color (where it should be white) is
-               tested in renderSinglePixelTextured() */
-            .setDiffuseColor(0x9999ff_rgbf);
-    } else shader.setDiffuseColor(0x333333_rgbf);
+        shader.bindDiffuseTexture(diffuse);
+    }
 
     GL::Texture2D specular;
     if(data.flags & PhongGL::Flag::SpecularTexture) {
@@ -1000,25 +1556,90 @@ void PhongGLTest::renderTextured() {
             .setWrapping(GL::SamplerWrapping::ClampToEdge)
             .setStorage(1, TextureFormatRGB, image->size())
             .setSubImage(0, {}, *image);
-        shader
-            .bindSpecularTexture(specular)
-            /* Colorized. Case without a color (where it should be white) is
-               tested in renderSinglePixelTextured() */
-            .setSpecularColor(0x99ff99_rgbf);
+        shader.bindSpecularTexture(specular);
     }
 
-    /* Using default (white) light colors to have the texture data visible
-       better */
-    shader.setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
-                              { 3.0f, -3.0f, 2.0f, 0.0f}})
-        .setTransformationMatrix(
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
-        .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf)).normalMatrix())
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .draw(sphere);
+    if(flag == PhongGL::Flag{}) {
+        if(data.textureTransformation != Matrix3{})
+            shader.setTextureMatrix(data.textureTransformation);
+        if(data.flags & PhongGL::Flag::AmbientTexture)
+            /* Colorized. Case without a color (where it should be white) is
+               tested in renderSinglePixelTextured() */
+            shader.setAmbientColor(0xff9999_rgbf);
+        if(data.flags & PhongGL::Flag::DiffuseTexture)
+            /* Colorized. Case without a color (where it should be white) is
+               tested in renderSinglePixelTextured() */
+            shader.setDiffuseColor(0x9999ff_rgbf);
+        else shader.setDiffuseColor(0x333333_rgbf);
+        if(data.flags & PhongGL::Flag::SpecularTexture)
+            /* Colorized. Case without a color (where it should be white) is
+               tested in renderSinglePixelTextured() */
+            shader.setSpecularColor(0x99ff99_rgbf);
+
+        /* Using default (white) light colors to have the texture data visible
+           better */
+        shader.setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
+                                  { 3.0f, -3.0f, 2.0f, 0.0f}})
+            .setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf))
+            .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)).normalMatrix())
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            .draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}.setProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
+            )
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}.setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)
+            )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}.setNormalMatrix(
+                (Matrix4::rotationY(-15.0_degf)*
+                 Matrix4::rotationX(15.0_degf)).normalMatrix()
+            )
+        }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(data.textureTransformation)
+        }};
+        GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongLightUniform{}.setPosition({-3.0f, -3.0f, 2.0f, 0.0f}),
+            PhongLightUniform{}.setPosition({3.0f, -3.0f, 2.0f, 0.0f})
+        }};
+
+        PhongMaterialUniform materialUniformData[1];
+        if(data.flags & PhongGL::Flag::AmbientTexture)
+            materialUniformData->setAmbientColor(0xff9999_rgbf);
+        if(data.flags & PhongGL::Flag::DiffuseTexture)
+            materialUniformData->setDiffuseColor(0x9999ff_rgbf);
+        else
+            materialUniformData->setDiffuseColor(0x333333_rgbf);
+        if(data.flags & PhongGL::Flag::SpecularTexture)
+            materialUniformData->setSpecularColor(0x99ff99_rgbf);
+        GL::Buffer materialUniform{materialUniformData};
+
+        if(data.textureTransformation != Matrix3{})
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
+        shader.bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1037,9 +1658,20 @@ void PhongGLTest::renderTextured() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void PhongGLTest::renderTexturedNormal() {
+template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
     auto&& data = RenderTexturedNormalData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -1081,30 +1713,71 @@ void PhongGLTest::renderTexturedNormal() {
     /* Rotating the view a few times (together with light positions). If the
        tangent transformation in the shader is correct, it should result in
        exactly the same images. */
-    PhongGL shader{PhongGL::Flag::NormalTexture|data.flags, 2};
-    shader.setLightPositions({
-            Matrix4::rotationZ(data.rotation)*Vector4{-3.0f, -3.0f, 2.0f, 0.0f},
-            Matrix4::rotationZ(data.rotation)*Vector4{ 3.0f, -3.0f, 2.0f, 0.0f}})
-        .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.35f))*
-            Matrix4::rotationZ(data.rotation)*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
-        .setNormalMatrix((Matrix4::rotationZ(data.rotation)*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf)).normalMatrix())
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .setDiffuseColor(0x999999_rgbf);
-
-    /* Verify the default is working properly */
-    if(data.scale != 1.0f)
-        shader.setNormalTextureScale(data.scale);
-
+    PhongGL shader{PhongGL::Flag::NormalTexture|data.flags|flag, 2};
     if(data.multiBind)
         shader.bindTextures(nullptr, nullptr, nullptr, &normal);
     else
         shader.bindNormalTexture(normal);
 
-    shader.draw(plane);
+    if(flag == PhongGL::Flag{}) {
+        /* Verify the default is working properly */
+        if(data.scale != 1.0f)
+            shader.setNormalTextureScale(data.scale);
+
+        shader.setLightPositions({
+                Matrix4::rotationZ(data.rotation)*Vector4{-3.0f, -3.0f, 2.0f, 0.0f},
+                Matrix4::rotationZ(data.rotation)*Vector4{ 3.0f, -3.0f, 2.0f, 0.0f}})
+            .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.35f))*
+                Matrix4::rotationZ(data.rotation)*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf))
+            .setNormalMatrix((Matrix4::rotationZ(data.rotation)*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)).normalMatrix())
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            .setDiffuseColor(0x999999_rgbf)
+            .draw(plane);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}.setProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
+            )
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}.setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.35f))*
+                Matrix4::rotationZ(data.rotation)*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)
+            )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}.setNormalMatrix(
+                (Matrix4::rotationZ(data.rotation)*
+                 Matrix4::rotationY(-15.0_degf)*
+                 Matrix4::rotationX(15.0_degf)).normalMatrix()
+            )
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+                .setDiffuseColor(0x999999_rgbf)
+                .setNormalTextureScale(data.scale)
+        }};
+        GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongLightUniform{}.setPosition(Matrix4::rotationZ(data.rotation)*Vector4{-3.0f, -3.0f, 2.0f, 0.0f}),
+            PhongLightUniform{}.setPosition(Matrix4::rotationZ(data.rotation)*Vector4{3.0f, -3.0f, 2.0f, 0.0f})
+        }};
+        shader.bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform)
+            .draw(plane);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1137,8 +1810,20 @@ void PhongGLTest::renderTexturedNormal() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-template<class T> void PhongGLTest::renderVertexColor() {
-    setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
+template<class T, PhongGL::Flag flag> void PhongGLTest::renderVertexColor() {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::UniformBuffers"});
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    } else
+    #endif
+    {
+        setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
+    }
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -1171,20 +1856,62 @@ template<class T> void PhongGLTest::renderVertexColor() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    PhongGL{PhongGL::Flag::DiffuseTexture|PhongGL::Flag::VertexColor, 2}
-        .setLightPositions({{-3.0f, -3.0f, 0.0f, 0.0f},
-                            { 3.0f, -3.0f, 0.0f, 0.0f}})
-        .setTransformationMatrix(
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
-        .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf)).normalMatrix())
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .setAmbientColor(0x111111_rgbf)
-        .setDiffuseColor(0x9999ff_rgbf)
-        .bindDiffuseTexture(diffuse)
-        .draw(sphere);
+    PhongGL shader{PhongGL::Flag::DiffuseTexture|PhongGL::Flag::VertexColor|flag, 2};
+    shader.bindDiffuseTexture(diffuse);
+
+    if(flag == PhongGL::Flag{}) {
+        shader
+            .setLightPositions({{-3.0f, -3.0f, 0.0f, 0.0f},
+                                { 3.0f, -3.0f, 0.0f, 0.0f}})
+            .setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf))
+            .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)).normalMatrix())
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            .setAmbientColor(0x111111_rgbf)
+            .setDiffuseColor(0x9999ff_rgbf)
+            .draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}.setProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
+            )
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}.setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)
+            )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}.setNormalMatrix(
+                (Matrix4::rotationY(-15.0_degf)*
+                 Matrix4::rotationX(15.0_degf)).normalMatrix()
+            )
+        }};
+        GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongLightUniform{}.setPosition({-3.0f, -3.0f, 0.0f, 0.0f}),
+            PhongLightUniform{}.setPosition({ 3.0f, -3.0f, 0.0f, 0.0f})
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+                .setAmbientColor(0x111111_rgbf)
+                .setDiffuseColor(0x9999ff_rgbf)
+        }};
+        shader.bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1203,20 +1930,68 @@ template<class T> void PhongGLTest::renderVertexColor() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void PhongGLTest::renderShininess() {
+template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
     auto&& data = RenderShininessData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    PhongGL{}
-        .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f}})
-        .setDiffuseColor(0xff3333_rgbf)
-        .setSpecularColor(data.specular)
-        .setShininess(data.shininess)
-        .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .draw(sphere);
+    PhongGL shader{flag};
+    if(flag == PhongGL::Flag{}) {
+        shader
+            .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f}})
+            .setDiffuseColor(0xff3333_rgbf)
+            .setSpecularColor(data.specular)
+            .setShininess(data.shininess)
+            .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            .draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}.setProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
+            )
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}.setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.15f))
+            )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}
+        }};
+        GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongLightUniform{}.setPosition({-3.0f, -3.0f, 2.0f, 0.0f})
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+                .setDiffuseColor(0xff3333_rgbf)
+                .setSpecularColor(data.specular)
+                .setShininess(data.shininess)
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1302,9 +2077,20 @@ void PhongGLTest::renderAlphaTeardown() {
     renderTeardown();
 }
 
-void PhongGLTest::renderAlpha() {
+template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
     auto&& data = RenderAlphaData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -1343,31 +2129,79 @@ void PhongGLTest::renderAlpha() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
-    PhongGL shader{data.flags, 2};
-    shader.setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
-                              { 3.0f, -3.0f, 2.0f, 0.0f}})
-        .setTransformationMatrix(
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
-        .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf)).normalMatrix())
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .setAmbientColor(data.ambientColor)
-        .setDiffuseColor(data.diffuseColor)
-        .setSpecularColor(0xffffff00_rgbaf)
-        .bindTextures(&ambient, &diffuse, nullptr, nullptr);
+    PhongGL shader{data.flags|flag, 2};
+    shader.bindTextures(&ambient, &diffuse, nullptr, nullptr);
 
-    /* Test that the default is correct by not setting the threshold if it's
-       equal to the default */
-    if(data.flags & PhongGL::Flag::AlphaMask && data.threshold != 0.5f)
-        shader.setAlphaMask(data.threshold);
+    if(flag == PhongGL::Flag{}) {
+        shader.setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
+                                  { 3.0f, -3.0f, 2.0f, 0.0f}})
+            .setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf))
+            .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)).normalMatrix())
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            .setAmbientColor(data.ambientColor)
+            .setDiffuseColor(data.diffuseColor)
+            .setSpecularColor(0xffffff00_rgbaf);
 
-    /* For proper Z order draw back faces first and then front faces */
-    GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
-    shader.draw(sphere);
-    GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
-    shader.draw(sphere);
+        /* Test that the default is correct by not setting the threshold if
+           it's equal to the default */
+        if(data.flags & PhongGL::Flag::AlphaMask && data.threshold != 0.5f)
+            shader.setAlphaMask(data.threshold);
+
+        /* For proper Z order draw back faces first and then front faces */
+        GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
+        shader.draw(sphere);
+        GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
+        shader.draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}.setProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
+            )
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}.setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)
+            )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}.setNormalMatrix(
+                (Matrix4::rotationY(-15.0_degf)*
+                 Matrix4::rotationX(15.0_degf)).normalMatrix()
+            )
+        }};
+        GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongLightUniform{}.setPosition({-3.0f, -3.0f, 2.0f, 0.0f}),
+            PhongLightUniform{}.setPosition({3.0f, -3.0f, 2.0f, 0.0f})
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+                .setAmbientColor(data.ambientColor)
+                .setDiffuseColor(data.diffuseColor)
+                .setSpecularColor(0xffffff00_rgbaf)
+                .setAlphaMask(data.threshold)
+        }};
+        shader.bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform);
+
+        /* For proper Z order draw back faces first and then front faces */
+        GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
+        shader.draw(sphere);
+        GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
+        shader.draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1426,9 +2260,20 @@ void PhongGLTest::renderObjectIdTeardown() {
     _framebuffer = GL::Framebuffer{NoCreate};
 }
 
-void PhongGLTest::renderObjectId() {
+template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -1445,17 +2290,55 @@ void PhongGLTest::renderObjectId() {
             GL::Buffer{Containers::arrayView({11002u, 48823u})},
             1, 0, PhongGL::ObjectId{});
 
-    PhongGL{data.flags, 2}
-        .setLightColors({0x993366_rgbf, 0x669933_rgbf})
-        .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
-                            { 3.0f, -3.0f, 2.0f, 0.0f}})
-        .setAmbientColor(0x330033_rgbf)
-        .setDiffuseColor(0xccffcc_rgbf)
-        .setSpecularColor(0x6666ff_rgbf)
-        .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .setObjectId(data.uniformId)
-        .draw(sphere);
+    PhongGL shader{data.flags|flag, 2};
+
+    if(flag == PhongGL::Flag{}) {
+        shader
+            .setLightColors({0x993366_rgbf, 0x669933_rgbf})
+            .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
+                                { 3.0f, -3.0f, 2.0f, 0.0f}})
+            .setAmbientColor(0x330033_rgbf)
+            .setDiffuseColor(0xccffcc_rgbf)
+            .setSpecularColor(0x6666ff_rgbf)
+            .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            .setObjectId(data.uniformId)
+            .draw(sphere);
+    } else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}.setProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
+            )
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}.setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.15f))
+            )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}.setObjectId(data.uniformId)
+        }};
+        GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongLightUniform{}
+                .setPosition({-3.0f, -3.0f, 2.0f, 0.0f})
+                .setColor(0x993366_rgbf),
+            PhongLightUniform{}
+                .setPosition({3.0f, -3.0f, 2.0f, 0.0f})
+                .setColor(0x669933_rgbf)
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+                .setAmbientColor(0x330033_rgbf)
+                .setDiffuseColor(0xccffcc_rgbf)
+                .setSpecularColor(0x6666ff_rgbf)
+        }};
+        shader.bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform)
+            .draw(sphere);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1493,29 +2376,79 @@ void PhongGLTest::renderObjectId() {
 }
 #endif
 
-void PhongGLTest::renderLights() {
+template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
     auto&& data = RenderLightsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     GL::Mesh plane = MeshTools::compile(Primitives::planeSolid());
 
     Matrix4 transformation =
         Matrix4::translation({0.0f, 0.0f, -1.5f});
 
-    PhongGL{{}, 1}
-        /* Set non-black ambient to catch accidental NaNs -- the render should
-           never be fully black */
-        .setAmbientColor(0x222222_rgbf)
-        .setSpecularColor(data.specularColor)
-        .setLightPositions({data.position})
-        .setLightColors({0xff8080_rgbf*data.intensity})
-        .setLightSpecularColors({data.lightSpecularColor})
-        .setLightRanges({data.range})
-        .setShininess(60.0f)
-        .setTransformationMatrix(transformation)
-        .setNormalMatrix(transformation.normalMatrix())
-        .setProjectionMatrix(Matrix4::perspectiveProjection(80.0_degf, 1.0f, 0.1f, 20.0f))
-        .draw(plane);
+    PhongGL shader{flag, 1};
+    if(flag == PhongGL::Flag{}) {
+        shader
+            /* Set non-black ambient to catch accidental NaNs -- the render
+               should never be fully black */
+            .setAmbientColor(0x222222_rgbf)
+            .setSpecularColor(data.specularColor)
+            .setLightPositions({data.position})
+            .setLightColors({0xff8080_rgbf*data.intensity})
+            .setLightSpecularColors({data.lightSpecularColor})
+            .setLightRanges({data.range})
+            .setShininess(60.0f)
+            .setTransformationMatrix(transformation)
+            .setNormalMatrix(transformation.normalMatrix())
+            .setProjectionMatrix(Matrix4::perspectiveProjection(80.0_degf, 1.0f, 0.1f, 20.0f))
+            .draw(plane);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}.setProjectionMatrix(
+                Matrix4::perspectiveProjection(80.0_degf, 1.0f, 0.1f, 20.0f)
+            )
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}.setTransformationMatrix(transformation)
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}.setNormalMatrix(transformation.normalMatrix())
+        }};
+        GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongLightUniform{}
+                .setPosition({data.position})
+                .setColor(0xff8080_rgbf*data.intensity)
+                .setSpecularColor(data.lightSpecularColor)
+                .setRange(data.range),
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+                .setAmbientColor(0x222222_rgbf)
+                .setSpecularColor(data.specularColor)
+                .setShininess(60.0f)
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform)
+            .draw(plane);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1635,12 +2568,21 @@ void PhongGLTest::renderLowLightAngle() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void PhongGLTest::renderZeroLights() {
-    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
-
+template<PhongGL::Flag flag> void PhongGLTest::renderZeroLights() {
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
@@ -1655,7 +2597,7 @@ void PhongGLTest::renderZeroLights() {
         flags |= PhongGL::Flag::ObjectId;
     }
     #endif
-    PhongGL shader{flags, 0};
+    PhongGL shader{flags|flag, 0};
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -1669,40 +2611,89 @@ void PhongGLTest::renderZeroLights() {
         .setStorage(1, TextureFormatRGBA, ambientImage->size())
         .setSubImage(0, {}, *ambientImage);
 
-    shader
-        .bindAmbientTexture(ambient)
-        .setAmbientColor(0x9999ff_rgbf)
-        .setTransformationMatrix(
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        /* Keep alpha mask at the default 0.5 to test the default */
-        /* Passing a zero-sized light position / color array, shouldn't assert */
-        .setLightPositions(Containers::ArrayView<const Vector4>{})
-        .setLightColors(Containers::ArrayView<const Color3>{})
-        /* Using a bogus normal matrix -- it's not used so it should be okay.
-           Same for all other unused values, they should get ignored. */
-        .setNormalMatrix(Matrix3x3{Math::ZeroInit})
-        .setDiffuseColor(0xfa9922_rgbf)
-        .setSpecularColor(0xfa9922_rgbf)
-        .setShininess(0.2f)
-        .setNormalTextureScale(-0.3f);
+    shader.bindAmbientTexture(ambient);
 
+    if(flag == PhongGL::Flag{}) {
+        shader
+            .setAmbientColor(0x9999ff_rgbf)
+            .setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf))
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            /* Keep alpha mask at the default 0.5 to test the default */
+            /* Passing a zero-sized light position / color array, shouldn't
+               assert */
+            .setLightPositions(Containers::ArrayView<const Vector4>{})
+            .setLightColors(Containers::ArrayView<const Color3>{})
+            /* Using a bogus normal matrix -- it's not used so it should be
+               okay. Same for all other unused values, they should get
+               ignored. */
+            .setNormalMatrix(Matrix3x3{Math::ZeroInit})
+            .setDiffuseColor(0xfa9922_rgbf)
+            .setSpecularColor(0xfa9922_rgbf)
+            .setShininess(0.2f)
+            .setNormalTextureScale(-0.3f);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        #endif
+        {
+            shader.setObjectId(65534);
+        }
+        #endif
+
+        /* For proper Z order draw back faces first and then front faces */
+        GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
+        shader.draw(sphere);
+        GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
+        shader.draw(sphere);
+    }
     #ifndef MAGNUM_TARGET_GLES2
-    #ifndef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-    #endif
-    {
-        shader.setObjectId(65534);
+    else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}.setProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
+            )
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}.setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)
+            )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}
+                /* Using a bogus normal matrix -- it's not used so it should be
+                   okay. */
+                .setNormalMatrix(Matrix3x3{Math::ZeroInit})
+                .setObjectId(65534)
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+                .setAmbientColor(0x9999ff_rgbf)
+                /* Same for all other unused values, they should get ignored */
+                .setDiffuseColor(0xfa9922_rgbf)
+                .setSpecularColor(0xfa9922_rgbf)
+                .setShininess(0.2f)
+                .setNormalTextureScale(-0.3f)
+        }};
+        /* Not binding any light buffer as it's not needed */
+        shader.bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform);
+
+        /* For proper Z order draw back faces first and then front faces */
+        GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
+        shader.draw(sphere);
+        GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
+        shader.draw(sphere);
     }
     #endif
-
-    /* For proper Z order draw back faces first and then front faces */
-    GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
-    shader.draw(sphere);
-    GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
-    shader.draw(sphere);
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1744,9 +2735,20 @@ void PhongGLTest::renderZeroLights() {
     #endif
 }
 
-void PhongGLTest::renderInstanced() {
+template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     auto&& data = RenderInstancedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
@@ -1823,27 +2825,71 @@ void PhongGLTest::renderInstanced() {
     PhongGL shader{PhongGL::Flag::DiffuseTexture|
           PhongGL::Flag::VertexColor|
           PhongGL::Flag::InstancedTransformation|
-          PhongGL::Flag::InstancedTextureOffset|data.flags, 2};
-    shader
-        .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
-                            { 3.0f, -3.0f, 2.0f, 0.0f}})
-        .setTransformationMatrix(
-            Matrix4::translation(Vector3::zAxis(-1.75f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf)*
-            Matrix4::scaling(Vector3{0.4f}))
-        .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf)).normalMatrix())
-        .setProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
-        .bindDiffuseTexture(diffuse)
-        .setDiffuseColor(0xffff99_rgbf);
-
+          PhongGL::Flag::InstancedTextureOffset|data.flags|flag, 2};
+    shader.bindDiffuseTexture(diffuse);
     if(data.flags & PhongGL::Flag::NormalTexture)
         shader.bindNormalTexture(normal);
 
-    shader.draw(sphere);
+    if(flag == PhongGL::Flag{}) {
+        shader
+            .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
+                                { 3.0f, -3.0f, 2.0f, 0.0f}})
+            .setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-1.75f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)*
+                Matrix4::scaling(Vector3{0.4f}))
+            .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)).normalMatrix())
+            .setProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
+            .setDiffuseColor(0xffff99_rgbf)
+            .draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}.setProjectionMatrix(
+                Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
+            )
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}.setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-1.75f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf)*
+                Matrix4::scaling(Vector3{0.4f})
+            )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}.setNormalMatrix(
+                (Matrix4::rotationY(-15.0_degf)*
+                 Matrix4::rotationX(15.0_degf)).normalMatrix()
+            )
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+                .setDiffuseColor(0xffff99_rgbf)
+        }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
+        }};
+        GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongLightUniform{}.setPosition(Vector4{-3.0f, -3.0f, 2.0f, 0.0f}),
+            PhongLightUniform{}.setPosition(Vector4{3.0f, -3.0f, 2.0f, 0.0f})
+        }};
+        shader.bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindTextureTransformationBuffer(textureTransformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
@@ -1852,6 +2898,279 @@ void PhongGLTest::renderInstanced() {
         Utility::Directory::join({_testDir, "PhongTestFiles", data.file}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::renderMulti() {
+    auto&& data = RenderMultiData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    GL::Texture2D diffuse;
+    if(data.flags & PhongGL::Flag::DiffuseTexture) {
+        if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+           !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+            CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+        Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+        CORRADE_VERIFY(importer);
+
+        Containers::Optional<Trade::ImageData2D> image;
+        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+
+        diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::RGB8, image->size())
+            .setSubImage(0, {}, *image);
+    }
+
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
+        Primitives::UVSphereFlag::TextureCoordinates|
+        Primitives::UVSphereFlag::Tangents);
+    /* Plane is a strip, make it indexed first */
+    Trade::MeshData planeData = MeshTools::generateIndices(Primitives::planeSolid(
+        Primitives::PlaneFlag::TextureCoordinates|
+        Primitives::PlaneFlag::Tangents));
+    Trade::MeshData coneData = Primitives::coneSolid(1, 32, 1.0f,
+        Primitives::ConeFlag::TextureCoordinates|
+        Primitives::ConeFlag::Tangents);
+    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({sphereData, planeData, coneData}));
+    GL::MeshView sphere{mesh};
+    sphere.setCount(sphereData.indexCount());
+    GL::MeshView plane{mesh};
+    plane.setCount(planeData.indexCount())
+        .setIndexRange(sphereData.indexCount());
+    GL::MeshView cone{mesh};
+    cone.setCount(coneData.indexCount())
+        .setIndexRange(sphereData.indexCount() + planeData.indexCount());
+
+    GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+        ProjectionUniform3D{}.setProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
+        )
+    }};
+
+    /* Some drivers have uniform offset alignment as high as 256, which means
+       the subsequent sets of uniforms have to be aligned to a multiply of it.
+       The data.uniformIncrement is set high enough to ensure that, in the
+       non-offset-bind case this value is 1. */
+
+    Containers::Array<PhongMaterialUniform> materialData{data.uniformIncrement + 1};
+    materialData[0*data.uniformIncrement] = PhongMaterialUniform{}
+        .setDiffuseColor(data.flags & PhongGL::Flag::DiffuseTexture ?
+            0xffffff_rgbf : 0x00ffff_rgbf);
+    materialData[1*data.uniformIncrement] = PhongMaterialUniform{}
+        .setDiffuseColor(data.flags & PhongGL::Flag::DiffuseTexture ?
+            0xffffff_rgbf : 0xffff00_rgbf);
+    GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
+
+    /* The shader has two lights hardcoded, so make sure the buffer can fit
+       2 items enough even though the last draw needs just one light. Not a
+       problem on desktop, but WebGL complains. */
+    Containers::Array<PhongLightUniform> lightData{2*data.uniformIncrement + 2};
+    lightData[0*data.uniformIncrement] = PhongLightUniform{}
+        .setPosition(Vector4{0.0f, 0.0f, 1.0f, 0.0f})
+        .setColor(data.flags & PhongGL::Flag::DiffuseTexture ?
+            0xffffff_rgbf : 0x00ffff_rgbf);
+    lightData[1*data.uniformIncrement + 0] = PhongLightUniform{}
+        .setPosition(Vector4{-3.0f, -3.0f, 2.0f, 0.0f})
+        .setColor(0x999999_rgbf)
+        .setSpecularColor(0xff0000_rgbf);
+    lightData[1*data.uniformIncrement + 1] = PhongLightUniform{}
+        .setPosition(Vector4{3.0f, -3.0f, 2.0f, 0.0f})
+        .setColor(0x999999_rgbf)
+        .setSpecularColor(0x00ff00_rgbf);
+    /* This will put the light to position 4 in case data.uniformIncrement is 1
+       and to an offset aligned to 256 if it's higher */
+    lightData[2*data.uniformIncrement + 1/data.uniformIncrement] = PhongLightUniform{}
+        .setPosition(Vector4{0.0f, 0.0f, 1.0f, 0.0f})
+        .setColor(data.flags & PhongGL::Flag::DiffuseTexture ?
+            0xffffff_rgbf : 0xff00ff_rgbf);
+    GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, lightData};
+
+    Containers::Array<TransformationUniform3D> transformationData{2*data.uniformIncrement + 1};
+    transformationData[0*data.uniformIncrement] = TransformationUniform3D{}
+        .setTransformationMatrix(
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f})*
+            Matrix4::translation({-1.25f, -1.25f, 0.0f})*
+            /* to test the normal matrix is applied properly */
+            Matrix4::rotationX(90.0_degf)
+        );
+    transformationData[1*data.uniformIncrement] = TransformationUniform3D{}
+        .setTransformationMatrix(
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f})*
+            Matrix4::translation({ 1.25f, -1.25f, 0.0f})
+        );
+    transformationData[2*data.uniformIncrement] = TransformationUniform3D{}
+        .setTransformationMatrix(
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f})*
+            Matrix4::translation({  0.0f,  1.0f, 1.0f})
+        );
+    GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, transformationData};
+
+    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::scaling(Vector2{0.5f})*
+            Matrix3::translation({0.0f, 0.0f})
+        );
+    textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::scaling(Vector2{0.5f})*
+            Matrix3::translation({1.0f, 0.0f})
+        );
+    textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            Matrix3::scaling(Vector2{0.5f})*
+            Matrix3::translation({0.5f, 1.0f})
+        );
+    GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
+
+    Containers::Array<PhongDrawUniform> drawData{2*data.uniformIncrement + 1};
+    /* Material / light offsets are zero if we have single draw, as those are
+       done with UBO offset bindings instead. */
+    drawData[0*data.uniformIncrement] = PhongDrawUniform{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setLightOffsetCount(data.drawCount == 1 ? 0 : 1, 2)
+        .setNormalMatrix(transformationData[0*data.uniformIncrement].transformationMatrix.normalMatrix())
+        .setObjectId(1211);
+    drawData[1*data.uniformIncrement] = PhongDrawUniform{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setLightOffsetCount(data.drawCount == 1 ? 0 : 3, 1)
+        .setNormalMatrix(transformationData[1*data.uniformIncrement].transformationMatrix.normalMatrix())
+        .setObjectId(5627);
+    drawData[2*data.uniformIncrement] = PhongDrawUniform{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setLightOffsetCount(data.drawCount == 1 ? 0 : 0, 1)
+        .setNormalMatrix(transformationData[2*data.uniformIncrement].transformationMatrix.normalMatrix())
+        .setObjectId(36363);
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    PhongGL shader{PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId|data.flags, data.lightCount, data.materialCount, data.drawCount};
+    shader.bindProjectionBuffer(projectionUniform);
+    if(data.flags & PhongGL::Flag::DiffuseTexture)
+        shader.bindDiffuseTexture(diffuse);
+
+    /* Just one draw, rebinding UBOs each time */
+    if(data.drawCount == 1) {
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(PhongMaterialUniform),
+            sizeof(PhongMaterialUniform));
+        shader.bindLightBuffer(lightUniform,
+            1*data.uniformIncrement*sizeof(PhongLightUniform),
+            2*sizeof(PhongLightUniform));
+        shader.bindTransformationBuffer(transformationUniform,
+            0*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            0*data.uniformIncrement*sizeof(PhongDrawUniform),
+            sizeof(PhongDrawUniform));
+        if(data.flags & PhongGL::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            0*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(sphere);
+
+        shader.bindMaterialBuffer(materialUniform,
+            0*data.uniformIncrement*sizeof(PhongMaterialUniform),
+            sizeof(PhongMaterialUniform));
+        shader.bindLightBuffer(lightUniform,
+            2*data.uniformIncrement*sizeof(PhongLightUniform),
+            2*sizeof(PhongLightUniform));
+        shader.bindTransformationBuffer(transformationUniform,
+            1*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            1*data.uniformIncrement*sizeof(PhongDrawUniform),
+            sizeof(PhongDrawUniform));
+        if(data.flags & PhongGL::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            1*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(plane);
+
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(PhongMaterialUniform),
+            sizeof(PhongMaterialUniform));
+        shader.bindLightBuffer(lightUniform,
+            0*data.uniformIncrement*sizeof(PhongLightUniform),
+            2*sizeof(PhongLightUniform));
+        shader.bindTransformationBuffer(transformationUniform,
+            2*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            2*data.uniformIncrement*sizeof(PhongDrawUniform),
+            sizeof(PhongDrawUniform));
+        if(data.flags & PhongGL::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            2*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
+        shader.draw(cone);
+
+    /* Otherwise using the draw offset */
+    } else {
+        shader.bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform);
+        if(data.flags & PhongGL::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
+        shader.setDrawOffset(0)
+            .draw(sphere);
+        shader.setDrawOffset(1)
+            .draw(plane);
+        shader.setDrawOffset(2)
+            .draw(cone);
+    }
+
+    /*
+        Colored case:
+
+        -   Sphere should be lower left, yellow with a white light with red and
+            green highlight on bottom left and right part
+        -   Plane lower right, cyan with a magenta light so blue
+        -   Cone up center, yellow with a cyan light so green
+
+        Textured case:
+
+        -   Sphere should have bottom left numbers, so light 7881, rotated (78
+            visible)
+        -   Plane bottom right, 1223
+        -   Cone 6778
+    */
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "PhongTestFiles", data.expected}),
+        (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
+
+    /* Object ID -- no need to verify the whole image, just check that pixels
+       on known places have expected values. SwiftShader insists that the read
+       format has to be 32bit, so the renderbuffer format is that too to make
+       it the same (ES3 Mesa complains if these don't match). */
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+        CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+        Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[5][5], 27); /* Outside */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], 1211); /* Sphere */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], 5627); /* Plane */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], 36363); /* Circle */
+    }
+}
+#endif
 
 }}}}
 

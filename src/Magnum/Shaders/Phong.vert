@@ -32,8 +32,13 @@
 #define out varying
 #endif
 
+#ifndef RUNTIME_CONST
+#define const
+#endif
+
 /* Uniforms */
 
+#ifndef UNIFORM_BUFFERS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -84,6 +89,92 @@ uniform highp vec4 lightPositions[LIGHT_COUNT]
     = vec4[](LIGHT_POSITION_INITIALIZER)
     #endif
     ;
+#endif
+
+/* Uniform buffers */
+
+#else
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform highp uint drawOffset
+    #ifndef GL_ES
+    = 0u
+    #endif
+    ;
+
+/* Keep in sync with Phong.frag. Can't "outsource" to a common file because
+   the #extension directive needs to be always before any code. */
+struct DrawUniform {
+    mediump mat3 normalMatrix; /* actually mat3x4 */
+    highp uvec4 materialIdReservedObjectIdLightOffsetLightCount;
+    #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCount.x
+    #define draw_objectId materialIdReservedObjectIdLightOffsetLightCount.y
+    #define draw_lightOffset materialIdReservedObjectIdLightOffsetLightCount.z
+    #define draw_lightCount materialIdReservedObjectIdLightOffsetLightCount.w
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 2
+    #endif
+) uniform Draw {
+    DrawUniform draws[DRAW_COUNT];
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 0
+    #endif
+) uniform Projection {
+    highp mat4 projectionMatrix;
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 1
+    #endif
+) uniform Transformation {
+    highp mat4 transformationMatrices[DRAW_COUNT];
+};
+
+#ifdef TEXTURE_TRANSFORMATION
+struct TextureTransformationUniform {
+    highp vec4 rotationScaling;
+    highp vec4 offsetReservedReserved;
+    #define textureTransformation_offset offsetReservedReserved.xy
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 3
+    #endif
+) uniform TextureTransformation {
+    TextureTransformationUniform textureTransformations[DRAW_COUNT];
+};
+#endif
+
+#if LIGHT_COUNT
+/* Keep in sync with Phong.frag. Can't "outsource" to a common file because
+   the #extension directive needs to be always before any code. */
+struct LightUniform {
+    highp vec4 position;
+    lowp vec3 colorReserved;
+    #define light_color colorReserved.xyz
+    lowp vec4 specularColorReserved;
+    #define light_specularColor specularColorReserved.xyz
+    lowp vec4 rangeReservedReservedReserved;
+    #define light_range rangeReservedReservedReserved.x
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 5
+    #endif
+) uniform Light {
+    LightUniform lights[LIGHT_COUNT];
+};
+#endif
 #endif
 
 /* Inputs */
@@ -183,6 +274,19 @@ out highp vec3 cameraDirection;
 #endif
 
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    highp const mat4 transformationMatrix = transformationMatrices[drawOffset];
+    #if LIGHT_COUNT
+    mediump const mat3 normalMatrix = draws[drawOffset].normalMatrix;
+    #endif
+    #ifdef TEXTURE_TRANSFORMATION
+    mediump const mat3 textureMatrix = mat3(textureTransformations[drawOffset].rotationScaling.xy, 0.0, textureTransformations[drawOffset].rotationScaling.zw, 0.0, textureTransformations[drawOffset].textureTransformation_offset, 1.0);
+    #endif
+    #if LIGHT_COUNT
+    mediump const uint lightOffset = draws[drawOffset].draw_lightOffset;
+    #endif
+    #endif
+
     /* Transformed vertex position */
     highp vec4 transformedPosition4 = transformationMatrix*
         #ifdef INSTANCED_TRANSFORMATION
@@ -221,8 +325,21 @@ void main() {
 
     /* Direction to the light. Directional lights have the last component set
        to 0, which gets used to ignore the transformed position. */
+    #ifndef UNIFORM_BUFFERS
     for(int i = 0; i < LIGHT_COUNT; ++i)
-        lightDirections[i] = vec4(lightPositions[i].xyz - transformedPosition*lightPositions[i].w, lightPositions[i].w);
+    #else
+    for(uint i = 0u, actualLightCount = min(uint(LIGHT_COUNT), draws[drawOffset].draw_lightCount); i < actualLightCount; ++i)
+    #endif
+    {
+        highp const vec4 lightPosition =
+            #ifndef UNIFORM_BUFFERS
+            lightPositions[i]
+            #else
+            lights[lightOffset + i].position
+            #endif
+            ;
+        lightDirections[i] = vec4(lightPosition.xyz - transformedPosition*lightPosition.w, lightPosition.w);
+    }
 
     /* Direction to the camera */
     cameraDirection = -transformedPosition;

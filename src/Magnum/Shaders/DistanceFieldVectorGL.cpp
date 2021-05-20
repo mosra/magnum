@@ -37,15 +37,55 @@
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 
+#ifndef MAGNUM_TARGET_GLES2
+#include <Corrade/Utility/FormatStl.h>
+
+#include "Magnum/GL/Buffer.h"
+#endif
+
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
 namespace Magnum { namespace Shaders {
 
 namespace {
     enum: Int { TextureUnit = 6 };
+
+    #ifndef MAGNUM_TARGET_GLES2
+    enum: Int {
+        /* Not using the zero binding to avoid conflicts with
+           ProjectionBufferBinding from other shaders which can likely stay
+           bound to the same buffer for the whole time */
+        TransformationProjectionBufferBinding = 1,
+        DrawBufferBinding = 2,
+        TextureTransformationBufferBinding = 3,
+        MaterialBufferBinding = 4
+    };
+    #endif
 }
 
-template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(const Flags flags): _flags{flags} {
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(const Flags flags
+    #ifndef MAGNUM_TARGET_GLES2
+    , const UnsignedInt materialCount, const UnsignedInt drawCount
+    #endif
+):
+    _flags{flags}
+    #ifndef MAGNUM_TARGET_GLES2
+    , _materialCount{materialCount},
+    _drawCount{drawCount}
+    #endif
+{
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
+        "Shaders::DistanceFieldVectorGL: material count can't be zero", );
+    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
+        "Shaders::DistanceFieldVectorGL: draw count can't be zero", );
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(flags >= Flag::UniformBuffers)
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
+    #endif
+
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumShadersGL"))
@@ -65,9 +105,27 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
     vert.addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
-        .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n")
-        .addSource(rs.get("generic.glsl"))
+        .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n");
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flags >= Flag::UniformBuffers) {
+        vert.addSource(Utility::formatString(
+            "#define UNIFORM_BUFFERS\n"
+            "#define DRAW_COUNT {}\n",
+            drawCount));
+    }
+    #endif
+    vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Vector.vert"));
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flags >= Flag::UniformBuffers) {
+        frag.addSource(Utility::formatString(
+            "#define UNIFORM_BUFFERS\n"
+            "#define MATERIAL_COUNT {}\n"
+            "#define DRAW_COUNT {}\n",
+            materialCount,
+            drawCount));
+    }
+    #endif
     frag.addSource(rs.get("generic.glsl"))
         .addSource(rs.get("DistanceFieldVector.frag"));
 
@@ -92,13 +150,20 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
-        _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-        if(flags & Flag::TextureTransformation)
-            _textureMatrixUniform = uniformLocation("textureMatrix");
-        _colorUniform = uniformLocation("color");
-        _outlineColorUniform = uniformLocation("outlineColor");
-        _outlineRangeUniform = uniformLocation("outlineRange");
-        _smoothnessUniform = uniformLocation("smoothness");
+        #ifndef MAGNUM_TARGET_GLES2
+        if(flags >= Flag::UniformBuffers) {
+            _drawOffsetUniform = uniformLocation("drawOffset");
+        } else
+        #endif
+        {
+            _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+            if(flags & Flag::TextureTransformation)
+                _textureMatrixUniform = uniformLocation("textureMatrix");
+            _colorUniform = uniformLocation("color");
+            _outlineColorUniform = uniformLocation("outlineColor");
+            _outlineRangeUniform = uniformLocation("outlineRange");
+            _smoothnessUniform = uniformLocation("smoothness");
+        }
     }
 
     #ifndef MAGNUM_TARGET_GLES
@@ -106,25 +171,54 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
     #endif
     {
         setUniform(uniformLocation("vectorTexture"), TextureUnit);
+        #ifndef MAGNUM_TARGET_GLES2
+        if(flags >= Flag::UniformBuffers) {
+            setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
+            if(flags & Flag::TextureTransformation)
+                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
+        }
+        #endif
     }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
-    setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
-    if(flags & Flag::TextureTransformation)
-        setTextureMatrix(Matrix3{Math::IdentityInit});
-    setColor(Color4{1.0f}); /* Outline color is zero by default */
-    setOutlineRange(0.5f, 1.0f);
-    setSmoothness(0.04f);
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flags >= Flag::UniformBuffers) {
+        /* Draw offset is zero by default */
+    } else
+    #endif
+    {
+        setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
+        if(flags & Flag::TextureTransformation)
+            setTextureMatrix(Matrix3{Math::IdentityInit});
+        setColor(Color4{1.0f});
+        /* Outline color is zero by default */
+        setOutlineRange(0.5f, 1.0f);
+        setSmoothness(0.04f);
+    }
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(const Flags flags): DistanceFieldVectorGL{flags, 1, 1} {}
+#endif
+
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::DistanceFieldVectorGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled", *this);
+    #endif
     setUniform(_transformationProjectionMatrixUniform, matrix);
     return *this;
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::setTextureMatrix(const Matrix3& matrix) {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::DistanceFieldVectorGL::setTextureMatrix(): the shader was created with uniform buffers enabled", *this);
+    #endif
     CORRADE_ASSERT(_flags & Flag::TextureTransformation,
         "Shaders::DistanceFieldVectorGL::setTextureMatrix(): the shader was not created with texture transformation enabled", *this);
     setUniform(_textureMatrixUniform, matrix);
@@ -132,24 +226,111 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFiel
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::setColor(const Color4& color) {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::DistanceFieldVectorGL::setColor(): the shader was created with uniform buffers enabled", *this);
+    #endif
     setUniform(_colorUniform, color);
     return *this;
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::setOutlineColor(const Color4& color) {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::DistanceFieldVectorGL::setOutlineColor(): the shader was created with uniform buffers enabled", *this);
+    #endif
     setUniform(_outlineColorUniform, color);
     return *this;
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::setOutlineRange(Float start, Float end) {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::DistanceFieldVectorGL::setOutlineRange(): the shader was created with uniform buffers enabled", *this);
+    #endif
     setUniform(_outlineRangeUniform, Vector2(start, end));
     return *this;
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::setSmoothness(Float value) {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::DistanceFieldVectorGL::setSmoothness(): the shader was created with uniform buffers enabled", *this);
+    #endif
     setUniform(_smoothnessUniform, value);
     return *this;
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::setDrawOffset(const UnsignedInt offset) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::DistanceFieldVectorGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(offset < _drawCount,
+        "Shaders::DistanceFieldVectorGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+    setUniform(_drawOffsetUniform, offset);
+    return *this;
+}
+
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindTransformationProjectionBuffer(GL::Buffer& buffer) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::DistanceFieldVectorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding);
+    return *this;
+}
+
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindTransformationProjectionBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::DistanceFieldVectorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding, offset, size);
+    return *this;
+}
+
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindDrawBuffer(GL::Buffer& buffer) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::DistanceFieldVectorGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding);
+    return *this;
+}
+
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindDrawBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::DistanceFieldVectorGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
+    return *this;
+}
+
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindTextureTransformationBuffer(GL::Buffer& buffer) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::DistanceFieldVectorGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(_flags & Flag::TextureTransformation,
+        "Shaders::DistanceFieldVectorGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding);
+    return *this;
+}
+
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindTextureTransformationBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::DistanceFieldVectorGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(_flags & Flag::TextureTransformation,
+        "Shaders::DistanceFieldVectorGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding, offset, size);
+    return *this;
+}
+
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindMaterialBuffer(GL::Buffer& buffer) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::DistanceFieldVectorGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding);
+    return *this;
+}
+
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindMaterialBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::DistanceFieldVectorGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
+    return *this;
+}
+#endif
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindVectorTexture(GL::Texture2D& texture) {
     texture.bind(TextureUnit);
@@ -168,6 +349,9 @@ Debug& operator<<(Debug& debug, const DistanceFieldVectorGLFlag value) {
         /* LCOV_EXCL_START */
         #define _c(v) case DistanceFieldVectorGLFlag::v: return debug << "::" #v;
         _c(TextureTransformation)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(UniformBuffers)
+        #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -177,8 +361,11 @@ Debug& operator<<(Debug& debug, const DistanceFieldVectorGLFlag value) {
 
 Debug& operator<<(Debug& debug, const DistanceFieldVectorGLFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "Shaders::DistanceFieldVectorGL::Flags{}", {
-        DistanceFieldVectorGLFlag::TextureTransformation
-        });
+        DistanceFieldVectorGLFlag::TextureTransformation,
+        #ifndef MAGNUM_TARGET_GLES2
+        DistanceFieldVectorGLFlag::UniformBuffers
+        #endif
+    });
 }
 
 }

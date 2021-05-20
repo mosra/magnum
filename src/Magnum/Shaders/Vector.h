@@ -25,26 +25,104 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
- * @brief Typedef @ref Magnum::Shaders::Vector, alias @ref Magnum::Shaders::Vector2D, @ref Magnum::Shaders::Vector3D
- * @m_deprecated_since_latest Use @ref Magnum/Shaders/VectorGL.h, the
- *      @ref Magnum::Shaders::VectorGL "VectorGL" class and
- *      related typedefs instead.
+ * @brief Struct @ref Magnum::Shaders::VectorDrawUniform
  */
-#endif
 
-#include "Magnum/configure.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Color.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Shaders/VectorGL.h"
-
-CORRADE_DEPRECATED_FILE("use Magnum/Shaders/VectorGL.h, the VectorGL class and related typedefs instead")
+#endif
 
 namespace Magnum { namespace Shaders {
 
+/**
+@brief Per-draw uniform for vector shaders
+@m_since_latest
+
+Together with the generic @ref TransformationProjectionUniform2D /
+@ref TransformationProjectionUniform3D contains parameters that are specific to
+each draw call. Texture transformation, if needed, is supplied separately in a
+@ref TextureTransformationUniform.
+@see @ref VectorGL::bindDrawBuffer()
+*/
+struct VectorDrawUniform {
+    /** @brief Construct with default parameters */
+    constexpr explicit VectorDrawUniform(DefaultInitT = DefaultInit) noexcept: color{1.0f, 1.0f, 1.0f, 1.0f}, backgroundColor{0.0f, 0.0f, 0.0f, 0.0f} {}
+
+    /** @brief Construct without initializing the contents */
+    explicit VectorDrawUniform(NoInitT) noexcept: color{NoInit}, backgroundColor{NoInit} {}
+
+    /** @{
+     * @name Convenience setters
+     *
+     * Provided to allow the use of method chaining for populating a structure
+     * in a single expression, otherwise equivalent to accessing the fields
+     * directly. Also guaranteed to provide backwards compatibility when
+     * packing of the actual fields changes.
+     */
+
+    /**
+     * @brief Set the @ref color field
+     * @return Reference to self (for method chaining)
+     */
+    VectorDrawUniform& setColor(const Color4& color) {
+        this->color = color;
+        return *this;
+    }
+
+    /**
+     * @brief Set the @ref backgroundColor field
+     * @return Reference to self (for method chaining)
+     */
+    VectorDrawUniform& setBackgroundColor(const Color4& color) {
+        backgroundColor = color;
+        return *this;
+    }
+
+    /**
+     * @}
+     */
+
+    /**
+     * @brief Fill color
+     *
+     * Default is @cpp 0xffffffff_rgbaf @ce.
+     * @see @ref VectorGL::setColor()
+     */
+    Color4 color;
+
+    /**
+     * @brief Background color
+     *
+     * Default is @cpp 0x00000000_rgbaf @ce.
+     * @see @ref VectorGL::setBackgroundColor()
+     */
+    Color4 backgroundColor;
+
+    /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
+       I MADE THOSE UNNAMED, YOU DUMB FOOL */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    /* This field is an UnsignedInt in the shader and skinOffset is extracted
+       as (value >> 16), so the order has to be different on BE */
+    #ifndef CORRADE_TARGET_BIG_ENDIAN
+    UnsignedShort:16;
+    UnsignedShort:16; /* reserved for skinOffset */
+    #else
+    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort:16;
+    #endif
+    Int:32; /* reserved for objectId */
+    Int:32; /* reserved for alphaMask */
+    Int:32;
+    #endif
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @brief @copybrief Shaders::VectorGL
  * @m_deprecated_since_latest Use @ref Shaders::VectorGL "VectorGL" instead.
  */
@@ -61,10 +139,8 @@ typedef CORRADE_DEPRECATED("use VectorGL2D instead") VectorGL2D Vector2D;
  * @m_deprecated_since_latest Use @ref VectorGL3D instead.
  */
 typedef CORRADE_DEPRECATED("use VectorGL3D instead") VectorGL3D Vector3D;
+#endif
 
 }}
-#else
-#error use Magnum/Shaders/VectorGL.h, the VectorGL class and related typedefs instead
-#endif
 
 #endif

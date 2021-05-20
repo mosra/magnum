@@ -36,12 +36,14 @@
 
 /* Uniforms */
 
+/* This one is for both classic and UBOs, as it's usually set globally instead
+   of changing per-draw */
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 5)
 #endif
 uniform lowp vec2 viewportSize; /* defaults to zero */
 
-
+#ifndef UNIFORM_BUFFERS
 #if (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)) && (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID))
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
@@ -80,6 +82,64 @@ uniform lowp float smoothness
     = 2.0
     #endif
     ;
+#endif
+
+/* Uniform buffers */
+
+#else
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform highp uint drawOffset
+    #ifndef GL_ES
+    = 0u
+    #endif
+    ;
+
+/* Keep in sync with MeshVisualizer.vert and MeshVisualizer.frag. Can't
+   "outsource" to a common file because the #extension directives need to be
+   always before any code. */
+struct DrawUniform {
+    #ifdef THREE_DIMENSIONS
+    highp mat3 normalMatrix; /* actually mat3x4 */
+    #elif !defined(TWO_DIMENSIONS)
+    #error
+    #endif
+    highp uvec4 materialIdReservedReservedReservedReserved;
+    #define draw_materialIdReserved materialIdReservedReservedReservedReserved.x
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 2
+    #endif
+) uniform Draw {
+    DrawUniform draws[DRAW_COUNT];
+};
+
+/* Keep in sync with MeshVisualizer.vert and MeshVisualizer.frag. Can't
+   "outsource" to a common file because the #extension directives need to be
+   always before any code. */
+struct MaterialUniform {
+    lowp vec4 color;
+    lowp vec4 wireframeColor;
+    lowp vec4 wireframeWidthColorMapOffsetColorMapScaleLineWidth;
+    #define material_wireframeWidth wireframeWidthColorMapOffsetColorMapScaleLineWidth.x
+    #define material_colorMapOffset wireframeWidthColorMapOffsetColorMapScaleLineWidth.y
+    #define material_colorMapScale wireframeWidthColorMapOffsetColorMapScaleLineWidth.z
+    #define material_lineWidth wireframeWidthColorMapOffsetColorMapScaleLineWidth.w
+    lowp vec4 lineLengthSmoothnessReservedReserved;
+    #define material_lineLength lineLengthSmoothnessReservedReserved.x
+    #define material_smoothness lineLengthSmoothnessReservedReserved.y
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 4
+    #endif
+) uniform Material {
+    MaterialUniform materials[MATERIAL_COUNT];
+};
 #endif
 
 /* Inputs */
@@ -130,7 +190,17 @@ flat out highp uint interpolatedPrimitiveId;
 out lowp vec4 backgroundColor;
 out lowp vec4 lineColor;
 
-void emitQuad(vec4 position, vec2 positionScreen, vec4 endpoint, vec2 endpointScreen) {
+void emitQuad(
+    #ifdef UNIFORM_BUFFERS
+    uint materialId,
+    #endif
+    vec4 position, vec2 positionScreen, vec4 endpoint, vec2 endpointScreen
+) {
+    #if defined(UNIFORM_BUFFERS) && (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION))
+    lowp const float lineWidth = materials[materialId].material_lineWidth;
+    lowp const float smoothness = materials[materialId].material_smoothness;
+    #endif
+
     /* Calculate screen-space locations for the bar vertices and form two
        triangles out of them. In case TBN is rendered alone, half bar width is
        lineWidth + smoothness to allow for antialiasing, in case it's rendered
@@ -184,6 +254,18 @@ void emitQuad(vec4 position, vec2 positionScreen, vec4 endpoint, vec2 endpointSc
 #endif
 
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    mediump const uint materialId = draws[drawOffset].draw_materialIdReserved & 0xffffu;
+    #if (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)) && (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID))
+    lowp const vec4 color = materials[materialId].color;
+    lowp const vec4 wireframeColor = materials[materialId].wireframeColor;
+    #endif
+    #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
+    lowp const float lineWidth = materials[materialId].material_lineWidth;
+    lowp const float smoothness = materials[materialId].material_smoothness;
+    #endif
+    #endif
+
     /* Passthrough for unchanged variables */
     #ifdef INSTANCED_OBJECT_ID
     interpolatedInstanceObjectId = interpolatedVsInstanceObjectId[0];
@@ -262,17 +344,32 @@ void main() {
     for(int i = 0; i != 3; ++i) {
         #ifdef TANGENT_DIRECTION
         lineColor = vec4(1.0, 0.0, 0.0, 1.0);
-        emitQuad(gl_in[i].gl_Position, p[i], tangentEndpoint[i], t[i]);
+        emitQuad(
+            #ifdef UNIFORM_BUFFERS
+            materialId,
+            #endif
+            gl_in[i].gl_Position, p[i], tangentEndpoint[i], t[i]
+        );
         #endif
 
         #ifdef BITANGENT_DIRECTION
         lineColor = vec4(0.0, 1.0, 0.0, 1.0);
-        emitQuad(gl_in[i].gl_Position, p[i], bitangentEndpoint[i], b[i]);
+        emitQuad(
+            #ifdef UNIFORM_BUFFERS
+            materialId,
+            #endif
+            gl_in[i].gl_Position, p[i], bitangentEndpoint[i], b[i]
+        );
         #endif
 
         #ifdef NORMAL_DIRECTION
         lineColor = vec4(0.0, 0.0, 1.0, 1.0);
-        emitQuad(gl_in[i].gl_Position, p[i], normalEndpoint[i], n[i]);
+        emitQuad(
+            #ifdef UNIFORM_BUFFERS
+            materialId,
+            #endif
+            gl_in[i].gl_Position, p[i], normalEndpoint[i], n[i]
+        );
         #endif
     }
     #endif

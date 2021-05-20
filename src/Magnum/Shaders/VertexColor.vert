@@ -28,8 +28,13 @@
 #define out varying
 #endif
 
+#ifndef RUNTIME_CONST
+#define const
+#endif
+
 /* Uniforms */
 
+#ifndef UNIFORM_BUFFERS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -47,6 +52,35 @@ uniform highp mat4 transformationProjectionMatrix
     ;
 #else
 #error
+#endif
+
+/* Uniform buffers */
+
+#else
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform highp uint drawOffset
+    #ifndef GL_ES
+    = 0u
+    #endif
+    ;
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 1
+    #endif
+) uniform TransformationProjection {
+    highp
+        #ifdef TWO_DIMENSIONS
+        mat3
+        #elif defined(THREE_DIMENSIONS)
+        mat4
+        #else
+        #error
+        #endif
+    transformationProjectionMatrices[DRAW_COUNT];
+};
 #endif
 
 /* Inputs */
@@ -72,6 +106,18 @@ in lowp vec4 color;
 out lowp vec4 interpolatedColor;
 
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    highp const
+        #ifdef TWO_DIMENSIONS
+        mat3
+        #elif defined(THREE_DIMENSIONS)
+        mat4
+        #else
+        #error
+        #endif
+        transformationProjectionMatrix = transformationProjectionMatrices[drawOffset];
+    #endif
+
     #ifdef TWO_DIMENSIONS
     gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);
     #elif defined(THREE_DIMENSIONS)

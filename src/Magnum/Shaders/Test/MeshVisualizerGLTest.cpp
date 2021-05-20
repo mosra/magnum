@@ -61,6 +61,17 @@
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
 
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/MeshView.h"
+#include "Magnum/MeshTools/Concatenate.h"
+#include "Magnum/MeshTools/GenerateIndices.h"
+#include "Magnum/Primitives/Cone.h"
+#include "Magnum/Primitives/Plane.h"
+#include "Magnum/Primitives/Square.h"
+#include "Magnum/Shaders/Generic.h"
+#include "Magnum/Shaders/MeshVisualizer.h"
+#endif
+
 #include "configure.h"
 
 namespace Magnum { namespace Shaders { namespace Test { namespace {
@@ -69,14 +80,38 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     explicit MeshVisualizerGLTest();
 
     void construct2D();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructUniformBuffers2D();
+    #endif
     void construct3D();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructUniformBuffers3D();
+    #endif
 
     void construct2DInvalid();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructUniformBuffers2DInvalid();
+    #endif
     void construct3DInvalid();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructUniformBuffers3DInvalid();
+    #endif
 
     void constructMove2D();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructMoveUniformBuffers2D();
+    #endif
     void constructMove3D();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructMoveUniformBuffers3D();
+    #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    void setUniformUniformBuffersEnabled2D();
+    void setUniformUniformBuffersEnabled3D();
+    void bindBufferUniformBuffersNotEnabled2D();
+    void bindBufferUniformBuffersNotEnabled3D();
+    #endif
     void setWireframeNotEnabled2D();
     void setWireframeNotEnabled3D();
     #ifndef MAGNUM_TARGET_GLES2
@@ -86,34 +121,44 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void setTangentBitangentNormalNotEnabled3D();
     #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void setWrongDrawOffset2D();
+    void setWrongDrawOffset3D();
+    #endif
 
     void renderSetup();
     void renderTeardown();
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void renderDefaultsWireframe2D();
-    void renderDefaultsWireframe3D();
+    template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderDefaultsWireframe2D();
+    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderDefaultsWireframe3D();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
-    void renderDefaultsObjectId2D();
-    void renderDefaultsObjectId3D();
-    void renderDefaultsVertexId2D();
-    void renderDefaultsVertexId3D();
-    void renderDefaultsPrimitiveId2D();
-    void renderDefaultsPrimitiveId3D();
+    template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderDefaultsObjectId2D();
+    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderDefaultsObjectId3D();
+    template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderDefaultsVertexId2D();
+    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderDefaultsVertexId3D();
+    template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderDefaultsPrimitiveId2D();
+    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderDefaultsPrimitiveId3D();
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void renderDefaultsTangentBitangentNormal();
+    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderDefaultsTangentBitangentNormal();
     #endif
-    void renderWireframe2D();
-    void renderWireframe3D();
+    template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderWireframe2D();
+    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderWireframe3D();
     #ifndef MAGNUM_TARGET_GLES2
-    void renderObjectVertexPrimitiveId2D();
-    void renderObjectVertexPrimitiveId3D();
+    template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderObjectVertexPrimitiveId2D();
+    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderObjectVertexPrimitiveId3D();
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* This tests something that's irrelevant to UBOs */
     void renderWireframe3DPerspective();
-    void renderTangentBitangentNormal();
+    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderTangentBitangentNormal();
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    void renderMulti2D();
+    void renderMulti3D();
     #endif
 
     private:
@@ -146,6 +191,8 @@ constexpr struct {
     const char* name;
     MeshVisualizerGL2D::Flags flags;
 } ConstructData2D[] {
+    /* Whatever is added here should probably go also into
+       ConstructUniformBuffersData2D */
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"wireframe", MeshVisualizerGL2D::Flag::Wireframe},
     #endif
@@ -160,10 +207,36 @@ constexpr struct {
     #endif
 };
 
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    MeshVisualizerGL2D::Flags flags;
+    UnsignedInt materialCount, drawCount;
+} ConstructUniformBuffersData2D[] {
+    {"classic fallback", MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 1},
+    {"", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 1},
+    {"multiple materials, draws", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 64, 128},
+    /* The rest is basically a copy of ConstructData2D with UniformBuffers
+       added */
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"wireframe", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe, 1, 1},
+    #endif
+    {"wireframe w/o GS", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 1},
+    {"object ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::InstancedObjectId, 1, 1},
+    {"vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::VertexId, 1, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"primitive ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::PrimitiveId, 1, 1},
+    #endif
+    {"primitive ID from vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId, 1, 1}
+};
+#endif
+
 constexpr struct {
     const char* name;
     MeshVisualizerGL3D::Flags flags;
 } ConstructData3D[] {
+    /* Whatever is added here should probably go also into
+       ConstructUniformBuffersData3D */
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"wireframe", MeshVisualizerGL3D::Flag::Wireframe},
     #endif
@@ -190,6 +263,42 @@ constexpr struct {
     #endif
 };
 
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    MeshVisualizerGL3D::Flags flags;
+    UnsignedInt materialCount, drawCount;
+} ConstructUniformBuffersData3D[] {
+    {"classic fallback", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 1, 1},
+    {"", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 1, 1},
+    {"multiple materials, draws", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 64, 128},
+    /* The rest is basically a copy of ConstructData2D with UniformBuffers
+       added */
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"wireframe", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe, 1, 1},
+    #endif
+    {"wireframe w/o GS", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 1, 1},
+    {"object ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::InstancedObjectId, 1, 1},
+    {"vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::VertexId, 1, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"primitive ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::PrimitiveId, 1, 1},
+    #endif
+    {"primitive ID from vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId, 1, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"tangent direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::TangentDirection, 1, 1},
+    {"bitangent direction from tangent", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection, 1, 1},
+    {"bitangent direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::BitangentDirection, 1, 1},
+    {"normal direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
+    {"tbn direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
+    {"tbn direction with bitangent from tangent", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
+    {"wireframe + vertex id", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId, 1, 1},
+    {"wireframe + t/n direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
+    {"wireframe + object id + t/n direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
+    {"wireframe + vertex id + t/b direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection, 1, 1}
+    #endif
+};
+#endif
+
 constexpr struct {
     const char* name;
     MeshVisualizerGL2D::Flags flags;
@@ -212,6 +321,20 @@ constexpr struct {
         ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"}
     #endif
 };
+
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    MeshVisualizerGL2D::Flags flags;
+    UnsignedInt materialCount, drawCount;
+    const char* message;
+} ConstructUniformBuffersInvalidData2D[] {
+    {"zero draws", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 0,
+        "draw count can't be zero"},
+    {"zero materials", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 0, 1,
+        "material count can't be zero"}
+};
+#endif
 
 constexpr struct {
     const char* name;
@@ -243,6 +366,20 @@ constexpr struct {
         "3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive"}
     #endif
 };
+
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    MeshVisualizerGL3D::Flags flags;
+    UnsignedInt materialCount, drawCount;
+    const char* message;
+} ConstructUniformBuffersInvalidData3D[] {
+    {"zero draws", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 1, 0,
+        "draw count can't be zero"},
+    {"zero materials", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 0, 1,
+        "material count can't be zero"},
+};
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 constexpr struct {
@@ -401,42 +538,168 @@ constexpr struct {
 };
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    const char* expected;
+    MeshVisualizerGL2D::Flags flags;
+    UnsignedInt materialCount, drawCount;
+    UnsignedInt uniformIncrement;
+    Float maxThreshold, meanThreshold;
+} RenderMultiData2D[] {
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, wireframe", "multidraw-wireframe2D.tga",
+        MeshVisualizerGL2D::Flag::Wireframe,
+        1, 1, 16, 0.0f, 0.0f},
+    #endif
+    {"bind with offset, w/o GS", "multidraw-wireframe-nogeo2D.tga",
+        MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
+        1, 1, 16, 0.0f, 0.0f},
+    {"bind with offset, vertex ID", "multidraw-vertexid2D.tga",
+        MeshVisualizerGL2D::Flag::VertexId,
+        1, 1, 16, 0.0f, 0.0f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, wireframe", "multidraw-wireframe2D.tga",
+        MeshVisualizerGL2D::Flag::Wireframe,
+        2, 3, 1, 0.0f, 0.0f},
+    #endif
+    {"draw offset, wireframe w/o GS", "multidraw-wireframe-nogeo2D.tga",
+        MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
+        2, 3, 1, 0.0f, 0.0f},
+    {"draw offset, vertex ID", "multidraw-vertexid2D.tga",
+        MeshVisualizerGL2D::Flag::VertexId,
+        2, 3, 1, 0.0f, 0.0f}
+};
+
+constexpr struct {
+    const char* name;
+    const char* expected;
+    MeshVisualizerGL3D::Flags flags;
+    UnsignedInt materialCount, drawCount;
+    UnsignedInt uniformIncrement;
+    Float maxThreshold, meanThreshold;
+} RenderMultiData3D[] {
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, wireframe", "multidraw-wireframe3D.tga",
+        MeshVisualizerGL3D::Flag::Wireframe,
+        1, 1, 16, 0.0f, 0.0f},
+    {"bind with offset, wireframe + TBN", "multidraw-wireframe-tbn3D.tga",
+        MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
+        1, 1, 16, 0.0f, 0.0f},
+    #endif
+    {"bind with offset, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
+        MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
+        1, 1, 16, 0.0f, 0.0f},
+    {"bind with offset, vertex ID", "multidraw-vertexid3D.tga",
+        MeshVisualizerGL3D::Flag::VertexId,
+        1, 1, 16, 0.0f, 0.0f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, wireframe", "multidraw-wireframe3D.tga",
+        MeshVisualizerGL3D::Flag::Wireframe,
+        2, 3, 1, 0.0f, 0.0f},
+    {"draw offset, wireframe + TBN", "multidraw-wireframe-tbn3D.tga",
+        MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
+        2, 3, 1, 0.0f, 0.0f},
+    #endif
+    {"draw offset, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
+        MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
+        2, 3, 1, 0.0f, 0.0f},
+    {"draw offset, vertex ID", "multidraw-vertexid3D.tga",
+        MeshVisualizerGL3D::Flag::VertexId,
+        2, 3, 1, 0.0f, 0.0f}
+};
+#endif
+
 MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addInstancedTests({&MeshVisualizerGLTest::construct2D},
         Containers::arraySize(ConstructData2D));
 
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&MeshVisualizerGLTest::constructUniformBuffers2D},
+        Containers::arraySize(ConstructUniformBuffersData2D));
+    #endif
+
     addInstancedTests({&MeshVisualizerGLTest::construct3D},
         Containers::arraySize(ConstructData3D));
 
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&MeshVisualizerGLTest::constructUniformBuffers3D},
+        Containers::arraySize(ConstructUniformBuffersData3D));
+    #endif
+
     addInstancedTests({&MeshVisualizerGLTest::construct2DInvalid},
         Containers::arraySize(ConstructInvalidData2D));
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&MeshVisualizerGLTest::constructUniformBuffers2DInvalid},
+        Containers::arraySize(ConstructUniformBuffersInvalidData2D));
+    #endif
+
     addInstancedTests({&MeshVisualizerGLTest::construct3DInvalid},
         Containers::arraySize(ConstructInvalidData3D));
 
-    addTests({&MeshVisualizerGLTest::constructMove2D,
-              &MeshVisualizerGLTest::constructMove3D,
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&MeshVisualizerGLTest::constructUniformBuffers3DInvalid},
+        Containers::arraySize(ConstructUniformBuffersInvalidData3D));
+    #endif
 
-              &MeshVisualizerGLTest::setWireframeNotEnabled2D,
-              &MeshVisualizerGLTest::setWireframeNotEnabled3D,
-              #ifndef MAGNUM_TARGET_GLES2
-              &MeshVisualizerGLTest::setColorMapNotEnabled2D,
-              &MeshVisualizerGLTest::setColorMapNotEnabled3D,
-              #endif
-              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-              &MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D,
-              #endif
-              });
+    addTests({
+        &MeshVisualizerGLTest::constructMove2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::constructMoveUniformBuffers2D,
+        #endif
+        &MeshVisualizerGLTest::constructMove3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::constructMoveUniformBuffers3D,
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D,
+        &MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D,
+        &MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D,
+        &MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D,
+        #endif
+        &MeshVisualizerGLTest::setWireframeNotEnabled2D,
+        &MeshVisualizerGLTest::setWireframeNotEnabled3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::setColorMapNotEnabled2D,
+        &MeshVisualizerGLTest::setColorMapNotEnabled3D,
+        #endif
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        &MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::setWrongDrawOffset2D,
+        &MeshVisualizerGLTest::setWrongDrawOffset3D
+        #endif
+        });
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    addTests({&MeshVisualizerGLTest::renderDefaultsWireframe2D,
-              &MeshVisualizerGLTest::renderDefaultsWireframe3D},
+    addTests({
+        &MeshVisualizerGLTest::renderDefaultsWireframe2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderDefaultsWireframe2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #endif
+        &MeshVisualizerGLTest::renderDefaultsWireframe3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderDefaultsWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #endif
+        },
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    addInstancedTests({&MeshVisualizerGLTest::renderDefaultsObjectId2D,
-                       &MeshVisualizerGLTest::renderDefaultsObjectId3D},
+    addInstancedTests({
+        &MeshVisualizerGLTest::renderDefaultsObjectId2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderDefaultsObjectId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #endif
+        &MeshVisualizerGLTest::renderDefaultsObjectId3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderDefaultsObjectId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #endif
+        },
         Containers::arraySize(ObjectIdDefaultsData),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
@@ -445,30 +708,63 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     #ifndef MAGNUM_TARGET_GLES2
     addTests({
         &MeshVisualizerGLTest::renderDefaultsVertexId2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderDefaultsVertexId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #endif
         &MeshVisualizerGLTest::renderDefaultsVertexId3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderDefaultsVertexId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #endif
         &MeshVisualizerGLTest::renderDefaultsPrimitiveId2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderDefaultsPrimitiveId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #endif
         &MeshVisualizerGLTest::renderDefaultsPrimitiveId3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderDefaultsPrimitiveId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #endif
         #ifndef MAGNUM_TARGET_WEBGL
-        &MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal
+        &MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #endif
         #endif
         },
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
 
-    addInstancedTests({&MeshVisualizerGLTest::renderWireframe2D},
+    addInstancedTests({
+        &MeshVisualizerGLTest::renderWireframe2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderWireframe2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #endif
+        },
         Containers::arraySize(WireframeData2D),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
 
-    addInstancedTests({&MeshVisualizerGLTest::renderWireframe3D},
+    addInstancedTests({
+        &MeshVisualizerGLTest::renderWireframe3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #endif
+        },
         Containers::arraySize(WireframeData3D),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
-    addInstancedTests({&MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D,
-                       &MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D},
+    addInstancedTests({
+        &MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #endif
+        &MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #endif
+        },
         Containers::arraySize(ObjectVertexPrimitiveIdData),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
@@ -479,8 +775,25 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
 
-    addInstancedTests({&MeshVisualizerGLTest::renderTangentBitangentNormal},
+    addInstancedTests({
+        &MeshVisualizerGLTest::renderTangentBitangentNormal,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderTangentBitangentNormal<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #endif
+        },
         Containers::arraySize(TangentBitangentNormalData),
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&MeshVisualizerGLTest::renderMulti2D},
+        Containers::arraySize(RenderMultiData2D),
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+
+    addInstancedTests({&MeshVisualizerGLTest::renderMulti3D},
+        Containers::arraySize(RenderMultiData3D),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -582,6 +895,72 @@ void MeshVisualizerGLTest::construct2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::constructUniformBuffers2D() {
+    auto&& data = ConstructUniformBuffersData2D[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & MeshVisualizerGL2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL300)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
+        #endif
+    ) CORRADE_SKIP("gl_VertexID not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags & MeshVisualizerGL2D::Flag::PrimitiveId && !(data.flags >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId) &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL320)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES320)
+        #endif
+    ) CORRADE_SKIP("gl_PrimitiveID not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if((data.flags & MeshVisualizerGL2D::Flag::Wireframe) && !(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES
+        if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+            CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
+        #endif
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.flags & MeshVisualizerGL2D::Flag::UniformBuffers && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    MeshVisualizerGL2D shader{data.flags, data.materialCount, data.drawCount};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(shader.id());
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
+
 void MeshVisualizerGLTest::construct3D() {
     auto&& data = ConstructData3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -641,6 +1020,72 @@ void MeshVisualizerGLTest::construct3D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::constructUniformBuffers3D() {
+    auto&& data = ConstructUniformBuffersData3D[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & MeshVisualizerGL3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL300)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
+        #endif
+    ) CORRADE_SKIP("gl_VertexID not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags & MeshVisualizerGL3D::Flag::PrimitiveId && !(data.flags >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId) &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL320)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES320)
+        #endif
+    ) CORRADE_SKIP("gl_PrimitiveID not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(((data.flags & MeshVisualizerGL3D::Flag::Wireframe) && !(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)) || (data.flags & (MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection))) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES
+        if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+            CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
+        #endif
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.flags & MeshVisualizerGL3D::Flag::UniformBuffers && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    MeshVisualizerGL3D shader{data.flags, data.materialCount, data.drawCount};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(shader.id());
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
+
 void MeshVisualizerGLTest::construct2DInvalid() {
     auto&& data = ConstructInvalidData2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -655,6 +1100,27 @@ void MeshVisualizerGLTest::construct2DInvalid() {
     CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL{}\n", data.message));
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::constructUniformBuffers2DInvalid() {
+    auto&& data = ConstructUniformBuffersInvalidData2D[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshVisualizerGL2D{data.flags, data.materialCount, data.drawCount};
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL2D: {}\n", data.message));
+}
+#endif
+
 void MeshVisualizerGLTest::construct3DInvalid() {
     auto&& data = ConstructInvalidData3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -668,6 +1134,27 @@ void MeshVisualizerGLTest::construct3DInvalid() {
     MeshVisualizerGL3D{data.flags};
     CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL{}\n", data.message));
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::constructUniformBuffers3DInvalid() {
+    auto&& data = ConstructUniformBuffersInvalidData3D[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshVisualizerGL3D{data.flags, data.materialCount, data.drawCount};
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL3D: {}\n", data.message));
+}
+#endif
 
 void MeshVisualizerGLTest::constructMove2D() {
     MeshVisualizerGL2D a{MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader};
@@ -688,6 +1175,36 @@ void MeshVisualizerGLTest::constructMove2D() {
     CORRADE_VERIFY(!b.id());
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::constructMoveUniformBuffers2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    MeshVisualizerGL2D a{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 2, 5};
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    MeshVisualizerGL2D b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_COMPARE(b.flags(), MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(b.materialCount(), 2);
+    CORRADE_COMPARE(b.drawCount(), 5);
+    CORRADE_VERIFY(!a.id());
+
+    MeshVisualizerGL2D c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_COMPARE(c.flags(), MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(c.materialCount(), 2);
+    CORRADE_COMPARE(c.drawCount(), 5);
+    CORRADE_VERIFY(!b.id());
+}
+#endif
+
 void MeshVisualizerGLTest::constructMove3D() {
     MeshVisualizerGL3D a{MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader};
     const GLuint id = a.id();
@@ -706,6 +1223,171 @@ void MeshVisualizerGLTest::constructMove3D() {
     CORRADE_COMPARE(c.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_VERIFY(!b.id());
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::constructMoveUniformBuffers3D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    MeshVisualizerGL3D a{MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 2, 5};
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    MeshVisualizerGL3D b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_COMPARE(b.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(b.materialCount(), 2);
+    CORRADE_COMPARE(b.drawCount(), 5);
+    CORRADE_VERIFY(!a.id());
+
+    MeshVisualizerGL3D c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_COMPARE(c.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(c.materialCount(), 2);
+    CORRADE_COMPARE(c.drawCount(), 5);
+    CORRADE_VERIFY(!b.id());
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader};
+    shader.setTransformationProjectionMatrix({})
+        /* setViewportSize() works on both UBOs and classic */
+        .setColor({})
+        .setWireframeColor({})
+        .setWireframeWidth({})
+        .setColorMapTransformation({}, {})
+        .setSmoothness({});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL2D::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setColor(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setWireframeColor(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setWireframeWidth(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setColorMapTransformation(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL2D::setSmoothness(): the shader was created with uniform buffers enabled\n");
+}
+
+void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader};
+    shader.setProjectionMatrix({})
+        .setTransformationMatrix({})
+        /* setViewportSize() works on both UBOs and classic */
+        .setColor({})
+        .setWireframeColor({})
+        .setWireframeWidth({})
+        .setColorMapTransformation({}, {})
+        .setSmoothness({});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL3D::setProjectionMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL3D::setTransformationMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setColor(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setWireframeColor(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setWireframeWidth(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setColorMapTransformation(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL3D::setSmoothness(): the shader was created with uniform buffers enabled\n");
+
+    out.str({});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    shader
+        .setNormalMatrix({})
+        .setLineWidth({})
+        .setLineLength({});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL3D::setNormalMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL3D::setLineWidth(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL3D::setLineLength(): the shader was created with uniform buffers enabled\n");
+    #endif
+}
+
+void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Buffer buffer;
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader};
+    shader.bindTransformationProjectionBuffer(buffer)
+          .bindTransformationProjectionBuffer(buffer, 0, 16)
+          .bindDrawBuffer(buffer)
+          .bindDrawBuffer(buffer, 0, 16)
+          .bindMaterialBuffer(buffer)
+          .bindMaterialBuffer(buffer, 0, 16)
+          .setDrawOffset(0);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL2D::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL2D::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL2D::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL2D::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
+}
+
+void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Buffer buffer;
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader};
+    shader.bindProjectionBuffer(buffer)
+          .bindProjectionBuffer(buffer, 0, 16)
+          .bindTransformationBuffer(buffer)
+          .bindTransformationBuffer(buffer, 0, 16)
+          .bindDrawBuffer(buffer)
+          .bindDrawBuffer(buffer, 0, 16)
+          .bindMaterialBuffer(buffer)
+          .bindMaterialBuffer(buffer, 0, 16)
+          .setDrawOffset(0);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL3D::bindProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL3D::bindProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL3D::bindTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL3D::bindTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL3D::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL3D::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
+}
+#endif
 
 void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
     #ifdef CORRADE_NO_ASSERT
@@ -843,6 +1525,44 @@ void MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D() {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::setWrongDrawOffset2D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshVisualizerGL2D{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 2, 5}
+        .setDrawOffset(5);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
+}
+
+void MeshVisualizerGLTest::setWrongDrawOffset3D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 2, 5}
+        .setDrawOffset(5);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
+}
+#endif
+
 constexpr Vector2i RenderSize{80, 80};
 
 void MeshVisualizerGLTest::renderSetup() {
@@ -880,7 +1600,16 @@ void MeshVisualizerGLTest::renderTeardown() {
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void MeshVisualizerGLTest::renderDefaultsWireframe2D() {
+template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsWireframe2D() {
+    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
@@ -896,8 +1625,26 @@ void MeshVisualizerGLTest::renderDefaultsWireframe2D() {
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(16));
 
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::Wireframe};
-    shader.draw(circle);
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::Wireframe|flag};
+
+    if(flag == MeshVisualizerGL2D::Flag{}) {
+        shader.draw(circle);
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform2D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(circle);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -915,9 +1662,26 @@ void MeshVisualizerGLTest::renderDefaultsWireframe2D() {
     }
 
     /** @todo make this unnecessary */
-    shader
-        .setViewportSize({80, 80})
-        .draw(circle);
+    shader.setViewportSize({80, 80});
+
+    if(flag == MeshVisualizerGL2D::Flag{}) {
+        shader.draw(circle);
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform2D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(circle);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -929,7 +1693,16 @@ void MeshVisualizerGLTest::renderDefaultsWireframe2D() {
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.082f}));
 }
 
-void MeshVisualizerGLTest::renderDefaultsWireframe3D() {
+template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsWireframe3D() {
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
@@ -945,8 +1718,30 @@ void MeshVisualizerGLTest::renderDefaultsWireframe3D() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::icosphereSolid(1));
 
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::Wireframe};
-    shader.draw(sphere);
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::Wireframe|flag};
+
+    if(flag == MeshVisualizerGL3D::Flag{}) {
+        shader.draw(sphere);
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform3D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(sphere);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -964,9 +1759,30 @@ void MeshVisualizerGLTest::renderDefaultsWireframe3D() {
     }
 
     /** @todo make this unnecessary */
-    shader
-        .setViewportSize({80, 80})
-        .draw(sphere);
+    shader.setViewportSize({80, 80});
+
+    if(flag == MeshVisualizerGL3D::Flag{}) {
+        shader.draw(sphere);
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform3D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(sphere);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -980,9 +1796,18 @@ void MeshVisualizerGLTest::renderDefaultsWireframe3D() {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
+template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
     auto&& data = ObjectIdDefaultsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -1011,9 +1836,27 @@ void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
                 Containers::arrayView(ids)}
         }));
 
-    MeshVisualizerGL2D{MeshVisualizerGL2D::Flag::InstancedObjectId}
-        .bindColorMapTexture(colorMapTexture)
-        .draw(circle);
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::InstancedObjectId|flag};
+    shader.bindColorMapTexture(colorMapTexture);
+
+    if(flag == MeshVisualizerGL2D::Flag{}) {
+        shader.draw(circle);
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform2D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(circle);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1029,9 +1872,18 @@ void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
         (DebugTools::CompareImageToFile{_manager, 150.67f, 0.45f}));
 }
 
-void MeshVisualizerGLTest::renderDefaultsObjectId3D() {
+template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsObjectId3D() {
     auto&& data = ObjectIdDefaultsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -1060,9 +1912,31 @@ void MeshVisualizerGLTest::renderDefaultsObjectId3D() {
                 Containers::arrayView(ids)}
         }));
 
-    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::InstancedObjectId}
-        .bindColorMapTexture(colorMapTexture)
-        .draw(icosphere);
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::InstancedObjectId|flag};
+    shader.bindColorMapTexture(colorMapTexture);
+
+    if(flag == MeshVisualizerGL3D::Flag{}) {
+        shader.draw(icosphere);
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform3D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(icosphere);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1078,7 +1952,16 @@ void MeshVisualizerGLTest::renderDefaultsObjectId3D() {
         (DebugTools::CompareImageToFile{_manager, 150.67f, 0.165f}));
 }
 
-void MeshVisualizerGLTest::renderDefaultsVertexId2D() {
+template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsVertexId2D() {
+    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1087,9 +1970,29 @@ void MeshVisualizerGLTest::renderDefaultsVertexId2D() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         CORRADE_SKIP("gl_VertexID not supported");
 
-    MeshVisualizerGL2D{MeshVisualizerGL2D::Flag::VertexId}
-        .bindColorMapTexture(_colorMapTexture)
-        .draw(MeshTools::compile(Primitives::circle2DSolid(16)));
+    GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(16));
+
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::VertexId|flag};
+    shader.bindColorMapTexture(_colorMapTexture);
+
+    if(flag == MeshVisualizerGL2D::Flag{}) {
+        shader.draw(circle);
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform2D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(circle);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1100,7 +2003,16 @@ void MeshVisualizerGLTest::renderDefaultsVertexId2D() {
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.017f}));
 }
 
-void MeshVisualizerGLTest::renderDefaultsVertexId3D() {
+template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsVertexId3D() {
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1109,9 +2021,33 @@ void MeshVisualizerGLTest::renderDefaultsVertexId3D() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         CORRADE_SKIP("gl_VertexID not supported");
 
-    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::VertexId}
-        .bindColorMapTexture(_colorMapTexture)
-        .draw(MeshTools::compile(Primitives::icosphereSolid(0)));
+    GL::Mesh icosphere = MeshTools::compile(Primitives::icosphereSolid(0));
+
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::VertexId|flag};
+    shader.bindColorMapTexture(_colorMapTexture);
+
+    if(flag == MeshVisualizerGL3D::Flag{}) {
+        shader.draw(icosphere);
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform3D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(icosphere);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1122,7 +2058,16 @@ void MeshVisualizerGLTest::renderDefaultsVertexId3D() {
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.012f}));
 }
 
-void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
+template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
+    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1160,9 +2105,29 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
     if(flags >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId)
         circleData = MeshTools::duplicate(MeshTools::generateIndices(circleData));
 
-    MeshVisualizerGL2D{flags}
-        .bindColorMapTexture(_colorMapTexture)
-        .draw(MeshTools::compile(circleData));
+    GL::Mesh circle = MeshTools::compile(circleData);
+
+    MeshVisualizerGL2D shader{flags|flag};
+    shader.bindColorMapTexture(_colorMapTexture);
+
+    if(flag == MeshVisualizerGL2D::Flag{}) {
+        shader.draw(circle);
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform2D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(circle);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1174,7 +2139,16 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
         (DebugTools::CompareImageToFile{_manager, 76.67f, 0.23f}));
 }
 
-void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
+template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1212,9 +2186,33 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
     if(flags >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId)
         icosphereData = MeshTools::duplicate(icosphereData);
 
-    MeshVisualizerGL3D{flags}
-        .bindColorMapTexture(_colorMapTexture)
-        .draw(MeshTools::compile(icosphereData));
+    GL::Mesh icosphere = MeshTools::compile(icosphereData);
+
+    MeshVisualizerGL3D shader{flags|flag};
+    shader.bindColorMapTexture(_colorMapTexture);
+
+    if(flag == MeshVisualizerGL3D::Flag{}) {
+        shader.draw(icosphere);
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform3D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(icosphere);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1228,7 +2226,16 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal() {
+template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal() {
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
@@ -1240,11 +2247,34 @@ void MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(4, 8,
         Primitives::UVSphereFlag::Tangents));
 
-    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::TangentDirection|
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::TangentDirection|
             MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|
-            MeshVisualizerGL3D::Flag::NormalDirection}
-        .setViewportSize({80, 80}) /** @todo make this unnecessary */
-        .draw(sphere);
+            MeshVisualizerGL3D::Flag::NormalDirection|flag};
+    /** @todo make this unnecessary */
+    shader.setViewportSize({80, 80});
+
+    if(flag == MeshVisualizerGL3D::Flag{}) {
+        shader.draw(sphere);
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform3D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(sphere);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1263,9 +2293,20 @@ void MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal() {
 }
 #endif
 
-void MeshVisualizerGLTest::renderWireframe2D() {
+template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWireframe2D() {
     auto&& data = WireframeData2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
@@ -1305,14 +2346,42 @@ void MeshVisualizerGLTest::renderWireframe2D() {
         }
     } else circle = MeshTools::compile(circleData);
 
-    MeshVisualizerGL2D{data.flags|MeshVisualizerGL2D::Flag::Wireframe}
-        .setColor(0xffff99_rgbf)
-        .setWireframeColor(0x9999ff_rgbf)
-        .setWireframeWidth(data.width)
-        .setSmoothness(data.smoothness)
-        .setViewportSize({80, 80})
-        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        .draw(circle);
+    MeshVisualizerGL2D shader{data.flags|MeshVisualizerGL2D::Flag::Wireframe|flag};
+    shader.setViewportSize({80, 80});
+
+    if(flag == MeshVisualizerGL2D::Flag{}) {
+        shader
+            .setColor(0xffff99_rgbf)
+            .setWireframeColor(0x9999ff_rgbf)
+            .setWireframeWidth(data.width)
+            .setSmoothness(data.smoothness)
+            .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+            .draw(circle);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform2D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+            .setColor(0xffff99_rgbf)
+            .setWireframeColor(0x9999ff_rgbf)
+            .setWireframeWidth(data.width)
+            .setSmoothness(data.smoothness)
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(circle);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1355,9 +2424,20 @@ void MeshVisualizerGLTest::renderWireframe2D() {
     }
 }
 
-void MeshVisualizerGLTest::renderWireframe3D() {
+template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWireframe3D() {
     auto&& data = WireframeData3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
@@ -1395,18 +2475,55 @@ void MeshVisualizerGLTest::renderWireframe3D() {
         }
     } else sphere = MeshTools::compile(sphereData);
 
-    MeshVisualizerGL3D{data.flags|MeshVisualizerGL3D::Flag::Wireframe}
-        .setColor(0xffff99_rgbf)
-        .setWireframeColor(0x9999ff_rgbf)
-        .setWireframeWidth(data.width)
-        .setSmoothness(data.smoothness)
-        .setViewportSize({80, 80})
-        .setTransformationMatrix(
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .draw(sphere);
+    MeshVisualizerGL3D shader{data.flags|MeshVisualizerGL3D::Flag::Wireframe|flag};
+    shader.setViewportSize({80, 80});
+
+    if(flag == MeshVisualizerGL3D::Flag{}) {
+        shader
+            .setColor(0xffff99_rgbf)
+            .setWireframeColor(0x9999ff_rgbf)
+            .setWireframeWidth(data.width)
+            .setSmoothness(data.smoothness)
+            .setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf))
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            .draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+                .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+                .setTransformationMatrix(
+                    Matrix4::translation(Vector3::zAxis(-2.15f))*
+                    Matrix4::rotationY(-15.0_degf)*
+                    Matrix4::rotationX(15.0_degf)
+                )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform3D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+                .setColor(0xffff99_rgbf)
+                .setWireframeColor(0x9999ff_rgbf)
+                .setWireframeWidth(data.width)
+                .setSmoothness(data.smoothness)
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1456,9 +2573,18 @@ void MeshVisualizerGLTest::renderWireframe3D() {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
+template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
     auto&& data = ObjectVertexPrimitiveIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
 
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags2D & MeshVisualizerGL2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -1514,32 +2640,55 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
 
     GL::Mesh circle = MeshTools::compile(circleData);
 
-    MeshVisualizerGL2D shader{data.flags2D};
+    MeshVisualizerGL2D shader{data.flags2D|flag};
     shader
-        /* Remove blue so it's clear the (wireframe) background and mapped ID
-           colors got mixed */
-        .setColor(0xffff00_rgbf)
         /* Shouldn't assert (nor warn) when wireframe is not enabled */
         .setViewportSize({80, 80})
-        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
         .bindColorMapTexture(_colorMapTexture);
 
-    /* OTOH the wireframe color should stay at full channels, not mixed */
-    if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe)
-        shader.setWireframeColor(0xffffff_rgbf);
-
-    /* For vertex ID we don't want any repeat/wraparound as that causes
-       disruptions in the gradient and test failures. There's 17 vertices
-       also. */
-    if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId)
-        shader.setColorMapTransformation(1.0f, -1.0f/17.0f);
-    /* For object/primitive ID there's no gradient so a wraparound is okay.
-       This should cover the first half of the colormap, in reverse order; for
-       primitive ID the whole colormap due to the repeat wrapping */
-    else
-        shader.setColorMapTransformation(0.5f, -1.0f/16.0f);
-
-    shader.draw(circle);
+    if(flag == MeshVisualizerGL2D::Flag{}) {
+        /* Remove blue so it's clear the (wireframe) background and mapped ID
+           colors got mixed */
+        shader.setColor(0xffff00_rgbf)
+            .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}));
+        /* OTOH the wireframe color should stay at full channels, not mixed */
+        if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe)
+            shader.setWireframeColor(0xffffff_rgbf);
+        /* For vertex ID we don't want any repeat/wraparound as that causes
+           disruptions in the gradient and test failures. There's 17 vertices
+           also. */
+        if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId)
+            shader.setColorMapTransformation(1.0f, -1.0f/17.0f);
+        /* For object/primitive ID there's no gradient so a wraparound is okay.
+           This should cover the first half of the colormap, in reverse order;
+           for primitive ID the whole colormap due to the repeat wrapping */
+        else
+            shader.setColorMapTransformation(0.5f, -1.0f/16.0f);
+        shader.draw(circle);
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        /* See above for comments */
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform2D{}
+        }};
+        MeshVisualizerMaterialUniform materialUniformData[1];
+        materialUniformData->setColor(0xffff00_rgbf);
+        if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe)
+            materialUniformData->setWireframeColor(0xffffff_rgbf);
+        if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId)
+            materialUniformData->setColorMapTransformation(1.0f, -1.0f/17.0f);
+        else
+            materialUniformData->setColorMapTransformation(0.5f, -1.0f/16.0f);
+        GL::Buffer materialUniform{materialUniformData};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(circle);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1556,9 +2705,18 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
         (DebugTools::CompareImageToFile{_manager, 4.0f, 0.141f}));
 }
 
-void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
+template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
     auto&& data = ObjectVertexPrimitiveIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
 
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags3D & MeshVisualizerGL3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -1607,37 +2765,70 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
        data.flags3D & MeshVisualizerGL3D::Flag::NoGeometryShader)
         icosphereData = MeshTools::duplicate(icosphereData);
 
-    GL::Mesh circle = MeshTools::compile(icosphereData);
+    GL::Mesh icosphere = MeshTools::compile(icosphereData);
 
-    MeshVisualizerGL3D shader{data.flags3D};
+    MeshVisualizerGL3D shader{data.flags3D|flag};
     shader
-        /* Remove blue so it's clear the wireframe background and mapped ID
-           colors got mixed */
-        .setColor(0xffff00_rgbf)
         /* Shouldn't assert (nor warn) when wireframe is not enabled */
         .setViewportSize({80, 80})
-        .setTransformationMatrix(
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         .bindColorMapTexture(_colorMapTexture);
 
-    /* OTOH the wireframe color should stay at full channels, not mixed */
-    if(data.flags2D & MeshVisualizerGL2D::Flag::Wireframe)
-        shader.setWireframeColor(0xffffff_rgbf);
-
-    /* For vertex ID we don't want any repeat/wraparound as that causes
-       disruptions in the gradient and test failures. There's 42 vertices also. */
-    if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId)
-        shader.setColorMapTransformation(1.0f, -1.0f/42.0f);
-    /* For object/primitive ID there's no gradient so a wraparound is okay.
-       This should cover the first half of the colormap, in reverse order; for
-       primitive ID the whole colormap due to the repeat wrapping */
-    else
-        shader.setColorMapTransformation(0.5f, -1.0f/40.0f);
-
-    shader.draw(circle);
+    if(flag == MeshVisualizerGL3D::Flag{}) {
+        /* Remove blue so it's clear the wireframe background and mapped ID
+           colors got mixed */
+        shader.setColor(0xffff00_rgbf)
+            .setTransformationMatrix(
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(-15.0_degf)*
+                Matrix4::rotationX(15.0_degf))
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f));
+        /* OTOH the wireframe color should stay at full channels, not mixed */
+        if(data.flags2D & MeshVisualizerGL2D::Flag::Wireframe)
+            shader.setWireframeColor(0xffffff_rgbf);
+        /* For vertex ID we don't want any repeat/wraparound as that causes
+           disruptions in the gradient and test failures. There's 42 vertices
+           also. */
+        if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId)
+            shader.setColorMapTransformation(1.0f, -1.0f/42.0f);
+        /* For object/primitive ID there's no gradient so a wraparound is okay.
+           This should cover the first half of the colormap, in reverse order;
+           for primitive ID the whole colormap due to the repeat wrapping */
+        else
+            shader.setColorMapTransformation(0.5f, -1.0f/40.0f);
+        shader.draw(icosphere);
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        /* See above for comments */
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+                .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+                .setTransformationMatrix(
+                    Matrix4::translation(Vector3::zAxis(-2.15f))*
+                    Matrix4::rotationY(-15.0_degf)*
+                    Matrix4::rotationX(15.0_degf)
+                )
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform3D{}
+        }};
+        MeshVisualizerMaterialUniform materialUniformData[1];
+        materialUniformData->setColor(0xffff00_rgbf);
+        if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe)
+            materialUniformData->setWireframeColor(0xffffff_rgbf);
+        if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId)
+            materialUniformData->setColorMapTransformation(1.0f, -1.0f/42.0f);
+        else
+            materialUniformData->setColorMapTransformation(0.5f, -1.0f/40.0f);
+        GL::Buffer materialUniform{materialUniformData};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(icosphere);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1707,9 +2898,18 @@ void MeshVisualizerGLTest::renderWireframe3DPerspective() {
         (DebugTools::CompareImageToFile{_manager, 0.667f, 0.002f}));
 }
 
-void MeshVisualizerGLTest::renderTangentBitangentNormal() {
+template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangentBitangentNormal() {
     auto&& data = TangentBitangentNormalData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
@@ -1808,25 +3008,58 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
             .draw(mesh);
     }
 
-    MeshVisualizerGL3D shader{data.flags};
-    shader
-        /** @todo make this unnecessary */
-        .setViewportSize({80, 80})
-        .setTransformationMatrix(transformation)
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .setNormalMatrix(transformation.normalMatrix()*data.multiply)
-        .setSmoothness(data.smoothness)
-        .setLineLength(data.lineLength)
-        .setLineWidth(data.lineWidth);
+    MeshVisualizerGL3D shader{data.flags|flag};
+    /** @todo make this unnecessary */
+    shader.setViewportSize({80, 80});
+    if(data.flags & MeshVisualizerGL3D::Flag::PrimitiveId)
+        shader.bindColorMapTexture(_colorMapTexture);
 
-    if(data.flags & MeshVisualizerGL3D::Flag::Wireframe) shader
-        .setColor(0xffff99_rgbf)
-        .setWireframeColor(0x9999ff_rgbf);
-    if(data.flags & MeshVisualizerGL3D::Flag::PrimitiveId) shader
-        .bindColorMapTexture(_colorMapTexture)
-        .setColorMapTransformation(1.0f/512.0f, 0.5f);
-
-    shader.draw(mesh);
+    if(flag == MeshVisualizerGL3D::Flag{}) {
+        shader.setTransformationMatrix(transformation)
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            .setNormalMatrix(transformation.normalMatrix()*data.multiply)
+            .setSmoothness(data.smoothness)
+            .setLineLength(data.lineLength)
+            .setLineWidth(data.lineWidth);
+        if(data.flags & MeshVisualizerGL3D::Flag::Wireframe)
+            shader
+                .setColor(0xffff99_rgbf)
+                .setWireframeColor(0x9999ff_rgbf);
+        if(data.flags & MeshVisualizerGL3D::Flag::PrimitiveId)
+            shader.setColorMapTransformation(1.0f/512.0f, 0.5f);
+        shader.draw(mesh);
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+                .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+                .setTransformationMatrix(transformation)
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform3D{}
+                .setNormalMatrix(transformation.normalMatrix()*data.multiply)
+        }};
+        MeshVisualizerMaterialUniform materialUniformData[1];
+        (*materialUniformData)
+            .setSmoothness(data.smoothness)
+            .setLineLength(data.lineLength)
+            .setLineWidth(data.lineWidth);
+        if(data.flags & MeshVisualizerGL3D::Flag::Wireframe)
+            (*materialUniformData)
+                .setColor(0xffff99_rgbf)
+                .setWireframeColor(0x9999ff_rgbf);
+        if(data.flags & MeshVisualizerGL3D::Flag::PrimitiveId)
+            materialUniformData->setColorMapTransformation(1.0f/512.0f, 0.5f);
+        GL::Buffer materialUniform{materialUniformData};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(mesh);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1849,6 +3082,372 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.file}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::renderMulti2D() {
+    auto&& data = RenderMultiData2D[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if((data.flags & MeshVisualizerGL2D::Flag::Wireframe) && !(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
+    /* Circle is a fan, plane is a strip, make it indexed first */
+    Trade::MeshData circleData = MeshTools::generateIndices(Primitives::circle2DSolid(8));
+    Trade::MeshData squareData = MeshTools::generateIndices(Primitives::squareSolid());
+    Trade::MeshData triangleData = MeshTools::generateIndices(Primitives::circle2DSolid(3));
+    /* For a GS-less wireframe we have to deindex the meshes */
+    if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)
+        for(Trade::MeshData* i: {&circleData, &squareData, &triangleData})
+            *i = MeshTools::duplicate(*i);
+    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({circleData, squareData, triangleData}));
+    GL::MeshView circle{mesh};
+    circle.setCount(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader ?
+        circleData.vertexCount() : circleData.indexCount());
+    GL::MeshView square{mesh};
+    square.setCount(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader ?
+        squareData.vertexCount() : squareData.indexCount());
+    if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)
+        square.setBaseVertex(circleData.vertexCount());
+    else
+        square.setIndexRange(circleData.indexCount());
+    GL::MeshView triangle{mesh};
+    triangle.setCount(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader ?
+        triangleData.vertexCount() : triangleData.indexCount());
+    if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)
+        triangle.setBaseVertex(circleData.vertexCount() + squareData.vertexCount());
+    else triangle.setIndexRange(circleData.indexCount() + squareData.indexCount());
+
+    /* Some drivers have uniform offset alignment as high as 256, which means
+       the subsequent sets of uniforms have to be aligned to a multiply of it.
+       The data.uniformIncrement is set high enough to ensure that, in the
+       non-offset-bind case this value is 1. */
+
+    Containers::Array<MeshVisualizerMaterialUniform> materialData{data.uniformIncrement + 1};
+    materialData[0*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
+        .setColor(0xffffcc_rgbf)
+        .setWireframeColor(0xcc0000_rgbf)
+        .setColorMapTransformation(0.5f/circleData.vertexCount(), 1.0f/circleData.vertexCount());
+    materialData[1*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
+        .setColor(0xccffff_rgbf)
+        .setWireframeColor(0x0000cc_rgbf)
+        .setWireframeWidth(2.5f)
+        .setColorMapTransformation(0.5f/triangleData.vertexCount(), 1.0f/triangleData.vertexCount());
+    GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
+
+    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
+    transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::projection({2.1f, 2.1f})*
+            Matrix3::scaling(Vector2{0.4f})*
+            Matrix3::translation({-1.25f, -1.25f})
+        );
+    transformationProjectionData[1*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::projection({2.1f, 2.1f})*
+            Matrix3::scaling(Vector2{0.4f})*
+            Matrix3::translation({ 1.25f, -1.25f})
+        );
+    transformationProjectionData[2*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::projection({2.1f, 2.1f})*
+            Matrix3::scaling(Vector2{0.4f})*
+            Matrix3::translation({ 0.00f,  1.25f})
+        );
+    GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
+
+    Containers::Array<MeshVisualizerDrawUniform2D> drawData{2*data.uniformIncrement + 1};
+    /* Material offsets are zero if we have single draw, as those are done with
+       UBO offset bindings instead. */
+    drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 0);
+    drawData[1*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+    drawData[2*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
+    shader.setViewportSize(Vector2{RenderSize});
+    if(data.flags & MeshVisualizerGL2D::Flag::VertexId)
+        shader.bindColorMapTexture(_colorMapTexture);
+
+    /* Just one draw, rebinding UBOs each time */
+    if(data.drawCount == 1) {
+        shader.bindMaterialBuffer(materialUniform,
+            0*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
+            sizeof(MeshVisualizerMaterialUniform));
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            0*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            0*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform2D),
+            sizeof(MeshVisualizerDrawUniform2D));
+        shader.draw(circle);
+
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
+            sizeof(MeshVisualizerMaterialUniform));
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            1*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            1*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform2D),
+            sizeof(MeshVisualizerDrawUniform2D));
+        shader.draw(square);
+
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
+            sizeof(MeshVisualizerMaterialUniform));
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            2*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            2*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform2D),
+            sizeof(MeshVisualizerDrawUniform2D));
+        shader.draw(triangle);
+
+    /* Otherwise using the draw offset */
+    } else {
+        shader.bindMaterialBuffer(materialUniform)
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform);
+        shader.setDrawOffset(0)
+            .draw(circle);
+        shader.setDrawOffset(1)
+            .draw(square);
+        shader.setDrawOffset(2)
+            .draw(triangle);
+    };
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    /*
+        Wireframe case:
+
+        -   Circle should be lower left, pink with red wireframe
+        -   Square lower right, cyan with thick blue wireframe
+        -   Triangle up center, cyan with thick blue wireframe
+
+        Vertex ID case:
+
+        -   Circle and triangle should have both almost the full color map
+            range, one tinted pink, one cyan
+        -   Square tinted cyan, with just two colors
+    */
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
+        (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
+}
+
+void MeshVisualizerGLTest::renderMulti3D() {
+    auto&& data = RenderMultiData3D[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(((data.flags & MeshVisualizerGL3D::Flag::Wireframe) && !(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)) || (data.flags & (MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection))) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
+    Trade::MeshData sphereData = MeshTools::interleave(Primitives::icosphereSolid(0), {
+        /* The icosphere doesn't have tangents and we don't use them, but
+           concatenate() will ignore the tangents of others if the first mesh
+           doesn't have them, so add a bogus data at least */
+        Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, VertexFormat::Vector4, nullptr}
+    });
+    /* Plane is a strip, make it indexed first */
+    Trade::MeshData planeData = MeshTools::generateIndices(Primitives::planeSolid(Primitives::PlaneFlag::Tangents));
+    Trade::MeshData coneData = Primitives::coneSolid(1, 8, 1.0f, Primitives::ConeFlag::Tangents);
+    /* For a GS-less wireframe we have to deindex the meshes */
+    if(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)
+        for(Trade::MeshData* i: {&sphereData, &planeData, &coneData})
+            *i = MeshTools::duplicate(*i);
+    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({sphereData, planeData, coneData}));
+    GL::MeshView sphere{mesh};
+    sphere.setCount(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader ?
+        sphereData.vertexCount() : sphereData.indexCount());
+    GL::MeshView plane{mesh};
+    plane.setCount(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader ?
+        planeData.vertexCount() : planeData.indexCount());
+    if(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)
+        plane.setBaseVertex(sphereData.vertexCount());
+    else
+        plane.setIndexRange(sphereData.indexCount());
+    GL::MeshView cone{mesh};
+    cone.setCount(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader ?
+        coneData.vertexCount() : coneData.indexCount());
+    if(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)
+        cone.setBaseVertex(sphereData.vertexCount() + planeData.vertexCount());
+    else cone.setIndexRange(sphereData.indexCount() + planeData.indexCount());
+
+    GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+        ProjectionUniform3D{}.setProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
+        )
+    }};
+
+    /* Some drivers have uniform offset alignment as high as 256, which means
+       the subsequent sets of uniforms have to be aligned to a multiply of it.
+       The data.uniformIncrement is set high enough to ensure that, in the
+       non-offset-bind case this value is 1. */
+
+    Containers::Array<MeshVisualizerMaterialUniform> materialData{data.uniformIncrement + 1};
+    materialData[0*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
+        .setColor(0xffffcc_rgbf)
+        .setWireframeColor(0xcc0000_rgbf)
+        .setLineLength(0.0f) /* no TBN */
+        .setColorMapTransformation(0.5f/sphereData.vertexCount(), 1.0f/sphereData.vertexCount());
+    materialData[1*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
+        .setColor(0xccffff_rgbf)
+        .setWireframeColor(0x0000cc_rgbf)
+        .setLineLength(0.25f)
+        .setWireframeWidth(2.5f)
+        .setColorMapTransformation(0.5f/coneData.vertexCount(), 1.0f/coneData.vertexCount());
+    GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
+
+    Containers::Array<TransformationUniform3D> transformationData{2*data.uniformIncrement + 1};
+    transformationData[0*data.uniformIncrement] = TransformationUniform3D{}
+        .setTransformationMatrix(
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f})*
+            Matrix4::translation({-1.25f, -1.25f, 0.0f})
+        );
+    transformationData[1*data.uniformIncrement] = TransformationUniform3D{}
+        .setTransformationMatrix(
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f})*
+            Matrix4::translation({ 1.25f, -1.25f, 0.0f})
+        );
+    transformationData[2*data.uniformIncrement] = TransformationUniform3D{}
+        .setTransformationMatrix(
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f})*
+            Matrix4::translation({  0.0f,  1.0f, 1.0f})
+        );
+    GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, transformationData};
+
+    Containers::Array<MeshVisualizerDrawUniform3D> drawData{2*data.uniformIncrement + 1};
+    /* Material offsets are zero if we have single draw, as those are done with
+       UBO offset bindings instead. Also no need to supply a normal matrix. */
+    drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 0);
+    drawData[1*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+    drawData[2*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
+    shader.setViewportSize(Vector2{RenderSize})
+        .bindProjectionBuffer(projectionUniform);
+    if(data.flags & MeshVisualizerGL3D::Flag::VertexId)
+        shader.bindColorMapTexture(_colorMapTexture);
+
+    /* Just one draw, rebinding UBOs each time */
+    if(data.drawCount == 1) {
+        shader.bindMaterialBuffer(materialUniform,
+            0*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
+            sizeof(MeshVisualizerMaterialUniform));
+        shader.bindTransformationBuffer(transformationUniform,
+            0*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            0*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform3D),
+            sizeof(MeshVisualizerDrawUniform3D));
+        shader.draw(sphere);
+
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
+            sizeof(MeshVisualizerMaterialUniform));
+        shader.bindTransformationBuffer(transformationUniform,
+            1*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            1*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform3D),
+            sizeof(MeshVisualizerDrawUniform3D));
+        shader.draw(plane);
+
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
+            sizeof(MeshVisualizerMaterialUniform));
+        shader.bindTransformationBuffer(transformationUniform,
+            2*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            2*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform3D),
+            sizeof(MeshVisualizerDrawUniform3D));
+        shader.draw(cone);
+
+    /* Otherwise using the draw offset */
+    } else {
+        shader.bindMaterialBuffer(materialUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform);
+        shader.setDrawOffset(0)
+            .draw(sphere);
+        shader.setDrawOffset(1)
+            .draw(plane);
+        shader.setDrawOffset(2)
+            .draw(cone);
+    };
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    /*
+        Wireframe case:
+
+        -   Sphere should be lower left, pink with red wireframe (and no TBN)
+        -   Plane lower right, cyan with thick blue wireframe and TBN
+        -   Cone up center, cyan with thick blue wireframe and TBN
+
+        Vertex ID case:
+
+        -   Sphere and cone should have both almost the full color map
+            range, one tinted pink, one cyan
+        -   Plane tinted cyan, with just two colors
+    */
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
+        (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
 #endif
 

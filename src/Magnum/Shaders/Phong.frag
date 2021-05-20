@@ -39,6 +39,7 @@
 
 /* Uniforms */
 
+#ifndef UNIFORM_BUFFERS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 4)
 #endif
@@ -53,7 +54,6 @@ uniform lowp vec4 ambientColor
     ;
 
 #if LIGHT_COUNT
-
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 5)
 #endif
@@ -145,6 +145,78 @@ uniform lowp float lightRanges[LIGHT_COUNT]
     ;
 #endif
 
+/* Uniform buffers */
+
+#else
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform highp uint drawOffset
+    #ifndef GL_ES
+    = 0u
+    #endif
+    ;
+
+/* Keep in sync with Phong.vert. Can't "outsource" to a common file because
+   the #extension directive needs to be always before any code. */
+struct DrawUniform {
+    mediump mat3 normalMatrix; /* actually mat3x4 */
+    highp uvec4 materialIdReservedObjectIdLightOffsetLightCount;
+    #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCount.x
+    #define draw_objectId materialIdReservedObjectIdLightOffsetLightCount.y
+    #define draw_lightOffset materialIdReservedObjectIdLightOffsetLightCount.z
+    #define draw_lightCount materialIdReservedObjectIdLightOffsetLightCount.w
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 2
+    #endif
+) uniform Draw {
+    DrawUniform draws[DRAW_COUNT];
+};
+
+struct MaterialUniform {
+    lowp vec4 ambientColor;
+    lowp vec4 diffuseColor;
+    lowp vec4 specularColor;
+    mediump vec4 normalTextureScaleShininessAlphaMaskReserved;
+    #define material_normalTextureScale normalTextureScaleShininessAlphaMaskReserved.x
+    #define material_shininess normalTextureScaleShininessAlphaMaskReserved.y
+    #define material_alphaMask normalTextureScaleShininessAlphaMaskReserved.z
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 4
+    #endif
+) uniform Material {
+    MaterialUniform materials[MATERIAL_COUNT];
+};
+
+/* Keep in sync with Phong.vert. Can't "outsource" to a common file because
+   the #extension directive needs to be always before any code. */
+struct LightUniform {
+    highp vec4 position;
+    lowp vec3 colorReserved;
+    #define light_color colorReserved.xyz
+    lowp vec4 specularColorReserved;
+    #define light_specularColor specularColorReserved.xyz
+    lowp vec4 rangeReservedReservedReserved;
+    #define light_range rangeReservedReservedReserved.x
+};
+
+#if LIGHT_COUNT
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 5
+    #endif
+) uniform Light {
+    LightUniform lights[LIGHT_COUNT];
+};
+#endif
+#endif
+
 /* Textures */
 
 #ifdef AMBIENT_TEXTURE
@@ -222,6 +294,28 @@ out highp uint fragmentObjectId;
 #endif
 
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    #ifdef OBJECT_ID
+    highp const uint objectId = draws[drawOffset].draw_objectId;
+    #endif
+    mediump const uint materialId = draws[drawOffset].draw_materialIdReserved & 0xffffu;
+    lowp const vec4 ambientColor = materials[materialId].ambientColor;
+    #if LIGHT_COUNT
+    lowp const vec4 diffuseColor = materials[materialId].diffuseColor;
+    lowp const vec4 specularColor = materials[materialId].specularColor;
+    mediump const float shininess = materials[materialId].material_shininess;
+    #endif
+    #ifdef NORMAL_TEXTURE
+    mediump float normalTextureScale = materials[materialId].material_normalTextureScale;
+    #endif
+    #ifdef ALPHA_MASK
+    lowp const float alphaMask = materials[materialId].material_alphaMask;
+    #endif
+    #if LIGHT_COUNT
+    mediump const uint lightOffset = draws[drawOffset].draw_lightOffset;
+    #endif
+    #endif
+
     lowp const vec4 finalAmbientColor =
         #ifdef AMBIENT_TEXTURE
         texture(ambientTexture, interpolatedTextureCoordinates)*
@@ -273,7 +367,34 @@ void main() {
     #endif
 
     /* Add diffuse color for each light */
-    for(int i = 0; i < LIGHT_COUNT; ++i) {
+    #ifndef UNIFORM_BUFFERS
+    for(int i = 0; i < LIGHT_COUNT; ++i)
+    #else
+    for(uint i = 0u, actualLightCount = min(uint(LIGHT_COUNT), draws[drawOffset].draw_lightCount); i < actualLightCount; ++i)
+    #endif
+    {
+        lowp const vec3 lightColor =
+            #ifndef UNIFORM_BUFFERS
+            lightColors[i]
+            #else
+            lights[lightOffset + i].light_color
+            #endif
+            ;
+        lowp const vec3 lightSpecularColor =
+            #ifndef UNIFORM_BUFFERS
+            lightSpecularColors[i]
+            #else
+            lights[lightOffset + i].light_specularColor
+            #endif
+            ;
+        lowp const float lightRange =
+            #ifndef UNIFORM_BUFFERS
+            lightRanges[i]
+            #else
+            lights[lightOffset + i].light_range
+            #endif
+            ;
+
         /* Attenuation. Directional lights have the .w component set to 0, use
            that to make the distance zero -- which will then ensure the
            attenuation is always 1.0 */
@@ -281,19 +402,25 @@ void main() {
         /* If range is 0 for whatever reason, clamp it to a small value to
            avoid a NaN when dist is 0 as well (which is the case for
            directional lights). */
-        highp float attenuation = clamp(1.0 - pow(dist/max(lightRanges[i], 0.0001), 4.0), 0.0, 1.0);
+        highp float attenuation = clamp(1.0 - pow(dist/max(lightRange, 0.0001), 4.0), 0.0, 1.0);
         attenuation = attenuation*attenuation/(1.0 + dist*dist);
 
         highp vec3 normalizedLightDirection = normalize(lightDirections[i].xyz);
         lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection))*attenuation;
-        fragmentColor += vec4(finalDiffuseColor.rgb*lightColors[i]*intensity, finalDiffuseColor.a/float(LIGHT_COUNT));
+        fragmentColor += vec4(finalDiffuseColor.rgb*lightColor*intensity, finalDiffuseColor.a/float(
+            #ifndef UNIFORM_BUFFERS
+            LIGHT_COUNT
+            #else
+            actualLightCount
+            #endif
+        ));
 
         /* Add specular color, if needed */
         if(intensity > 0.001) {
             highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
             /* Use attenuation for the specularity as well */
             mediump float specularity = clamp(pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess), 0.0, 1.0)*attenuation;
-            fragmentColor += vec4(finalSpecularColor.rgb*lightSpecularColors[i].rgb*specularity, finalSpecularColor.a);
+            fragmentColor += vec4(finalSpecularColor.rgb*lightSpecularColor.rgb*specularity, finalSpecularColor.a);
         }
     }
     #endif

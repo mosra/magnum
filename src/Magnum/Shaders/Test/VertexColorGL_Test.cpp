@@ -23,7 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Shaders/VertexColorGL.h"
 
@@ -36,6 +38,9 @@ struct VertexColorGL_Test: TestSuite::Tester {
 
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
+
+    void debugFlag();
+    void debugFlags();
 };
 
 VertexColorGL_Test::VertexColorGL_Test() {
@@ -44,7 +49,10 @@ VertexColorGL_Test::VertexColorGL_Test() {
         &VertexColorGL_Test::constructNoCreate<3>,
 
         &VertexColorGL_Test::constructCopy<2>,
-        &VertexColorGL_Test::constructCopy<3>});
+        &VertexColorGL_Test::constructCopy<3>,
+
+        &VertexColorGL_Test::debugFlag,
+        &VertexColorGL_Test::debugFlags});
 }
 
 template<UnsignedInt dimensions> void VertexColorGL_Test::constructNoCreate() {
@@ -63,6 +71,30 @@ template<UnsignedInt dimensions> void VertexColorGL_Test::constructCopy() {
 
     CORRADE_VERIFY(!std::is_copy_constructible<VertexColorGL<dimensions>>{});
     CORRADE_VERIFY(!std::is_copy_assignable<VertexColorGL<dimensions>>{});
+}
+
+void VertexColorGL_Test::debugFlag() {
+    std::ostringstream out;
+
+    #ifndef MAGNUM_TARGET_GLES2
+    Debug{&out} << VertexColorGL3D::Flag::UniformBuffers << VertexColorGL3D::Flag(0xf0);
+    CORRADE_COMPARE(out.str(), "Shaders::VertexColorGL::Flag::UniformBuffers Shaders::VertexColorGL::Flag(0xf0)\n");
+    #else
+    Debug{&out} << VertexColorGL3D::Flag(0xf0);
+    CORRADE_COMPARE(out.str(), "Shaders::VertexColorGL::Flag(0xf0)\n");
+    #endif
+}
+
+void VertexColorGL_Test::debugFlags() {
+    std::ostringstream out;
+
+    #ifndef MAGNUM_TARGET_GLES2
+    Debug{&out} << (VertexColorGL3D::Flag::UniformBuffers|VertexColorGL3D::Flag(0xf0)) << VertexColorGL3D::Flags{};
+    CORRADE_COMPARE(out.str(), "Shaders::VertexColorGL::Flag::UniformBuffers|Shaders::VertexColorGL::Flag(0xf0) Shaders::VertexColorGL::Flags{}\n");
+    #else
+    Debug{&out} << VertexColorGL3D::Flag(0xf0) << VertexColorGL3D::Flags{};
+    CORRADE_COMPARE(out.str(), "Shaders::VertexColorGL::Flag(0xf0) Shaders::VertexColorGL::Flags{}\n");
+    #endif
 }
 
 }}}}

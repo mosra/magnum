@@ -27,14 +27,23 @@
 #extension GL_EXT_gpu_shader4: require
 #endif
 
+#if defined(UNIFORM_BUFFERS) && defined(ALPHA_MASK) && !defined(GL_ES)
+#extension GL_ARB_shader_bit_encoding: require
+#endif
+
 #ifndef NEW_GLSL
 #define fragmentColor gl_FragColor
 #define texture texture2D
 #define in varying
 #endif
 
+#ifndef RUNTIME_CONST
+#define const
+#endif
+
 /* Uniforms */
 
+#ifndef UNIFORM_BUFFERS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2)
 #endif
@@ -61,6 +70,34 @@ layout(location = 4)
 #endif
 /* mediump is just 2^10, which might not be enough, this is 2^16 */
 uniform highp uint objectId; /* defaults to zero */
+#endif
+
+/* Uniform buffers */
+
+#else
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform highp uint drawOffset
+    #ifndef GL_ES
+    = 0u
+    #endif
+    ;
+
+struct DrawUniform {
+    lowp vec4 color;
+    highp uvec4 objectIdReservedAlphaMaskReserved;
+    #define draw_objectId objectIdReservedAlphaMaskReserved.x
+    #define draw_alphaMask objectIdReservedAlphaMaskReserved.z
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 2
+    #endif
+) uniform Draw {
+    DrawUniform draws[DRAW_COUNT];
+};
 #endif
 
 /* Textures */
@@ -103,6 +140,16 @@ out highp uint fragmentObjectId;
 #endif
 
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    lowp const vec4 color = draws[drawOffset].color;
+    #ifdef OBJECT_ID
+    highp const uint objectId = draws[drawOffset].draw_objectId;
+    #endif
+    #ifdef ALPHA_MASK
+    lowp const float alphaMask = uintBitsToFloat(draws[drawOffset].draw_alphaMask);
+    #endif
+    #endif
+
     fragmentColor =
         #ifdef TEXTURED
         texture(textureData, interpolatedTextureCoordinates)*

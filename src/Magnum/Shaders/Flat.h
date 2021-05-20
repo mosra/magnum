@@ -25,26 +25,136 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
- * @brief Typedef @ref Magnum::Shaders::Flat, alias @ref Magnum::Shaders::Flat2D, @ref Magnum::Shaders::Flat3D
- * @m_deprecated_since_latest Use @ref Magnum/Shaders/FlatGL.h, the
- *      @ref Magnum::Shaders::FlatGL "FlatGL" class and
- *      related typedefs instead.
+ * @brief Struct @ref Magnum::Shaders::FlatDrawUniform
  */
-#endif
 
-#include "Magnum/configure.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Color.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Shaders/FlatGL.h"
-
-CORRADE_DEPRECATED_FILE("use Magnum/Shaders/FlatGL.h, the FlatGL class and related typedefs instead")
+#endif
 
 namespace Magnum { namespace Shaders {
 
+/**
+@brief Per-draw uniform for flat shaders
+@m_since_latest
+
+Together with the generic @ref TransformationProjectionUniform2D /
+@ref TransformationProjectionUniform3D contains parameters that are specific to
+each draw call. Texture transformation, if needed, is supplied separately in a
+@ref TextureTransformationUniform.
+@see @ref FlatGL::bindDrawBuffer()
+*/
+struct FlatDrawUniform {
+    /** @brief Construct with default parameters */
+    constexpr explicit FlatDrawUniform(DefaultInitT = DefaultInit) noexcept: color{1.0f, 1.0f, 1.0f, 1.0f}, objectId{0}, alphaMask{0.5f} {}
+
+    /** @brief Construct without initializing the contents */
+    explicit FlatDrawUniform(NoInitT) noexcept: color{NoInit} {}
+
+    /** @{
+     * @name Convenience setters
+     *
+     * Provided to allow the use of method chaining for populating a structure
+     * in a single expression, otherwise equivalent to accessing the fields
+     * directly. Also guaranteed to provide backwards compatibility when
+     * packing of the actual fields changes.
+     */
+
+    /**
+     * @brief Set the @ref objectId field
+     * @return Reference to self (for method chaining)
+     */
+    FlatDrawUniform& setObjectId(UnsignedInt id) {
+        objectId = id;
+        return *this;
+    }
+
+    /**
+     * @brief Set the @ref alphaMask field
+     * @return Reference to self (for method chaining)
+     */
+    FlatDrawUniform& setAlphaMask(Float alphaMask) {
+        this->alphaMask = alphaMask;
+        return *this;
+    }
+
+    /**
+     * @brief Set the @ref color field
+     * @return Reference to self (for method chaining)
+     */
+    FlatDrawUniform& setColor(const Color4& color) {
+        this->color = color;
+        return *this;
+    }
+
+    /**
+     * @}
+     */
+
+    /**
+     * @brief Color
+     *
+     * Default value is @cpp 0xffffffff_rgbaf @ce.
+     *
+     * If @ref FlatGL::Flag::VertexColor is enabled, the color is multiplied
+     * with a color coming from the @ref FlatGL::Color3 / @ref FlatGL::Color4
+     * attribute.
+     * @see @ref FlatGL::setColor()
+     */
+    Color4 color;
+
+    /**
+     * @brief Object ID
+     *
+     * Used only for the object ID framebuffer output, not to access any other
+     * uniform data. Default value is @cpp 0 @ce.
+     *
+     * Used only if @ref FlatGL::Flag::ObjectId is enabled, ignored otherwise.
+     * If @ref FlatGL::Flag::InstancedObjectId is enabled as well, this value
+     * is added to the ID coming from the @ref FlatGL::ObjectId attribute.
+     * @see @ref FlatGL::setObjectId()
+     */
+    UnsignedInt objectId;
+
+    /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
+       I MADE THOSE UNNAMED, YOU DUMB FOOL */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    /* This field is an UnsignedInt in the shader and skinOffset is extracted
+       as (value >> 16), so the order has to be different on BE */
+    #ifndef CORRADE_TARGET_BIG_ENDIAN
+    UnsignedShort:16;
+    UnsignedShort:16; /* reserved for skinOffset */
+    #else
+    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort:16;
+    #endif
+    #endif
+
+    /**
+     * @brief Alpha mask value
+     *
+     * Fragments with alpha values smaller than the mask value will be
+     * discarded. Default value is @cpp 0.5f @ce.
+     *
+     * Used only if @ref FlatGL::Flag::AlphaMask is enabled, ignored otherwise.
+     * @see @ref FlatGL::setAlphaMask()
+     */
+    Float alphaMask;
+
+    /* warning: Member __pad2__ is not documented. FFS DOXYGEN WHY DO YOU THINK
+       I MADE THOSE UNNAMED, YOU DUMB FOOL */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    Int:32;
+    #endif
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @brief @copybrief FlatGL
  * @m_deprecated_since_latest Use @ref FlatGL instead.
  */
@@ -61,10 +171,8 @@ typedef CORRADE_DEPRECATED("use FlatGL2D instead") FlatGL2D Flat2D;
  * @m_deprecated_since_latest Use @ref FlatGL3D instead.
  */
 typedef CORRADE_DEPRECATED("use FlatGL3D instead") FlatGL3D Flat3D;
+#endif
 
 }}
-#else
-#error use Magnum/Shaders/FlatGL.h, the FlatGL class and related typedefs instead
-#endif
 
 #endif
