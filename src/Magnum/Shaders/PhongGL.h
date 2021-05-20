@@ -1060,9 +1060,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
             _shininessUniform{7},
             _normalTextureScaleUniform{8},
             _alphaMaskUniform{9};
-            #ifndef MAGNUM_TARGET_GLES2
-            Int _objectIdUniform{10};
-            #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        Int _objectIdUniform{10};
+        #endif
         Int _lightPositionsUniform{11},
             _lightColorsUniform, /* 11 + lightCount, set in the constructor */
             _lightSpecularColorsUniform, /* 11 + 2*lightCount */
