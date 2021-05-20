@@ -293,10 +293,20 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags): Implementation::MeshV
         #ifndef MAGNUM_TARGET_GLES2
         if(flags & (Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
             _colorMapOffsetScaleUniform = uniformLocation("colorMapOffsetScale");
-            setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
         }
         #endif
     }
+
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(flags && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
+    #endif
+    {
+        if(flags & (Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
+            setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
+        }
+    }
+    #endif
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
@@ -509,7 +519,6 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags): Implementation::MeshV
         #ifndef MAGNUM_TARGET_GLES2
         if(flags & (Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
             _colorMapOffsetScaleUniform = uniformLocation("colorMapOffsetScale");
-            setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
         }
         #endif
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -520,6 +529,17 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags): Implementation::MeshV
         }
         #endif
     }
+
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(flags && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
+    #endif
+    {
+        if(flags & (Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
+            setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
+        }
+    }
+    #endif
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
