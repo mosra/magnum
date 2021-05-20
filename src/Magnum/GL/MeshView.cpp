@@ -174,8 +174,8 @@ void MeshView::multiDrawElementsBaseVertexImplementationANGLE(const GLenum mode,
     Containers::ArrayView<GLsizei> instanceCount;
     Containers::ArrayView<GLuint> baseInstance;
     Containers::ArrayTuple data{
-        {Containers::NoInit, std::size_t(drawCount), instanceCount},
-        {Containers::ValueInit, std::size_t(drawCount), baseInstance},
+        {NoInit, std::size_t(drawCount), instanceCount},
+        {ValueInit, std::size_t(drawCount), baseInstance},
     };
     for(GLsizei& i: instanceCount) i = 1;
 
