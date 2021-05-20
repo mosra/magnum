@@ -113,6 +113,16 @@ uniform highp uint objectId; /* defaults to zero */
 #endif
 
 #if LIGHT_COUNT
+/* Needs to be last because it uses locations 12 to 12 + LIGHT_COUNT - 1 */
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 12)
+#endif
+uniform highp vec4 lightPositions[LIGHT_COUNT]
+    #ifndef GL_ES
+    = vec4[](LIGHT_POSITION_INITIALIZER)
+    #endif
+    ;
+
 /* Needs to be last because it uses locations 12 + LIGHT_COUNT to
    12 + 2*LIGHT_COUNT - 1. Location 12 is lightPositions. Also it can't be
    specified as 12 + LIGHT_COUNT because that requires ARB_enhanced_layouts.
@@ -202,8 +212,7 @@ layout(std140
     MaterialUniform materials[MATERIAL_COUNT];
 };
 
-/* Keep in sync with Phong.vert. Can't "outsource" to a common file because
-   the #extension directive needs to be always before any code. */
+#if LIGHT_COUNT
 struct LightUniform {
     highp vec4 position;
     lowp vec3 colorReserved;
@@ -214,7 +223,6 @@ struct LightUniform {
     #define light_range rangeReservedReservedReserved.x
 };
 
-#if LIGHT_COUNT
 layout(std140
     #ifdef EXPLICIT_BINDING
     , binding = 5
@@ -293,8 +301,7 @@ in mediump vec3 transformedTangent;
 in mediump vec3 transformedBitangent;
 #endif
 #endif
-in highp vec4 lightDirections[LIGHT_COUNT];
-in highp vec3 cameraDirection;
+in highp vec3 transformedPosition;
 #endif
 
 #if defined(AMBIENT_TEXTURE) || defined(DIFFUSE_TEXTURE) || defined(SPECULAR_TEXTURE) || defined(NORMAL_TEXTURE)
@@ -441,17 +448,26 @@ void main() {
             #endif
             ;
 
+        highp const vec4 lightPosition =
+            #ifndef UNIFORM_BUFFERS
+            lightPositions[i]
+            #else
+            lights[lightOffset + i].position
+            #endif
+            ;
+        highp const vec4 lightDirection = vec4(lightPosition.xyz - transformedPosition*lightPosition.w, lightPosition.w);
+
         /* Attenuation. Directional lights have the .w component set to 0, use
            that to make the distance zero -- which will then ensure the
            attenuation is always 1.0 */
-        highp float dist = length(lightDirections[i].xyz)*lightDirections[i].w;
+        highp float dist = length(lightDirection.xyz)*lightDirection.w;
         /* If range is 0 for whatever reason, clamp it to a small value to
            avoid a NaN when dist is 0 as well (which is the case for
            directional lights). */
         highp float attenuation = clamp(1.0 - pow(dist/max(lightRange, 0.0001), 4.0), 0.0, 1.0);
         attenuation = attenuation*attenuation/(1.0 + dist*dist);
 
-        highp vec3 normalizedLightDirection = normalize(lightDirections[i].xyz);
+        highp vec3 normalizedLightDirection = normalize(lightDirection.xyz);
         lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection))*attenuation;
         fragmentColor += vec4(finalDiffuseColor.rgb*lightColor*intensity, finalDiffuseColor.a/float(
             #ifndef UNIFORM_BUFFERS
@@ -465,7 +481,7 @@ void main() {
         if(intensity > 0.001) {
             highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
             /* Use attenuation for the specularity as well */
-            mediump float specularity = clamp(pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess), 0.0, 1.0)*attenuation;
+            mediump float specularity = clamp(pow(max(0.0, dot(normalize(-transformedPosition), reflection)), shininess), 0.0, 1.0)*attenuation;
             fragmentColor += vec4(finalSpecularColor.rgb*lightSpecularColor.rgb*specularity, finalSpecularColor.a);
         }
     }

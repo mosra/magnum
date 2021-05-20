@@ -69,7 +69,7 @@ uniform highp mat4 projectionMatrix
     #endif
     ;
 
-#if LIGHT_COUNT
+#ifdef HAS_LIGHTS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2)
 #endif
@@ -97,18 +97,6 @@ layout(location = 4)
 #endif
 /* mediump is just 2^10, which might not be enough, this is 2^16 */
 uniform highp uint textureLayer; /* defaults to zero */
-#endif
-
-#if LIGHT_COUNT
-/* Needs to be last because it uses locations 11 to 11 + LIGHT_COUNT - 1 */
-#ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 12)
-#endif
-uniform highp vec4 lightPositions[LIGHT_COUNT]
-    #ifndef GL_ES
-    = vec4[](LIGHT_POSITION_INITIALIZER)
-    #endif
-    ;
 #endif
 
 /* Uniform buffers */
@@ -191,28 +179,6 @@ layout(std140
     TextureTransformationUniform textureTransformations[DRAW_COUNT];
 };
 #endif
-
-#if LIGHT_COUNT
-/* Keep in sync with Phong.frag. Can't "outsource" to a common file because
-   the #extension directive needs to be always before any code. */
-struct LightUniform {
-    highp vec4 position;
-    lowp vec3 colorReserved;
-    #define light_color colorReserved.xyz
-    lowp vec4 specularColorReserved;
-    #define light_specularColor specularColorReserved.xyz
-    lowp vec4 rangeReservedReservedReserved;
-    #define light_range rangeReservedReservedReserved.x
-};
-
-layout(std140
-    #ifdef EXPLICIT_BINDING
-    , binding = 5
-    #endif
-) uniform Light {
-    LightUniform lights[LIGHT_COUNT];
-};
-#endif
 #endif
 
 /* Inputs */
@@ -222,7 +188,7 @@ layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
 in highp vec4 position;
 
-#if LIGHT_COUNT
+#ifdef HAS_LIGHTS
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = NORMAL_ATTRIBUTE_LOCATION)
 #endif
@@ -315,7 +281,7 @@ out lowp vec4 interpolatedVertexColor;
 flat out highp uint interpolatedInstanceObjectId;
 #endif
 
-#if LIGHT_COUNT
+#ifdef HAS_LIGHTS
 out mediump vec3 transformedNormal;
 #ifdef NORMAL_TEXTURE
 #ifndef BITANGENT
@@ -325,8 +291,7 @@ out mediump vec3 transformedTangent;
 out mediump vec3 transformedBitangent;
 #endif
 #endif
-out highp vec4 lightDirections[LIGHT_COUNT];
-out highp vec3 cameraDirection;
+out highp vec3 transformedPosition;
 #endif
 
 #ifdef MULTI_DRAW
@@ -348,7 +313,7 @@ void main() {
     #endif
 
     highp const mat4 transformationMatrix = transformationMatrices[drawId];
-    #if LIGHT_COUNT
+    #ifdef HAS_LIGHTS
     mediump const mat3 normalMatrix = mat3(draws[drawId].normalMatrix);
     #endif
     #ifdef TEXTURE_TRANSFORMATION
@@ -356,9 +321,6 @@ void main() {
     #ifdef TEXTURE_ARRAYS
     highp const uint textureLayer = floatBitsToUint(textureTransformations[drawId].textureTransformation_layer);
     #endif
-    #endif
-    #if LIGHT_COUNT
-    mediump const uint lightOffset = draws[drawId].draw_lightOffset;
     #endif
     #endif
 
@@ -368,9 +330,12 @@ void main() {
         instancedTransformationMatrix*
         #endif
         position;
-    highp vec3 transformedPosition = transformedPosition4.xyz/transformedPosition4.w;
+    #ifndef HAS_LIGHTS
+    highp vec3
+    #endif
+    transformedPosition = transformedPosition4.xyz/transformedPosition4.w;
 
-    #if LIGHT_COUNT
+    #ifdef HAS_LIGHTS
     /* Transformed normal and tangent vector */
     transformedNormal = normalMatrix*
         #ifdef INSTANCED_TRANSFORMATION
@@ -397,27 +362,6 @@ void main() {
         bitangent;
     #endif
     #endif
-
-    /* Direction to the light. Directional lights have the last component set
-       to 0, which gets used to ignore the transformed position. */
-    #ifndef UNIFORM_BUFFERS
-    for(int i = 0; i < LIGHT_COUNT; ++i)
-    #else
-    for(uint i = 0u, actualLightCount = min(uint(LIGHT_COUNT), draws[drawId].draw_lightCount); i < actualLightCount; ++i)
-    #endif
-    {
-        highp const vec4 lightPosition =
-            #ifndef UNIFORM_BUFFERS
-            lightPositions[i]
-            #else
-            lights[lightOffset + i].position
-            #endif
-            ;
-        lightDirections[i] = vec4(lightPosition.xyz - transformedPosition*lightPosition.w, lightPosition.w);
-    }
-
-    /* Direction to the camera */
-    cameraDirection = -transformedPosition;
     #endif
 
     /* Transform the position */

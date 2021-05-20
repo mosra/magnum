@@ -153,7 +153,7 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
     #ifndef MAGNUM_TARGET_GLES
-    std::string lightInitializerVertex, lightInitializerFragment;
+    std::string lightInitializer;
     if(!(flags >= Flag::UniformBuffers) && lightCount) {
         using namespace Containers::Literals;
 
@@ -167,39 +167,37 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
         constexpr Containers::StringView lightColorInitializerItem = "vec3(1.0), "_s;
         constexpr Containers::StringView lightRangeInitializerItem = "1.0/0.0, "_s;
 
-        lightInitializerVertex.reserve(
+        lightInitializer.reserve(
             lightPositionInitializerPreamble.size() +
-            lightCount*(lightPositionInitializerItem.size()));
-
-        lightInitializerVertex.append(lightPositionInitializerPreamble);
-        for(std::size_t i = 0; i != lightCount; ++i)
-            lightInitializerVertex.append(lightPositionInitializerItem);
-
-        /* Drop the last comma and add a newline at the end */
-        lightInitializerVertex[lightInitializerVertex.size() - 2] = '\n';
-        lightInitializerVertex.resize(lightInitializerVertex.size() - 1);
-
-        lightInitializerFragment.reserve(
             lightColorInitializerPreamble.size() +
             lightRangeInitializerPreamble.size() +
-            lightCount*(lightColorInitializerItem.size() +
+            lightCount*(lightPositionInitializerItem.size() +
+                        lightColorInitializerItem.size() +
                         lightRangeInitializerItem.size()));
 
-        lightInitializerFragment.append(lightColorInitializerPreamble);
+        lightInitializer.append(lightPositionInitializerPreamble);
         for(std::size_t i = 0; i != lightCount; ++i)
-            lightInitializerFragment.append(lightColorInitializerItem);
+            lightInitializer.append(lightPositionInitializerItem);
 
         /* Drop the last comma and add a newline at the end */
-        lightInitializerFragment[lightInitializerFragment.size() - 2] = '\n';
-        lightInitializerFragment.resize(lightInitializerFragment.size() - 1);
+        lightInitializer[lightInitializer.size() - 2] = '\n';
+        lightInitializer.resize(lightInitializer.size() - 1);
 
-        lightInitializerFragment.append(lightRangeInitializerPreamble);
+        lightInitializer.append(lightColorInitializerPreamble);
         for(std::size_t i = 0; i != lightCount; ++i)
-            lightInitializerFragment.append(lightRangeInitializerItem);
+            lightInitializer.append(lightColorInitializerItem);
 
         /* Drop the last comma and add a newline at the end */
-        lightInitializerFragment[lightInitializerFragment.size() - 2] = '\n';
-        lightInitializerFragment.resize(lightInitializerFragment.size() - 1);
+        lightInitializer[lightInitializer.size() - 2] = '\n';
+        lightInitializer.resize(lightInitializer.size() - 1);
+
+        lightInitializer.append(lightRangeInitializerPreamble);
+        for(std::size_t i = 0; i != lightCount; ++i)
+            lightInitializer.append(lightRangeInitializerItem);
+
+        /* Drop the last comma and add a newline at the end */
+        lightInitializer[lightInitializer.size() - 2] = '\n';
+        lightInitializer.resize(lightInitializer.size() - 1);
     }
     #endif
 
@@ -211,7 +209,7 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
         #endif
-        .addSource(Utility::formatString("#define LIGHT_COUNT {}\n", lightCount))
+        .addSource(lightCount ? "#define HAS_LIGHTS\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         #endif
@@ -221,16 +219,11 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
     if(flags >= Flag::UniformBuffers) {
         vert.addSource(Utility::formatString(
             "#define UNIFORM_BUFFERS\n"
-            "#define DRAW_COUNT {}\n"
-            "#define LIGHT_COUNT {}\n",
+            "#define DRAW_COUNT {}\n",
             drawCount,
             lightCount));
         vert.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
-    #endif
-    #ifndef MAGNUM_TARGET_GLES
-    if(!(flags >= Flag::UniformBuffers) && lightCount)
-        vert.addSource(std::move(lightInitializerVertex));
     #endif
     vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.vert"));
@@ -275,7 +268,7 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
     }
     #ifndef MAGNUM_TARGET_GLES
     if(!(flags >= Flag::UniformBuffers) && lightCount)
-        frag.addSource(std::move(lightInitializerFragment));
+        frag.addSource(std::move(lightInitializer));
     #endif
     frag.addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.frag"));
