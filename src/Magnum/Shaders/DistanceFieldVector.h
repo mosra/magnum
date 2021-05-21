@@ -108,7 +108,7 @@ struct DistanceFieldVectorDrawUniform {
     /* This field is an UnsignedInt in the shader and materialId is extracted
        as (value & 0xffff), so the order has to be different on BE */
     #ifndef CORRADE_TARGET_BIG_ENDIAN
-    UnsignedShort materialId;
+    alignas(4) UnsignedShort materialId;
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -119,7 +119,7 @@ struct DistanceFieldVectorDrawUniform {
         :16; /* reserved for skinOffset */
     #endif
     #else
-    UnsignedShort
+    alignas(4) UnsignedShort
         #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
         _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif

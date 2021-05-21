@@ -33,7 +33,7 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct DistanceFieldVectorTest: TestSuite::Tester {
     explicit DistanceFieldVectorTest();
 
-    template<class T> void uniformSize();
+    template<class T> void uniformSizeAlignment();
 
     void drawUniformConstructDefault();
     void drawUniformConstructNoInit();
@@ -46,8 +46,8 @@ struct DistanceFieldVectorTest: TestSuite::Tester {
 };
 
 DistanceFieldVectorTest::DistanceFieldVectorTest() {
-    addTests({&DistanceFieldVectorTest::uniformSize<DistanceFieldVectorDrawUniform>,
-              &DistanceFieldVectorTest::uniformSize<DistanceFieldVectorMaterialUniform>,
+    addTests({&DistanceFieldVectorTest::uniformSizeAlignment<DistanceFieldVectorDrawUniform>,
+              &DistanceFieldVectorTest::uniformSizeAlignment<DistanceFieldVectorMaterialUniform>,
 
               &DistanceFieldVectorTest::drawUniformConstructDefault,
               &DistanceFieldVectorTest::drawUniformConstructNoInit,
@@ -69,7 +69,7 @@ template<> struct UniformTraits<DistanceFieldVectorMaterialUniform> {
     static const char* name() { return "DistanceFieldVectorMaterialUniform"; }
 };
 
-template<class T> void DistanceFieldVectorTest::uniformSize() {
+template<class T> void DistanceFieldVectorTest::uniformSizeAlignment() {
     setTestCaseTemplateName(UniformTraits<T>::name());
 
     CORRADE_FAIL_IF(sizeof(T) % sizeof(Vector4) != 0, sizeof(T) << "is not a multiple of vec4 for UBO alignment.");
@@ -79,6 +79,8 @@ template<class T> void DistanceFieldVectorTest::uniformSize() {
     CORRADE_FAIL_IF(768 % sizeof(T) != 0, sizeof(T) << "can't fit exactly into 768-byte UBO alignment.");
     if(256 % sizeof(T) != 0)
         CORRADE_WARN(sizeof(T) << "can't fit exactly into 256-byte UBO alignment, only 768.");
+
+    CORRADE_COMPARE(alignof(T), 4);
 }
 
 void DistanceFieldVectorTest::drawUniformConstructDefault() {

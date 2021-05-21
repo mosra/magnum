@@ -33,7 +33,7 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct FlatTest: TestSuite::Tester {
     explicit FlatTest();
 
-    template<class T> void uniformSize();
+    template<class T> void uniformSizeAlignment();
 
     void drawUniformConstructDefault();
     void drawUniformConstructNoInit();
@@ -41,7 +41,7 @@ struct FlatTest: TestSuite::Tester {
 };
 
 FlatTest::FlatTest() {
-    addTests({&FlatTest::uniformSize<FlatDrawUniform>,
+    addTests({&FlatTest::uniformSizeAlignment<FlatDrawUniform>,
 
               &FlatTest::drawUniformConstructDefault,
               &FlatTest::drawUniformConstructNoInit,
@@ -55,7 +55,7 @@ template<> struct UniformTraits<FlatDrawUniform> {
     static const char* name() { return "FlatDrawUniform"; }
 };
 
-template<class T> void FlatTest::uniformSize() {
+template<class T> void FlatTest::uniformSizeAlignment() {
     setTestCaseTemplateName(UniformTraits<T>::name());
 
     CORRADE_FAIL_IF(sizeof(T) % sizeof(Vector4) != 0, sizeof(T) << "is not a multiple of vec4 for UBO alignment.");
@@ -65,6 +65,8 @@ template<class T> void FlatTest::uniformSize() {
     CORRADE_FAIL_IF(768 % sizeof(T) != 0, sizeof(T) << "can't fit exactly into 768-byte UBO alignment.");
     if(256 % sizeof(T) != 0)
         CORRADE_WARN(sizeof(T) << "can't fit exactly into 256-byte UBO alignment, only 768.");
+
+    CORRADE_COMPARE(alignof(T), 4);
 }
 
 void FlatTest::drawUniformConstructDefault() {

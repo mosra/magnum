@@ -34,7 +34,7 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct MeshVisualizerTest: TestSuite::Tester {
     explicit MeshVisualizerTest();
 
-    template<class T> void uniformSize();
+    template<class T> void uniformSizeAlignment();
 
     void drawUniform2DConstructDefault();
     void drawUniform2DConstructNoInit();
@@ -52,9 +52,9 @@ struct MeshVisualizerTest: TestSuite::Tester {
 };
 
 MeshVisualizerTest::MeshVisualizerTest() {
-    addTests({&MeshVisualizerTest::uniformSize<MeshVisualizerDrawUniform2D>,
-              &MeshVisualizerTest::uniformSize<MeshVisualizerDrawUniform3D>,
-              &MeshVisualizerTest::uniformSize<MeshVisualizerMaterialUniform>,
+    addTests({&MeshVisualizerTest::uniformSizeAlignment<MeshVisualizerDrawUniform2D>,
+              &MeshVisualizerTest::uniformSizeAlignment<MeshVisualizerDrawUniform3D>,
+              &MeshVisualizerTest::uniformSizeAlignment<MeshVisualizerMaterialUniform>,
 
               &MeshVisualizerTest::drawUniform2DConstructDefault,
               &MeshVisualizerTest::drawUniform2DConstructNoInit,
@@ -84,7 +84,7 @@ template<> struct UniformTraits<MeshVisualizerMaterialUniform> {
     static const char* name() { return "MeshVisualizerMaterialUniform"; }
 };
 
-template<class T> void MeshVisualizerTest::uniformSize() {
+template<class T> void MeshVisualizerTest::uniformSizeAlignment() {
     setTestCaseTemplateName(UniformTraits<T>::name());
 
     CORRADE_FAIL_IF(sizeof(T) % sizeof(Vector4) != 0, sizeof(T) << "is not a multiple of vec4 for UBO alignment");
@@ -94,6 +94,8 @@ template<class T> void MeshVisualizerTest::uniformSize() {
     CORRADE_FAIL_IF(768 % sizeof(T) != 0, sizeof(T) << "can't fit exactly into 768-byte UBO alignment");
     if(256 % sizeof(T) != 0)
         CORRADE_WARN(sizeof(T) << "can't fit exactly into 256-byte UBO alignment, only 768");
+
+    CORRADE_COMPARE(alignof(T), 4);
 }
 
 void MeshVisualizerTest::drawUniform2DConstructDefault() {

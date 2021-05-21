@@ -33,7 +33,7 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct GenericTest: TestSuite::Tester {
     explicit GenericTest();
 
-    template<class T> void uniformSize();
+    template<class T> void uniformSizeAlignment();
 
     void projectionUniform2DConstructDefault();
     void projectionUniform2DConstructNoInit();
@@ -57,11 +57,11 @@ struct GenericTest: TestSuite::Tester {
 };
 
 GenericTest::GenericTest() {
-    addTests({&GenericTest::uniformSize<ProjectionUniform2D>,
-              &GenericTest::uniformSize<ProjectionUniform3D>,
-              &GenericTest::uniformSize<TransformationUniform2D>,
-              &GenericTest::uniformSize<TransformationUniform3D>,
-              &GenericTest::uniformSize<TextureTransformationUniform>,
+    addTests({&GenericTest::uniformSizeAlignment<ProjectionUniform2D>,
+              &GenericTest::uniformSizeAlignment<ProjectionUniform3D>,
+              &GenericTest::uniformSizeAlignment<TransformationUniform2D>,
+              &GenericTest::uniformSizeAlignment<TransformationUniform3D>,
+              &GenericTest::uniformSizeAlignment<TextureTransformationUniform>,
 
               &GenericTest::projectionUniform2DConstructDefault,
               &GenericTest::projectionUniform2DConstructNoInit,
@@ -103,7 +103,7 @@ template<> struct UniformTraits<TextureTransformationUniform> {
     static const char* name() { return "TextureTransformationUniform"; }
 };
 
-template<class T> void GenericTest::uniformSize() {
+template<class T> void GenericTest::uniformSizeAlignment() {
     setTestCaseTemplateName(UniformTraits<T>::name());
 
     CORRADE_FAIL_IF(sizeof(T) % sizeof(Vector4) != 0, sizeof(T) << "is not a multiple of vec4 for UBO alignment.");
@@ -113,6 +113,8 @@ template<class T> void GenericTest::uniformSize() {
     CORRADE_FAIL_IF(768 % sizeof(T) != 0, sizeof(T) << "can't fit exactly into 768-byte UBO alignment.");
     if(256 % sizeof(T) != 0)
         CORRADE_WARN(sizeof(T) << "can't fit exactly into 256-byte UBO alignment, only 768.");
+
+    CORRADE_COMPARE(alignof(T), 4);
 }
 
 void GenericTest::projectionUniform2DConstructDefault() {

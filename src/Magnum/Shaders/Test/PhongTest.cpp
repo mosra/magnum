@@ -34,7 +34,7 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct PhongTest: TestSuite::Tester {
     explicit PhongTest();
 
-    template<class T> void uniformSize();
+    template<class T> void uniformSizeAlignment();
 
     void drawUniformConstructDefault();
     void drawUniformConstructNoInit();
@@ -51,9 +51,9 @@ struct PhongTest: TestSuite::Tester {
 };
 
 PhongTest::PhongTest() {
-    addTests({&PhongTest::uniformSize<PhongDrawUniform>,
-              &PhongTest::uniformSize<PhongMaterialUniform>,
-              &PhongTest::uniformSize<PhongLightUniform>,
+    addTests({&PhongTest::uniformSizeAlignment<PhongDrawUniform>,
+              &PhongTest::uniformSizeAlignment<PhongMaterialUniform>,
+              &PhongTest::uniformSizeAlignment<PhongLightUniform>,
 
               &PhongTest::drawUniformConstructDefault,
               &PhongTest::drawUniformConstructNoInit,
@@ -82,7 +82,7 @@ template<> struct UniformTraits<PhongLightUniform> {
     static const char* name() { return "PhongLightUniform"; }
 };
 
-template<class T> void PhongTest::uniformSize() {
+template<class T> void PhongTest::uniformSizeAlignment() {
     setTestCaseTemplateName(UniformTraits<T>::name());
 
     CORRADE_FAIL_IF(sizeof(T) % sizeof(Vector4) != 0, sizeof(T) << "is not a multiple of vec4 for UBO alignment.");
@@ -92,6 +92,8 @@ template<class T> void PhongTest::uniformSize() {
     CORRADE_FAIL_IF(768 % sizeof(T) != 0, sizeof(T) << "can't fit exactly into 768-byte UBO alignment.");
     if(256 % sizeof(T) != 0)
         CORRADE_WARN(sizeof(T) << "can't fit exactly into 256-byte UBO alignment, only 768.");
+
+    CORRADE_COMPARE(alignof(T), 4);
 }
 
 void PhongTest::drawUniformConstructDefault() {
