@@ -237,7 +237,8 @@ VectorGLTest::VectorGLTest() {
         #endif
         });
 
-    addTests({
+    /* MSVC needs explicit type due to default template args */
+    addTests<VectorGLTest>({
         &VectorGLTest::renderDefaults2D,
         #ifndef MAGNUM_TARGET_GLES2
         &VectorGLTest::renderDefaults2D<VectorGL2D::Flag::UniformBuffers>,
@@ -250,7 +251,8 @@ VectorGLTest::VectorGLTest() {
         &VectorGLTest::renderSetup,
         &VectorGLTest::renderTeardown);
 
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<VectorGLTest>({
         &VectorGLTest::render2D,
         #ifndef MAGNUM_TARGET_GLES2
         &VectorGLTest::render2D<VectorGL2D::Flag::UniformBuffers>,

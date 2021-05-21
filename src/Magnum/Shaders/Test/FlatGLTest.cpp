@@ -336,7 +336,8 @@ FlatGLTest::FlatGLTest() {
         #endif
     });
 
-    addTests({
+    /* MSVC needs explicit type due to default template args */
+    addTests<FlatGLTest>({
         &FlatGLTest::renderDefaults2D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderDefaults2D<FlatGL2D::Flag::UniformBuffers>,
@@ -365,7 +366,8 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
 
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<FlatGLTest>({
         &FlatGLTest::renderTextured2D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderTextured2D<FlatGL2D::Flag::UniformBuffers>,
@@ -379,7 +381,8 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
 
-    addTests({
+    /* MSVC needs explicit type due to default template args */
+    addTests<FlatGLTest>({
         &FlatGLTest::renderVertexColor2D<Color3>,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderVertexColor2D<Color3, FlatGL2D::Flag::UniformBuffers>,
@@ -400,7 +403,8 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
 
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<FlatGLTest>({
         &FlatGLTest::renderAlpha2D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderAlpha2D<FlatGL2D::Flag::UniformBuffers>,
@@ -415,7 +419,8 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderAlphaTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<FlatGLTest>({
         &FlatGLTest::renderObjectId2D,
         &FlatGLTest::renderObjectId2D<FlatGL2D::Flag::UniformBuffers>,
         &FlatGLTest::renderObjectId3D,
@@ -425,7 +430,8 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderObjectIdTeardown);
     #endif
 
-    addTests({
+    /* MSVC needs explicit type due to default template args */
+    addTests<FlatGLTest>({
         &FlatGLTest::renderInstanced2D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderInstanced2D<FlatGL2D::Flag::UniformBuffers>,

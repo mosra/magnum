@@ -188,7 +188,8 @@ VertexColorGLTest::VertexColorGLTest() {
         #endif
         });
 
-    addTests({
+    /* MSVC needs explicit type due to default template args */
+    addTests<VertexColorGLTest>({
         &VertexColorGLTest::renderDefaults2D<Color3>,
         #ifndef MAGNUM_TARGET_GLES2
         &VertexColorGLTest::renderDefaults2D<Color3, VertexColorGL2D::Flag::UniformBuffers>,

@@ -620,7 +620,8 @@ PhongGLTest::PhongGLTest() {
         #endif
     });
 
-    addTests({
+    /* MSVC needs explicit type due to default template args */
+    addTests<PhongGLTest>({
         &PhongGLTest::renderDefaults,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderDefaults<PhongGL::Flag::UniformBuffers>
@@ -629,7 +630,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderColored,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderColored<PhongGL::Flag::UniformBuffers>
@@ -639,7 +641,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderSinglePixelTextured,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderSinglePixelTextured<PhongGL::Flag::UniformBuffers>
@@ -649,7 +652,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderTextured,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderTextured<PhongGL::Flag::UniformBuffers>
@@ -659,7 +663,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderTexturedNormal,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderTexturedNormal<PhongGL::Flag::UniformBuffers>
@@ -669,7 +674,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addTests({
+    /* MSVC needs explicit type due to default template args */
+    addTests<PhongGLTest>({
         &PhongGLTest::renderVertexColor<Color3>,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderVertexColor<Color3, PhongGL::Flag::UniformBuffers>,
@@ -682,7 +688,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderShininess,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderShininess<PhongGL::Flag::UniformBuffers>,
@@ -692,7 +699,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderAlpha,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderAlpha<PhongGL::Flag::UniformBuffers>
@@ -703,7 +711,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderAlphaTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderObjectId,
         &PhongGLTest::renderObjectId<PhongGL::Flag::UniformBuffers>},
         Containers::arraySize(RenderObjectIdData),
@@ -711,7 +720,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderObjectIdTeardown);
     #endif
 
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderLights,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderLights<PhongGL::Flag::UniformBuffers>,
@@ -726,7 +736,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addTests({
+    /* MSVC needs explicit type due to default template args */
+    addTests<PhongGLTest>({
         &PhongGLTest::renderZeroLights,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderZeroLights<PhongGL::Flag::UniformBuffers>
@@ -741,7 +752,8 @@ PhongGLTest::PhongGLTest() {
         #endif
     );
 
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderInstanced,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderInstanced<PhongGL::Flag::UniformBuffers>,

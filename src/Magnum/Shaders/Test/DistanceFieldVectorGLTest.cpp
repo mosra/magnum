@@ -259,7 +259,8 @@ DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
         #endif
         });
 
-    addTests({
+    /* MSVC needs explicit type due to default template args */
+    addTests<DistanceFieldVectorGLTest>({
         &DistanceFieldVectorGLTest::renderDefaults2D,
         #ifndef MAGNUM_TARGET_GLES2
         &DistanceFieldVectorGLTest::renderDefaults2D<DistanceFieldVectorGL2D::Flag::UniformBuffers>,
@@ -272,7 +273,8 @@ DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
         &DistanceFieldVectorGLTest::renderSetup,
         &DistanceFieldVectorGLTest::renderTeardown);
 
-    addInstancedTests({
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<DistanceFieldVectorGLTest>({
         &DistanceFieldVectorGLTest::render2D,
         #ifndef MAGNUM_TARGET_GLES2
         &DistanceFieldVectorGLTest::render2D<DistanceFieldVectorGL2D::Flag::UniformBuffers>,
