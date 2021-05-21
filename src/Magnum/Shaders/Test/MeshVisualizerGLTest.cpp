@@ -215,7 +215,9 @@ constexpr struct {
 } ConstructUniformBuffersData2D[] {
     {"classic fallback", MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 1},
     {"", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 1},
-    {"multiple materials, draws", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 64, 128},
+    /* SwiftShader has 256 uniform vectors at most, per-2D-draw is 4,
+       per-material 4, two need to be left for drawOffset + viewportSize */
+    {"multiple materials, draws", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 8, 55},
     /* The rest is basically a copy of ConstructData2D with UniformBuffers
        added */
     #ifndef MAGNUM_TARGET_WEBGL
@@ -271,7 +273,9 @@ constexpr struct {
 } ConstructUniformBuffersData3D[] {
     {"classic fallback", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 1, 1},
     {"", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 1, 1},
-    {"multiple materials, draws", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 64, 128},
+    /* SwiftShader has 256 uniform vectors at most, per-3D-draw is 4+4,
+       per-material 4, plus 4 for projection */
+    {"multiple materials, draws", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 6, 28},
     /* The rest is basically a copy of ConstructData2D with UniformBuffers
        added */
     #ifndef MAGNUM_TARGET_WEBGL

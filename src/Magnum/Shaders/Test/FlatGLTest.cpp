@@ -199,7 +199,9 @@ constexpr struct {
 } ConstructUniformBuffersData[]{
     {"classic fallback", {}, 1},
     {"", FlatGL2D::Flag::UniformBuffers, 1},
-    {"multiple draws", FlatGL2D::Flag::UniformBuffers, 128},
+    /* SwiftShader has 256 uniform vectors at most, per-draw is 4+2 in 3D case
+       and 3+2 in 2D */
+    {"multiple draws", FlatGL2D::Flag::UniformBuffers, 42},
     {"texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1},
     {"alpha mask", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask, 1},
     {"object ID", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId, 1}

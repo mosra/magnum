@@ -218,8 +218,10 @@ constexpr struct {
 } ConstructUniformBuffersData[]{
     {"classic fallback", {}, 1, 1, 1},
     {"", PhongGL::Flag::UniformBuffers, 1, 1, 1},
-    {"multiple lights, materials, draws", PhongGL::Flag::UniformBuffers, 30, 64, 128},
-    {"zero lights", PhongGL::Flag::UniformBuffers, 0, 64, 128},
+    /* SwiftShader has 256 uniform vectors at most, per-3D-draw is 4+4,
+       per-material 4, per-light 4 plus 4 for projection */
+    {"multiple lights, materials, draws", PhongGL::Flag::UniformBuffers, 8, 8, 24},
+    {"zero lights", PhongGL::Flag::UniformBuffers, 0, 16, 24},
     {"ambient + diffuse + specular texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1, 1, 1},
     {"ambient + diffuse + specular texture + texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1},
     {"normal texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture, 1, 1, 1},

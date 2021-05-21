@@ -156,7 +156,9 @@ constexpr struct {
     {"classic fallback", {}, 1, 1},
     {"", DistanceFieldVectorGL2D::Flag::UniformBuffers, 1, 1},
     {"texture transformation", DistanceFieldVectorGL2D::Flag::UniformBuffers|DistanceFieldVectorGL2D::Flag::TextureTransformation, 1, 1},
-    {"multiple materials, draws", DistanceFieldVectorGL2D::Flag::UniformBuffers, 64, 128},
+    /* SwiftShader has 256 uniform vectors at most, per-draw is 4+1 in 3D case
+       and 3+1 in 2D, per-material 4 */
+    {"multiple materials, draws", DistanceFieldVectorGL2D::Flag::UniformBuffers, 16, 48},
 };
 
 constexpr struct {

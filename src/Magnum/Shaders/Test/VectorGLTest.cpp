@@ -155,7 +155,9 @@ constexpr struct {
     {"classic fallback", {}, 1},
     {"", VectorGL2D::Flag::UniformBuffers, 1},
     {"texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1},
-    {"multiple draws", VectorGL2D::Flag::UniformBuffers, 128},
+    /* SwiftShader has 256 uniform vectors at most, per-draw is 4+3 in 3D case
+       and 3+3 in 2D */
+    {"multiple draws", VectorGL2D::Flag::UniformBuffers, 36},
 };
 #endif
 

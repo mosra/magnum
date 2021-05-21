@@ -132,7 +132,9 @@ constexpr struct {
 } ConstructUniformBuffersData[]{
     {"classic fallback", {}, 1},
     {"", VertexColorGL2D::Flag::UniformBuffers, 1},
-    {"multiple draws", VertexColorGL2D::Flag::UniformBuffers, 128}
+    /* SwiftShader has 256 uniform vectors at most, per-draw is 4 in 3D case
+       and 3 in 2D; one needs to be reserved for drawOffset */
+    {"multiple draws", VertexColorGL2D::Flag::UniformBuffers, 63}
 };
 #endif
 
