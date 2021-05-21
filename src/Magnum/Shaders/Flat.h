@@ -52,7 +52,16 @@ each draw call. Texture transformation, if needed, is supplied separately in a
 */
 struct FlatDrawUniform {
     /** @brief Construct with default parameters */
-    constexpr explicit FlatDrawUniform(DefaultInitT = DefaultInit) noexcept: color{1.0f, 1.0f, 1.0f, 1.0f}, objectId{0}, alphaMask{0.5f} {}
+    constexpr explicit FlatDrawUniform(DefaultInitT = DefaultInit) noexcept: color{1.0f, 1.0f, 1.0f, 1.0f}, objectId{0},
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        /* Otherwise it refuses to constexpr, on 3.8 at least */
+        _pad0{}, _pad1{},
+        #endif
+        alphaMask{0.5f}
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        , _pad2{}
+        #endif
+        {}
 
     /** @brief Construct without initializing the contents */
     explicit FlatDrawUniform(NoInitT) noexcept: color{NoInit} {}
@@ -128,11 +137,27 @@ struct FlatDrawUniform {
     /* This field is an UnsignedInt in the shader and skinOffset is extracted
        as (value >> 16), so the order has to be different on BE */
     #ifndef CORRADE_TARGET_BIG_ENDIAN
-    UnsignedShort:16;
-    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :16;
+    UnsignedShort
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :16; /* reserved for skinOffset */
     #else
-    UnsignedShort:16; /* reserved for skinOffset */
-    UnsignedShort:16;
+    UnsignedShort
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :16; /* reserved for skinOffset */
+    UnsignedShort
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :16;
     #endif
     #endif
 
@@ -150,7 +175,11 @@ struct FlatDrawUniform {
     /* warning: Member __pad2__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int:32;
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad2 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
     #endif
 };
 

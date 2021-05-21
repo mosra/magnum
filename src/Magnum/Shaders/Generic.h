@@ -374,7 +374,12 @@ Used only if @ref DistanceFieldVectorGL::Flag::TextureTransformation,
 */
 struct TextureTransformationUniform {
     /** @brief Construct with default parameters */
-    constexpr explicit TextureTransformationUniform(DefaultInitT = DefaultInit) noexcept: rotationScaling{Math::IdentityInit} {}
+    constexpr explicit TextureTransformationUniform(DefaultInitT = DefaultInit) noexcept: rotationScaling{Math::IdentityInit}
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        /* Otherwise it refuses to constexpr, on 3.8 at least */
+        , _pad0{}, _pad1{}
+        #endif
+        {}
     /** @brief Construct without initializing the contents */
     explicit TextureTransformationUniform(NoInitT) noexcept: rotationScaling{NoInit}, offset{NoInit} {}
 
@@ -447,8 +452,16 @@ struct TextureTransformationUniform {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int:32; /* reserved for layer */
-    Int:32; /* reserved for coordinateSet */
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32; /* reserved for layer */
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32; /* reserved for coordinateSet */
     #endif
 };
 

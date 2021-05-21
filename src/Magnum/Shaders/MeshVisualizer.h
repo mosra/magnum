@@ -54,7 +54,18 @@ separate @ref MeshVisualizerMaterialUniform structure, referenced by
 */
 struct MeshVisualizerDrawUniform2D {
     /** @brief Construct with default parameters */
-    constexpr explicit MeshVisualizerDrawUniform2D(DefaultInitT = DefaultInit) noexcept: materialId{0} {}
+    constexpr explicit MeshVisualizerDrawUniform2D(DefaultInitT = DefaultInit) noexcept:
+        #if ((defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)) && defined(CORRADE_TARGET_BIG_ENDIAN)
+        _pad0{}, /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        materialId{0}
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        #ifndef CORRADE_TARGET_BIG_ENDIAN
+        , _pad0{}
+        #endif
+        , _pad1{}, _pad2{}, _pad3{}
+        #endif
+        {}
 
     /** @brief Construct without initializing the contents */
     explicit MeshVisualizerDrawUniform2D(NoInitT) noexcept {}
@@ -100,19 +111,39 @@ struct MeshVisualizerDrawUniform2D {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :16; /* reserved for skinOffset */
     #endif
     #else
-    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :16; /* reserved for skinOffset */
     UnsignedShort materialId;
     #endif
 
     /* warning: Member __pad1__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int:32;
-    Int:32;
-    Int:32;
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad2 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad3 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
     #endif
 };
 
@@ -128,7 +159,18 @@ shared among multiple draw calls and thus are provided in a separate
 */
 struct MeshVisualizerDrawUniform3D {
     /** @brief Construct with default parameters */
-    constexpr explicit MeshVisualizerDrawUniform3D(DefaultInitT = DefaultInit) noexcept: normalMatrix{Math::IdentityInit}, materialId{0} {}
+    constexpr explicit MeshVisualizerDrawUniform3D(DefaultInitT = DefaultInit) noexcept: normalMatrix{Math::IdentityInit}
+        #if ((defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)) && defined(CORRADE_TARGET_BIG_ENDIAN)
+        , _pad0{} /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        , materialId{0}
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        #ifndef CORRADE_TARGET_BIG_ENDIAN
+        , _pad0{}
+        #endif
+        , _pad1{}, _pad2{}, _pad3{}
+        #endif
+        {}
 
     /** @brief Construct without initializing the contents */
     explicit MeshVisualizerDrawUniform3D(NoInitT) noexcept: normalMatrix{NoInit} {}
@@ -194,19 +236,39 @@ struct MeshVisualizerDrawUniform3D {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :16; /* reserved for skinOffset */
     #endif
     #else
-    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :16; /* reserved for skinOffset */
     UnsignedShort materialId;
     #endif
 
     /* warning: Member __pad1__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int:32;
-    Int:32;
-    Int:32;
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad2 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad3 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
     #endif
 };
 
@@ -220,7 +282,12 @@ Describes material properties referenced from
 */
 struct MeshVisualizerMaterialUniform {
     /** @brief Construct with default parameters */
-    constexpr explicit MeshVisualizerMaterialUniform(DefaultInitT = DefaultInit) noexcept: color{1.0f, 1.0f, 1.0f, 1.0f}, wireframeColor{0.0f, 0.0f, 0.0f, 1.0f}, wireframeWidth{1.0f}, colorMapOffset{1.0f/512.0f}, colorMapScale{1.0f/256.0f}, lineWidth{1.0f}, lineLength{1.0f}, smoothness{2.0f} {}
+    constexpr explicit MeshVisualizerMaterialUniform(DefaultInitT = DefaultInit) noexcept: color{1.0f, 1.0f, 1.0f, 1.0f}, wireframeColor{0.0f, 0.0f, 0.0f, 1.0f}, wireframeWidth{1.0f}, colorMapOffset{1.0f/512.0f}, colorMapScale{1.0f/256.0f}, lineWidth{1.0f}, lineLength{1.0f}, smoothness{2.0f}
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        /* Otherwise it refuses to constexpr, on 3.8 at least */
+        , _pad0{}, _pad1{}
+        #endif
+        {}
 
     /** @brief Construct without initializing the contents */
     explicit MeshVisualizerMaterialUniform(NoInitT) noexcept: color{NoInit}, wireframeColor{NoInit} {}
@@ -432,8 +499,16 @@ struct MeshVisualizerMaterialUniform {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int:32;
-    Int:32;
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
     #endif
 };
 
