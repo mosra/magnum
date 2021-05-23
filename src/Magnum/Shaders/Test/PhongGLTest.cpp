@@ -162,18 +162,31 @@ struct PhongGLTest: GL::OpenGLTester {
 };
 
 /*
-    Rendering tests done on:
+    Rendering tests done:
 
-    -   Mesa Intel
-    -   Mesa AMD
-    .   Mesa llvmpipe
-    -   SwiftShader ES2/ES3
-    -   ARM Mali (Huawei P10) ES2/ES3 (except instancing)
-    -   WebGL 1 / 2 (on Mesa Intel) (except instancing)
-    -   NVidia Windows (except instancing)
-    -   Intel Windows (except instancing)
-    -   AMD on macOS (except instancing)
-    -   iPhone 6 w/ iOS 12.4 (except instancing)
+    [B] base
+    [A] alpha mask
+    [D] object ID
+    [L] point lights
+    [I] instancing
+    [O] draw offset
+
+    Mesa Intel                      BADLIO
+               ES2                       x
+               ES3                  BADLIO
+    Mesa AMD                        BAD I
+    Mesa llvmpipe                   BAD I
+    SwiftShader ES2                 BADLIx
+                ES3                 BADLI
+    ARM Mali (Huawei P10) ES2       BAD  x
+                          ES3       BADLIO
+    WebGL (on Mesa Intel) 1.0       BAD  x
+                          2.0       BADLIO
+    NVidia                          BAD
+    Intel Windows                   BAD
+    AMD macOS                       BAD
+    Intel macOS                     BADLIO
+    iPhone 6 w/ iOS 12.4 ES3        BAD
 */
 
 constexpr struct {
@@ -565,16 +578,24 @@ constexpr struct {
 } RenderMultiData[] {
     {"bind with offset, colored", "multidraw.tga",
         {},
-        2, 1, 1, 16, 0.0f, 0.0f},
+        2, 1, 1, 16,
+        /* Minor differences on ARM Mali */
+        3.34f, 0.01f},
     {"bind with offset, textured", "multidraw-textured.tga",
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
-        2, 1, 1, 16, 0.0f, 0.0f},
+        2, 1, 1, 16,
+        /* Minor differences on ARM Mali */
+        4.67f, 0.02f},
     {"draw offset, colored", "multidraw.tga",
         {},
-        4, 2, 3, 1, 0.0f, 0.0f},
+        4, 2, 3, 1,
+        /* Minor differences on ARM Mali */
+        3.34f, 0.01f},
     {"draw offset, textured", "multidraw-textured.tga",
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
-        4, 2, 3, 1, 0.0f, 0.0f}
+        4, 2, 3, 1,
+        /* Minor differences on ARM Mali */
+        4.67f, 0.02f},
 };
 #endif
 
@@ -2022,7 +2043,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
         #elif !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /* SwiftShader has some minor rounding differences (max = 1.67). ARM
            Mali G71 has bigger rounding differences. */
-        const Float maxThreshold = 12.0f, meanThreshold = 0.043f;
+        const Float maxThreshold = 221.0f, meanThreshold = 0.106f;
         #else
         /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
         const Float maxThreshold = 16.667f, meanThreshold = 2.583f;

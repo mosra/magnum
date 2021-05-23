@@ -112,14 +112,27 @@ struct VertexColorGLTest: GL::OpenGLTester {
 };
 
 /*
-    Rendering tests done on:
+    Rendering tests done:
 
-    -   Mesa Intel
-    -   Mesa AMD
-    -   SwiftShader ES2/ES3
-    -   ARM Mali (Huawei P10) ES2/ES3
-    -   WebGL 1 / 2 (on Mesa Intel)
-    -   iPhone 6 w/ iOS 12.4
+    [B] base
+    [O] draw offset
+
+    Mesa Intel                      BO
+               ES2                   x
+               ES3                  BO
+    Mesa AMD                        B
+    Mesa llvmpipe                   B
+    SwiftShader ES2                 Bx
+                ES3                 B
+    ARM Mali (Huawei P10) ES2       Bx
+                          ES3       BO
+    WebGL (on Mesa Intel) 1.0       Bx
+                          2.0       BO
+    NVidia
+    Intel Windows
+    AMD macOS
+    Intel macOS                     BO
+    iPhone 6 w/ iOS 12.4 ES3        B
 */
 
 using namespace Math::Literals;
@@ -148,9 +161,13 @@ constexpr struct {
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
     {"bind with offset", "multidraw2D.tga", "multidraw3D.tga",
-        1, 16, 0.0f, 0.0f},
+        1, 16,
+        /* Minor differences on ARM Mali */
+        0.34f, 0.01f},
     {"draw offset", "multidraw2D.tga", "multidraw3D.tga",
-        3, 1, 0.0f, 0.0f}
+        3, 1,
+        /* Minor differences on ARM Mali */
+        0.34f, 0.01f},
 };
 #endif
 

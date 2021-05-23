@@ -155,18 +155,30 @@ struct FlatGLTest: GL::OpenGLTester {
 };
 
 /*
-    Rendering tests done on:
+    Rendering tests done:
 
-    -   Mesa Intel
-    -   Mesa AMD
-    -   Mesa llvmpipe
-    -   SwiftShader ES2/ES3
-    -   ARM Mali (Huawei P10) ES2/ES3 (except instancing)
-    -   WebGL 1 / 2 (on Mesa Intel) (except instancing)
-    -   NVidia Windows (except instancing)
-    -   Intel Windows (except instancing)
-    -   AMD on macOS (except instancing)
-    -   iPhone 6 w/ iOS 12.4 (except instancing)
+    [B] base
+    [A] alpha mask
+    [D] object ID
+    [I] instancing
+    [O] draw offset
+
+    Mesa Intel                      BADIO
+               ES2                      x
+               ES3                  BADIO
+    Mesa AMD                        BADI
+    Mesa llvmpipe                   BADI
+    SwiftShader ES2                 BADIx
+                ES3                 BADI
+    ARM Mali (Huawei P10) ES2       BAD x
+                          ES3       BADIO
+    WebGL (on Mesa Intel) 1.0       BAD x
+                          2.0       BADIO
+    NVidia                          BAD
+    Intel Windows                   BAD
+    AMD macOS                       BAD
+    Intel macOS                     BADIO
+    iPhone 6 w/ iOS 12.4 ES3        BAD
 */
 
 using namespace Math::Literals;
@@ -274,12 +286,16 @@ constexpr struct {
         {}, 1, 16, 0.0f, 0.0f},
     {"bind with offset, textured", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
-        1, 16, 0.0f, 0.0f},
+        1, 16,
+        /* Minor differences on ARM Mali */
+        2.34f, 0.01f},
     {"draw offset, colored", "multidraw2D.tga", "multidraw3D.tga",
         {}, 3, 1, 0.0f, 0.0f},
     {"draw offset, textured", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
-        3, 1, 0.0f, 0.0f}
+        3, 1,
+        /* Minor differences on ARM Mali */
+        2.34f, 0.01f}
 };
 #endif
 

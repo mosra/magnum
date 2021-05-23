@@ -174,15 +174,29 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
 };
 
 /*
-    Rendering tests done on:
+    Rendering tests done:
 
-    -   Mesa Intel
-    -   Mesa AMD
-    .   Mesa llvmpipe
-    -   SwiftShader ES2/ES3
-    -   ARM Mali (Huawei P10) ES2/ES3 (except TBN visualization)
-    -   WebGL 1 / 2 (on Mesa Intel) (except primitive/vertex/object ID)
-    -   iPhone 6 w/ iOS 12.4 (except primitive/vertex/object ID)
+    [W] wireframe
+    [D] primitive/vertex/object ID
+    [T] TBN visualization
+    [O] draw offset
+
+    Mesa Intel                      WDTO
+               ES2                     x
+               ES3
+    Mesa AMD                        WDT
+    Mesa llvmpipe                   WDT
+    SwiftShader ES2                 WDxx
+                ES3                 WDx
+    ARM Mali (Huawei P10) ES2       W xx
+                          ES3       W  O (WDT big diffs, needs investigation)
+    WebGL (on Mesa Intel) 1.0       W xx
+                          2.0       W x
+    NVidia
+    Intel Windows
+    AMD macOS
+    Intel macOS                     WDTO
+    iPhone 6 w/ iOS 12.4 ES3        W x
 */
 
 using namespace Math::Literals;
@@ -554,25 +568,37 @@ constexpr struct {
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, wireframe", "multidraw-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe,
-        1, 1, 16, 0.0f, 0.0f},
+        1, 1, 16,
+        /* Minor differences on ARM Mali */
+        0.67f, 0.01f},
     #endif
     {"bind with offset, w/o GS", "multidraw-wireframe-nogeo2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
-        1, 1, 16, 0.0f, 0.0f},
+        1, 1, 16,
+        /* Minor differences on ARM Mali */
+        0.67f, 0.02f},
     {"bind with offset, vertex ID", "multidraw-vertexid2D.tga",
         MeshVisualizerGL2D::Flag::VertexId,
-        1, 1, 16, 0.0f, 0.0f},
+        1, 1, 16,
+        /* Minor differences on ARM Mali */
+        0.67f, 0.01f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, wireframe", "multidraw-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, 1,
+        /* Minor differences on ARM Mali */
+        0.67f, 0.01f},
     #endif
     {"draw offset, wireframe w/o GS", "multidraw-wireframe-nogeo2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, 1,
+        /* Minor differences on ARM Mali */
+        0.67f, 0.02f},
     {"draw offset, vertex ID", "multidraw-vertexid2D.tga",
         MeshVisualizerGL2D::Flag::VertexId,
-        2, 3, 1, 0.0f, 0.0f}
+        2, 3, 1,
+        /* Minor differences on ARM Mali */
+        0.67f, 0.01f},
 };
 
 constexpr struct {
@@ -593,10 +619,14 @@ constexpr struct {
     #endif
     {"bind with offset, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
-        1, 1, 16, 0.0f, 0.0f},
+        1, 1, 16,
+        /* Minor differences on ARM Mali */
+        6.0f, 0.04f},
     {"bind with offset, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::VertexId,
-        1, 1, 16, 0.0f, 0.0f},
+        1, 1, 16,
+        /* Minor differences on ARM Mali */
+        0.67f, 0.01f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe,
@@ -607,10 +637,14 @@ constexpr struct {
     #endif
     {"draw offset, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, 1,
+        /* Minor differences on ARM Mali */
+        6.0f, 0.04f},
     {"draw offset, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::VertexId,
-        2, 3, 1, 0.0f, 0.0f}
+        2, 3, 1,
+        /* Minor differences on ARM Mali */
+        0.67f, 0.01f},
 };
 #endif
 
@@ -3084,8 +3118,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
     Float maxThreshold = 1.334f, meanThreshold = 0.018f;
     #ifdef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>()) {
-        maxThreshold = 39.0f;
-        meanThreshold = 1.207f;
+        maxThreshold = 58.0f;
+        meanThreshold = 1.547f;
     }
     #endif
     CORRADE_COMPARE_WITH(
