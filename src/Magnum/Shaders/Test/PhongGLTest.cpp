@@ -2794,6 +2794,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         Matrix3x3 normal;
         Color3 color;
         Vector2 textureOffset;
+        /* instanced ObjectId tested directly in renderObjectId() */
     } instanceData[] {
         {Matrix4::translation({-1.25f, -1.25f, 0.0f})*
          Matrix4::rotationX(90.0_degf),
