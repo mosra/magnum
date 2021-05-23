@@ -248,6 +248,44 @@ well to ensure lighting works:
 @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays} in WebGL
     1.0.
 
+@section Shaders-PhongGL-ubo Uniform buffers
+
+See @ref shaders-usage-ubo for a high-level overview that applies to all
+shaders. In this particular case, the shader needs a separate
+@ref ProjectionUniform3D and @ref TransformationUniform3D buffer, lights are
+supplied via a @ref PhongLightUniform. To maximize use of the limited uniform
+buffer memory, materials are supplied separately in a @ref PhongMaterialUniform
+buffer and then referenced via @relativeref{PhongDrawUniform,materialId} from a
+@ref PhongDrawUniform; for optional texture transformation a per-draw
+@ref TextureTransformationUniform can be supplied as well. A uniform buffer
+setup equivalent to the @ref Shaders-PhongGL-colored "colored case at the top",
+with one default light, would look like this:
+
+@snippet MagnumShaders-gl.cpp PhongGL-ubo
+
+For a multidraw workflow enable @ref Flag::MultiDraw (and possibly
+@ref Flag::TextureArrays) and supply desired light, material and draw count in
+the @ref PhongGL(Flags, UnsignedInt, UnsignedInt, UnsignedInt) constructor. For
+every draw then specify material references and texture offsets/layers, it's
+also possible to perform per-draw light culling by supplying a subrange into
+the @ref PhongLightUniform array using @ref PhongDrawUniform::lightOffset and
+@relativeref{PhongDrawUniform,lightCount}. Besides that, the usage is similar
+for all shaders, see @ref shaders-usage-multidraw for an example.
+
+@requires_gl30 Extension @gl_extension{EXT,texture_array} for texture arrays.
+@requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object} for uniform
+    buffers.
+@requires_gl46 Extension @gl_extension{ARB,shader_draw_parameters} for
+    multidraw.
+@requires_gles30 Neither texture arrays nor uniform buffers are available in
+    OpenGL ES 2.0.
+@requires_webgl20 Neither texture arrays nor uniform buffers are available in
+    WebGL 1.0.
+@requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+    (unlisted) for multidraw.
+@requires_webgl_extension Extension @webgl_extension{ANGLE,multi_draw} for
+    multidraw.
+
 @see @ref shaders
 */
 class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {

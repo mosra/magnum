@@ -156,6 +156,41 @@ color to a mesh:
 @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays} in WebGL
     1.0.
 
+@section Shaders-FlatGL-ubo Uniform buffers
+
+See @ref shaders-usage-ubo for a high-level overview that applies to all
+shaders. In this particular case, because the shader doesn't need a separate
+projection and transformation matrix, a combined one is supplied via a
+@ref TransformationProjectionUniform2D / @ref TransformationProjectionUniform3D
+buffer. To maximize use of the limited uniform buffer memory, materials are
+supplied separately in a @ref FlatMaterialUniform buffer and then referenced
+via @relativeref{FlatDrawUniform,materialId} from a @ref FlatDrawUniform; for
+optional texture transformation a per-draw @ref TextureTransformationUniform
+can be supplied as well. A uniform buffer setup equivalent to the
+@ref Shaders-FlatGL-colored "colored case at the top" would look like this:
+
+@snippet MagnumShaders-gl.cpp FlatGL-ubo
+
+For a multidraw workflow enable @ref Flag::MultiDraw (and possibly
+@ref Flag::TextureArrays), supply desired material and draw count in the
+@ref FlatGL(Flags, UnsignedInt, UnsignedInt) constructor and specify material
+references and texture offsets/layers for every draw. The usage is similar for
+all shaders, see @ref shaders-usage-multidraw for an example.
+
+@requires_gl30 Extension @gl_extension{EXT,texture_array} for texture arrays.
+@requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object} for uniform
+    buffers.
+@requires_gl46 Extension @gl_extension{ARB,shader_draw_parameters} for
+    multidraw.
+@requires_gles30 Neither texture arrays nor uniform buffers are available in
+    OpenGL ES 2.0.
+@requires_webgl20 Neither texture arrays nor uniform buffers are available in
+    WebGL 1.0.
+@requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+    (unlisted) for multidraw.
+@requires_webgl_extension Extension @webgl_extension{ANGLE,multi_draw} for
+    multidraw.
+
 @see @ref shaders, @ref FlatGL2D, @ref FlatGL3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::AbstractShaderProgram {

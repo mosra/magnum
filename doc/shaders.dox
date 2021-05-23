@@ -34,8 +34,7 @@ namespace Magnum {
 
 Magnum contains a set of general-purpose shaders for easy prototyping, UI
 rendering and data visualization/debugging in both 2D and 3D scenes. The
-following shaders are available, see documentation of each class for sample
-output and example setup:
+following shaders are available:
 
 -   @ref Shaders::FlatGL "Shaders::FlatGL*D" --- flat shading using single
     color or texture
@@ -48,32 +47,245 @@ output and example setup:
 -   @ref Shaders::MeshVisualizerGL2D / @ref Shaders::MeshVisualizerGL3D ---
     wireframe visualization
 
-All the builtin shaders can be used on unextended OpenGL 2.1 and OpenGL ES 2.0
-/ WebGL 1.0, but they try to use the most recent technology available to have
-them as efficient as possible on every configuration.
+The essential functionality of builtin shaders can be used even on unextended
+OpenGL 2.1 and OpenGL ES 2.0 / WebGL 1.0, but the code will try to use the most
+recent technology available to have them as efficient as possible on every
+configuration. Some functionality, such as uniform buffers, texture arrays or
+object ID rendering, requires newer versions or extensions, as noted in
+documentation of a particular feature.
 
 @section shaders-usage Usage
 
-Shader usage is divided into two parts: configuring vertex attributes in the
-mesh and configuring the shader itself.
+Shader usage is divided into two parts: describing vertex attributes in the
+mesh and setting up the shader itself.
 
-Each shader expects some set of vertex attributes, thus when adding vertex
+Each shader expects some set of vertex attributes, thus when adding a vertex
 buffer into the mesh, you need to specify which shader attributes are on which
 position in the buffer. See @ref GL::Mesh::addVertexBuffer() for details and
-usage examples. Example mesh configuration for @ref Shaders::PhongGL shader:
+usage examples. Example mesh configuration for the @ref Shaders::PhongGL
+shader:
 
 @snippet MagnumShaders-gl.cpp shaders-setup
 
 Each shader then has its own set of configuration functions. Some configuration
 is static, specified commonly as flags in constructor, directly affecting
 compiled shader code. Other configuration is specified through uniforms and
-various binding points, commonly exposed through various setters. All shader
-uniforms have a reasonable defaults so you are able to see at least something
-when using the shader directly without any further configuration, but in most
-cases you may want to specify at least the transformation/projection matrices.
-Example configuration and rendering using @link Shaders::PhongGL @endlink:
+various binding points, commonly exposed through various setters. For uniforms
+there's two different workflows --- a classical one, where uniforms have
+immediate setters, and a uniform buffer workflow, where the uniform parameters
+are saved to a structure and then uploaded to a GPU buffer. Let's compare both
+approaches:
 
-@snippet MagnumShaders-gl.cpp shaders-rendering
+@subsection shaders-usage-classic Using classic uniforms
+
+The most straightforward and portable way, working even on old OpenGL ES 2.0
+and WebGL 1.0 platforms, is using classic uniform setters. All shader uniforms
+have a reasonable defaults so you are able to see at least something when using
+the shader directly without any further configuration, but in most cases you
+may want to specify at least the transformation/projection matrices.
+Example configuration and rendering using @link Shaders::PhongGL @endlink ---
+by default it's just colored and uses a single light, and we set a color of
+both in addition to transformation, projection and normal matrices:
+
+@snippet MagnumShaders-gl.cpp shaders-classic
+
+@subsection shaders-usage-ubo Using uniform buffers
+
+Uniform buffers require GL 3.1, OpenGL ES 3.0 or WebGL 2.0 and are more verbose
+to set up, but when used the right way they can result in greatly reduced
+driver overhead. Uniform buffers get enabled using the
+@relativeref{Shaders::PhongGL,Flag::UniformBuffers} flag that's implemented for
+all builtin shaders, and after that you're not supposed to use most of the
+`set*()` APIs anymore, instead you have to fill uniform structures, upload them
+to @ref GL::Buffer instances and then bind those via various `bind*Buffer()`
+APIs. To simplify porting, documentation of each classic uniform setter lists
+the equivalent uniform buffer APIs.
+
+Because some parameters such as projection, material or light setup don't
+change every draw, they are organized into buffers based on expected frequency
+of change. This way you can fill the projection and material buffers just once
+at the start, light setup only when the camera position changes and with much
+less to upload for every draw. The separation is also done in a way that makes
+it possible to reuse projection/transformation data among different shaders,
+e.g. for a depth pre-pass.
+
+In the following example, projection and transformation parameters are supplied
+via generic shader-independent @ref Shaders::ProjectionUniform3D and
+@ref Shaders::TransformationUniform3D structures and Phong-specific parameters
+then via @ref Shaders::PhongDrawUniform, @ref Shaders::PhongMaterialUniform and
+@ref Shaders::PhongLightUniform structures. While the structures expose the
+fields directly, the data layout may be non-trivial and it's thus recommended
+to use the setters unless they prove to be a performance bottleneck:
+
+@snippet MagnumShaders-gl.cpp shaders-ubo
+
+Altogether, this results in the same output as in the classic uniform case
+shown above. Similarly to the classic uniforms, default-constructed structures
+have reasonable defaults to make the shader render at least something, but note
+that you *have to* bind the buffer to get the defaults, without a buffer bound
+you'll get a fully black mesh at best and nothing rendered at all in the worst
+cases.
+
+@m_class{m-block m-success}
+
+@par Importance of buffer usage and storage flags
+    With uniform buffers, it's very important what kind of memory gets used for
+    the backing storage. In the above snippets, the (implicit)
+    @ref GL::BufferUsage::StaticDraw got used for simplicity, but for data that
+    are changed for every draw it could make sense to pick
+    @ref GL::BufferUsage::DynamicDraw instead.
+@par
+    The most ideal way may be to use @gl_extension{ARB,buffer_storage}
+    from OpenGL 4.4, and instead of @ref GL::Buffer::setData() calling
+    @relativeref{GL::Buffer,setStorage()} directly with the uniform data and
+    with empty @ref GL::Buffer::StorageFlags, which makes the buffer immutable.
+    Updating such immutable buffer can be still done via
+    @ref GL::Buffer::copy() from another buffer, but setting or mapping the
+    data from the CPU side won't be possible.
+@par
+    As with everything, be sure to profile and pick the best workflow for your
+    target platform --- what's best for desktop may not be the best in WebGL,
+    and what works with WebGL running on top GL may not be the best with WebGL
+    that's itself implemented using D3D or Metal.
+
+@subsection shaders-usage-multidraw Multidraw and reducing driver overhead
+
+The main advantage of uniform buffers is the ability to specify data for
+multiple draws together --- after all, having to reupload three or four buffers
+for every draw like shown above wouldn't be really faster or easier than
+setting the uniforms directly. On the other hand, uploading everything first
+and binding a different subrange each time would avoid the reupload, but since
+most drivers have uniform buffer alignment requirement as high as 256 bytes
+(@ref GL::Buffer::uniformOffsetAlignment()), the per-draw buffers would have to
+be very sparse.
+
+Instead, it's possible to construct the shaders with a statically defined
+draw count, fill the buffers with data for that many draws at once and then use
+@relativeref{Shaders::PhongGL,setDrawOffset()} to pick concrete per-draw
+parameters. Since material parameters are commonly shared among multiple draws,
+the desired usage is to upload unique materials and then reference them via a
+@ref Shaders::PhongDrawUniform::materialId "Shaders::*DrawUniform::materialId".
+The following snippet shows drawing three different meshes, where two of them
+share the same material definition. The projection and light buffer is the same
+as above:
+
+@snippet MagnumShaders-gl.cpp shaders-multi
+
+While this minimizes the state changes to just a single immediate uniform being
+changed between draws, it's possible to go even further by using
+@ref GL::MeshView instances onto a single @ref GL::Mesh instead of several
+different @ref GL::Mesh objects --- that way the attribute layout doesn't need
+to be updated and it's just submitting draws with different offsets and counts.
+
+Finally, with mesh views and on platforms that support @gl_extension{ARB,shader_draw_parameters} from OpenGL 4.6 or the
+@gl_extension{ANGLE,multi_draw} / @webgl_extension{WEBGL,multi_draw} ES and
+WebGL extension, it's possible to directly submit a multi-draw command. The
+shader needs to have @relativeref{Shaders::PhongGL,Flag::MultiDraw} enabled,
+which will make it use the @glsl gl_DrawID @ce builtin to pick the per-draw
+parameters on its own. The above snippet modified for multidraw would then look
+like this, uniform upload and binding is the same as before:
+
+@snippet MagnumShaders-gl.cpp shaders-multidraw
+
+<b></b>
+
+@m_class{m-block m-warning}
+
+@par Uniform buffer size limits
+    Note that size of a single uniform buffer that can be bound to a shader is
+    quite limited (@ref GL::AbstractShaderProgram::maxUniformBlockSize(),
+    usually just 16 or 64 kB), and another reason the parameters are separated
+    and deduplicated among several buffers is to maximize use of that memory.
+    With that you should always be able to submit at least 256 draws at once as
+    the biggest per-draw uniform structure used by builtin shaders has a size
+    of a 4x4 matrix.
+@par
+    For larger batches the expected workflow is to still upload everything at
+    once but then bind and draw smaller (and properly aligned) subranges that
+    fit into the limit. For convenience, all uniform structures are guaranteed
+    to fit evenly into multiples of 768 bytes, which should be large enough for
+    even the strictest @ref GL::Buffer::uniformOffsetAlignment() requirements.
+
+@subsection shaders-usage-instancing Instancing
+
+@ref Shaders::FlatGL and @ref Shaders::PhongGL support instancing, which allows
+them to render the same mesh several times but with different transformation
+and material applied. It can be thought of as a more constrained variant of the
+multidraw mentioned above, but instead of uniform buffers the per-instance
+parameters are passed through instanced mesh attributes.
+
+No uniform buffer requirement means this feature can be used even on OpenGL ES
+2.0 and WebGL 1.0 targets if corresponding instancing extensions are available.
+Using attributes instead of uniform buffers also means there's no limitation on
+how many instances can be drawn at once, on the other hand a mesh can have only
+a certain amount of attribute bindings and thus only the basic properties can
+be specified per-instance such as the transformation matrix or base color.
+
+The following snippet shows a setup similar to the multidraw above, except that
+it's just the same sphere drawn three times in different locations and with a
+different material applied. Note that the per-instance color is achieved by
+using the usual vertex color attribute, only instanced:
+
+@snippet MagnumShaders-gl.cpp shaders-instancing
+
+@subsection shaders-usage-textures Using textures
+
+Unless the shader requires a texture to work (which is the case of
+@ref Shaders::VectorGL and @ref Shaders::DistanceFieldVectorGL), by default all
+shaders are just colored. Enabling a texture is done via a flag (such as
+@ref Shaders::Phong::Flag::DiffuseTexture) and then the texture is bound via an
+appropriate `bind*Texture()` call. In most cases the texture value is
+multiplied with the corresponding color uniform.
+
+@snippet MagnumShaders-gl.cpp shaders-textures
+
+All shaders that support textures are also able to apply arbitrary
+transformation to the texture coordinate attribute by enabling
+@relativeref{Shaders::PhongGL,Flag::TextureTransformation} on a particular
+shader. Desired transformation is then supplied via
+@relativeref{Shaders::PhongGL,setTextureMatrix()} (or a
+@ref Shaders::TextureTransformationUniform in case uniform buffers are used).
+This can be useful for animations, when you have a larger atlas with switchable
+texture variations for a single mesh, or when you have texture coordinates
+quantized in some nontrivial way.
+
+Texture transformation is also useful in the
+@ref shaders-usage-multidraw "multidraw" or
+@ref shaders-usage-instancing "instancing" scenarios mentioned above, since
+each draw will most likely require a different texture. There are two options:
+
+-   Upload the textures to subrectangles of a larger @ref GL::Texture2D and
+    then specify @ref Shaders::TextureTransformationUniform::offset and
+    @relativeref{Shaders::TextureTransformationUniform,rotationScaling} for
+    each draw, or in case of an instanced draw supply an instanced
+    @relativeref{Shaders::PhongGL,TextureOffset} attribute and have a global
+    scale set for all instanced via
+    @relativeref{Shaders::PhongGL,setTextureMatrix()}.
+-   Enable @relativeref{Shaders::PhongGL,Flag::TextureArrays} in the shader
+    (not available on OpenGL ES 2.0 or WebGL 1.0), upload the textures to
+    slices of a @ref GL::Texture2DArray and specify
+    @ref Shaders::TextureTransformationUniform::layer for each draw, or in case
+    of an instanced draw supply a layer in an instanced
+    @relativeref{Shaders::PhongGL,TextureOffsetLayer} attribute.
+
+While with a @ref GL::Texture2D you may hit texture size limits (not to mention
+you possible issues with materials that relied on a certain wrapping mode),
+@ref GL::Texture2DArray is generally able to contain a lot more data, however
+all slices have to be of the same size. You can also combine the two approaches
+and pack differently sized textures to slices of a texture array and then set
+both offset/scale and a layer per-draw.
+
+The following snippet shows a multi-draw setup with a different texture array
+layer used by each draw. While the projection, transformation, draw material
+and light buffers are the same as before, there's a new per-draw
+@ref Shaders::TextureTransformationUniform buffer supplying the layer
+information:
+
+@snippet MagnumShaders-gl.cpp shaders-texture-arrays
+
+While the primary use case of texture arrays is with uniform buffers and
+multidraw, they work in the classic uniform workflow as well --- use
+@relativeref{Shaders::PhongGL,setTextureLayer()} there instead.
 
 @section shaders-generic Generic vertex attributes and framebuffer attachments
 
@@ -81,28 +293,29 @@ Many shaders share the same vertex attribute definitions, such as positions,
 normals, texture coordinates etc. It's thus possible to configure the mesh
 for a *generic* shader and then render it with any compatible shader.
 Definition of all generic attributes is available in the
-@ref Shaders::GenericGL class. Configuration of the above mesh using generic
-attributes could then look like this:
+@ref Shaders::GenericGL class. Setup of the mesh @ref shaders-usage "shown above"
+using generic attributes could then look like this:
 
 @snippet MagnumShaders-gl.cpp shaders-generic
 
-Note that in this particular case both configurations are equivalent, because
-@ref Shaders::PhongGL also uses generic vertex attribute definitions. Then you
-can render the mesh using @ref Shaders::PhongGL shader like above, or use for
-example @ref Shaders::FlatGL3D or even @ref Shaders::MeshVisualizerGL3D with
-the same mesh reconfiguration. The unused attributes will be simply ignored.
+Note that in this particular case both setups are equivalent, because
+@ref Shaders::PhongGL attribute definitions are just aliases to the generic
+ones. Then you can render the mesh using the @ref Shaders::PhongGL shader like
+above, or use for example @ref Shaders::FlatGL3D or even
+@ref Shaders::MeshVisualizerGL3D with the same mesh reconfiguration. The unused
+attributes will be simply ignored.
 
 @snippet MagnumShaders-gl.cpp shaders-meshvisualizer
 
 The @ref MeshTools::compile() utility configures meshes using generic vertex
-attribute definitions to make them usable with any shader.
+attribute definitions to make them usable with any builtin shader.
 
-Besides vertex attributes, the @ref Shaders::GenericGL contains generic
-definitions for framebuffer outputs as well --- in many cases a shader has just
-one (color) output, but some shaders such as @ref Shaders::FlatGL or
-@ref Shaders::PhongGL offer an object ID output as well. A setup equivalent to
-what's done in Flat shader's @ref Shaders-FlatGL-object-id but using the
-generic definitions would look like this:
+Besides vertex attributes, @ref Shaders::GenericGL contains generic definitions
+for framebuffer outputs as well --- in many cases a shader has just one (color)
+output, but some shaders such as @ref Shaders::FlatGL or @ref Shaders::PhongGL
+offer an object ID output as well. A setup equivalent to what's done in Flat
+shader's @ref Shaders-FlatGL-object-id but using the generic definitions would
+look like this:
 
 @snippet MagnumShaders-gl.cpp shaders-generic-object-id
 */

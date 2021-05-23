@@ -78,6 +78,39 @@ Common rendering setup:
 
 @snippet MagnumShaders-gl.cpp VectorGL-usage2
 
+@section Shaders-VectorGL-ubo Uniform buffers
+
+See @ref shaders-usage-ubo for a high-level overview that applies to all
+shaders. In this particular case, because the shader doesn't need a separate
+projection and transformation matrix, a combined one is supplied via a
+@ref TransformationProjectionUniform2D / @ref TransformationProjectionUniform3D
+buffer. To maximize use of the limited uniform buffer memory, materials are
+supplied separately in a @ref VectorMaterialUniform buffer and then referenced
+via @relativeref{VectorDrawUniform,materialId} from a @ref VectorDrawUniform;
+for optional texture transformation a per-draw
+@ref TextureTransformationUniform can be supplied as well. A uniform buffer
+setup equivalent to the above would look like this:
+
+@snippet MagnumShaders-gl.cpp VectorGL-ubo
+
+For a multidraw workflow enable @ref Flag::MultiDraw, supply desired material
+and draw count in the @ref VectorGL(Flags, UnsignedInt, UnsignedInt)
+constructor and specify material references and texture offsets for every draw.
+Texture arrays aren't currently supported for this shader. Besides that, the
+usage is similar for all shaders, see @ref shaders-usage-multidraw for an
+example.
+
+@requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object} for uniform
+    buffers.
+@requires_gl46 Extension @gl_extension{ARB,shader_draw_parameters} for
+    multidraw.
+@requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+@requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+@requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+    (unlisted) for multidraw.
+@requires_webgl_extension Extension @webgl_extension{ANGLE,multi_draw} for
+    multidraw.
+
 @see @ref shaders, @ref VectorGL2D, @ref VectorGL3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL::AbstractShaderProgram {

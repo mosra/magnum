@@ -781,6 +781,37 @@ non-indexed @ref MeshPrimitive::Triangles.
 @requires_gles `gl_PrimitiveID` is not available in WebGL.
 @requires_webgl20 `gl_VertexID` is not available in WebGL 1.0.
 
+@section Shaders-MeshVisualizerGL3D-ubo Uniform buffers
+
+See @ref shaders-usage-ubo for a high-level overview that applies to all
+shaders. In this particular case, the shader needs a separate
+@ref ProjectionUniform3D and @ref TransformationUniform3D buffer. To maximize
+use of the limited uniform buffer memory, materials are supplied separately in
+a @ref MeshVisualizerMaterialUniform and then referenced via
+@relativeref{MeshVisualizerDrawUniform3D,materialId} from a
+@ref MeshVisualizerDrawUniform3D. A uniform buffer setup equivalent to the
+@ref Shaders-MeshVisualizerGL3D-wireframe "wireframe case at the top" would
+look like this --- note that @ref setViewportSize() is an immediate uniform
+here as well, as it's assumed to be set globally and rarely changed:
+
+@snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-ubo
+
+For a multidraw workflow enable @ref Flag::MultiDraw, supply desired material
+and draw count in the @ref MeshVisualizerGL3D(Flags, UnsignedInt, UnsignedInt)
+constructor and specify material references for every draw. The usage is
+similar for all shaders, see @ref shaders-usage-multidraw for an example.
+
+@requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object} for uniform
+    buffers.
+@requires_gl46 Extension @gl_extension{ARB,shader_draw_parameters} for
+    multidraw.
+@requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+@requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+@requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+    (unlisted) for multidraw.
+@requires_webgl_extension Extension @webgl_extension{ANGLE,multi_draw} for
+    multidraw.
+
 @see @ref shaders, @ref MeshVisualizerGL2D
 @todo Understand and add support wireframe width/smoothness without GS
 */

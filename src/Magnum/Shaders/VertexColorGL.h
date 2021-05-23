@@ -79,6 +79,33 @@ Common rendering setup:
 
 @snippet MagnumShaders-gl.cpp VertexColorGL-usage2
 
+@section Shaders-VertexColorGL-ubo Uniform buffers
+
+See @ref shaders-usage-ubo for a high-level overview that applies to all
+shaders. In this particular case, because the shader doesn't need a separate
+projection and transformation matrix, a combined one is supplied via a
+@ref TransformationProjectionUniform2D / @ref TransformationProjectionUniform3D
+buffer. This is also the only buffer supplied, as there are no other draw
+parameters. A uniform buffer setup equivalent to the above would look like
+this:
+
+@snippet MagnumShaders-gl.cpp VectorGL-ubo
+
+For a multidraw workflow enable @ref Flag::MultiDraw and supply desired draw
+count in the @ref VertexColorGL(Flags, UnsignedInt) constructor. The usage is
+similar for all shaders, see @ref shaders-usage-multidraw for an example.
+
+@requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object} for uniform
+    buffers.
+@requires_gl46 Extension @gl_extension{ARB,shader_draw_parameters} for
+    multidraw.
+@requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+@requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+@requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+    (unlisted) for multidraw.
+@requires_webgl_extension Extension @webgl_extension{ANGLE,multi_draw} for
+    multidraw.
+
 @see @ref shaders, @ref VertexColorGL2D, @ref VertexColorGL3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: public GL::AbstractShaderProgram {
