@@ -54,6 +54,15 @@
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
 
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/Shaders/DistanceFieldVector.h"
+#include "Magnum/Shaders/Flat.h"
+#include "Magnum/Shaders/Generic.h"
+#include "Magnum/Shaders/MeshVisualizer.h"
+#include "Magnum/Shaders/Phong.h"
+#include "Magnum/Shaders/Vector.h"
+#endif
+
 #include "configure.h"
 
 namespace Magnum { namespace Shaders { namespace Test { namespace {
@@ -121,98 +130,163 @@ constexpr std::size_t BenchmarkRepeats{4};
 const struct {
     const char* name;
     FlatGL2D::Flags flags;
+    UnsignedInt drawCount;
 } FlatData[] {
-    {"", {}},
-    {"vertex color", FlatGL2D::Flag::VertexColor},
+    {"", {}, 1},
+    {"vertex color", FlatGL2D::Flag::VertexColor, 1},
     #ifndef MAGNUM_TARGET_GLES2
-    {"object ID", FlatGL2D::Flag::ObjectId},
+    {"object ID", FlatGL2D::Flag::ObjectId, 1},
     #endif
-    {"textured", FlatGL2D::Flag::Textured},
-    {"textured + alpha mask", FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask},
-    {"texture transformation", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation},
-    {"instanced transformation", FlatGL2D::Flag::InstancedTransformation},
-    {"instanced transformation + color", FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::VertexColor},
+    {"textured", FlatGL2D::Flag::Textured, 1},
+    {"textured + alpha mask", FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask, 1},
+    {"texture transformation", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1},
+    {"instanced transformation", FlatGL2D::Flag::InstancedTransformation, 1},
+    {"instanced transformation + color", FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::VertexColor, 1},
     #ifndef MAGNUM_TARGET_GLES2
-    {"instanced transformation + object ID", FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId},
+    {"instanced transformation + object ID", FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId, 1},
     #endif
-    {"instanced transformation + texture offset", FlatGL2D::Flag::Textured|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedTextureOffset},
+    {"instanced transformation + texture offset", FlatGL2D::Flag::Textured|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedTextureOffset, 1},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"UBO single", FlatGL2D::Flag::UniformBuffers, 1},
+    {"UBO single, texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1},
+    {"UBO multi", FlatGL2D::Flag::UniformBuffers, 128},
+    #endif
 };
 
 const struct {
     const char* name;
     PhongGL::Flags flags;
-    UnsignedInt lights;
+    UnsignedInt lightCount, materialCount, drawCount;
 } PhongData[] {
+    {"", {}, 1, 1, 1},
+    {"zero lights", {}, 0, 1, 1},
+    {"five lights", {}, 5, 1, 1},
+    {"vertex color", PhongGL::Flag::VertexColor, 1, 1, 1},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"object ID", PhongGL::Flag::ObjectId, 1, 1, 1},
+    #endif
+    {"diffuse texture", PhongGL::Flag::DiffuseTexture, 1, 1, 1},
+    {"ADS textures", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1, 1, 1},
+    {"ADS textures + alpha mask", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::AlphaMask, 1, 1, 1},
+    {"ADS textures + transformation", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1},
+    {"normal texture", PhongGL::Flag::NormalTexture, 1, 1, 1},
+    {"normal texture with separate bitangent", PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1, 1, 1},
+    {"instanced transformation", PhongGL::Flag::InstancedTransformation, 1, 1, 1},
+    {"instanced transformation + color", PhongGL::Flag::InstancedTransformation|PhongGL::Flag::VertexColor, 1, 1, 1},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"instanced transformation + object ID", PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId, 1, 1, 1},
+    #endif
+    {"instanced transformation + ADS texture offset", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedTextureOffset, 1, 1, 1},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"UBO single", PhongGL::Flag::UniformBuffers, 1, 1, 1},
+    {"UBO single, zero lights", PhongGL::Flag::UniformBuffers, 0, 1, 1},
+    {"UBO single five lights", PhongGL::Flag::UniformBuffers, 5, 1, 1},
+    {"UBO single, ADS textures + transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1},
+    {"UBO multi, one light", PhongGL::Flag::UniformBuffers, 1, 32, 128},
+    #endif
+};
+
+const struct {
+    const char* name;
+    VertexColorGL2D::Flags flags;
+    UnsignedInt drawCount;
+} VertexColorData[] {
     {"", {}, 1},
-    {"zero lights", {}, 0},
-    {"five lights", {}, 5},
-    {"vertex color", PhongGL::Flag::VertexColor, 1},
     #ifndef MAGNUM_TARGET_GLES2
-    {"object ID", PhongGL::Flag::ObjectId, 1},
+    {"UBO single", VertexColorGL2D::Flag::UniformBuffers, 1},
+    {"UBO multi", VertexColorGL2D::Flag::UniformBuffers, 128},
     #endif
-    {"diffuse texture", PhongGL::Flag::DiffuseTexture, 1},
-    {"ADS textures", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1},
-    {"ADS textures + alpha mask", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::AlphaMask, 1},
-    {"ADS textures + transformation", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1},
-    {"normal texture", PhongGL::Flag::NormalTexture, 1},
-    {"normal texture with separate bitangent", PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1},
-    {"instanced transformation", PhongGL::Flag::InstancedTransformation, 1},
-    {"instanced transformation + color", PhongGL::Flag::InstancedTransformation|PhongGL::Flag::VertexColor, 1},
-    #ifndef MAGNUM_TARGET_GLES2
-    {"instanced transformation + object ID", PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId, 1},
-    #endif
-    {"instanced transformation + ADS texture offset", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedTextureOffset, 1},
 };
 
 const struct {
     const char* name;
     VectorGL2D::Flags flags;
+    UnsignedInt drawCount;
 } VectorData[] {
-    {"", {}},
-    {"texture transformation", VectorGL2D::Flag::TextureTransformation}
+    {"", {}, 1},
+    {"texture transformation", VectorGL2D::Flag::TextureTransformation, 1},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"UBO single", VectorGL2D::Flag::UniformBuffers, 1},
+    {"UBO single, texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1},
+    {"UBO multi", VectorGL2D::Flag::UniformBuffers, 128},
+    {"UBO multi, texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 128},
+    #endif
 };
 
 const struct {
     const char* name;
     DistanceFieldVectorGL2D::Flags flags;
+    UnsignedInt materialCount, drawCount;
 } DistanceFieldVectorData[] {
-    {"", {}},
-    {"texture transformation", DistanceFieldVectorGL2D::Flag::TextureTransformation}
+    {"", {}, 1, 1},
+    {"texture transformation", DistanceFieldVectorGL2D::Flag::TextureTransformation, 1, 1},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"UBO single", DistanceFieldVectorGL2D::Flag::UniformBuffers, 1, 1},
+    {"UBO single, texture transformation", DistanceFieldVectorGL2D::Flag::UniformBuffers|DistanceFieldVectorGL2D::Flag::TextureTransformation, 1, 1},
+    {"UBO multi", DistanceFieldVectorGL2D::Flag::UniformBuffers, 32, 128},
+    {"UBO multi, texture transformation", DistanceFieldVectorGL2D::Flag::UniformBuffers|DistanceFieldVectorGL2D::Flag::TextureTransformation, 32, 128},
+    #endif
 };
 
 const struct {
     const char* name;
     MeshVisualizerGL2D::Flags flags;
+    UnsignedInt materialCount, drawCount;
 } MeshVisualizer2DData[] {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    {"wireframe", MeshVisualizerGL2D::Flag::Wireframe},
+    {"wireframe", MeshVisualizerGL2D::Flag::Wireframe, 1, 1},
     #endif
-    {"wireframe w/o a GS", MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader},
+    {"wireframe w/o a GS", MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 1},
     #ifndef MAGNUM_TARGET_GLES2
-    {"instanced object ID", MeshVisualizerGL2D::Flag::InstancedObjectId},
-    {"vertex ID", MeshVisualizerGL2D::Flag::VertexId},
+    {"instanced object ID", MeshVisualizerGL2D::Flag::InstancedObjectId, 1, 1},
+    {"vertex ID", MeshVisualizerGL2D::Flag::VertexId, 1, 1},
     #ifndef MAGNUM_TARGET_WEBGL
-    {"primitive ID", MeshVisualizerGL2D::Flag::PrimitiveId},
-    {"primitive ID from vertex ID", MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId},
+    {"primitive ID", MeshVisualizerGL2D::Flag::PrimitiveId, 1, 1},
+    {"primitive ID from vertex ID", MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId, 1, 1},
     #endif
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"UBO single, wireframe", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe, 1, 1},
+    #endif
+    {"UBO single, wireframe w/o a GS", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 1},
+    {"UBO single, vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::VertexId, 1, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"UBO multi, wireframe", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe, 32, 128},
+    #endif
+    {"UBO multi, wireframe w/o a GS", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 32, 128},
+    {"UBO multi, vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::VertexId, 32, 128},
     #endif
 };
 
 const struct {
     const char* name;
     MeshVisualizerGL3D::Flags flags;
+    UnsignedInt materialCount, drawCount;
 } MeshVisualizer3DData[] {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    {"wireframe", MeshVisualizerGL3D::Flag::Wireframe},
+    {"wireframe", MeshVisualizerGL3D::Flag::Wireframe, 1, 1},
     #endif
-    {"wireframe w/o a GS", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader},
+    {"wireframe w/o a GS", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 1, 1},
     #ifndef MAGNUM_TARGET_GLES2
-    {"instanced object ID", MeshVisualizerGL3D::Flag::InstancedObjectId},
-    {"vertex ID", MeshVisualizerGL3D::Flag::VertexId},
+    {"instanced object ID", MeshVisualizerGL3D::Flag::InstancedObjectId, 1, 1},
+    {"vertex ID", MeshVisualizerGL3D::Flag::VertexId, 1, 1},
     #ifndef MAGNUM_TARGET_WEBGL
-    {"primitive ID", MeshVisualizerGL3D::Flag::PrimitiveId},
-    {"primitive ID from vertex ID", MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId},
+    {"primitive ID", MeshVisualizerGL3D::Flag::PrimitiveId, 1, 1},
+    {"primitive ID from vertex ID", MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId, 1, 1},
     #endif
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"UBO single, wireframe", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe, 1, 1},
+    #endif
+    {"UBO single, wireframe w/o a GS", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 1, 1},
+    {"UBO single, vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::VertexId, 1, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"UBO multi, wireframe", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe, 32, 128},
+    #endif
+    {"UBO multi, wireframe w/o a GS", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 32, 128},
+    {"UBO multi, vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::VertexId, 32, 128},
     #endif
 };
 
@@ -230,9 +304,9 @@ ShadersGLBenchmark::ShadersGLBenchmark(): _framebuffer{{{}, RenderSize}} {
         &ShadersGLBenchmark::renderTeardown,
         BenchmarkType::GpuTime);
 
-    addBenchmarks({&ShadersGLBenchmark::vertexColor<2>,
+    addInstancedBenchmarks({&ShadersGLBenchmark::vertexColor<2>,
                    &ShadersGLBenchmark::vertexColor<3>},
-        BenchmarkRepeats,
+        BenchmarkRepeats, Containers::arraySize(VertexColorData),
         &ShadersGLBenchmark::renderSetup,
         &ShadersGLBenchmark::renderTeardown,
         BenchmarkType::GpuTime);
@@ -411,6 +485,16 @@ void ShadersGLBenchmark::renderTeardown() {
     /* Nothing to do here */
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt> struct UniformTraits;
+template<> struct UniformTraits<2> {
+    typedef TransformationProjectionUniform2D TransformationProjection;
+};
+template<> struct UniformTraits<3> {
+    typedef TransformationProjectionUniform3D TransformationProjection;
+};
+#endif
+
 template<UnsignedInt dimensions> void ShadersGLBenchmark::flat() {
     auto&& data = FlatData[testCaseInstanceId()];
     setTestCaseTemplateName(Utility::formatString("{}", dimensions));
@@ -420,9 +504,38 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::flat() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    FlatGL<dimensions> shader{data.flags};
-    if(data.flags >= FlatGL2D::Flag::AlphaMask)
-        shader.setAlphaMask(0.0f);
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    FlatGL<dimensions> shader{data.flags
+        #ifndef MAGNUM_TARGET_GLES2
+        , data.drawCount
+        #endif
+    };
+
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Buffer transformationProjectionUniform{NoCreate};
+    GL::Buffer drawUniform{NoCreate};
+    GL::Buffer textureTransformationUniform{NoCreate};
+    if(data.flags & FlatGL2D::Flag::UniformBuffers) {
+        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{data.drawCount}};
+        Containers::Array<FlatDrawUniform> drawData{data.drawCount};
+        drawData[0].setAlphaMask(0.0f);
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, drawData};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform);
+        if(data.flags & FlatGL2D::Flag::TextureTransformation) {
+            textureTransformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TextureTransformationUniform>{data.drawCount}};
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
+        }
+    } else
+    #endif
+    {
+        if(data.flags >= FlatGL2D::Flag::AlphaMask)
+            shader.setAlphaMask(0.0f);
+    }
     if(data.flags >= FlatGL2D::Flag::Textured)
         shader.bindTexture(_textureWhite);
 
@@ -476,11 +589,54 @@ void ShadersGLBenchmark::phong() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    PhongGL shader{data.flags, data.lights};
-    /* White ambient so we always have a white output */
-    shader.setAmbientColor(0xffffffff_rgbaf);
-    if(data.flags >= PhongGL::Flag::AlphaMask)
-        shader.setAlphaMask(0.0f);
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & PhongGL::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    PhongGL shader{data.flags, data.lightCount
+        #ifndef MAGNUM_TARGET_GLES2
+        , data.materialCount, data.drawCount
+        #endif
+    };
+
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Buffer projectionUniform{NoCreate};
+    GL::Buffer transformationUniform{NoCreate};
+    GL::Buffer drawUniform{NoCreate};
+    GL::Buffer materialUniform{NoCreate};
+    GL::Buffer lightUniform{NoCreate};
+    GL::Buffer textureTransformationUniform{NoCreate};
+    if(data.flags & PhongGL::Flag::UniformBuffers) {
+        projectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        transformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TransformationUniform3D>{data.drawCount}};
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<PhongDrawUniform>{data.drawCount}};
+        Containers::Array<PhongMaterialUniform> materialData{data.materialCount};
+        materialData[0]
+            /* White ambient so we always have a white output */
+            .setAmbientColor(0xffffffff_rgbaf)
+            .setAlphaMask(0.0f);
+        materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, materialData};
+        lightUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<PhongLightUniform>{data.lightCount}};
+        shader.bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindLightBuffer(lightUniform);
+        if(data.flags & PhongGL::Flag::TextureTransformation) {
+            textureTransformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TextureTransformationUniform>{data.drawCount}};
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
+        }
+    } else
+    #endif
+    {
+        /* White ambient so we always have a white output */
+        shader.setAmbientColor(0xffffffff_rgbaf);
+        if(data.flags >= PhongGL::Flag::AlphaMask)
+            shader.setAlphaMask(0.0f);
+    }
     if(data.flags >= PhongGL::Flag::AmbientTexture)
         shader.bindAmbientTexture(_textureWhite);
     if(data.flags >= PhongGL::Flag::DiffuseTexture)
@@ -533,13 +689,33 @@ void ShadersGLBenchmark::phong() {
 }
 
 template<UnsignedInt dimensions> void ShadersGLBenchmark::vertexColor() {
+    auto&& data = VertexColorData[testCaseInstanceId()];
     setTestCaseTemplateName(Utility::formatString("{}", dimensions));
+    setTestCaseDescription(data.name);
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    VertexColorGL<dimensions> shader;
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & VertexColorGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    VertexColorGL<dimensions> shader{data.flags
+        #ifndef MAGNUM_TARGET_GLES2
+        , data.drawCount
+        #endif
+    };
+
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Buffer transformationProjectionUniform{NoCreate};
+    GL::Buffer textureTransformationUniform{NoCreate};
+    if(data.flags & VertexColorGL<dimensions>::Flag::UniformBuffers) {
+        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{data.drawCount}};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform);
+    }
+    #endif
 
     /* Warmup run */
     /** @todo make this possible to do inside CORRADE_BENCHMARK() */
@@ -565,8 +741,35 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vector() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    VectorGL<dimensions> shader{data.flags};
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & VectorGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    VectorGL<dimensions> shader{data.flags
+        #ifndef MAGNUM_TARGET_GLES2
+        , data.drawCount
+        #endif
+    };
     shader.bindVectorTexture(_textureWhite);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Buffer transformationProjectionUniform{NoCreate};
+    GL::Buffer drawUniform{NoCreate};
+    GL::Buffer textureTransformationUniform{NoCreate};
+    if(data.flags & VectorGL2D::Flag::UniformBuffers) {
+        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{data.drawCount}};
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<VectorDrawUniform>{data.drawCount}};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform);
+        if(data.flags & VectorGL2D::Flag::TextureTransformation) {
+            textureTransformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, {
+                TextureTransformationUniform{}
+            }};
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
+        }
+    }
+    #endif
 
     /* Warmup run */
     /** @todo make this possible to do inside CORRADE_BENCHMARK() */
@@ -592,8 +795,36 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::distanceFieldVector() 
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    DistanceFieldVectorGL<dimensions> shader{data.flags};
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & DistanceFieldVectorGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    DistanceFieldVectorGL<dimensions> shader{data.flags
+        #ifndef MAGNUM_TARGET_GLES2
+        , data.materialCount, data.drawCount
+        #endif
+    };
     shader.bindVectorTexture(_textureWhite);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Buffer transformationProjectionUniform{NoCreate};
+    GL::Buffer drawUniform{NoCreate};
+    GL::Buffer materialUniform{NoCreate};
+    GL::Buffer textureTransformationUniform{NoCreate};
+    if(data.flags & DistanceFieldVectorGL2D::Flag::UniformBuffers) {
+        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{data.drawCount}};
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<DistanceFieldVectorDrawUniform>{data.drawCount}};
+        materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<DistanceFieldVectorMaterialUniform>{data.materialCount}};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform);
+        if(data.flags & DistanceFieldVectorGL2D::Flag::TextureTransformation) {
+            textureTransformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TextureTransformationUniform>{data.drawCount}};
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
+        }
+    }
+    #endif
 
     /* Warmup run */
     /** @todo make this possible to do inside CORRADE_BENCHMARK() */
@@ -617,6 +848,11 @@ void ShadersGLBenchmark::meshVisualizer2D() {
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & MeshVisualizerGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
 
     /* Checks verbatim copied from MeshVisualizerGLTest::construct2D() */
     #ifndef MAGNUM_TARGET_GLES
@@ -663,8 +899,6 @@ void ShadersGLBenchmark::meshVisualizer2D() {
 
     MeshVisualizerGL2D shader{data.flags};
     shader.setViewportSize(Vector2{RenderSize});
-    if(data.flags >= MeshVisualizerGL2D::Flag::Wireframe)
-        shader.setWireframeColor(0xffffffff_rgbaf);
     #ifndef MAGNUM_TARGET_GLES2
     if(data.flags & (MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::VertexId|MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId
         #ifndef MAGNUM_TARGET_WEBGL
@@ -673,6 +907,26 @@ void ShadersGLBenchmark::meshVisualizer2D() {
     ))
         shader.bindColorMapTexture(_textureWhite);
     #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Buffer transformationProjectionUniform{NoCreate};
+    GL::Buffer drawUniform{NoCreate};
+    GL::Buffer materialUniform{NoCreate};
+    if(data.flags & MeshVisualizerGL2D::Flag::UniformBuffers) {
+        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TransformationProjectionUniform2D>{data.drawCount}};
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<MeshVisualizerDrawUniform2D>{data.drawCount}};
+        Containers::Array<MeshVisualizerMaterialUniform> materialData{data.materialCount};
+        materialData[0].setWireframeColor(0xffffffff_rgbaf);
+        materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, materialData};
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform);
+    } else
+    #endif
+    {
+        if(data.flags >= MeshVisualizerGL2D::Flag::Wireframe)
+            shader.setWireframeColor(0xffffffff_rgbaf);
+    }
 
     GL::Mesh* mesh;
     if(data.flags >= MeshVisualizerGL2D::Flag::NoGeometryShader) {
@@ -713,6 +967,11 @@ void ShadersGLBenchmark::meshVisualizer3D() {
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & MeshVisualizerGL3D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
 
     /* Checks verbatim copied from MeshVisualizerGLTest:.construct3D() */
     #ifndef MAGNUM_TARGET_GLES
@@ -759,8 +1018,7 @@ void ShadersGLBenchmark::meshVisualizer3D() {
 
     MeshVisualizerGL3D shader{data.flags};
     shader.setViewportSize(Vector2{RenderSize});
-    if(data.flags >= MeshVisualizerGL3D::Flag::Wireframe)
-        shader.setWireframeColor(0xffffffff_rgbaf);
+
     #ifndef MAGNUM_TARGET_GLES2
     if(data.flags & (MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId
         #ifndef MAGNUM_TARGET_WEBGL
@@ -769,6 +1027,31 @@ void ShadersGLBenchmark::meshVisualizer3D() {
     ))
         shader.bindColorMapTexture(_textureWhite);
     #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Buffer projectionUniform{NoCreate};
+    GL::Buffer transformationUniform{NoCreate};
+    GL::Buffer drawUniform{NoCreate};
+    GL::Buffer materialUniform{NoCreate};
+    if(data.flags & MeshVisualizerGL3D::Flag::UniformBuffers) {
+        projectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        transformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TransformationUniform3D>{data.drawCount}};
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<MeshVisualizerDrawUniform3D>{data.drawCount}};
+        Containers::Array<MeshVisualizerMaterialUniform> materialData{data.materialCount};
+        materialData[0].setWireframeColor(0xffffffff_rgbaf);
+        materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, materialData};
+        shader.bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform);
+    } else
+    #endif
+    {
+        if(data.flags >= MeshVisualizerGL3D::Flag::Wireframe)
+            shader.setWireframeColor(0xffffffff_rgbaf);
+    }
 
     GL::Mesh* mesh;
     if(data.flags >= MeshVisualizerGL3D::Flag::NoGeometryShader)
