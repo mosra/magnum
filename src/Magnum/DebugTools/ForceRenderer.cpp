@@ -28,7 +28,7 @@
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/DebugTools/ResourceManager.h"
 #include "Magnum/SceneGraph/Camera.h"
-#include "Magnum/Shaders/Flat.h"
+#include "Magnum/Shaders/FlatGL.h"
 
 #include "Magnum/DebugTools/Implementation/ForceRendererTransformation.h"
 
@@ -57,8 +57,8 @@ constexpr UnsignedByte indices[]{
 
 template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(object, drawables), _forcePosition(forcePosition), _force(force), _options(manager.get<ForceRendererOptions>(options)) {
     /* Shader */
-    _shader = manager.get<GL::AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
-    if(!_shader) manager.set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::Flat<dimensions>);
+    _shader = manager.get<GL::AbstractShaderProgram, Shaders::FlatGL<dimensions>>(shaderKey<dimensions>());
+    if(!_shader) manager.set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::FlatGL<dimensions>);
 
     /* Mesh and vertex buffer */
     _mesh = manager.get<GL::Mesh>("force");
@@ -72,7 +72,7 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(Resour
     GL::Mesh mesh{GL::MeshPrimitive::Lines};
     mesh.setCount(Containers::arraySize(indices))
         .addVertexBuffer(std::move(vertexBuffer), 0,
-            typename Shaders::Flat<dimensions>::Position(Shaders::Flat<dimensions>::Position::Components::Two))
+            typename Shaders::FlatGL<dimensions>::Position(Shaders::FlatGL<dimensions>::Position::Components::Two))
         .setIndexBuffer(std::move(indexBuffer), 0, GL::MeshIndexType::UnsignedByte, 0, Containers::arraySize(positions));
     manager.set(_mesh.key(), std::move(mesh), ResourceDataState::Final, ResourcePolicy::Manual);
 }

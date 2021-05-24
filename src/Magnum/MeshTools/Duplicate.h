@@ -62,7 +62,7 @@ use @ref duplicateInto().
 @see @ref removeDuplicatesInPlace(), @ref combineIndexedAttributes()
 */
 template<class IndexType, class T> Containers::Array<T> duplicate(const Containers::StridedArrayView1D<const IndexType>& indices, const Containers::StridedArrayView1D<const T>& data) {
-    Containers::Array<T> out{Containers::NoInit, indices.size()};
+    Containers::Array<T> out{NoInit, indices.size()};
     duplicateInto<IndexType, T>(indices, data, out);
     return out;
 }

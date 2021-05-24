@@ -25,7 +25,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/Pointer.h>
+#include <iosfwd>
+#include <utility>
+#include <Corrade/Containers/Containers.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
@@ -49,27 +51,26 @@ struct TransformFeedbackState;
 #endif
 
 struct State {
-    /* Initializes context-based functionality */
-    explicit State(Context& context, std::ostream* out);
-
-    ~State();
+    /* Initializes context-based functionality together with all nested classes
+       in a single allocation */
+    static std::pair<Containers::ArrayTuple, State&> allocate(Context& context, std::ostream* out);
 
     enum: GLuint { DisengagedBinding = ~0u };
 
-    Containers::Pointer<BufferState> buffer;
-    Containers::Pointer<ContextState> context;
+    BufferState& buffer;
+    ContextState& context;
     #ifndef MAGNUM_TARGET_WEBGL
-    Containers::Pointer<DebugState> debug;
+    DebugState& debug;
     #endif
-    Containers::Pointer<FramebufferState> framebuffer;
-    Containers::Pointer<MeshState> mesh;
-    Containers::Pointer<QueryState> query;
-    Containers::Pointer<RendererState> renderer;
-    Containers::Pointer<ShaderState> shader;
-    Containers::Pointer<ShaderProgramState> shaderProgram;
-    Containers::Pointer<TextureState> texture;
+    FramebufferState& framebuffer;
+    MeshState& mesh;
+    QueryState& query;
+    RendererState& renderer;
+    ShaderState& shader;
+    ShaderProgramState& shaderProgram;
+    TextureState& texture;
     #ifndef MAGNUM_TARGET_GLES2
-    Containers::Pointer<TransformFeedbackState> transformFeedback;
+    TransformFeedbackState& transformFeedback;
     #endif
 };
 

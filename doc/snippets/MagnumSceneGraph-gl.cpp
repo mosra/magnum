@@ -39,8 +39,8 @@
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"
 #include "Magnum/SceneGraph/Object.h"
 #include "Magnum/SceneGraph/Scene.h"
-#include "Magnum/Shaders/Flat.h"
-#include "Magnum/Shaders/Phong.h"
+#include "Magnum/Shaders/FlatGL.h"
+#include "Magnum/Shaders/PhongGL.h"
 #include "Magnum/Trade/MeshData.h"
 
 using namespace Magnum;
@@ -110,7 +110,7 @@ class RedCubeDrawable: public SceneGraph::Drawable3D {
         }
 
         GL::Mesh _mesh;
-        Shaders::Phong _shader;
+        Shaders::PhongGL _shader;
 };
 /* [Drawable-usage] */
 
@@ -127,14 +127,14 @@ class RedCube: public Object3D, public SceneGraph::Drawable3D {
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
         GL::Mesh _mesh;
-        Shaders::Phong _shader;
+        Shaders::PhongGL _shader;
 };
 /* [Drawable-usage-multiple-inheritance] */
 
 void draw(const Matrix4&, SceneGraph::Camera3D&);
 void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
 /* [Drawable-usage-shader] */
-Shaders::Flat3D shader;
+Shaders::FlatGL3D shader;
 shader.setTransformationProjectionMatrix(
     camera.projectionMatrix()*transformationMatrix);
 /* [Drawable-usage-shader] */
@@ -188,7 +188,7 @@ struct MyApplication: Platform::Application {
 /* [Drawable-multiple-groups] */
     // ...
 
-    Shaders::Phong _shader;
+    Shaders::PhongGL _shader;
     SceneGraph::DrawableGroup3D _phongObjects, _transparentObjects;
 };
 

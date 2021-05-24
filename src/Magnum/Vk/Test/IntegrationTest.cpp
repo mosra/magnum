@@ -217,8 +217,8 @@ void IntegrationTest::vkClearColorValue3() {
     /** @todo test constexpr once/if possible */
 
     /* Conversion the ohter way not allowed */
-    CORRADE_VERIFY((std::is_constructible<Color4, VkClearColorValue>::value));
-    CORRADE_VERIFY(!(std::is_constructible<Color3, VkClearColorValue>::value));
+    CORRADE_VERIFY(std::is_constructible<Color4, VkClearColorValue>::value);
+    CORRADE_VERIFY(!std::is_constructible<Color3, VkClearColorValue>::value);
 }
 
 void IntegrationTest::vkViewport() {

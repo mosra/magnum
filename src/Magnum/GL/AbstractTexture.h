@@ -586,10 +586,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         #endif
 
         void MAGNUM_GL_LOCAL setMaxAnisotropyImplementationNoOp(GLfloat);
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL setMaxAnisotropyImplementationArb(GLfloat anisotropy);
-        #endif
-        void MAGNUM_GL_LOCAL setMaxAnisotropyImplementationExt(GLfloat anisotropy);
+        void MAGNUM_GL_LOCAL setMaxAnisotropyImplementationArbOrExt(GLfloat anisotropy);
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         void MAGNUM_GL_LOCAL getLevelParameterImplementationDefault(GLint level, GLenum parameter, GLint* values);
@@ -723,7 +720,7 @@ template<> struct MAGNUM_GL_EXPORT AbstractTexture::DataHelper<1> {
     static Math::Vector<1, GLint> compressedBlockSize(GLenum target, TextureFormat format);
     static Math::Vector<1, GLint> imageSize(AbstractTexture& texture, GLint level);
 
-    static void setWrapping(AbstractTexture& texture, const Array1D<SamplerWrapping>& wrapping);
+    static void setWrapping(AbstractTexture& texture, const Math::Vector<1, SamplerWrapping>& wrapping);
 
     static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
 
@@ -748,7 +745,7 @@ template<> struct MAGNUM_GL_EXPORT AbstractTexture::DataHelper<2> {
     static Vector2i imageSize(AbstractTexture& texture, GLint level);
     #endif
 
-    static void setWrapping(AbstractTexture& texture, const Array2D<SamplerWrapping>& wrapping);
+    static void setWrapping(AbstractTexture& texture, const Math::Vector2<SamplerWrapping>& wrapping);
 
     static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
 
@@ -793,7 +790,7 @@ template<> struct MAGNUM_GL_EXPORT AbstractTexture::DataHelper<3> {
     static Vector3i imageSize(AbstractTexture& texture, GLint level);
     #endif
 
-    static void setWrapping(AbstractTexture& texture, const Array3D<SamplerWrapping>& wrapping);
+    static void setWrapping(AbstractTexture& texture, const Math::Vector3<SamplerWrapping>& wrapping);
 
     static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
 

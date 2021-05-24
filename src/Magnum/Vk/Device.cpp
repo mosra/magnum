@@ -120,7 +120,7 @@ struct DeviceCreateInfo::State {
     DeviceProperties properties{NoCreate};
 };
 
-DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const ExtensionProperties* extensionProperties, const Flags flags): _physicalDevice{deviceProperties}, _info{}, _state{Containers::InPlaceInit} {
+DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const ExtensionProperties* extensionProperties, const Flags flags): _physicalDevice{deviceProperties}, _info{}, _state{InPlaceInit} {
     Utility::Arguments args = Implementation::arguments();
     args.parse(deviceProperties._instance->state().argc, deviceProperties._instance->state().argv);
 
@@ -141,9 +141,9 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
        we don't need to bother with String allocations. */
     Containers::StringView disabledWorkarounds = args.value<Containers::StringView>("disable-workarounds");
     if(!disabledWorkarounds.isEmpty()) {
-        Containers::Array<Containers::StringView> split = disabledWorkarounds.splitWithoutEmptyParts();
+        const Containers::Array<Containers::StringView> split = disabledWorkarounds.splitWithoutEmptyParts();
         arrayReserve(_state->encounteredWorkarounds, split.size());
-        for(Containers::StringView workaround: split)
+        for(const Containers::StringView workaround: split)
             Implementation::disableWorkaround(_state->encounteredWorkarounds, workaround);
     }
 
@@ -180,37 +180,58 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
 
         /* Only if we don't have Vulkan 1.1, on which these are core */
         if(_state->version < Version::Vk11) {
+            /* Needed for VK_ERROR_OUT_OF_POOL_MEMORY support in DescriptorSet
+               allocation */
+            if(extensionProperties->isSupported<Extensions::KHR::maintenance1>())
+                addEnabledExtensions<Extensions::KHR::maintenance1>();
+
+            /* Dependencies of VK_KHR_create_renderpass2, which is enabled
+               below. If an extension is supported, all its dependencies should
+               be too, so not checking for their presence again. */
+            if(extensionProperties->isSupported<Extensions::KHR::create_renderpass2>()) {
+                addEnabledExtensions<Extensions::KHR::multiview>();
+                addEnabledExtensions<Extensions::KHR::maintenance2>();
+            }
+
+            /* Used for the extra extension points in MemoryAllocationInfo */
             if(extensionProperties->isSupported<Extensions::KHR::get_memory_requirements2>())
                 addEnabledExtensions<Extensions::KHR::get_memory_requirements2>();
+
+            /* Used for the extra extension points in bindMemory() */
             if(extensionProperties->isSupported<Extensions::KHR::bind_memory2>())
                 addEnabledExtensions<Extensions::KHR::bind_memory2>();
         }
+
         /* Only if we don't have Vulkan 1.2, on which these are core */
         if(_state->version < Version::Vk12) {
+            /* Used for the extra extension points in RenderPassCreateInfo and
+               related structs. Depends on VK_KHR_multiview and
+               VK_KHR_maintenance2, which were enabled above. */
             if(extensionProperties->isSupported<Extensions::KHR::create_renderpass2>())
                 addEnabledExtensions<Extensions::KHR::create_renderpass2>();
         }
 
-        /* Enable the KHR_copy_commands2 and EXT_extended_dynamic_state
-           extensions. Not in any Vulkan version yet. */
+        /* Used for the extra extension points in CopyBuffer, CopyImage etc.
+           Not in any Vulkan version yet. */
         if(extensionProperties->isSupported<Extensions::KHR::copy_commands2>())
             addEnabledExtensions<Extensions::KHR::copy_commands2>();
+
+        /* Used for dynamic stride and primitive specification in
+           CommandBuffer::draw(). Not in any Vulkan version yet. */
         if(extensionProperties->isSupported<Extensions::EXT::extended_dynamic_state>())
             addEnabledExtensions<Extensions::EXT::extended_dynamic_state>();
 
-        /* Enable the KHR_portability_subset extension, which *has to be*
-           enabled when available. Not enabling any of its features though,
-           that responsibility lies on the user. */
+        /* The KHR_portability_subset extension *has to be* enabled when
+           available. Not enabling any of its features though, that
+           responsibility lies on the user. If KHR_portability_subset is not
+           supported, mark its features as *implicitly* supported -- those
+           don't get explicitly enabled and are also not listed in the list of
+           enabled features in the startup log */
         if(extensionProperties->isSupported<Extensions::KHR::portability_subset>()) {
             addEnabledExtensions<Extensions::KHR::portability_subset>();
-
-        /* Otherwise, if KHR_portability_subset is not supported, mark its
-           features as *implicitly* supported -- those don't get explicitly
-           enabled and are also not listed in the list of enabled features in
-           the startup log */
-        /** @todo wrap this under a NoImplicitFeatures flag? it doesn't actually
-            *do* anything though */
         } else {
+            /** @todo wrap this under a NoImplicitFeatures flag? it doesn't
+                actually *do* anything though */
             _state->implicitFeatures = Implementation::deviceFeaturesPortabilitySubset();
         }
     }
@@ -286,7 +307,7 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::Array
            don't get invalidated when the array gets reallocated. */
         const char* data;
         if(!(extension.flags() >= (Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global)))
-            data = arrayAppend(_state->ownedStrings, Containers::InPlaceInit,
+            data = arrayAppend(_state->ownedStrings, InPlaceInit,
                 Containers::AllocatedInit, extension).data();
         else data = extension.data();
 
@@ -837,7 +858,7 @@ template<class T> void Device::initializeExtensions(const Containers::ArrayView<
         for(const Version version: KnownVersionsForExtensions) {
             const Containers::ArrayView<const Extension> knownExtensions =
                 Extension::extensions(version);
-            auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const Extension& a, const T& b) {
+            const auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const Extension& a, const T& b) {
                 return a.string() < static_cast<const Containers::StringView&>(b);
             });
             if(found->string() != extension) continue;

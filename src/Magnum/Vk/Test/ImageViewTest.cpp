@@ -405,10 +405,10 @@ void ImageViewTest::createInfoConstructNoInit() {
     new(&info) ImageViewCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<ImageViewCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<ImageViewCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, ImageViewCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, ImageViewCreateInfo>::value);
 }
 
 void ImageViewTest::createInfoConstructFromVk() {
@@ -426,7 +426,7 @@ void ImageViewTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, ImageView>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, ImageView>::value);
 }
 
 void ImageViewTest::constructCopy() {

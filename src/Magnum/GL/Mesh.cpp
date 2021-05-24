@@ -181,7 +181,7 @@ UnsignedInt Mesh::maxVertexAttributeStride() {
     }
 
     #ifndef MAGNUM_TARGET_GLES2
-    GLint& value = Context::current().state().mesh->maxVertexAttributeStride;
+    GLint& value = Context::current().state().mesh.maxVertexAttributeStride;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -209,7 +209,7 @@ Int Mesh::maxElementIndex()
     #else
     GLint& value =
     #endif
-        Context::current().state().mesh->maxElementIndex;
+        Context::current().state().mesh.maxElementIndex;
 
     /* Get the value, if not already cached */
     if(value == 0) {
@@ -224,7 +224,7 @@ Int Mesh::maxElementIndex()
 }
 
 Int Mesh::maxElementsIndices() {
-    GLint& value = Context::current().state().mesh->maxElementsIndices;
+    GLint& value = Context::current().state().mesh.maxElementsIndices;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -234,7 +234,7 @@ Int Mesh::maxElementsIndices() {
 }
 
 Int Mesh::maxElementsVertices() {
-    GLint& value = Context::current().state().mesh->maxElementsVertices;
+    GLint& value = Context::current().state().mesh.maxElementsVertices;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -245,7 +245,7 @@ Int Mesh::maxElementsVertices() {
 #endif
 
 Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _flags{ObjectFlag::DeleteOnDestruction} {
-    (this->*Context::current().state().mesh->createImplementation)(true);
+    (this->*Context::current().state().mesh.createImplementation)(true);
 }
 
 Mesh::Mesh(NoCreateT) noexcept: _id{0}, _primitive{MeshPrimitive::Triangles}, _flags{ObjectFlag::DeleteOnDestruction} {}
@@ -256,11 +256,11 @@ Mesh::~Mesh() {
     /* Moved out or not deleting on destruction, nothing to do */
     if(deleteObject) {
         /* Remove current vao from the state */
-        GLuint& current = Context::current().state().mesh->currentVAO;
+        GLuint& current = Context::current().state().mesh.currentVAO;
         if(current == _id) current = 0;
     }
 
-    if(_constructed) (this->*Context::current().state().mesh->destroyImplementation)(deleteObject);
+    if(_constructed) (this->*Context::current().state().mesh.destroyImplementation)(deleteObject);
 }
 
 Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _flags{other._flags}, _countSet{other._countSet}, _count(other._count), _baseVertex{other._baseVertex}, _instanceCount{other._instanceCount},
@@ -273,7 +273,7 @@ Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive),
     _indexOffset(other._indexOffset), _indexType(other._indexType), _indexBuffer{std::move(other._indexBuffer)}
 {
     if(_constructed || other._constructed)
-        (this->*Context::current().state().mesh->moveConstructImplementation)(std::move(other));
+        (this->*Context::current().state().mesh.moveConstructImplementation)(std::move(other));
     other._id = 0;
 }
 
@@ -298,13 +298,13 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     swap(_indexBuffer, other._indexBuffer);
 
     if(_constructed || other._constructed)
-        (this->*Context::current().state().mesh->moveAssignImplementation)(std::move(other));
+        (this->*Context::current().state().mesh.moveAssignImplementation)(std::move(other));
 
     return *this;
 }
 
 Mesh::Mesh(const GLuint id, const MeshPrimitive primitive, const ObjectFlags flags): _id{id}, _primitive{primitive}, _flags{flags} {
-    (this->*Context::current().state().mesh->createImplementation)(false);
+    (this->*Context::current().state().mesh.createImplementation)(false);
 }
 
 inline void Mesh::createIfNotAlready() {
@@ -323,18 +323,18 @@ inline void Mesh::createIfNotAlready() {
 std::string Mesh::label() {
     createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES2
-    return Context::current().state().debug->getLabelImplementation(GL_VERTEX_ARRAY, _id);
+    return Context::current().state().debug.getLabelImplementation(GL_VERTEX_ARRAY, _id);
     #else
-    return Context::current().state().debug->getLabelImplementation(GL_VERTEX_ARRAY_KHR, _id);
+    return Context::current().state().debug.getLabelImplementation(GL_VERTEX_ARRAY_KHR, _id);
     #endif
 }
 
 Mesh& Mesh::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES2
-    Context::current().state().debug->labelImplementation(GL_VERTEX_ARRAY, _id, label);
+    Context::current().state().debug.labelImplementation(GL_VERTEX_ARRAY, _id, label);
     #else
-    Context::current().state().debug->labelImplementation(GL_VERTEX_ARRAY_KHR, _id, label);
+    Context::current().state().debug.labelImplementation(GL_VERTEX_ARRAY_KHR, _id, label);
     #endif
     return *this;
 }
@@ -381,7 +381,7 @@ Mesh& Mesh::setIndexBuffer(Buffer&& buffer, GLintptr offset, MeshIndexType type,
     /* It's IMPORTANT to do this *before* the _indexBuffer is set, since the
        bindVAO() function called from here is resetting element buffer state
        tracker to _indexBuffer.id(). */
-    (this->*Context::current().state().mesh->bindIndexBufferImplementation)(buffer);
+    (this->*Context::current().state().mesh.bindIndexBufferImplementation)(buffer);
 
     _indexBuffer = std::move(buffer);
     _indexOffset = offset;
@@ -407,7 +407,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, UnsignedIn
 void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset)
 #endif
 {
-    const Implementation::MeshState& state = *Context::current().state().mesh;
+    const Implementation::MeshState& state = Context::current().state().mesh;
 
     (this->*state.bindImplementation)();
 
@@ -548,7 +548,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::drawInternal(TransformFeedback& xfb, const UnsignedInt stream, const Int instanceCount) {
-    const Implementation::MeshState& state = *Context::current().state().mesh;
+    const Implementation::MeshState& state = Context::current().state().mesh;
 
     (this->*state.bindImplementation)();
 
@@ -605,11 +605,11 @@ void Mesh::bindVAOImplementationVAO(const GLuint id) {
     #else
     glBindVertexArrayOES
     #endif
-        (Context::current().state().mesh->currentVAO = id);
+        (Context::current().state().mesh.currentVAO = id);
 }
 
 void Mesh::bindVAO() {
-    GLuint& current = Context::current().state().mesh->currentVAO;
+    GLuint& current = Context::current().state().mesh.currentVAO;
     if(current != _id) {
         /* Binding the VAO finally creates it */
         _flags |= ObjectFlag::Created;
@@ -622,7 +622,7 @@ void Mesh::bindVAO() {
            particular, the setIndexBuffer() buffers call this function *and
            then* sets the _indexBuffer, which means at this point the ID will
            be still 0. */
-        Context::current().state().buffer->bindings[Implementation::BufferState::indexForTarget(Buffer::TargetHint::ElementArray)] = _indexBuffer.id();
+        Context::current().state().buffer.bindings[Implementation::BufferState::indexForTarget(Buffer::TargetHint::ElementArray)] = _indexBuffer.id();
     }
 }
 
@@ -731,7 +731,7 @@ void Mesh::attributePointerInternal(const Buffer& buffer, const GLuint location,
 void Mesh::attributePointerInternal(AttributeLayout&& attribute) {
     CORRADE_ASSERT(attribute.buffer.id(),
         "GL::Mesh::addVertexBuffer(): empty or moved-out Buffer instance was passed", );
-    (this->*Context::current().state().mesh->attributePointerImplementation)(std::move(attribute));
+    (this->*Context::current().state().mesh.attributePointerImplementation)(std::move(attribute));
 }
 
 void Mesh::attributePointerImplementationDefault(AttributeLayout&& attribute) {
@@ -775,7 +775,7 @@ void Mesh::attributePointerImplementationVAODSA(AttributeLayout&& attribute) {
     glVertexArrayVertexBuffer(_id, attribute.location, attribute.buffer.id(), attribute.offset, attribute.stride);
 
     if(attribute.divisor)
-        (this->*Context::current().state().mesh->vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
+        (this->*Context::current().state().mesh.vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
 }
 
 #ifdef CORRADE_TARGET_WINDOWS
@@ -811,7 +811,7 @@ void Mesh::vertexAttribPointer(AttributeLayout& attribute) {
         #ifndef MAGNUM_TARGET_GLES2
         glVertexAttribDivisor(attribute.location, attribute.divisor);
         #else
-        (this->*Context::current().state().mesh->vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
+        (this->*Context::current().state().mesh.vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
         #endif
     }
 }
@@ -839,7 +839,7 @@ void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint 
 #endif
 
 void Mesh::acquireVertexBuffer(Buffer&& buffer) {
-    (this->*Context::current().state().mesh->acquireVertexBufferImplementation)(std::move(buffer));
+    (this->*Context::current().state().mesh.acquireVertexBufferImplementation)(std::move(buffer));
 }
 
 void Mesh::acquireVertexBufferImplementationDefault(Buffer&& buffer) {
@@ -895,7 +895,7 @@ void Mesh::unbindImplementationDefault() {
             #ifndef MAGNUM_TARGET_GLES2
             glVertexAttribDivisor(attribute.location, 0);
             #else
-            (this->*Context::current().state().mesh->vertexAttribDivisorImplementation)(attribute.location, 0);
+            (this->*Context::current().state().mesh.vertexAttribDivisorImplementation)(attribute.location, 0);
             #endif
         }
     }

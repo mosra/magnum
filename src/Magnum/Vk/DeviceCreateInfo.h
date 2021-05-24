@@ -176,9 +176,19 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          * or in at least one of the enabled layers, use
          * @ref ExtensionProperties::isSupported() to check for their presence.
          *
-         * The function makes copies of string views that are not global or
-         * null-terminated, use the @link Containers::Literals::operator""_s() @endlink
-         * literal to prevent that where possible.
+         * The following @type_vk{DeviceCreateInfo} fields are set by this
+         * function:
+         *
+         * -    `enabledExtensionCount` to the count of extensions added
+         *      previously by this function plus @cpp extensions.size() @ce
+         * -    `pEnabledExtensionNames` to an array containing all extension
+         *      strings added previously by this function together with ones
+         *      from @p extensions (doing a copy where needed)
+         *
+         * @note The function makes copies of string views that are not global
+         *      or null-terminated, use the
+         *      @link Containers::Literals::operator""_s() @endlink
+         *      literal to prevent that where possible.
          */
         DeviceCreateInfo& addEnabledExtensions(Containers::ArrayView<const Containers::StringView> extensions) &;
         /** @overload */
@@ -215,8 +225,13 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          * corresponding extension enabled via @ref addEnabledExtensions(). Use
          * @ref DeviceProperties::features() to check for feature support.
          *
-         * Depending on what features are enabled, a subset of the following
-         * structures will be added to the `pNext` chain:
+         * If Vulkan 1.1 is not supported and
+         * @vk_extension{KHR,get_physical_device_properties2} is not enabled on
+         * the instance, the `pEnabledFeatures` field in
+         * @type_vk{DeviceCreateInfo} is set to the Vulkan 1.0 subset of
+         * @p features. Otherwise, depending on what features are enabled, a
+         * subset of the following structures will be added to the `pNext`
+         * chain:
          *
          * -    @type_vk_keyword{PhysicalDeviceProtectedMemoryFeatures} (Vulkan
          *      1.1)
@@ -292,6 +307,16 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          * @return Reference to self (for method chaining)
          *
          * At least one queue has to be added.
+         *
+         * The following @type_vk{DeviceCreateInfo} fields are set by this
+         * function:
+         *
+         * -    `queueCreateInfoCount` to the count of queues added previously
+         *      by this function plus @cpp queues.size() @ce
+         * -    `pQueueCreateInfos` to an array containing all queue create
+         *      infos added previously by this function together with ones
+         *      from @p family and @p priorities
+         *
          * @see @ref DeviceProperties::pickQueueFamily()
          * @todoc link to addQueues(QueueFlags) once doxygen finally GROWS UP
          *      and can link to &-qualified functions FFS
@@ -331,8 +356,16 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          * @return Reference to self (for method chaining)
          *
          * Compared to @ref addQueues() this allows you to specify additional
-         * queue properties using the `pNext` chain. The info is uses as-is,
+         * queue properties using the `pNext` chain. The info is used as-is,
          * with all pointers expected to stay in scope until device creation.
+         *
+         * The following @type_vk{DeviceCreateInfo} fields are set by this
+         * function:
+         *
+         * -    `queueCreateInfoCount` to the count of queues added previously
+         *      by this function plus @cpp 1 @ce
+         * -    `pQueueCreateInfos` to an array containing all queue create
+         *      infos added previously by this function together with @p info
          */
         DeviceCreateInfo& addQueues(const VkDeviceQueueCreateInfo& info) &;
         /** @overload */

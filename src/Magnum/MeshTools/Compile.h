@@ -95,22 +95,22 @@ typedef Containers::EnumSet<CompileFlag> CompileFlags;
 CORRADE_ENUMSET_OPERATORS(CompileFlags)
 
 /**
-@brief Compile mesh data
+@brief Compile OpenGL mesh data
 @m_since{2020,06}
 
-Configures a mesh for a @ref Shaders::Generic shader with a vertex buffer and
+Configures a mesh for a @ref Shaders::GenericGL shader with a vertex buffer and
 possibly also an index buffer, if the mesh is indexed.
 
 -   If the mesh contains positions, these are bound to the
-    @ref Shaders::Generic2D::Position attribute if they are 2D or to
-    @ref Shaders::Generic3D::Position if they are 3D.
+    @ref Shaders::GenericGL2D::Position attribute if they are 2D or to
+    @ref Shaders::GenericGL3D::Position if they are 3D.
 -   If the mesh contains normals or if @ref CompileFlag::GenerateFlatNormals /
     @ref CompileFlag::GenerateSmoothNormals is set, these are bound to
-    @ref Shaders::Generic3D::Normal.
+    @ref Shaders::GenericGL3D::Normal.
 -   If the mesh contains texture coordinates, these are bound to
-    @ref Shaders::Generic::TextureCoordinates.
+    @ref Shaders::GenericGL::TextureCoordinates.
 -   If the mesh contains colors, these are bound to
-    @ref Shaders::Generic::Color3 / @ref Shaders::Generic::Color4 based on
+    @ref Shaders::GenericGL::Color3 / @ref Shaders::GenericGL::Color4 based on
     their type.
 -   Custom attributes and known attributes of implementation-specific types
     are ignored with a warning. See the @ref compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
@@ -200,11 +200,11 @@ MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, GL::Bu
 @m_deprecated_since{2020,06} Use @ref compile(const Trade::MeshData&, CompileFlags)
     instead.
 
-Configures a mesh for @ref Shaders::Generic2D shader with vertex buffer and
+Configures a mesh for @ref Shaders::GenericGL2D shader with vertex buffer and
 possibly also an index buffer, if the mesh is indexed. Positions are bound to
-@ref Shaders::Generic2D::Position attribute. If the mesh contains texture
-coordinates, these are bound to @ref Shaders::Generic2D::TextureCoordinates
-attribute. If the mesh contains colors, these are bound to @ref Shaders::Generic3D::Color4
+@ref Shaders::GenericGL2D::Position attribute. If the mesh contains texture
+coordinates, these are bound to @ref Shaders::GenericGL2D::TextureCoordinates
+attribute. If the mesh contains colors, these are bound to @ref Shaders::GenericGL3D::Color4
 attribute. No data compression or index optimization (except for index buffer
 packing) is done, both the vertex buffer and the index buffer (if any) is owned
 by the mesh, both created with @ref GL::BufferUsage::StaticDraw.
@@ -230,15 +230,16 @@ CORRADE_IGNORE_DEPRECATED_POP
 @m_deprecated_since{2020,06} Use @ref compile(const Trade::MeshData&, CompileFlags)
     instead.
 
-Configures mesh for @ref Shaders::Generic3D shader with vertex buffer and
+Configures mesh for @ref Shaders::GenericGL3D shader with vertex buffer and
 possibly also index buffer, if the mesh is indexed. Positions are bound to
-@ref Shaders::Generic3D::Position attribute. If the mesh contains normals, they
-are bound to @ref Shaders::Generic3D::Normal attribute, texture coordinates are
-bound to @ref Shaders::Generic3D::TextureCoordinates attribute. If the mesh
-contains colors, they are bound to @ref Shaders::Generic3D::Color4 attribute.
-No data compression or index optimization (except for index buffer packing) is
-done, both the vertex buffer and the index buffer (if any) is owned by the mesh,
-both created with @ref GL::BufferUsage::StaticDraw.
+@ref Shaders::GenericGL3D::Position attribute. If the mesh contains normals,
+they are bound to @ref Shaders::GenericGL3D::Normal attribute, texture
+coordinates are bound to @ref Shaders::GenericGL3D::TextureCoordinates
+attribute. If the mesh contains colors, they are bound to
+@ref Shaders::GenericGL3D::Color4 attribute. No data compression or index
+optimization (except for index buffer packing) is done, both the vertex buffer
+and the index buffer (if any) is owned by the mesh, both created with
+@ref GL::BufferUsage::StaticDraw.
 
 This is just a convenience function for creating generic meshes, you might want
 to use @ref interleave() and @ref compressIndices() functions together with

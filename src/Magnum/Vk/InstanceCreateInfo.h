@@ -156,9 +156,18 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          * Use the @ref version() helper to create the @p version value. The
          * name is @cpp nullptr @ce by default.
          *
-         * The function makes copies of string views that are not global or
-         * null-terminated, use the @link Containers::Literals::operator""_s() @endlink
-         * literal to prevent that where possible.
+         * The following @type_vk{InstanceCreateInfo} fields are set by this
+         * function:
+         *
+         * -    `pApplicationInfo`
+         * -    @cpp pApplicationInfo->pApplicationName @ce to @p name (a copy
+         *      of it, if needed)
+         * -    @cpp pApplicationInfo->applicationVersion @ce to @p version
+         *
+         * @note The function makes copies of string views that are not global
+         *      or null-terminated, use the
+         *      @link Containers::Literals::operator""_s() @endlink literal to
+         *      prevent that where possible.
          */
         InstanceCreateInfo& setApplicationInfo(Containers::StringView name, Version version);
 
@@ -172,9 +181,19 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          * @ref Vk-Instance-command-line "command-line options", it's not
          * added.
          *
-         * The function makes copies of string views that are not global or
-         * null-terminated, use the @link Containers::Literals::operator""_s() @endlink
-         * literal to prevent that where possible.
+         * The following @type_vk{InstanceCreateInfo} fields are set by this
+         * function:
+         *
+         * -    `enabledLayerCount` to the count of layers added previously by
+         *      this function plus @cpp layers.size() @ce
+         * -    `pEnabledLayerNames` to an array containing all layer strings
+         *      added previously by this function together with ones from
+         *      @p layers (doing a copy where needed)
+         *
+         * @note The function makes copies of string views that are not global
+         *      or null-terminated, use the
+         *      @link Containers::Literals::operator""_s() @endlink literal to
+         *      prevent that where possible.
          */
         InstanceCreateInfo& addEnabledLayers(Containers::ArrayView<const Containers::StringView> layers);
         /** @overload */
@@ -192,9 +211,19 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          * @ref Vk-Instance-command-line "command-line options", it's not
          * added.
          *
-         * The function makes copies of string views that are not global or
-         * null-terminated, use the @link Containers::Literals::operator""_s() @endlink
-         * literal to prevent that where possible.
+         * The following @type_vk{InstanceCreateInfo} fields are set by this
+         * function:
+         *
+         * -    `enabledExtensionCount` to the count of extensions added
+         *      previously by this function plus @cpp extensions.size() @ce
+         * -    `pEnabledExtensionNames` to an array containing all extension
+         *      strings added previously by this function together with ones
+         *      from @p extensions (doing a copy where needed)
+         *
+         * @note The function makes copies of string views that are not global
+         *      or null-terminated, use the
+         *      @link Containers::Literals::operator""_s() @endlink literal to
+         *      prevent that where possible.
          */
         InstanceCreateInfo& addEnabledExtensions(Containers::ArrayView<const Containers::StringView> extensions);
         /** @overload */

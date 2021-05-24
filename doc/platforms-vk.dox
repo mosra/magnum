@@ -73,7 +73,17 @@ Build as a static library and supply to CMake via `Vulkan_LIBRARY`:
 
 @include libvulkan.cpp
 
-@section platforms-vk-best-practices Vulkan best practices
+@section platforms-vk-best-practices Vulkan tutorials and best practices
+
+@m_class{m-note m-danger}
+
+@par
+    Please note that various vendor may suggest mutually incompatible workflows
+    and what works best for one may not work for another. Certain tutorials and
+    posts were also written very early on the Vulkan evolution timeline (2016,
+    2017) and the understanding of the API, best practices and driver fast
+    paths may have changed since. If in doubt about efficiency of certain
+    approach, always consult multiple sources.
 
 Khronos wiki:
 
@@ -90,6 +100,11 @@ NVidia tutorials and tips:
 -   [Tips and Tricks: Vulkan Dos and Don’ts](https://developer.nvidia.com/blog/vulkan-dos-donts/)
 -   [Vulkan Device Generated Commands](https://developer.nvidia.com/blog/new-vulkan-device-generated-commands/)
 
+Intel tutorials:
+
+-   [API without Secrets: Introduction to Vulkan](https://software.intel.com/content/www/us/en/develop/articles/api-without-secrets-introduction-to-vulkan-preface.html)
+    -   [Important note about framebuffer creation efficiency](https://github.com/GameTechDev/IntroductionToVulkan/issues/20)
+
 ARM best practices:
 
 -   [Vulkan Best Practice for Mobile Developers](https://github.com/ARM-software/vulkan_best_practice_for_mobile_developers)
@@ -98,6 +113,7 @@ Various useful links:
 
 -   [Yet another blog explaining Vulkan synchronization](http://themaister.net/blog/2019/08/14/yet-another-blog-explaining-vulkan-synchronization/)
 -   [Writing an efficient Vulkan renderer](https://zeux.io/2020/02/27/writing-an-efficient-vulkan-renderer/)
+-   [Custom memory allocators](https://rastergrid.com/blog/sw-eng/2021/03/custom-memory-allocators/)
 
 */
 

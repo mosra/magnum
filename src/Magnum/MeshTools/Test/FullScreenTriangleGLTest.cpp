@@ -133,12 +133,12 @@ void main() {
     using namespace Math::Literals;
 
     Image2D image = framebuffer.read({{}, Vector2i{4}}, PixelFormat::RGBA8Unorm);
-    CORRADE_COMPARE_AS(Containers::arrayCast<Color4ub>(image.data()), Containers::arrayView(Containers::Array<Color4ub>{Containers::InPlaceInit, {
+    CORRADE_COMPARE_AS(Containers::arrayCast<Color4ub>(image.data()), Containers::arrayView<Color4ub>({
         0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba,
         0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba,
         0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba,
         0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba
-    }}), TestSuite::Compare::Container);
+    }), TestSuite::Compare::Container);
 }
 
 }}}}

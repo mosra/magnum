@@ -29,6 +29,7 @@
 #include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/StringStl.h> /* for Directory */
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Comparator.h>
@@ -38,6 +39,7 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Algorithms/KahanSum.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
@@ -93,7 +95,7 @@ template<std::size_t size, class T> Float calculateImageDelta(const Containers::
 
 std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected) {
     /* Calculate a delta image */
-    Containers::Array<Float> deltaData{Containers::NoInit,
+    Containers::Array<Float> deltaData{NoInit,
         std::size_t(expected.size().product())};
     Containers::StridedArrayView2D<Float> delta{deltaData,
         {std::size_t(expected.size().y()), std::size_t(expected.size().x())}};
@@ -132,8 +134,17 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
                     Containers::arrayCast<2, const Math::Vector<size, T>>(actualPixels), \
                     expected.pixels<Math::Vector<size, T>>(), delta);       \
                 break;
+        #define _f(first, second, third, fourth, size, T)                   \
+            case PixelFormat::first:                                        \
+            case PixelFormat::second:                                       \
+            case PixelFormat::third:                                        \
+            case PixelFormat::fourth:                                       \
+                max = calculateImageDelta<size, T>(                         \
+                    Containers::arrayCast<2, const Math::Vector<size, T>>(actualPixels), \
+                    expected.pixels<Math::Vector<size, T>>(), delta);       \
+                break;
         /* LCOV_EXCL_START */
-        _e(R8Unorm, R8Srgb, R8UI, 1, UnsignedByte)
+        _f(R8Unorm, R8Srgb, R8UI, Stencil8UI, 1, UnsignedByte)
         _e(RG8Unorm, RG8Srgb, RG8UI, 2, UnsignedByte)
         _e(RGB8Unorm, RGB8Srgb, RGB8UI, 3, UnsignedByte)
         _e(RGBA8Unorm, RGBA8Srgb, RGBA8UI, 4, UnsignedByte)
@@ -141,7 +152,7 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
         _d(RG8Snorm, RG8I, 2, Byte)
         _d(RGB8Snorm, RGB8I, 3, Byte)
         _d(RGBA8Snorm, RGBA8I, 4, Byte)
-        _d(R16Unorm, R16UI, 1, UnsignedShort)
+        _e(R16Unorm, R16UI, Depth16Unorm, 1, UnsignedShort)
         _d(RG16Unorm, RG16UI, 2, UnsignedShort)
         _d(RGB16Unorm, RGB16UI, 3, UnsignedShort)
         _d(RGBA16Unorm, RGBA16UI, 4, UnsignedShort)
@@ -149,7 +160,7 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
         _d(RG16Snorm, RG16I, 2, Short)
         _d(RGB16Snorm, RGB16I, 3, Short)
         _d(RGBA16Snorm, RGBA16I, 4, Short)
-        _c(R32UI, 1, UnsignedInt)
+        _d(R32UI, Depth24Unorm, 1, UnsignedInt)
         _c(RG32UI, 2, UnsignedInt)
         _c(RGB32UI, 3, UnsignedInt)
         _c(RGBA32UI, 4, UnsignedInt)
@@ -157,20 +168,24 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
         _c(RG32I, 2, Int)
         _c(RGB32I, 3, Int)
         _c(RGBA32I, 4, Int)
-        _c(R32F, 1, Float)
+        _c(R16F, 1, Half)
+        _c(RG16F, 2, Half)
+        _c(RGB16F, 3, Half)
+        _c(RGBA16F, 4, Half)
+        _d(R32F, Depth32F, 1, Float)
         _c(RG32F, 2, Float)
         _c(RGB32F, 3, Float)
         _c(RGBA32F, 4, Float)
         /* LCOV_EXCL_STOP */
+        #undef _f
         #undef _e
         #undef _d
         #undef _c
 
-        case PixelFormat::R16F:
-        case PixelFormat::RG16F:
-        case PixelFormat::RGB16F:
-        case PixelFormat::RGBA16F:
-            CORRADE_ASSERT_UNREACHABLE("DebugTools::CompareImage: half-float formats are not supported yet", {});
+        case PixelFormat::Depth16UnormStencil8UI:
+        case PixelFormat::Depth24UnormStencil8UI:
+        case PixelFormat::Depth32FStencil8UI:
+            CORRADE_ASSERT_UNREACHABLE("DebugTools::CompareImage: packed depth/stencil formats are not supported yet", {});
     }
     #ifdef __GNUC__
     #pragma GCC diagnostic pop
@@ -261,11 +276,18 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
         #define _e(first, second, third, size, T)                           \
             case PixelFormat::first:                                        \
             case PixelFormat::second:                                       \
-            case PixelFormat::third:                                       \
+            case PixelFormat::third:                                        \
+                out << *reinterpret_cast<const Math::Vector<size, T>*>(pixel); \
+                break;
+        #define _f(first, second, third, fourth, size, T)                   \
+            case PixelFormat::first:                                        \
+            case PixelFormat::second:                                       \
+            case PixelFormat::third:                                        \
+            case PixelFormat::fourth:                                       \
                 out << *reinterpret_cast<const Math::Vector<size, T>*>(pixel); \
                 break;
         /* LCOV_EXCL_START */
-        _e(R8Unorm, R8Srgb, R8UI, 1, UnsignedByte)
+        _f(R8Unorm, R8Srgb, R8UI, Stencil8UI, 1, UnsignedByte)
         _e(RG8Unorm, RG8Srgb, RG8UI, 2, UnsignedByte)
         _c(RGB8UI, 3, UnsignedByte)
         _c(RGBA8UI, 4, UnsignedByte)
@@ -274,7 +296,7 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
         _d(RG8Snorm, RG8I, 2, Byte)
         _d(RGB8Snorm, RGB8I, 3, Byte)
         _d(RGBA8Snorm, RGBA8I, 4, Byte)
-        _d(R16Unorm, R16UI, 1, UnsignedShort)
+        _e(R16Unorm, R16UI, Depth16Unorm, 1, UnsignedShort)
         _d(RG16Unorm, RG16UI, 2, UnsignedShort)
         _d(RGB16Unorm, RGB16UI, 3, UnsignedShort)
         _d(RGBA16Unorm, RGBA16UI, 4, UnsignedShort)
@@ -282,7 +304,7 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
         _d(RG16Snorm, RG16I, 2, Short)
         _d(RGB16Snorm, RGB16I, 3, Short)
         _d(RGBA16Snorm, RGBA16I, 4, Short)
-        _c(R32UI, 1, UnsignedInt)
+        _d(R32UI, Depth24Unorm, 1, UnsignedInt)
         _c(RG32UI, 2, UnsignedInt)
         _c(RGB32UI, 3, UnsignedInt)
         _c(RGBA32UI, 4, UnsignedInt)
@@ -290,11 +312,16 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
         _c(RG32I, 2, Int)
         _c(RGB32I, 3, Int)
         _c(RGBA32I, 4, Int)
-        _c(R32F, 1, Float)
+        _c(R16F, 1, Half)
+        _c(RG16F, 2, Half)
+        _c(RGB16F, 3, Half)
+        _c(RGBA16F, 4, Half)
+        _d(R32F, Depth32F, 1, Float)
         _c(RG32F, 2, Float)
         _c(RGB32F, 3, Float)
         _c(RGBA32F, 4, Float)
         /* LCOV_EXCL_STOP */
+        #undef _f
         #undef _e
         #undef _d
         #undef _c
@@ -309,10 +336,9 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
             out << *reinterpret_cast<const Color4ub*>(pixel);
             break;
 
-        case PixelFormat::R16F:
-        case PixelFormat::RG16F:
-        case PixelFormat::RGB16F:
-        case PixelFormat::RGBA16F:
+        case PixelFormat::Depth16UnormStencil8UI:
+        case PixelFormat::Depth24UnormStencil8UI:
+        case PixelFormat::Depth32FStencil8UI:
             /* Already handled by a printing assert before */
             CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
@@ -420,7 +446,7 @@ class ImageComparatorBase::State {
         Containers::Array<Float> delta;
 };
 
-ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* importerManager, PluginManager::Manager<Trade::AbstractImageConverter>* converterManager, Float maxThreshold, Float meanThreshold): _state{Containers::InPlaceInit, importerManager, converterManager, maxThreshold, meanThreshold} {
+ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* importerManager, PluginManager::Manager<Trade::AbstractImageConverter>* converterManager, Float maxThreshold, Float meanThreshold): _state{InPlaceInit, importerManager, converterManager, maxThreshold, meanThreshold} {
     CORRADE_ASSERT(!Math::isNan(maxThreshold) && !Math::isInf(maxThreshold) &&
                    !Math::isNan(meanThreshold) && !Math::isInf(meanThreshold),
         "DebugTools::CompareImage: thresholds can't be NaN or infinity", );
@@ -709,7 +735,7 @@ void ImageComparatorBase::saveDiagnostic(TestSuite::ComparisonStatusFlags, Utili
        we're in the middle of a fail anyway (and everything will print messages
        to the output nevertheless). */
     Containers::Pointer<Trade::AbstractImageConverter> converter = _state->converterManager().loadAndInstantiate("AnyImageConverter");
-    if(converter && converter->exportToFile(image, filename))
+    if(converter && converter->convertToFile(image, filename))
         out << "->" << filename;
 }
 

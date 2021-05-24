@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/SceneGraph/AbstractFeature.hpp"
 #include "Magnum/SceneGraph/MatrixTransformation3D.hpp"
@@ -57,6 +58,8 @@ struct ObjectTest: TestSuite::Tester {
 
     template<class T> void rangeBasedForChildren();
     template<class T> void rangeBasedForFeatures();
+
+    void treeDestructionOrder();
 };
 
 ObjectTest::ObjectTest() {
@@ -96,7 +99,9 @@ ObjectTest::ObjectTest() {
         &ObjectTest::rangeBasedForChildren<Float>,
         &ObjectTest::rangeBasedForChildren<Double>,
         &ObjectTest::rangeBasedForFeatures<Float>,
-        &ObjectTest::rangeBasedForFeatures<Double>});
+        &ObjectTest::rangeBasedForFeatures<Double>,
+
+        &ObjectTest::treeDestructionOrder});
 }
 
 template<class T> using Object3D = SceneGraph::Object<SceneGraph::BasicMatrixTransformation3D<T>>;
@@ -607,6 +612,104 @@ template<class T> void ObjectTest::rangeBasedForFeatures() {
     std::vector<AbstractBasicFeature3D<T>*> features;
     for(auto&& i: object.features()) features.push_back(&i);
     CORRADE_COMPARE(features, (std::vector<AbstractBasicFeature3D<T>*>{&a, &b, &c}));
+}
+
+void ObjectTest::treeDestructionOrder() {
+    struct AccessingParent: Object3D<Float> {
+        explicit AccessingParent(Int id, Object3D<Float>* parent): Object3D<Float>{parent}, id{id} {}
+
+        ~AccessingParent() {
+            int parentDepth = 0;
+            Object3D<Float>* p = parent();
+            while(p) {
+                ++parentDepth;
+                p = p->parent();
+            }
+
+            Debug{} << "Destructing an object" << id << "with" << parentDepth << "parents and" << (scene() ? "a scene" : "no scene");
+        }
+
+        Int id;
+    };
+
+    struct AccessingObject: AbstractFeature3D {
+        explicit AccessingObject(Object3D<Float>& object, int id): AbstractFeature3D{object}, id{id} {}
+
+        ~AccessingObject() {
+            Debug{} << "Destructing a feature" << id << "attached to an object" << static_cast<AccessingParent&>(object()).id;
+        }
+
+        int id;
+    };
+
+    std::stringstream out;
+    Debug redirectOutput{&out};
+    {
+        struct Scene: Scene3D<Float> {
+            ~Scene() {
+                Debug{} << "Destructing the scene";
+            }
+        } scene;
+
+        /* These get deleted at the end of scope */
+        AccessingParent a{0, &scene};
+        AccessingParent b{1, &a};
+        AccessingObject bf{b, 0};
+
+        /* These get deleted as a consequence of b getting out of scope */
+        AccessingParent* c = new AccessingParent{2, &b};
+        new AccessingObject{*(new AccessingParent{3, c}), 1};
+        new AccessingObject{*c, 2};
+
+        /* These during scene destruction */
+        AccessingParent* d = new AccessingParent{4, &scene};
+        new AccessingObject{*d, 3};
+
+        /* These get deleted right now */
+        AccessingParent{5, nullptr};
+        AccessingObject{b, 4};
+
+        CORRADE_COMPARE(out.str(),
+            "Destructing an object 5 with 0 parents and no scene\n"
+            "Destructing a feature 4 attached to an object 1\n");
+    }
+
+    const char* vtableBehavior =
+        #ifndef CORRADE_TARGET_CLANG
+        "no scene"
+        #else
+        "a scene" /* See below. */
+        #endif
+        ;
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Destructing an object 5 with 0 parents and no scene\n"
+        "Destructing a feature 4 attached to an object 1\n"
+
+        /* First a feature that was on stack gets destructed */
+        "Destructing a feature 0 attached to an object 1\n"
+
+        /* Then `b`, which then proceeds with destructing heap-allocated child
+           `c` and its grand child */
+        "Destructing an object 1 with 2 parents and a scene\n"
+        "Destructing an object 2 with 3 parents and a scene\n"
+        "Destructing an object 3 with 4 parents and a scene\n"
+        /* and after that the heap-allocated feature attached to the
+           grandchild */
+        "Destructing a feature 1 attached to an object 3\n"
+        /* and then the feature attached to `c` */
+        "Destructing a feature 2 attached to an object 2\n"
+
+        /* Then `a`, which has nothing */
+        "Destructing an object 0 with 1 parents and a scene\n"
+
+        /* Then the scene and everything remaining attached to it -- first the
+           object and then the feature attached to it */
+        "Destructing the scene\n"
+        /* The scene got partially destructed at this point and only an Object
+           may remain of it, which means the isScene() override saying it's a
+           scene is no longer present. GCC does this but not Clang. */
+        "Destructing an object 4 with 1 parents and {}\n"
+        "Destructing a feature 3 attached to an object 4\n", vtableBehavior));
 }
 
 }}}}

@@ -25,94 +25,46 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
- * @brief Class @ref Magnum::Shaders::AbstractVector, typedef @ref Magnum::Shaders::AbstractVector2D, @ref Magnum::Shaders::AbstractVector3D
+ * @brief Typedef @ref Magnum::Shaders::AbstractVector, alias @ref Magnum::Shaders::AbstractVector2D, @ref Magnum::Shaders::AbstractVector3D
+ * @m_deprecated_since_latest Use @ref Magnum/Shaders/AbstractVectorGL.h, the
+ *      @ref Magnum::Shaders::AbstractVectorGL "AbstractVectorGL" class and
+ *      related typedefs instead.
  */
+#endif
 
-#include "Magnum/GL/AbstractShaderProgram.h"
-#include "Magnum/Shaders/Generic.h"
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+
+#include "Magnum/Shaders/AbstractVectorGL.h"
+
+CORRADE_DEPRECATED_FILE("use Magnum/Shaders/AbstractVectorGL.h, the AbstractVectorGL class and related typedefs instead")
 
 namespace Magnum { namespace Shaders {
 
-/**
-@brief Base for vector shaders
+/** @brief @copybrief AbstractVectorGL
+ * @m_deprecated_since_latest Use @ref AbstractVectorGL instead.
+ */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<UnsignedInt dimensions> using AbstractVector CORRADE_DEPRECATED_ALIAS("use AbstractVectorGL instead") = AbstractVectorGL<dimensions>;
+#endif
 
-See @ref DistanceFieldVector and @ref Vector for more information.
-@see @ref shaders, @ref AbstractVector2D, @ref AbstractVector3D
-*/
-template<UnsignedInt dimensions> class AbstractVector: public GL::AbstractShaderProgram {
-    public:
-        /**
-         * @brief Vertex position
-         *
-         * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector2 "Vector2" in 2D, @ref Magnum::Vector3 "Vector3"
-         * in 3D.
-         */
-        typedef typename Generic<dimensions>::Position Position;
+/** @brief @copybrief AbstractVectorGL2D
+ * @m_deprecated_since_latest Use @ref AbstractVectorGL2D instead.
+ */
+typedef CORRADE_DEPRECATED("use AbstractVectorGL2D instead") AbstractVectorGL2D AbstractVector2D;
 
-        /**
-         * @brief 2D texture coordinates
-         *
-         * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector2 "Vector2".
-         */
-        typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
-
-        enum: UnsignedInt {
-            /**
-             * Color shader output. @ref shaders-generic "Generic output",
-             * present always. Expects three- or four-component floating-point
-             * or normalized buffer attachment.
-             */
-            ColorOutput = Generic<dimensions>::ColorOutput
-        };
-
-        /** @brief Copying is not allowed */
-        AbstractVector(const AbstractVector<dimensions>&) = delete;
-
-        /** @brief Move constructor */
-        AbstractVector(AbstractVector<dimensions>&&) noexcept = default;
-
-        /** @brief Copying is not allowed */
-        AbstractVector<dimensions>& operator=(const AbstractVector<dimensions>&) = delete;
-
-        /** @brief Move assignment */
-        AbstractVector<dimensions>& operator=(AbstractVector<dimensions>&&) noexcept = default;
-
-        /**
-         * @brief Bind vector texture
-         * @return Reference to self (for method chaining)
-         *
-         * @see @ref DistanceFieldVector::Flag::TextureTransformation,
-         *      @ref Vector::Flag::TextureTransformation,
-         *      @ref DistanceFieldVector::setTextureMatrix(),
-         *      @ref Vector::setTextureMatrix()
-         */
-        AbstractVector<dimensions>& bindVectorTexture(GL::Texture2D& texture);
-
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
-    private:
-    #endif
-        /* Those textures are quite specific (and likely reused multiple times
-           per frame for e.g. text rendering, so put them in a specific slot.
-           Older iOS (and iOS WebGL) has only 8 texture units, so can't go
-           above that. Unit 7 is used by TextureTools::DistanceField. */
-        enum: Int { VectorTextureUnit = 6 };
-
-        explicit AbstractVector(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
-        explicit AbstractVector() = default;
-        ~AbstractVector() = default;
-};
-
-/** @brief Base for two-dimensional text shaders */
-typedef AbstractVector<2> AbstractVector2D;
-
-/** @brief Base for three-dimensional text shader */
-typedef AbstractVector<3> AbstractVector3D;
+/** @brief @copybrief AbstractVectorGL3D
+ * @m_deprecated_since_latest Use @ref AbstractVectorGL3D instead.
+ */
+typedef CORRADE_DEPRECATED("use AbstractVectorGL3D instead") AbstractVectorGL3D AbstractVector3D;
 
 }}
+#else
+#error use Magnum/Shaders/AbstractVectorGL.h, the AbstractVectorGL class and related typedefs instead
+#endif
 
 #endif

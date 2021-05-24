@@ -66,7 +66,7 @@ void PipelineStatisticsQueryGLTest::constructMove() {
 
 void PipelineStatisticsQueryGLTest::wrap() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::pipeline_statistics_query>())
-        CORRADE_SKIP(Extensions::ARB::pipeline_statistics_query::string() + std::string(" is not available"));
+        CORRADE_SKIP(Extensions::ARB::pipeline_statistics_query::string() << "is not available");
 
     GLuint id;
     glGenQueries(1, &id);
@@ -84,7 +84,7 @@ void PipelineStatisticsQueryGLTest::wrap() {
 
 void PipelineStatisticsQueryGLTest::queryVerticesSubmitted() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::pipeline_statistics_query>())
-        CORRADE_SKIP(Extensions::ARB::pipeline_statistics_query::string() + std::string(" is not available"));
+        CORRADE_SKIP(Extensions::ARB::pipeline_statistics_query::string() << "is not available");
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
     Renderbuffer color;

@@ -25,6 +25,8 @@
 
 #include "AnyImageConverter.h"
 
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StringStl.h> /* for Directory */
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
@@ -42,10 +44,10 @@ AnyImageConverter::AnyImageConverter(PluginManager::AbstractManager& manager, co
 AnyImageConverter::~AnyImageConverter() = default;
 
 ImageConverterFeatures AnyImageConverter::doFeatures() const {
-    return ImageConverterFeature::ConvertFile|ImageConverterFeature::ConvertCompressedFile;
+    return ImageConverterFeature::Convert2DToFile|ImageConverterFeature::ConvertCompressed2DToFile;
 }
 
-bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::string& filename) {
+bool AnyImageConverter::doConvertToFile(const ImageView2D& image, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
     /** @todo lowercase only the extension, once Directory::split() is done */
@@ -73,18 +75,18 @@ bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::stri
             Utility::String::endsWith(normalized, ".vst"))
         plugin = "TgaImageConverter";
     else {
-        Error{} << "Trade::AnyImageConverter::exportToFile(): cannot determine the format of" << filename;
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename;
         return false;
     }
 
     /* Try to load the plugin */
     if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
-        Error{} << "Trade::AnyImageConverter::exportToFile(): cannot load the" << plugin << "plugin";
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot load the" << plugin << "plugin";
         return false;
     }
     if(flags() & ImageConverterFlag::Verbose) {
         Debug d;
-        d << "Trade::AnyImageConverter::exportToFile(): using" << plugin;
+        d << "Trade::AnyImageConverter::convertToFile(): using" << plugin;
         PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
         CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
@@ -97,19 +99,19 @@ bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::stri
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
-    return converter->exportToFile(image, filename);
+    return converter->convertToFile(image, filename);
 }
 
-bool AnyImageConverter::doExportToFile(const CompressedImageView2D&, const std::string& filename) {
+bool AnyImageConverter::doConvertToFile(const CompressedImageView2D&, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
     /* No file formats to store compressed data yet */
 
-    Error{} << "Trade::AnyImageConverter::exportToFile(): cannot determine the format of" << filename << "to store compressed data";
+    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "to store compressed data";
     return false;
 }
 
 }}
 
 CORRADE_PLUGIN_REGISTER(AnyImageConverter, Magnum::Trade::AnyImageConverter,
-    "cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1")
+    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3")

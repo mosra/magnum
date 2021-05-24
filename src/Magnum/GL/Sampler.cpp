@@ -107,7 +107,7 @@ SamplerWrapping samplerWrapping(const Magnum::SamplerWrapping wrapping) {
 }
 
 Float Sampler::maxMaxAnisotropy() {
-    GLfloat& value = Context::current().state().texture->maxMaxAnisotropy;
+    GLfloat& value = Context::current().state().texture.maxMaxAnisotropy;
 
     /* Get the value, if not already cached */
     if(value == 0.0f) {

@@ -348,6 +348,43 @@ MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const 
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
 
+/**
+@brief Cast 32-bit floating-point values into a 64-bit floating-point representation
+@param[in]  src     Source float values
+@param[out] dst     Destination double values
+@m_since_latest
+
+This function performs an equivalent of @cpp Double(a) @ce over the range, so
+e.g. @cpp 135.0f @ce becomes @cpp 135.0 @ce. Second dimension is meant to
+contain vector/matrix components, or have a size of 1 for scalars. Expects that
+@p src and @p dst have the same size and that the second dimension in both is
+contiguous.
+
+@see @ref castInto(const Corrade::Containers::StridedArrayView2D<const Double>&, const Corrade::Containers::StridedArrayView2D<Float>&),
+    @ref Corrade::Containers::StridedArrayView::isContiguous()
+*/
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+
+/**
+@brief Cast 64-bit floating-point values into a 32-bit floating-point representation
+@param[in]  src     Source double values
+@param[out] dst     Destination float values
+@m_since_latest
+
+This function performs an equivalent of @cpp Float(a) @ce over the range, so
+e.g. @cpp 135.0 @ce becomes @cpp 135.0f @ce. Second dimension is meant to
+contain vector/matrix components, or have a size of 1 for scalars. Expects that
+@p src and @p dst have the same size and that the second dimension in both is
+contiguous.
+
+@attention Numbers with more than 23 bits of precision will not be represented
+    accurately when cast into a @ref Magnum::Float "Float".
+
+@see @ref castInto(const Corrade::Containers::StridedArrayView2D<const Float>&, const Corrade::Containers::StridedArrayView2D<Double>&),
+    @ref Corrade::Containers::StridedArrayView::isContiguous()
+*/
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+
 /* Since 1.8.17, the original short-hand group closing doesn't work anymore.
    FFS. */
 /**

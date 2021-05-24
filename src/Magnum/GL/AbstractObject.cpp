@@ -110,7 +110,7 @@ Int AbstractObject::maxLabelLength() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         return 0;
 
-    GLint& value = Context::current().state().debug->maxLabelLength;
+    GLint& value = Context::current().state().debug.maxLabelLength;
 
     if(value == 0) {
         #ifndef MAGNUM_TARGET_GLES2

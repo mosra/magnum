@@ -181,7 +181,7 @@ void FrameProfiler::endFrame() {
 
     /* If we don't have all frames yet, enlarge the array */
     if(++_measuredFrameCount <= _maxFrameCount)
-        arrayAppend(_data, Containers::NoInit, _measurements.size());
+        arrayAppend(_data, NoInit, _measurements.size());
 
     /* Wrap up measurements for this frame  */
     for(std::size_t i = 0; i != _measurements.size(); ++i) {
@@ -429,7 +429,7 @@ Debug& operator<<(Debug& debug, const FrameProfiler::Units value) {
 }
 
 #ifdef MAGNUM_TARGET_GL
-struct GLFrameProfiler::State {
+struct FrameProfilerGL::State {
     UnsignedShort cpuDurationIndex = 0xffff,
         gpuDurationIndex = 0xffff,
         frameTimeIndex = 0xffff;
@@ -448,27 +448,27 @@ struct GLFrameProfiler::State {
     #endif
 };
 
-GLFrameProfiler::GLFrameProfiler(): _state{Containers::InPlaceInit} {}
+FrameProfilerGL::FrameProfilerGL(): _state{InPlaceInit} {}
 
-GLFrameProfiler::GLFrameProfiler(const Values values, const UnsignedInt maxFrameCount): GLFrameProfiler{}
+FrameProfilerGL::FrameProfilerGL(const Values values, const UnsignedInt maxFrameCount): FrameProfilerGL{}
 {
     setup(values, maxFrameCount);
 }
 
-GLFrameProfiler::GLFrameProfiler(GLFrameProfiler&&) noexcept = default;
+FrameProfilerGL::FrameProfilerGL(FrameProfilerGL&&) noexcept = default;
 
-GLFrameProfiler& GLFrameProfiler::operator=(GLFrameProfiler&&) noexcept = default;
+FrameProfilerGL& FrameProfilerGL::operator=(FrameProfilerGL&&) noexcept = default;
 
-GLFrameProfiler::~GLFrameProfiler() = default;
+FrameProfilerGL::~FrameProfilerGL() = default;
 
-void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount) {
+void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount) {
     UnsignedShort index = 0;
     Containers::Array<Measurement> measurements;
     if(values & Value::FrameTime) {
         /* Fucking hell, STL. When I first saw std::chrono back in 2010 I
            should have flipped the table and learn carpentry instead. BUT NO,
            I'm still suffering this abomination a decade later! */
-        arrayAppend(measurements, Containers::InPlaceInit,
+        arrayAppend(measurements, InPlaceInit,
             "Frame time", Units::Nanoseconds, UnsignedInt(Containers::arraySize(_state->frameTimeStartFrame)),
             [](void* state, UnsignedInt current) {
                 static_cast<State*>(state)->frameTimeStartFrame[current] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
@@ -482,7 +482,7 @@ void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount
         _state->frameTimeIndex = index++;
     }
     if(values & Value::CpuDuration) {
-        arrayAppend(measurements, Containers::InPlaceInit,
+        arrayAppend(measurements, InPlaceInit,
             "CPU duration", Units::Nanoseconds,
             [](void* state) {
                 static_cast<State*>(state)->cpuDurationStartFrame = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
@@ -496,7 +496,7 @@ void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount
     if(values & Value::GpuDuration) {
         for(GL::TimeQuery& q: _state->timeQueries)
             q = GL::TimeQuery{GL::TimeQuery::Target::TimeElapsed};
-        arrayAppend(measurements, Containers::InPlaceInit,
+        arrayAppend(measurements, InPlaceInit,
             "GPU duration", Units::Nanoseconds,
             UnsignedInt(Containers::arraySize(_state->timeQueries)),
             [](void* state, UnsignedInt current) {
@@ -516,7 +516,7 @@ void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount
             q = GL::PipelineStatisticsQuery{GL::PipelineStatisticsQuery::Target::VerticesSubmitted};
         for(GL::PipelineStatisticsQuery& q: _state->vertexShaderInvocationsQueries)
             q = GL::PipelineStatisticsQuery{GL::PipelineStatisticsQuery::Target::VertexShaderInvocations};
-        arrayAppend(measurements, Containers::InPlaceInit,
+        arrayAppend(measurements, InPlaceInit,
             "Vertex fetch ratio", Units::RatioThousandths,
             UnsignedInt(Containers::arraySize(_state->verticesSubmittedQueries)),
             [](void* state, UnsignedInt current) {
@@ -541,7 +541,7 @@ void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount
             q = GL::PipelineStatisticsQuery{GL::PipelineStatisticsQuery::Target::ClippingInputPrimitives};
         for(GL::PipelineStatisticsQuery& q: _state->clippingOutputPrimitivesQueries)
             q = GL::PipelineStatisticsQuery{GL::PipelineStatisticsQuery::Target::ClippingOutputPrimitives};
-        arrayAppend(measurements, Containers::InPlaceInit,
+        arrayAppend(measurements, InPlaceInit,
             "Primitives clipped", Units::PercentageThousandths,
             UnsignedInt(Containers::arraySize(_state->clippingInputPrimitivesQueries)),
             [](void* state, UnsignedInt current) {
@@ -565,7 +565,7 @@ void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount
     setup(std::move(measurements), maxFrameCount);
 }
 
-auto GLFrameProfiler::values() const -> Values {
+auto FrameProfilerGL::values() const -> Values {
     Values values;
     if(_state->frameTimeIndex != 0xffff) values |= Value::FrameTime;
     if(_state->cpuDurationIndex != 0xffff) values |= Value::CpuDuration;
@@ -577,7 +577,7 @@ auto GLFrameProfiler::values() const -> Values {
     return values;
 }
 
-bool GLFrameProfiler::isMeasurementAvailable(const Value value) const {
+bool FrameProfilerGL::isMeasurementAvailable(const Value value) const {
     const UnsignedShort* index = nullptr;
     switch(value) {
         case Value::FrameTime: index = &_state->frameTimeIndex; break;
@@ -590,45 +590,45 @@ bool GLFrameProfiler::isMeasurementAvailable(const Value value) const {
     }
     CORRADE_INTERNAL_ASSERT(index);
     CORRADE_ASSERT(*index < measurementCount(),
-        "DebugTools::GLFrameProfiler::isMeasurementAvailable():" << value << "not enabled", {});
+        "DebugTools::FrameProfilerGL::isMeasurementAvailable():" << value << "not enabled", {});
     return isMeasurementAvailable(*index);
 }
 
-Double GLFrameProfiler::frameTimeMean() const {
+Double FrameProfilerGL::frameTimeMean() const {
     CORRADE_ASSERT(_state->frameTimeIndex < measurementCount(),
-        "DebugTools::GLFrameProfiler::frameTimeMean(): not enabled", {});
+        "DebugTools::FrameProfilerGL::frameTimeMean(): not enabled", {});
     return measurementMean(_state->frameTimeIndex);
 }
 
-Double GLFrameProfiler::cpuDurationMean() const {
+Double FrameProfilerGL::cpuDurationMean() const {
     CORRADE_ASSERT(_state->cpuDurationIndex < measurementCount(),
-        "DebugTools::GLFrameProfiler::cpuDurationMean(): not enabled", {});
+        "DebugTools::FrameProfilerGL::cpuDurationMean(): not enabled", {});
     return measurementMean(_state->cpuDurationIndex);
 }
 
-Double GLFrameProfiler::gpuDurationMean() const {
+Double FrameProfilerGL::gpuDurationMean() const {
     CORRADE_ASSERT(_state->gpuDurationIndex < measurementCount(),
-        "DebugTools::GLFrameProfiler::gpuDurationMean(): not enabled", {});
+        "DebugTools::FrameProfilerGL::gpuDurationMean(): not enabled", {});
     return measurementMean(_state->gpuDurationIndex);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-Double GLFrameProfiler::vertexFetchRatioMean() const {
+Double FrameProfilerGL::vertexFetchRatioMean() const {
     CORRADE_ASSERT(_state->vertexFetchRatioIndex < measurementCount(),
-        "DebugTools::GLFrameProfiler::vertexFetchRatioMean(): not enabled", {});
+        "DebugTools::FrameProfilerGL::vertexFetchRatioMean(): not enabled", {});
     return measurementMean(_state->vertexFetchRatioIndex);
 }
 
-Double GLFrameProfiler::primitiveClipRatioMean() const {
+Double FrameProfilerGL::primitiveClipRatioMean() const {
     CORRADE_ASSERT(_state->primitiveClipRatioIndex < measurementCount(),
-        "DebugTools::GLFrameProfiler::primitiveClipRatioMean(): not enabled", {});
+        "DebugTools::FrameProfilerGL::primitiveClipRatioMean(): not enabled", {});
     return measurementMean(_state->primitiveClipRatioIndex);
 }
 #endif
 
 namespace {
 
-constexpr const char* GLFrameProfilerValueNames[] {
+constexpr const char* FrameProfilerGLValueNames[] {
     "FrameTime",
     "CpuDuration",
     "GpuDuration",
@@ -638,24 +638,24 @@ constexpr const char* GLFrameProfilerValueNames[] {
 
 }
 
-Debug& operator<<(Debug& debug, const GLFrameProfiler::Value value) {
-    debug << "DebugTools::GLFrameProfiler::Value" << Debug::nospace;
+Debug& operator<<(Debug& debug, const FrameProfilerGL::Value value) {
+    debug << "DebugTools::FrameProfilerGL::Value" << Debug::nospace;
 
     const UnsignedInt bit = Math::log2(UnsignedShort(value));
     if(1 << bit == UnsignedShort(value))
-        return debug << "::" << Debug::nospace << GLFrameProfilerValueNames[bit];
+        return debug << "::" << Debug::nospace << FrameProfilerGLValueNames[bit];
 
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, const GLFrameProfiler::Values value) {
-    return Containers::enumSetDebugOutput(debug, value, "DebugTools::GLFrameProfiler::Values{}", {
-        GLFrameProfiler::Value::FrameTime,
-        GLFrameProfiler::Value::CpuDuration,
-        GLFrameProfiler::Value::GpuDuration,
+Debug& operator<<(Debug& debug, const FrameProfilerGL::Values value) {
+    return Containers::enumSetDebugOutput(debug, value, "DebugTools::FrameProfilerGL::Values{}", {
+        FrameProfilerGL::Value::FrameTime,
+        FrameProfilerGL::Value::CpuDuration,
+        FrameProfilerGL::Value::GpuDuration,
         #ifndef MAGNUM_TARGET_GLES
-        GLFrameProfiler::Value::VertexFetchRatio,
-        GLFrameProfiler::Value::PrimitiveClipRatio
+        FrameProfilerGL::Value::VertexFetchRatio,
+        FrameProfilerGL::Value::PrimitiveClipRatio
         #endif
         });
 }
@@ -668,43 +668,43 @@ namespace Corrade { namespace Utility {
 using namespace Magnum;
 
 #ifdef MAGNUM_TARGET_GL
-std::string ConfigurationValue<DebugTools::GLFrameProfiler::Value>::toString(const DebugTools::GLFrameProfiler::Value value, ConfigurationValueFlags) {
+std::string ConfigurationValue<DebugTools::FrameProfilerGL::Value>::toString(const DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags) {
     const UnsignedInt bit = Math::log2(UnsignedShort(value));
     if(1 << bit == UnsignedShort(value))
-        return DebugTools::GLFrameProfilerValueNames[bit];
+        return DebugTools::FrameProfilerGLValueNames[bit];
     return "";
 }
 
-DebugTools::GLFrameProfiler::Value ConfigurationValue<DebugTools::GLFrameProfiler::Value>::fromString(const std::string& value, ConfigurationValueFlags) {
-    for(std::size_t i = 0; i != Containers::arraySize(DebugTools::GLFrameProfilerValueNames); ++i)
-        if(DebugTools::GLFrameProfilerValueNames[i] == value)
-            return DebugTools::GLFrameProfiler::Value(1 << i);
+DebugTools::FrameProfilerGL::Value ConfigurationValue<DebugTools::FrameProfilerGL::Value>::fromString(const std::string& value, ConfigurationValueFlags) {
+    for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i)
+        if(DebugTools::FrameProfilerGLValueNames[i] == value)
+            return DebugTools::FrameProfilerGL::Value(1 << i);
 
-    return DebugTools::GLFrameProfiler::Value{};
+    return DebugTools::FrameProfilerGL::Value{};
 }
 
-std::string ConfigurationValue<DebugTools::GLFrameProfiler::Values>::toString(const DebugTools::GLFrameProfiler::Values value, ConfigurationValueFlags) {
+std::string ConfigurationValue<DebugTools::FrameProfilerGL::Values>::toString(const DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags) {
     std::string out;
 
-    for(std::size_t i = 0; i != Containers::arraySize(DebugTools::GLFrameProfilerValueNames); ++i) {
-        const auto bit = DebugTools::GLFrameProfiler::Value(1 << i);
+    for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i) {
+        const auto bit = DebugTools::FrameProfilerGL::Value(1 << i);
         if(value & bit) {
             if(!out.empty()) out += ' ';
-            out += DebugTools::GLFrameProfilerValueNames[i];
+            out += DebugTools::FrameProfilerGLValueNames[i];
         }
     }
 
     return out;
 }
 
-DebugTools::GLFrameProfiler::Values ConfigurationValue<DebugTools::GLFrameProfiler::Values>::fromString(const std::string& value, ConfigurationValueFlags) {
+DebugTools::FrameProfilerGL::Values ConfigurationValue<DebugTools::FrameProfilerGL::Values>::fromString(const std::string& value, ConfigurationValueFlags) {
     const std::vector<std::string> bits = Utility::String::splitWithoutEmptyParts(value);
 
-    DebugTools::GLFrameProfiler::Values values;
+    DebugTools::FrameProfilerGL::Values values;
     for(const std::string& bit: bits)
-        for(std::size_t i = 0; i != Containers::arraySize(DebugTools::GLFrameProfilerValueNames); ++i)
-            if(DebugTools::GLFrameProfilerValueNames[i] == bit)
-                values |= DebugTools::GLFrameProfiler::Value(1 << i);
+        for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i)
+            if(DebugTools::FrameProfilerGLValueNames[i] == bit)
+                values |= DebugTools::FrameProfilerGL::Value(1 << i);
 
     return values;
 }

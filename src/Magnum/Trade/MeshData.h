@@ -66,7 +66,7 @@ enum class MeshAttribute: UnsignedShort {
      * @ref VertexFormat::Vector3b, @ref VertexFormat::Vector3bNormalized,
      * @ref VertexFormat::Vector3us, @ref VertexFormat::Vector3usNormalized,
      * @ref VertexFormat::Vector3s or @ref VertexFormat::Vector3sNormalized.
-     * Corresponds to @ref Shaders::Generic::Position.
+     * Corresponds to @ref Shaders::GenericGL::Position.
      * @see @ref MeshData::positions2DAsArray(),
      *      @ref MeshData::positions3DAsArray()
      */
@@ -86,8 +86,8 @@ enum class MeshAttribute: UnsignedShort {
      *
      * @snippet MagnumTrade.cpp MeshAttribute-bitangent-from-tangent
      *
-     * Corresponds to @ref Shaders::Generic::Tangent or
-     * @ref Shaders::Generic::Tangent4.
+     * Corresponds to @ref Shaders::GenericGL::Tangent or
+     * @ref Shaders::GenericGL::Tangent4.
      * @see @ref MeshData::tangentsAsArray(),
      *      @ref MeshData::bitangentSignsAsArray()
      */
@@ -99,7 +99,7 @@ enum class MeshAttribute: UnsignedShort {
      * @ref VertexFormat::Vector3sNormalized. For better storage efficiency,
      * the bitangent can be also reconstructed from the normal and tangent, see
      * @ref MeshAttribute::Tangent for more information. Corresponds to
-     * @ref Shaders::Generic::Bitangent.
+     * @ref Shaders::GenericGL::Bitangent.
      * @see @ref MeshData::bitangentsAsArray()
      */
     Bitangent,
@@ -108,7 +108,7 @@ enum class MeshAttribute: UnsignedShort {
      * Normal. Type is usually @ref VertexFormat::Vector3, but can be also
      * @ref VertexFormat::Vector3h. @ref VertexFormat::Vector3bNormalized or
      * @ref VertexFormat::Vector3sNormalized. Corresponds to
-     * @ref Shaders::Generic::Normal.
+     * @ref Shaders::GenericGL::Normal.
      * @see @ref MeshData::normalsAsArray()
      */
     Normal,
@@ -120,7 +120,7 @@ enum class MeshAttribute: UnsignedShort {
      * @ref VertexFormat::Vector2b, @ref VertexFormat::Vector2bNormalized,
      * @ref VertexFormat::Vector2us, @ref VertexFormat::Vector2usNormalized,
      * @ref VertexFormat::Vector2s or @ref VertexFormat::Vector2sNormalized.
-     * Corresponds to @ref Shaders::Generic::TextureCoordinates.
+     * Corresponds to @ref Shaders::GenericGL::TextureCoordinates.
      * @see @ref MeshData::textureCoordinates2DAsArray()
      */
     TextureCoordinates,
@@ -133,7 +133,7 @@ enum class MeshAttribute: UnsignedShort {
      * @ref VertexFormat::Vector3usNormalized,
      * @ref VertexFormat::Vector4ubNormalized or
      * @ref VertexFormat::Vector4usNormalized. Corresponds to
-     * @ref Shaders::Generic::Color3 or @ref Shaders::Generic::Color4.
+     * @ref Shaders::GenericGL::Color3 or @ref Shaders::GenericGL::Color4.
      * @see @ref MeshData::colorsAsArray()
      */
     Color,
@@ -142,7 +142,7 @@ enum class MeshAttribute: UnsignedShort {
      * (Instanced) object ID for editor selection or scene annotation. Type is
      * usually @ref VertexFormat::UnsignedInt, but can be also
      * @ref VertexFormat::UnsignedShort or @ref VertexFormat::UnsignedByte.
-     * Corresponds to @ref Shaders::Generic::ObjectId.
+     * Corresponds to @ref Shaders::GenericGL::ObjectId.
      * @see @ref MeshData::objectIdsAsArray()
      */
     ObjectId,

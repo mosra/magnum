@@ -540,12 +540,21 @@ void AbstractImporterTest::setFlags() {
 
         ImporterFlags _flags;
     } importer;
-
     CORRADE_COMPARE(importer.flags(), ImporterFlags{});
     CORRADE_COMPARE(importer._flags, ImporterFlags{});
+
     importer.setFlags(ImporterFlag::Verbose);
     CORRADE_COMPARE(importer.flags(), ImporterFlag::Verbose);
     CORRADE_COMPARE(importer._flags, ImporterFlag::Verbose);
+
+    /** @todo use a real flag when we have more than one */
+    importer.addFlags(ImporterFlag(4));
+    CORRADE_COMPARE(importer.flags(), ImporterFlag::Verbose|ImporterFlag(4));
+    CORRADE_COMPARE(importer._flags, ImporterFlag::Verbose|ImporterFlag(4));
+
+    importer.clearFlags(ImporterFlag::Verbose);
+    CORRADE_COMPARE(importer.flags(), ImporterFlag(4));
+    CORRADE_COMPARE(importer._flags, ImporterFlag(4));
 }
 
 void AbstractImporterTest::setFlagsNotImplemented() {
@@ -575,7 +584,13 @@ void AbstractImporterTest::setFlagsFileOpened() {
     std::ostringstream out;
     Error redirectError{&out};
     importer.setFlags(ImporterFlag::Verbose);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::setFlags(): can't be set while a file is opened\n");
+    importer.addFlags(ImporterFlag::Verbose);
+    importer.clearFlags(ImporterFlag::Verbose);
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::setFlags(): can't be set while a file is opened\n"
+        /* These all call into setFlags(), so the same assert is reused */
+        "Trade::AbstractImporter::setFlags(): can't be set while a file is opened\n"
+        "Trade::AbstractImporter::setFlags(): can't be set while a file is opened\n");
 }
 
 void AbstractImporterTest::openData() {

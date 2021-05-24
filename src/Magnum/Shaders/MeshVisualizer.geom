@@ -34,6 +34,8 @@
 #endif
 #endif
 
+/* Uniforms */
+
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 5)
 #endif
@@ -81,6 +83,8 @@ uniform lowp float smoothness
     ;
 #endif
 
+/* Inputs */
+
 #ifdef TANGENT_DIRECTION
 in highp vec4 tangentEndpoint[];
 #endif
@@ -91,6 +95,18 @@ in highp vec4 bitangentEndpoint[];
 in highp vec4 normalEndpoint[];
 #endif
 
+#ifdef INSTANCED_OBJECT_ID
+flat in highp uint interpolatedVsInstanceObjectId[];
+#endif
+#ifdef VERTEX_ID
+in highp float interpolatedVsMappedVertexId[];
+#endif
+#ifdef PRIMITIVE_ID_FROM_VERTEX_ID
+flat in highp uint interpolatedVsPrimitiveId[];
+#endif
+
+/* Outputs */
+
 layout(triangle_strip, max_vertices = MAX_VERTICES) out;
 
 /* Interpolate in screen space (if possible) */
@@ -100,15 +116,12 @@ noperspective
 out lowp vec3 dist;
 
 #ifdef INSTANCED_OBJECT_ID
-flat in highp uint interpolatedVsInstanceObjectId[];
 flat out highp uint interpolatedInstanceObjectId;
 #endif
 #ifdef VERTEX_ID
-in highp float interpolatedVsMappedVertexId[];
 out highp float interpolatedMappedVertexId;
 #endif
 #ifdef PRIMITIVE_ID_FROM_VERTEX_ID
-flat in highp uint interpolatedVsPrimitiveId[];
 flat out highp uint interpolatedPrimitiveId;
 #endif
 

@@ -81,18 +81,19 @@ void AssertTest::success() {
 
 void AssertTest::successOr() {
     Result a = Result::ErrorUnknown;
-    Result a2 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, a = Result::Success);
+    Result a2 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(a = Result::Success, Result::Incomplete);
     CORRADE_COMPARE(a2, a);
 
     Result r = _failAssertSuccessOr ? Result::ErrorExtensionNotPresent : Result::Incomplete;
-    Result a3 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, a = r);
+    /* Verify that multiple results work too and all get checked */
+    Result a3 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(a = r, Result::ErrorOutOfDeviceMemory, Result::Incomplete);
 
     CORRADE_COMPARE(a, Result::Incomplete);
     CORRADE_COMPARE(a3, a);
 
     /* Test also that a standalone macro won't cause warnings about unused
        expression results */
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(ErrorDeviceLost, Result::ErrorDeviceLost);
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Result::ErrorDeviceLost, Result::ErrorDeviceLost);
 }
 
 void AssertTest::vkSuccess() {
@@ -106,18 +107,19 @@ void AssertTest::vkSuccess() {
 
 void AssertTest::vkSuccessOr() {
     VkResult a = VK_ERROR_UNKNOWN;
-    Result a2 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, a = VK_SUCCESS);
+    Result a2 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(a = VK_SUCCESS, Result::Incomplete);
     CORRADE_COMPARE(a2, Result(a));
 
     VkResult s = _failAssertVkSuccessOr ? VK_ERROR_EXTENSION_NOT_PRESENT : VK_INCOMPLETE;
-    Result a3 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, a = s);
+    /* Verify that multiple results work too and all get checked */
+    Result a3 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(a = s, Result::ErrorOutOfDeviceMemory, Result::Incomplete);
 
     CORRADE_COMPARE(Result(a), Result::Incomplete);
     CORRADE_COMPARE(a3, Result(a));
 
     /* Test also that a standalone macro won't cause warnings about unused
        expression results */
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(ErrorDeviceLost, VK_ERROR_DEVICE_LOST);
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(VK_ERROR_DEVICE_LOST, Result::ErrorDeviceLost);
 }
 
 }}}}

@@ -548,6 +548,9 @@ template<class T> class Quaternion {
          *      p q = [p_S \boldsymbol q_V + q_S \boldsymbol p_V + \boldsymbol p_V \times \boldsymbol q_V,
          *             p_S q_S - \boldsymbol p_V \cdot \boldsymbol q_V]
          * @f]
+         *
+         * @see @ref cross(const Vector3<T>&, const Vector3<T>&),
+         *      @ref Vector::dot() const
          */
         Quaternion<T> operator*(const Quaternion<T>& other) const;
 

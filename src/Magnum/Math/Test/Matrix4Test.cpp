@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -122,8 +123,9 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
 
 typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
-typedef Math::Matrix<2, Float> Matrix2x2;
-typedef Math::Matrix<3, Float> Matrix3x3;
+typedef Math::Matrix2x2<Float> Matrix2x2;
+typedef Math::Matrix2x3<Float> Matrix2x3;
+typedef Math::Matrix3x3<Float> Matrix3x3;
 typedef Math::Matrix4<Float> Matrix4;
 typedef Math::Matrix4<Int> Matrix4i;
 typedef Math::Vector2<Float> Vector2;
@@ -201,7 +203,7 @@ void Matrix4Test::construct() {
                                {1.0f,  2.0f, 3.0f, -1.0f},
                                {7.9f, -1.0f, 8.0f, -1.5f}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, Vector4, Vector4, Vector4, Vector4>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4, Vector4, Vector4, Vector4, Vector4>::value);
 }
 
 void Matrix4Test::constructIdentity() {
@@ -224,10 +226,10 @@ void Matrix4Test::constructIdentity() {
     CORRADE_COMPARE(identity3, identity3Expected);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Matrix4>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, IdentityInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4, IdentityInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, Matrix4>::value));
+    CORRADE_VERIFY(!std::is_convertible<IdentityInitT, Matrix4>::value);
 }
 
 void Matrix4Test::constructZero() {
@@ -237,10 +239,10 @@ void Matrix4Test::constructZero() {
                                {0.0f, 0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f, 0.0f}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Matrix4>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Matrix4>::value);
 }
 
 void Matrix4Test::constructNoInit() {
@@ -259,10 +261,10 @@ void Matrix4Test::constructNoInit() {
                                    {7.9f, -1.0f, 8.0f, -1.5f}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Matrix4>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Matrix4>::value);
 }
 
 void Matrix4Test::constructOneValue() {
@@ -273,9 +275,9 @@ void Matrix4Test::constructOneValue() {
                                 {1.5f, 1.5f, 1.5f, 1.5f}}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Float, Matrix4>::value));
+    CORRADE_VERIFY(!std::is_convertible<Float, Matrix4>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4, Float>::value);
 }
 
 void Matrix4Test::constructConversion() {
@@ -290,30 +292,41 @@ void Matrix4Test::constructConversion() {
                                 {7, -1, 8, -1}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Matrix4, Matrix4i>::value));
+    CORRADE_VERIFY(!std::is_convertible<Matrix4, Matrix4i>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, Matrix4i>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4, Matrix4i>::value);
 }
 
 void Matrix4Test::constructFromDifferentSize() {
-    constexpr Matrix4 a{{3.0f,  5.0f, 8.0f, -3.0f},
-                        {4.5f,  4.0f, 7.0f,  2.0f},
-                        {1.0f,  2.0f, 3.0f, -1.0f},
-                        {7.9f, -1.0f, 8.0f, -1.5f}};
-    constexpr Matrix2x2 b{Vector2{3.0f,  5.0f},
-                          Vector2{4.5f,  4.0f}};
-    constexpr Matrix4 c{{3.0f, 5.0f, 0.0f, 0.0f},
-                        {4.5f, 4.0f, 0.0f, 0.0f},
-                        {0.0f, 0.0f, 1.0f, 0.0f},
-                        {0.0f, 0.0f, 0.0f, 1.0f}};
+    /* Tested thoroughly in RectangularMatrixTest, verify just that the args
+       are propagated correctly (cols, rows, zero/identity, identity value) */
+    constexpr Matrix2x3 a{Vector3{3.0f,  5.0f, 8.0f},
+                          Vector3{4.5f,  4.0f, 7.0f}};
+    constexpr Matrix4 expectedIdentity{{3.0f, 5.0f, 8.0f, 0.0f},
+                                       {4.5f, 4.0f, 7.0f, 0.0f},
+                                       {0.0f, 0.0f, 0.5f, 0.0f},
+                                       {0.0f, 0.0f, 0.0f, 0.5f}};
+    constexpr Matrix4 expectedZero{{3.0f, 5.0f, 8.0f, 0.0f},
+                                   {4.5f, 4.0f, 7.0f, 0.0f},
+                                   {0.0f, 0.0f, 0.0f, 0.0f},
+                                   {0.0f, 0.0f, 0.0f, 0.0f}};
 
-    constexpr Matrix4 larger{b};
-    CORRADE_COMPARE(larger, c);
-    CORRADE_COMPARE(Matrix4{b}, c);
+    constexpr Matrix4 identity1{a, 0.5f};
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* It ICEs, haha */
+    constexpr
+    #endif
+    Matrix4 identity2{IdentityInit, a, 0.5f};
+    CORRADE_COMPARE(identity1, expectedIdentity);
+    CORRADE_COMPARE(identity2, expectedIdentity);
+    CORRADE_COMPARE((Matrix4{a, 0.5f}), expectedIdentity);
+    CORRADE_COMPARE((Matrix4{IdentityInit, a, 0.5f}), expectedIdentity);
 
-    constexpr Matrix2x2 smaller{a};
-    CORRADE_COMPARE(smaller, b);
-    CORRADE_COMPARE(Matrix2x2{a}, b);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* It ICEs, haha */
+    constexpr
+    #endif
+    Matrix4 zero{ZeroInit, a};
+    CORRADE_COMPARE(zero, expectedZero);
+    CORRADE_COMPARE((Matrix4{ZeroInit, a}), expectedZero);
 }
 
 void Matrix4Test::constructCopy() {
@@ -330,6 +343,10 @@ void Matrix4Test::constructCopy() {
                                {1.0f,  2.0f, 3.0f, -1.0f},
                                {7.9f, -1.0f, 8.0f, -1.5f}));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Matrix4>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Matrix4>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Matrix4>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Matrix4>::value);
 }
@@ -355,8 +372,8 @@ void Matrix4Test::convert() {
         CORRADE_COMPARE(d.a[i], a.a[i]);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Mat4, Matrix4>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Matrix4, Mat4>::value));
+    CORRADE_VERIFY(!std::is_convertible<Mat4, Matrix4>::value);
+    CORRADE_VERIFY(!std::is_convertible<Matrix4, Mat4>::value);
 }
 
 void Matrix4Test::isRigidTransformation() {

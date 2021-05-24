@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::DebugTools::FrameProfiler, @ref Magnum::DebugTools::GLFrameProfiler
+ * @brief Class @ref Magnum::DebugTools::FrameProfiler, @ref Magnum::DebugTools::FrameProfilerGL
  * @m_since{2020,06}
  */
 
@@ -46,7 +46,7 @@ namespace Magnum { namespace DebugTools {
 A generic implementation of a frame profiler supporting a moving average over
 a set of frames as well as delayed measurements to avoid stalls when querying
 the results. This class alone doesn't provide any pre-defined measurements, see
-for example @ref GLFrameProfiler that provides common measurements like CPU and
+for example @ref FrameProfilerGL that provides common measurements like CPU and
 GPU time.
 
 @experimental
@@ -78,13 +78,13 @@ frames:
 @snippet MagnumDebugTools.cpp FrameProfiler-usage-console
 
 And here's a sample output on the terminal --- using a fully configured
-@link GLFrameProfiler @endlink:
+@link FrameProfilerGL @endlink:
 
 @include debugtools-frameprofiler.ansi
 
 @section DebugTools-FrameProfiler-setup Setting up measurements
 
-Unless you're using this class through @ref GLFrameProfiler, measurements
+Unless you're using this class through @ref FrameProfilerGL, measurements
 have to be set up by passing @ref Measurement instances to the @ref setup()
 function or to the constructor, together with specifying count of frames for
 the moving average. A CPU duration measurements using the @ref std::chrono APIs
@@ -499,7 +499,7 @@ A @ref FrameProfiler with OpenGL-specific measurements. Instantiate with a
 desired subset of measured values and then continue the same way as described
 in the @ref DebugTools-FrameProfiler-usage "FrameProfiler usage documentation":
 
-@snippet MagnumDebugTools-gl.cpp GLFrameProfiler-usage
+@snippet MagnumDebugTools-gl.cpp FrameProfilerGL-usage
 
 If none if @ref Value::GpuDuration, @ref Value::VertexFetchRatio and
 @ref Value::PrimitiveClipRatio is not enabled, the class can operate without an
@@ -507,12 +507,12 @@ active OpenGL context.
 
 @experimental
 */
-class MAGNUM_DEBUGTOOLS_EXPORT GLFrameProfiler: public FrameProfiler {
+class MAGNUM_DEBUGTOOLS_EXPORT FrameProfilerGL: public FrameProfiler {
     public:
         /**
          * @brief Measured value
          *
-         * @see @ref Values, @ref GLFrameProfiler(Values, UnsignedInt),
+         * @see @ref Values, @ref FrameProfilerGL(Values, UnsignedInt),
          *      @ref setup()
          */
         enum class Value: UnsignedShort {
@@ -572,7 +572,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT GLFrameProfiler: public FrameProfiler {
         /**
          * @brief Measured values
          *
-         * @see @ref GLFrameProfiler(Values, UnsignedInt), @ref setup()
+         * @see @ref FrameProfilerGL(Values, UnsignedInt), @ref setup()
          */
         typedef Containers::EnumSet<Value> Values;
 
@@ -581,7 +581,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT GLFrameProfiler: public FrameProfiler {
          *
          * Call @ref setup() to populate the profiler with measurements.
          */
-        explicit GLFrameProfiler();
+        explicit FrameProfilerGL();
 
         /**
          * @brief Constructor
@@ -589,21 +589,21 @@ class MAGNUM_DEBUGTOOLS_EXPORT GLFrameProfiler: public FrameProfiler {
          * Equivalent to default-constructing an instance and calling
          * @ref setup() afterwards.
          */
-        explicit GLFrameProfiler(Values values, UnsignedInt maxFrameCount);
+        explicit FrameProfilerGL(Values values, UnsignedInt maxFrameCount);
 
         /** @brief Copying is not allowed */
-        GLFrameProfiler(const GLFrameProfiler&) = delete;
+        FrameProfilerGL(const FrameProfilerGL&) = delete;
 
         /** @brief Move constructor */
-        GLFrameProfiler(GLFrameProfiler&&) noexcept;
+        FrameProfilerGL(FrameProfilerGL&&) noexcept;
 
         /** @brief Copying is not allowed */
-        GLFrameProfiler& operator=(const GLFrameProfiler&) = delete;
+        FrameProfilerGL& operator=(const FrameProfilerGL&) = delete;
 
         /** @brief Move assignment */
-        GLFrameProfiler& operator=(GLFrameProfiler&&) noexcept;
+        FrameProfilerGL& operator=(FrameProfilerGL&&) noexcept;
 
-        ~GLFrameProfiler();
+        ~FrameProfilerGL();
 
         /**
          * @brief Setup measured values
@@ -621,7 +621,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT GLFrameProfiler: public FrameProfiler {
          * @brief Measured values
          *
          * Corresponds to the @p values parameter passed to
-         * @ref GLFrameProfiler(Values, UnsignedInt) or @ref setup().
+         * @ref FrameProfilerGL(Values, UnsignedInt) or @ref setup().
          */
         Values values() const;
 
@@ -696,19 +696,26 @@ class MAGNUM_DEBUGTOOLS_EXPORT GLFrameProfiler: public FrameProfiler {
         Containers::Pointer<State> _state;
 };
 
-CORRADE_ENUMSET_OPERATORS(GLFrameProfiler::Values)
+CORRADE_ENUMSET_OPERATORS(FrameProfilerGL::Values)
 
 /**
-@debugoperatorclassenum{GLFrameProfiler,GLFrameProfiler::Value}
+@debugoperatorclassenum{FrameProfilerGL,FrameProfilerGL::Value}
 @m_since{2020,06}
 */
-MAGNUM_DEBUGTOOLS_EXPORT Debug& operator<<(Debug& debug, GLFrameProfiler::Value value);
+MAGNUM_DEBUGTOOLS_EXPORT Debug& operator<<(Debug& debug, FrameProfilerGL::Value value);
 
 /**
-@debugoperatorclassenum{GLFrameProfiler,GLFrameProfiler::Values}
+@debugoperatorclassenum{FrameProfilerGL,FrameProfilerGL::Values}
 @m_since{2020,06}
 */
-MAGNUM_DEBUGTOOLS_EXPORT Debug& operator<<(Debug& debug, GLFrameProfiler::Values value);
+MAGNUM_DEBUGTOOLS_EXPORT Debug& operator<<(Debug& debug, FrameProfilerGL::Values value);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/** @brief @copybrief FrameProfilerGL
+ * @m_deprecated_since_latest Use @ref FrameProfilerGL instead.
+ */
+typedef CORRADE_DEPRECATED("use FrameProfilerGL instead") FrameProfilerGL GLFrameProfiler;
+#endif
 #endif
 
 }}
@@ -717,10 +724,10 @@ namespace Corrade { namespace Utility {
 
 #ifdef MAGNUM_TARGET_GL
 /**
-@configurationvalue{Magnum::DebugTools::GLFrameProfiler::Value}
+@configurationvalue{Magnum::DebugTools::FrameProfilerGL::Value}
 @m_since{2020,06}
 */
-template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools::GLFrameProfiler::Value> {
+template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools::FrameProfilerGL::Value> {
     ConfigurationValue() = delete;
 
     /**
@@ -728,21 +735,21 @@ template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools
      *
      * If the value is invalid, returns an empty string.
      */
-    static std::string toString(Magnum::DebugTools::GLFrameProfiler::Value value, ConfigurationValueFlags);
+    static std::string toString(Magnum::DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags);
 
     /**
      * @brief Reads enum value as a string
      *
      * If the string is invalid, returns a zero (invalid) value.
      */
-    static Magnum::DebugTools::GLFrameProfiler::Value fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::DebugTools::FrameProfilerGL::Value fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
 
 /**
-@configurationvalue{Magnum::DebugTools::GLFrameProfiler::Values}
+@configurationvalue{Magnum::DebugTools::FrameProfilerGL::Values}
 @m_since{2020,06}
 */
-template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools::GLFrameProfiler::Values> {
+template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools::FrameProfilerGL::Values> {
     ConfigurationValue() = delete;
 
     /**
@@ -751,7 +758,7 @@ template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools
      * Writes the enum set as a sequence of flag names separated by spaces. If
      * the value is invalid, returns an empty string.
      */
-    static std::string toString(Magnum::DebugTools::GLFrameProfiler::Values value, ConfigurationValueFlags);
+    static std::string toString(Magnum::DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags);
 
     /**
      * @brief Reads enum set value as a string
@@ -759,7 +766,7 @@ template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools
      * Assumes the string is a sequence of flag names separated by spaces. If
      * the value is invalid, returns an empty set.
      */
-    static Magnum::DebugTools::GLFrameProfiler::Values fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::DebugTools::FrameProfilerGL::Values fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
 #endif
 

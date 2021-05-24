@@ -36,7 +36,7 @@
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/Primitives/Cube.h"
-#include "Magnum/Shaders/Flat.h"
+#include "Magnum/Shaders/FlatGL.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace DebugTools { namespace Test { namespace {
@@ -53,14 +53,14 @@ struct FrameProfilerGLTest: GL::OpenGLTester {
 
 struct {
     const char* name;
-    GLFrameProfiler::Values values;
+    FrameProfilerGL::Values values;
 } Data[]{
-    {"gpu duration", GLFrameProfiler::Value::GpuDuration},
-    {"cpu duration + gpu duration", GLFrameProfiler::Value::CpuDuration|GLFrameProfiler::Value::GpuDuration},
-    {"frame time + gpu duration", GLFrameProfiler::Value::FrameTime|GLFrameProfiler::Value::GpuDuration},
+    {"gpu duration", FrameProfilerGL::Value::GpuDuration},
+    {"cpu duration + gpu duration", FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration},
+    {"frame time + gpu duration", FrameProfilerGL::Value::FrameTime|FrameProfilerGL::Value::GpuDuration},
     #ifndef MAGNUM_TARGET_GLES
-    {"gpu duration + vertex fetch ratio", GLFrameProfiler::Value::GpuDuration|GLFrameProfiler::Value::VertexFetchRatio},
-    {"vertex fetch ratio + primitive clip ratio", GLFrameProfiler::Value::VertexFetchRatio|GLFrameProfiler::Value::PrimitiveClipRatio}
+    {"gpu duration + vertex fetch ratio", FrameProfilerGL::Value::GpuDuration|FrameProfilerGL::Value::VertexFetchRatio},
+    {"vertex fetch ratio + primitive clip ratio", FrameProfilerGL::Value::VertexFetchRatio|FrameProfilerGL::Value::PrimitiveClipRatio}
     #endif
 };
 
@@ -78,22 +78,22 @@ void FrameProfilerGLTest::test() {
     auto&& data = Data[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    if(data.values & GLFrameProfiler::Value::GpuDuration) {
+    if(data.values & FrameProfilerGL::Value::GpuDuration) {
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::timer_query>())
-            CORRADE_SKIP(GL::Extensions::ARB::timer_query::string() + std::string(" is not available"));
+            CORRADE_SKIP(GL::Extensions::ARB::timer_query::string() << "is not supported.");
         #elif defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::disjoint_timer_query_webgl2>())
-            CORRADE_SKIP(GL::Extensions::EXT::disjoint_timer_query_webgl2::string() + std::string(" is not available"));
+            CORRADE_SKIP(GL::Extensions::EXT::disjoint_timer_query_webgl2::string() << "is not supported.");
         #else
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::disjoint_timer_query>())
-            CORRADE_SKIP(GL::Extensions::EXT::disjoint_timer_query::string() + std::string(" is not available"));
+            CORRADE_SKIP(GL::Extensions::EXT::disjoint_timer_query::string() << "is not supported.");
         #endif
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if((data.values & GLFrameProfiler::Value::VertexFetchRatio) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::pipeline_statistics_query>())
-        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() + std::string(" is not available"));
+    if((data.values & FrameProfilerGL::Value::VertexFetchRatio) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::pipeline_statistics_query>())
+        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() << "is not supported.");
     #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
@@ -109,18 +109,18 @@ void FrameProfilerGLTest::test() {
     fb.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, color)
       .bind();
 
-    Shaders::Flat3D shader;
+    Shaders::FlatGL3D shader;
     GL::Mesh mesh = MeshTools::compile(Primitives::cubeSolid());
 
-    GLFrameProfiler profiler{data.values, 4};
+    FrameProfilerGL profiler{data.values, 4};
     CORRADE_COMPARE(profiler.maxFrameCount(), 4);
 
     /* MSVC 2015 needs the {} */
-    for(auto value: {GLFrameProfiler::Value::CpuDuration,
-                     GLFrameProfiler::Value::GpuDuration,
+    for(auto value: {FrameProfilerGL::Value::CpuDuration,
+                     FrameProfilerGL::Value::GpuDuration,
                      #ifndef MAGNUM_TARGET_GLES
-                     GLFrameProfiler::Value::VertexFetchRatio,
-                     GLFrameProfiler::Value::PrimitiveClipRatio
+                     FrameProfilerGL::Value::VertexFetchRatio,
+                     FrameProfilerGL::Value::PrimitiveClipRatio
                      #endif
                      }) {
         if(data.values & value)
@@ -153,8 +153,8 @@ void FrameProfilerGLTest::test() {
     /* The GPU time should not be a total zero. Can't test upper bound because
        (especially on overloaded CIs) it all takes a magnitude more than
        expected. */
-    if(data.values & GLFrameProfiler::Value::GpuDuration) {
-        CORRADE_VERIFY(profiler.isMeasurementAvailable(GLFrameProfiler::Value::GpuDuration));
+    if(data.values & FrameProfilerGL::Value::GpuDuration) {
+        CORRADE_VERIFY(profiler.isMeasurementAvailable(FrameProfilerGL::Value::GpuDuration));
         CORRADE_COMPARE_AS(profiler.gpuDurationMean(), 100,
             TestSuite::Compare::Greater);
     }
@@ -162,24 +162,24 @@ void FrameProfilerGLTest::test() {
     /* 3/4 frames took 1 ms, the ideal average is 0.75 ms. Can't test upper
        bound because (especially on overloaded CIs) it all takes a magnitude
        more than expected. */
-    if(data.values & GLFrameProfiler::Value::CpuDuration) {
-        CORRADE_VERIFY(profiler.isMeasurementAvailable(GLFrameProfiler::Value::CpuDuration));
+    if(data.values & FrameProfilerGL::Value::CpuDuration) {
+        CORRADE_VERIFY(profiler.isMeasurementAvailable(FrameProfilerGL::Value::CpuDuration));
         CORRADE_COMPARE_AS(profiler.cpuDurationMean(), 0.70*1000*1000,
             TestSuite::Compare::GreaterOrEqual);
     }
 
     #ifndef MAGNUM_TARGET_GLES
     /* 24 unique vertices in 12 triangles, ideal ratio is 24/36 */
-    if(data.values & GLFrameProfiler::Value::VertexFetchRatio) {
-        CORRADE_VERIFY(profiler.isMeasurementAvailable(GLFrameProfiler::Value::VertexFetchRatio));
+    if(data.values & FrameProfilerGL::Value::VertexFetchRatio) {
+        CORRADE_VERIFY(profiler.isMeasurementAvailable(FrameProfilerGL::Value::VertexFetchRatio));
         CORRADE_COMPARE_WITH(profiler.vertexFetchRatioMean()/1000, 0.6667,
             TestSuite::Compare::around(0.1));
     }
 
     /* We use a default transformation, which means the whole cube should be
        visible, nothing clipped */
-    if(data.values & GLFrameProfiler::Value::PrimitiveClipRatio) {
-        CORRADE_VERIFY(profiler.isMeasurementAvailable(GLFrameProfiler::Value::PrimitiveClipRatio));
+    if(data.values & FrameProfilerGL::Value::PrimitiveClipRatio) {
+        CORRADE_VERIFY(profiler.isMeasurementAvailable(FrameProfilerGL::Value::PrimitiveClipRatio));
         CORRADE_COMPARE(profiler.primitiveClipRatioMean()/1000, 0.0);
     }
     #endif
@@ -188,9 +188,9 @@ void FrameProfilerGLTest::test() {
 #ifndef MAGNUM_TARGET_GLES
 void FrameProfilerGLTest::vertexFetchRatioDivisionByZero() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::pipeline_statistics_query>())
-        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() + std::string(" is not available"));
+        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() << "is not supported.");
 
-    GLFrameProfiler profiler{GLFrameProfiler::Value::VertexFetchRatio, 4};
+    FrameProfilerGL profiler{FrameProfilerGL::Value::VertexFetchRatio, 4};
 
     profiler.beginFrame();
     profiler.endFrame();
@@ -208,15 +208,15 @@ void FrameProfilerGLTest::vertexFetchRatioDivisionByZero() {
 
     /* No draws happened, so the ratio should be 0 (and not crashing with a
        division by zero) */
-    CORRADE_VERIFY(profiler.isMeasurementAvailable(GLFrameProfiler::Value::VertexFetchRatio));
+    CORRADE_VERIFY(profiler.isMeasurementAvailable(FrameProfilerGL::Value::VertexFetchRatio));
     CORRADE_COMPARE(profiler.vertexFetchRatioMean(), 0.0);
 }
 
 void FrameProfilerGLTest::primitiveClipRatioDivisionByZero() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::pipeline_statistics_query>())
-        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() + std::string(" is not available"));
+        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() << "is not supported.");
 
-    GLFrameProfiler profiler{GLFrameProfiler::Value::PrimitiveClipRatio, 4};
+    FrameProfilerGL profiler{FrameProfilerGL::Value::PrimitiveClipRatio, 4};
 
     profiler.beginFrame();
     profiler.endFrame();
@@ -234,7 +234,7 @@ void FrameProfilerGLTest::primitiveClipRatioDivisionByZero() {
 
     /* No draws happened, so the ratio should be 0 (and not crashing with a
        division by zero) */
-    CORRADE_VERIFY(profiler.isMeasurementAvailable(GLFrameProfiler::Value::PrimitiveClipRatio));
+    CORRADE_VERIFY(profiler.isMeasurementAvailable(FrameProfilerGL::Value::PrimitiveClipRatio));
     CORRADE_COMPARE(profiler.primitiveClipRatioMean(), 0.0);
 }
 #endif

@@ -62,10 +62,10 @@ void CommandPoolTest::createInfoConstructNoInit() {
     new(&info) CommandPoolCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CommandPoolCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CommandPoolCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, CommandPoolCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, CommandPoolCreateInfo>::value);
 }
 
 void CommandPoolTest::createInfoConstructFromVk() {
@@ -83,7 +83,7 @@ void CommandPoolTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, CommandPool>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, CommandPool>::value);
 }
 
 void CommandPoolTest::constructCopy() {

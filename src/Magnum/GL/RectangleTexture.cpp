@@ -40,7 +40,7 @@ Vector2i RectangleTexture::maxSize() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
         return {};
 
-    GLint& value = Context::current().state().texture->maxRectangleSize;
+    GLint& value = Context::current().state().texture.maxRectangleSize;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &value);

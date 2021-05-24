@@ -88,7 +88,7 @@ MeshView& MeshView::draw(AbstractShaderProgram&& shader, TransformFeedback& xfb,
 void MeshView::multiDrawImplementationDefault(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
     CORRADE_INTERNAL_ASSERT(meshes.size());
 
-    const Implementation::MeshState& state = *Context::current().state().mesh;
+    const Implementation::MeshState& state = Context::current().state().mesh;
 
     Mesh& original = meshes.begin()->get()._original;
     Containers::Array<GLsizei> count{meshes.size()};

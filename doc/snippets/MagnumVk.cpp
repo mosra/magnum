@@ -25,12 +25,14 @@
 
 #include <string>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Sampler.h"
 #include "Magnum/VertexFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Vk/Assert.h"
@@ -38,6 +40,10 @@
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/CommandPoolCreateInfo.h"
 #include "Magnum/Vk/ComputePipelineCreateInfo.h"
+#include "Magnum/Vk/DescriptorPoolCreateInfo.h"
+#include "Magnum/Vk/DescriptorSet.h"
+#include "Magnum/Vk/DescriptorSetLayoutCreateInfo.h"
+#include "Magnum/Vk/DescriptorType.h"
 #include "Magnum/Vk/DeviceCreateInfo.h"
 #include "Magnum/Vk/DeviceFeatures.h"
 #include "Magnum/Vk/DeviceProperties.h"
@@ -53,12 +59,13 @@
 #include "Magnum/Vk/MemoryAllocateInfo.h"
 #include "Magnum/Vk/Mesh.h"
 #include "Magnum/Vk/Pipeline.h"
-#include "Magnum/Vk/PipelineLayout.h"
+#include "Magnum/Vk/PipelineLayoutCreateInfo.h"
 #include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/Queue.h"
 #include "Magnum/Vk/RasterizationPipelineCreateInfo.h"
 #include "Magnum/Vk/RenderPassCreateInfo.h"
 #include "Magnum/Vk/Result.h"
+#include "Magnum/Vk/SamplerCreateInfo.h"
 #include "Magnum/Vk/ShaderCreateInfo.h"
 #include "Magnum/Vk/ShaderSet.h"
 #include "MagnumExternal/Vulkan/flextVkGlobal.h"
@@ -190,8 +197,9 @@ Vk::Device device{instance, std::move(info)};
 Vk::Device device{NoCreate};
 VkFence fence{};
 /* [MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR] */
-const Vk::Result result = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(NotReady,
-    vkGetFenceStatus(device, fence));
+const Vk::Result result = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(
+    vkGetFenceStatus(device, fence),
+    Vk::Result::NotReady);
 if(result == Vk::Result::Success) {
     // signaled
 } else {
@@ -308,6 +316,131 @@ Vk::Fence fence{device};
 queue.submit({Vk::SubmitInfo{}.setCommandBuffers({cmd})}, fence);
 fence.wait();
 /* [CommandBuffer-usage-submit] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
+/* [DescriptorPool-creation] */
+#include <Magnum/Vk/DescriptorPoolCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::DescriptorPool pool{device, Vk::DescriptorPoolCreateInfo{8, {
+    {Vk::DescriptorType::UniformBuffer, 24},
+    {Vk::DescriptorType::CombinedImageSampler, 16}
+}}};
+/* [DescriptorPool-creation] */
+}
+
+{
+/* [DescriptorSet-allocation] */
+Vk::DescriptorSetLayout layout{DOXYGEN_IGNORE(NoCreate)};
+Vk::DescriptorPool pool{DOXYGEN_IGNORE(NoCreate)};
+
+Vk::DescriptorSet set = pool.allocate(layout);
+/* [DescriptorSet-allocation] */
+}
+
+{
+Vk::DescriptorSetLayout layout{NoCreate};
+Vk::DescriptorPool pool{NoCreate}, overflowPool{NoCreate};
+/* [DescriptorSet-allocation-try] */
+Containers::Optional<Vk::DescriptorSet> set = pool.tryAllocate(layout);
+
+/* Oops, the pool is full (or fragmented). Hope the plan B doesn't fail too. */
+if(!set) set = overflowPool.allocate(layout);
+/* [DescriptorSet-allocation-try] */
+}
+
+{
+Vk::Device device{NoCreate};
+Vk::DescriptorSetLayout layout{NoCreate};
+/* [DescriptorSet-allocation-free] */
+Vk::DescriptorPool pool{device, Vk::DescriptorPoolCreateInfo{DOXYGEN_IGNORE(0), {
+    DOXYGEN_IGNORE()
+}, Vk::DescriptorPoolCreateInfo::Flag::FreeDescriptorSet}};
+
+{
+    Vk::DescriptorSet set = pool.allocate(layout);
+
+    // the set gets automatically freed at the end of scope
+}
+/* [DescriptorSet-allocation-free] */
+}
+
+{
+Vk::Instance instance{NoCreate};
+Vk::DescriptorPool pool{NoCreate};
+/* [DescriptorSet-allocation-variable] */
+Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(Vk::pickDevice(instance))}
+    DOXYGEN_IGNORE()
+    .addEnabledExtensions<Vk::Extensions::EXT::descriptor_indexing>()
+    .setEnabledFeatures(
+        Vk::DeviceFeature::DescriptorBindingVariableDescriptorCount|
+        DOXYGEN_IGNORE(Vk::DeviceFeatures{})
+    )
+};
+
+Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
+    {{DOXYGEN_IGNORE(0), Vk::DescriptorType::SampledImage, 8,
+      Vk::ShaderStage::Fragment,
+      Vk::DescriptorSetLayoutBinding::Flag::VariableDescriptorCount}},
+    DOXYGEN_IGNORE()
+}};
+
+Vk::DescriptorSet set = pool.allocate(layout, 4);
+/* [DescriptorSet-allocation-variable] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
+/* [DescriptorSetLayout-creation] */
+#include <Magnum/Vk/DescriptorSetLayoutCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
+    {{0, Vk::DescriptorType::UniformBuffer}},
+    {{1, Vk::DescriptorType::CombinedImageSampler, 1,
+      Vk::ShaderStage::Fragment}}
+}};
+/* [DescriptorSetLayout-creation] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* [DescriptorSetLayout-creation-immutable-samplers] */
+Vk::Sampler sampler{DOXYGEN_IGNORE(NoCreate)};
+
+Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
+    {{0, Vk::DescriptorType::UniformBuffer}},
+    {{1, Vk::DescriptorType::CombinedImageSampler, {sampler},
+      Vk::ShaderStage::Fragment}}
+}};
+/* [DescriptorSetLayout-creation-immutable-samplers] */
+}
+
+{
+Vk::Instance instance{NoCreate};
+/* [DescriptorSetLayout-creation-binding-flags] */
+Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(Vk::pickDevice(instance))}
+    DOXYGEN_IGNORE()
+    .addEnabledExtensions<Vk::Extensions::EXT::descriptor_indexing>()
+    .setEnabledFeatures(
+        Vk::DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind|
+        DOXYGEN_IGNORE(Vk::DeviceFeatures{})
+    )
+};
+
+Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
+    {{0, Vk::DescriptorType::UniformBuffer, 1,
+      ~Vk::ShaderStages{},
+      Vk::DescriptorSetLayoutBinding::Flag::UpdateAfterBind}},
+    DOXYGEN_IGNORE()
+}};
+/* [DescriptorSetLayout-creation-binding-flags] */
 }
 
 {
@@ -972,6 +1105,24 @@ cmd.bindPipeline(pipeline);
 {
 Vk::Device device{NoCreate};
 /* The include should be a no-op here since it was already included above */
+/* [PipelineLayout-creation] */
+#include <Magnum/Vk/PipelineLayoutCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::DescriptorSetLayout layout1{DOXYGEN_IGNORE(NoCreate)};
+Vk::DescriptorSetLayout layout2{DOXYGEN_IGNORE(NoCreate)};
+DOXYGEN_IGNORE()
+
+Vk::PipelineLayout{device, Vk::PipelineLayoutCreateInfo{
+    layout1, layout2, DOXYGEN_IGNORE(layout1)
+}};
+/* [PipelineLayout-creation] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
 /* [RenderPass-creation] */
 #include <Magnum/Vk/RenderPassCreateInfo.h>
 
@@ -1032,7 +1183,30 @@ cmd.begin()
 }
 
 {
-Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
+/* [Sampler-creation] */
+#include <Magnum/Vk/SamplerCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::Sampler sampler{device, Vk::SamplerCreateInfo{}};
+/* [Sampler-creation] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* [Sampler-creation-linear] */
+Vk::Sampler sampler{device, Vk::SamplerCreateInfo{}
+    .setMinificationFilter(SamplerFilter::Linear, SamplerMipmap::Linear)
+    .setMagnificationFilter(SamplerFilter::Linear)
+    .setWrapping(SamplerWrapping::ClampToEdge)
+};
+/* [Sampler-creation-linear] */
+}
+
+{
+Vk::Device device{NoCreate};
 /* The include should be a no-op here since it was already included above */
 /* [Shader-creation] */
 #include <Magnum/Vk/ShaderCreateInfo.h>

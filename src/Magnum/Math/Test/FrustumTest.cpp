@@ -29,6 +29,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Frustum.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -156,7 +157,7 @@ void FrustumTest::construct() {
     CORRADE_COMPARE(cfar, planes[5]);
     CORRADE_COMPARE(a.far(), planes[5]);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, Vector4, Vector4, Vector4, Vector4, Vector4, Vector4>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Frustum, Vector4, Vector4, Vector4, Vector4, Vector4, Vector4>::value);
 }
 
 void FrustumTest::constructIdentity() {
@@ -174,10 +175,10 @@ void FrustumTest::constructIdentity() {
     CORRADE_COMPARE(b, expected);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Frustum>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, IdentityInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Frustum, IdentityInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, Frustum>::value));
+    CORRADE_VERIFY(!std::is_convertible<IdentityInitT, Frustum>::value);
 }
 
 void FrustumTest::constructNoInit() {
@@ -205,7 +206,7 @@ void FrustumTest::constructNoInit() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Frustum, Magnum::NoInitT>::value);
 }
 
 void FrustumTest::constructConversion() {
@@ -228,9 +229,9 @@ void FrustumTest::constructConversion() {
     CORRADE_COMPARE(b, expected);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Frustum, Frustumd>::value));
+    CORRADE_VERIFY(!std::is_convertible<Frustum, Frustumd>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, Frustumd>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Frustum, Frustumd>::value);
 }
 
 void FrustumTest::constructCopy() {
@@ -244,6 +245,10 @@ void FrustumTest::constructCopy() {
     constexpr Frustum b{a};
     CORRADE_COMPARE(b, a);
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Frustum>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Frustum>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Frustum>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Frustum>::value);
 }
@@ -294,8 +299,8 @@ void FrustumTest::convert() {
         Corrade::TestSuite::Compare::Container);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Frstm, Frustum>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Frustum, Frstm>::value));
+    CORRADE_VERIFY(!std::is_convertible<Frstm, Frustum>::value);
+    CORRADE_VERIFY(!std::is_convertible<Frustum, Frstm>::value);
 }
 
 void FrustumTest::data() {

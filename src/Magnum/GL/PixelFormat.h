@@ -376,21 +376,23 @@ enum class PixelType: GLenum {
      *      for color texture data
      * @requires_webgl20 Extension @webgl_extension{WEBGL,depth_texture} in
      *      WebGL 1.0 for depth texture data
-     * @requires_webgl_extension @webgl_extension{EXT,texture_norm16} for color
-     *      texture data
+     * @requires_webgl20 For integer color texture data
+     * @requires_webgl_extension WebGL 2.0 and
+     *      @webgl_extension{EXT,texture_norm16} for normalized color texture
+     *      data
      */
     UnsignedShort = GL_UNSIGNED_SHORT,
 
-    /* Available everywhere except ES2 (WebGL 1 has it) */
-    #if !(defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
+    #ifndef MAGNUM_TARGET_GLES2
     /**
      * Each component signed short.
      * @requires_gl Can't be used for framebuffer reading in OpenGL ES or
      *      WebGL.
      * @requires_gles30 For texture data only, only @ref PixelType::UnsignedShort
      *      is available in OpenGL ES 2.0.
-     * @requires_webgl20 For texture data only, @webgl_extension{EXT,texture_norm16}
-     *      in WebGL 1.0.
+     * @requires_webgl20 For integer texture data. Not available in WebGL 1.0.
+     * @requires_webgl_extension WebGL 2.0 and
+     *      @webgl_extension{EXT,texture_norm16} for normalized texture data
      */
     Short = GL_SHORT,
     #endif

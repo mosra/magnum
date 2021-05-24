@@ -199,7 +199,7 @@ SubpassDescription::SubpassDescription(const VkSubpassDescription& description):
     nullptr,
     description.preserveAttachmentCount,
     description.pPreserveAttachments
-}, _state{Containers::InPlaceInit} {
+}, _state{InPlaceInit} {
     /* Convert all attachment references to the "version 2" format */
     setInputAttachmentsInternal<VkAttachmentReference>({description.pInputAttachments, description.inputAttachmentCount});
     setColorAttachmentsInternal<VkAttachmentReference>({description.pColorAttachments, description.colorAttachmentCount}, {description.pResolveAttachments, description.pResolveAttachments ? description.colorAttachmentCount : 0});
@@ -450,7 +450,7 @@ Containers::Array<VkSubpassDescription> SubpassDescription::vkSubpassDescription
        converted VkAttachmentReference instances it needs. Expect the default
        deleter is used so we don't need to wrap some other below. */
     const std::size_t extrasSize = vkSubpassDescriptionExtrasSize(_description);
-    Containers::Array<char> storage{Containers::NoInit, sizeof(VkSubpassDescription) + extrasSize};
+    Containers::Array<char> storage{NoInit, sizeof(VkSubpassDescription) + extrasSize};
     CORRADE_INTERNAL_ASSERT(!storage.deleter());
 
     /* Fill it with data and return, faking a size of 1 and with a custom
@@ -702,7 +702,7 @@ Containers::Array<VkRenderPassCreateInfo> RenderPassCreateInfo::vkRenderPassCrea
     /* Allocate an array to fit VkRenderPassCreateInfo together with all extras
        it needs. Expect the default deleter is used so we don't need to wrap
        some other below. */
-    Containers::Array<char> storage{Containers::NoInit, sizeof(VkRenderPassCreateInfo) + structuresSize + extrasSize};
+    Containers::Array<char> storage{NoInit, sizeof(VkRenderPassCreateInfo) + structuresSize + extrasSize};
     CORRADE_INTERNAL_ASSERT(!storage.deleter());
 
     /* Copy what can be copied for the output info struct. The pointers will be
@@ -889,7 +889,7 @@ RenderPassBeginInfo& RenderPassBeginInfo::clearDepthStencil(const UnsignedInt at
 RenderPassBeginInfo& RenderPassBeginInfo::clearInternal(const UnsignedInt attachment, const VkClearValue& value) {
     if(!_state) _state.emplace();
     if(_state->clearValues.size() <= attachment)
-        arrayResize(_state->clearValues, Containers::NoInit, attachment + 1);
+        arrayResize(_state->clearValues, NoInit, attachment + 1);
     _state->clearValues[attachment] = value;
     _info.clearValueCount = _state->clearValues.size();
     _info.pClearValues = _state->clearValues;

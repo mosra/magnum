@@ -34,7 +34,6 @@
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -42,7 +41,7 @@
 #include "Magnum/Platform/Platform.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include "Magnum/GL/GL.h"
+#include "Magnum/Platform/GLContext.h"
 #endif
 
 #ifdef CORRADE_TARGET_WINDOWS /* Windows version of SDL2 redefines main(), we don't want that */
@@ -218,16 +217,50 @@ find_package(Magnum REQUIRED Sdl2Application)
 target_link_libraries(your-app PRIVATE Magnum::Sdl2Application)
 @endcode
 
-Additionally, if you're using Magnum as a CMake subproject, do the following
+Additionally, if you're using Magnum as a CMake subproject, bundle the
+[SDL repository](https://github.com/libsdl-org/SDL) and do the following
 * *before* calling @cmake find_package() @ce to ensure it's enabled, as the
-library is not built by default.  Using SDL2 itself as a CMake subproject isn't
-tested at the moment, so you need to provide it as a system dependency and
-point `CMAKE_PREFIX_PATH` to its installation dir if necessary.
+library is not built by default. If you want to use system-installed SDL2,
+omit the first part and point `CMAKE_PREFIX_PATH` to its installation dir if
+necessary.
 
 @code{.cmake}
+# This is the most minimal set of features which still make Sdl2Application
+# work. If you need something from these, remove the setting. The SDL_AUDIO
+# option should not be needed either as Magnum doesn't use it, but if it's
+# disabled it causes linker errors. Either SDL_DLOPEN or SDL_LOADSO needs to be
+# enabled depending on the system to allow linking dependencies at runtime, so
+# it's better to just leave them both on.
+set(SDL_ATOMIC OFF CACHE BOOL "" FORCE)
+set(SDL_CPUINFO OFF CACHE BOOL "" FORCE)
+set(SDL_EVENTS OFF CACHE BOOL "" FORCE)
+set(SDL_FILE OFF CACHE BOOL "" FORCE)
+set(SDL_FILESYSTEM OFF CACHE BOOL "" FORCE)
+set(SDL_HAPTIC OFF CACHE BOOL "" FORCE)
+set(SDL_LOCALE OFF CACHE BOOL "" FORCE)
+set(SDL_POWER OFF CACHE BOOL "" FORCE)
+set(SDL_RENDER OFF CACHE BOOL "" FORCE)
+set(SDL_SENSOR OFF CACHE BOOL "" FORCE)
+set(SDL_THREADS OFF CACHE BOOL "" FORCE)
+set(SDL_TIMERS OFF CACHE BOOL "" FORCE)
+# This assumes you want to have SDL as a static library. If not, set SDL_STATIC
+# to OFF instead.
+set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+add_subdirectory(SDL EXCLUDE_FROM_ALL)
+
 set(WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
+
+<b></b>
+
+@m_class{m-note m-warning}
+
+@par
+    While SDL itself, being a C project, builds quite fast, when using it as a
+    CMake subproject be prepared that it will *significantly* increase the
+    CMake configure time due to excessive platform checks, and pollute the
+    CMake option list with a lot of unprefixed SDL-specific options.
 
 If no other application is requested, you can also use the generic
 `Magnum::Application` alias to simplify porting. Again, see @ref building and
@@ -968,7 +1001,8 @@ class Sdl2Application {
          * @brief Set cursor type
          * @m_since{2020,06}
          *
-         * Default is @ref Cursor::Arrow.
+         * Expects that a window is already created. Default is
+         * @ref Cursor::Arrow.
          */
         void setCursor(Cursor cursor);
 
@@ -1184,7 +1218,7 @@ class Sdl2Application {
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        SDL_Cursor* _cursors[14]{};
+        SDL_Cursor* _cursors[12]{};
         #else
         Cursor _cursor;
         #endif
@@ -1208,7 +1242,10 @@ class Sdl2Application {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_GLContext _glContext{};
         #endif
-        Containers::Pointer<Platform::GLContext> _context;
+        /* Has to be in an Optional because we delay-create it in a constructor
+           with populated Arguments and it gets explicitly destroyed before the
+           GL context */
+        Containers::Optional<Platform::GLContext> _context;
         #endif
 
         Flags _flags;
@@ -1228,20 +1265,21 @@ The created window is always with a double-buffered OpenGL context.
 
 @see @ref Sdl2Application(), @ref create(), @ref tryCreate()
 */
-class Sdl2Application::GLConfiguration {
+class Sdl2Application::GLConfiguration: public GL::Context::Configuration {
     public:
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Context flag
          *
+         * Includes also everything from @ref GL::Context::Configuration::Flag
+         * except for @relativeref{GL::Context::Configuration,Flag::Windowless},
+         * which is not meant to be enabled for windowed apps.
          * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
-         * @requires_gles Context flags are not available in WebGL.
          */
-        enum class Flag: int {
+        enum class Flag: UnsignedLong {
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
             #ifndef MAGNUM_TARGET_GLES
             /**
-             * Forward compatible context
-             *
+             * Forward compatible context.
              * @requires_gl Core/compatibility profile distinction and forward
              *      compatibility applies only to desktop GL.
              */
@@ -1249,59 +1287,96 @@ class Sdl2Application::GLConfiguration {
             #endif
 
             /**
-             * Debug context. Enabled automatically if the
-             * `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
-             * is present.
+             * Debug context. Enabled automatically if supported by the driver
+             * and the @ref Flag::GpuValidation flag is set or if the
+             * `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
+             * is set to `on`.
+             * @requires_gles Context flags are not available in WebGL.
              */
             Debug = SDL_GL_CONTEXT_DEBUG_FLAG,
 
-            /** Context with robust access */
+            /**
+             * Context with robust access.
+             * @requires_gles Context flags are not available in WebGL.
+             */
             RobustAccess = SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG,
 
-            /** Context with reset isolation */
-            ResetIsolation = SDL_GL_CONTEXT_RESET_ISOLATION_FLAG
+            /**
+             * Context with reset isolation.
+             * @requires_gles Context flags are not available in WebGL.
+             */
+            ResetIsolation = SDL_GL_CONTEXT_RESET_ISOLATION_FLAG,
+
+            #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006 || defined(DOXYGEN_GENERATING_OUTPUT)
+            /**
+             * Context without error reporting. Might result in better
+             * performance, but situations that would have generated errors
+             * instead cause undefined behavior. Enabled automatically if
+             * supported by the driver and the @ref Flag::GpuValidationNoError
+             * flag is set or if the `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
+             * is set to `no-error`.
+             *
+             * @note Available since SDL 2.0.6.
+             * @requires_gles Context flags are not available in WebGL.
+             * @m_since_latest
+             */
+            /* Treated as a separate attribute and not a flag in SDL, thus
+               handling manually. */
+            NoError = 1ull << 32,
+            #endif
+            #endif
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::QuietLog
+             * @m_since_latest
+             */
+            QuietLog = UnsignedLong(GL::Context::Configuration::Flag::QuietLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::VerboseLog
+             * @m_since_latest
+             */
+            VerboseLog = UnsignedLong(GL::Context::Configuration::Flag::VerboseLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidation
+             * @m_since_latest
+             */
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidationNoError
+             * @m_since_latest
+             */
+            GpuValidationNoError = UnsignedLong(GL::Context::Configuration::Flag::GpuValidationNoError)
         };
 
         /**
          * @brief Context flags
          *
          * @see @ref setFlags(), @ref GL::Context::Flags
-         * @requires_gles Context flags are not available in WebGL.
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, SDL_GL_CONTEXT_DEBUG_FLAG|
-            SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG|SDL_GL_CONTEXT_RESET_ISOLATION_FLAG
-            #ifndef MAGNUM_TARGET_GLES
-            |SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG
-            #endif
-            > Flags;
-        #else
         typedef Containers::EnumSet<Flag> Flags;
-        #endif
-        #endif
 
         explicit GLConfiguration();
         ~GLConfiguration();
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        /**
-         * @brief Context flags
-         *
-         * @requires_gles Context flags are not available in WebGL.
-         */
-        Flags flags() const { return _flags; }
+        /** @brief Context flags */
+        Flags flags() const {
+            return Flag(UnsignedLong(GL::Context::Configuration::flags()));
+        }
 
         /**
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
          * Default is @ref Flag::ForwardCompatible on desktop GL and no flags
-         * on OpenGL ES.
-         * @see @ref addFlags(), @ref clearFlags(), @ref GL::Context::flags()
-         * @requires_gles Context flags are not available in WebGL.
+         * on OpenGL ES. To avoid clearing default flags by accident, prefer to
+         * use @ref addFlags() and @ref clearFlags() instead.
+         * @see @ref GL::Context::flags()
          */
         GLConfiguration& setFlags(Flags flags) {
-            _flags = flags;
+            GL::Context::Configuration::setFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -1312,10 +1387,9 @@ class Sdl2Application::GLConfiguration {
          * Unlike @ref setFlags(), ORs the flags with existing instead of
          * replacing them. Useful for preserving the defaults.
          * @see @ref clearFlags()
-         * @requires_gles Context flags are not available in WebGL.
          */
         GLConfiguration& addFlags(Flags flags) {
-            _flags |= flags;
+            GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -1326,13 +1400,13 @@ class Sdl2Application::GLConfiguration {
          * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
          * instead of replacing them. Useful for removing default flags.
          * @see @ref addFlags()
-         * @requires_gles Context flags are not available in WebGL.
          */
         GLConfiguration& clearFlags(Flags flags) {
-            _flags &= ~flags;
+            GL::Context::Configuration::clearFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Context version
          *
@@ -1441,13 +1515,17 @@ class Sdl2Application::GLConfiguration {
         }
         #endif
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(GLConfiguration)
+        #endif
+
     private:
         Vector4i _colorBufferSize;
         Int _depthBufferSize, _stencilBufferSize;
         Int _sampleCount;
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         GL::Version _version;
-        Flags _flags;
         bool _srgbCapable;
         #endif
 };
@@ -1831,7 +1909,9 @@ class Sdl2Application::Configuration {
          * @brief Set window flags
          * @return Reference to self (for method chaining)
          *
-         * Default are none.
+         * Default are none. To avoid clearing default flags by accident,
+         * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
+         * instead.
          */
         Configuration& setWindowFlags(WindowFlags flags) {
             _windowFlags = flags;

@@ -57,7 +57,7 @@
 #include "Magnum/Primitives/Icosphere.h"
 #include "Magnum/Primitives/Plane.h"
 #include "Magnum/Primitives/UVSphere.h"
-#include "Magnum/Shaders/MeshVisualizer.h"
+#include "Magnum/Shaders/MeshVisualizerGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -153,60 +153,60 @@ using namespace Math::Literals;
 
 constexpr struct {
     const char* name;
-    MeshVisualizer2D::Flags flags;
+    MeshVisualizerGL2D::Flags flags;
 } ConstructData2D[] {
-    {"wireframe w/o GS", MeshVisualizer2D::Flag::Wireframe|MeshVisualizer2D::Flag::NoGeometryShader},
+    {"wireframe w/o GS", MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader},
     #ifndef MAGNUM_TARGET_GLES2
-    {"object ID", MeshVisualizer2D::Flag::InstancedObjectId},
-    {"vertex ID", MeshVisualizer2D::Flag::VertexId},
+    {"object ID", MeshVisualizerGL2D::Flag::InstancedObjectId},
+    {"vertex ID", MeshVisualizerGL2D::Flag::VertexId},
     #ifndef MAGNUM_TARGET_WEBGL
-    {"primitive ID", MeshVisualizer2D::Flag::PrimitiveId},
+    {"primitive ID", MeshVisualizerGL2D::Flag::PrimitiveId},
     #endif
-    {"primitive ID from vertex ID", MeshVisualizer2D::Flag::PrimitiveIdFromVertexId}
+    {"primitive ID from vertex ID", MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId}
     #endif
 };
 
 constexpr struct {
     const char* name;
-    MeshVisualizer3D::Flags flags;
+    MeshVisualizerGL3D::Flags flags;
 } ConstructData3D[] {
-    {"wireframe w/o GS", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader},
+    {"wireframe w/o GS", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader},
     #ifndef MAGNUM_TARGET_GLES2
-    {"object ID", MeshVisualizer3D::Flag::InstancedObjectId},
-    {"vertex ID", MeshVisualizer3D::Flag::VertexId},
+    {"object ID", MeshVisualizerGL3D::Flag::InstancedObjectId},
+    {"vertex ID", MeshVisualizerGL3D::Flag::VertexId},
     #ifndef MAGNUM_TARGET_WEBGL
-    {"primitive ID", MeshVisualizer3D::Flag::PrimitiveId},
+    {"primitive ID", MeshVisualizerGL3D::Flag::PrimitiveId},
     #endif
-    {"primitive ID from vertex ID", MeshVisualizer3D::Flag::PrimitiveIdFromVertexId}
+    {"primitive ID from vertex ID", MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId}
     #endif
 };
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 constexpr struct {
     const char* name;
-    MeshVisualizer3D::Flags flags;
+    MeshVisualizerGL3D::Flags flags;
 } ConstructGeometryShaderData3D[] {
-    {"wireframe", MeshVisualizer3D::Flag::Wireframe},
-    {"tangent direction", MeshVisualizer3D::Flag::TangentDirection},
-    {"bitangent direction from tangent", MeshVisualizer3D::Flag::BitangentFromTangentDirection},
-    {"bitangent direction", MeshVisualizer3D::Flag::BitangentDirection},
-    {"normal direction", MeshVisualizer3D::Flag::NormalDirection},
-    {"tbn direction", MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::BitangentDirection|MeshVisualizer3D::Flag::NormalDirection},
-    {"tbn direction with bitangent from tangent", MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::BitangentFromTangentDirection|MeshVisualizer3D::Flag::NormalDirection},
-    {"wireframe + vertex id", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::VertexId},
-    {"wireframe + t/n direction", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::NormalDirection},
-    {"wireframe + object id + t/n direction", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::NormalDirection},
-    {"wireframe + vertex id + t/b direction", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::VertexId|MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::BitangentDirection}
+    {"wireframe", MeshVisualizerGL3D::Flag::Wireframe},
+    {"tangent direction", MeshVisualizerGL3D::Flag::TangentDirection},
+    {"bitangent direction from tangent", MeshVisualizerGL3D::Flag::BitangentFromTangentDirection},
+    {"bitangent direction", MeshVisualizerGL3D::Flag::BitangentDirection},
+    {"normal direction", MeshVisualizerGL3D::Flag::NormalDirection},
+    {"tbn direction", MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
+    {"tbn direction with bitangent from tangent", MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
+    {"wireframe + vertex id", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId},
+    {"wireframe + t/n direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
+    {"wireframe + object id + t/n direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
+    {"wireframe + vertex id + t/b direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection}
 };
 #endif
 
 constexpr struct {
     const char* name;
-    MeshVisualizer2D::Flags flags;
+    MeshVisualizerGL2D::Flags flags;
     const char* message;
 } ConstructInvalidData2D[] {
     {"no feature enabled",
-        MeshVisualizer2D::Flag::NoGeometryShader, /* not a feature flag */
+        MeshVisualizerGL2D::Flag::NoGeometryShader, /* not a feature flag */
         #ifndef MAGNUM_TARGET_GLES2
         "2D: at least one visualization feature has to be enabled"
         #else
@@ -215,21 +215,21 @@ constexpr struct {
         },
     #ifndef MAGNUM_TARGET_GLES2
     {"both object and primitive id",
-        MeshVisualizer2D::Flag::InstancedObjectId|MeshVisualizer2D::Flag::PrimitiveIdFromVertexId,
+        MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId,
         ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
     {"both object and vertex id",
-        MeshVisualizer2D::Flag::InstancedObjectId|MeshVisualizer2D::Flag::VertexId,
+        MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::VertexId,
         ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"}
     #endif
 };
 
 constexpr struct {
     const char* name;
-    MeshVisualizer3D::Flags flags;
+    MeshVisualizerGL3D::Flags flags;
     const char* message;
 } ConstructInvalidData3D[] {
     {"no feature enabled",
-        MeshVisualizer3D::Flag::NoGeometryShader, /* not a feature flag */
+        MeshVisualizerGL3D::Flag::NoGeometryShader, /* not a feature flag */
         #ifndef MAGNUM_TARGET_GLES2
         "3D: at least one visualization feature has to be enabled"
         #else
@@ -238,10 +238,10 @@ constexpr struct {
         },
     #ifndef MAGNUM_TARGET_GLES2
     {"both object and primitive id",
-        MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::PrimitiveIdFromVertexId,
+        MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
         ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
     {"both vertex and primitive id",
-        MeshVisualizer3D::Flag::VertexId|MeshVisualizer3D::Flag::PrimitiveIdFromVertexId,
+        MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
         ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"}
     #endif
 };
@@ -261,83 +261,83 @@ constexpr struct {
 
 constexpr struct {
     const char* name;
-    MeshVisualizer2D::Flags flags;
+    MeshVisualizerGL2D::Flags flags;
     Float width, smoothness;
     const char* file;
     const char* fileXfail;
 } WireframeData2D[] {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    {"", MeshVisualizer2D::Flags{},
+    {"", MeshVisualizerGL2D::Flags{},
         1.0f, 2.0f, "wireframe2D.tga", nullptr},
-    {"wide/sharp", MeshVisualizer2D::Flags{},
+    {"wide/sharp", MeshVisualizerGL2D::Flags{},
         3.0f, 1.0f, "wireframe-wide2D.tga", nullptr},
     #endif
-    {"no geometry shader", MeshVisualizer2D::Flag::NoGeometryShader,
+    {"no geometry shader", MeshVisualizerGL2D::Flag::NoGeometryShader,
         1.0f, 2.0f, "wireframe2D.tga", "wireframe-nogeo2D.tga"},
-    {"no geometry shader, wide/sharp", MeshVisualizer2D::Flag::NoGeometryShader,
+    {"no geometry shader, wide/sharp", MeshVisualizerGL2D::Flag::NoGeometryShader,
         3.0f, 1.0f, "wireframe-wide2D.tga", "wireframe-nogeo2D.tga"}
 };
 
 constexpr struct {
     const char* name;
-    MeshVisualizer3D::Flags flags;
+    MeshVisualizerGL3D::Flags flags;
     Float width, smoothness;
     const char* file;
     const char* fileXfail;
 } WireframeData3D[] {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    {"", MeshVisualizer3D::Flags{},
+    {"", MeshVisualizerGL3D::Flags{},
         1.0f, 2.0f, "wireframe3D.tga", nullptr},
-    {"wide/sharp", MeshVisualizer3D::Flags{},
+    {"wide/sharp", MeshVisualizerGL3D::Flags{},
         3.0f, 1.0f, "wireframe-wide3D.tga", nullptr},
     #endif
     {"no geometry shader",
-        MeshVisualizer3D::Flag::NoGeometryShader,
+        MeshVisualizerGL3D::Flag::NoGeometryShader,
         1.0f, 2.0f, "wireframe3D.tga", "wireframe-nogeo3D.tga"},
     {"no geometry shader, wide/sharp",
-        MeshVisualizer3D::Flag::NoGeometryShader,
+        MeshVisualizerGL3D::Flag::NoGeometryShader,
         3.0f, 1.0f, "wireframe-wide3D.tga", "wireframe-nogeo3D.tga"}
 };
 
 #ifndef MAGNUM_TARGET_GLES2
 constexpr struct {
     const char* name;
-    MeshVisualizer2D::Flags flags2D;
-    MeshVisualizer3D::Flags flags3D;
+    MeshVisualizerGL2D::Flags flags2D;
+    MeshVisualizerGL3D::Flags flags3D;
     const char* file2D;
     const char* file3D;
 } ObjectVertexPrimitiveIdData[] {
     {"object ID",
-        MeshVisualizer2D::Flag::InstancedObjectId,
-        MeshVisualizer3D::Flag::InstancedObjectId,
+        MeshVisualizerGL2D::Flag::InstancedObjectId,
+        MeshVisualizerGL3D::Flag::InstancedObjectId,
         "objectid2D.tga", "objectid3D.tga"},
     {"vertex ID",
-        MeshVisualizer2D::Flag::VertexId,
-        MeshVisualizer3D::Flag::VertexId,
+        MeshVisualizerGL2D::Flag::VertexId,
+        MeshVisualizerGL3D::Flag::VertexId,
         "vertexid2D.tga", "vertexid3D.tga"},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID",
-        MeshVisualizer2D::Flag::PrimitiveId,
-        MeshVisualizer3D::Flag::PrimitiveId,
+        MeshVisualizerGL2D::Flag::PrimitiveId,
+        MeshVisualizerGL3D::Flag::PrimitiveId,
         "primitiveid2D.tga", "primitiveid3D.tga"},
     #endif
     {"primitive ID from vertex ID",
-        MeshVisualizer2D::Flag::PrimitiveIdFromVertexId,
-        MeshVisualizer3D::Flag::PrimitiveIdFromVertexId,
+        MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId,
+        MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
         "primitiveid2D.tga", "primitiveid3D.tga"},
     {"wireframe + object ID",
-        MeshVisualizer2D::Flag::InstancedObjectId|MeshVisualizer2D::Flag::Wireframe,
-        MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::Wireframe,
+        MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::Wireframe,
+        MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::Wireframe,
         "wireframe-objectid2D.tga", "wireframe-objectid3D.tga"},
     {"wireframe + object ID, no geometry shader",
-        MeshVisualizer2D::Flag::InstancedObjectId|MeshVisualizer2D::Flag::Wireframe|
-        MeshVisualizer2D::Flag::NoGeometryShader,
-        MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::Wireframe|
-        MeshVisualizer3D::Flag::NoGeometryShader,
+        MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::Wireframe|
+        MeshVisualizerGL2D::Flag::NoGeometryShader,
+        MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::Wireframe|
+        MeshVisualizerGL3D::Flag::NoGeometryShader,
         "wireframe-nogeo-objectid2D.tga", "wireframe-nogeo-objectid3D.tga"},
     {"wireframe + vertex ID",
-        MeshVisualizer2D::Flag::VertexId|MeshVisualizer2D::Flag::Wireframe,
-        MeshVisualizer3D::Flag::VertexId|MeshVisualizer3D::Flag::Wireframe,
+        MeshVisualizerGL2D::Flag::VertexId|MeshVisualizerGL2D::Flag::Wireframe,
+        MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::Wireframe,
         "wireframe-vertexid2D.tga", "wireframe-vertexid3D.tga"}
 };
 #endif
@@ -345,8 +345,8 @@ constexpr struct {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 constexpr struct {
     const char* name;
-    MeshVisualizer3D::Flags flags;
-    MeshVisualizer3D::Flags secondPassFlags;
+    MeshVisualizerGL3D::Flags flags;
+    MeshVisualizerGL3D::Flags secondPassFlags;
     bool skipBitagnentEvenIfEnabledInFlags;
     Float smoothness;
     Float lineWidth;
@@ -355,50 +355,50 @@ constexpr struct {
     const char* file;
 } TangentBitangentNormalData[] {
     {"",
-        MeshVisualizer3D::Flag::TangentDirection|
-        MeshVisualizer3D::Flag::BitangentDirection|
-        MeshVisualizer3D::Flag::NormalDirection, {},
+        MeshVisualizerGL3D::Flag::TangentDirection|
+        MeshVisualizerGL3D::Flag::BitangentDirection|
+        MeshVisualizerGL3D::Flag::NormalDirection, {},
         false, 2.0f, 1.0f, 0.6f, 1.0f, "tbn.tga"},
     {"bitangents from tangents",
-        MeshVisualizer3D::Flag::TangentDirection|
-        MeshVisualizer3D::Flag::BitangentFromTangentDirection|
-        MeshVisualizer3D::Flag::NormalDirection, {},
+        MeshVisualizerGL3D::Flag::TangentDirection|
+        MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|
+        MeshVisualizerGL3D::Flag::NormalDirection, {},
         false, 2.0f, 1.0f, 0.6f, 1.0f, "tbn.tga"},
     {"scaled data",
-        MeshVisualizer3D::Flag::TangentDirection|
-        MeshVisualizer3D::Flag::BitangentDirection|
-        MeshVisualizer3D::Flag::NormalDirection, {},
+        MeshVisualizerGL3D::Flag::TangentDirection|
+        MeshVisualizerGL3D::Flag::BitangentDirection|
+        MeshVisualizerGL3D::Flag::NormalDirection, {},
         false, 2.0f, 1.0f, 0.6f, 5.0f, "tbn.tga"},
     {"wide blurry lines",
-        MeshVisualizer3D::Flag::TangentDirection|
-        MeshVisualizer3D::Flag::BitangentDirection|
-        MeshVisualizer3D::Flag::NormalDirection, {},
+        MeshVisualizerGL3D::Flag::TangentDirection|
+        MeshVisualizerGL3D::Flag::BitangentDirection|
+        MeshVisualizerGL3D::Flag::NormalDirection, {},
         false, 5.0f, 5.0f, 0.8f, 1.0f, "tbn-wide.tga"},
     {"only bitangent from tangent",
-        MeshVisualizer3D::Flag::BitangentFromTangentDirection, {},
+        MeshVisualizerGL3D::Flag::BitangentFromTangentDirection, {},
         false, 2.0f, 1.0f, 0.6f, 1.0f, "bitangents-from-tangents.tga"},
     {"wireframe + primitive ID + tangents + normals, single pass",
-        MeshVisualizer3D::Flag::Wireframe|
-        MeshVisualizer3D::Flag::PrimitiveId|
-        MeshVisualizer3D::Flag::TangentDirection|
-        MeshVisualizer3D::Flag::NormalDirection, {},
+        MeshVisualizerGL3D::Flag::Wireframe|
+        MeshVisualizerGL3D::Flag::PrimitiveId|
+        MeshVisualizerGL3D::Flag::TangentDirection|
+        MeshVisualizerGL3D::Flag::NormalDirection, {},
         false, 2.0f, 1.0f, 0.6f, 1.0f, "wireframe-primitiveid-tn.tga"},
     {"wireframe + primitive ID, rendering all, but only tangents + normals present",
-        MeshVisualizer3D::Flag::Wireframe|
-        MeshVisualizer3D::Flag::PrimitiveId|
-        MeshVisualizer3D::Flag::TangentDirection|
-        MeshVisualizer3D::Flag::BitangentDirection|
-        MeshVisualizer3D::Flag::NormalDirection, {},
+        MeshVisualizerGL3D::Flag::Wireframe|
+        MeshVisualizerGL3D::Flag::PrimitiveId|
+        MeshVisualizerGL3D::Flag::TangentDirection|
+        MeshVisualizerGL3D::Flag::BitangentDirection|
+        MeshVisualizerGL3D::Flag::NormalDirection, {},
         true, 2.0f, 1.0f, 0.6f, 1.0f, "wireframe-primitiveid-tn.tga"},
     {"wireframe + tangents + normals, two passes",
-        MeshVisualizer3D::Flag::TangentDirection|
-        MeshVisualizer3D::Flag::NormalDirection,
-        MeshVisualizer3D::Flag::Wireframe,
+        MeshVisualizerGL3D::Flag::TangentDirection|
+        MeshVisualizerGL3D::Flag::NormalDirection,
+        MeshVisualizerGL3D::Flag::Wireframe,
         false, 2.0f, 1.0f, 0.6f, 1.0f, "wireframe-tn-smooth.tga"},
     {"primitive ID + tangents + normals",
-        MeshVisualizer3D::Flag::PrimitiveId|
-        MeshVisualizer3D::Flag::TangentDirection|
-        MeshVisualizer3D::Flag::NormalDirection, {},
+        MeshVisualizerGL3D::Flag::PrimitiveId|
+        MeshVisualizerGL3D::Flag::TangentDirection|
+        MeshVisualizerGL3D::Flag::NormalDirection, {},
         false, 2.0f, 1.0f, 0.6f, 1.0f, "primitiveid-tn.tga"}
 };
 #endif
@@ -543,12 +543,12 @@ void MeshVisualizerGLTest::construct2D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if((data.flags & MeshVisualizer2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    if((data.flags & MeshVisualizerGL2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(data.flags >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId &&
+    if(data.flags >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId &&
         #ifndef MAGNUM_TARGET_GLES
         !GL::Context::current().isVersionSupported(GL::Version::GL300)
         #else
@@ -558,7 +558,7 @@ void MeshVisualizerGLTest::construct2D() {
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(data.flags & MeshVisualizer2D::Flag::PrimitiveId && !(data.flags >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId) &&
+    if(data.flags & MeshVisualizerGL2D::Flag::PrimitiveId && !(data.flags >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId) &&
         #ifndef MAGNUM_TARGET_GLES
         !GL::Context::current().isVersionSupported(GL::Version::GL320)
         #else
@@ -567,7 +567,7 @@ void MeshVisualizerGLTest::construct2D() {
     ) CORRADE_SKIP("gl_PrimitiveID not supported.");
     #endif
 
-    MeshVisualizer2D shader{data.flags};
+    MeshVisualizerGL2D shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
@@ -585,12 +585,12 @@ void MeshVisualizerGLTest::construct3D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if((data.flags & MeshVisualizer3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    if((data.flags & MeshVisualizerGL3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(data.flags >= MeshVisualizer3D::Flag::PrimitiveIdFromVertexId &&
+    if(data.flags >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId &&
         #ifndef MAGNUM_TARGET_GLES
         !GL::Context::current().isVersionSupported(GL::Version::GL300)
         #else
@@ -600,7 +600,7 @@ void MeshVisualizerGLTest::construct3D() {
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(data.flags & MeshVisualizer3D::Flag::PrimitiveId && !(data.flags >= MeshVisualizer3D::Flag::PrimitiveIdFromVertexId) &&
+    if(data.flags & MeshVisualizerGL3D::Flag::PrimitiveId && !(data.flags >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId) &&
         #ifndef MAGNUM_TARGET_GLES
         !GL::Context::current().isVersionSupported(GL::Version::GL320)
         #else
@@ -609,7 +609,7 @@ void MeshVisualizerGLTest::construct3D() {
     ) CORRADE_SKIP("gl_PrimitiveID not supported.");
     #endif
 
-    MeshVisualizer3D shader{data.flags};
+    MeshVisualizerGL3D shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
@@ -626,10 +626,10 @@ void MeshVisualizerGLTest::construct3D() {
 void MeshVisualizerGLTest::constructWireframeGeometryShader2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
@@ -637,8 +637,8 @@ void MeshVisualizerGLTest::constructWireframeGeometryShader2D() {
         Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
     #endif
 
-    MeshVisualizer2D shader{MeshVisualizer2D::Flag::Wireframe};
-    CORRADE_COMPARE(shader.flags(), MeshVisualizer2D::Flag::Wireframe);
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::Wireframe};
+    CORRADE_COMPARE(shader.flags(), MeshVisualizerGL2D::Flag::Wireframe);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -654,10 +654,10 @@ void MeshVisualizerGLTest::constructGeometryShader3D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
@@ -665,7 +665,7 @@ void MeshVisualizerGLTest::constructGeometryShader3D() {
         Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
     #endif
 
-    MeshVisualizer3D shader{data.flags};
+    MeshVisualizerGL3D shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
     {
         #ifdef CORRADE_TARGET_APPLE
@@ -687,8 +687,8 @@ void MeshVisualizerGLTest::construct2DInvalid() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshVisualizer2D{data.flags};
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizer{}\n", data.message));
+    MeshVisualizerGL2D{data.flags};
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL{}\n", data.message));
 }
 
 void MeshVisualizerGLTest::construct3DInvalid() {
@@ -701,8 +701,8 @@ void MeshVisualizerGLTest::construct3DInvalid() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshVisualizer3D{data.flags};
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizer{}\n", data.message));
+    MeshVisualizerGL3D{data.flags};
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL{}\n", data.message));
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -713,17 +713,17 @@ void MeshVisualizerGLTest::construct3DGeometryShaderDisabledButNeeded() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshVisualizer3D{MeshVisualizer3D::Flag::NoGeometryShader|MeshVisualizer3D::Flag::NormalDirection};
+    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::NoGeometryShader|MeshVisualizerGL3D::Flag::NormalDirection};
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer3D: geometry shader has to be enabled when rendering TBN direction\n");
+        "Shaders::MeshVisualizerGL3D: geometry shader has to be enabled when rendering TBN direction\n");
 }
 
 void MeshVisualizerGLTest::construct3DConflictingBitangentInput() {
@@ -733,55 +733,55 @@ void MeshVisualizerGLTest::construct3DConflictingBitangentInput() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshVisualizer3D{MeshVisualizer3D::Flag::BitangentFromTangentDirection|MeshVisualizer3D::Flag::BitangentDirection};
+    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection};
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive\n");
+        "Shaders::MeshVisualizerGL3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive\n");
 }
 #endif
 
 void MeshVisualizerGLTest::constructMove2D() {
-    MeshVisualizer2D a{MeshVisualizer2D::Flag::Wireframe|MeshVisualizer2D::Flag::NoGeometryShader};
+    MeshVisualizerGL2D a{MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    MeshVisualizer2D b{std::move(a)};
+    MeshVisualizerGL2D b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
-    CORRADE_COMPARE(b.flags(), MeshVisualizer2D::Flag::Wireframe|MeshVisualizer2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(b.flags(), MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_VERIFY(!a.id());
 
-    MeshVisualizer2D c{NoCreate};
+    MeshVisualizerGL2D c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
-    CORRADE_COMPARE(c.flags(), MeshVisualizer2D::Flag::Wireframe|MeshVisualizer2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(c.flags(), MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_VERIFY(!b.id());
 }
 
 void MeshVisualizerGLTest::constructMove3D() {
-    MeshVisualizer3D a{MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader};
+    MeshVisualizerGL3D a{MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    MeshVisualizer3D b{std::move(a)};
+    MeshVisualizerGL3D b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
-    CORRADE_COMPARE(b.flags(), MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(b.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_VERIFY(!a.id());
 
-    MeshVisualizer3D c{NoCreate};
+    MeshVisualizerGL3D c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
-    CORRADE_COMPARE(c.flags(), MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(c.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_VERIFY(!b.id());
 }
 
@@ -795,16 +795,16 @@ void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
 
     /* The constructor asserts for at least some feature being enabled (which
        is just wireframe in case of 2D), so fake it with a NoCreate */
-    MeshVisualizer2D shader{NoCreate};
+    MeshVisualizerGL2D shader{NoCreate};
     shader
         .setColor({});
 
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe or object/vertex/primitive ID enabled\n");
+        "Shaders::MeshVisualizerGL::setColor(): the shader was not created with wireframe or object/vertex/primitive ID enabled\n");
     #else
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe enabled\n");
+        "Shaders::MeshVisualizerGL::setColor(): the shader was not created with wireframe enabled\n");
     #endif
 
     out.str({});
@@ -814,9 +814,9 @@ void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
         .setSmoothness({});
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setWireframeColor(): the shader was not created with wireframe enabled\n"
-        "Shaders::MeshVisualizer::setWireframeWidth(): the shader was not created with wireframe enabled\n"
-        "Shaders::MeshVisualizer2D::setSmoothness(): the shader was not created with wireframe enabled\n");
+        "Shaders::MeshVisualizerGL::setWireframeColor(): the shader was not created with wireframe enabled\n"
+        "Shaders::MeshVisualizerGL::setWireframeWidth(): the shader was not created with wireframe enabled\n"
+        "Shaders::MeshVisualizerGL2D::setSmoothness(): the shader was not created with wireframe enabled\n");
 }
 
 void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
@@ -830,16 +830,16 @@ void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
     /* The constructor asserts for at least some feature being enabled (which
        is just wireframe in case we're not on desktop or ES3.2), so fake it
        with a NoCreate */
-    MeshVisualizer3D shader{NoCreate};
+    MeshVisualizerGL3D shader{NoCreate};
     shader
         .setColor({});
 
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe or object/vertex/primitive ID enabled\n");
+        "Shaders::MeshVisualizerGL::setColor(): the shader was not created with wireframe or object/vertex/primitive ID enabled\n");
     #else
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe enabled\n");
+        "Shaders::MeshVisualizerGL::setColor(): the shader was not created with wireframe enabled\n");
     #endif
 
     out.str({});
@@ -849,9 +849,9 @@ void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
         .setSmoothness({});
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setWireframeColor(): the shader was not created with wireframe enabled\n"
-        "Shaders::MeshVisualizer::setWireframeWidth(): the shader was not created with wireframe enabled\n"
-        "Shaders::MeshVisualizer3D::setSmoothness(): the shader was not created with wireframe or TBN direction enabled\n");
+        "Shaders::MeshVisualizerGL::setWireframeColor(): the shader was not created with wireframe enabled\n"
+        "Shaders::MeshVisualizerGL::setWireframeWidth(): the shader was not created with wireframe enabled\n"
+        "Shaders::MeshVisualizerGL3D::setSmoothness(): the shader was not created with wireframe or TBN direction enabled\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -864,13 +864,13 @@ void MeshVisualizerGLTest::setColorMapNotEnabled2D() {
     Error redirectError{&out};
 
     GL::Texture2D texture;
-    MeshVisualizer2D shader{NoCreate};
+    MeshVisualizerGL2D shader{NoCreate};
     shader.setColorMapTransformation({}, {})
         .bindColorMapTexture(texture);
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setColorMapTransformation(): the shader was not created with object/vertex/primitive ID enabled\n"
-        "Shaders::MeshVisualizer::bindColorMapTexture(): the shader was not created with object/vertex/primitive ID enabled\n");
+        "Shaders::MeshVisualizerGL::setColorMapTransformation(): the shader was not created with object/vertex/primitive ID enabled\n"
+        "Shaders::MeshVisualizerGL::bindColorMapTexture(): the shader was not created with object/vertex/primitive ID enabled\n");
 }
 
 void MeshVisualizerGLTest::setColorMapNotEnabled3D() {
@@ -882,13 +882,13 @@ void MeshVisualizerGLTest::setColorMapNotEnabled3D() {
     Error redirectError{&out};
 
     GL::Texture2D texture;
-    MeshVisualizer3D shader{NoCreate};
+    MeshVisualizerGL3D shader{NoCreate};
     shader.setColorMapTransformation({}, {})
         .bindColorMapTexture(texture);
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setColorMapTransformation(): the shader was not created with object/vertex/primitive ID enabled\n"
-        "Shaders::MeshVisualizer::bindColorMapTexture(): the shader was not created with object/vertex/primitive ID enabled\n");
+        "Shaders::MeshVisualizerGL::setColorMapTransformation(): the shader was not created with object/vertex/primitive ID enabled\n"
+        "Shaders::MeshVisualizerGL::bindColorMapTexture(): the shader was not created with object/vertex/primitive ID enabled\n");
 }
 #endif
 
@@ -900,24 +900,24 @@ void MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     std::ostringstream out;
     Error redirectError{&out};
 
-    MeshVisualizer3D shader{MeshVisualizer3D::Flag::Wireframe};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::Wireframe};
     shader.setNormalMatrix({})
         .setLineWidth({})
         .setLineLength({});
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer3D::setNormalMatrix(): the shader was not created with TBN direction enabled\n"
-        "Shaders::MeshVisualizer3D::setLineWidth(): the shader was not created with TBN direction enabled\n"
-        "Shaders::MeshVisualizer3D::setLineLength(): the shader was not created with TBN direction enabled\n");
+        "Shaders::MeshVisualizerGL3D::setNormalMatrix(): the shader was not created with TBN direction enabled\n"
+        "Shaders::MeshVisualizerGL3D::setLineWidth(): the shader was not created with TBN direction enabled\n"
+        "Shaders::MeshVisualizerGL3D::setLineLength(): the shader was not created with TBN direction enabled\n");
 }
 #endif
 
@@ -961,10 +961,10 @@ void MeshVisualizerGLTest::renderTeardown() {
 void MeshVisualizerGLTest::renderDefaultsWireframe2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
@@ -974,7 +974,7 @@ void MeshVisualizerGLTest::renderDefaultsWireframe2D() {
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(16));
 
-    MeshVisualizer2D shader{MeshVisualizer2D::Flag::Wireframe};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::Wireframe};
     shader.draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1010,10 +1010,10 @@ void MeshVisualizerGLTest::renderDefaultsWireframe2D() {
 void MeshVisualizerGLTest::renderDefaultsWireframe3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
@@ -1023,7 +1023,7 @@ void MeshVisualizerGLTest::renderDefaultsWireframe3D() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::icosphereSolid(1));
 
-    MeshVisualizer3D shader{MeshVisualizer3D::Flag::Wireframe};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::Wireframe};
     shader.draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1064,7 +1064,7 @@ void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     /* Configure a texture with preset filtering and wrapping. The goal here is
@@ -1089,7 +1089,7 @@ void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
                 Containers::arrayView(ids)}
         }));
 
-    MeshVisualizer2D{MeshVisualizer2D::Flag::InstancedObjectId}
+    MeshVisualizerGL2D{MeshVisualizerGL2D::Flag::InstancedObjectId}
         .bindColorMapTexture(colorMapTexture)
         .draw(circle);
 
@@ -1113,7 +1113,7 @@ void MeshVisualizerGLTest::renderDefaultsObjectId3D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     /* Configure a texture with preset filtering and wrapping. The goal here is
@@ -1138,7 +1138,7 @@ void MeshVisualizerGLTest::renderDefaultsObjectId3D() {
                 Containers::arrayView(ids)}
         }));
 
-    MeshVisualizer3D{MeshVisualizer3D::Flag::InstancedObjectId}
+    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::InstancedObjectId}
         .bindColorMapTexture(colorMapTexture)
         .draw(icosphere);
 
@@ -1165,7 +1165,7 @@ void MeshVisualizerGLTest::renderDefaultsVertexId2D() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         CORRADE_SKIP("gl_VertexID not supported");
 
-    MeshVisualizer2D{MeshVisualizer2D::Flag::VertexId}
+    MeshVisualizerGL2D{MeshVisualizerGL2D::Flag::VertexId}
         .bindColorMapTexture(_colorMapTexture)
         .draw(MeshTools::compile(Primitives::circle2DSolid(16)));
 
@@ -1187,7 +1187,7 @@ void MeshVisualizerGLTest::renderDefaultsVertexId3D() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         CORRADE_SKIP("gl_VertexID not supported");
 
-    MeshVisualizer2D{MeshVisualizer2D::Flag::VertexId}
+    MeshVisualizerGL2D{MeshVisualizerGL2D::Flag::VertexId}
         .bindColorMapTexture(_colorMapTexture)
         .draw(MeshTools::compile(Primitives::icosphereSolid(0)));
 
@@ -1217,9 +1217,9 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
     ) CORRADE_SKIP("gl_VertexID not supported.");
     #endif
 
-    MeshVisualizer2D::Flags flags;
+    MeshVisualizerGL2D::Flags flags;
     #ifdef MAGNUM_TARGET_WEBGL
-    flags = MeshVisualizer2D::Flag::PrimitiveIdFromVertexId;
+    flags = MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId;
     #else
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isVersionSupported(GL::Version::GL320))
@@ -1228,16 +1228,16 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
     #endif
     {
         Debug{} << "Using primitive ID from vertex ID";
-        flags = MeshVisualizer2D::Flag::PrimitiveIdFromVertexId;
+        flags = MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId;
     }
-    else flags = MeshVisualizer2D::Flag::PrimitiveId;
+    else flags = MeshVisualizerGL2D::Flag::PrimitiveId;
     #endif
 
     Trade::MeshData circleData = Primitives::circle2DSolid(16);
-    if(flags >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId)
+    if(flags >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId)
         circleData = MeshTools::duplicate(MeshTools::generateIndices(circleData));
 
-    MeshVisualizer2D{flags}
+    MeshVisualizerGL2D{flags}
         .bindColorMapTexture(_colorMapTexture)
         .draw(MeshTools::compile(circleData));
 
@@ -1269,9 +1269,9 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
     ) CORRADE_SKIP("gl_VertexID not supported.");
     #endif
 
-    MeshVisualizer2D::Flags flags;
+    MeshVisualizerGL2D::Flags flags;
     #ifdef MAGNUM_TARGET_WEBGL
-    flags = MeshVisualizer2D::Flag::PrimitiveIdFromVertexId;
+    flags = MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId;
     #else
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isVersionSupported(GL::Version::GL320))
@@ -1280,16 +1280,16 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
     #endif
     {
         Debug{} << "Using primitive ID from vertex ID";
-        flags = MeshVisualizer2D::Flag::PrimitiveIdFromVertexId;
+        flags = MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId;
     }
-    else flags = MeshVisualizer2D::Flag::PrimitiveId;
+    else flags = MeshVisualizerGL2D::Flag::PrimitiveId;
     #endif
 
     Trade::MeshData icosphereData = Primitives::icosphereSolid(0);
-    if(flags >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId)
+    if(flags >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId)
         icosphereData = MeshTools::duplicate(icosphereData);
 
-    MeshVisualizer2D{flags}
+    MeshVisualizerGL2D{flags}
         .bindColorMapTexture(_colorMapTexture)
         .draw(MeshTools::compile(icosphereData));
 
@@ -1308,18 +1308,18 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
 void MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(4, 8,
         Primitives::UVSphereFlag::Tangents));
 
-    MeshVisualizer3D{MeshVisualizer3D::Flag::TangentDirection|
-            MeshVisualizer3D::Flag::BitangentFromTangentDirection|
-            MeshVisualizer3D::Flag::NormalDirection}
+    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::TangentDirection|
+            MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|
+            MeshVisualizerGL3D::Flag::NormalDirection}
         .setViewportSize({80, 80}) /** @todo make this unnecessary */
         .draw(sphere);
 
@@ -1346,11 +1346,11 @@ void MeshVisualizerGLTest::renderWireframe2D() {
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(!(data.flags & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    if(!(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
-    if(!(data.flags & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    if(!(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
@@ -1362,7 +1362,7 @@ void MeshVisualizerGLTest::renderWireframe2D() {
     const Trade::MeshData circleData = Primitives::circle2DSolid(16);
 
     GL::Mesh circle{NoCreate};
-    if(data.flags & MeshVisualizer2D::Flag::NoGeometryShader) {
+    if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader) {
         /* Duplicate the vertices. The circle primitive is  */
         const Trade::MeshData circleDataIndexed =
             MeshTools::generateIndices(circleData);
@@ -1378,11 +1378,11 @@ void MeshVisualizerGLTest::renderWireframe2D() {
 
             GL::Buffer vertexId;
             vertexId.setData(vertexIndex);
-            circle.addVertexBuffer(std::move(vertexId), 0, MeshVisualizer2D::VertexIndex{});
+            circle.addVertexBuffer(std::move(vertexId), 0, MeshVisualizerGL2D::VertexIndex{});
         }
     } else circle = MeshTools::compile(circleData);
 
-    MeshVisualizer2D{data.flags|MeshVisualizer2D::Flag::Wireframe}
+    MeshVisualizerGL2D{data.flags|MeshVisualizerGL2D::Flag::Wireframe}
         .setColor(0xffff99_rgbf)
         .setWireframeColor(0x9999ff_rgbf)
         .setWireframeWidth(data.width)
@@ -1398,7 +1398,7 @@ void MeshVisualizerGLTest::renderWireframe2D() {
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     {
-        CORRADE_EXPECT_FAIL_IF(data.flags & MeshVisualizer2D::Flag::NoGeometryShader,
+        CORRADE_EXPECT_FAIL_IF(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader,
             "Line width is currently not configurable w/o geometry shader.");
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /* SwiftShader has differently rasterized edges on four pixels */
@@ -1415,7 +1415,7 @@ void MeshVisualizerGLTest::renderWireframe2D() {
     }
 
     /* Test it's not *too* off, at least */
-    if(data.flags & MeshVisualizer2D::Flag::NoGeometryShader) {
+    if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader) {
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /* SwiftShader has differently rasterized edges on four pixels. Apple
            A8 on more. */
@@ -1438,11 +1438,11 @@ void MeshVisualizerGLTest::renderWireframe3D() {
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(!(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    if(!(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
-    if(!(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    if(!(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
@@ -1454,7 +1454,7 @@ void MeshVisualizerGLTest::renderWireframe3D() {
     const Trade::MeshData sphereData = Primitives::icosphereSolid(1);
 
     GL::Mesh sphere{NoCreate};
-    if(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) {
+    if(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader) {
         /* Duplicate the vertices */
         sphere = MeshTools::compile(MeshTools::duplicate(sphereData));
 
@@ -1468,11 +1468,11 @@ void MeshVisualizerGLTest::renderWireframe3D() {
 
             GL::Buffer vertexId;
             vertexId.setData(vertexIndex);
-            sphere.addVertexBuffer(std::move(vertexId), 0, MeshVisualizer3D::VertexIndex{});
+            sphere.addVertexBuffer(std::move(vertexId), 0, MeshVisualizerGL3D::VertexIndex{});
         }
     } else sphere = MeshTools::compile(sphereData);
 
-    MeshVisualizer3D{data.flags|MeshVisualizer3D::Flag::Wireframe}
+    MeshVisualizerGL3D{data.flags|MeshVisualizerGL3D::Flag::Wireframe}
         .setColor(0xffff99_rgbf)
         .setWireframeColor(0x9999ff_rgbf)
         .setWireframeWidth(data.width)
@@ -1492,7 +1492,7 @@ void MeshVisualizerGLTest::renderWireframe3D() {
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     {
-        CORRADE_EXPECT_FAIL_IF(data.flags & MeshVisualizer3D::Flag::NoGeometryShader,
+        CORRADE_EXPECT_FAIL_IF(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader,
             "Line width is currently not configurable w/o geometry shader.");
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /* SwiftShader has differently rasterized edges on four pixels. On a
@@ -1500,7 +1500,7 @@ void MeshVisualizerGLTest::renderWireframe3D() {
            the artifacts are bigger. */
         Float maxThreshold = 170.0f, meanThreshold = 0.327f;
         #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        if(!(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+        if(!(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
             meanThreshold = 2.166f;
         #endif
         #else
@@ -1515,7 +1515,7 @@ void MeshVisualizerGLTest::renderWireframe3D() {
     }
 
     /* Test it's not *too* off, at least */
-    if(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) {
+    if(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader) {
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /* SwiftShader has differently rasterized edges on four pixels. Apple
            A8 on more. */
@@ -1538,17 +1538,17 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if((data.flags2D & MeshVisualizer2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    if((data.flags2D & MeshVisualizerGL2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     /* Interestingly for PrimitiveIdFromVertexId gl_VertexID in SwiftShader
        works -- maybe it works only for nonindexed triangle draws? */
-    if(data.flags2D & MeshVisualizer2D::Flag::VertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+    if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         CORRADE_SKIP("gl_VertexID not supported");
 
     #ifndef MAGNUM_TARGET_WEBGL
-    if(data.flags2D & MeshVisualizer2D::Flag::PrimitiveId && !(data.flags2D >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId) &&
+    if(data.flags2D & MeshVisualizerGL2D::Flag::PrimitiveId && !(data.flags2D >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId) &&
         #ifndef MAGNUM_TARGET_GLES
         !GL::Context::current().isVersionSupported(GL::Version::GL320)
         #else
@@ -1557,17 +1557,17 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
     ) CORRADE_SKIP("gl_PrimitiveID not supported.");
 
     #ifndef MAGNUM_TARGET_GLES
-    if(data.flags2D & MeshVisualizer2D::Flag::Wireframe && !(data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    if(data.flags2D & MeshVisualizerGL2D::Flag::Wireframe && !(data.flags2D & MeshVisualizerGL2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
-    if(data.flags2D & MeshVisualizer2D::Flag::Wireframe && !(data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    if(data.flags2D & MeshVisualizerGL2D::Flag::Wireframe && !(data.flags2D & MeshVisualizerGL2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
     #endif
 
     Trade::MeshData circleData = Primitives::circle2DSolid(16);
 
-    if(data.flags2D & MeshVisualizer2D::Flag::InstancedObjectId) {
+    if(data.flags2D & MeshVisualizerGL2D::Flag::InstancedObjectId) {
         Containers::Array<UnsignedInt> ids{16};
         /* Each two faces share the same ID */
         for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
@@ -1580,10 +1580,10 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
 
     /* Duplicate the data if using primitive ID from vertex ID or if geometry
        shader is disabled */
-    if(data.flags2D >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId)
+    if(data.flags2D >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId)
         circleData = MeshTools::generateIndices(circleData);
-    if(data.flags2D >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId ||
-       data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader) {
+    if(data.flags2D >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId ||
+       data.flags2D & MeshVisualizerGL2D::Flag::NoGeometryShader) {
         if(circleData.primitive() != MeshPrimitive::Triangles)
             circleData = MeshTools::generateIndices(circleData);
         circleData = MeshTools::duplicate(circleData);
@@ -1591,7 +1591,7 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
 
     GL::Mesh circle = MeshTools::compile(circleData);
 
-    MeshVisualizer2D shader{data.flags2D};
+    MeshVisualizerGL2D shader{data.flags2D};
     shader
         /* Remove blue so it's clear the (wireframe) background and mapped ID
            colors got mixed */
@@ -1602,13 +1602,13 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
         .bindColorMapTexture(_colorMapTexture);
 
     /* OTOH the wireframe color should stay at full channels, not mixed */
-    if(data.flags3D & MeshVisualizer3D::Flag::Wireframe)
+    if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe)
         shader.setWireframeColor(0xffffff_rgbf);
 
     /* For vertex ID we don't want any repeat/wraparound as that causes
        disruptions in the gradient and test failures. There's 17 vertices
        also. */
-    if(data.flags2D & MeshVisualizer2D::Flag::VertexId)
+    if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId)
         shader.setColorMapTransformation(1.0f, -1.0f/17.0f);
     /* For object/primitive ID there's no gradient so a wraparound is okay.
        This should cover the first half of the colormap, in reverse order; for
@@ -1638,17 +1638,17 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if((data.flags3D & MeshVisualizer3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    if((data.flags3D & MeshVisualizerGL3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     /* Interestingly for PrimitiveIdFromVertexId gl_VertexID in SwiftShader
        works -- maybe it works only for nonindexed triangle draws? */
-    if(data.flags3D & MeshVisualizer3D::Flag::VertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+    if(data.flags3D & MeshVisualizerGL3D::Flag::VertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         CORRADE_SKIP("gl_VertexID not supported");
 
     #ifndef MAGNUM_TARGET_WEBGL
-    if(data.flags3D & MeshVisualizer3D::Flag::PrimitiveId && !(data.flags3D >= MeshVisualizer3D::Flag::PrimitiveIdFromVertexId) &&
+    if(data.flags3D & MeshVisualizerGL3D::Flag::PrimitiveId && !(data.flags3D >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId) &&
         #ifndef MAGNUM_TARGET_GLES
         !GL::Context::current().isVersionSupported(GL::Version::GL320)
         #else
@@ -1657,17 +1657,17 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
     ) CORRADE_SKIP("gl_PrimitiveID not supported.");
 
     #ifndef MAGNUM_TARGET_GLES
-    if(data.flags3D & MeshVisualizer3D::Flag::Wireframe && !(data.flags3D & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe && !(data.flags3D & MeshVisualizerGL3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
-    if(data.flags3D & MeshVisualizer3D::Flag::Wireframe && !(data.flags3D & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe && !(data.flags3D & MeshVisualizerGL3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
     #endif
 
     Trade::MeshData icosphereData = Primitives::icosphereSolid(1);
 
-    if(data.flags3D & MeshVisualizer3D::Flag::InstancedObjectId) {
+    if(data.flags3D & MeshVisualizerGL3D::Flag::InstancedObjectId) {
         Containers::Array<UnsignedInt> ids{80};
         /* Each four faces share the same ID */
         for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/4;
@@ -1680,13 +1680,13 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
 
     /* Duplicate the data if using primitive ID from vertex ID or if geometry
        shader is disabled */
-    if(data.flags3D >= MeshVisualizer3D::Flag::PrimitiveIdFromVertexId ||
-       data.flags3D & MeshVisualizer3D::Flag::NoGeometryShader)
+    if(data.flags3D >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId ||
+       data.flags3D & MeshVisualizerGL3D::Flag::NoGeometryShader)
         icosphereData = MeshTools::duplicate(icosphereData);
 
     GL::Mesh circle = MeshTools::compile(icosphereData);
 
-    MeshVisualizer3D shader{data.flags3D};
+    MeshVisualizerGL3D shader{data.flags3D};
     shader
         /* Remove blue so it's clear the wireframe background and mapped ID
            colors got mixed */
@@ -1701,12 +1701,12 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
         .bindColorMapTexture(_colorMapTexture);
 
     /* OTOH the wireframe color should stay at full channels, not mixed */
-    if(data.flags2D & MeshVisualizer2D::Flag::Wireframe)
+    if(data.flags2D & MeshVisualizerGL2D::Flag::Wireframe)
         shader.setWireframeColor(0xffffff_rgbf);
 
     /* For vertex ID we don't want any repeat/wraparound as that causes
        disruptions in the gradient and test failures. There's 42 vertices also. */
-    if(data.flags2D & MeshVisualizer2D::Flag::VertexId)
+    if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId)
         shader.setColorMapTransformation(1.0f, -1.0f/42.0f);
     /* For object/primitive ID there's no gradient so a wraparound is okay.
        This should cover the first half of the colormap, in reverse order; for
@@ -1728,7 +1728,7 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
        supported, the artifacts are bigger when wireframe is enabled. */
     Float maxThreshold = 138.4f, meanThreshold = 0.279f;
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-    if(data.flags3D & MeshVisualizer3D::Flag::Wireframe && !GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>()) {
+    if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe && !GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>()) {
         /* SwiftShader has a bit more rounding errors */
         maxThreshold = 238.0f;
         meanThreshold = 1.957f;
@@ -1746,15 +1746,15 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
 void MeshVisualizerGLTest::renderWireframe3DPerspective() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     GL::Mesh plane = MeshTools::compile(Primitives::planeSolid());
 
-    MeshVisualizer3D{MeshVisualizer3D::Flag::Wireframe}
+    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::Wireframe}
         .setWireframeWidth(8.0f)
         .setWireframeColor(0xff0000_rgbf)
         .setViewportSize({80, 80})
@@ -1790,10 +1790,10 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
@@ -1848,26 +1848,26 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
     GL::Mesh mesh{MeshPrimitive::TriangleStrip};
     mesh.setCount(4)
         .addVertexBuffer(vertices, 0,
-            Shaders::MeshVisualizer3D::Position{},
+            Shaders::MeshVisualizerGL3D::Position{},
             sizeof(Vector4), /* conditionally added below */
             sizeof(Vector3), /* conditionally added below */
-            Shaders::MeshVisualizer3D::Normal{});
-    if(data.flags & MeshVisualizer3D::Flag::BitangentFromTangentDirection && !data.skipBitagnentEvenIfEnabledInFlags)
+            Shaders::MeshVisualizerGL3D::Normal{});
+    if(data.flags & MeshVisualizerGL3D::Flag::BitangentFromTangentDirection && !data.skipBitagnentEvenIfEnabledInFlags)
         mesh.addVertexBuffer(vertices, 0,
             sizeof(Vector3),
-            Shaders::MeshVisualizer3D::Tangent4{},
+            Shaders::MeshVisualizerGL3D::Tangent4{},
             sizeof(Vector3),
             sizeof(Vector3));
-    else if(data.flags & MeshVisualizer3D::Flag::TangentDirection)
+    else if(data.flags & MeshVisualizerGL3D::Flag::TangentDirection)
         mesh.addVertexBuffer(vertices, 0,
             sizeof(Vector3),
-            Shaders::MeshVisualizer3D::Tangent{}, sizeof(Float), sizeof(Vector3),
+            Shaders::MeshVisualizerGL3D::Tangent{}, sizeof(Float), sizeof(Vector3),
             sizeof(Vector3));
-    if(data.flags & MeshVisualizer3D::Flag::BitangentDirection && !data.skipBitagnentEvenIfEnabledInFlags)
+    if(data.flags & MeshVisualizerGL3D::Flag::BitangentDirection && !data.skipBitagnentEvenIfEnabledInFlags)
         mesh.addVertexBuffer(vertices, 0,
             sizeof(Vector3),
             sizeof(Vector4),
-            Shaders::MeshVisualizer3D::Bitangent{},
+            Shaders::MeshVisualizerGL3D::Bitangent{},
             sizeof(Vector3));
 
     Matrix4 transformation = Matrix4::translation({0.0f, 0.5f, -3.5f})*
@@ -1875,7 +1875,7 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
         Matrix4::scaling(Vector3::yScale(1.5f));
 
     if(data.secondPassFlags) {
-        MeshVisualizer3D{data.secondPassFlags}
+        MeshVisualizerGL3D{data.secondPassFlags}
             /** @todo make this unnecessary */
             .setViewportSize({80, 80})
             .setTransformationMatrix(transformation)
@@ -1885,7 +1885,7 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
             .draw(mesh);
     }
 
-    MeshVisualizer3D shader{data.flags};
+    MeshVisualizerGL3D shader{data.flags};
     shader
         /** @todo make this unnecessary */
         .setViewportSize({80, 80})
@@ -1896,10 +1896,10 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
         .setLineLength(data.lineLength)
         .setLineWidth(data.lineWidth);
 
-    if(data.flags & MeshVisualizer3D::Flag::Wireframe) shader
+    if(data.flags & MeshVisualizerGL3D::Flag::Wireframe) shader
         .setColor(0xffff99_rgbf)
         .setWireframeColor(0x9999ff_rgbf);
-    if(data.flags & MeshVisualizer3D::Flag::PrimitiveId) shader
+    if(data.flags & MeshVisualizerGL3D::Flag::PrimitiveId) shader
         .bindColorMapTexture(_colorMapTexture)
         .setColorMapTransformation(1.0f/512.0f, 0.5f);
 

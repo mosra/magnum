@@ -11,9 +11,6 @@
 #
 #  Corrade_FOUND                  - Whether the base library was found
 #  CORRADE_LIB_SUFFIX_MODULE      - Path to CorradeLibSuffix.cmake module
-#  CORRADE_INCLUDE_INSTALL_PREFIX - Prefix where to put platform-independent
-#   include and other files, defaults to ``.``. If a relative path is used,
-#   it's relative to :variable:`CMAKE_INSTALL_PREFIX`.
 #
 # This command will try to find only the base library, not the optional
 # components, which are:
@@ -618,8 +615,9 @@ find_package_handle_standard_args(Corrade REQUIRED_VARS
 # Finalize the finding process
 include(${CORRADE_USE_MODULE})
 
-# Installation dirs
-set(CORRADE_INCLUDE_INSTALL_PREFIX "."
-    CACHE STRING "Prefix where to put platform-independent include and other files")
+set(CORRADE_INCLUDE_INSTALL_DIR include/Corrade)
 
-set(CORRADE_INCLUDE_INSTALL_DIR ${CORRADE_INCLUDE_INSTALL_PREFIX}/include/Corrade)
+if(CORRADE_BUILD_DEPRECATED AND CORRADE_INCLUDE_INSTALL_PREFIX AND NOT CORRADE_INCLUDE_INSTALL_PREFIX STREQUAL ".")
+    message(DEPRECATION "CORRADE_INCLUDE_INSTALL_PREFIX is obsolete as its primary use was for old Android NDK versions. Please switch to the NDK r19+ layout instead of using this variable and recreate your build directory to get rid of this warning.")
+    set(CORRADE_INCLUDE_INSTALL_DIR ${CORRADE_INCLUDE_INSTALL_PREFIX}/${CORRADE_INCLUDE_INSTALL_DIR})
+endif()

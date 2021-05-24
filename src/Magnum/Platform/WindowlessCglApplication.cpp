@@ -5,6 +5,7 @@
                 2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2013 <https://github.com/ArEnSc>
     Copyright © 2014 Travis Watkins <https://github.com/amaranth>
+    Copyright © 2021 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -31,11 +32,10 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 
 namespace Magnum { namespace Platform {
 
-WindowlessCglContext::WindowlessCglContext(const Configuration & configuration, GLContext*) {
+WindowlessCglContext::WindowlessCglContext(const Configuration& configuration, GLContext*) {
     int formatCount;
     CGLPixelFormatAttribute attributes32[] = {
         kCGLPFAAccelerated,
@@ -97,6 +97,18 @@ bool WindowlessCglContext::makeCurrent() {
     return false;
 }
 
+bool WindowlessCglContext::release() {
+    if(CGLSetCurrentContext(0) == kCGLNoError)
+        return true;
+
+    Error() << "Platform::WindowlessCglContext::release(): cannot release current context";
+    return false;
+}
+
+WindowlessCglContext::Configuration::Configuration() {
+    GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag::Windowless);
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments): WindowlessCglApplication{arguments, Configuration{}} {}
 #endif
@@ -105,7 +117,7 @@ WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{NoCreate, arguments.argc, arguments.argv} {}
 
 WindowlessCglApplication::~WindowlessCglApplication() = default;
 
@@ -116,10 +128,10 @@ void WindowlessCglApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessCglApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context.version() == GL::Version::None, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
 
-    WindowlessCglContext glContext{configuration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+    WindowlessCglContext glContext{configuration, &_context};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context.tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

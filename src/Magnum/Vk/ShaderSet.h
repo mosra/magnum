@@ -110,11 +110,11 @@ pipeline.
 @section Vk-ShaderSet-usage Usage
 
 Based on whether the shader set is for a rasterization, compute or ray tracing
-pipeline, you'll call @ref addShader() with all stages that the pipeline needs.
-At the very least you need to specify what stage is the shader for and the
-entrypoint name --- usually it'd be @cpp main() @ce, but there can be also
-SPIR-V shader modules with multiple entry points, which is why this parameter
-is needed.
+pipeline, you'll call @ref addShader() with all @ref Shader stages that the
+pipeline needs. At the very least you need to specify what stage is the shader
+for and the entrypoint name --- usually it'd be @cpp main() @ce, but there can
+be also SPIR-V shader modules with multiple entry points, which is why this
+parameter is needed.
 
 @snippet MagnumVk.cpp ShaderSet-usage
 

@@ -47,6 +47,7 @@ namespace Implementation { struct DeviceState; }
 @brief Image layout
 @m_since_latest
 
+Wraps @type_vk_keyword{ImageLayout}.
 @see @ref ImageCreateInfo
 @m_enum_values_as_keywords
 */
@@ -97,6 +98,8 @@ enum class ImageLayout: Int {
      *      While this layout will always work, it's recommended to pick a
      *      stricter layout where appropriate, as it may result in better
      *      performance.
+     *
+     * @see @ref ImageUsage::Storage
      */
     General = VK_IMAGE_LAYOUT_GENERAL,
 
@@ -109,6 +112,7 @@ enum class ImageLayout: Int {
      * usable for anything else.
      *
      * Only valid for images created with @ref ImageUsage::ColorAttachment.
+     * @see @ref SubpassDescription::setColorAttachments()
      */
     ColorAttachment = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 
@@ -118,6 +122,7 @@ enum class ImageLayout: Int {
      *
      * Only valid for images created with
      * @ref ImageUsage::DepthStencilAttachment.
+     * @see @ref SubpassDescription::setDepthStencilAttachment()
      */
     DepthStencilAttachment = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 
@@ -128,6 +133,9 @@ enum class ImageLayout: Int {
      *
      * Only valid for images created with @ref ImageUsage::Sampled or
      * @ref ImageUsage::InputAttachment.
+     * @see @ref DescriptorType::CombinedImageSampler,
+     *      @ref DescriptorType::SampledImage,
+     *      @ref DescriptorType::InputAttachment
      */
     ShaderReadOnly = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 
@@ -136,6 +144,8 @@ enum class ImageLayout: Int {
      * anything else.
      *
      * Only valid for images created with @ref ImageUsage::TransferSource.
+     * @see @ref CommandBuffer::copyImage(),
+     *      @ref CommandBuffer::copyImageToBuffer()
      */
     TransferSource = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 
@@ -144,6 +154,12 @@ enum class ImageLayout: Int {
      * anything else.
      *
      * Only valid for images created with @ref ImageUsage::TransferDestination.
+     * @see @ref CommandBuffer::clearColorImage(),
+     *      @ref CommandBuffer::clearDepthStencilImage(),
+     *      @ref CommandBuffer::clearDepthImage(),
+     *      @ref CommandBuffer::clearStencilImage(),
+     *      @ref CommandBuffer::copyImage(),
+     *      @ref CommandBuffer::copyBufferToImage()
      */
     TransferDestination = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 

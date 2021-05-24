@@ -64,8 +64,8 @@ vertices in the mesh is up to the user.
 template<class IndexType, class Vertex, class Interpolator> void subdivide(Containers::Array<IndexType>& indices, Containers::Array<Vertex>& vertices, Interpolator interpolator) {
     CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3", );
 
-    arrayResize(vertices, Containers::NoInit, vertices.size() + indices.size());
-    arrayResize(indices, Containers::NoInit, indices.size()*4);
+    arrayResize(vertices, NoInit, vertices.size() + indices.size());
+    arrayResize(indices, NoInit, indices.size()*4);
     subdivideInPlace(Containers::stridedArrayView(indices), Containers::stridedArrayView(vertices), interpolator);
 }
 

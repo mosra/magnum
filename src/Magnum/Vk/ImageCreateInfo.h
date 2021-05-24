@@ -58,14 +58,22 @@ enum class ImageUsage: UnsignedInt {
     /**
      * Source of a transfer command
      *
-     * @see @ref ImageLayout::TransferSource
+     * @see @ref ImageLayout::TransferSource,
+     *      @ref CommandBuffer::copyImage(),
+     *      @ref CommandBuffer::copyImageToBuffer()
      */
     TransferSource = VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
 
     /**
      * Destination of a transfer command
      *
-     * @see @ref ImageLayout::TransferDestination
+     * @see @ref ImageLayout::TransferDestination,
+     *      @ref CommandBuffer::clearColorImage(),
+     *      @ref CommandBuffer::clearDepthStencilImage(),
+     *      @ref CommandBuffer::clearDepthImage(),
+     *      @ref CommandBuffer::clearStencilImage(),
+     *      @ref CommandBuffer::copyImage(),
+     *      @ref CommandBuffer::copyBufferToImage()
      */
     TransferDestination = VK_IMAGE_USAGE_TRANSFER_DST_BIT,
 
@@ -74,7 +82,8 @@ enum class ImageUsage: UnsignedInt {
      *
      * Not all pixel formats support sampling, see @ref PixelFormat for more
      * information.
-     * @see @ref ImageLayout::ShaderReadOnly
+     * @see @ref ImageLayout::ShaderReadOnly,
+     *      @ref DescriptorType::SampledImage
      */
     Sampled = VK_IMAGE_USAGE_SAMPLED_BIT,
 
@@ -84,6 +93,8 @@ enum class ImageUsage: UnsignedInt {
      * Not all pixel formats support shader storage, with some requiring the
      * @ref DeviceFeature::ShaderStorageImageExtendedFormats feature. See
      * @ref PixelFormat for more information.
+     * @see @ref ImageLayout::General,
+     *      @ref DescriptorType::StorageImage
      */
     Storage = VK_IMAGE_USAGE_STORAGE_BIT,
 
@@ -92,7 +103,8 @@ enum class ImageUsage: UnsignedInt {
      *
      * Not all pixel formats support color attachment, see @ref PixelFormat for
      * more information.
-     * @see @ref ImageLayout::ColorAttachment
+     * @see @ref ImageLayout::ColorAttachment,
+     *      @ref SubpassDescription::setColorAttachments()
      */
     ColorAttachment = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 
@@ -103,7 +115,8 @@ enum class ImageUsage: UnsignedInt {
      * @ref PixelFormat::Depth32F and @ref PixelFormat::Depth24UnormStencil8UI
      * / @ref PixelFormat::Depth32FStencil8UI is guaranteed to support
      * depth/stencil attachment.
-     * @see @ref ImageLayout::DepthStencilAttachment
+     * @see @ref ImageLayout::DepthStencilAttachment,
+     *      @ref SubpassDescription::setDepthStencilAttachment()
      */
     DepthStencilAttachment = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
 
@@ -113,7 +126,9 @@ enum class ImageUsage: UnsignedInt {
     /**
      * Input attachment in a shader or framebuffer
      *
-     * @see @ref ImageLayout::ShaderReadOnly
+     * @see @ref ImageLayout::ShaderReadOnly,
+     *      @ref DescriptorType::InputAttachment,
+     *      @ref SubpassDescription::setInputAttachments()
      */
     InputAttachment = VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT
 };

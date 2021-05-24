@@ -282,7 +282,7 @@ Hello! This application is running on OpenGL 4.5 using GeForce GT 740M
 
 @image html getting-started-blue.png width=410px
 
-The barebones application accepts various @ref GL-Context-command-line "command-line arguments",
+The barebones application accepts various @ref GL-Context-usage-command-line "command-line arguments",
 pass `--magnum-help` to see them all. Depending on your platform, these can
 adjust HiDPI scaling, enable GPU command validation or for example switch to a
 different GPU device.

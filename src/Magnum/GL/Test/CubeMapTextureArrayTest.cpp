@@ -48,7 +48,7 @@ void CubeMapTextureArrayTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, CubeMapTextureArray>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, CubeMapTextureArray>::value);
 }
 
 void CubeMapTextureArrayTest::constructCopy() {

@@ -5,7 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
-    Copyright © 2018, 2019 Jonathan Hale <squareys@googlemail.com>
+    Copyright © 2018, 2019, 2020 Jonathan Hale <squareys@googlemail.com>
     Copyright © 2020 Pablo Escobar <mail@rvrs.in>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,13 +36,21 @@
 
 #include <string>
 #include <Corrade/Containers/ArrayView.h>
+
+/* Needed by the MAGNUM_EMSCRIPTENAPPLICATION_MAIN() macro */
+/** @todo use an Optional */
 #include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/GL.h"
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Platform/Platform.h"
+
+#ifdef MAGNUM_TARGET_GL
+#include <Corrade/Containers/Optional.h>
+
+#include "Magnum/Platform/GLContext.h"
+#endif
 
 #if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
 
@@ -902,7 +910,10 @@ class EmscriptenApplication {
 
         #ifdef MAGNUM_TARGET_GL
         EMSCRIPTEN_WEBGL_CONTEXT_HANDLE _glContext{};
-        Containers::Pointer<Platform::GLContext> _context;
+        /* Has to be in an Optional because we delay-create it in a constructor
+           with populated Arguments and it gets explicitly destroyed before the
+           GL context */
+        Containers::Optional<Platform::GLContext> _context;
         #endif
 
         /* These are saved from command-line arguments */
@@ -926,14 +937,17 @@ The created context is always with a double-buffered OpenGL context.
 @see @ref EmscriptenApplication(), @ref Configuration, @ref create(),
     @ref tryCreate()
 */
-class EmscriptenApplication::GLConfiguration {
+class EmscriptenApplication::GLConfiguration: public GL::Context::Configuration {
     public:
         /**
          * @brief Context flag
          *
+         * Includes also everything from @ref GL::Context::Configuration::Flag
+         * except for @relativeref{GL::Context::Configuration,Flag::Windowless},
+         * which is not meant to be enabled for windowed apps.
          * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          */
-        enum class Flag: Int {
+        enum class Flag: UnsignedLong {
             /**
              * Premultiplied alpha. If set, the alpha channel of the rendering
              * context will be treated as representing premultiplied alpha
@@ -987,7 +1001,31 @@ class EmscriptenApplication::GLConfiguration {
              * Proxy content to main thread. For more details, see the
              * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.proxyContextToMainThread).
              */
-            ProxyContextToMainThread = 1 << 7
+            ProxyContextToMainThread = 1 << 7,
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::QuietLog
+             * @m_since_latest
+             */
+            QuietLog = UnsignedLong(GL::Context::Configuration::Flag::QuietLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::VerboseLog
+             * @m_since_latest
+             */
+            VerboseLog = UnsignedLong(GL::Context::Configuration::Flag::VerboseLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidation
+             * @m_since_latest
+             */
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidationNoError
+             * @m_since_latest
+             */
+            GpuValidationNoError = UnsignedLong(GL::Context::Configuration::Flag::GpuValidationNoError)
         };
 
         /**
@@ -1000,17 +1038,21 @@ class EmscriptenApplication::GLConfiguration {
         /*implicit*/ GLConfiguration();
 
         /** @brief Context flags */
-        Flags flags() const { return _flags; }
+        Flags flags() const {
+            return Flag(UnsignedLong(GL::Context::Configuration::flags()));
+        }
 
         /**
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is @ref Flag::EnableExtensionsByDefault.
-         * @see @ref addFlags(), @ref clearFlags(), @ref GL::Context::flags()
+         * Default is @ref Flag::EnableExtensionsByDefault. To avoid clearing
+         * default flags by accident, prefer to use @ref addFlags() and
+         * @ref clearFlags() instead.
+         * @see @ref GL::Context::flags()
          */
         GLConfiguration& setFlags(Flags flags) {
-            _flags = flags;
+            GL::Context::Configuration::setFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -1023,7 +1065,7 @@ class EmscriptenApplication::GLConfiguration {
          * @see @ref clearFlags()
          */
         GLConfiguration& addFlags(Flags flags) {
-            _flags |= flags;
+            GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -1036,7 +1078,7 @@ class EmscriptenApplication::GLConfiguration {
          * @see @ref addFlags()
          */
         GLConfiguration& clearFlags(Flags flags) {
-            _flags &= ~flags;
+            GL::Context::Configuration::clearFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -1110,12 +1152,15 @@ class EmscriptenApplication::GLConfiguration {
             return *this;
         }
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(GLConfiguration)
+        #endif
+
     private:
         Vector4i _colorBufferSize;
         Int _depthBufferSize, _stencilBufferSize;
         Int _sampleCount;
-
-        Flags _flags{Flag::EnableExtensionsByDefault};
 };
 
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::GLConfiguration::Flags)
@@ -1230,9 +1275,42 @@ class EmscriptenApplication::Configuration {
         /**
          * @brief Set window flags
          * @return Reference to self (for method chaining)
+         *
+         * Default are none. To avoid clearing default flags by accident,
+         * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
+         * instead.
          */
         Configuration& setWindowFlags(WindowFlags windowFlags) {
             _windowFlags = windowFlags;
+            return *this;
+        }
+
+        /**
+         * @brief Add window flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setWindowFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearWindowFlags()
+         */
+        Configuration& addWindowFlags(WindowFlags flags) {
+            _windowFlags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear window flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setWindowFlags(), ANDs the inverse of @p flags with
+         * existing instead of replacing them. Useful for removing default
+         * flags.
+         * @see @ref addWindowFlags()
+         */
+        Configuration& clearWindowFlags(WindowFlags flags) {
+            _windowFlags &= ~flags;
             return *this;
         }
 

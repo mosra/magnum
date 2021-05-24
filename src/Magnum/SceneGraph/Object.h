@@ -104,7 +104,7 @@ class documentation or @ref compilation-speedup-hpp for more information.
 */
 template<class Transformation> class Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    , private Containers::LinkedList<Object<Transformation>>, private Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>
+    , private Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>, private Containers::LinkedList<Object<Transformation>>
     #endif
 {
     public:
@@ -126,8 +126,9 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /**
          * @brief Destructor
          *
-         * Removes itself from parent's children list and destroys all own
-         * children.
+         * Destroys all own children and then removes itself from the parent
+         * list. Features are then deleted in the @ref AbstractObject
+         * destructor.
          */
         ~Object();
 

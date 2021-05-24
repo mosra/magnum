@@ -76,7 +76,11 @@ MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, PipelineBindPoint value);
 @brief Pipeline
 @m_since_latest
 
-Wraps a @type_vk_keyword{Pipeline}.
+Wraps a @type_vk_keyword{Pipeline}. A pipeline contains all state for execution
+of either rasterization commands or a compute dispatch and among other things
+contains shaders, pipeline layout specifying how uniform buffers, samplers and
+other resources are bound, or a render pass describing how framebuffer
+attachments get used.
 
 @section Vk-Pipeline-creation-rasterization Rasterization pipeline creation
 

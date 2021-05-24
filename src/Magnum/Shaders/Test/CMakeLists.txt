@@ -23,21 +23,24 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(ShadersDistanceFieldVectorTest DistanceFieldVectorTest.cpp LIBRARIES MagnumShaders)
-corrade_add_test(ShadersFlatTest FlatTest.cpp LIBRARIES MagnumShaders)
-corrade_add_test(ShadersGenericTest GenericTest.cpp LIBRARIES MagnumShaders)
-corrade_add_test(ShadersMeshVisualizerTest MeshVisualizerTest.cpp LIBRARIES MagnumShaders)
-corrade_add_test(ShadersPhongTest PhongTest.cpp LIBRARIES MagnumShaders)
-corrade_add_test(ShadersVectorTest VectorTest.cpp LIBRARIES MagnumShaders)
-corrade_add_test(ShadersVertexColorTest VertexColorTest.cpp LIBRARIES MagnumShaders)
+# There's an underscore between GL and Test to disambiguate from GLTest, which
+# is a common suffix used to mark tests that need a GL context. Ugly, I know.
+corrade_add_test(ShadersDistanceFieldVectorGL_Test DistanceFieldVectorGL_Test.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersFlatGL_Test FlatGL_Test.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersGenericGL_Test GenericGL_Test.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersMeshVisualizerGL_Test MeshVisualizerGL_Test.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersPhongGL_Test PhongGL_Test.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersVectorGL_Test VectorGL_Test.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersVertexColorGL_Test VertexColorGL_Test.cpp LIBRARIES MagnumShaders)
 
 set_target_properties(
-    ShadersDistanceFieldVectorTest
-    ShadersFlatTest
-    ShadersMeshVisualizerTest
-    ShadersPhongTest
-    ShadersVectorTest
-    ShadersVertexColorTest
+    ShadersDistanceFieldVectorGL_Test
+    ShadersFlatGL_Test
+    ShadersGenericGL_Test
+    ShadersMeshVisualizerGL_Test
+    ShadersPhongGL_Test
+    ShadersVectorGL_Test
+    ShadersVertexColorGL_Test
     PROPERTIES FOLDER "Magnum/Shaders/Test")
 
 if(BUILD_GL_TESTS)

@@ -110,9 +110,9 @@ options passed to the application itself. Options that don't have this prefix
 are completely ignored, see documentation of the
 @ref Utility-Arguments-delegating "Utility::Arguments" class for details.
 Moreover, `--magnum`-prefixed options unrelated to audio (such as those defined
-by @ref GL-Context-command-line "GL::Context") are ignored as well. In order to
-provide a complete help and command-line argument diagnostic, you should
-instantiate this class *after* @ref GL::Context.
+by @ref GL-Context-usage-command-line "GL::Context") are ignored as well. In
+order to provide a complete help and command-line argument diagnostic, you
+should instantiate this class *after* @ref GL::Context.
  */
 class MAGNUM_AUDIO_EXPORT Context {
     public:

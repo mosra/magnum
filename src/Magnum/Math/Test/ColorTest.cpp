@@ -32,6 +32,7 @@
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Tweakable.h>
 #endif
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Half.h"
@@ -295,8 +296,8 @@ void ColorTest::construct() {
     CORRADE_COMPARE(c, Vector4(1.0f, 0.5f, 0.75f, 1.0f));
     CORRADE_COMPARE(d, Math::Vector4<UnsignedByte>(10, 25, 176, 255));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, Float, Float, Float>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Float, Float, Float, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color3, Float, Float, Float>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color4, Float, Float, Float, Float>::value);
 }
 
 void ColorTest::constructDefaultAlphaHalf() {
@@ -321,12 +322,12 @@ void ColorTest::constructDefault() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Color3>::value);
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Color4>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, ZeroInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color3, ZeroInitT>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color4, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Color3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Color4>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Color3>::value);
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Color4>::value);
 }
 
 void ColorTest::constructNoInit() {
@@ -342,12 +343,12 @@ void ColorTest::constructNoInit() {
         CORRADE_COMPARE(b, (Color4{1.0f, 0.5f, 0.75f, 0.5f}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, Magnum::NoInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color3, Magnum::NoInitT>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color4, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Color3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Color4>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Color3>::value);
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Color4>::value);
 }
 
 void ColorTest::constructOneValue() {
@@ -364,11 +365,11 @@ void ColorTest::constructOneValue() {
     CORRADE_COMPARE(d, Color4ub(67, 67, 67, 255));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Float, Color3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Float, Color4>::value));
+    CORRADE_VERIFY(!std::is_convertible<Float, Color3>::value);
+    CORRADE_VERIFY(!std::is_convertible<Float, Color4>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, Float>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Float, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color3, Float>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color4, Float, Float>::value);
 }
 
 void ColorTest::constructParts() {
@@ -384,7 +385,7 @@ void ColorTest::constructParts() {
     CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 1.0f));
     CORRADE_COMPARE(e, Color4ub(10, 25, 176, 255));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Color3, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color4, Color3, Float>::value);
 }
 
 void ColorTest::constructConversion() {
@@ -397,11 +398,11 @@ void ColorTest::constructConversion() {
     CORRADE_COMPARE(d, Color4ub(10, 12, 0, 5));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Color3, Color3ub>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Color4, Color4ub>::value));
+    CORRADE_VERIFY(!std::is_convertible<Color3, Color3ub>::value);
+    CORRADE_VERIFY(!std::is_convertible<Color4, Color4ub>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color3ub, Color3>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Color4ub>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color3ub, Color3>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color4, Color4ub>::value);
 }
 
 void ColorTest::constructPacking() {
@@ -429,6 +430,12 @@ void ColorTest::constructCopy() {
     Color4 d(c);
     CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 0.25f));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Color3>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Color4>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Color3>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Color4>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Color3>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Color4>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Color3>::value);
@@ -466,10 +473,10 @@ void ColorTest::convert() {
     CORRADE_COMPARE(d4.w, a4.w);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Vec3, Color3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Vec4, Color4>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Color3, Vec3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Color4, Vec4>::value));
+    CORRADE_VERIFY(!std::is_convertible<Vec3, Color3>::value);
+    CORRADE_VERIFY(!std::is_convertible<Vec4, Color4>::value);
+    CORRADE_VERIFY(!std::is_convertible<Color3, Vec3>::value);
+    CORRADE_VERIFY(!std::is_convertible<Color4, Vec4>::value);
 }
 
 void ColorTest::constructHsv() {
@@ -486,7 +493,7 @@ void ColorTest::constructHsv() {
     CORRADE_COMPARE(saturation, 0.5f);
     CORRADE_COMPARE(value, 0.9f);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<ColorHsv, Deg, Float, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<ColorHsv, Deg, Float, Float>::value);
 }
 
 void ColorTest::constructHsvDefault() {
@@ -501,10 +508,10 @@ void ColorTest::constructHsvDefault() {
     CORRADE_COMPARE(ca2, (ColorHsv{0.0_degf, 0.0f, 0.0f}));
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<ColorHsv>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<ColorHsv, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<ColorHsv, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, ColorHsv>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, ColorHsv>::value);
 }
 
 void ColorTest::constructHsvNoInit() {
@@ -517,10 +524,10 @@ void ColorTest::constructHsvNoInit() {
         CORRADE_COMPARE(a, (ColorHsv{135.0_degf, 0.5f, 0.9f}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<ColorHsv, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<ColorHsv, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, ColorHsv>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, ColorHsv>::value);
 }
 
 void ColorTest::constructHsvConversion() {
@@ -537,9 +544,9 @@ void ColorTest::constructHsvConversion() {
     CORRADE_COMPARE(cb, (ColorHsv(135.0_degf, 0.5f, 0.9f)));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ColorHsvd, ColorHsv>::value));
+    CORRADE_VERIFY(!std::is_convertible<ColorHsvd, ColorHsv>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<ColorHsv, ColorHsvd>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<ColorHsv, ColorHsvd>::value);
 }
 
 void ColorTest::constructHsvCopy() {
@@ -556,11 +563,11 @@ void ColorTest::constructHsvCopy() {
 }
 
 void ColorTest::compareHsv() {
-    CORRADE_VERIFY((ColorHsv{135.0_degf, 0.5f, 0.9f} == ColorHsv{135.0_degf + TypeTraits<Float>::epsilon()*100.0_degf, 0.5f, 0.9f}));
-    CORRADE_VERIFY((ColorHsv{135.0_degf, 0.5f, 0.9f} != ColorHsv{135.0_degf + TypeTraits<Float>::epsilon()*400.0_degf, 0.5f, 0.9f}));
+    CORRADE_VERIFY(ColorHsv{135.0_degf, 0.5f, 0.9f} == ColorHsv{135.0_degf + TypeTraits<Float>::epsilon()*100.0_degf, 0.5f, 0.9f});
+    CORRADE_VERIFY(ColorHsv{135.0_degf, 0.5f, 0.9f} != ColorHsv{135.0_degf + TypeTraits<Float>::epsilon()*400.0_degf, 0.5f, 0.9f});
 
-    CORRADE_VERIFY((ColorHsv{135.0_degf, 0.5f, 0.9f} == ColorHsv{135.0_degf, 0.5f, 0.9f + TypeTraits<Float>::epsilon()*0.5f}));
-    CORRADE_VERIFY((ColorHsv{135.0_degf, 0.5f, 0.9f} != ColorHsv{135.0_degf, 0.5f, 0.9f + TypeTraits<Float>::epsilon()*2.0f}));
+    CORRADE_VERIFY(ColorHsv{135.0_degf, 0.5f, 0.9f} == ColorHsv{135.0_degf, 0.5f, 0.9f + TypeTraits<Float>::epsilon()*0.5f});
+    CORRADE_VERIFY(ColorHsv{135.0_degf, 0.5f, 0.9f} != ColorHsv{135.0_degf, 0.5f, 0.9f + TypeTraits<Float>::epsilon()*2.0f});
 }
 
 void ColorTest::data() {
@@ -582,10 +589,10 @@ void ColorTest::data() {
     CORRADE_COMPARE(cc3a, (Color3{1.0f, 2.0f, 3.0f}));
     CORRADE_COMPARE(cc3b, (Color3{1.0f, 2.0f, 3.0f}));
 
-    CORRADE_VERIFY((std::is_same<decltype(c.xyz()), Color3&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(cc.xyz()), const Color3>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c.rgb()), Color3&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(cc.rgb()), const Color3>::value));
+    CORRADE_VERIFY(std::is_same<decltype(c.xyz()), Color3&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(cc.xyz()), const Color3>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c.rgb()), Color3&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(cc.rgb()), const Color3>::value);
 }
 
 void ColorTest::literals() {
@@ -1009,16 +1016,16 @@ void ColorTest::swizzleType() {
     constexpr Color4ub origColor4;
 
     constexpr auto a = Math::gather<'y', 'z', 'r'>(origColor3);
-    CORRADE_VERIFY((std::is_same<decltype(a), const Color3>::value));
+    CORRADE_VERIFY(std::is_same<decltype(a), const Color3>::value);
 
     constexpr auto b = Math::gather<'y', 'z', 'a'>(origColor4);
-    CORRADE_VERIFY((std::is_same<decltype(b), const Color3ub>::value));
+    CORRADE_VERIFY(std::is_same<decltype(b), const Color3ub>::value);
 
     constexpr auto c = Math::gather<'y', 'z', 'y', 'x'>(origColor3);
-    CORRADE_VERIFY((std::is_same<decltype(c), const Color4>::value));
+    CORRADE_VERIFY(std::is_same<decltype(c), const Color4>::value);
 
     constexpr auto d = Math::gather<'y', 'a', 'y', 'x'>(origColor4);
-    CORRADE_VERIFY((std::is_same<decltype(d), const Color4ub>::value));
+    CORRADE_VERIFY(std::is_same<decltype(d), const Color4ub>::value);
 }
 
 void ColorTest::debug() {

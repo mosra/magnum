@@ -61,8 +61,8 @@ bool spirvPatchSwiftShaderConflictingMultiEntrypointLocations(Containers::ArrayV
     /* Get locations and storage classes for all entrypoint interfaces */
     Containers::ArrayView<ShaderTools::Implementation::SpirvEntrypointInterface> vertexInterface, fragmentInterface;
     Containers::ArrayTuple interfaceData{
-        {Containers::ValueInit, vertexEntryPoint->interfaces.size(), vertexInterface},
-        {Containers::ValueInit, fragmentEntryPoint->interfaces.size(), fragmentInterface}
+        {ValueInit, vertexEntryPoint->interfaces.size(), vertexInterface},
+        {ValueInit, fragmentEntryPoint->interfaces.size(), fragmentInterface}
     };
     spirvEntrypointInterface(data, *vertexEntryPoint, vertexInterface);
     spirvEntrypointInterface(data, *fragmentEntryPoint, fragmentInterface);

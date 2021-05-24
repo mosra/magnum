@@ -28,6 +28,8 @@
 #define out varying
 #endif
 
+/* Uniforms */
+
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -58,6 +60,8 @@ uniform mediump mat3 textureMatrix
     ;
 #endif
 
+/* Inputs */
+
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
@@ -73,6 +77,8 @@ in highp vec4 position;
 layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
 #endif
 in mediump vec2 textureCoordinates;
+
+/* Outputs */
 
 out mediump vec2 interpolatedTextureCoordinates;
 

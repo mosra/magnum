@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Vector3.h" /* Vector3 used in Vector2Test::cross() */
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -107,7 +108,7 @@ void Vector2Test::construct() {
     constexpr Vector2 a = {1.5f, 2.5f};
     CORRADE_COMPARE(a, (Vector<2, Float>(1.5f, 2.5f)));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector2, Float, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector2, Float, Float>::value);
 }
 
 void Vector2Test::constructDefault() {
@@ -117,10 +118,10 @@ void Vector2Test::constructDefault() {
     CORRADE_COMPARE(b, Vector2(0.0f, 0.0f));
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Vector2>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector2, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector2, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Vector2>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Vector2>::value);
 }
 
 void Vector2Test::constructNoInit() {
@@ -133,10 +134,10 @@ void Vector2Test::constructNoInit() {
         CORRADE_COMPARE(a, (Vector2{1.5f, 2.5f}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector2, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector2, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Vector2>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Vector2>::value);
 }
 
 void Vector2Test::constructOneValue() {
@@ -144,9 +145,9 @@ void Vector2Test::constructOneValue() {
     CORRADE_COMPARE(a, Vector2(3.0f, 3.0f));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Float, Vector2>::value));
+    CORRADE_VERIFY(!std::is_convertible<Float, Vector2>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector2, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector2, Float>::value);
 }
 
 void Vector2Test::constructConversion() {
@@ -155,9 +156,9 @@ void Vector2Test::constructConversion() {
     CORRADE_COMPARE(b, Vector2i(1, 2));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Vector2, Vector2i>::value));
+    CORRADE_VERIFY(!std::is_convertible<Vector2, Vector2i>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector2, Vector2i>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector2, Vector2i>::value);
 }
 
 void Vector2Test::constructCopy() {
@@ -168,6 +169,10 @@ void Vector2Test::constructCopy() {
     Vector2 b(a);
     CORRADE_COMPARE(b, Vector2(1.5f, 2.5f));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Vector2>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Vector2>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Vector2>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Vector2>::value);
 }
@@ -184,8 +189,8 @@ void Vector2Test::convert() {
     CORRADE_COMPARE(d.y, a.y);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Vec2, Vector2>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Vector2, Vec2>::value));
+    CORRADE_VERIFY(!std::is_convertible<Vec2, Vector2>::value);
+    CORRADE_VERIFY(!std::is_convertible<Vector2, Vec2>::value);
 }
 
 void Vector2Test::access() {
@@ -252,7 +257,7 @@ void Vector2Test::strictWeakOrdering() {
 void Vector2Test::swizzleType() {
     constexpr Vector<4, Int> orig;
     constexpr auto a = gather<'y', 'a'>(orig);
-    CORRADE_VERIFY((std::is_same<decltype(a), const Vector2i>::value));
+    CORRADE_VERIFY(std::is_same<decltype(a), const Vector2i>::value);
 }
 
 void Vector2Test::debug() {

@@ -115,15 +115,9 @@ _n(RG16Unorm, LuminanceAlpha, UnsignedShort)
 _n(RGB16Unorm, RGB, UnsignedShort)
 _n(RGBA16Unorm, RGBA, UnsignedShort)
 #endif
-/* Available everywhere except ES2 (WebGL 1 has it) */
-#ifndef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_GLES
 _c(R16Snorm, Red, Short, R16Snorm)
 _c(RG16Snorm, RG, Short, RG16Snorm)
-_c(RGB16Snorm, RGB, Short, RGB16Snorm)
-_c(RGBA16Snorm, RGBA, Short, RGBA16Snorm)
-#elif defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL)
-_c(R16Snorm, Luminance, Short, R16Snorm)
-_c(RG16Snorm, LuminanceAlpha, Short, RG16Snorm)
 _c(RGB16Snorm, RGB, Short, RGB16Snorm)
 _c(RGBA16Snorm, RGBA, Short, RGBA16Snorm)
 #else
@@ -188,5 +182,33 @@ _n(R32F, Luminance, Float)
 _n(RG32F, LuminanceAlpha, Float)
 _n(RGB32F, RGB, Float)
 _n(RGBA32F, RGBA, Float)
+#endif
+#ifndef MAGNUM_TARGET_GLES2
+_c(Depth16Unorm, DepthComponent, UnsignedShort, DepthComponent16)
+_c(Depth24Unorm, DepthComponent, UnsignedInt, DepthComponent24)
+#else
+_n(Depth16Unorm, DepthComponent, UnsignedShort)
+_n(Depth24Unorm, DepthComponent, UnsignedInt)
+#endif
+#ifndef MAGNUM_TARGET_GLES2
+_c(Depth32F, DepthComponent, Float, DepthComponent32F)
+#else
+_s(Depth32F)
+#endif
+#ifndef MAGNUM_TARGET_WEBGL
+_c(Stencil8UI, StencilIndex, UnsignedByte, StencilIndex8)
+#else
+_s(Stencil8UI)
+#endif
+_s(Depth16UnormStencil8UI)
+#ifndef MAGNUM_TARGET_GLES2
+_c(Depth24UnormStencil8UI, DepthStencil, UnsignedInt248, Depth24Stencil8)
+#else
+_n(Depth24UnormStencil8UI, DepthStencil, UnsignedInt248)
+#endif
+#ifndef MAGNUM_TARGET_GLES2
+_c(Depth32FStencil8UI, DepthStencil, Float32UnsignedInt248Rev, Depth32FStencil8)
+#else
+_s(Depth32FStencil8UI)
 #endif
 #endif

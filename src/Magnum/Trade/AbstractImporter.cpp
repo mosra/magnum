@@ -104,6 +104,14 @@ void AbstractImporter::setFlags(ImporterFlags flags) {
 
 void AbstractImporter::doSetFlags(ImporterFlags) {}
 
+void AbstractImporter::addFlags(ImporterFlags flags) {
+    setFlags(_flags|flags);
+}
+
+void AbstractImporter::clearFlags(ImporterFlags flags) {
+    setFlags(_flags & ~flags);
+}
+
 void AbstractImporter::setFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* const userData) {
     CORRADE_ASSERT(!isOpened(), "Trade::AbstractImporter::setFileCallback(): can't be set while a file is opened", );
     CORRADE_ASSERT(features() & (ImporterFeature::FileCallback|ImporterFeature::OpenData), "Trade::AbstractImporter::setFileCallback(): importer supports neither loading from data nor via callbacks, callbacks can't be used", );

@@ -29,9 +29,12 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 
 #include "Implementation/Egl.h"
+
+#ifndef EGL_KHR_create_context_no_error
+#define EGL_CONTEXT_OPENGL_NO_ERROR_KHR 0x31B3
+#endif
 
 namespace Magnum { namespace Platform {
 
@@ -113,12 +116,16 @@ WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& co
         return;
     }
 
-    /* Request debug context if --magnum-gpu-validation is enabled */
+    /* Request debug context if GpuValidation is enabled either via the
+       configuration or via command-line */
     Configuration::Flags flags = configuration.flags();
-    if(magnumContext && magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+    if((flags & Configuration::Flag::GpuValidation) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         flags |= Configuration::Flag::Debug;
+    else if((flags & Configuration::Flag::GpuValidationNoError) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidationNoError))
+        flags |= Configuration::Flag::NoError;
 
-    const EGLint attributes[] = {
+    /** @todo needs a growable DynamicArray with disabled alloc or somesuch */
+    EGLint attributes[7] = {
         #ifdef MAGNUM_TARGET_GLES
         EGL_CONTEXT_CLIENT_VERSION,
             #ifdef MAGNUM_TARGET_GLES3
@@ -129,9 +136,23 @@ WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& co
             #error unsupported OpenGL ES version
             #endif
         #endif
-        EGL_CONTEXT_FLAGS_KHR, EGLint(flags),
+        /* Mask out the upper 32bits used for other flags */
+        EGL_CONTEXT_FLAGS_KHR, EGLint(UnsignedLong(flags) & 0xffffffffu),
+
+        /* The rest is added optionally */
+        EGL_NONE, EGL_NONE, /* EGL_CONTEXT_OPENGL_NO_ERROR_KHR */
         EGL_NONE
     };
+
+    std::size_t nextAttribute = 4;
+    CORRADE_INTERNAL_ASSERT(attributes[nextAttribute] == EGL_NONE);
+
+    if(flags & Configuration::Flag::NoError) {
+        attributes[nextAttribute++] = EGL_CONTEXT_OPENGL_NO_ERROR_KHR;
+        attributes[nextAttribute++] = true;
+    }
+
+    CORRADE_INTERNAL_ASSERT(nextAttribute < Containers::arraySize(attributes));
 
     if(!(_context = eglCreateContext(_display, config, configuration.sharedContext(), attributes))) {
         Error() << "Platform::WindowlessWindowsEglContext: cannot create EGL context:" << Implementation::eglErrorString(eglGetError());
@@ -173,6 +194,18 @@ bool WindowlessWindowsEglContext::makeCurrent() {
     return false;
 }
 
+bool WindowlessWindowsEglContext::release() {
+    if(eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT))
+        return true;
+
+    Error() << "Platform::WindowlessWindowsEglApplication::release(): cannot release current context:" << GetLastError();
+    return false;
+}
+
+WindowlessWindowsEglContext::Configuration::Configuration() {
+    GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag::Windowless);
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments): WindowlessWindowsEglApplication{arguments, Configuration{}} {}
 #endif
@@ -181,7 +214,7 @@ WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments
     createContext(configuration);
 }
 
-WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{NoCreate, arguments.argc, arguments.argv} {}
 
 void WindowlessWindowsEglApplication::createContext() { createContext({}); }
 
@@ -190,10 +223,10 @@ void WindowlessWindowsEglApplication::createContext(const Configuration& configu
 }
 
 bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWindowsEglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context.version() == Version::None, "Platform::WindowlessWindowsEglApplication::tryCreateContext(): context already created", false);
 
-    WindowlessWindowsEglContext glContext{configuration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+    WindowlessWindowsEglContext glContext{configuration, &_context};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context.tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

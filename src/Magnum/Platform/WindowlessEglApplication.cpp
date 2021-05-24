@@ -4,6 +4,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2020, 2021 Erik Wijmans <etw@gatech.edu>
+    Copyright © 2021 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -26,7 +27,7 @@
 
 #include "WindowlessEglApplication.h"
 
-#include <cstring>
+#include <cstring> /** @todo used by extensionSupported(), cleann up */
 #include <string>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Assert.h>
@@ -35,7 +36,6 @@
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 
 #include "Implementation/Egl.h"
 
@@ -67,9 +67,15 @@ typedef void* EGLObjectKHR;
 typedef void* EGLLabelKHR;
 typedef void (APIENTRY *EGLDEBUGPROCKHR)(EGLenum error, const char* command, EGLint messageType, EGLLabelKHR threadLabel, EGLLabelKHR objectLabel, const char* message);
 #endif
+
+#ifndef EGL_KHR_create_context_no_error
+#define EGL_CONTEXT_OPENGL_NO_ERROR_KHR 0x31B3
+#endif
 #endif
 
 namespace Magnum { namespace Platform {
+
+using namespace Containers::Literals;
 
 #ifndef MAGNUM_TARGET_WEBGL
 namespace {
@@ -99,6 +105,10 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     /* Otherwise find the display and initialize EGL */
     {
         #ifndef MAGNUM_TARGET_WEBGL
+        /* Display verbose log if specified either on command line or in
+           Configuration but not if the command line overrides it to be quiet */
+        const bool displayVerboseLog = ((configuration.flags() & Configuration::Flag::VerboseLog) && (!magnumContext || !(magnumContext->configurationFlags() & GL::Context::Configuration::Flag::QuietLog))) || (magnumContext && (magnumContext->configurationFlags() >= GL::Context::Configuration::Flag::VerboseLog));
+
         /* If relevant extensions are supported, try to find some display using
            those APIs, as that works reliably also when running headless. This
            would ideally use EGL 1.5 APIs but since we still want to support
@@ -126,7 +136,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                --magnum-gpu-validation is enabled because otherwise it's
                fucking hard to discover what's to blame (lost > 3 hours
                already). See class docs for more info and a workaround. */
-            if(extensionSupported(extensions, "EGL_KHR_debug") && magnumContext && (magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)) {
+            if(extensionSupported(extensions, "EGL_KHR_debug") && magnumContext && (magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation)) {
                 auto eglDebugMessageControl = reinterpret_cast<EGLint(*)(EGLDEBUGPROCKHR, const EGLAttrib*)>(eglGetProcAddress("eglDebugMessageControlKHR"));
                 const EGLAttrib debugAttribs[] = {
                     EGL_DEBUG_MSG_WARN_KHR, EGL_TRUE,
@@ -148,7 +158,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             if(!count) {
                 Error e;
                 e << "Platform::WindowlessEglApplication::tryCreateContext(): no EGL devices found, likely a driver issue";
-                if(!magnumContext || !(magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation))
+                if(!magnumContext || !(magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
                     e << Debug::nospace << "; enable --magnum-gpu-validation to see additional info";
                 return;
             }
@@ -189,10 +199,10 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                        well-behaved driver versions, eglQueryDeviceAttribEXT()
                        returns false instead of segfaulting. */
                     const char* const eglExtensions = eglQueryDeviceStringEXT(devices[selectedDevice], EGL_EXTENSIONS);
-                    if(eglGetError() == EGL_BAD_DEVICE_EXT && !magnumContext->isDriverWorkaroundDisabled("nv-egl-crashy-query-device-attrib"))
+                    if(eglGetError() == EGL_BAD_DEVICE_EXT && !magnumContext->isDriverWorkaroundDisabled("nv-egl-crashy-query-device-attrib"_s))
                         continue;
 
-                    if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog))
+                    if(displayVerboseLog)
                         Debug{} << "Platform::WindowlessEglApplication: eglQueryDeviceStringEXT(EGLDevice=" << Debug::nospace << selectedDevice << Debug::nospace << "):" << eglExtensions;
 
                     EGLAttrib cudaDeviceNumber;
@@ -207,7 +217,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                     return;
                 }
 
-                if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog)) {
+                if(displayVerboseLog) {
                     Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing EGL device" << selectedDevice << "for CUDA device" << configuration.cudaDevice();
                 }
 
@@ -215,7 +225,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             } else {
                 /* Print the log *before* calling eglQueryDevices() again, as
                    the `count` gets overwritten by it */
-                if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog)) {
+                if(displayVerboseLog) {
                     Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing device" << configuration.device();
                 }
 
@@ -297,16 +307,17 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     }
 
     #ifndef MAGNUM_TARGET_WEBGL
-    /* Request debug context if --magnum-gpu-validation is enabled */
+    /* Request debug context if GpuValidation is enabled either via the
+       configuration or via command-line */
     Configuration::Flags flags = configuration.flags();
-    if(magnumContext && magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+    if((flags & Configuration::Flag::GpuValidation) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         flags |= Configuration::Flag::Debug;
+    else if((flags & Configuration::Flag::GpuValidationNoError) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidationNoError))
+        flags |= Configuration::Flag::NoError;
     #endif
 
-    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_WEBGL)
-    const /* Is modified below to work around a SwiftShader limitation */
-    #endif
-    EGLint attributes[] = {
+    /** @todo needs a growable DynamicArray with disabled alloc or somesuch */
+    EGLint attributes[7] = {
         EGL_CONTEXT_CLIENT_VERSION,
             #ifdef MAGNUM_TARGET_GLES
             #if defined(MAGNUM_TARGET_GLES2) || (defined(CORRADE_TARGET_EMSCRIPTEN) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 13824)
@@ -323,31 +334,48 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             #else
             3,
             #endif
-        #ifndef MAGNUM_TARGET_WEBGL
-        /* Needs to be last because we're zeroing this out for SwiftShader (see
-           below) */
-        EGL_CONTEXT_FLAGS_KHR, EGLint(flags),
-        #endif
+
+        /* The rest is added optionally */
+        EGL_NONE, EGL_NONE, /* EGL_CONTEXT_OPENGL_NO_ERROR_KHR */
+        EGL_NONE, EGL_NONE, /* EGL_CONTEXT_FLAGS_KHR, need to be last */
         EGL_NONE
     };
 
-    #ifdef MAGNUM_TARGET_WEBGL
-    static_cast<void>(configuration);
-    static_cast<void>(magnumContext);
-    #endif
+    #ifndef MAGNUM_TARGET_WEBGL
+    std::size_t nextAttribute = 2;
+    CORRADE_INTERNAL_ASSERT(attributes[nextAttribute] == EGL_NONE);
 
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-    const char* version = eglQueryString(_display, EGL_VERSION);
+    if(flags & Configuration::Flag::NoError) {
+        attributes[nextAttribute++] = EGL_CONTEXT_OPENGL_NO_ERROR_KHR;
+        attributes[nextAttribute++] = true;
+    }
+
+    /* Context flags need to be last because we're zeroing this out for
+       SwiftShader (see below). Also mask out the upper 32bits used for other
+       flags. */
+    attributes[nextAttribute++] = EGL_CONTEXT_FLAGS_KHR;
+    attributes[nextAttribute++] = EGLint(UnsignedLong(flags) & 0xffffffffu);
+
+    CORRADE_INTERNAL_ASSERT(nextAttribute < Containers::arraySize(attributes));
+
+    #ifdef MAGNUM_TARGET_GLES
+    const Containers::StringView version = eglQueryString(_display, EGL_VERSION);
 
     /* SwiftShader 3.3.0.1 blows up on encountering EGL_CONTEXT_FLAGS_KHR with
        a zero value, so erase these. It also doesn't handle them as correct
        flags, but instead checks for the whole value, so a combination won't
        work either: https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L8104 */
-    if(!configuration.flags() && version && std::strstr(version, "SwiftShader") != nullptr && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"))) {
-        auto& contextFlags = attributes[Containers::arraySize(attributes) - 3];
+    if(!(UnsignedLong(flags) & 0xffffffffu) && version.contains("SwiftShader"_s) && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"_s))) {
+        auto& contextFlags = attributes[nextAttribute - 2];
         CORRADE_INTERNAL_ASSERT(contextFlags == EGL_CONTEXT_FLAGS_KHR);
         contextFlags = EGL_NONE;
     }
+    #endif
+    #endif
+
+    #ifdef MAGNUM_TARGET_WEBGL
+    static_cast<void>(configuration);
+    static_cast<void>(magnumContext);
     #endif
 
     _context = eglCreateContext(_display, config,
@@ -363,13 +391,30 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     if(!_context) {
         Warning{} << "Platform::WindowlessEglContext: cannot create core context, falling back to compatibility context:" << Implementation::eglErrorString(eglGetError());
 
-        const EGLint fallbackAttributes[] = {
+        /** @todo duplicated three times, do better */
+        EGLint fallbackAttributes[5] = {
             /* Discard the ForwardCompatible flag for the fallback. Having it
                set makes the fallback context creation fail on Mesa's Zink
-               (which is just 2.1) and I assume on others as well. */
-            EGL_CONTEXT_FLAGS_KHR, GLint(flags & ~Configuration::Flag::ForwardCompatible),
+               (which is just 2.1) and I assume on others as well.
+
+               Also mask out the upper 32bits used for other flags. */
+            EGL_CONTEXT_FLAGS_KHR, EGLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
+
+            /* The rest is added dynamically */
+            EGL_NONE, EGL_NONE, /* EGL_CONTEXT_OPENGL_NO_ERROR_KHR */
             EGL_NONE
         };
+
+        std::size_t nextFallbackAttribute = 2;
+        CORRADE_INTERNAL_ASSERT(fallbackAttributes[nextFallbackAttribute] == EGL_NONE);
+
+        if(flags & Configuration::Flag::NoError) {
+            fallbackAttributes[nextFallbackAttribute++] = EGL_CONTEXT_OPENGL_NO_ERROR_KHR;
+            fallbackAttributes[nextFallbackAttribute++] = true;
+        }
+
+        CORRADE_INTERNAL_ASSERT(nextFallbackAttribute < Containers::arraySize(fallbackAttributes));
+
         _context = eglCreateContext(_display, config, configuration.sharedContext(), fallbackAttributes);
 
     /* Fall back to (forward compatible) GL 2.1 if we are on binary NVidia/AMD
@@ -390,26 +435,40 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
 
         /* The workaround check is the last so it doesn't appear in workaround
            list on unrelated drivers */
-        constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
-        constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
-        const char* const vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-        /* If context creation fails *really bad*, glGetString() may actually
-           return nullptr. Check for that to avoid crashes deep inside
-           strncmp() */
-        if(vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
-            std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0) &&
-            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context")))
+        const Containers::StringView vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+        /* Unlike GLFW/SDL2/WGL there's no Intel here because EGL doesn't work
+           with native drivers on Windows, only though ANGLE etc, and those
+           don't suffer from this issue. */
+        if((vendorString == "NVIDIA Corporation"_s ||
+            vendorString == "ATI Technologies Inc."_s)
+           && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s)))
         {
             /* Destroy the core context and create a compatibility one */
             eglDestroyContext(_display, _context);
-            const GLint fallbackAttributes[] = {
+
+            /** @todo duplicated three times, do better */
+            GLint fallbackAttributes[5] = {
                 /* Discard the ForwardCompatible flag for the fallback.
                    Compared to the above case of a 2.1 fallback it's not really
                    needed here (AFAIK it works in both cases), but let's be
-                   consistent. */
-                EGL_CONTEXT_FLAGS_KHR, GLint(flags & ~Configuration::Flag::ForwardCompatible),
+                   consistent. Also mask out the upper 32bits used for other
+                   flags. */
+                EGL_CONTEXT_FLAGS_KHR, EGLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
+
+                /* The rest is added dynamically */
+                EGL_NONE, EGL_NONE, /* EGL_CONTEXT_OPENGL_NO_ERROR_KHR */
                 EGL_NONE
             };
+            std::size_t nextFallbackAttribute = 2;
+            CORRADE_INTERNAL_ASSERT(fallbackAttributes[nextFallbackAttribute] == EGL_NONE);
+
+            if(flags & Configuration::Flag::NoError) {
+                fallbackAttributes[nextFallbackAttribute++] = EGL_CONTEXT_OPENGL_NO_ERROR_KHR;
+                fallbackAttributes[nextFallbackAttribute++] = true;
+            }
+
+            CORRADE_INTERNAL_ASSERT(nextFallbackAttribute < Containers::arraySize(fallbackAttributes));
+
             _context = eglCreateContext(_display, config, configuration.sharedContext(), fallbackAttributes);
         }
 
@@ -429,7 +488,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     /* SwiftShader 3.3.0.1 needs some pbuffer, otherwise it crashes somewhere
        deep inside when making the context current */
-    if(version && std::strstr(version, "SwiftShader") != nullptr && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-egl-context-needs-pbuffer"))) {
+    if(version.contains("SwiftShader"_s) && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-egl-context-needs-pbuffer"_s))) {
         EGLint surfaceAttributes[] = {
             EGL_WIDTH, 32,
             EGL_HEIGHT, 32,
@@ -503,17 +562,28 @@ bool WindowlessEglContext::makeCurrent() {
         return true;
     #endif
 
-    Error() << "Platform::WindowlessEglApplication::tryCreateContext(): cannot make context current:" << Implementation::eglErrorString(eglGetError());
+    Error() << "Platform::WindowlessEglApplication::makeCurrent(): cannot make context current:" << Implementation::eglErrorString(eglGetError());
+    return false;
+}
+
+bool WindowlessEglContext::release() {
+    if(eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT))
+        return true;
+
+    Error() << "Platform::WindowlessEglApplication::release(): cannot release current context:" << Implementation::eglErrorString(eglGetError());
     return false;
 }
 
 WindowlessEglContext::Configuration::Configuration()
-    #ifndef MAGNUM_TARGET_GLES
-    : _flags{Flag::ForwardCompatible}, _device{}
-    #elif !defined(MAGNUM_TARGET_WEBGL)
-    : _flags{}, _device{}
+    #ifndef MAGNUM_TARGET_WEBGL
+    : _device{}
     #endif
-    {}
+{
+    GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag::Windowless);
+    #ifndef MAGNUM_TARGET_GLES
+    addFlags(Flag::ForwardCompatible);
+    #endif
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments): WindowlessEglApplication{arguments, Configuration{}} {}
@@ -531,7 +601,7 @@ WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments, N
         .addOption("cuda-device", "").setHelp("cuda-device", "CUDA device to use. Takes precedence over --magnum-device.", "N")
         .setFromEnvironment("cuda-device");
     #endif
-    _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});
+    _context.emplace(NoCreate, args, arguments.argc, arguments.argv);
 
     #ifndef MAGNUM_TARGET_WEBGL
     if(args.value("device").empty())
@@ -559,11 +629,13 @@ bool WindowlessEglApplication::tryCreateContext(const Configuration& configurati
     Configuration mergedConfiguration{configuration};
     #ifndef MAGNUM_TARGET_WEBGL
     if(!mergedConfiguration.device())
-        mergedConfiguration.setDevice(_commandLineDevice).setCudaDevice(_commandLineCudaDevice);
+        mergedConfiguration
+            .setDevice(_commandLineDevice)
+            .setCudaDevice(_commandLineCudaDevice);
     #endif
 
-    WindowlessEglContext glContext{mergedConfiguration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+    WindowlessEglContext glContext{mergedConfiguration, &*_context};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

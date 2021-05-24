@@ -40,12 +40,10 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <Corrade/Containers/EnumSet.h>
-#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/OpenGL.h"
-#include "Magnum/Platform/Platform.h"
+#include "Magnum/Platform/GLContext.h"
 
 namespace Magnum { namespace Platform {
 
@@ -115,9 +113,22 @@ class WindowlessWindowsEglContext {
          * @brief Make the context current
          *
          * Prints error message and returns @cpp false @ce on failure,
-         * otherwise returns @cpp true @ce.
+         * otherwise returns @cpp true @ce. If the context is current on
+         * another thread, you have to @ref release() it there first --- an
+         * OpenGL context can't be current in multiple threads at the same
+         * time.
          */
         bool makeCurrent();
+
+        /**
+         * @brief Release current context
+         * @m_since_latest
+         *
+         * Releases a context previously made current using @ref makeCurrent().
+         * Prints error message and returns @cpp false @ce on failure,
+         * otherwise returns @cpp true @ce.
+         */
+        bool release();
 
         /**
          * @brief Underlying OpenGL context
@@ -145,20 +156,61 @@ class WindowlessWindowsEglContext {
     @ref WindowlessWindowsEglApplication::createContext(),
     @ref WindowlessWindowsEglApplication::tryCreateContext()
 */
-class WindowlessWindowsEglContext::Configuration {
+class WindowlessWindowsEglContext::Configuration: public GL::Context::Configuration {
     public:
         /**
          * @brief Context flag
          *
+         * Includes also everything from @ref GL::Context::Configuration::Flag
+         * except for @relativeref{GL::Context::Configuration,Flag::Windowless},
+         * which is enabled implicitly by default.
          * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          */
-        enum class Flag: int {
+        enum class Flag: UnsignedLong {
             /**
-             * Debug context. Enabled automatically if the
-             * `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
-             * is present.
+             * Debug context. Enabled automatically if supported by the driver
+             * and the @ref Flag::GpuValidation flag is set or if the
+             * `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
+             * is set to `on`.
              */
-            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR
+            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
+
+            /**
+             * Context without error reporting. Might result in better
+             * performance, but situations that would have generated errors
+             * instead cause undefined behavior. Enabled automatically if
+             * supported by the driver and the @ref Flag::GpuValidationNoError
+             * flag is set or if the `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
+             * is set to `no-error`.
+             * @m_since_latest
+             */
+            /* Treated as a separate attribute and not a flag in EGL, thus
+               handling manually. */
+            NoError = 1ull << 32,
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::QuietLog
+             * @m_since_latest
+             */
+            QuietLog = UnsignedLong(GL::Context::Configuration::Flag::QuietLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::VerboseLog
+             * @m_since_latest
+             */
+            VerboseLog = UnsignedLong(GL::Context::Configuration::Flag::VerboseLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidation
+             * @m_since_latest
+             */
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidationNoError
+             * @m_since_latest
+             */
+            GpuValidationNoError = UnsignedLong(GL::Context::Configuration::Flag::GpuValidationNoError)
         };
 
         /**
@@ -166,25 +218,25 @@ class WindowlessWindowsEglContext::Configuration {
          *
          * @see @ref setFlags(), @ref Context::Flags
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR> Flags;
-        #else
         typedef Containers::EnumSet<Flag> Flags;
-        #endif
 
-        constexpr /*implicit*/ Configuration() {}
+        /*implicit*/ Configuration();
 
         /** @brief Context flags */
-        Flags flags() const { return _flags; }
+        Flags flags() const {
+            return Flag(UnsignedLong(GL::Context::Configuration::flags()));
+        }
 
         /**
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is no flag. See also @ref GL::Context::flags().
+         * Default is no flag. To avoid clearing default flags by accident,
+         * prefer to use @ref addFlags() and @ref clearFlags() instead.
+         * @see @ref GL::Context::flags()
          */
         Configuration& setFlags(Flags flags) {
-            _flags = flags;
+            GL::Context::Configuration::setFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -197,7 +249,7 @@ class WindowlessWindowsEglContext::Configuration {
          * @see @ref clearFlags()
          */
         Configuration& addFlags(Flags flags) {
-            _flags |= flags;
+            GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -210,7 +262,7 @@ class WindowlessWindowsEglContext::Configuration {
          * @see @ref addFlags()
          */
         Configuration& clearFlags(Flags flags) {
-            _flags &= ~flags;
+            GL::Context::Configuration::clearFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -238,8 +290,12 @@ class WindowlessWindowsEglContext::Configuration {
          */
         EGLContext sharedContext() const { return _sharedContext; }
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(Configuration)
+        #endif
+
     private:
-        Flags _flags;
         EGLContext _sharedContext = EGL_NO_CONTEXT;
 };
 
@@ -433,7 +489,7 @@ class WindowlessWindowsEglApplication {
 
     private:
         WindowlessWindowsEglContext _glContext;
-        Containers::Pointer<Platform::GLContext> _context;
+        Platform::GLContext _context;
 };
 
 /** @hideinitializer

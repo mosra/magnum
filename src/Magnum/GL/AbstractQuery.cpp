@@ -37,7 +37,7 @@
 namespace Magnum { namespace GL {
 
 AbstractQuery::AbstractQuery(GLenum target): _target{target}, _flags{ObjectFlag::DeleteOnDestruction} {
-    (this->*Context::current().state().query->createImplementation)();
+    (this->*Context::current().state().query.createImplementation)();
 }
 
 AbstractQuery::~AbstractQuery() {
@@ -93,17 +93,17 @@ void AbstractQuery::createImplementationDSAExceptPipelineStats() {
 #ifndef MAGNUM_TARGET_WEBGL
 std::string AbstractQuery::label() const {
     #ifndef MAGNUM_TARGET_GLES2
-    return Context::current().state().debug->getLabelImplementation(GL_QUERY, _id);
+    return Context::current().state().debug.getLabelImplementation(GL_QUERY, _id);
     #else
-    return Context::current().state().debug->getLabelImplementation(GL_QUERY_KHR, _id);
+    return Context::current().state().debug.getLabelImplementation(GL_QUERY_KHR, _id);
     #endif
 }
 
 AbstractQuery& AbstractQuery::setLabelInternal(const Containers::ArrayView<const char> label) {
     #ifndef MAGNUM_TARGET_GLES2
-    Context::current().state().debug->labelImplementation(GL_QUERY, _id, label);
+    Context::current().state().debug.labelImplementation(GL_QUERY, _id, label);
     #else
-    Context::current().state().debug->labelImplementation(GL_QUERY_KHR, _id, label);
+    Context::current().state().debug.labelImplementation(GL_QUERY_KHR, _id, label);
     #endif
     return *this;
 }

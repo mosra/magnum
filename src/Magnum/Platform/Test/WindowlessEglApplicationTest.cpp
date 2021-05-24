@@ -23,14 +23,40 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/Arguments.h>
+
 #include "Magnum/Platform/WindowlessEglApplication.h"
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct WindowlessEglApplicationTest: Platform::WindowlessApplication {
-    explicit WindowlessEglApplicationTest(const Arguments& arguments): Platform::WindowlessApplication{arguments} {}
+    explicit WindowlessEglApplicationTest(const Arguments& arguments);
     int exec() override { return 0; }
 };
+
+WindowlessEglApplicationTest::WindowlessEglApplicationTest(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {
+    Utility::Arguments args;
+    args.addSkippedPrefix("magnum", "engine-specific options")
+        .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
+        .addBooleanOption("verbose").setHelp("verbose", "like --magnum-log verbose, but specified via a Context::Configuration instead")
+        .addBooleanOption("gpu-validation").setHelp("gpu-validation", "like --magnum-gpu-validation, but specified via a Context::Configuration instead")
+        .parse(arguments.argc, arguments.argv);
+
+    Configuration conf;
+    if(args.isSet("quiet"))
+        conf.addFlags(Configuration::Flag::QuietLog);
+    /* Additional EGL-specific output is printed by the app, verify we take
+       the Configuration option into account as well, not just command line */
+    if(args.isSet("verbose"))
+        conf.addFlags(Configuration::Flag::VerboseLog);
+    if(args.isSet("gpu-validation"))
+        conf.addFlags(Configuration::Flag::GpuValidation);
+    createContext(conf);
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    Debug{} << "GL context flags:" << GL::Context::current().flags();
+    #endif
+}
 
 }}}}
 

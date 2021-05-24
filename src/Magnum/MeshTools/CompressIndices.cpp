@@ -127,7 +127,7 @@ Trade::MeshData compressIndices(Trade::MeshData&& data, MeshIndexType atLeast) {
     if(data.vertexDataFlags() & Trade::DataFlag::Owned)
         vertexData = data.releaseVertexData();
     else {
-        vertexData = Containers::Array<char>{Containers::NoInit, data.vertexData().size()};
+        vertexData = Containers::Array<char>{NoInit, data.vertexData().size()};
         Utility::copy(data.vertexData(), vertexData);
     }
 

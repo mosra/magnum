@@ -48,7 +48,7 @@
 
 /* This header is included only privately and doesn't introduce any linker
    dependency, thus it's completely safe */
-#include "Magnum/Shaders/Generic.h"
+#include "Magnum/Shaders/GenericGL.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -88,34 +88,34 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
             case Trade::MeshAttribute::Position:
                 /* Pick 3D position always, the format will properly reduce it
                    to a 2-component version if needed */
-                attribute.emplace(Shaders::Generic3D::Position{}, format);
+                attribute.emplace(Shaders::GenericGL3D::Position{}, format);
                 break;
             case Trade::MeshAttribute::TextureCoordinates:
                 /** @todo have Generic2D derived from Generic that has all
                     attribute definitions common for 2D and 3D */
-                attribute.emplace(Shaders::Generic2D::TextureCoordinates{}, format);
+                attribute.emplace(Shaders::GenericGL2D::TextureCoordinates{}, format);
                 break;
             case Trade::MeshAttribute::Color:
                 /** @todo have Generic2D derived from Generic that has all
                     attribute definitions common for 2D and 3D */
                 /* Pick Color4 always, the format will properly reduce it to a
                    3-component version if needed */
-                attribute.emplace(Shaders::Generic2D::Color4{}, format);
+                attribute.emplace(Shaders::GenericGL2D::Color4{}, format);
                 break;
             case Trade::MeshAttribute::Tangent:
                 /* Pick Tangent4 always, the format will properly reduce it to
                    a 3-component version if needed */
-                attribute.emplace(Shaders::Generic3D::Tangent4{}, format);
+                attribute.emplace(Shaders::GenericGL3D::Tangent4{}, format);
                 break;
             case Trade::MeshAttribute::Bitangent:
-                attribute.emplace(Shaders::Generic3D::Bitangent{}, format);
+                attribute.emplace(Shaders::GenericGL3D::Bitangent{}, format);
                 break;
             case Trade::MeshAttribute::Normal:
-                attribute.emplace(Shaders::Generic3D::Normal{}, format);
+                attribute.emplace(Shaders::GenericGL3D::Normal{}, format);
                 break;
             #ifndef MAGNUM_TARGET_GLES2
             case Trade::MeshAttribute::ObjectId:
-                attribute.emplace(Shaders::Generic3D::ObjectId{}, format);
+                attribute.emplace(Shaders::GenericGL3D::ObjectId{}, format);
                 break;
             #endif
 

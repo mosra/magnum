@@ -588,8 +588,8 @@ void FunctionsTest::trigonometric() {
 
 void FunctionsTest::trigonometricWithBase() {
     /* Verify that the functions can be called with Unit<Deg, T> and Unit<Rad, T> */
-    CORRADE_VERIFY((std::is_same<decltype(2*15.0_degf), Unit<Math::Deg, Float>>::value));
-    CORRADE_VERIFY((std::is_same<decltype(2*Rad(Constants::pi()/12)), Unit<Math::Rad, Float>>::value));
+    CORRADE_VERIFY(std::is_same<decltype(2*15.0_degf), Unit<Math::Deg, Float>>::value);
+    CORRADE_VERIFY(std::is_same<decltype(2*Rad(Constants::pi()/12)), Unit<Math::Rad, Float>>::value);
 
     CORRADE_COMPARE(Math::sin(2*15.0_degf), 0.5f);
     CORRADE_COMPARE(Math::sin(2*Rad(Constants::pi()/12)), 0.5f);

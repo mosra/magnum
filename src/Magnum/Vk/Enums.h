@@ -25,21 +25,31 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Function @ref Magnum::Vk::hasVkPrimitiveTopology(), @ref Magnum::Vk::vkPrimitiveTopology(), @ref Magnum::Vk::hasVkIndexType(), @ref Magnum::Vk::vkIndexType(), @ref Magnum::Vk::hasVkFormat(), @ref Magnum::Vk::vkFormat(), @ref Magnum::Vk::vkFilter(), @ref Magnum::Vk::vkSamplerMipmapMode(), @ref Magnum::Vk::hasVkSamplerAddressMode(), @ref Magnum::Vk::vkSamplerAddressMode()
+ * @m_deprecated_since_latest All functionality in this header has been
+ *      deprecated and moved elsewhere. Use headers corresponding to the
+ *      suggested replacement APIs instead.
  */
+#endif
 
-#include "Magnum/Array.h"
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/Array.h" /* That's fine, we're deprecated too */
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/Vk/Vulkan.h"
 #include "Magnum/Vk/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
+
+#ifndef _MAGNUM_NO_DEPRECATED_VK_ENUMS
+CORRADE_DEPRECATED_FILE("use headers corresponding to the suggested replacement APIs instead")
 #endif
 
 namespace Magnum { namespace Vk {
 
-#ifdef MAGNUM_BUILD_DEPRECATED
 /**
  * @brief @copybrief hasMeshPrimitive()
  * @m_deprecated_since_latest Use @ref hasMeshPrimitive() instead.
@@ -103,57 +113,46 @@ CORRADE_DEPRECATED("use pixelFormat() instead") MAGNUM_VK_EXPORT VkFormat vkForm
  *      instead.
  */
 CORRADE_DEPRECATED("use pixelFormat() instead") MAGNUM_VK_EXPORT VkFormat vkFormat(Magnum::CompressedPixelFormat format);
-#endif
 
 /**
-@brief Convert generic sampler filter to Vulkan filter
-
-@see @ref vkSamplerMipmapMode(), @ref vkSamplerAddressMode()
-*/
-MAGNUM_VK_EXPORT VkFilter vkFilter(Magnum::SamplerFilter filter);
-
-/**
-@brief Convert generic sampler mipomap mode to Vulkan sampler mipmap mode
-
-Vulkan doesn't support the @ref SamplerMipmap::Base value directly, instead
-@val_vk{SAMPLER_MIPMAP_MODE_NEAREST,SamplerMipmapMode} is used and you have to
-configure the sampler to use just a single mipmap level.
-@see @ref vkFilter(), @ref vkSamplerAddressMode()
-*/
-MAGNUM_VK_EXPORT VkSamplerMipmapMode vkSamplerMipmapMode(Magnum::SamplerMipmap mipmap);
+ * @brief @copybrief samplerFilter()
+ * @m_deprecated_since_latest Use @ref samplerFilter() instead.
+ */
+CORRADE_DEPRECATED("use samplerFilter() instead") MAGNUM_VK_EXPORT VkFilter vkFilter(Magnum::SamplerFilter filter);
 
 /**
-@brief Check availability of a generic sampler wrapping mode
-
-Returns @cpp false @ce if Vulkan doesn't support such wrapping, @cpp true @ce
-otherwise. The @p wrapping value is expected to be valid.
-
-@note Support of some modes depends on presence of a particular Vulkan
-    extension. Such check is outside of the scope of this function and you are
-    expected to verify extension availability before using such mode.
-
-@see @ref vkSamplerAddressMode(), @ref vkFilter(), @ref vkSamplerMipmapMode()
-*/
-MAGNUM_VK_EXPORT bool hasVkSamplerAddressMode(Magnum::SamplerWrapping wrapping);
+ * @brief @copybrief samplerMipmap()
+ * @m_deprecated_since_latest Use @ref samplerMipmap() instead.
+ */
+CORRADE_DEPRECATED("use samplerMipmap() instead") MAGNUM_VK_EXPORT VkSamplerMipmapMode vkSamplerMipmapMode(Magnum::SamplerMipmap mipmap);
 
 /**
-@brief Convert generic sampler filter mode to Vulkan sampler address mode
+ * @brief Check availability of a generic sampler wrapping mode
+ * @m_deprecated_since_latest All generic sampler wrapping modes are available
+ *      in Vulkan.
+ */
+CORRADE_DEPRECATED("all generic sampler wrapping modes are available in Vulkan") MAGNUM_VK_EXPORT bool hasVkSamplerAddressMode(Magnum::SamplerWrapping wrapping);
 
-Not all generic sampler wrapping modes have a Vulkan equivalent and this
-function expects that given mode is available. Use @ref hasVkSamplerAddressMode()
-to query availability of given mode.
-@see @ref vkFilter(), @ref vkSamplerAddressMode()
-*/
-MAGNUM_VK_EXPORT VkSamplerAddressMode vkSamplerAddressMode(Magnum::SamplerWrapping wrapping);
+/**
+ * @brief @copybrief samplerWrapping()
+ * @m_deprecated_since_latest Use @ref samplerWrapping() instead.
+ */
+CORRADE_DEPRECATED("use samplerWrapping() instead") MAGNUM_VK_EXPORT VkSamplerAddressMode vkSamplerAddressMode(Magnum::SamplerWrapping wrapping);
 
-/** @overload */
-template<UnsignedInt dimensions> Array<dimensions, VkSamplerAddressMode> vkSamplerAddressMode(const Array<dimensions, Magnum::SamplerWrapping>& wrapping) {
-    Array<dimensions, VkSamplerAddressMode> out; /** @todo NoInit */
+/**
+ * @brief @copybrief samplerWrapping()
+ * @m_deprecated_since_latest Use @ref samplerWrapping() instead.
+ */
+template<std::size_t dimensions> CORRADE_DEPRECATED("use samplerWrapping() instead") Math::Vector<dimensions, VkSamplerAddressMode> vkSamplerAddressMode(const Math::Vector<dimensions, Magnum::SamplerWrapping>& wrapping) {
+    Math::Vector<dimensions, VkSamplerAddressMode> out{NoInit};
     for(std::size_t i = 0; i != dimensions; ++i)
         out[i] = vkSamplerAddressMode(wrapping[i]);
     return out;
 }
 
 }}
+#else
+#error use headers corresponding to the suggested replacement APIs instead
+#endif
 
 #endif

@@ -464,17 +464,24 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
         template<class U> constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other) noexcept: Matrix4x4<T>(other) {}
 
-        /** @brief Construct from external representation */
+        /** @brief Construct a matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(std::declval<U>()))> constexpr explicit Matrix4(const U& other): Matrix4x4<T>(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(other)) {}
 
+        /** @copydoc RectangularMatrix::RectangularMatrix(IdentityInitT, const RectangularMatrix<otherCols, otherRows, T>&, T) */
+        template<std::size_t otherCols, std::size_t otherRows> constexpr explicit Matrix4(IdentityInitT, const RectangularMatrix<otherCols, otherRows, T>& other, T value = T(1)) noexcept: Matrix4x4<T>{IdentityInit, other, value} {}
+
+        /** @copydoc RectangularMatrix::RectangularMatrix(ZeroInitT, const RectangularMatrix<otherCols, otherRows, T>&) */
+        template<std::size_t otherCols, std::size_t otherRows> constexpr explicit Matrix4(ZeroInitT, const RectangularMatrix<otherCols, otherRows, T>& other) noexcept: Matrix4x4<T>{ZeroInit, other} {}
+
         /**
-         * @brief Construct by slicing or expanding a matrix of a different size
+         * @brief Construct by slicing or expanding a matrix of different size
+         * @m_since_latest
          *
-         * If the other matrix is larger, takes only the first @cpp size @ce
-         * columns and rows from it; if the other matrix is smaller, it's
-         * expanded to an identity (ones on diagonal, zeros elsewhere).
+         * Equivalent to @ref Matrix4(IdentityInitT, const RectangularMatrix<otherCols, otherRows, T>&, T).
+         * Note that this default is different from @ref RectangularMatrix,
+         * where it's equivalent to the @ref ZeroInit variant instead.
          */
-        template<std::size_t otherSize> constexpr explicit Matrix4(const RectangularMatrix<otherSize, otherSize, T>& other) noexcept: Matrix4x4<T>{other} {}
+        template<std::size_t otherCols, std::size_t otherRows> constexpr explicit Matrix4(const RectangularMatrix<otherCols, otherRows, T>& other, T value = T(1)) noexcept: Matrix4x4<T>{IdentityInit, other, value} {}
 
         /** @brief Copy constructor */
         constexpr /*implicit*/ Matrix4(const RectangularMatrix<4, 4, T>& other) noexcept: Matrix4x4<T>(other) {}

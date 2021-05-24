@@ -54,7 +54,8 @@ namespace Implementation {
 @m_since_latest
 
 Wraps a @type_vk_keyword{Device} and stores device-specific Vulkan function
-pointers.
+pointers. A device provides an abstraction over a physical GPU or a CPU with
+Vulkan capabilities.
 
 @section Vk-Device-creation Device creation
 
@@ -113,7 +114,9 @@ explicitly enabled.
 @snippet MagnumVk.cpp Device-creation-check-supported
 
 With both @ref Instance and @ref Device created, you can proceed to setting up
-a @ref CommandPool.
+a @ref CommandPool and a @ref Pipeline, which will then need a
+@ref ShaderSet and a @ref PipelineLayout. For rasterization pipelines, you'll
+additionally need a @ref MeshLayout and a @ref RenderPass.
 
 @subsection Vk-Device-portability-subset Vulkan portability subset
 

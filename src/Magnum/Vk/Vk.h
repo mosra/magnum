@@ -57,6 +57,12 @@ class CopyImageToBufferInfo;
 /* Not forward-declaring CopyBufferToImageInfo1D etc right now, I see no need */
 enum class DependencyFlag: UnsignedInt;
 typedef Containers::EnumSet<DependencyFlag> DependencyFlags;
+class DescriptorPool;
+class DescriptorPoolCreateInfo;
+class DescriptorSet;
+class DescriptorSetLayout;
+class DescriptorSetLayoutCreateInfo;
+enum class DescriptorType: Int;
 class Device;
 class DeviceCreateInfo;
 enum class DeviceFeature: UnsignedShort;
@@ -119,11 +125,20 @@ class RenderPassCreateInfo;
    SubpassDependency are useful only to be passed directly to
    RenderPassCreateInfo */
 enum class Result: Int;
+class Sampler;
+class SamplerCreateInfo;
+enum class SamplerFilter: Int;
+enum class SamplerMipmap: Int;
+enum class SamplerWrapping: Int;
 class Shader;
 class ShaderCreateInfo;
 class ShaderSet;
 /* ShaderSpecialization used only directly with ShaderSet */
 enum class ShaderStage: UnsignedInt;
+/* 0x7FFFFFFF = VK_SHADER_STAGE_ALL, but that would mean including the whole
+   Vulkan headers. Using a number here and then the actual enum value in
+   Shadder.h to ensure it doesn't get out of sync. */
+typedef Containers::EnumSet<ShaderStage, 0x7FFFFFFF> ShaderStages;
 class SubmitInfo;
 class SubpassBeginInfo;
 class SubpassEndInfo;

@@ -192,7 +192,7 @@ void RendererGLTest::renderMesh() {
     /* Vertex buffer contents */
     Containers::Array<char> vertices = vertexBuffer.data();
     CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(vertices),
-        (Containers::Array<Float>{Containers::InPlaceInit, {
+        Containers::arrayView<Float>({
             0.0f + offset.x(),  0.5f + offset.y(), 0.0f, 10.0f,
             0.0f + offset.x(),  0.0f + offset.y(), 0.0f,  0.0f,
             0.75f + offset.x(), 0.5f + offset.y(), 6.0f, 10.0f,
@@ -207,15 +207,15 @@ void RendererGLTest::renderMesh() {
             2.75f + offset.x(), -0.5f + offset.y(), 12.0f,  0.0f,
             5.0f + offset.x(),   1.0f + offset.y(), 18.0f, 10.0f,
             5.0f + offset.x(),  -0.5f + offset.y(), 18.0f,  0.0f
-        }}), TestSuite::Compare::Container);
+        }), TestSuite::Compare::Container);
 
     Containers::Array<char> indices = indexBuffer.data();
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indices),
-        (Containers::Array<UnsignedByte>{Containers::InPlaceInit, {
+        Containers::arrayView<UnsignedByte>({
             0,  1,  2,  1,  3,  2,
             4,  5,  6,  5,  7,  6,
             8,  9, 10,  9, 11, 10
-        }}), TestSuite::Compare::Container);
+        }), TestSuite::Compare::Container);
     #endif
 }
 
@@ -236,11 +236,11 @@ void RendererGLTest::renderMeshIndexType() {
     CORRADE_COMPARE(vertexBuffer.size(), 256*(2 + 2)*4);
     CORRADE_COMPARE(indicesByte.size(), 64*6);
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indicesByte).prefix(18),
-        (Containers::Array<UnsignedByte>{Containers::InPlaceInit, {
+        Containers::arrayView<UnsignedByte>({
             0,  1,  2,  1,  3,  2,
             4,  5,  6,  5,  7,  6,
             8,  9, 10,  9, 11, 10
-        }}), TestSuite::Compare::Container);
+        }), TestSuite::Compare::Container);
 
     /* 16-bit indices (260 vertices) */
     std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, nullGlyphCache,
@@ -250,11 +250,11 @@ void RendererGLTest::renderMeshIndexType() {
     CORRADE_COMPARE(vertexBuffer.size(), 260*(2 + 2)*4);
     CORRADE_COMPARE(indicesShort.size(), 65*6*2);
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedShort>(indicesShort).prefix(18),
-        (Containers::Array<UnsignedShort>{Containers::InPlaceInit, {
+        Containers::arrayView<UnsignedShort>({
             0,  1,  2,  1,  3,  2,
             4,  5,  6,  5,  7,  6,
             8,  9, 10,  9, 11, 10
-        }}), TestSuite::Compare::Container);
+        }), TestSuite::Compare::Container);
     #else
     CORRADE_SKIP("Can't verify buffer contents on OpenGL ES.");
     #endif
@@ -263,7 +263,7 @@ void RendererGLTest::renderMeshIndexType() {
 void RendererGLTest::mutableText() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::map_buffer_range>())
-        CORRADE_SKIP(GL::Extensions::ARB::map_buffer_range::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::map_buffer_range::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::map_buffer_range>() &&
        !GL::Context::current().isExtensionSupported<GL::Extensions::OES::mapbuffer>())
@@ -284,12 +284,12 @@ void RendererGLTest::mutableText() {
     #ifndef MAGNUM_TARGET_GLES
     Containers::Array<char> indices = renderer.indexBuffer().data();
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indices).prefix(24),
-        (Containers::Array<UnsignedByte>{Containers::InPlaceInit, {
+        Containers::arrayView<UnsignedByte>({
              0,  1,  2,  1,  3,  2,
              4,  5,  6,  5,  7,  6,
              8,  9, 10,  9, 11, 10,
             12, 13, 14, 13, 15, 14
-        }}), TestSuite::Compare::Container);
+        }), TestSuite::Compare::Container);
     #endif
 
     /* Render text */
@@ -305,7 +305,7 @@ void RendererGLTest::mutableText() {
     #ifndef MAGNUM_TARGET_GLES
     Containers::Array<char> vertices = renderer.vertexBuffer().data();
     CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(vertices).prefix(48),
-        (Containers::Array<Float>{Containers::InPlaceInit, {
+        Containers::arrayView<Float>({
             0.0f,  0.5f, 0.0f, 10.0f,
             0.0f,  0.0f, 0.0f,  0.0f,
             0.75f, 0.5f, 6.0f, 10.0f,
@@ -320,7 +320,7 @@ void RendererGLTest::mutableText() {
             2.75f, -0.5f, 12.0f,  0.0f,
             5.0f,   1.0f, 18.0f, 10.0f,
             5.0f,  -0.5f, 18.0f,  0.0f
-        }}), TestSuite::Compare::Container);
+        }), TestSuite::Compare::Container);
     #endif
 }
 

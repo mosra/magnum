@@ -33,12 +33,7 @@
 #define in varying
 #endif
 
-#ifdef TEXTURED
-#ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 0)
-#endif
-uniform lowp sampler2D textureData;
-#endif
+/* Uniforms */
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2)
@@ -68,6 +63,17 @@ layout(location = 4)
 uniform highp uint objectId; /* defaults to zero */
 #endif
 
+/* Textures */
+
+#ifdef TEXTURED
+#ifdef EXPLICIT_TEXTURE_LAYER
+layout(binding = 0)
+#endif
+uniform lowp sampler2D textureData;
+#endif
+
+/* Inputs */
+
 #ifdef TEXTURED
 in mediump vec2 interpolatedTextureCoordinates;
 #endif
@@ -79,6 +85,8 @@ in lowp vec4 interpolatedVertexColor;
 #ifdef INSTANCED_OBJECT_ID
 flat in highp uint interpolatedInstanceObjectId;
 #endif
+
+/* Outputs */
 
 #ifdef NEW_GLSL
 #ifdef EXPLICIT_ATTRIB_LOCATION

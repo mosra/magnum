@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Dual.h"
 #include "Magnum/Math/Quaternion.h"
@@ -118,7 +119,7 @@ void DualTest::construct() {
     CORRADE_COMPARE(d.real(), 3.0f);
     CORRADE_COMPARE(d.dual(), 0.0f);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Dual, Float, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Dual, Float, Float>::value);
 }
 
 void DualTest::constructDefault() {
@@ -136,12 +137,12 @@ void DualTest::constructZero() {
     CORRADE_COMPARE(a, Dual(0.0f, 0.0f));
     CORRADE_COMPARE(b, Math::Dual<Math::Quaternion<Float>>({{0.0f, 0.0f, 0.0f}, 0.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Dual, ZeroInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Math::Dual<Math::Quaternion<Float>>, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Dual, ZeroInitT>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Math::Dual<Math::Quaternion<Float>>, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Dual>::value));
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Math::Dual<Math::Quaternion<Float>>>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Dual>::value);
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Math::Dual<Math::Quaternion<Float>>>::value);
 }
 
 void DualTest::constructNoInit() {
@@ -157,12 +158,12 @@ void DualTest::constructNoInit() {
         CORRADE_COMPARE(b, (Math::Dual<Math::Quaternion<Float>>{{{3.0f, 0.1f, 1.0f}, 1.0f}, {{0.1f, 0.0f, 1.0f}, 0.3f}}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Dual, Magnum::NoInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Math::Dual<Math::Quaternion<Float>>, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Dual, Magnum::NoInitT>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Math::Dual<Math::Quaternion<Float>>, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Dual>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Math::Dual<Math::Quaternion<Float>>>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Dual>::value);
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Math::Dual<Math::Quaternion<Float>>>::value);
 }
 
 void DualTest::constructConversion() {
@@ -174,9 +175,9 @@ void DualTest::constructConversion() {
     CORRADE_COMPARE(b, (Duali{1, 2}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Dual, Duali>::value));
+    CORRADE_VERIFY(!std::is_convertible<Dual, Duali>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Dual, Duali>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Dual, Duali>::value);
 }
 
 void DualTest::constructCopy() {
@@ -184,6 +185,10 @@ void DualTest::constructCopy() {
     constexpr Dual b(a);
     CORRADE_COMPARE(b, Dual(2.0f, 3.0f));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Dual>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Dual>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Dual>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Dual>::value);
 }
@@ -278,8 +283,8 @@ void DualTest::sincos() {
 
 void DualTest::sincosWithBase() {
     /* Verify that the functions can be called with Dual<Unit<Deg, T>> and Dual<Unit<Rad, T>> */
-    CORRADE_VERIFY((std::is_same<decltype(2*Math::Dual<Deg>{15.0_degf}), Math::Dual<Unit<Math::Deg, Float>>>::value));
-    CORRADE_VERIFY((std::is_same<decltype(2*Math::Dual<Rad>{Rad{Constants::pi()/12}}), Math::Dual<Unit<Math::Rad, Float>>>::value));
+    CORRADE_VERIFY(std::is_same<decltype(2*Math::Dual<Deg>{15.0_degf}), Math::Dual<Unit<Math::Deg, Float>>>::value);
+    CORRADE_VERIFY(std::is_same<decltype(2*Math::Dual<Rad>{Rad{Constants::pi()/12}}), Math::Dual<Unit<Math::Rad, Float>>>::value);
 
     const auto result = std::make_pair(
         Dual(0.5f, 0.8660254037844386f*Constants::pi()/2),
@@ -317,25 +322,25 @@ typedef BasicDualVec2<Float> DualVec2;
 
 void DualTest::subclassTypes() {
     const DualVec2 a;
-    CORRADE_VERIFY((std::is_same<decltype(-a), DualVec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a + a), DualVec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a - a), DualVec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a*a), DualVec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a/a), DualVec2>::value));
+    CORRADE_VERIFY(std::is_same<decltype(-a), DualVec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a + a), DualVec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a - a), DualVec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a*a), DualVec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a/a), DualVec2>::value);
 
     DualVec2 b;
-    CORRADE_VERIFY((std::is_same<decltype(b += a), DualVec2&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(b -= a), DualVec2&>::value));
+    CORRADE_VERIFY(std::is_same<decltype(b += a), DualVec2&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(b -= a), DualVec2&>::value);
 
     const Dual c;
-    CORRADE_VERIFY((std::is_same<decltype(a*c), DualVec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c*a), DualVec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a/c), DualVec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c/a), DualVec2>::value));
+    CORRADE_VERIFY(std::is_same<decltype(a*c), DualVec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c*a), DualVec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a/c), DualVec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c/a), DualVec2>::value);
 
-    CORRADE_VERIFY((std::is_same<decltype(a*5.0f), DualVec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(5.0f*a), DualVec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a/5.0f), DualVec2>::value));
+    CORRADE_VERIFY(std::is_same<decltype(a*5.0f), DualVec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(5.0f*a), DualVec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a/5.0f), DualVec2>::value);
 }
 
 void DualTest::subclass() {

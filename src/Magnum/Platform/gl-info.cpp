@@ -118,7 +118,7 @@ Arguments:
 -   `--all-extensions` --- display extensions also for fully supported versions
 -   `--limits` --- display also limits and implementation-defined values
 -   `--magnum-...` --- engine-specific options (see
-    @ref GL-Context-command-line for details)
+    @ref GL-Context-usage-command-line for details)
 
 @subsection magnum-gl-info-usage-emscripten Usage on Emscripten
 
@@ -194,6 +194,8 @@ class MagnumInfo: public Platform::WindowlessApplication {
 
         int exec() override { return 0; }
 };
+
+using namespace Containers::Literals;
 
 MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {
     Utility::Arguments args;
@@ -359,7 +361,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug{} << "Detected driver:" << c.detectedDriver();
 
     Debug{} << "Supported GLSL versions:";
-    Debug{} << "   " << Utility::String::joinWithoutEmptyParts(c.shadingLanguageVersionStrings(), ", ");
+    Debug{} << "   " << ", "_s.joinWithoutEmptyParts(c.shadingLanguageVersionStrings());
 
     if(args.isSet("extension-strings")) {
         Debug{} << "Extension strings:" << Debug::newline

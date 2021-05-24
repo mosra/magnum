@@ -38,6 +38,8 @@
 
 using namespace Magnum;
 
+#define DOXYGEN_IGNORE(...) __VA_ARGS__
+
 namespace {
 
 Image2D doProcessing() {
@@ -68,17 +70,22 @@ struct ProcessingTest: TestSuite::Tester {
 
 ProcessingTest::ProcessingTest() {
     addTests({&ProcessingTest::process});
+
+    if(false) {
+/* [basic] */
+Image2D actual{DOXYGEN_IGNORE(doProcessing())}, expected{DOXYGEN_IGNORE(loadExpectedImage())};
+CORRADE_COMPARE_AS(actual, expected, DebugTools::CompareImage);
+/* [basic] */
+    }
 }
 
-/** [0] */
 void ProcessingTest::process() {
     Image2D actual = doProcessing();
     Image2D expected = loadExpectedImage();
-
-    CORRADE_COMPARE_WITH(actual, expected,
-        (DebugTools::CompareImage{170.0f, 96.0f}));
+/* [delta] */
+CORRADE_COMPARE_WITH(actual, expected, (DebugTools::CompareImage{170.0f, 96.0f}));
+/* [delta] */
 }
-/** [0] */
 
 CORRADE_TEST_MAIN(ProcessingTest)
 

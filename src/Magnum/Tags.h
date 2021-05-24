@@ -26,14 +26,29 @@
 */
 
 /** @file
- * @brief Tag type @ref Magnum::NoInitT, @ref Magnum::NoCreateT, tag @ref Magnum::NoInit, @ref Magnum::NoCreate
+ * @brief Tag type @ref Magnum::NoInitT, @ref Magnum::NoCreateT, @ref Magnum::NoAllocateT, tag @ref Magnum::NoInit, @ref Magnum::NoCreate, @ref Magnum::NoAllocate
  */
 
-#include <Corrade/Containers/Tags.h>
+#include <Corrade/Tags.h>
 
 #include "Magnum/configure.h"
 
 namespace Magnum {
+
+/**
+@brief Default initialization tag type
+@m_since_latest
+
+Used to distinguish construction with default initialization. The actual
+meaning of "default" may vary, see documentation of a particular API using this
+tag for a detailed behavior description.
+@see @ref DefaultInit
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+typedef Corrade::DefaultInitT DefaultInitT;
+#else
+using Corrade::DefaultInitT;
+#endif
 
 /**
 @brief No initialization tag type
@@ -42,7 +57,11 @@ namespace Magnum {
 Used to distinguish construction with no initialization at all.
 @see @ref NoInit
 */
-typedef Corrade::Containers::NoInitT NoInitT;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+typedef Corrade::NoInitT NoInitT;
+#else
+using Corrade::NoInitT;
+#endif
 
 /**
 @brief No creation tag type
@@ -51,7 +70,11 @@ Used to distinguish construction without creating the underlying OpenGL /
 Vulkan / ... object.
 @see @ref NoCreate
 */
-typedef Corrade::Containers::NoCreateT NoCreateT;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+typedef Corrade::NoCreateT NoCreateT;
+#else
+using Corrade::NoCreateT;
+#endif
 
 /**
 @brief No allocation tag type
@@ -69,6 +92,20 @@ struct NoAllocateT {
 };
 
 /**
+@brief Default initialization tag
+@m_since_latest
+
+Use for construction with default initialization. The actual meaning of
+"default" may vary, see documentation of a particular API using this tag for
+a detailed behavior description.
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+constexpr DefaultInitT DefaultInit{};
+#else
+using Corrade::DefaultInit;
+#endif
+
+/**
 @brief No initialization tag
 @m_since{2020,06}
 
@@ -77,7 +114,7 @@ Use for construction with no initialization at all.
 #ifdef DOXYGEN_GENERATING_OUTPUT
 constexpr NoInitT NoInit{};
 #else
-using Corrade::Containers::NoInit;
+using Corrade::NoInit;
 #endif
 
 /**
@@ -92,7 +129,7 @@ overhead), wrap the objects in an @ref Corrade::Containers::Optional.
 #ifdef DOXYGEN_GENERATING_OUTPUT
 constexpr NoCreateT NoCreate{};
 #else
-using Corrade::Containers::NoCreate;
+using Corrade::NoCreate;
 #endif
 
 /**

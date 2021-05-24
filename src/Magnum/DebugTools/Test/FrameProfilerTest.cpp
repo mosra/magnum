@@ -98,14 +98,14 @@ struct {
 #ifdef MAGNUM_TARGET_GL
 struct {
     const char* name;
-    GLFrameProfiler::Values values;
+    FrameProfilerGL::Values values;
     UnsignedInt measurementCount;
     UnsignedInt measurementDelay;
 } GLData[]{
     {"empty", {}, 0, 1},
-    {"frame time", GLFrameProfiler::Value::FrameTime, 1, 2},
-    {"cpu duration", GLFrameProfiler::Value::CpuDuration, 1, 1},
-    {"frame time + cpu duration", GLFrameProfiler::Value::FrameTime|GLFrameProfiler::Value::CpuDuration, 2, 2}
+    {"frame time", FrameProfilerGL::Value::FrameTime, 1, 2},
+    {"cpu duration", FrameProfilerGL::Value::CpuDuration, 1, 1},
+    {"frame time + cpu duration", FrameProfilerGL::Value::FrameTime|FrameProfilerGL::Value::CpuDuration, 2, 2}
 };
 #endif
 
@@ -1114,17 +1114,16 @@ void FrameProfilerTest::gl() {
     setTestCaseDescription(data.name);
 
     /* Test that we use the right state pointers to survive a move */
-    Containers::Pointer<GLFrameProfiler> profiler_{Containers::InPlaceInit,
-        data.values, 4u};
-    GLFrameProfiler profiler = std::move(*profiler_);
+    Containers::Pointer<FrameProfilerGL> profiler_{InPlaceInit, data.values, 4u};
+    FrameProfilerGL profiler = std::move(*profiler_);
     profiler_ = nullptr;
     CORRADE_COMPARE(profiler.values(), data.values);
     CORRADE_COMPARE(profiler.maxFrameCount(), 4);
     CORRADE_COMPARE(profiler.measurementCount(), data.measurementCount);
 
     /* MSVC 2015 needs the {} */
-    for(auto value: {GLFrameProfiler::Value::CpuDuration,
-                     GLFrameProfiler::Value::FrameTime}) {
+    for(auto value: {FrameProfilerGL::Value::CpuDuration,
+                     FrameProfilerGL::Value::FrameTime}) {
         if(data.values & value)
             CORRADE_VERIFY(!profiler.isMeasurementAvailable(value));
     }
@@ -1153,8 +1152,8 @@ void FrameProfilerTest::gl() {
        bound because (especially on overloaded CIs) it all takes a magnitude
        more than expected. Emscripten builds have it as low as 0.5, account for
        that. */
-    if(data.values & GLFrameProfiler::Value::CpuDuration) {
-        CORRADE_VERIFY(profiler.isMeasurementAvailable(GLFrameProfiler::Value::CpuDuration));
+    if(data.values & FrameProfilerGL::Value::CpuDuration) {
+        CORRADE_VERIFY(profiler.isMeasurementAvailable(FrameProfilerGL::Value::CpuDuration));
         CORRADE_COMPARE_AS(profiler.cpuDurationMean(), 0.50*1000*1000,
             TestSuite::Compare::GreaterOrEqual);
     }
@@ -1162,8 +1161,8 @@ void FrameProfilerTest::gl() {
     /* 3/4 frames took 1 ms, and one 10 ms, the ideal average is 3.25 ms. Can't
        test upper bound because (especially on overloaded CIs) it all takes a
        magnitude more than expected. */
-    if(data.values & GLFrameProfiler::Value::FrameTime) {
-        CORRADE_VERIFY(profiler.isMeasurementAvailable(GLFrameProfiler::Value::FrameTime));
+    if(data.values & FrameProfilerGL::Value::FrameTime) {
+        CORRADE_VERIFY(profiler.isMeasurementAvailable(FrameProfilerGL::Value::FrameTime));
         CORRADE_COMPARE_AS(profiler.frameTimeMean(), 3.20*1000*1000,
             TestSuite::Compare::GreaterOrEqual);
     }
@@ -1176,19 +1175,19 @@ void FrameProfilerTest::glNotEnabled() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    GLFrameProfiler profiler{{}, 5};
+    FrameProfilerGL profiler{{}, 5};
 
     std::ostringstream out;
     Error redirectError{&out};
-    profiler.isMeasurementAvailable(GLFrameProfiler::Value::CpuDuration);
+    profiler.isMeasurementAvailable(FrameProfilerGL::Value::CpuDuration);
     profiler.frameTimeMean();
     profiler.cpuDurationMean();
     profiler.gpuDurationMean();
     CORRADE_COMPARE(out.str(),
-        "DebugTools::GLFrameProfiler::isMeasurementAvailable(): DebugTools::GLFrameProfiler::Value::CpuDuration not enabled\n"
-        "DebugTools::GLFrameProfiler::frameTimeMean(): not enabled\n"
-        "DebugTools::GLFrameProfiler::cpuDurationMean(): not enabled\n"
-        "DebugTools::GLFrameProfiler::gpuDurationMean(): not enabled\n");
+        "DebugTools::FrameProfilerGL::isMeasurementAvailable(): DebugTools::FrameProfilerGL::Value::CpuDuration not enabled\n"
+        "DebugTools::FrameProfilerGL::frameTimeMean(): not enabled\n"
+        "DebugTools::FrameProfilerGL::cpuDurationMean(): not enabled\n"
+        "DebugTools::FrameProfilerGL::gpuDurationMean(): not enabled\n");
 }
 #endif
 
@@ -1203,47 +1202,47 @@ void FrameProfilerTest::debugUnits() {
 void FrameProfilerTest::debugGLValue() {
     std::ostringstream out;
 
-    Debug{&out} << GLFrameProfiler::Value::GpuDuration << GLFrameProfiler::Value(0xfff0);
-    CORRADE_COMPARE(out.str(), "DebugTools::GLFrameProfiler::Value::GpuDuration DebugTools::GLFrameProfiler::Value(0xfff0)\n");
+    Debug{&out} << FrameProfilerGL::Value::GpuDuration << FrameProfilerGL::Value(0xfff0);
+    CORRADE_COMPARE(out.str(), "DebugTools::FrameProfilerGL::Value::GpuDuration DebugTools::FrameProfilerGL::Value(0xfff0)\n");
 }
 
 void FrameProfilerTest::debugGLValues() {
     std::ostringstream out;
 
-    Debug{&out} << (GLFrameProfiler::Value::CpuDuration|GLFrameProfiler::Value::FrameTime) << GLFrameProfiler::Values{};
-    CORRADE_COMPARE(out.str(), "DebugTools::GLFrameProfiler::Value::FrameTime|DebugTools::GLFrameProfiler::Value::CpuDuration DebugTools::GLFrameProfiler::Values{}\n");
+    Debug{&out} << (FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::FrameTime) << FrameProfilerGL::Values{};
+    CORRADE_COMPARE(out.str(), "DebugTools::FrameProfilerGL::Value::FrameTime|DebugTools::FrameProfilerGL::Value::CpuDuration DebugTools::FrameProfilerGL::Values{}\n");
 }
 
 void FrameProfilerTest::configurationGLValue() {
     Utility::ConfigurationGroup c;
 
-    c.setValue("value", GLFrameProfiler::Value::GpuDuration);
+    c.setValue("value", FrameProfilerGL::Value::GpuDuration);
     CORRADE_COMPARE(c.value("value"), "GpuDuration");
-    CORRADE_COMPARE(c.value<GLFrameProfiler::Value>("value"), GLFrameProfiler::Value::GpuDuration);
+    CORRADE_COMPARE(c.value<FrameProfilerGL::Value>("value"), FrameProfilerGL::Value::GpuDuration);
 
-    c.setValue("zero", GLFrameProfiler::Value{});
+    c.setValue("zero", FrameProfilerGL::Value{});
     CORRADE_COMPARE(c.value("zero"), "");
-    CORRADE_COMPARE(c.value<GLFrameProfiler::Value>("zero"), GLFrameProfiler::Value{});
+    CORRADE_COMPARE(c.value<FrameProfilerGL::Value>("zero"), FrameProfilerGL::Value{});
 
-    c.setValue("invalid", GLFrameProfiler::Value(0xdead));
+    c.setValue("invalid", FrameProfilerGL::Value(0xdead));
     CORRADE_COMPARE(c.value("invalid"), "");
-    CORRADE_COMPARE(c.value<GLFrameProfiler::Value>("invalid"), GLFrameProfiler::Value{});
+    CORRADE_COMPARE(c.value<FrameProfilerGL::Value>("invalid"), FrameProfilerGL::Value{});
 }
 
 void FrameProfilerTest::configurationGLValues() {
     Utility::ConfigurationGroup c;
 
-    c.setValue("value", GLFrameProfiler::Value::FrameTime|GLFrameProfiler::Value::CpuDuration|GLFrameProfiler::Value::GpuDuration);
+    c.setValue("value", FrameProfilerGL::Value::FrameTime|FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration);
     CORRADE_COMPARE(c.value("value"), "FrameTime CpuDuration GpuDuration");
-    CORRADE_COMPARE(c.value<GLFrameProfiler::Values>("value"), GLFrameProfiler::Value::FrameTime|GLFrameProfiler::Value::CpuDuration|GLFrameProfiler::Value::GpuDuration);
+    CORRADE_COMPARE(c.value<FrameProfilerGL::Values>("value"), FrameProfilerGL::Value::FrameTime|FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration);
 
-    c.setValue("empty", GLFrameProfiler::Values{});
+    c.setValue("empty", FrameProfilerGL::Values{});
     CORRADE_COMPARE(c.value("empty"), "");
-    CORRADE_COMPARE(c.value<GLFrameProfiler::Values>("empty"), GLFrameProfiler::Values{});
+    CORRADE_COMPARE(c.value<FrameProfilerGL::Values>("empty"), FrameProfilerGL::Values{});
 
-    c.setValue("invalid", GLFrameProfiler::Value::CpuDuration|GLFrameProfiler::Value::GpuDuration|GLFrameProfiler::Value(0xff00));
+    c.setValue("invalid", FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration|FrameProfilerGL::Value(0xff00));
     CORRADE_COMPARE(c.value("invalid"), "CpuDuration GpuDuration");
-    CORRADE_COMPARE(c.value<GLFrameProfiler::Values>("invalid"), GLFrameProfiler::Value::CpuDuration|GLFrameProfiler::Value::GpuDuration);
+    CORRADE_COMPARE(c.value<FrameProfilerGL::Values>("invalid"), FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration);
 }
 #endif
 

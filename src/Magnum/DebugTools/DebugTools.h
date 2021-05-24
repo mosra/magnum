@@ -31,12 +31,24 @@
 
 #include "Magnum/Types.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace DebugTools {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-class Profiler;
+#ifdef MAGNUM_BUILD_DEPRECATED
+class CORRADE_DEPRECATED("use FrameProfiler instead") Profiler;
+#endif
+class FrameProfiler;
 
 #ifdef MAGNUM_TARGET_GL
+class FrameProfilerGL;
+#ifdef MAGNUM_BUILD_DEPRECATED
+typedef CORRADE_DEPRECATED("use FrameProfilerGL instead") FrameProfilerGL GLFrameProfiler;
+#endif
+
 template<UnsignedInt> class ForceRenderer;
 typedef ForceRenderer<2> ForceRenderer2D;
 typedef ForceRenderer<3> ForceRenderer3D;

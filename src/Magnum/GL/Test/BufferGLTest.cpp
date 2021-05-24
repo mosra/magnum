@@ -56,6 +56,7 @@ struct BufferGLTest: OpenGLTester {
 
     #ifndef MAGNUM_TARGET_GLES
     void storage();
+    void storagePreinitialized();
     #endif
 
     void data();
@@ -87,6 +88,7 @@ BufferGLTest::BufferGLTest() {
 
               #ifndef MAGNUM_TARGET_GLES
               &BufferGLTest::storage,
+              &BufferGLTest::storagePreinitialized,
               #endif
 
               &BufferGLTest::data,
@@ -207,7 +209,7 @@ void BufferGLTest::label() {
 void BufferGLTest::bindBase() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::uniform_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::uniform_buffer_object::string() + std::string{" is not supported."});
+        CORRADE_SKIP(Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
     Buffer buffer;
@@ -231,7 +233,7 @@ void BufferGLTest::bindBase() {
 void BufferGLTest::bindRange() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::uniform_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::uniform_buffer_object::string() + std::string{" is not supported."});
+        CORRADE_SKIP(Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
     /* Check that we have correct offset alignment */
@@ -254,6 +256,26 @@ void BufferGLTest::bindRange() {
 
 #ifndef MAGNUM_TARGET_GLES
 void BufferGLTest::storage() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::buffer_storage>())
+        CORRADE_SKIP(Extensions::ARB::buffer_storage::string() << "is not supported.");
+
+    Buffer buffer;
+
+    constexpr Int data[] = {2, 7, 5, 13, 25};
+
+    buffer.setStorage(sizeof(data), Buffer::StorageFlag::DynamicStorage)
+        .setSubData(0, data);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(buffer.data()),
+        Containers::arrayView(data),
+        TestSuite::Compare::Container);
+}
+
+void BufferGLTest::storagePreinitialized() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::buffer_storage>())
+        CORRADE_SKIP(Extensions::ARB::buffer_storage::string() << "is not supported.");
+
     Buffer buffer;
 
     constexpr Int data[] = {2, 7, 5, 13, 25};
@@ -329,7 +351,7 @@ void BufferGLTest::data() {
 void BufferGLTest::map() {
     #ifdef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::OES::mapbuffer>())
-        CORRADE_SKIP(Extensions::OES::mapbuffer::string() + std::string(" is not supported"));
+        CORRADE_SKIP(Extensions::OES::mapbuffer::string() << "is not supported.");
     #endif
     Buffer buffer;
 
@@ -365,10 +387,10 @@ void BufferGLTest::map() {
 void BufferGLTest::mapRange() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::map_buffer_range>())
-        CORRADE_SKIP(Extensions::ARB::map_buffer_range::string() + std::string(" is not supported"));
+        CORRADE_SKIP(Extensions::ARB::map_buffer_range::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::EXT::map_buffer_range>())
-        CORRADE_SKIP(Extensions::EXT::map_buffer_range::string() + std::string(" is not supported"));
+        CORRADE_SKIP(Extensions::EXT::map_buffer_range::string() << "is not supported.");
     #endif
 
     constexpr char data[] = {2, 7, 5, 13, 25};
@@ -397,10 +419,10 @@ void BufferGLTest::mapRange() {
 void BufferGLTest::mapRangeExplicitFlush() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::map_buffer_range>())
-        CORRADE_SKIP(Extensions::ARB::map_buffer_range::string() + std::string(" is not supported"));
+        CORRADE_SKIP(Extensions::ARB::map_buffer_range::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::EXT::map_buffer_range>())
-        CORRADE_SKIP(Extensions::EXT::map_buffer_range::string() + std::string(" is not supported"));
+        CORRADE_SKIP(Extensions::EXT::map_buffer_range::string() << "is not supported.");
     #endif
 
     constexpr char data[] = {2, 7, 5, 13, 25};

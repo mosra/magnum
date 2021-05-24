@@ -85,8 +85,8 @@ macOS / iOS.
 In a deferred rendering setup for example, a shader usually has more than one
 output. That's finally where non-zero @ref ColorAttachment and @ref mapForDraw()
 gets used. In builtin shaders this is also how the
-@ref Shaders::Flat::ColorOutput / @ref Shaders::Flat::ObjectIdOutput etc. get
-used:
+@ref Shaders::FlatGL::ColorOutput / @ref Shaders::FlatGL::ObjectIdOutput etc.
+get used:
 
 @snippet MagnumGL.cpp Framebuffer-usage-deferred
 

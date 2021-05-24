@@ -54,7 +54,7 @@
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/MeshTools/Compile.h"
-#include "Magnum/Shaders/Phong.h"
+#include "Magnum/Shaders/PhongGL.h"
 #endif
 #ifdef MAGNUM_TARGET_VK
 #include "Magnum/Vk/Vulkan.h"
@@ -544,7 +544,7 @@ GL::Buffer vertices;
 vertices.setData(MeshTools::interleave(data.positions3DAsArray(),
                                        data.normalsAsArray()));
 mesh.addVertexBuffer(std::move(vertices), 0,
-    Shaders::Phong::Position{}, Shaders::Phong::Normal{});
+    Shaders::PhongGL::Position{}, Shaders::PhongGL::Normal{});
 
 /* Set up an index buffer, if the mesh is indexed*/
 if(data.isIndexed()) {
@@ -568,12 +568,12 @@ vertices.setData(data.vertexData());
 mesh.addVertexBuffer(vertices,
     data.attributeOffset(Trade::MeshAttribute::Position),
     data.attributeStride(Trade::MeshAttribute::Position),
-    GL::DynamicAttribute{Shaders::Phong::Position{},
+    GL::DynamicAttribute{Shaders::PhongGL::Position{},
         data.attributeFormat(Trade::MeshAttribute::Position)});
 mesh.addVertexBuffer(vertices,
     data.attributeOffset(Trade::MeshAttribute::Normal),
     data.attributeStride(Trade::MeshAttribute::Normal),
-    GL::DynamicAttribute{Shaders::Phong::Normal{},
+    GL::DynamicAttribute{Shaders::PhongGL::Normal{},
         data.attributeFormat(Trade::MeshAttribute::Normal)});
 
 // Set up other attributes ...

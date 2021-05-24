@@ -149,11 +149,11 @@ new DebugTools::ObjectRenderer3D{manager, *object, "my", &debugDrawables};
 }
 
 {
-/* [GLFrameProfiler-usage] */
-DebugTools::GLFrameProfiler profiler{
-    DebugTools::GLFrameProfiler::Value::FrameTime|
-    DebugTools::GLFrameProfiler::Value::GpuDuration, 50};
-/* [GLFrameProfiler-usage] */
+/* [FrameProfilerGL-usage] */
+DebugTools::FrameProfilerGL profiler{
+    DebugTools::FrameProfilerGL::Value::FrameTime|
+    DebugTools::FrameProfilerGL::Value::GpuDuration, 50};
+/* [FrameProfilerGL-usage] */
 }
 
 {

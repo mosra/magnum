@@ -244,7 +244,7 @@ key=true; configuration subgroups are delimited with /.)")
         }
 
         /* Set options, if passed */
-        if(args.isSet("verbose")) importer->setFlags(Trade::ImporterFlag::Verbose);
+        if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
         Implementation::setOptions(*importer, args.value("importer-options"));
 
         /* Print image info, if requested */
@@ -328,11 +328,11 @@ key=true; configuration subgroups are delimited with /.)")
     }
 
     /* Set options, if passed */
-    if(args.isSet("verbose")) converter->setFlags(Trade::ImageConverterFlag::Verbose);
+    if(args.isSet("verbose")) converter->addFlags(Trade::ImageConverterFlag::Verbose);
     Implementation::setOptions(*converter, args.value("converter-options"));
 
     /* Save output file */
-    if(!converter->exportToFile(*image, output)) {
+    if(!converter->convertToFile(*image, output)) {
         Error() << "Cannot save file" << output;
         return 5;
     }

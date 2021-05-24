@@ -170,7 +170,7 @@ template<std::size_t size, class T> class Vector {
         }
 
         /**
-         * @brief Pad vector
+         * @brief Pad a vector
          *
          * If size of @p a is smaller than @ref Size, it is padded from right
          * with @p value, otherwise it's cut.
@@ -674,7 +674,12 @@ template<std::size_t size, class T> class Vector {
         T _data[size];
 
     private:
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* Since I added deprecated aliases to Shaders::VectorGL, this FUCKING
+           DUMPSTER FIRE DOXYGEN CRAP thinks this refers to Shaders::Vector or
+           whatever fucking insane thing. WHAT THE FUCK. */
         template<std::size_t, class> friend class Vector;
+        #endif
         /* These three needed to access _data to speed up debug builds */
         template<std::size_t, std::size_t, class> friend class RectangularMatrix;
         template<std::size_t, class> friend class Matrix;

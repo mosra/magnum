@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
-DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
+DebugState::DebugState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions):
     maxLabelLength{0},
     maxLoggedMessages{0},
     maxMessageLength{0},
@@ -45,7 +45,8 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.emplace_back(Extensions::KHR::debug::string());
+        extensions[Extensions::KHR::debug::Index] =
+                   Extensions::KHR::debug::string();
         #endif
 
         getLabelImplementation = &AbstractObject::getLabelImplementationKhrDesktopES32;
@@ -60,7 +61,8 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
     #endif
     #ifdef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::KHR::debug>()) {
-        extensions.emplace_back(Extensions::KHR::debug::string());
+        extensions[Extensions::KHR::debug::Index] =
+                   Extensions::KHR::debug::string();
 
         getLabelImplementation = &AbstractObject::getLabelImplementationKhrES;
         labelImplementation = &AbstractObject::labelImplementationKhrES;
@@ -74,7 +76,8 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
     #endif
     {
         if(context.isExtensionSupported<Extensions::EXT::debug_label>()) {
-            extensions.emplace_back(Extensions::EXT::debug_label::string());
+            extensions[Extensions::EXT::debug_label::Index] =
+                       Extensions::EXT::debug_label::string();
 
             getLabelImplementation = &AbstractObject::getLabelImplementationExt;
             labelImplementation = &AbstractObject::labelImplementationExt;
@@ -84,14 +87,16 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
         }
 
         if(context.isExtensionSupported<Extensions::EXT::debug_marker>()) {
-            extensions.emplace_back(Extensions::EXT::debug_marker::string());
+            extensions[Extensions::EXT::debug_marker::Index] =
+                       Extensions::EXT::debug_marker::string();
 
             pushGroupImplementation = &DebugGroup::pushImplementationExt;
             popGroupImplementation = &DebugGroup::popImplementationExt;
             messageInsertImplementation = &DebugMessage::insertImplementationExt;
         #ifndef MAGNUM_TARGET_GLES
         } else if(context.isExtensionSupported<Extensions::GREMEDY::string_marker>()) {
-            extensions.emplace_back(Extensions::GREMEDY::string_marker::string());
+            extensions[Extensions::GREMEDY::string_marker::Index] =
+                       Extensions::GREMEDY::string_marker::string();
 
             pushGroupImplementation = &DebugGroup::pushImplementationNoOp;
             popGroupImplementation = &DebugGroup::popImplementationNoOp;

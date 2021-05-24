@@ -121,7 +121,7 @@ template<UnsignedInt dimensions> class ObjectRenderer: public SceneGraph::Drawab
         void draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::Camera<dimensions, Float>& camera) override;
 
         Resource<ObjectRendererOptions> _options;
-        Resource<GL::AbstractShaderProgram, Shaders::VertexColor<dimensions>> _shader;
+        Resource<GL::AbstractShaderProgram, Shaders::VertexColorGL<dimensions>> _shader;
         Resource<GL::Mesh> _mesh;
 };
 

@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -107,7 +108,7 @@ void Vector3Test::construct() {
     constexpr Vector3 a = {1.0f, 2.5f, -3.0f};
     CORRADE_COMPARE(a, (Vector<3, Float>(1.0f, 2.5f, -3.0f)));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector3, Float, Float, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector3, Float, Float, Float>::value);
 }
 
 void Vector3Test::constructDefault() {
@@ -117,10 +118,10 @@ void Vector3Test::constructDefault() {
     CORRADE_COMPARE(b, Vector3(0.0f, 0.0f, 0.0f));
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Vector3>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector3, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector3, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Vector3>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Vector3>::value);
 }
 
 void Vector3Test::constructNoInit() {
@@ -133,10 +134,10 @@ void Vector3Test::constructNoInit() {
         CORRADE_COMPARE(a, (Vector3{1.0f, 2.5f, -3.0f}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector3, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector3, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Vector3>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Vector3>::value);
 }
 
 void Vector3Test::constructOneValue() {
@@ -144,9 +145,9 @@ void Vector3Test::constructOneValue() {
     CORRADE_COMPARE(a, Vector3(-3.0f, -3.0f, -3.0f));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Float, Vector3>::value));
+    CORRADE_VERIFY(!std::is_convertible<Float, Vector3>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector3, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector3, Float>::value);
 }
 
 void Vector3Test::constructParts() {
@@ -154,7 +155,7 @@ void Vector3Test::constructParts() {
     constexpr Vector3 b = {a, 3.0f};
     CORRADE_COMPARE(b, Vector3(1.0f, 2.0f, 3.0f));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector3, Vector2, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector3, Vector2, Float>::value);
 }
 
 void Vector3Test::constructConversion() {
@@ -163,9 +164,9 @@ void Vector3Test::constructConversion() {
     CORRADE_COMPARE(b, Vector3i(1, 2, -3));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Vector3, Vector3i>::value));
+    CORRADE_VERIFY(!std::is_convertible<Vector3, Vector3i>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector3, Vector3i>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector3, Vector3i>::value);
 }
 
 void Vector3Test::constructCopy() {
@@ -176,6 +177,10 @@ void Vector3Test::constructCopy() {
     Vector3 b(a);
     CORRADE_COMPARE(b, Vector3(1.0f, 2.5f, -3.0f));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Vector3>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Vector3>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Vector3>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Vector3>::value);
 }
@@ -193,8 +198,8 @@ void Vector3Test::convert() {
     CORRADE_COMPARE(d.z, a.z);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Vec3, Vector3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Vector3, Vec3>::value));
+    CORRADE_VERIFY(!std::is_convertible<Vec3, Vector3>::value);
+    CORRADE_VERIFY(!std::is_convertible<Vector3, Vec3>::value);
 }
 
 void Vector3Test::access() {
@@ -276,7 +281,7 @@ void Vector3Test::strictWeakOrdering() {
 void Vector3Test::swizzleType() {
     constexpr Vector<4, Int> orig;
     constexpr auto b = gather<'y', 'z', 'a'>(orig);
-    CORRADE_VERIFY((std::is_same<decltype(b), const Vector3i>::value));
+    CORRADE_VERIFY(std::is_same<decltype(b), const Vector3i>::value);
 }
 
 void Vector3Test::debug() {

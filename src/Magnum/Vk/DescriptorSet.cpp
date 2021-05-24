@@ -23,21 +23,47 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "AbstractVector.h"
+#include "DescriptorSet.h"
 
-#include "Magnum/GL/Texture.h"
-#include "Magnum/Shaders/visibility.h"
+#include "Magnum/Vk/Assert.h"
+#include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Result.h"
 
-namespace Magnum { namespace Shaders {
+namespace Magnum { namespace Vk {
 
-template<UnsignedInt dimensions> AbstractVector<dimensions>& AbstractVector<dimensions>::bindVectorTexture(GL::Texture2D& texture) {
-    texture.bind(VectorTextureUnit);
+DescriptorSet DescriptorSet::wrap(Device& device, const VkDescriptorPool pool, const VkDescriptorSet handle, const HandleFlags flags) {
+    DescriptorSet out{NoCreate};
+    out._device = &device;
+    out._pool = pool;
+    out._handle = handle;
+    out._flags = flags;
+    return out;
+}
+
+DescriptorSet::DescriptorSet(NoCreateT): _device{}, _pool{}, _handle{} {}
+
+DescriptorSet::DescriptorSet(DescriptorSet&& other) noexcept: _device{other._device}, _pool{other._pool}, _handle{other._handle}, _flags{other._flags} {
+    other._handle = {};
+}
+
+DescriptorSet::~DescriptorSet() {
+    if(_handle && (_flags & HandleFlag::DestroyOnDestruction))
+        (**_device).FreeDescriptorSets(*_device, _pool, 1, &_handle);
+}
+
+DescriptorSet& DescriptorSet::operator=(DescriptorSet&& other) noexcept {
+    using std::swap;
+    swap(other._device, _device);
+    swap(other._pool, _pool);
+    swap(other._handle, _handle);
+    swap(other._flags, _flags);
     return *this;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_SHADERS_EXPORT AbstractVector<2>;
-template class MAGNUM_SHADERS_EXPORT AbstractVector<3>;
-#endif
+VkDescriptorSet DescriptorSet::release() {
+    const VkDescriptorSet handle = _handle;
+    _handle = {};
+    return handle;
+}
 
 }}

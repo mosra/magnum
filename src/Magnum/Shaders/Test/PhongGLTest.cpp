@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -51,7 +52,7 @@
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/Primitives/Plane.h"
 #include "Magnum/Primitives/UVSphere.h"
-#include "Magnum/Shaders/Phong.h"
+#include "Magnum/Shaders/PhongGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/MeshData.h"
@@ -139,36 +140,36 @@ struct PhongGLTest: GL::OpenGLTester {
 
 constexpr struct {
     const char* name;
-    Phong::Flags flags;
+    PhongGL::Flags flags;
     UnsignedInt lightCount;
 } ConstructData[]{
     {"", {}, 1},
-    {"ambient texture", Phong::Flag::AmbientTexture, 1},
-    {"diffuse texture", Phong::Flag::DiffuseTexture, 1},
-    {"diffuse texture + texture transform", Phong::Flag::DiffuseTexture|Phong::Flag::TextureTransformation, 1},
-    {"specular texture", Phong::Flag::SpecularTexture, 1},
-    {"normal texture", Phong::Flag::NormalTexture, 1},
-    {"normal texture + separate bitangents", Phong::Flag::NormalTexture|Phong::Flag::Bitangent, 1},
-    {"separate bitangents alone", Phong::Flag::Bitangent, 1},
-    {"ambient + diffuse texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture, 1},
-    {"ambient + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::SpecularTexture, 1},
-    {"diffuse + specular texture", Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture, 1},
-    {"ambient + diffuse + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture, 1},
-    {"ambient + diffuse + specular + normal texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture|Phong::Flag::NormalTexture, 1},
-    {"alpha mask", Phong::Flag::AlphaMask, 1},
-    {"alpha mask + diffuse texture", Phong::Flag::AlphaMask|Phong::Flag::DiffuseTexture, 1},
-    {"vertex colors", Phong::Flag::VertexColor, 1},
-    {"vertex colors + diffuse texture", Phong::Flag::VertexColor|Phong::Flag::DiffuseTexture, 1},
+    {"ambient texture", PhongGL::Flag::AmbientTexture, 1},
+    {"diffuse texture", PhongGL::Flag::DiffuseTexture, 1},
+    {"diffuse texture + texture transform", PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureTransformation, 1},
+    {"specular texture", PhongGL::Flag::SpecularTexture, 1},
+    {"normal texture", PhongGL::Flag::NormalTexture, 1},
+    {"normal texture + separate bitangents", PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1},
+    {"separate bitangents alone", PhongGL::Flag::Bitangent, 1},
+    {"ambient + diffuse texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture, 1},
+    {"ambient + specular texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture, 1},
+    {"diffuse + specular texture", PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1},
+    {"ambient + diffuse + specular texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1},
+    {"ambient + diffuse + specular + normal texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture, 1},
+    {"alpha mask", PhongGL::Flag::AlphaMask, 1},
+    {"alpha mask + diffuse texture", PhongGL::Flag::AlphaMask|PhongGL::Flag::DiffuseTexture, 1},
+    {"vertex colors", PhongGL::Flag::VertexColor, 1},
+    {"vertex colors + diffuse texture", PhongGL::Flag::VertexColor|PhongGL::Flag::DiffuseTexture, 1},
     #ifndef MAGNUM_TARGET_GLES2
-    {"object ID", Phong::Flag::ObjectId, 1},
-    {"instanced object ID", Phong::Flag::InstancedObjectId, 1},
-    {"object ID + alpha mask + specular texture", Phong::Flag::ObjectId|Phong::Flag::AlphaMask|Phong::Flag::SpecularTexture, 1},
+    {"object ID", PhongGL::Flag::ObjectId, 1},
+    {"instanced object ID", PhongGL::Flag::InstancedObjectId, 1},
+    {"object ID + alpha mask + specular texture", PhongGL::Flag::ObjectId|PhongGL::Flag::AlphaMask|PhongGL::Flag::SpecularTexture, 1},
     #endif
     {"five lights", {}, 5},
     {"zero lights", {}, 0},
-    {"instanced transformation", Phong::Flag::InstancedTransformation, 3},
-    {"instanced specular texture offset", Phong::Flag::SpecularTexture|Phong::Flag::InstancedTextureOffset, 3},
-    {"instanced normal texture offset", Phong::Flag::NormalTexture|Phong::Flag::InstancedTextureOffset, 3}
+    {"instanced transformation", PhongGL::Flag::InstancedTransformation, 3},
+    {"instanced specular texture offset", PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset, 3},
+    {"instanced normal texture offset", PhongGL::Flag::NormalTexture|PhongGL::Flag::InstancedTextureOffset, 3}
 };
 
 using namespace Math::Literals;
@@ -195,17 +196,17 @@ constexpr struct {
 const struct {
     const char* name;
     const char* expected;
-    Phong::Flags flags;
+    PhongGL::Flags flags;
     Matrix3 textureTransformation;
 } RenderTexturedData[]{
-    {"all", "textured.tga", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture, {}},
-    {"ambient", "textured-ambient.tga", Phong::Flag::AmbientTexture, {}},
-    {"diffuse", "textured-diffuse.tga", Phong::Flag::DiffuseTexture, {}},
+    {"all", "textured.tga", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, {}},
+    {"ambient", "textured-ambient.tga", PhongGL::Flag::AmbientTexture, {}},
+    {"diffuse", "textured-diffuse.tga", PhongGL::Flag::DiffuseTexture, {}},
     {"diffuse transformed", "textured-diffuse-transformed.tga",
-        Phong::Flag::DiffuseTexture|Phong::Flag::TextureTransformation,
+        PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureTransformation,
         Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f})
     },
-    {"specular", "textured-specular.tga", Phong::Flag::SpecularTexture, {}}
+    {"specular", "textured-specular.tga", PhongGL::Flag::SpecularTexture, {}}
 };
 
 /* MSVC 2015 doesn't like constexpr here due to the angles */
@@ -217,50 +218,50 @@ const struct {
     Float scale;
     Vector4 tangent;
     Vector3 bitangent;
-    Shaders::Phong::Tangent4::Components tangentComponents;
+    PhongGL::Tangent4::Components tangentComponents;
     bool flipNormalY;
-    Shaders::Phong::Flags flags;
+    PhongGL::Flags flags;
 } RenderTexturedNormalData[]{
     {"", "textured-normal.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        Shaders::Phong::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}},
     {"multi bind", "textured-normal.tga", true, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        Shaders::Phong::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}},
     {"rotated 90°", "textured-normal.tga", false, 90.0_degf, 1.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        Shaders::Phong::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}},
     {"rotated -90°", "textured-normal.tga", false, -90.0_degf, 1.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        Shaders::Phong::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}},
     {"0.5 scale", "textured-normal0.5.tga", false, {}, 0.5f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        Shaders::Phong::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}},
     {"0.0 scale", "textured-normal0.0.tga", false, {}, 0.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        Shaders::Phong::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}},
     /* The fourth component, if missing, gets automatically filled up to 1,
        so this should work */
     {"implicit bitangent direction", "textured-normal.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, 0.0f}, {},
-        Shaders::Phong::Tangent4::Components::Three, false, {}},
+        PhongGL::Tangent4::Components::Three, false, {}},
     {"separate bitangents", "textured-normal.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f},
-        Shaders::Phong::Tangent4::Components::Three, false,
-        Shaders::Phong::Flag::Bitangent},
+        PhongGL::Tangent4::Components::Three, false,
+        PhongGL::Flag::Bitangent},
     {"right-handed, flipped Y", "textured-normal-left.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        Shaders::Phong::Tangent4::Components::Four, true, {}},
+        PhongGL::Tangent4::Components::Four, true, {}},
     {"left-handed", "textured-normal-left.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, -1.0f}, {},
-        Shaders::Phong::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}},
     {"left-handed, separate bitangents", "textured-normal-left.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
-        Shaders::Phong::Tangent4::Components::Three, false,
-        Shaders::Phong::Flag::Bitangent},
+        PhongGL::Tangent4::Components::Three, false,
+        PhongGL::Flag::Bitangent},
     {"left-handed, flipped Y", "textured-normal.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, -1.0f}, {},
-        Shaders::Phong::Tangent4::Components::Four, true, {}}
+        PhongGL::Tangent4::Components::Four, true, {}}
 };
 
 const struct {
@@ -280,7 +281,7 @@ const struct {
     const char* name;
     const char* expected;
     bool blending;
-    Phong::Flags flags;
+    PhongGL::Flags flags;
     Float threshold;
     const char* ambientTexture;
     const char* diffuseTexture;
@@ -290,35 +291,35 @@ const struct {
     /* All those deliberately have a non-white diffuse in order to match the
        expected data from textured() */
     {"none, separate", "PhongTestFiles/textured-diffuse.tga", false,
-        Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture, 0.0f,
+        PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture, 0.0f,
         "alpha-texture.tga", "diffuse-texture.tga",
         0xffffffff_rgbaf, 0x9999ff00_rgbaf},
     {"none, combined", "PhongTestFiles/textured-diffuse.tga", false,
-        Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture, 0.0f,
+        PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture, 0.0f,
         "diffuse-alpha-texture.tga", "diffuse-alpha-texture.tga",
         0x000000ff_rgbaf, 0x9999ff00_rgbaf},
     {"blending, separate", "PhongTestFiles/textured-diffuse-alpha.tga", true,
-        Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture, 0.0f,
+        PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture, 0.0f,
         "alpha-texture.tga", "diffuse-texture.tga",
         0xffffffff_rgbaf, 0x9999ff00_rgbaf},
     {"blending, combined", "PhongTestFiles/textured-diffuse-alpha.tga", true,
-        Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture, 0.0f,
+        PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture, 0.0f,
         "diffuse-alpha-texture.tga", "diffuse-alpha-texture.tga",
         0x000000ff_rgbaf, 0x9999ff00_rgbaf},
     {"masking 0.0, separate", "PhongTestFiles/textured-diffuse.tga", false,
-        Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::AlphaMask, 0.0f,
+        PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AlphaMask, 0.0f,
         "alpha-texture.tga", "diffuse-texture.tga",
         0xffffffff_rgbaf, 0x9999ff00_rgbaf},
     {"masking 0.5, separate", "PhongTestFiles/textured-diffuse-alpha-mask0.5.tga", false,
-        Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::AlphaMask, 0.5f,
+        PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AlphaMask, 0.5f,
         "alpha-texture.tga", "diffuse-texture.tga",
         0xffffffff_rgbaf, 0x9999ff00_rgbaf},
     {"masking 0.5, combined", "PhongTestFiles/textured-diffuse-alpha-mask0.5.tga", false,
-        Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::AlphaMask, 0.5f,
+        PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AlphaMask, 0.5f,
         "diffuse-alpha-texture.tga", "diffuse-alpha-texture.tga",
         0x000000ff_rgbaf, 0x9999ff00_rgbaf},
     {"masking 1.0, separate", "TestFiles/alpha-mask1.0.tga", false,
-        Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::AlphaMask, 1.0f,
+        PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AlphaMask, 1.0f,
         "alpha-texture.tga", "diffuse-texture.tga",
         0xffffffff_rgbaf, 0x9999ff00_rgbaf}
 };
@@ -326,17 +327,17 @@ const struct {
 #ifndef MAGNUM_TARGET_GLES2
 constexpr struct {
     const char* name;
-    Phong::Flags flags;
+    PhongGL::Flags flags;
     UnsignedInt uniformId;
     UnsignedInt instanceCount;
     UnsignedInt expected;
 } RenderObjectIdData[] {
     {"", /* Verify that it can hold 16 bits at least */
-        Phong::Flag::ObjectId, 48526, 0, 48526},
+        PhongGL::Flag::ObjectId, 48526, 0, 48526},
     {"instanced, first instance",
-        Phong::Flag::InstancedObjectId, 13524, 1, 24526},
+        PhongGL::Flag::InstancedObjectId, 13524, 1, 24526},
     {"instanced, second instance",
-        Phong::Flag::InstancedObjectId, 13524, 2, 62347}
+        PhongGL::Flag::InstancedObjectId, 13524, 2, 62347}
 };
 #endif
 
@@ -352,7 +353,7 @@ const struct {
     {"directional", "light-directional.tga",
         {1.0f, -1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, Constants::inf(),
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* Ambient isn't affected by light direction, otherwise it's a
                dot product of a normalized direction */
             {{40, 40}, 0x222222_rgb + 0xff8080_rgb*dot(Vector3{1.0f, -1.5f, 0.5f}.normalized(), Vector3::zAxis())},
@@ -379,7 +380,7 @@ const struct {
     {"directional, from back", "light-none.tga",
         {-1.0f, 1.5f, -0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, Constants::inf(),
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* Only ambient color left */
             {{40, 40}, 0x222222_rgb}
         }}},
@@ -388,13 +389,13 @@ const struct {
     {"directional, intensity=2", "light-directional-intensity2.tga",
         {1.0f, -1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
         2.0f, 1.0f,
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             {{40, 40}, 0x222222_rgb + 0xff8080_rgb*dot(Vector3{1.0f, -1.5f, 0.5f}.normalized(), Vector3::zAxis())*2.0f}
         }}},
     {"point", "light-point.tga",
         {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, Constants::inf(),
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* The range is inf, so it doesn't get fully ambient even at the
                edge */
             {{8, 71}, 0x2c2727_rgb},
@@ -406,21 +407,21 @@ const struct {
     {"point, specular material color", "light-point-specular-color.tga",
         {0.75f, -0.75f, -0.75f, 1.0f}, 0x80ff80_rgbf, Color3{1.0f},
         1.0f, Constants::inf(),
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* Colored specular highlight */
             {{60, 19}, 0xc27573_rgb}
         }}},
     {"point, specular light color", "light-point-specular-color.tga",
         {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, 0x80ff80_rgbf,
         1.0f, Constants::inf(),
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* Colored specular highlight */
             {{60, 19}, 0xc27573_rgb}
         }}},
     {"point, attenuated specular", "light-point-attenuated-specular.tga",
         {1.0f, -1.0f, -0.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, 2.5f,
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* Specular highlight shouldn't be brighter than the attenuated
                intensity */
             {{57, 22}, 0xa68787_rgb}
@@ -428,7 +429,7 @@ const struct {
     {"point, range=1.5, specular color", "light-point-range1.5.tga",
         {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, 0x80ff80_rgbf,
         1.0f, 1.5f,
-        {Containers::InPlaceInit, {
+        {InPlaceInit, {
             /* Color goes back to ambient at distance = 1.5 */
             {{59, 60}, 0x222222_rgb},
             {{29, 50}, 0x222222_rgb},
@@ -459,7 +460,7 @@ const struct {
 constexpr struct {
     const char* name;
     const char* file;
-    Phong::Flags flags;
+    PhongGL::Flags flags;
     Float maxThreshold, meanThreshold;
 } RenderInstancedData[] {
     {"diffuse", "instanced.tga", {},
@@ -471,7 +472,7 @@ constexpr struct {
         96.34f, 0.113f,
         #endif
         },
-    {"diffuse + normal", "instanced-normal.tga", Phong::Flag::NormalTexture,
+    {"diffuse + normal", "instanced-normal.tga", PhongGL::Flag::NormalTexture,
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /* AMD has one off pixel, llvmpipe more */
         96.0f, 0.333f,
@@ -598,11 +599,11 @@ void PhongGLTest::construct() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if((data.flags & Phong::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    if((data.flags & PhongGL::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
-    Phong shader{data.flags, data.lightCount};
+    PhongGL shader{data.flags, data.lightCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.lightCount(), data.lightCount);
     CORRADE_VERIFY(shader.id());
@@ -617,22 +618,22 @@ void PhongGLTest::construct() {
 }
 
 void PhongGLTest::constructMove() {
-    Phong a{Phong::Flag::AlphaMask, 3};
+    PhongGL a{PhongGL::Flag::AlphaMask, 3};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Phong b{std::move(a)};
+    PhongGL b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
-    CORRADE_COMPARE(b.flags(), Phong::Flag::AlphaMask);
+    CORRADE_COMPARE(b.flags(), PhongGL::Flag::AlphaMask);
     CORRADE_COMPARE(b.lightCount(), 3);
     CORRADE_VERIFY(!a.id());
 
-    Phong c{NoCreate};
+    PhongGL c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
-    CORRADE_COMPARE(c.flags(), Phong::Flag::AlphaMask);
+    CORRADE_COMPARE(c.flags(), PhongGL::Flag::AlphaMask);
     CORRADE_COMPARE(c.lightCount(), 3);
     CORRADE_VERIFY(!b.id());
 }
@@ -644,9 +645,9 @@ void PhongGLTest::constructTextureTransformationNotTextured() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    Phong{Phong::Flag::TextureTransformation};
+    PhongGL{PhongGL::Flag::TextureTransformation};
     CORRADE_COMPARE(out.str(),
-        "Shaders::Phong: texture transformation enabled but the shader is not textured\n");
+        "Shaders::PhongGL: texture transformation enabled but the shader is not textured\n");
 }
 
 void PhongGLTest::bindTexturesNotEnabled() {
@@ -658,7 +659,7 @@ void PhongGLTest::bindTexturesNotEnabled() {
     Error redirectError{&out};
 
     GL::Texture2D texture;
-    Phong shader;
+    PhongGL shader;
     shader.bindAmbientTexture(texture)
           .bindDiffuseTexture(texture)
           .bindSpecularTexture(texture)
@@ -667,12 +668,12 @@ void PhongGLTest::bindTexturesNotEnabled() {
           .bindTextures(&texture, &texture, &texture, &texture);
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::Phong::bindAmbientTexture(): the shader was not created with ambient texture enabled\n"
-        "Shaders::Phong::bindDiffuseTexture(): the shader was not created with diffuse texture enabled\n"
-        "Shaders::Phong::bindSpecularTexture(): the shader was not created with specular texture enabled\n"
-        "Shaders::Phong::bindNormalTexture(): the shader was not created with normal texture enabled\n"
-        "Shaders::Phong::setNormalTextureScale(): the shader was not created with normal texture enabled\n"
-        "Shaders::Phong::bindTextures(): the shader was not created with any textures enabled\n");
+        "Shaders::PhongGL::bindAmbientTexture(): the shader was not created with ambient texture enabled\n"
+        "Shaders::PhongGL::bindDiffuseTexture(): the shader was not created with diffuse texture enabled\n"
+        "Shaders::PhongGL::bindSpecularTexture(): the shader was not created with specular texture enabled\n"
+        "Shaders::PhongGL::bindNormalTexture(): the shader was not created with normal texture enabled\n"
+        "Shaders::PhongGL::setNormalTextureScale(): the shader was not created with normal texture enabled\n"
+        "Shaders::PhongGL::bindTextures(): the shader was not created with any textures enabled\n");
 }
 
 void PhongGLTest::setAlphaMaskNotEnabled() {
@@ -683,11 +684,11 @@ void PhongGLTest::setAlphaMaskNotEnabled() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Phong shader;
+    PhongGL shader;
     shader.setAlphaMask(0.75f);
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::Phong::setAlphaMask(): the shader was not created with alpha mask enabled\n");
+        "Shaders::PhongGL::setAlphaMask(): the shader was not created with alpha mask enabled\n");
 }
 
 void PhongGLTest::setTextureMatrixNotEnabled() {
@@ -698,11 +699,11 @@ void PhongGLTest::setTextureMatrixNotEnabled() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Phong shader;
+    PhongGL shader;
     shader.setTextureMatrix({});
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::Phong::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
+        "Shaders::PhongGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -714,11 +715,11 @@ void PhongGLTest::setObjectIdNotEnabled() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Phong shader;
+    PhongGL shader;
     shader.setObjectId(33376);
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::Phong::setObjectId(): the shader was not created with object ID enabled\n");
+        "Shaders::PhongGL::setObjectId(): the shader was not created with object ID enabled\n");
 }
 #endif
 
@@ -729,14 +730,14 @@ void PhongGLTest::setWrongLightCount() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    Phong{{}, 5}
+    PhongGL{{}, 5}
         .setLightColors({Color3{}})
         .setLightPositions({Vector4{}})
         .setLightRanges({0.0f});
     CORRADE_COMPARE(out.str(),
-        "Shaders::Phong::setLightColors(): expected 5 items but got 1\n"
-        "Shaders::Phong::setLightPositions(): expected 5 items but got 1\n"
-        "Shaders::Phong::setLightRanges(): expected 5 items but got 1\n");
+        "Shaders::PhongGL::setLightColors(): expected 5 items but got 1\n"
+        "Shaders::PhongGL::setLightPositions(): expected 5 items but got 1\n"
+        "Shaders::PhongGL::setLightRanges(): expected 5 items but got 1\n");
 }
 
 void PhongGLTest::setWrongLightId() {
@@ -746,14 +747,14 @@ void PhongGLTest::setWrongLightId() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    Phong{{}, 3}
+    PhongGL{{}, 3}
         .setLightColor(3, Color3{})
         .setLightPosition(3, Vector4{})
         .setLightRange(3, 0.0f);
     CORRADE_COMPARE(out.str(),
-        "Shaders::Phong::setLightColor(): light ID 3 is out of bounds for 3 lights\n"
-        "Shaders::Phong::setLightPosition(): light ID 3 is out of bounds for 3 lights\n"
-        "Shaders::Phong::setLightRange(): light ID 3 is out of bounds for 3 lights\n");
+        "Shaders::PhongGL::setLightColor(): light ID 3 is out of bounds for 3 lights\n"
+        "Shaders::PhongGL::setLightPosition(): light ID 3 is out of bounds for 3 lights\n"
+        "Shaders::PhongGL::setLightRange(): light ID 3 is out of bounds for 3 lights\n");
 }
 
 constexpr Vector2i RenderSize{80, 80};
@@ -787,7 +788,7 @@ void PhongGLTest::renderTeardown() {
 void PhongGLTest::renderDefaults() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Phong{}
+    PhongGL{}
         .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -817,7 +818,7 @@ void PhongGLTest::renderColored() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Phong{{}, 2}
+    PhongGL{{}, 2}
         .setLightColors({data.lightColor1, data.lightColor2})
         .setLightPositions({{data.lightPosition1, -3.0f, 2.0f, 0.0f},
                             {data.lightPosition2, -3.0f, 2.0f, 0.0f}})
@@ -900,7 +901,7 @@ void PhongGLTest::renderSinglePixelTextured() {
         .setStorage(1, TextureFormatRGBA, Vector2i{1})
         .setSubImage(0, {}, specularImage);
 
-    Phong shader{Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture, 2};
+    PhongGL shader{PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 2};
     shader.setLightColors({0x993366_rgbf, 0x669933_rgbf})
         .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
                             { 3.0f, -3.0f, 2.0f, 0.0f}})
@@ -948,7 +949,7 @@ void PhongGLTest::renderTextured() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
-    Phong shader{data.flags, 2};
+    PhongGL shader{data.flags, 2};
 
     if(data.textureTransformation != Matrix3{})
         shader.setTextureMatrix(data.textureTransformation);
@@ -957,7 +958,7 @@ void PhongGLTest::renderTextured() {
     CORRADE_VERIFY(importer);
 
     GL::Texture2D ambient;
-    if(data.flags & Phong::Flag::AmbientTexture) {
+    if(data.flags & PhongGL::Flag::AmbientTexture) {
         Containers::Optional<Trade::ImageData2D> image;
         CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/ambient-texture.tga")) && (image = importer->image2D(0)));
         ambient.setMinificationFilter(GL::SamplerFilter::Linear)
@@ -975,7 +976,7 @@ void PhongGLTest::renderTextured() {
     /* If no diffuse texture is present, dial down the default diffuse color
        so ambient/specular is visible */
     GL::Texture2D diffuse;
-    if(data.flags & Phong::Flag::DiffuseTexture) {
+    if(data.flags & PhongGL::Flag::DiffuseTexture) {
         Containers::Optional<Trade::ImageData2D> image;
         CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
         diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
@@ -991,7 +992,7 @@ void PhongGLTest::renderTextured() {
     } else shader.setDiffuseColor(0x333333_rgbf);
 
     GL::Texture2D specular;
-    if(data.flags & Phong::Flag::SpecularTexture) {
+    if(data.flags & PhongGL::Flag::SpecularTexture) {
         Containers::Optional<Trade::ImageData2D> image;
         CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/specular-texture.tga")) && (image = importer->image2D(0)));
         specular.setMinificationFilter(GL::SamplerFilter::Linear)
@@ -1070,17 +1071,17 @@ void PhongGLTest::renderTexturedNormal() {
         Vector3 bitangent;
     } tangentBitangent{data.tangent, data.bitangent};
     GL::Buffer tangents;
-    tangents.setData(Containers::Array<TangentBitangent>{Containers::DirectInit, 4, tangentBitangent});
+    tangents.setData(Containers::Array<TangentBitangent>{DirectInit, 4, tangentBitangent});
     plane.addVertexBuffer(tangents, 0, sizeof(TangentBitangent),
-        GL::DynamicAttribute{Shaders::Phong::Tangent4{data.tangentComponents}});
+        GL::DynamicAttribute{Shaders::PhongGL::Tangent4{data.tangentComponents}});
     plane.addVertexBuffer(std::move(tangents), sizeof(Vector4),
         sizeof(TangentBitangent),
-        GL::DynamicAttribute{Shaders::Phong::Bitangent{}});
+        GL::DynamicAttribute{Shaders::PhongGL::Bitangent{}});
 
     /* Rotating the view a few times (together with light positions). If the
        tangent transformation in the shader is correct, it should result in
        exactly the same images. */
-    Phong shader{Phong::Flag::NormalTexture|data.flags, 2};
+    PhongGL shader{PhongGL::Flag::NormalTexture|data.flags, 2};
     shader.setLightPositions({
             Matrix4::rotationZ(data.rotation)*Vector4{-3.0f, -3.0f, 2.0f, 0.0f},
             Matrix4::rotationZ(data.rotation)*Vector4{ 3.0f, -3.0f, 2.0f, 0.0f}})
@@ -1147,7 +1148,7 @@ template<class T> void PhongGLTest::renderVertexColor() {
         Primitives::UVSphereFlag::TextureCoordinates);
 
     /* Highlight the pole vertices and the middle rings */
-    Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0x999999_rgbf};
+    Containers::Array<T> colorData{DirectInit, sphereData.vertexCount(), 0x999999_rgbf};
     for(std::size_t i = 0; i != 3*33 + 1; ++i)
         colorData[sphereData.vertexCount()  - i - 1] = 0xff0000_rgbf*5.0f;
     for(std::size_t i = 6*33; i != 9*33; ++i)
@@ -1156,7 +1157,7 @@ template<class T> void PhongGLTest::renderVertexColor() {
     GL::Buffer colors;
     colors.setData(colorData);
     GL::Mesh sphere = MeshTools::compile(sphereData);
-    sphere.addVertexBuffer(colors, 0, GL::Attribute<Shaders::Phong::Color3::Location, T>{});
+    sphere.addVertexBuffer(colors, 0, GL::Attribute<Shaders::PhongGL::Color3::Location, T>{});
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -1170,7 +1171,7 @@ template<class T> void PhongGLTest::renderVertexColor() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Phong{Phong::Flag::DiffuseTexture|Phong::Flag::VertexColor, 2}
+    PhongGL{PhongGL::Flag::DiffuseTexture|PhongGL::Flag::VertexColor, 2}
         .setLightPositions({{-3.0f, -3.0f, 0.0f, 0.0f},
                             { 3.0f, -3.0f, 0.0f, 0.0f}})
         .setTransformationMatrix(
@@ -1208,7 +1209,7 @@ void PhongGLTest::renderShininess() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Phong{}
+    PhongGL{}
         .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f}})
         .setDiffuseColor(0xff3333_rgbf)
         .setSpecularColor(data.specular)
@@ -1246,13 +1247,13 @@ void PhongGLTest::renderShininess() {
             "ARM Mali has a much larger ring for the overflown shininess when it's exactly 0.");
         #endif
         #ifndef MAGNUM_TARGET_WEBGL
-        CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().find("AMD") != std::string::npos,
+        CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().contains("AMD"),
             "AMD Mesa drivers have a much larger ring for the overflown shininess when it's exactly 0.");
-        CORRADE_EXPECT_FAIL_IF(data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().find("llvmpipe") != std::string::npos,
+        CORRADE_EXPECT_FAIL_IF(data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().contains("llvmpipe"),
             "Mesa llvmpipe drivers have a much larger ring for the overflown shininess.");
         #endif
         #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-        CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && GL::Context::current().rendererString().find("AMD") != std::string::npos,
+        CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && GL::Context::current().rendererString().contains("AMD"),
             "AMD on macOS has a much larger ring for the overflown shininess when it's exactly 0.");
         #endif
         CORRADE_COMPARE_WITH(
@@ -1268,10 +1269,10 @@ void PhongGLTest::renderShininess() {
         || (data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader))
         #endif
         #ifndef MAGNUM_TARGET_WEBGL
-        || (data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().find("AMD") != std::string::npos)
+        || (data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().contains("AMD"))
         #endif
         #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-        || (data.shininess == 0.0f && GL::Context::current().rendererString().find("AMD") != std::string::npos)
+        || (data.shininess == 0.0f && GL::Context::current().rendererString().contains("AMD"))
         #endif
         #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES2)
         || (data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::ArmMali))
@@ -1342,7 +1343,7 @@ void PhongGLTest::renderAlpha() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
-    Phong shader{data.flags, 2};
+    PhongGL shader{data.flags, 2};
     shader.setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
                               { 3.0f, -3.0f, 2.0f, 0.0f}})
         .setTransformationMatrix(
@@ -1359,7 +1360,7 @@ void PhongGLTest::renderAlpha() {
 
     /* Test that the default is correct by not setting the threshold if it's
        equal to the default */
-    if(data.flags & Phong::Flag::AlphaMask && data.threshold != 0.5f)
+    if(data.flags & PhongGL::Flag::AlphaMask && data.threshold != 0.5f)
         shader.setAlphaMask(data.threshold);
 
     /* For proper Z order draw back faces first and then front faces */
@@ -1412,8 +1413,8 @@ void PhongGLTest::renderObjectIdSetup() {
         _objectId.setStorage(GL::RenderbufferFormat::R32UI, RenderSize);
         _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
             .mapForDraw({
-                {Phong::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
-                {Phong::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+                {PhongGL::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+                {PhongGL::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
             })
             .clearColor(1, Vector4ui{27});
     }
@@ -1431,7 +1432,7 @@ void PhongGLTest::renderObjectId() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
@@ -1442,9 +1443,9 @@ void PhongGLTest::renderObjectId() {
         .setInstanceCount(data.instanceCount)
         .addVertexBufferInstanced(
             GL::Buffer{Containers::arrayView({11002u, 48823u})},
-            1, 0, Phong::ObjectId{});
+            1, 0, PhongGL::ObjectId{});
 
-    Phong{data.flags, 2}
+    PhongGL{data.flags, 2}
         .setLightColors({0x993366_rgbf, 0x669933_rgbf})
         .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
                             { 3.0f, -3.0f, 2.0f, 0.0f}})
@@ -1501,7 +1502,7 @@ void PhongGLTest::renderLights() {
     Matrix4 transformation =
         Matrix4::translation({0.0f, 0.0f, -1.5f});
 
-    Phong{{}, 1}
+    PhongGL{{}, 1}
         /* Set non-black ambient to catch accidental NaNs -- the render should
            never be fully black */
         .setAmbientColor(0x222222_rgbf)
@@ -1552,7 +1553,7 @@ void PhongGLTest::renderLightsSetOneByOne() {
     Matrix4 transformation =
         Matrix4::translation({0.0f, 0.0f, -1.5f});
 
-    Phong{{}, 2}
+    PhongGL{{}, 2}
         /* Set non-black ambient to catch accidental NaNs -- the render should
            never be fully black */
         .setAmbientColor(0x222222_rgbf)
@@ -1607,7 +1608,7 @@ void PhongGLTest::renderLowLightAngle() {
        in the vertex shader, where the incorrect normalization caused the
        fragment-interpolated light direction being incorrect, most visible with
        long polygons and low light angles. */
-    Phong{{}, 1}
+    PhongGL{{}, 1}
         .setLightPositions({{0.0f, 0.1f, 0.0f, 1.0f}})
         .setShininess(200)
         .setTransformationMatrix(transformation)
@@ -1645,16 +1646,16 @@ void PhongGLTest::renderZeroLights() {
         Primitives::UVSphereFlag::TextureCoordinates));
 
     /* Enable also Object ID, if supported */
-    Phong::Flags flags = Phong::Flag::AmbientTexture|Phong::Flag::NormalTexture|Phong::Flag::AlphaMask;
+    PhongGL::Flags flags = PhongGL::Flag::AmbientTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::AlphaMask;
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
     #endif
     {
-        flags |= Phong::Flag::ObjectId;
+        flags |= PhongGL::Flag::ObjectId;
     }
     #endif
-    Phong shader{flags, 0};
+    PhongGL shader{flags, 0};
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -1751,7 +1752,7 @@ void PhongGLTest::renderInstanced() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
-        CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_WEBGL
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::instanced_arrays>() &&
@@ -1760,7 +1761,7 @@ void PhongGLTest::renderInstanced() {
         CORRADE_SKIP("GL_{ANGLE,EXT,NV}_instanced_arrays is not supported");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::instanced_arrays>())
-        CORRADE_SKIP(GL::Extensions::ANGLE::instanced_arrays::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ANGLE::instanced_arrays::string() << "is not supported.");
     #endif
     #endif
 
@@ -1795,10 +1796,10 @@ void PhongGLTest::renderInstanced() {
 
     sphere
         .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
-            Phong::TransformationMatrix{},
-            Phong::NormalMatrix{},
-            Phong::Color3{},
-            Phong::TextureOffset{})
+            PhongGL::TransformationMatrix{},
+            PhongGL::NormalMatrix{},
+            PhongGL::Color3{},
+            PhongGL::TextureOffset{})
         .setInstanceCount(3);
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
@@ -1821,10 +1822,10 @@ void PhongGLTest::renderInstanced() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Phong shader{Phong::Flag::DiffuseTexture|
-          Phong::Flag::VertexColor|
-          Phong::Flag::InstancedTransformation|
-          Phong::Flag::InstancedTextureOffset|data.flags, 2};
+    PhongGL shader{PhongGL::Flag::DiffuseTexture|
+          PhongGL::Flag::VertexColor|
+          PhongGL::Flag::InstancedTransformation|
+          PhongGL::Flag::InstancedTextureOffset|data.flags, 2};
     shader
         .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
                             { 3.0f, -3.0f, 2.0f, 0.0f}})
@@ -1841,7 +1842,7 @@ void PhongGLTest::renderInstanced() {
         .bindDiffuseTexture(diffuse)
         .setDiffuseColor(0xffff99_rgbf);
 
-    if(data.flags & Phong::Flag::NormalTexture)
+    if(data.flags & PhongGL::Flag::NormalTexture)
         shader.bindNormalTexture(normal);
 
     shader.draw(sphere);

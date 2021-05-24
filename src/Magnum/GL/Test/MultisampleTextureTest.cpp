@@ -54,7 +54,7 @@ void MultisampleTextureTest::construct2DNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, MultisampleTexture2D>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, MultisampleTexture2D>::value);
 }
 
 void MultisampleTextureTest::construct2DArrayNoCreate() {
@@ -64,7 +64,7 @@ void MultisampleTextureTest::construct2DArrayNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, MultisampleTexture2DArray>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, MultisampleTexture2DArray>::value);
 }
 
 void MultisampleTextureTest::constructCopy2D() {

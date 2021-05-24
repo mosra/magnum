@@ -165,6 +165,10 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
         .addBooleanOption("always-on-top").setHelp("always-on-top", "always on top")
         #endif
         #endif
+        #ifdef MAGNUM_TARGET_GL
+        .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
+        .addBooleanOption("gpu-validation").setHelp("gpu-validation", "like --magnum-gpu-validation, but specified via a Context::Configuration instead")
+        #endif
         .parse(arguments.argc, arguments.argv);
 
     if(args.isSet("exit-immediately")) {
@@ -184,7 +188,22 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
         conf.addWindowFlags(Configuration::WindowFlag::AlwaysOnTop);
     #endif
     #endif
+    #ifdef MAGNUM_TARGET_GL
+    GLConfiguration glConf;
+    if(args.isSet("quiet"))
+        glConf.addFlags(GLConfiguration::Flag::QuietLog);
+    /* No GL-specific verbose log in Sdl2Application that we'd need to handle
+       explicitly */
+    if(args.isSet("gpu-validation"))
+        glConf.addFlags(GLConfiguration::Flag::GpuValidation);
+    create(conf, glConf);
+    #else
     create(conf);
+    #endif
+
+    #if defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_WEBGL)
+    Debug{} << "GL context flags:" << GL::Context::current().flags();
+    #endif
 
     /* For testing resize events */
     Debug{} << "window size" << windowSize()

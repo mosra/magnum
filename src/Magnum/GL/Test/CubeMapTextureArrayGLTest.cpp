@@ -329,10 +329,10 @@ CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
 void CubeMapTextureArrayGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     {
@@ -357,10 +357,10 @@ void CubeMapTextureArrayGLTest::constructMove() {
 void CubeMapTextureArrayGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     GLuint id;
@@ -380,10 +380,10 @@ void CubeMapTextureArrayGLTest::wrap() {
 void CubeMapTextureArrayGLTest::bind() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -407,12 +407,12 @@ void CubeMapTextureArrayGLTest::bind() {
 void CubeMapTextureArrayGLTest::bindImage() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::shader_image_load_store>())
-        CORRADE_SKIP(Extensions::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::shader_image_load_store::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isVersionSupported(Version::GLES310))
         CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
     #endif
@@ -447,10 +447,10 @@ template<class T> void CubeMapTextureArrayGLTest::sampling() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -479,13 +479,13 @@ template<class T> void CubeMapTextureArrayGLTest::sampling() {
 void CubeMapTextureArrayGLTest::samplingSrgbDecode() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_sRGB_decode>())
-        CORRADE_SKIP(Extensions::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_sRGB_decode::string() << "is not supported.");
 
     CubeMapTextureArray texture;
     texture.setSrgbDecode(false);
@@ -496,14 +496,14 @@ void CubeMapTextureArrayGLTest::samplingSrgbDecode() {
 void CubeMapTextureArrayGLTest::samplingBorderInteger() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_integer>())
-        CORRADE_SKIP(Extensions::EXT::texture_integer::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_integer::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_border_clamp>())
-        CORRADE_SKIP(Extensions::EXT::texture_border_clamp::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_border_clamp::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray a;
@@ -519,12 +519,12 @@ void CubeMapTextureArrayGLTest::samplingBorderInteger() {
 void CubeMapTextureArrayGLTest::samplingSwizzle() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_swizzle>())
-        CORRADE_SKIP(Extensions::ARB::texture_swizzle::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_swizzle::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -536,12 +536,12 @@ void CubeMapTextureArrayGLTest::samplingSwizzle() {
 void CubeMapTextureArrayGLTest::samplingDepthStencilMode() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::stencil_texturing>())
-        CORRADE_SKIP(Extensions::ARB::stencil_texturing::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::stencil_texturing::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -553,9 +553,9 @@ void CubeMapTextureArrayGLTest::samplingDepthStencilMode() {
 #ifdef MAGNUM_TARGET_GLES
 void CubeMapTextureArrayGLTest::samplingBorder() {
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_border_clamp>())
-        CORRADE_SKIP(Extensions::EXT::texture_border_clamp::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_border_clamp::string() << "is not supported.");
 
     CubeMapTextureArray texture;
     texture.setWrapping(SamplerWrapping::ClampToBorder)
@@ -568,10 +568,10 @@ void CubeMapTextureArrayGLTest::samplingBorder() {
 void CubeMapTextureArrayGLTest::storage() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -594,10 +594,10 @@ void CubeMapTextureArrayGLTest::image() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -626,10 +626,10 @@ void CubeMapTextureArrayGLTest::imageBuffer() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -661,7 +661,7 @@ void CubeMapTextureArrayGLTest::imageQueryView() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
 
     CubeMapTextureArray texture;
     texture.setImage(0, TextureFormat::RGBA8, ImageView3D{
@@ -689,22 +689,22 @@ void CubeMapTextureArrayGLTest::compressedImage() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::texture_compression_dxt3>())
-        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() << "is not supported.");
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(CompressedPixelStorageData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -734,22 +734,22 @@ void CubeMapTextureArrayGLTest::compressedImageBuffer() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::texture_compression_dxt3>())
-        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() << "is not supported.");
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(CompressedPixelStorageData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -782,12 +782,12 @@ void CubeMapTextureArrayGLTest::compressedImageQueryView() {
     setTestCaseDescription(CompressedPixelStorageData[testCaseInstanceId()].name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
 
     if(CompressedPixelStorageData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
 
     CubeMapTextureArray texture;
     texture.setCompressedImage(0, CompressedImageView3D{
@@ -852,10 +852,10 @@ void CubeMapTextureArrayGLTest::subImage() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -885,10 +885,10 @@ void CubeMapTextureArrayGLTest::subImageBuffer() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -921,9 +921,9 @@ void CubeMapTextureArrayGLTest::subImageQuery() {
     setTestCaseDescription(SubPixelStorageData[testCaseInstanceId()].name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() << "is not supported.");
 
     CubeMapTextureArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, {4, 4, 6})
@@ -947,9 +947,9 @@ void CubeMapTextureArrayGLTest::subImageQueryView() {
     setTestCaseDescription(SubPixelStorageData[testCaseInstanceId()].name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() << "is not supported.");
 
     CubeMapTextureArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, {4, 4, 6})
@@ -973,9 +973,9 @@ void CubeMapTextureArrayGLTest::subImageQueryBuffer() {
     setTestCaseDescription(SubPixelStorageData[testCaseInstanceId()].name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() << "is not supported.");
 
     CubeMapTextureArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, {4, 4, 6})
@@ -1068,22 +1068,22 @@ void CubeMapTextureArrayGLTest::compressedSubImage() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::texture_compression_dxt3>())
-        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() << "is not supported.");
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(CompressedPixelStorageData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -1121,22 +1121,22 @@ void CubeMapTextureArrayGLTest::compressedSubImageBuffer() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::texture_compression_dxt3>())
-        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() << "is not supported.");
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(CompressedPixelStorageData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -1170,15 +1170,15 @@ void CubeMapTextureArrayGLTest::compressedSubImageQuery() {
     setTestCaseDescription(CompressedSubPixelStorageData[testCaseInstanceId()].name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
     if(CompressedSubPixelStorageData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
     if(CompressedSubPixelStorageData[testCaseInstanceId()].storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::internalformat_query2>())
-        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() << "is not supported.");
 
     CubeMapTextureArray texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {12, 12, 6})
@@ -1200,15 +1200,15 @@ void CubeMapTextureArrayGLTest::compressedSubImageQueryView() {
     setTestCaseDescription(CompressedSubPixelStorageData[testCaseInstanceId()].name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
     if(CompressedSubPixelStorageData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
     if(CompressedSubPixelStorageData[testCaseInstanceId()].storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::internalformat_query2>())
-        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() << "is not supported.");
 
     CubeMapTextureArray texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {12, 12, 6})
@@ -1232,15 +1232,15 @@ void CubeMapTextureArrayGLTest::compressedSubImageQueryBuffer() {
     setTestCaseDescription(CompressedSubPixelStorageData[testCaseInstanceId()].name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
     if(CompressedSubPixelStorageData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
     if(CompressedSubPixelStorageData[testCaseInstanceId()].storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::internalformat_query2>())
-        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() << "is not supported.");
 
     CubeMapTextureArray texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {12, 12, 6})
@@ -1263,12 +1263,12 @@ void CubeMapTextureArrayGLTest::compressedSubImageQueryBuffer() {
 void CubeMapTextureArrayGLTest::generateMipmap() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -1295,10 +1295,10 @@ void CubeMapTextureArrayGLTest::generateMipmap() {
 void CubeMapTextureArrayGLTest::invalidateImage() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;
@@ -1311,10 +1311,10 @@ void CubeMapTextureArrayGLTest::invalidateImage() {
 void CubeMapTextureArrayGLTest::invalidateSubImage() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray texture;

@@ -90,7 +90,7 @@ Extension                                           | Status
 @vk_extension{KHR,create_renderpass2}               | done
 @vk_extension{EXT,sampler_filter_minmax}            | |
 @vk_extension{KHR,image_format_list}                | |
-@vk_extension{EXT,descriptor_indexing}              | |
+@vk_extension{EXT,descriptor_indexing}              | done except properties
 @vk_extension{EXT,shader_viewport_index_layer}      | |
 @vk_extension{KHR,draw_indirect_count}              | |
 @vk_extension{KHR,shader_subgroup_extended_types}   | |

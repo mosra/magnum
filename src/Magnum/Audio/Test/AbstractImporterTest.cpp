@@ -340,7 +340,7 @@ void AbstractImporterTest::data() {
         }
     } importer;
 
-    CORRADE_COMPARE_AS(importer.data(), (Containers::Array<char>{Containers::InPlaceInit, {'H'}}), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(importer.data(), (Containers::Array<char>{InPlaceInit, {'H'}}), TestSuite::Compare::Container);
 }
 
 void AbstractImporterTest::dataNoFile() {

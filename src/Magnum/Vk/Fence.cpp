@@ -78,7 +78,7 @@ Fence& Fence::operator=(Fence&& other) noexcept {
 }
 
 bool Fence::status() {
-    return MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(NotReady, (**_device).GetFenceStatus(*_device, _handle)) == Result::Success;
+    return MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR((**_device).GetFenceStatus(*_device, _handle), Result::NotReady) == Result::Success;
 }
 
 void Fence::reset() {
@@ -86,7 +86,7 @@ void Fence::reset() {
 }
 
 bool Fence::wait(const std::chrono::nanoseconds timeout) {
-    return MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Timeout, (**_device).WaitForFences(*_device, 1, &_handle, true, timeout.count())) == Result::Success;
+    return MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR((**_device).WaitForFences(*_device, 1, &_handle, true, timeout.count()), Result::Timeout) == Result::Success;
 }
 
 void Fence::wait() {

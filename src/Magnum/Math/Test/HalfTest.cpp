@@ -32,6 +32,7 @@
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Corrade/Utility/Tweakable.h>
 #endif
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Packing.h"
@@ -504,11 +505,11 @@ void HalfTest::constructDefault() {
     CORRADE_COMPARE(UnsignedShort(b), 0);
     CORRADE_COMPARE(b.data(), 0);
 
-    CORRADE_VERIFY((std::is_nothrow_default_constructible<Half>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Half, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Half>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Half, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Half>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Half>::value);
 }
 
 void HalfTest::constructValue() {
@@ -521,12 +522,12 @@ void HalfTest::constructValue() {
     CORRADE_COMPARE(a.data(), 0x4300);
     CORRADE_COMPARE(b.data(), 0x4300);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Half, Float>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Half, Double>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Half, Float>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Half, Double>::value);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Float, Half>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Double, Half>::value));
+    CORRADE_VERIFY(!std::is_convertible<Float, Half>::value);
+    CORRADE_VERIFY(!std::is_convertible<Double, Half>::value);
 }
 
 void HalfTest::constructData() {
@@ -534,10 +535,10 @@ void HalfTest::constructData() {
     CORRADE_COMPARE(Float(a), 3.5f);
     CORRADE_COMPARE(UnsignedShort(a), 0x4300);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Half, UnsignedShort>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Half, UnsignedShort>::value);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<UnsignedShort, Half>::value));
+    CORRADE_VERIFY(!std::is_convertible<UnsignedShort, Half>::value);
 }
 
 void HalfTest::constructNoInit() {
@@ -550,10 +551,10 @@ void HalfTest::constructNoInit() {
         CORRADE_COMPARE(a, Half{3.5f});
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Half, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Half, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Half>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Half>::value);
 }
 
 void HalfTest::constructCopy() {
@@ -562,6 +563,10 @@ void HalfTest::constructCopy() {
 
     CORRADE_COMPARE(b, Half{3.5f});
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Half>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Half>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Half>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Half>::value);
 }

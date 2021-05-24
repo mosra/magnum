@@ -23,8 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/Reference.h>
-
+#include "Magnum/Vk/DescriptorSetLayoutCreateInfo.h"
+#include "Magnum/Vk/DescriptorType.h"
 #include "Magnum/Vk/PipelineLayoutCreateInfo.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/VulkanTester.h"
@@ -34,22 +34,45 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct PipelineLayoutVkTest: VulkanTester {
     explicit PipelineLayoutVkTest();
 
-    void construct();
+    void constructEmpty();
+    void constructWithDescriptorSetLayout();
     void constructMove();
 
     void wrap();
 };
 
 PipelineLayoutVkTest::PipelineLayoutVkTest() {
-    addTests({&PipelineLayoutVkTest::construct,
+    addTests({&PipelineLayoutVkTest::constructEmpty,
+              &PipelineLayoutVkTest::constructWithDescriptorSetLayout,
               &PipelineLayoutVkTest::constructMove,
 
               &PipelineLayoutVkTest::wrap});
 }
 
-void PipelineLayoutVkTest::construct() {
+void PipelineLayoutVkTest::constructEmpty() {
     {
+        /* Rare, but should still work */
         PipelineLayout layout{device(), PipelineLayoutCreateInfo{}};
+        CORRADE_VERIFY(layout.handle());
+        CORRADE_COMPARE(layout.handleFlags(), HandleFlag::DestroyOnDestruction);
+    }
+
+    /* Shouldn't crash or anything */
+    CORRADE_VERIFY(true);
+}
+
+void PipelineLayoutVkTest::constructWithDescriptorSetLayout() {
+    {
+        DescriptorSetLayout descriptorSetLayout1{device(), DescriptorSetLayoutCreateInfo{
+            {{15, DescriptorType::UniformBuffer}}
+        }};
+        DescriptorSetLayout descriptorSetLayout2{device(), DescriptorSetLayoutCreateInfo{
+            {{1, DescriptorType::CombinedImageSampler}}
+        }};
+
+        PipelineLayout layout{device(), PipelineLayoutCreateInfo{
+            descriptorSetLayout1, descriptorSetLayout2
+        }};
         CORRADE_VERIFY(layout.handle());
         CORRADE_COMPARE(layout.handleFlags(), HandleFlag::DestroyOnDestruction);
     }

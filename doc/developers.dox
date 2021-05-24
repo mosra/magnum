@@ -508,14 +508,14 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 @section developers-adding-attribute Checklist for adding a new mesh attribute
 
 1.  Extend @ref Trade::MeshAttribute with the new entry
-2.  Add a corresponding reserved type to @ref Shaders::Generic, if not there
+2.  Add a corresponding reserved type to @ref Shaders::GenericGL, if not there
     already
     -   Also update `src/Magnum/Shaders/generic.glsl` with the reserved ID
 3.  Update the type assertion in the @ref Trade::MeshAttributeData constructor
     to account for the new type
 4.  Add a pair of convenience getters to @ref Trade::MeshData similar to e.g.
     @ref Trade::MeshData::normalsInto() / @ref Trade::MeshData::normalsAsArray()
-    with a type that's the same as the one used in the @ref Shaders::Generic
+    with a type that's the same as the one used in the @ref Shaders::GenericGL
     definition, test that it does the right thing for every supported type
 5.  Update @ref Trade::operator<<(Debug&, MeshAttribute) for the new entry
 6.  Update @ref MeshTools::compile() to recognize the new attribute. If there
@@ -792,6 +792,11 @@ unless it doesn't affect public API at all.
 -   The main constructor(s) should explicitly list what structure fields are
     filled to which value, and if the constructor isn't enough to get a working
     state, it should also clearly mention what needs to be done next
+-   For everything non-essential or what isn't practical to be set in
+    constructor a setter should be added. If applicable, document what
+    subsequent calls to the same function result in (for example when a list
+    gets cleared while all other functions append to lists). The docs should
+    again list what underlying structure fields are set to which value.
 -   Every class should have a @ref NoInitT constructor, which keeps the
     structure uninitialized and *doesn't* allocate any internal state
 -   Every class should have a constructor taking the underlying Vulkan

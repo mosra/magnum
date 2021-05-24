@@ -30,7 +30,7 @@
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/Primitives/Axis.h"
 #include "Magnum/SceneGraph/Camera.h"
-#include "Magnum/Shaders/VertexColor.h"
+#include "Magnum/Shaders/VertexColorGL.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace DebugTools {
@@ -56,8 +56,8 @@ template<> struct Renderer<3> {
 /* Doxygen gets confused when using {} to initialize parent object */
 template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(object, drawables), _options{manager.get<ObjectRendererOptions>(options)} {
     /* Shader */
-    _shader = manager.get<GL::AbstractShaderProgram, Shaders::VertexColor<dimensions>>(Renderer<dimensions>::shader());
-    if(!_shader) manager.set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::VertexColor<dimensions>);
+    _shader = manager.get<GL::AbstractShaderProgram, Shaders::VertexColorGL<dimensions>>(Renderer<dimensions>::shader());
+    if(!_shader) manager.set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::VertexColorGL<dimensions>);
 
     /* Mesh */
     _mesh = manager.get<GL::Mesh>(Renderer<dimensions>::mesh());

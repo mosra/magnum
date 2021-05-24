@@ -40,7 +40,6 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 #endif
 
 /** @todo drop once we don't support < 1.38.27 anymore */
@@ -237,7 +236,7 @@ EmscriptenApplication::EmscriptenApplication(const Arguments& arguments, NoCreat
 {
     Utility::Arguments args{Implementation::windowScalingArguments()};
     #ifdef MAGNUM_TARGET_GL
-    _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});
+    _context.emplace(NoCreate, args, arguments.argc, arguments.argv);
     #else
     args.parse(arguments.argc, arguments.argv);
     #endif
@@ -260,7 +259,9 @@ EmscriptenApplication::EmscriptenApplication(const Arguments& arguments, NoCreat
 
 EmscriptenApplication::~EmscriptenApplication() {
     #ifdef MAGNUM_TARGET_GL
-    _context.reset();
+    /* Destroy Magnum context first to avoid it potentially accessing the
+       now-destroyed GL context after */
+    _context = Containers::NullOpt;
 
     emscripten_webgl_destroy_context(_glContext);
     #endif
@@ -450,7 +451,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     setupAnimationFrame(!!(configuration.windowFlags() & Configuration::WindowFlag::AlwaysRequestAnimationFrame));
 
     /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    return _context->tryCreate(glConfiguration);
 }
 #endif
 
@@ -770,7 +771,10 @@ void EmscriptenApplication::textInputEvent(TextInputEvent&) {}
 #ifdef MAGNUM_TARGET_GL
 EmscriptenApplication::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 8}, _depthBufferSize{24}, _stencilBufferSize{0},
-    _sampleCount{0} {}
+    _sampleCount{0}
+{
+    addFlags(Flag::EnableExtensionsByDefault);
+}
 #endif
 
 int EmscriptenApplication::exec() {

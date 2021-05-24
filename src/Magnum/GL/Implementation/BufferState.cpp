@@ -25,6 +25,7 @@
 
 #include "BufferState.h"
 
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/Context.h"
@@ -32,6 +33,8 @@
 #include "Magnum/GL/Implementation/State.h"
 
 namespace Magnum { namespace GL { namespace Implementation {
+
+using namespace Containers::Literals;
 
 const Buffer::TargetHint BufferState::targetForIndex[] = {
     Buffer::TargetHint::Array,
@@ -77,7 +80,7 @@ std::size_t BufferState::indexForTarget(Buffer::TargetHint target) {
     CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-BufferState::BufferState(Context& context, std::vector<std::string>& extensions): bindings()
+BufferState::BufferState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions): bindings()
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     , minMapAlignment(0)
@@ -93,10 +96,11 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
         #ifdef CORRADE_TARGET_WINDOWS
         && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
-        context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-buffer-dsa"))
+        context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-buffer-dsa"_s))
         #endif
     ) {
-        extensions.emplace_back(Extensions::ARB::direct_state_access::string());
+        extensions[Extensions::ARB::direct_state_access::Index] =
+                   Extensions::ARB::direct_state_access::string();
 
         createImplementation = &Buffer::createImplementationDSA;
         copyImplementation = &Buffer::copyImplementationDSA;
@@ -137,7 +141,8 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
 
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::invalidate_subdata>()) {
-        extensions.emplace_back(Extensions::ARB::invalidate_subdata::string());
+        extensions[Extensions::ARB::invalidate_subdata::Index] =
+                   Extensions::ARB::invalidate_subdata::string();
 
         invalidateImplementation = &Buffer::invalidateImplementationARB;
         invalidateSubImplementation = &Buffer::invalidateSubImplementationARB;
@@ -151,7 +156,8 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::multi_bind>()) {
-        extensions.emplace_back(Extensions::ARB::multi_bind::string());
+        extensions[Extensions::ARB::multi_bind::Index] =
+                   Extensions::ARB::multi_bind::string();
 
         bindBasesImplementation = &Buffer::bindImplementationMulti;
         bindRangesImplementation = &Buffer::bindImplementationMulti;
@@ -166,7 +172,7 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
       (context.detectedDriver() & Context::DetectedDriver::Svga3D) &&
-      !context.isDriverWorkaroundDisabled("svga3d-broken-dsa-bufferdata"))
+      !context.isDriverWorkaroundDisabled("svga3d-broken-dsa-bufferdata"_s))
     {
         dataImplementation = &Buffer::dataImplementationDefault;
     }
@@ -174,7 +180,7 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
 
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if((context.detectedDriver() & Context::DetectedDriver::SwiftShader) &&
-      !context.isDriverWorkaroundDisabled("swiftshader-broken-xfb-buffer-binding-target"))
+      !context.isDriverWorkaroundDisabled("swiftshader-broken-xfb-buffer-binding-target"_s))
     {
         setTargetHintImplementation = &Buffer::setTargetHintImplementationSwiftShader;
     } else
@@ -184,7 +190,7 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     }
 
     #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
-    if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify")) {
+    if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify"_s)) {
         dataImplementation = &Buffer::dataImplementationApple;
         subDataImplementation = &Buffer::subDataImplementationApple;
         mapImplementation = &Buffer::mapImplementationApple;

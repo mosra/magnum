@@ -277,6 +277,9 @@ void DeviceVkTest::createInfoExtensions() {
 }
 
 void DeviceVkTest::createInfoExtensionsCopiedStrings() {
+    if(std::getenv("MAGNUM_DISABLE_EXTENSIONS"))
+        CORRADE_SKIP("Can't test with the MAGNUM_DISABLE_EXTENSIONS environment variable set");
+
     Containers::StringView globalButNotNullTerminated = "VK_KHR_maintenance25"_s.except(1);
     Containers::String localButNullTerminated = Extensions::KHR::draw_indirect_count::string();
 
@@ -498,8 +501,8 @@ void DeviceVkTest::createInfoWrongQueueOutputCount() {
 }
 
 void DeviceVkTest::createInfoConstructCopy() {
-    CORRADE_VERIFY(!(std::is_copy_constructible<DeviceCreateInfo>{}));
-    CORRADE_VERIFY(!(std::is_copy_assignable<DeviceCreateInfo>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<DeviceCreateInfo>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<DeviceCreateInfo>{});
 }
 
 void DeviceVkTest::createInfoConstructMove() {

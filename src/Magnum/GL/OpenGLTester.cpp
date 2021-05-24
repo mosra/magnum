@@ -44,17 +44,25 @@ void OpenGLTester::gpuTimeBenchmarkBegin() {
 
     /* Initialize, if not already; check for extension presence and skip if not
        available. This function is always called from inside CORRADE_BENCHMARK,
-       which does the test case registration on a proper function. */
+       which does the test case registration on a proper function, thus we
+       don't need to use the CORRADE_SKIP() macro, which avoids some
+       unnecessary work. */
     if(!_gpuTimeQuery.id()) {
         #ifndef MAGNUM_TARGET_GLES
         if(!Context::current().isExtensionSupported<Extensions::ARB::timer_query>())
-            skip("GL_ARB_timer_query is not supported");
+            skip([](Debug&& debug) {
+                debug << "GL_ARB_timer_query is not supported";
+            });
         #elif defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
         if(!Context::current().isExtensionSupported<Extensions::EXT::disjoint_timer_query_webgl2>())
-            skip("GL_EXT_disjoint_timer_query_webgl2 is not supported");
+            skip([](Debug&& debug) {
+                debug << "GL_EXT_disjoint_timer_query_webgl2 is not supported";
+            });
         #else
         if(!Context::current().isExtensionSupported<Extensions::EXT::disjoint_timer_query>())
-            skip("GL_EXT_disjoint_timer_query is not supported");
+            skip([](Debug&& debug) {
+                debug << "GL_EXT_disjoint_timer_query is not supported";
+            });
         #endif
         _gpuTimeQuery = TimeQuery{TimeQuery::Target::TimeElapsed};
     }

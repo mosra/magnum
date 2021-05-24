@@ -360,10 +360,6 @@ class MAGNUM_VK_EXPORT RasterizationPipelineCreateInfo {
          *      @p subpass uses
          * @param flags             Rasterization pipeline creation flags
          *
-         * Note that the @p shaderSet and @p meshLayout structure internals are
-         * referenced, not copied, and thus have to stay in scope until the
-         * @ref Pipeline object is created.
-         *
          * The following @type_vk{GraphicsPipelineCreateInfo} and substructure
          * fields are pre-filled in addition to `sType` of all referenced
          * structures, everything else is zero-filled:
@@ -393,6 +389,10 @@ class MAGNUM_VK_EXPORT RasterizationPipelineCreateInfo {
          * -    `layout` to @p pipelineLayout
          * -    `renderPass`
          * -    `subpass`
+         *
+         * @attention Note that the @p shaderSet and @p meshLayout structure
+         *      internals are referenced, not copied, and thus have to stay in
+         *      scope until the @ref Pipeline object is created.
          *
          * You need to call at least @ref setViewport() or specifying
          * @ref DynamicRasterizationState::Viewport in
@@ -454,8 +454,8 @@ class MAGNUM_VK_EXPORT RasterizationPipelineCreateInfo {
          * @f$ [0.0, 1.0] @f$.
          *
          * The following @type_vk{GraphicsPipelineCreateInfo} and substructure
-         * fields are modified, in addition to `sType` of newly referenced
-         * structures:
+         * fields are modified by this function, in addition to `sType` of
+         * newly referenced structures:
          *
          * -    `pViewportState`
          * -    @cpp pViewportState->viewportCount @ce to @cpp 1 @ce
@@ -501,8 +501,8 @@ class MAGNUM_VK_EXPORT RasterizationPipelineCreateInfo {
          * @brief Set dynamic states
          *
          * The following @type_vk{GraphicsPipelineCreateInfo} and substructure
-         * fields are modified, in addition to `sType` of newly referenced
-         * structures:
+         * fields are modified by this function, in addition to `sType` of
+         * newly referenced structures:
          *
          * -    `pDynamicState`
          * -    @cpp pDynamicState->dynamicStateCount @ce to count of values

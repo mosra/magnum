@@ -26,6 +26,7 @@
 #include "TextureState.h"
 
 #include <tuple>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/AbstractTexture.h"
@@ -40,7 +41,15 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
-TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxSize{},
+using namespace Containers::Literals;
+
+TextureState::TextureState(Context& context,
+    Containers::ArrayView<std::pair<GLenum, GLuint>> bindings,
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    Containers::ArrayView<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings,
+    #endif
+    Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions):
+    maxSize{},
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     max3DSize{},
     #endif
@@ -51,22 +60,29 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     #ifndef MAGNUM_TARGET_GLES
     maxRectangleSize{}, maxBufferSize{},
     #endif
-    maxTextureUnits(0),
+    /* This value got queried in State already to allocate the bindings array,
+       reuse it here */
+    maxTextureUnits{GLint(bindings.size())},
     #ifndef MAGNUM_TARGET_GLES2
     maxLodBias{0.0f},
     #endif
-    maxMaxAnisotropy(0.0f), currentTextureUnit(0)
+    maxMaxAnisotropy(0.0f), currentTextureUnit(0),
     #ifndef MAGNUM_TARGET_GLES2
-    , maxColorSamples(0), maxDepthSamples(0), maxIntegerSamples(0)
+    maxColorSamples(0), maxDepthSamples(0), maxIntegerSamples(0),
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    , bufferOffsetAlignment(0)
+    bufferOffsetAlignment(0),
+    #endif
+    bindings{bindings}
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    , imageBindings{imageBindings}
     #endif
 {
     /* Create implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
-        extensions.emplace_back(Extensions::ARB::direct_state_access::string());
+        extensions[Extensions::ARB::direct_state_access::Index] =
+                   Extensions::ARB::direct_state_access::string();
         createImplementation = &AbstractTexture::createImplementationDSA;
 
     } else
@@ -82,7 +98,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
 
         #ifdef CORRADE_TARGET_WINDOWS
         if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
-            !context.isDriverWorkaroundDisabled("intel-windows-half-baked-dsa-texture-bind"))
+            !context.isDriverWorkaroundDisabled("intel-windows-half-baked-dsa-texture-bind"_s))
         {
             unbindImplementation = &AbstractTexture::unbindImplementationDefault;
             bindImplementation = &AbstractTexture::bindImplementationDSAIntelWindows;
@@ -111,7 +127,8 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* Multi bind implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::multi_bind>()) {
-        extensions.emplace_back(Extensions::ARB::multi_bind::string());
+        extensions[Extensions::ARB::multi_bind::Index] =
+                   Extensions::ARB::multi_bind::string();
 
         bindMultiImplementation = &AbstractTexture::bindImplementationMulti;
 
@@ -124,7 +141,8 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* DSA/non-DSA implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
-        extensions.emplace_back(Extensions::ARB::direct_state_access::string());
+        extensions[Extensions::ARB::direct_state_access::Index] =
+                   Extensions::ARB::direct_state_access::string();
 
         parameteriImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfImplementation = &AbstractTexture::parameterImplementationDSA;
@@ -184,11 +202,11 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
 
         #ifdef CORRADE_TARGET_WINDOWS
-        if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps")) {
+        if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s)) {
             getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDefault;
             cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDefault;
             cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDefault;
-        } else if((context.detectedDriver() & Context::DetectedDriver::Amd) && !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice")) {
+        } else if((context.detectedDriver() & Context::DetectedDriver::Amd) && !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice"_s)) {
             /* This one is not broken, but the others are */
             getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSA;
             cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDefault;
@@ -241,7 +259,8 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* Data invalidation implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::invalidate_subdata>()) {
-        extensions.emplace_back(Extensions::ARB::invalidate_subdata::string());
+        extensions[Extensions::ARB::invalidate_subdata::Index] =
+                   Extensions::ARB::invalidate_subdata::string();
 
         invalidateImageImplementation = &AbstractTexture::invalidateImageImplementationARB;
         invalidateSubImageImplementation = &AbstractTexture::invalidateSubImageImplementationARB;
@@ -256,14 +275,14 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* Compressed cubemap image size query implementation (extensions added
        above) */
     if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
-        !context.isDriverWorkaroundDisabled("nv-cubemap-inconsistent-compressed-image-size")) {
+        !context.isDriverWorkaroundDisabled("nv-cubemap-inconsistent-compressed-image-size"_s)) {
         if(context.isExtensionSupported<Extensions::ARB::direct_state_access>())
             getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSANonImmutableWorkaround;
         else getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefaultImmutableWorkaround;
     } else if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
         #ifdef CORRADE_TARGET_WINDOWS
         && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
-            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"))
+            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s))
         #endif
     ) {
         getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSA;
@@ -278,7 +297,9 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         getCompressedImageImplementation = &AbstractTexture::getCompressedImageImplementationDSA;
 
     } else if(context.isExtensionSupported<Extensions::ARB::robustness>()) {
-        extensions.emplace_back(Extensions::ARB::robustness::string());
+        extensions[Extensions::ARB::robustness::Index] =
+                   Extensions::ARB::robustness::string();
+
         getImageImplementation = &AbstractTexture::getImageImplementationRobustness;
         getCompressedImageImplementation = &AbstractTexture::getCompressedImageImplementationRobustness;
 
@@ -289,7 +310,9 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
 
     /* Image retrieval implementation for cube map */
     if(context.isExtensionSupported<Extensions::ARB::get_texture_sub_image>()) {
-        extensions.emplace_back(Extensions::ARB::get_texture_sub_image::string());
+        extensions[Extensions::ARB::get_texture_sub_image::Index] =
+                   Extensions::ARB::get_texture_sub_image::string();
+
         getCubeImageImplementation = &CubeMapTexture::getImageImplementationDSA;
         getCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSA;
 
@@ -303,30 +326,32 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         getCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDefault;
     }
 
-    /* Full compressed cubemap image query implementation (extensions added
+    /* 3D compressed cubemap image query implementation (extensions added
        above) */
     if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
         context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
-        !context.isDriverWorkaroundDisabled("nv-cubemap-broken-full-compressed-image-query"))
-        getFullCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSASingleSliceWorkaround;
+        !context.isDriverWorkaroundDisabled("nv-cubemap-broken-full-compressed-image-query"_s))
+        getCompressedCubeImage3DImplementation = &CubeMapTexture::getCompressedImageImplementationDSASingleSliceWorkaround;
     else
-        getFullCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSA;
+        getCompressedCubeImage3DImplementation = &CubeMapTexture::getCompressedImageImplementationDSA;
 
     #ifdef CORRADE_TARGET_WINDOWS
     /** @todo those *might* be happening with the proprietary AMD driver on
         linux as well, test */
     if((context.detectedDriver() & Context::DetectedDriver::Amd) &&
         context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
-        !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice"))
-        getFullCubeImageImplementation = &CubeMapTexture::getImageImplementationDSAAmdSliceBySlice;
+        !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice"_s))
+        getCubeImage3DImplementation = &CubeMapTexture::getImageImplementationDSAAmdSliceBySlice;
     else if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
         context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
-        !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"))
-        getFullCubeImageImplementation = &CubeMapTexture::getImageImplementationSliceBySlice;
+        !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s))
+        getCubeImage3DImplementation = &CubeMapTexture::getImageImplementationSliceBySlice;
     else
     #endif
-    {
-        getFullCubeImageImplementation = &CubeMapTexture::getImageImplementationDSA;
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+        getCubeImage3DImplementation = &CubeMapTexture::getImageImplementationDSA;
+    } else {
+        getCubeImage3DImplementation = &CubeMapTexture::getImageImplementationSliceBySlice;
     }
     #endif
 
@@ -339,9 +364,11 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.emplace_back(Extensions::ARB::texture_storage::string());
+        extensions[Extensions::ARB::texture_storage::Index] =
+                   Extensions::ARB::texture_storage::string();
         #elif defined(MAGNUM_TARGET_GLES2)
-        extensions.push_back(Extensions::EXT::texture_storage::string());
+        extensions[Extensions::EXT::texture_storage::Index] =
+                   Extensions::EXT::texture_storage::string();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -384,7 +411,8 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* Storage implementation for multisample textures. The fallback doesn't
        have DSA alternative, so it must be handled specially. */
     if(context.isExtensionSupported<Extensions::ARB::texture_storage_multisample>()) {
-        extensions.emplace_back(Extensions::ARB::texture_storage_multisample::string());
+        extensions[Extensions::ARB::texture_storage_multisample::Index] =
+                   Extensions::ARB::texture_storage_multisample::string();
 
         if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
             storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSA;
@@ -400,32 +428,38 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;
 
-    if(context.isVersionSupported(Version::GLES320))
+    if(context.isVersionSupported(Version::GLES320)) {
         storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;
-    else if(context.isExtensionSupported<Extensions::OES::texture_storage_multisample_2d_array>())
+    } else if(context.isExtensionSupported<Extensions::OES::texture_storage_multisample_2d_array>()) {
+        extensions[Extensions::OES::texture_storage_multisample_2d_array::Index] =
+                   Extensions::OES::texture_storage_multisample_2d_array::string();
+
         storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationOES;
-    else
+    } else {
         storage3DMultisampleImplementation = nullptr;
+    }
     #endif
 
     /* Anisotropic filter implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::EXT::texture_filter_anisotropic>()) {
-        extensions.emplace_back(Extensions::ARB::texture_filter_anisotropic::string());
+    if(context.isExtensionSupported<Extensions::ARB::texture_filter_anisotropic>()) {
+        extensions[Extensions::ARB::texture_filter_anisotropic::Index] =
+                   Extensions::ARB::texture_filter_anisotropic::string();
 
-        setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationArb;
+        setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationArbOrExt;
     } else
     #endif
     if(context.isExtensionSupported<Extensions::EXT::texture_filter_anisotropic>()) {
-        extensions.emplace_back(Extensions::EXT::texture_filter_anisotropic::string());
+        extensions[Extensions::EXT::texture_filter_anisotropic::Index] =
+                   Extensions::EXT::texture_filter_anisotropic::string();
 
-        setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationExt;
+        setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationArbOrExt;
     } else setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationNoOp;
 
     #ifndef MAGNUM_TARGET_GLES
     /* NVidia workaround for compressed block data size implementation */
     if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
-        !context.isDriverWorkaroundDisabled("nv-compressed-block-size-in-bits"))
+        !context.isDriverWorkaroundDisabled("nv-compressed-block-size-in-bits"_s))
         compressedBlockDataSizeImplementation = &AbstractTexture::compressedBlockDataSizeImplementationBitsWorkaround;
     else
         compressedBlockDataSizeImplementation = &AbstractTexture::compressedBlockDataSizeImplementationDefault;
@@ -435,7 +469,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* SVGA3D workaround for array / 3D / cube map texture upload. Overrides
        the DSA / non-DSA function pointers set above. */
     if((context.detectedDriver() & Context::DetectedDriver::Svga3D) &&
-       !context.isDriverWorkaroundDisabled("svga3d-texture-upload-slice-by-slice")) {
+       !context.isDriverWorkaroundDisabled("svga3d-texture-upload-slice-by-slice"_s)) {
         #ifndef MAGNUM_TARGET_GLES
         image2DImplementation = &AbstractTexture::imageImplementationSvga3DSliceBySlice;
         #endif
@@ -469,21 +503,21 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* SVGA3D and Intel workaround for cube map texture upload. Overrides the
        DSA / non-DSA function pointers set above. */
     if((context.detectedDriver() & Context::DetectedDriver::Svga3D) &&
-       !context.isDriverWorkaroundDisabled("svga3d-texture-upload-slice-by-slice")) {
-        if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
-            cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationDSASliceBySlice;
-        } else {
-            cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSliceBySlice;
-        }
+        context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
+        !context.isDriverWorkaroundDisabled("svga3d-texture-upload-slice-by-slice"_s)
+    ) {
+        cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationDSASliceBySlice;
     } else if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
-       !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps")) {
+        context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
+        !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s)
+    ) {
         cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSliceBySlice;
     }
     #ifdef CORRADE_TARGET_WINDOWS
     /** @todo those *might* be happening with the proprietary AMD driver on
         linux as well, test */
     else if((context.detectedDriver() & Context::DetectedDriver::Amd) &&
-       !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice")) {
+       !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice"_s)) {
         /* DSA version is broken (non-zero Z offset not allowed), need to
            emulate using classic APIs */
         cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSliceBySlice;
@@ -492,18 +526,13 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     else if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationDSA;
     } else
+    #endif
     {
         cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSliceBySlice;
     }
-    #endif
-
-    /* Allocate texture bindings array to hold all possible texture units */
-    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
-    CORRADE_INTERNAL_ASSERT(maxTextureUnits > 0);
-    bindings = Containers::Array<std::pair<GLenum, GLuint>>{Containers::ValueInit, std::size_t(maxTextureUnits)};
 
     #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
-    if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify")) {
+    if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify"_s)) {
         CORRADE_INTERNAL_ASSERT(std::size_t(maxTextureUnits) <= decltype(bufferTextureBound)::Size);
         /* Assume ARB_multi_bind is not supported, otherwise we'd need to
            implement the workaround also for bindMultiImplementation */
@@ -516,23 +545,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         /* bindImplementation already set above */
         bindInternalImplementation = &AbstractTexture::bindImplementationDefault;
     }
-
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    /* Allocate image bindings array to hold all possible image units */
-    #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::ARB::shader_image_load_store>())
-    #else
-    if(context.isVersionSupported(Version::GLES310))
-    #endif
-    {
-        GLint maxImageUnits;
-        glGetIntegerv(GL_MAX_IMAGE_UNITS, &maxImageUnits);
-        imageBindings = Containers::Array<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>>{Containers::ValueInit, std::size_t(maxImageUnits)};
-    }
-    #endif
 }
-
-TextureState::~TextureState() = default;
 
 void TextureState::reset() {
     std::fill_n(bindings.begin(), bindings.size(), std::pair<GLenum, GLuint>{{}, State::DisengagedBinding});

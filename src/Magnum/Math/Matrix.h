@@ -35,15 +35,6 @@ namespace Magnum { namespace Math {
 
 namespace Implementation {
     template<std::size_t, class> struct MatrixDeterminant;
-
-    template<std::size_t size, std::size_t col, std::size_t otherSize, class T, std::size_t ...row> constexpr Vector<size, T> valueOrIdentityVector(Corrade::Containers::Implementation::Sequence<row...>, const RectangularMatrix<otherSize, otherSize, T>& other) {
-        return {(col < otherSize && row < otherSize ? other[col][row] :
-            col == row ? T{1} : T{0})...};
-    }
-
-    template<std::size_t size, std::size_t col, std::size_t otherSize, class T> constexpr Vector<size, T> valueOrIdentityVector(const RectangularMatrix<otherSize, otherSize, T>& other) {
-        return valueOrIdentityVector<size, col>(typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{}, other);
-    }
 }
 
 /**
@@ -78,9 +69,9 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * @brief Construct an identity matrix
          *
          * The @p value allows you to specify a value on diagonal.
-         * @see @ref fromDiagonal()
+         * @see @ref Matrix(ZeroInitT), @ref fromDiagonal()
          */
-        constexpr explicit Matrix(IdentityInitT, T value = T(1)) noexcept: RectangularMatrix<size, size, T>{typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{}, Vector<size, T>(value)} {}
+        constexpr explicit Matrix(IdentityInitT, T value = T(1)) noexcept: RectangularMatrix<size, size, T>{IdentityInit, value} {}
 
         /** @copydoc RectangularMatrix::RectangularMatrix(ZeroInitT) */
         constexpr explicit Matrix(ZeroInitT) noexcept: RectangularMatrix<size, size, T>{ZeroInit} {}
@@ -92,10 +83,10 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         template<class ...U> constexpr /*implicit*/ Matrix(const Vector<size, T>& first, const U&... next) noexcept: RectangularMatrix<size, size, T>(first, next...) {}
 
         /** @brief Construct with one value for all elements */
-        constexpr explicit Matrix(T value) noexcept: RectangularMatrix<size, size, T>{typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{}, value} {}
+        constexpr explicit Matrix(T value) noexcept: RectangularMatrix<size, size, T>{value} {}
 
         /**
-         * @brief Construct from a matrix of adifferent type
+         * @brief Construct from a matrix of a different type
          *
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
@@ -107,14 +98,21 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /** @brief Construct matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<size, size, T, U>::from(std::declval<U>()))> constexpr explicit Matrix(const U& other): RectangularMatrix<size, size, T>(Implementation::RectangularMatrixConverter<size, size, T, U>::from(other)) {}
 
+        /** @copydoc RectangularMatrix::RectangularMatrix(IdentityInitT, const RectangularMatrix<otherCols, otherRows, T>&, T) */
+        template<std::size_t otherCols, std::size_t otherRows> constexpr explicit Matrix(IdentityInitT, const RectangularMatrix<otherCols, otherRows, T>& other, T value = T(1)) noexcept: RectangularMatrix<size, size, T>{IdentityInit, other, value} {}
+
+        /** @copydoc RectangularMatrix::RectangularMatrix(ZeroInitT, const RectangularMatrix<otherCols, otherRows, T>&) */
+        template<std::size_t otherCols, std::size_t otherRows> constexpr explicit Matrix(ZeroInitT, const RectangularMatrix<otherCols, otherRows, T>& other) noexcept: RectangularMatrix<size, size, T>{ZeroInit, other} {}
+
         /**
          * @brief Construct by slicing or expanding a matrix of different size
+         * @m_since_latest
          *
-         * If the other matrix is larger, takes only the first @cpp size @ce
-         * columns and rows from it; if the other matrix is smaller, it's
-         * expanded to an identity (ones on diagonal, zeros elsewhere).
+         * Equivalent to @ref Matrix(IdentityInitT, const RectangularMatrix<otherCols, otherRows, T>&, T).
+         * Note that this default is different from @ref RectangularMatrix,
+         * where it's equivalent to the @ref ZeroInit variant instead.
          */
-        template<std::size_t otherSize> constexpr explicit Matrix(const RectangularMatrix<otherSize, otherSize, T>& other) noexcept: Matrix<size, T>{typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{}, other} {}
+        template<std::size_t otherCols, std::size_t otherRows> constexpr explicit Matrix(const RectangularMatrix<otherCols, otherRows, T>& other, T value = T(1)) noexcept: RectangularMatrix<size, size, T>{IdentityInit, other, value} {}
 
         /** @brief Copy constructor */
         constexpr /*implicit*/ Matrix(const RectangularMatrix<size, size, T>& other) noexcept: RectangularMatrix<size, size, T>(other) {}
@@ -300,9 +298,6 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
 
     private:
         friend struct Implementation::MatrixDeterminant<size, T>;
-
-        /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
-        template<std::size_t otherSize, std::size_t ...col> constexpr explicit Matrix(Corrade::Containers::Implementation::Sequence<col...>, const RectangularMatrix<otherSize, otherSize, T>& other) noexcept: RectangularMatrix<size, size, T>{Implementation::valueOrIdentityVector<size, col>(other)...} {}
 };
 
 /**

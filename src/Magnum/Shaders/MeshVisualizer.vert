@@ -32,6 +32,8 @@
 #define out varying
 #endif
 
+/* Uniforms */
+
 #ifdef TWO_DIMENSIONS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
@@ -95,6 +97,8 @@ uniform highp float lineLength
     ;
 #endif
 
+/* Inputs */
+
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
@@ -135,8 +139,6 @@ layout(location = 4)
 in lowp float vertexIndex;
 #define gl_VertexID int(vertexIndex)
 #endif
-
-out vec3 barycentric;
 #endif
 
 #ifdef INSTANCED_OBJECT_ID
@@ -144,7 +146,15 @@ out vec3 barycentric;
 layout(location = OBJECT_ID_ATTRIBUTE_LOCATION)
 #endif
 in highp uint instanceObjectId;
+#endif
 
+/* Outputs */
+
+#if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
+out vec3 barycentric;
+#endif
+
+#ifdef INSTANCED_OBJECT_ID
 #ifdef NO_GEOMETRY_SHADER
 flat out highp uint interpolatedInstanceObjectId;
 #else

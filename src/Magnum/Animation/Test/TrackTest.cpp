@@ -132,7 +132,7 @@ void TrackTest::constructEmpty() {
 
 void TrackTest::constructArrayInterpolator() {
     Track<Float, Vector3> a{
-        Containers::Array<std::pair<Float, Vector3>>{Containers::InPlaceInit,
+        Containers::Array<std::pair<Float, Vector3>>{InPlaceInit,
             {{1.0f, {3.0f, 1.0f, 0.1f}},
              {5.0f, {0.3f, 0.6f, 1.0f}}}},
         Math::select, Extrapolation::Extrapolated, Extrapolation::Constant};
@@ -162,7 +162,7 @@ void TrackTest::constructArrayInterpolator() {
 
 void TrackTest::constructArrayInterpolatorDefaults() {
     const Track<Float, Vector3> a{
-        Containers::Array<std::pair<Float, Vector3>>{Containers::InPlaceInit,
+        Containers::Array<std::pair<Float, Vector3>>{InPlaceInit,
             {{1.0f, {3.0f, 1.0f, 0.1f}}}},
         Math::lerp, Extrapolation::DefaultConstructed};
 
@@ -183,7 +183,7 @@ void TrackTest::constructArrayInterpolatorDefaults() {
 
 void TrackTest::constructArrayInterpolation() {
     const Track<Float, Vector3> a{
-        Containers::Array<std::pair<Float, Vector3>>{Containers::InPlaceInit,
+        Containers::Array<std::pair<Float, Vector3>>{InPlaceInit,
             {{1.0f, {3.0f, 1.0f, 0.1f}},
              {5.0f, {0.3f, 0.6f, 1.0f}}}},
         Interpolation::Linear, Extrapolation::Extrapolated, Extrapolation::Constant};
@@ -205,7 +205,7 @@ void TrackTest::constructArrayInterpolation() {
 
 void TrackTest::constructArrayInterpolationDefaults() {
     const Track<Float, Vector3> a{
-        Containers::Array<std::pair<Float, Vector3>>{Containers::InPlaceInit,
+        Containers::Array<std::pair<Float, Vector3>>{InPlaceInit,
             {{1.0f, {3.0f, 1.0f, 0.1f}}}},
         Interpolation::Constant, Extrapolation::DefaultConstructed};
 
@@ -228,7 +228,7 @@ Vector3 customLerp(const Vector3&, const Vector3&, Float) { return {}; }
 
 void TrackTest::constructArrayInterpolationInterpolator() {
     const Track<Float, Vector3> a{
-        Containers::Array<std::pair<Float, Vector3>>{Containers::InPlaceInit,
+        Containers::Array<std::pair<Float, Vector3>>{InPlaceInit,
             {{1.0f, {3.0f, 1.0f, 0.1f}},
              {5.0f, {0.3f, 0.6f, 1.0f}}}},
         Interpolation::Linear, customLerp, Extrapolation::Extrapolated, Extrapolation::Constant};
@@ -250,7 +250,7 @@ void TrackTest::constructArrayInterpolationInterpolator() {
 
 void TrackTest::constructArrayInterpolationInterpolationDefaults() {
     const Track<Float, Vector3> a{
-        Containers::Array<std::pair<Float, Vector3>>{Containers::InPlaceInit,
+        Containers::Array<std::pair<Float, Vector3>>{InPlaceInit,
             {{1.0f, {3.0f, 1.0f, 0.1f}}}},
         Interpolation::Constant, customLerp, Extrapolation::DefaultConstructed};
 

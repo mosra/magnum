@@ -73,7 +73,7 @@ void Queue::submit(const Containers::ArrayView<const Containers::Reference<const
         return;
     }
 
-    Containers::Array<VkSubmitInfo> vkInfos{Containers::NoInit, infos.size()};
+    Containers::Array<VkSubmitInfo> vkInfos{NoInit, infos.size()};
     for(std::size_t i = 0; i != infos.size(); ++i)
         vkInfos[i] = *infos[i];
 
@@ -140,7 +140,7 @@ SubmitInfo& SubmitInfo::operator=(SubmitInfo&& other) noexcept {
 SubmitInfo& SubmitInfo::setCommandBuffers(const Containers::ArrayView<const VkCommandBuffer> buffers) {
     if(!_state) _state.emplace();
 
-    _state->commandBuffers = Containers::Array<VkCommandBuffer>{Containers::NoInit, buffers.size()};
+    _state->commandBuffers = Containers::Array<VkCommandBuffer>{NoInit, buffers.size()};
     Utility::copy(buffers, _state->commandBuffers);
     _info.commandBufferCount = _state->commandBuffers.size();
     _info.pCommandBuffers = _state->commandBuffers;

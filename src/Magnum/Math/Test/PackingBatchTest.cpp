@@ -57,6 +57,8 @@ struct PackingBatchTest: Corrade::TestSuite::Tester {
     template<class T, class U> void castUnsignedInteger();
     template<class T, class U> void castSignedInteger();
 
+    void castFloatDouble();
+
     template<class T> void assertionsPackUnpack();
     void assertionsPackUnpackHalf();
     template<class U, class T> void assertionsCast();
@@ -89,6 +91,8 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::castSignedInteger<Short, Int>,
               &PackingBatchTest::castSignedInteger<Byte, Short>,
 
+              &PackingBatchTest::castFloatDouble,
+
               &PackingBatchTest::assertionsPackUnpack<UnsignedByte>,
               &PackingBatchTest::assertionsPackUnpack<Byte>,
               &PackingBatchTest::assertionsPackUnpack<UnsignedShort>,
@@ -105,7 +109,8 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::assertionsCast<UnsignedShort, UnsignedByte>,
               &PackingBatchTest::assertionsCast<Int, Byte>,
               &PackingBatchTest::assertionsCast<Int, Short>,
-              &PackingBatchTest::assertionsCast<Short, Byte>});
+              &PackingBatchTest::assertionsCast<Short, Byte>,
+              &PackingBatchTest::assertionsCast<Double, Float>});
 }
 
 typedef Math::Constants<Float> Constants;
@@ -569,6 +574,42 @@ template<class T, class U> void PackingBatchTest::castSignedInteger() {
     /* Test the other way around as well */
     castInto(Corrade::Containers::arrayCast<2, U>(dst),
              Corrade::Containers::arrayCast<2, T>(src));
+    CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedOriginalType),
+        Corrade::TestSuite::Compare::Container);
+}
+
+void PackingBatchTest::castFloatDouble() {
+    struct Data {
+        Math::Vector2<Float> src;
+        Math::Vector2<Double> dst;
+    } data[]{
+        {{0.25f, -89.5f}, {}},
+        {{-119.0f, 22.75f}, {}},
+        {{13.0f, 127.5f}, {}}
+    };
+
+    constexpr Math::Vector2<Double> expectedTargetType[] {
+        {0.25, -89.5},
+        {-119.0, 22.75},
+        {13.0, 127.5}
+    };
+
+    constexpr Math::Vector2<Float> expectedOriginalType[] {
+        {0.25f, -89.5f},
+        {-119.0f, 22.75f},
+        {13.0f, 127.5f}
+    };
+
+    Corrade::Containers::StridedArrayView1D<Math::Vector2<Float>> src{data, &data[0].src, 3, sizeof(Data)};
+    Corrade::Containers::StridedArrayView1D<Math::Vector2<Double>> dst{data, &data[0].dst, 3, sizeof(Data)};
+    castInto(Corrade::Containers::arrayCast<2, Float>(src),
+             Corrade::Containers::arrayCast<2, Double>(dst));
+    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedTargetType),
+        Corrade::TestSuite::Compare::Container);
+
+    /* Test the other way around as well */
+    castInto(Corrade::Containers::arrayCast<2, Double>(dst),
+             Corrade::Containers::arrayCast<2, Float>(src));
     CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedOriginalType),
         Corrade::TestSuite::Compare::Container);
 }

@@ -36,7 +36,7 @@
 namespace Magnum { namespace GL {
 
 Range1D Renderer::lineWidthRange() {
-    auto& state = *Context::current().state().renderer;
+    Implementation::RendererState& state = Context::current().state().renderer;
     Range1D& value = state.lineWidthRange;
 
     /* Get the value, if not already cached */
@@ -74,11 +74,11 @@ void Renderer::setFeature(const Feature feature, const bool enabled) {
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void Renderer::enable(const Feature feature, const UnsignedInt drawBuffer) {
-    Context::current().state().renderer->enableiImplementation(GLenum(feature), drawBuffer);
+    Context::current().state().renderer.enableiImplementation(GLenum(feature), drawBuffer);
 }
 
 void Renderer::disable(const Feature feature, const UnsignedInt drawBuffer) {
-    Context::current().state().renderer->disableiImplementation(GLenum(feature), drawBuffer);
+    Context::current().state().renderer.disableiImplementation(GLenum(feature), drawBuffer);
 }
 
 void Renderer::setFeature(const Feature feature, const UnsignedInt drawBuffer, const bool enabled) {
@@ -101,7 +101,7 @@ void Renderer::setClearDepth(const Double depth) {
 #endif
 
 void Renderer::setClearDepth(Float depth) {
-    Context::current().state().renderer->clearDepthfImplementation(depth);
+    Context::current().state().renderer.clearDepthfImplementation(depth);
 }
 
 void Renderer::setClearStencil(const Int stencil) {
@@ -149,7 +149,7 @@ void Renderer::setPointSize(const Float size) {
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void Renderer::setMinSampleShading(const Float value) {
-    (Context::current().state().renderer->minSampleShadingImplementation)(value);
+    (Context::current().state().renderer.minSampleShadingImplementation)(value);
 }
 
 void Renderer::minSampleShadingImplementationDefault(const GLfloat value) {
@@ -173,7 +173,7 @@ UnsignedInt Renderer::maxPatchVertexCount() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().renderer->maxPatchVertexCount;
+    GLint& value = Context::current().state().renderer.maxPatchVertexCount;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -183,7 +183,7 @@ UnsignedInt Renderer::maxPatchVertexCount() {
 }
 
 void Renderer::setPatchVertexCount(UnsignedInt count) {
-    Context::current().state().renderer->patchParameteriImplementation(GL_PATCH_VERTICES, count);
+    Context::current().state().renderer.patchParameteriImplementation(GL_PATCH_VERTICES, count);
 }
 #endif
 
@@ -210,7 +210,7 @@ UnsignedInt Renderer::maxClipDistances() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().renderer->maxClipDistances;
+    GLint& value = Context::current().state().renderer.maxClipDistances;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -238,7 +238,7 @@ UnsignedInt Renderer::maxCullDistances() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().renderer->maxCullDistances;
+    GLint& value = Context::current().state().renderer.maxCullDistances;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -262,7 +262,7 @@ UnsignedInt Renderer::maxCombinedClipAndCullDistances() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().renderer->maxCombinedClipAndCullDistances;
+    GLint& value = Context::current().state().renderer.maxCombinedClipAndCullDistances;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -308,7 +308,7 @@ void Renderer::setColorMask(const GLboolean allowRed, const GLboolean allowGreen
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void Renderer::setColorMask(const UnsignedInt drawBuffer, const GLboolean allowRed, const GLboolean allowGreen, const GLboolean allowBlue, const GLboolean allowAlpha) {
-    Context::current().state().renderer->colorMaskiImplementation(drawBuffer, allowRed, allowGreen, allowBlue, allowAlpha);
+    Context::current().state().renderer.colorMaskiImplementation(drawBuffer, allowRed, allowGreen, allowBlue, allowAlpha);
 }
 #endif
 
@@ -342,19 +342,19 @@ void Renderer::setBlendFunction(const BlendFunction sourceRgb, const BlendFuncti
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void Renderer::setBlendEquation(const UnsignedInt drawBuffer, const BlendEquation equation) {
-    Context::current().state().renderer->blendEquationiImplementation(drawBuffer, GLenum(equation));
+    Context::current().state().renderer.blendEquationiImplementation(drawBuffer, GLenum(equation));
 }
 
 void Renderer::setBlendEquation(const UnsignedInt drawBuffer, const BlendEquation rgb, const BlendEquation alpha) {
-    Context::current().state().renderer->blendEquationSeparateiImplementation(drawBuffer, GLenum(rgb), GLenum(alpha));
+    Context::current().state().renderer.blendEquationSeparateiImplementation(drawBuffer, GLenum(rgb), GLenum(alpha));
 }
 
 void Renderer::setBlendFunction(const UnsignedInt drawBuffer, const BlendFunction source, const BlendFunction destination) {
-    Context::current().state().renderer->blendFunciImplementation(drawBuffer, GLenum(source), GLenum(destination));
+    Context::current().state().renderer.blendFunciImplementation(drawBuffer, GLenum(source), GLenum(destination));
 }
 
 void Renderer::setBlendFunction(const UnsignedInt drawBuffer, const BlendFunction sourceRgb, const BlendFunction destinationRgb, const BlendFunction sourceAlpha, const BlendFunction destinationAlpha) {
-    Context::current().state().renderer->blendFuncSeparateiImplementation(drawBuffer, GLenum(sourceRgb), GLenum(destinationRgb), GLenum(sourceAlpha), GLenum(destinationAlpha));
+    Context::current().state().renderer.blendFuncSeparateiImplementation(drawBuffer, GLenum(sourceRgb), GLenum(destinationRgb), GLenum(sourceAlpha), GLenum(destinationAlpha));
 }
 #endif
 
@@ -388,7 +388,7 @@ Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
     #endif
         return ResetNotificationStrategy::NoResetNotification;
 
-    ResetNotificationStrategy& strategy = Context::current().state().renderer->resetNotificationStrategy;
+    ResetNotificationStrategy& strategy = Context::current().state().renderer.resetNotificationStrategy;
 
     if(strategy == ResetNotificationStrategy()) {
         #ifndef MAGNUM_TARGET_GLES
@@ -402,7 +402,7 @@ Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
 }
 
 Renderer::GraphicsResetStatus Renderer::graphicsResetStatus() {
-    return Context::current().state().renderer->graphicsResetStatusImplementation();
+    return Context::current().state().renderer.graphicsResetStatusImplementation();
 }
 #endif
 

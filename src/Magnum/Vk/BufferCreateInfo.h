@@ -49,28 +49,55 @@ Wraps a @type_vk_keyword{BufferUsageFlagBits}.
 @m_enum_values_as_keywords
 */
 enum class BufferUsage: UnsignedInt {
-    /** Source of a transfer command */
+    /**
+     * Source of a transfer command.
+     * @see @ref CommandBuffer::copyBuffer(),
+     *      @ref CommandBuffer::copyBufferToImage()
+     */
     TransferSource = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 
-    /** Destination of a transfer command */
+    /**
+     * Destination of a transfer command.
+     * @see @ref CommandBuffer::fillBuffer(),
+     *      @ref CommandBuffer::copyBuffer(),
+     *      @ref CommandBuffer::copyImageToBuffer()
+     */
     TransferDestination = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 
-    /** Suitable for creating a uniform texel buffer view */
+    /**
+     * Suitable for creating a uniform texel buffer view.
+     * @see @ref DescriptorType::UniformTexelBuffer
+     */
     UniformTexelBuffer = VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT,
 
-    /** Suitable for creating a storage texel buffer view */
+    /**
+     * Suitable for creating a storage texel buffer view.
+     * @see @ref DescriptorType::StorageTexelBuffer
+     */
     StorageTexelBuffer = VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT,
 
-    /** Suitable for a uniform buffer */
+    /**
+     * Suitable for a uniform buffer.
+     * @see @ref DescriptorType::UniformBuffer
+     */
     UniformBuffer = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 
-    /** Suitable for a storage buffer */
+    /**
+     * Suitable for a storage buffer.
+     * @see @ref DescriptorType::StorageBuffer
+     */
     StorageBuffer = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
 
-    /** Suitable for an index buffer */
+    /**
+     * Suitable for an index buffer.
+     * @see @ref Mesh::setIndexBuffer()
+     */
     IndexBuffer = VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 
-    /** Suitable for a vertex buffer */
+    /**
+     * Suitable for a vertex buffer.
+     * @see @ref Mesh::addVertexBuffer()
+     */
     VertexBuffer = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 
     /** Suitable for a indirect draw buffer */

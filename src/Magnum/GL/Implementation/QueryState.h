@@ -25,9 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <vector>
-
+#include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
 
 #ifdef _MSC_VER
@@ -40,7 +38,7 @@
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct QueryState {
-    explicit QueryState(Context& context, std::vector<std::string>& extensions);
+    explicit QueryState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
 
     void reset();
 

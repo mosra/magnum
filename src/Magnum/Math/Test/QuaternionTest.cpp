@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Matrix4.h"
@@ -217,7 +218,7 @@ void QuaternionTest::construct() {
     CORRADE_COMPARE(a.vector(), Vector3(1.0f, 2.0f, 3.0f));
     CORRADE_COMPARE(a.scalar(), -4.0f);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, Vector3, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Quaternion, Vector3, Float>::value);
 }
 
 void QuaternionTest::constructIdentity() {
@@ -229,20 +230,20 @@ void QuaternionTest::constructIdentity() {
     CORRADE_COMPARE(b.length(), 1.0f);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Quaternion>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, IdentityInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Quaternion, IdentityInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, Quaternion>::value));
+    CORRADE_VERIFY(!std::is_convertible<IdentityInitT, Quaternion>::value);
 }
 
 void QuaternionTest::constructZero() {
     constexpr Quaternion a{ZeroInit};
     CORRADE_COMPARE(a, Quaternion({0.0f, 0.0f, 0.0f}, 0.0f));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Quaternion, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Quaternion>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Quaternion>::value);
 }
 
 void QuaternionTest::constructNoInit() {
@@ -255,10 +256,10 @@ void QuaternionTest::constructNoInit() {
         CORRADE_COMPARE(a, Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Quaternion, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Quaternion>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Quaternion>::value);
 }
 
 void QuaternionTest::constructFromVector() {
@@ -266,9 +267,9 @@ void QuaternionTest::constructFromVector() {
     CORRADE_COMPARE(a, Quaternion({1.0f, 2.0f, 3.0f}, 0.0f));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Vector3, Quaternion>::value));
+    CORRADE_VERIFY(!std::is_convertible<Vector3, Quaternion>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, Vector3>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Quaternion, Vector3>::value);
 }
 
 void QuaternionTest::constructConversion() {
@@ -280,9 +281,9 @@ void QuaternionTest::constructConversion() {
     CORRADE_COMPARE(b, (Quaternioni{{1, 2, -15}, 7}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Quaternion, Quaternioni>::value));
+    CORRADE_VERIFY(!std::is_convertible<Quaternion, Quaternioni>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, Quaternioni>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Quaternion, Quaternioni>::value);
 }
 
 void QuaternionTest::constructCopy() {
@@ -290,6 +291,10 @@ void QuaternionTest::constructCopy() {
     constexpr Quaternion b(a);
     CORRADE_COMPARE(b, Quaternion({1.0f, -3.0f, 7.0f}, 2.5f));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Quaternion>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Quaternion>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Quaternion>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Quaternion>::value);
 }
@@ -310,8 +315,8 @@ void QuaternionTest::convert() {
     CORRADE_COMPARE(d.w, a.w);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Quat, Quaternion>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Quaternion, Quat>::value));
+    CORRADE_VERIFY(!std::is_convertible<Quat, Quaternion>::value);
+    CORRADE_VERIFY(!std::is_convertible<Quaternion, Quat>::value);
 }
 
 void QuaternionTest::data() {
@@ -350,8 +355,8 @@ void QuaternionTest::isNormalized() {
 template<class T> void QuaternionTest::isNormalizedEpsilon() {
     setTestCaseTemplateName(TypeTraits<T>::name());
 
-    CORRADE_VERIFY((Math::Quaternion<T>{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128) + TypeTraits<T>::epsilon()/T(2.0)}.isNormalized()));
-    CORRADE_VERIFY(!(Math::Quaternion<T>{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128) + TypeTraits<T>::epsilon()*T(2.0)}.isNormalized()));
+    CORRADE_VERIFY(Math::Quaternion<T>{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128) + TypeTraits<T>::epsilon()/T(2.0)}.isNormalized());
+    CORRADE_VERIFY(!Math::Quaternion<T>{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128) + TypeTraits<T>::epsilon()*T(2.0)}.isNormalized());
 }
 
 void QuaternionTest::axisAngle() {

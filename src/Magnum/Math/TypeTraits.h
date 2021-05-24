@@ -308,9 +308,9 @@ namespace Implementation {
 /**
 @brief Traits class for builtin arithmetic types
 
-Traits classes are usable for detecting type features at compile time without
-the need for repeated code such as method overloading or template
-specialization for given types. All builtin arithmetic types have this class
+Useful for detecting type features at compile time without the need for
+repeated code such as method overloading, cascaded ifs or template
+specializations for given types. All builtin arithmetic types have this class
 implemented.
 */
 template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
@@ -333,8 +333,8 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
     /**
      * @brief Type name
      *
-     * Returns a string representation of type name, such as `"UnsignedInt"`
-     * for @ref Magnum::UnsignedInt "UnsignedInt".
+     * Returns a string representation of type name, such as
+     * @cpp "UnsignedInt" @ce for @relativeref{Magnum,UnsignedInt}.
      */
     constexpr static const char* name();
 

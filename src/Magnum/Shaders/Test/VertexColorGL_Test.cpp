@@ -23,68 +23,48 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/Shaders/Vector.h"
+#include "Magnum/Shaders/VertexColorGL.h"
 
 namespace Magnum { namespace Shaders { namespace Test { namespace {
 
-struct VectorTest: TestSuite::Tester {
-    explicit VectorTest();
+/* There's an underscore between GL and Test to disambiguate from GLTest, which
+   is a common suffix used to mark tests that need a GL context. Ugly, I know. */
+struct VertexColorGL_Test: TestSuite::Tester {
+    explicit VertexColorGL_Test();
 
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
-
-    void debugFlag();
-    void debugFlags();
 };
 
-VectorTest::VectorTest() {
-    addTests({&VectorTest::constructNoCreate<2>,
-              &VectorTest::constructNoCreate<3>,
+VertexColorGL_Test::VertexColorGL_Test() {
+    addTests<VertexColorGL_Test>({
+        &VertexColorGL_Test::constructNoCreate<2>,
+        &VertexColorGL_Test::constructNoCreate<3>,
 
-              &VectorTest::constructCopy<2>,
-              &VectorTest::constructCopy<3>,
-
-              &VectorTest::debugFlag,
-              &VectorTest::debugFlags});
+        &VertexColorGL_Test::constructCopy<2>,
+        &VertexColorGL_Test::constructCopy<3>});
 }
 
-template<UnsignedInt dimensions> void VectorTest::constructNoCreate() {
+template<UnsignedInt dimensions> void VertexColorGL_Test::constructNoCreate() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
     {
-        Vector<dimensions> shader{NoCreate};
+        VertexColorGL<dimensions> shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
-        CORRADE_COMPARE(shader.flags(), typename Vector<dimensions>::Flags{});
     }
 
     CORRADE_VERIFY(true);
 }
 
-template<UnsignedInt dimensions> void VectorTest::constructCopy() {
+template<UnsignedInt dimensions> void VertexColorGL_Test::constructCopy() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    CORRADE_VERIFY(!std::is_copy_constructible<Vector<dimensions>>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<Vector<dimensions>>{});
-}
-
-void VectorTest::debugFlag() {
-    std::ostringstream out;
-
-    Debug{&out} << Vector2D::Flag::TextureTransformation << Vector2D::Flag(0xf0);
-    CORRADE_COMPARE(out.str(), "Shaders::Vector::Flag::TextureTransformation Shaders::Vector::Flag(0xf0)\n");
-}
-
-void VectorTest::debugFlags() {
-    std::ostringstream out;
-
-    Debug{&out} << Vector3D::Flags{Vector3D::Flag::TextureTransformation|Vector3D::Flag(0xf0)} << Vector3D::Flags{};
-    CORRADE_COMPARE(out.str(), "Shaders::Vector::Flag::TextureTransformation|Shaders::Vector::Flag(0xf0) Shaders::Vector::Flags{}\n");
+    CORRADE_VERIFY(!std::is_copy_constructible<VertexColorGL<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<VertexColorGL<dimensions>>{});
 }
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::VectorTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::VertexColorGL_Test)

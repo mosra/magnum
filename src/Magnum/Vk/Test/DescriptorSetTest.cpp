@@ -23,46 +23,40 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <new>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Shaders/VertexColor.h"
+#include "Magnum/Vk/DescriptorSet.h"
 
-namespace Magnum { namespace Shaders { namespace Test { namespace {
+namespace Magnum { namespace Vk { namespace Test { namespace {
 
-struct VertexColorTest: TestSuite::Tester {
-    explicit VertexColorTest();
+struct DescriptorSetTest: TestSuite::Tester {
+    explicit DescriptorSetTest();
 
-    template<UnsignedInt dimensions> void constructNoCreate();
-    template<UnsignedInt dimensions> void constructCopy();
+    void constructNoCreate();
+    void constructCopy();
 };
 
-VertexColorTest::VertexColorTest() {
-    addTests<VertexColorTest>({
-        &VertexColorTest::constructNoCreate<2>,
-        &VertexColorTest::constructNoCreate<3>,
-
-        &VertexColorTest::constructCopy<2>,
-        &VertexColorTest::constructCopy<3>});
+DescriptorSetTest::DescriptorSetTest() {
+    addTests({&DescriptorSetTest::constructNoCreate,
+              &DescriptorSetTest::constructCopy});
 }
 
-template<UnsignedInt dimensions> void VertexColorTest::constructNoCreate() {
-    setTestCaseTemplateName(std::to_string(dimensions));
-
+void DescriptorSetTest::constructNoCreate() {
     {
-        VertexColor<dimensions> shader{NoCreate};
-        CORRADE_COMPARE(shader.id(), 0);
+        DescriptorSet set{NoCreate};
+        CORRADE_VERIFY(!set.handle());
     }
 
-    CORRADE_VERIFY(true);
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, DescriptorSet>::value);
 }
 
-template<UnsignedInt dimensions> void VertexColorTest::constructCopy() {
-    setTestCaseTemplateName(std::to_string(dimensions));
-
-    CORRADE_VERIFY(!std::is_copy_constructible<VertexColor<dimensions>>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<VertexColor<dimensions>>{});
+void DescriptorSetTest::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<DescriptorSet>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<DescriptorSet>{});
 }
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::VertexColorTest)
+CORRADE_TEST_MAIN(Magnum::Vk::Test::DescriptorSetTest)

@@ -79,8 +79,8 @@ application itself by setting up message callback using @ref setCallback() or
 @par Enabling debug output from the command line / environment
     Apart from setting up the debug output callbacks manually, it's also
     possible to enable it conveniently using the `--magnum-gpu-validation`
-    @ref GL-Context-command-line "command-line or environment option" --- ideal
-    for quick debugging of rendering issues. If you are using application
+    @ref GL-Context-usage-command-line "command-line or environment option" ---
+    ideal for quick debugging of rendering issues. If you are using application
     classes from the @ref Platform namespace, this option also ensures that
     @ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "GLConfiguration::Flag::Debug"
     is passed for context creation, both with windowed and windowless

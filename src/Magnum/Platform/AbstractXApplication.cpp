@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2019, 2020 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -28,7 +29,6 @@
 #include <Corrade/Utility/System.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 
 #include "Implementation/AbstractContextHandler.h"
 
@@ -41,7 +41,7 @@ AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandle
     create(configuration, glConfiguration);
 }
 
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT): _contextHandler{contextHandler}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw} {}
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT): _contextHandler{contextHandler}, _context{InPlaceInit, NoCreate, arguments.argc, arguments.argv}, _flags{Flag::Redraw} {}
 
 void AbstractXApplication::create() { create({}); }
 
@@ -104,11 +104,13 @@ bool AbstractXApplication::tryCreate(const Configuration& configuration, const G
     _contextHandler->makeCurrent();
 
     /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    return _context->tryCreate(glConfiguration);
 }
 
 AbstractXApplication::~AbstractXApplication() {
-    _context.reset();
+    /* Destroy Magnum context first to avoid it potentially accessing the
+       now-destroyed GL context after */
+    _context = Containers::NullOpt;
 
     /* Shut down context handler */
     _contextHandler.reset();

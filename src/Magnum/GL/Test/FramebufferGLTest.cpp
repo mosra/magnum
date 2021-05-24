@@ -326,7 +326,7 @@ FramebufferGLTest::FramebufferGLTest() {
 void FramebufferGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     {
@@ -343,7 +343,7 @@ void FramebufferGLTest::construct() {
 void FramebufferGLTest::constructMove() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Framebuffer a({{32, 16}, {128, 256}});
@@ -375,7 +375,7 @@ void FramebufferGLTest::constructMove() {
 void FramebufferGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     GLuint id;
@@ -396,7 +396,7 @@ void FramebufferGLTest::wrap() {
 void FramebufferGLTest::label() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     /* No-Op version is tested in AbstractObjectGLTest */
@@ -419,7 +419,7 @@ void FramebufferGLTest::label() {
 void FramebufferGLTest::attachRenderbuffer() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Renderbuffer color;
@@ -471,7 +471,7 @@ void FramebufferGLTest::attachRenderbuffer() {
 void FramebufferGLTest::attachRenderbufferMultisample() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::framebuffer_multisample>() &&
        !Context::current().isExtensionSupported<Extensions::NV::framebuffer_multisample>())
@@ -510,7 +510,7 @@ void FramebufferGLTest::attachRenderbufferMultisample() {
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachTexture1D() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
 
     Texture1D color;
     color.setStorage(1, TextureFormat::RGBA8, 128);
@@ -531,7 +531,7 @@ void FramebufferGLTest::attachTexture1D() {
 void FramebufferGLTest::attachTexture2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -602,10 +602,10 @@ void FramebufferGLTest::attachTexture2D() {
 void FramebufferGLTest::attachTexture3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::OES::texture_3D>())
-        CORRADE_SKIP(Extensions::OES::texture_3D::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::OES::texture_3D::string() << "is not supported.");
     #endif
 
     Texture3D color;
@@ -629,9 +629,9 @@ void FramebufferGLTest::attachTexture3D() {
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachTexture1DArray() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() << "is not supported.");
 
     Texture1DArray color;
     color.setStorage(1, TextureFormat::RGBA8, {128, 8});
@@ -653,9 +653,9 @@ void FramebufferGLTest::attachTexture1DArray() {
 void FramebufferGLTest::attachTexture2DArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
     Texture2DArray color;
@@ -678,9 +678,9 @@ void FramebufferGLTest::attachTexture2DArray() {
 void FramebufferGLTest::attachTexture2DMultisample() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
         CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
@@ -708,12 +708,12 @@ void FramebufferGLTest::attachTexture2DMultisample() {
 void FramebufferGLTest::attachTexture2DMultisampleArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::OES::texture_storage_multisample_2d_array>())
-        CORRADE_SKIP(Extensions::OES::texture_storage_multisample_2d_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::OES::texture_storage_multisample_2d_array::string() << "is not supported.");
     #endif
 
     MultisampleTexture2DArray color;
@@ -739,9 +739,9 @@ void FramebufferGLTest::attachTexture2DMultisampleArray() {
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachRectangleTexture() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() << "is not supported.");
 
     RectangleTexture color;
     color.setStorage(TextureFormat::RGBA8, Vector2i(128));
@@ -762,7 +762,7 @@ void FramebufferGLTest::attachRectangleTexture() {
 void FramebufferGLTest::attachCubeMapTexture() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Framebuffer framebuffer({{}, Vector2i(128)});
@@ -823,12 +823,12 @@ void FramebufferGLTest::attachCubeMapTexture() {
 void FramebufferGLTest::attachCubeMapTextureArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray color;
@@ -851,12 +851,12 @@ void FramebufferGLTest::attachCubeMapTextureArray() {
 void FramebufferGLTest::attachLayeredTexture3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     Texture3D color;
@@ -873,9 +873,9 @@ void FramebufferGLTest::attachLayeredTexture3D() {
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachLayeredTexture1DArray() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() << "is not supported.");
 
     Texture1DArray color;
     color.setStorage(1, TextureFormat::RGBA8, {128, 8});
@@ -896,12 +896,12 @@ void FramebufferGLTest::attachLayeredTexture1DArray() {
 void FramebufferGLTest::attachLayeredTexture2DArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     Texture2DArray color;
@@ -922,12 +922,12 @@ void FramebufferGLTest::attachLayeredTexture2DArray() {
 void FramebufferGLTest::attachLayeredCubeMapTexture() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     CubeMapTexture color;
@@ -948,16 +948,16 @@ void FramebufferGLTest::attachLayeredCubeMapTexture() {
 void FramebufferGLTest::attachLayeredCubeMapTextureArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     CubeMapTextureArray color;
@@ -978,16 +978,16 @@ void FramebufferGLTest::attachLayeredCubeMapTextureArray() {
 void FramebufferGLTest::attachLayeredTexture2DMultisampleArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::OES::texture_storage_multisample_2d_array>())
-        CORRADE_SKIP(Extensions::OES::texture_storage_multisample_2d_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::OES::texture_storage_multisample_2d_array::string() << "is not supported.");
     #endif
 
     MultisampleTexture2DArray color;
@@ -1013,7 +1013,7 @@ void FramebufferGLTest::attachLayeredTexture2DMultisampleArray() {
 void FramebufferGLTest::detach() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Framebuffer framebuffer({{}, Vector2i(128)});
@@ -1027,11 +1027,11 @@ void FramebufferGLTest::detach() {
 void FramebufferGLTest::multipleColorOutputs() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
     #ifdef MAGNUM_TARGET_WEBGL
     if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_buffers>())
-        CORRADE_SKIP(Extensions::WEBGL::draw_buffers::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::WEBGL::draw_buffers::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::draw_buffers>() &&
        !Context::current().isExtensionSupported<Extensions::NV::draw_buffers>())
@@ -1095,7 +1095,7 @@ void FramebufferGLTest::multipleColorOutputs() {
 void FramebufferGLTest::clear() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1368,7 +1368,7 @@ void FramebufferGLTest::clearDepthStencil() {
 void FramebufferGLTest::invalidate() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1397,7 +1397,7 @@ void FramebufferGLTest::invalidate() {
 void FramebufferGLTest::invalidateSub() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1429,7 +1429,7 @@ void FramebufferGLTest::read() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1560,7 +1560,7 @@ void FramebufferGLTest::readView() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1610,7 +1610,7 @@ void FramebufferGLTest::readViewNullptr() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1638,7 +1638,7 @@ void FramebufferGLTest::readViewBadSize() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1664,7 +1664,7 @@ void FramebufferGLTest::readViewBadSize() {
 void FramebufferGLTest::readBuffer() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1712,7 +1712,7 @@ constexpr char ZeroStorage[4*4*4*6]{};
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::copyImageTexture1D() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
 
     Texture2D storage;
     storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
@@ -1728,7 +1728,7 @@ void FramebufferGLTest::copyImageTexture1D() {
 
     CORRADE_COMPARE(texture.imageSize(0)[0], 2);
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b}}),
+        Containers::arrayView<char>({0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b}),
         TestSuite::Compare::Container);
 }
 #endif
@@ -1736,7 +1736,7 @@ void FramebufferGLTest::copyImageTexture1D() {
 void FramebufferGLTest::copyImageTexture2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Texture2D storage;
@@ -1770,9 +1770,9 @@ void FramebufferGLTest::copyImageTexture2D() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(texture.imageSize(0), Vector2i{2});
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::arrayView<char>({
             0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,
-            0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b}}),
+            0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b}),
         TestSuite::Compare::Container);
     #endif
 }
@@ -1780,9 +1780,9 @@ void FramebufferGLTest::copyImageTexture2D() {
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::copyImageTexture1DArray() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() << "is not supported.");
 
     Texture2D storage;
     storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
@@ -1798,17 +1798,17 @@ void FramebufferGLTest::copyImageTexture1DArray() {
 
     CORRADE_COMPARE(texture.imageSize(0), Vector2i{2});
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::arrayView<char>({
             0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,
-            0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b}}),
+            0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b}),
         TestSuite::Compare::Container);
 }
 
 void FramebufferGLTest::copyImageRectangleTexture() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() << "is not supported.");
 
     Texture2D storage;
     storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
@@ -1824,9 +1824,9 @@ void FramebufferGLTest::copyImageRectangleTexture() {
 
     CORRADE_COMPARE(texture.imageSize(), Vector2i{2});
     CORRADE_COMPARE_AS(texture.image({PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::arrayView<char>({
             0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,
-            0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b}}),
+            0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b}),
         TestSuite::Compare::Container);
 }
 #endif
@@ -1834,7 +1834,7 @@ void FramebufferGLTest::copyImageRectangleTexture() {
 void FramebufferGLTest::copyImageCubeMapTexture() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -1875,9 +1875,9 @@ void FramebufferGLTest::copyImageCubeMapTexture() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(texture.imageSize(0), Vector2i{2});
     CORRADE_COMPARE_AS(texture.image(CubeMapCoordinate::PositiveX, 0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::arrayView<char>({
             0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,
-            0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b}}),
+            0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b}),
         TestSuite::Compare::Container);
     #endif
 }
@@ -1885,7 +1885,7 @@ void FramebufferGLTest::copyImageCubeMapTexture() {
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::copySubImageTexture1D() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
 
     Texture2D storage;
     storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
@@ -1902,8 +1902,8 @@ void FramebufferGLTest::copySubImageTexture1D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00}}),
+        Containers::arrayView<char>({
+            0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00}),
         TestSuite::Compare::Container);
 }
 #endif
@@ -1911,7 +1911,7 @@ void FramebufferGLTest::copySubImageTexture1D() {
 void FramebufferGLTest::copySubImageTexture2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Texture2D storage;
@@ -1946,11 +1946,11 @@ void FramebufferGLTest::copySubImageTexture2D() {
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::arrayView<char>({
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}),
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}),
         TestSuite::Compare::Container);
     #endif
 }
@@ -1959,10 +1959,10 @@ void FramebufferGLTest::copySubImageTexture2D() {
 void FramebufferGLTest::copySubImageTexture3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::OES::texture_3D>())
-        CORRADE_SKIP(Extensions::OES::texture_3D::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::OES::texture_3D::string() << "is not supported.");
     #endif
 
     Texture2D storage;
@@ -1993,7 +1993,7 @@ void FramebufferGLTest::copySubImageTexture3D() {
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::arrayView<char>({
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -2002,7 +2002,7 @@ void FramebufferGLTest::copySubImageTexture3D() {
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}),
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}),
         TestSuite::Compare::Container);
     #endif
 }
@@ -2011,9 +2011,9 @@ void FramebufferGLTest::copySubImageTexture3D() {
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::copySubImageTexture1DArray() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() << "is not supported.");
 
     Texture2D storage;
     storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
@@ -2030,11 +2030,11 @@ void FramebufferGLTest::copySubImageTexture1DArray() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::arrayView<char>({
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}),
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}),
         TestSuite::Compare::Container);
 }
 #endif
@@ -2043,9 +2043,9 @@ void FramebufferGLTest::copySubImageTexture1DArray() {
 void FramebufferGLTest::copySubImageTexture2DArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
     Texture2D storage;
@@ -2064,7 +2064,7 @@ void FramebufferGLTest::copySubImageTexture2DArray() {
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::arrayView<char>({
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -2073,7 +2073,7 @@ void FramebufferGLTest::copySubImageTexture2DArray() {
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}),
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}),
         TestSuite::Compare::Container);
     #endif
 }
@@ -2082,9 +2082,9 @@ void FramebufferGLTest::copySubImageTexture2DArray() {
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::copySubImageRectangleTexture() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() << "is not supported.");
 
     Texture2D storage;
     storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
@@ -2101,11 +2101,11 @@ void FramebufferGLTest::copySubImageRectangleTexture() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_AS(texture.image({PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::arrayView<char>({
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}),
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}),
         TestSuite::Compare::Container);
 }
 #endif
@@ -2113,7 +2113,7 @@ void FramebufferGLTest::copySubImageRectangleTexture() {
 void FramebufferGLTest::copySubImageCubeMapTexture() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #endif
 
     Texture2D storage;
@@ -2148,11 +2148,11 @@ void FramebufferGLTest::copySubImageCubeMapTexture() {
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(texture.image(CubeMapCoordinate::NegativeY, 0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::arrayView<char>({
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}),
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}),
         TestSuite::Compare::Container);
     #endif
 }
@@ -2161,12 +2161,12 @@ void FramebufferGLTest::copySubImageCubeMapTexture() {
 void FramebufferGLTest::copySubImageCubeMapTextureArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
     #endif
 
     Texture2D storage;
@@ -2185,7 +2185,7 @@ void FramebufferGLTest::copySubImageCubeMapTextureArray() {
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
+        Containers::arrayView<char>({
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -2214,7 +2214,7 @@ void FramebufferGLTest::copySubImageCubeMapTextureArray() {
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}),
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}),
         TestSuite::Compare::Container);
     #endif
 }
@@ -2224,7 +2224,7 @@ void FramebufferGLTest::copySubImageCubeMapTextureArray() {
 void FramebufferGLTest::blit() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::NV::framebuffer_blit>() &&
        !Context::current().isExtensionSupported<Extensions::ANGLE::framebuffer_blit>())
@@ -2277,7 +2277,7 @@ void FramebufferGLTest::implementationColorReadFormat() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(data.integer && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_integer>())
-        CORRADE_SKIP(GL::Extensions::EXT::texture_integer::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::texture_integer::string() << "is not supported.");
     #endif
 
     Renderbuffer color;

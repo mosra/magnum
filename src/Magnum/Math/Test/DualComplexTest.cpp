@@ -27,6 +27,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
@@ -170,7 +171,7 @@ void DualComplexTest::construct() {
     constexpr DualComplex b(Complex(-1.0f, 2.5f));
     CORRADE_COMPARE(b, DualComplex({-1.0f, 2.5f}, {0.0f, 0.0f}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, Complex, Complex>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<DualComplex, Complex, Complex>::value);
 }
 
 void DualComplexTest::constructIdentity() {
@@ -182,20 +183,20 @@ void DualComplexTest::constructIdentity() {
     CORRADE_COMPARE(b.length(), 1.0f);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<DualComplex>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, IdentityInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<DualComplex, IdentityInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, DualComplex>::value));
+    CORRADE_VERIFY(!std::is_convertible<IdentityInitT, DualComplex>::value);
 }
 
 void DualComplexTest::constructZero() {
     constexpr DualComplex a{ZeroInit};
     CORRADE_COMPARE(a, DualComplex({0.0f, 0.0f}, {0.0f, 0.0f}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<DualComplex, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, DualComplex>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, DualComplex>::value);
 }
 
 void DualComplexTest::constructNoInit() {
@@ -208,10 +209,10 @@ void DualComplexTest::constructNoInit() {
         CORRADE_COMPARE(a, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<DualComplex, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, DualComplex>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, DualComplex>::value);
 }
 
 void DualComplexTest::constructFromVector() {
@@ -219,9 +220,9 @@ void DualComplexTest::constructFromVector() {
     CORRADE_COMPARE(a, DualComplex({1.0f, 0.0f}, {1.5f, -3.0f}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Vector2, DualComplex>::value));
+    CORRADE_VERIFY(!std::is_convertible<Vector2, DualComplex>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, Vector2>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<DualComplex, Vector2>::value);
 }
 
 void DualComplexTest::constructConversion() {
@@ -233,9 +234,9 @@ void DualComplexTest::constructConversion() {
     CORRADE_COMPARE(b, (DualComplexi{{1, 2}, {-15, 7}}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<DualComplex, DualComplexi>::value));
+    CORRADE_VERIFY(!std::is_convertible<DualComplex, DualComplexi>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, DualComplexi>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<DualComplex, DualComplexi>::value);
 }
 
 void DualComplexTest::constructCopy() {
@@ -246,6 +247,10 @@ void DualComplexTest::constructCopy() {
     DualComplex b(a);
     CORRADE_COMPARE(b, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<DualComplex>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<DualComplex>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<DualComplex>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<DualComplex>::value);
 }
@@ -266,8 +271,8 @@ void DualComplexTest::convert() {
     CORRADE_COMPARE(d.y, a.y);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<DualCmpl, DualComplex>::value));
-    CORRADE_VERIFY(!(std::is_convertible<DualComplex, DualCmpl>::value));
+    CORRADE_VERIFY(!std::is_convertible<DualCmpl, DualComplex>::value);
+    CORRADE_VERIFY(!std::is_convertible<DualComplex, DualCmpl>::value);
 }
 
 void DualComplexTest::data() {
@@ -294,16 +299,16 @@ void DualComplexTest::isNormalized() {
 template<class T> void DualComplexTest::isNormalizedEpsilonRotation() {
     setTestCaseTemplateName(TypeTraits<T>::name());
 
-    CORRADE_VERIFY((Math::DualComplex<T>{{T(0.801775644243754) + TypeTraits<T>::epsilon()/T(2.0), T(0.597625146975521)}, {T(8018055.25501103), T(5975850.58193309)}}.isNormalized()));
-    CORRADE_VERIFY(!(Math::DualComplex<T>{{T(0.801775644243754) + TypeTraits<T>::epsilon()*T(2.0), T(0.597625146975521)}, {T(8018055.25501103), T(5975850.58193309)}}.isNormalized()));
+    CORRADE_VERIFY(Math::DualComplex<T>{{T(0.801775644243754) + TypeTraits<T>::epsilon()/T(2.0), T(0.597625146975521)}, {T(8018055.25501103), T(5975850.58193309)}}.isNormalized());
+    CORRADE_VERIFY(!Math::DualComplex<T>{{T(0.801775644243754) + TypeTraits<T>::epsilon()*T(2.0), T(0.597625146975521)}, {T(8018055.25501103), T(5975850.58193309)}}.isNormalized());
 }
 
 template<class T> void DualComplexTest::isNormalizedEpsilonTranslation() {
     setTestCaseTemplateName(TypeTraits<T>::name());
 
     /* Translation does not affect normalization */
-    CORRADE_VERIFY((Math::DualComplex<T>{{T(0.801775644243754), T(0.597625146975521)}, {T(8018055.25501103), T(20.5)}}.isNormalized()));
-    CORRADE_VERIFY((Math::DualComplex<T>{{T(0.801775644243754), T(0.597625146975521)}, {T(8018055.25501103), T(-200000000.0)}}.isNormalized()));
+    CORRADE_VERIFY(Math::DualComplex<T>{{T(0.801775644243754), T(0.597625146975521)}, {T(8018055.25501103), T(20.5)}}.isNormalized());
+    CORRADE_VERIFY(Math::DualComplex<T>{{T(0.801775644243754), T(0.597625146975521)}, {T(8018055.25501103), T(-200000000.0)}}.isNormalized());
 }
 
 void DualComplexTest::multiply() {

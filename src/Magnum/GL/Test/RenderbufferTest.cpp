@@ -48,7 +48,7 @@ void RenderbufferTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Renderbuffer>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Renderbuffer>::value);
 }
 
 void RenderbufferTest::constructCopy() {

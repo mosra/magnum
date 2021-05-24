@@ -471,13 +471,35 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * Some flags can be set only if the converter supports particular
          * features, see documentation of each @ref ConverterFlag for more
-         * information. By default no flags are set.
+         * information. By default no flags are set. To avoid clearing
+         * potential future default flags by accident, prefer to use
+         * @ref addFlags() and @ref clearFlags() instead.
          *
          * Corresponds to the `-q` / `--quiet`, `-v` / `--verbose`,
          * `--warning-as-error` and `-E` / `--preprocess-only` options
          * in @ref magnum-shaderconverter "magnum-shaderconverter".
          */
         void setFlags(ConverterFlags flags);
+
+        /**
+         * @brief Add converter flags
+         * @m_since_latest
+         *
+         * Calls @ref setFlags() with the existing flags ORed with @p flags.
+         * Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        void addFlags(ConverterFlags flags);
+
+        /**
+         * @brief Clear converter flags
+         * @m_since_latest
+         *
+         * Calls @ref setFlags() with the existing flags ANDed with inverse of
+         * @p flags. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        void clearFlags(ConverterFlags flags);
 
         /**
          * @brief Input file callback function
@@ -590,9 +612,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
          * or @ref linkFilesToData() call will fail.
          *
-         * The @p version parameter corresponds to the `--input-version` option
-         * in @ref magnum-shaderconverter "magnum-shaderconverter", the
-         * @p format isn't currently exposed there.
+         * The @p format parameter corresponds to the `--input-format` option
+         * in @ref magnum-shaderconverter "magnum-shaderconverter",
+         * @p version to `--input-version`.
          * @see @ref setOutputFormat()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -614,9 +636,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
          * or @ref linkFilesToData() call will fail.
          *
-         * The @p version parameter corresponds to the `--output-version`
-         * option in @ref magnum-shaderconverter "magnum-shaderconverter", the
-         * @p format isn't currently exposed there.
+         * The @p format parameter corresponds to the `--output-format` option
+         * in @ref magnum-shaderconverter "magnum-shaderconverter",
+         * @p version to `--output-version`.
          * @see @ref setInputFormat()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -743,7 +765,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @see @ref features(), @ref convertDataToData(),
          *      @ref convertFileToData(), @ref convertFileToFile()
          */
-        bool convertDataToFile(Stage stage, Containers::ArrayView<const void> data, Containers::StringView to);
+        bool convertDataToFile(Stage stage, Containers::ArrayView<const void> data, Containers::StringView filename);
 
         /**
          * @brief Convert shader file to a file
@@ -770,7 +792,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @see @ref features(), @ref convertFileToFile(),
          *      @ref convertDataToFile(), @ref convertDataToData()
          */
-        Containers::Array<char> convertFileToData(Stage stage, const Containers::StringView from);
+        Containers::Array<char> convertFileToData(Stage stage, Containers::StringView filename);
 
         /**
          * @brief Link shader data together to a data
@@ -798,10 +820,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @see @ref features(), @ref linkFilesToFile(),
          *      @ref linkFilesToData(), @ref linkDataToData()
          */
-        bool linkDataToFile(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView to);
+        bool linkDataToFile(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView filename);
 
         /** @overload */
-        bool linkDataToFile(std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView to);
+        bool linkDataToFile(std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView filename);
 
         /**
          * @brief Link shader files together to a file
@@ -834,10 +856,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @see @ref features(), @ref linkFilesToFile(), @ref linkDataToFile(),
          *      @ref linkDataToData()
          */
-        Containers::Array<char> linkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from);
+        Containers::Array<char> linkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
 
         /** @overload */
-        Containers::Array<char> linkFilesToData(std::initializer_list<std::pair<Stage, Containers::StringView>> from);
+        Containers::Array<char> linkFilesToData(std::initializer_list<std::pair<Stage, Containers::StringView>> filenames);
 
     protected:
         /**
@@ -889,7 +911,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * is not supported --- instead, file is loaded though the callback and
          * data passed through to @ref doConvertDataToData().
          */
-        virtual Containers::Array<char> doConvertFileToData(Stage stage, Containers::StringView from);
+        virtual Containers::Array<char> doConvertFileToData(Stage stage, Containers::StringView filename);
 
         /**
          * @brief Implementation for @ref linkFilesToFile()
@@ -923,7 +945,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * is not supported --- instead, file is loaded though the callback and
          * data passed through to @ref doConvertDataToData().
          */
-        virtual Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from);
+        virtual Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
 
     private:
         /**
@@ -1034,7 +1056,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
 
         /* Used by convertFileToFile(), doConvertFileToFile(),
            convertFileToData() and doConvertFileToData() */
-        MAGNUM_SHADERTOOLS_LOCAL Containers::Array<char> convertDataToDataUsingInputFileCallbacks(const char* prefix, const Stage stage, Containers::StringView from);
+        MAGNUM_SHADERTOOLS_LOCAL Containers::Array<char> convertDataToDataUsingInputFileCallbacks(const char* prefix, const Stage stage, Containers::StringView filename);
 
         /**
          * @brief Implementation for @ref convertDataToData()
@@ -1048,7 +1070,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
 
         /* Used by linkFilesToFile(), doLinkFilesToFile(), linkFilesToData()
            and doLinkFilesToData() */
-        MAGNUM_SHADERTOOLS_LOCAL Containers::Array<char> linkDataToDataUsingInputFileCallbacks(const char* prefix, Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from);
+        MAGNUM_SHADERTOOLS_LOCAL Containers::Array<char> linkDataToDataUsingInputFileCallbacks(const char* prefix, Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
 
         /**
          * @brief Implementation for @ref linkDataToData()

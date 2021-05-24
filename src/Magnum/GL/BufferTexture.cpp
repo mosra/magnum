@@ -44,7 +44,7 @@ Int BufferTexture::maxSize() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().texture->maxBufferSize;
+    GLint& value = Context::current().state().texture.maxBufferSize;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -62,7 +62,7 @@ Int BufferTexture::offsetAlignment() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().texture->bufferOffsetAlignment;
+    GLint& value = Context::current().state().texture.bufferOffsetAlignment;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -75,19 +75,19 @@ Int BufferTexture::size() {
     /* Can't use DataHelper<1>::imageSize(*this, 0)[0] because for 1D textures
        it's not defined on ES */
     Int size;
-    (this->*Context::current().state().texture->getLevelParameterivImplementation)(0, GL_TEXTURE_WIDTH, &size);
+    (this->*Context::current().state().texture.getLevelParameterivImplementation)(0, GL_TEXTURE_WIDTH, &size);
     return size;
 }
 
 BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer) {
     buffer.createIfNotAlready();
-    (this->*Context::current().state().texture->setBufferImplementation)(internalFormat, &buffer);
+    (this->*Context::current().state().texture.setBufferImplementation)(internalFormat, &buffer);
     return *this;
 }
 
 BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     buffer.createIfNotAlready();
-    (this->*Context::current().state().texture->setBufferRangeImplementation)(internalFormat, buffer, offset, size);
+    (this->*Context::current().state().texture.setBufferRangeImplementation)(internalFormat, buffer, offset, size);
     return *this;
 }
 
@@ -130,7 +130,7 @@ void BufferTexture::setBufferRangeImplementationDSA(const BufferTextureFormat in
 BufferTexture& BufferTexture::resetBuffer() {
     /* R8 is the default state according to ARB_texture_buffer_object, so use
        that */
-    (this->*Context::current().state().texture->setBufferImplementation)(BufferTextureFormat::R8, nullptr);
+    (this->*Context::current().state().texture.setBufferImplementation)(BufferTextureFormat::R8, nullptr);
     return *this;
 }
 

@@ -25,12 +25,11 @@
 
 #include "WindowlessWglApplication.h"
 
-#include <cstring>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Define stuff that we need because I can't be bothered with creating a new
@@ -41,9 +40,15 @@
 #define WGL_CONTEXT_PROFILE_MASK_ARB 0x9126
 #define WGL_CONTEXT_CORE_PROFILE_BIT_ARB 0x00000001
 #define WGL_CONTEXT_ES2_PROFILE_BIT_EXT 0x00000004
+
+#ifndef WGL_ARB_create_context_no_error
+#define WGL_CONTEXT_OPENGL_NO_ERROR_ARB 0x31B3
+#endif
 #endif
 
 namespace Magnum { namespace Platform {
+
+using namespace Containers::Literals;
 
 WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, GLContext* const magnumContext) {
     /* Register the window class (if not yet done) */
@@ -119,13 +124,17 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
     typedef HGLRC(WINAPI*PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
     const PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>( wglGetProcAddress(reinterpret_cast<LPCSTR>("wglCreateContextAttribsARB")));
 
-    /* Request debug context if --magnum-gpu-validation is enabled */
+    /* Request debug context if GpuValidation is enabled either via the
+       configuration or via command-line */
     Configuration::Flags flags = configuration.flags();
-    if(magnumContext && magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+    if((flags & Configuration::Flag::GpuValidation) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         flags |= Configuration::Flag::Debug;
+    else if((flags & Configuration::Flag::GpuValidationNoError) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidationNoError))
+        flags |= Configuration::Flag::NoError;
 
+    /** @todo needs a growable DynamicArray with disabled alloc or somesuch */
     /* Optimistically choose core context first */
-    const GLint contextAttributes[] = {
+    GLint contextAttributes[11] = {
         #ifdef MAGNUM_TARGET_GLES
         #ifdef MAGNUM_TARGET_GLES3
         WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
@@ -136,15 +145,31 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
         #endif
         WGL_CONTEXT_MINOR_VERSION_ARB, 0,
         WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_ES2_PROFILE_BIT_EXT,
-        WGL_CONTEXT_FLAGS_ARB, GLint(flags),
+        /* Mask out the upper 32bits used for other flags */
+        WGL_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags) & 0xffffffffu),
         #else
         WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
         WGL_CONTEXT_MINOR_VERSION_ARB, 1,
         WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-        WGL_CONTEXT_FLAGS_ARB, GLint(flags),
+        /* Mask out the upper 32bits used for other flags */
+        WGL_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags) & 0xffffffffu),
         #endif
+
+        /* The rest is added optionally */
+        0, 0, /* WGL_CONTEXT_OPENGL_NO_ERROR_ARB */
         0
     };
+
+    std::size_t nextAttribute = 8;
+    CORRADE_INTERNAL_ASSERT(!contextAttributes[nextAttribute]);
+
+    if(flags & Configuration::Flag::NoError) {
+        contextAttributes[nextAttribute++] = WGL_CONTEXT_OPENGL_NO_ERROR_ARB;
+        contextAttributes[nextAttribute++] = true;
+    }
+
+    CORRADE_INTERNAL_ASSERT(nextAttribute < Containers::arraySize(contextAttributes));
+
     _context = wglCreateContextAttribsARB(_deviceContext, configuration.sharedContext(), contextAttributes);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -152,11 +177,26 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
     if(!_context) {
         Warning() << "Platform::WindowlessWglContext: cannot create core context, falling back to compatibility context:" << GetLastError();
 
-        const int fallbackContextAttributes[] = {
+        /** @todo duplicated three times, do better */
+        GLint fallbackContextAttributes[5] = {
             /** @todo or keep the fwcompat? */
-            WGL_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
+            /* Mask out the upper 32bits used for other flags */
+            WGL_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
+
+            /* The rest is added dynamically */
+            0, 0, /* WGL_CONTEXT_OPENGL_NO_ERROR_ARB */
             0
         };
+        std::size_t nextFallbackAttribute = 2;
+        CORRADE_INTERNAL_ASSERT(!fallbackContextAttributes[nextFallbackAttribute]);
+
+        if(flags & Configuration::Flag::NoError) {
+            fallbackContextAttributes[nextFallbackAttribute++] = WGL_CONTEXT_OPENGL_NO_ERROR_ARB;
+            fallbackContextAttributes[nextFallbackAttribute++] = true;
+        }
+
+        CORRADE_INTERNAL_ASSERT(nextFallbackAttribute < Containers::arraySize(fallbackContextAttributes));
+
         _context = wglCreateContextAttribsARB(_deviceContext, configuration.sharedContext(), fallbackContextAttributes);
 
     /* Fall back to (forward compatible) GL 2.1 if we are on binary
@@ -177,25 +217,35 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
 
         /* The workaround check is the last so it doesn't appear in workaround
            list on unrelated drivers */
-        constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
-        constexpr static const char intelVendorString[] = "Intel";
-        constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
-        const char* const vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-        /* If context creation fails *really bad*, glGetString() may actually
-           return nullptr. Check for that to avoid crashes deep inside
-           strncmp() */
-        if(vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
-            std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
-            std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0) &&
-            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context")))
+        const Containers::StringView vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+        if((vendorString == "NVIDIA Corporation"_s ||
+            vendorString == "Intel"_s ||
+            vendorString == "ATI Technologies Inc."_s)
+           && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s)))
         {
             /* Destroy the core context and create a compatibility one */
             wglDeleteContext(_context);
-            const int fallbackContextAttributes[] = {
+
+            /** @todo duplicated three times, do better */
+            GLint fallbackContextAttributes[5] = {
                 /** @todo or keep the fwcompat? */
-                WGL_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
+                /* Mask out the upper 32bits used for other flags */
+                WGL_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
+
+                /* The rest is added dynamically */
+                0, 0, /* WGL_CONTEXT_OPENGL_NO_ERROR_ARB */
                 0
             };
+            std::size_t nextFallbackAttribute = 2;
+            CORRADE_INTERNAL_ASSERT(!fallbackContextAttributes[nextFallbackAttribute]);
+
+            if(flags & Configuration::Flag::NoError) {
+                fallbackContextAttributes[nextFallbackAttribute++] = WGL_CONTEXT_OPENGL_NO_ERROR_ARB;
+                fallbackContextAttributes[nextFallbackAttribute++] = true;
+            }
+
+            CORRADE_INTERNAL_ASSERT(nextFallbackAttribute < Containers::arraySize(fallbackContextAttributes));
+
             _context = wglCreateContextAttribsARB(_deviceContext, configuration.sharedContext(), fallbackContextAttributes);
         }
     }
@@ -243,13 +293,20 @@ bool WindowlessWglContext::makeCurrent() {
     return false;
 }
 
-WindowlessWglContext::Configuration::Configuration():
+bool WindowlessWglContext::release() {
+    if(wglMakeCurrent(_deviceContext, nullptr))
+        return true;
+
+    Error() << "Platform::WindowlessWglContext::release(): cannot release current context:" << GetLastError();
+    return false;
+}
+
+WindowlessWglContext::Configuration::Configuration() {
+    GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag::Windowless);
     #ifndef MAGNUM_TARGET_GLES
-    _flags{Flag::ForwardCompatible}
-    #else
-    _flags{}
+    addFlags(Flag::ForwardCompatible);
     #endif
-    {}
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments): WindowlessWglApplication{arguments, Configuration{}} {}
@@ -259,7 +316,7 @@ WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{NoCreate, arguments.argc, arguments.argv} {}
 
 void WindowlessWglApplication::createContext() { createContext({}); }
 
@@ -268,10 +325,10 @@ void WindowlessWglApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessWglApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context.version() == GL::Version::None, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
 
-    WindowlessWglContext glContext{configuration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+    WindowlessWglContext glContext{configuration, &_context};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context.tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

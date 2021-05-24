@@ -43,12 +43,12 @@ TgaImageConverter::TgaImageConverter() = default;
 
 TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImageConverter{manager, plugin} {}
 
-ImageConverterFeatures TgaImageConverter::doFeatures() const { return ImageConverterFeature::ConvertData; }
+ImageConverterFeatures TgaImageConverter::doFeatures() const { return ImageConverterFeature::Convert2DToData; }
 
-Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& image) {
+Containers::Array<char> TgaImageConverter::doConvertToData(const ImageView2D& image) {
     /* Initialize data buffer */
     const auto pixelSize = UnsignedByte(image.pixelSize());
-    Containers::Array<char> data{Containers::ValueInit, sizeof(Implementation::TgaHeader) + pixelSize*image.size().product()};
+    Containers::Array<char> data{ValueInit, sizeof(Implementation::TgaHeader) + pixelSize*image.size().product()};
 
     /* Fill header */
     auto header = reinterpret_cast<Implementation::TgaHeader*>(data.begin());
@@ -61,7 +61,7 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
             header->imageType = 3;
             break;
         default:
-            Error() << "Trade::TgaImageConverter::exportToData(): unsupported pixel format" << image.format();
+            Error() << "Trade::TgaImageConverter::convertToData(): unsupported pixel format" << image.format();
             return nullptr;
     }
     header->bpp = pixelSize*8;
@@ -75,12 +75,12 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
 
     if(image.format() == PixelFormat::RGB8Unorm) {
         if(flags() & ImageConverterFlag::Verbose)
-            Debug{} << "Trade::TgaImageConverter::exportToData(): converting from RGB to BGR";
+            Debug{} << "Trade::TgaImageConverter::convertToData(): converting from RGB to BGR";
         for(Vector3ub& pixel: Containers::arrayCast<Vector3ub>(pixels))
             pixel = Math::gather<'b', 'g', 'r'>(pixel);
     } else if(image.format() == PixelFormat::RGBA8Unorm) {
         if(flags() & ImageConverterFlag::Verbose)
-            Debug{} << "Trade::TgaImageConverter::exportToData(): converting from RGBA to BGRA";
+            Debug{} << "Trade::TgaImageConverter::convertToData(): converting from RGBA to BGRA";
         for(Vector4ub& pixel: Containers::arrayCast<Vector4ub>(pixels))
             pixel = Math::gather<'b', 'g', 'r', 'a'>(pixel);
     }
@@ -91,4 +91,4 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
 }}
 
 CORRADE_PLUGIN_REGISTER(TgaImageConverter, Magnum::Trade::TgaImageConverter,
-    "cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1")
+    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3")

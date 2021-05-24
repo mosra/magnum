@@ -25,7 +25,9 @@
 
 #include "FlipNormals.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <vector>
+#endif
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Math/Vector3.h"

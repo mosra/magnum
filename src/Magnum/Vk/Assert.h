@@ -82,14 +82,14 @@ You can override this implementation by placing your own
 #endif
 
 /**
-@brief Assert that a Vulkan function call succeeds or returns the specified result
+@brief Assert that a Vulkan function call succeeds or returns any of the specified results
 @m_since_latest
 
 A variant of @ref MAGNUM_VK_INTERNAL_ASSERT_SUCCESS() that allows the call to
-return specified @p result in addition to
-@ref Magnum::Vk::Result::Success "Vk::Result::Success". The value specified in
-@p result is directly the (unscoped) enum value and the macro returns the
-actual result value. Example usage:
+return any of the specified results in addition to
+@ref Magnum::Vk::Result::Success "Result::Success". The variadic argument
+accepts any number of @ref Magnum::Vk::Result "Result" values, the macro then
+returns the actual result value. Example usage:
 
 @snippet MagnumVk.cpp MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR
 
@@ -103,26 +103,35 @@ including the @ref Magnum/Vk/Assert.h header.
 #if defined(CORRADE_NO_ASSERT) || (defined(CORRADE_STANDARD_ASSERT) && defined(NDEBUG))
 /* Defining it to just Magnum::Vk::Result(call) causes ugly warnings with
    asserts disabled, so it has to be a lambda even here :( */
-#define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(result, call)                  \
+#define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(call, ...)                        \
     [&]() {                                                                 \
         return Magnum::Vk::Result(call);                                    \
     }()
 #elif defined(CORRADE_STANDARD_ASSERT)
-#define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(result, call)                  \
+/* MinGW GCC 8 for some reason needs the `return Magnum::Vk::Result();` at the
+   end, otherwise it complains about non-void function exiting with no return.
+   All other compilers understand the abort() as a noreturn function. */
+#define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(call, ...)                        \
     [&]() {                                                                 \
         const Magnum::Vk::Result _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) = Magnum::Vk::Result(call); \
-        assert(_CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) == Magnum::Vk::Result::Success || _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) == Magnum::Vk::Result::result); \
-        return _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__);             \
+        for(const Magnum::Vk::Result _CORRADE_HELPER_PASTE(magnumVkResultCandidate, __LINE__): {Magnum::Vk::Result::Success, __VA_ARGS__}) { \
+            if(_CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) == _CORRADE_HELPER_PASTE(magnumVkResultCandidate, __LINE__)) \
+                return _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__);     \
+        }                                                                   \
+        assert(false);                                                      \
+        return Magnum::Vk::Result();                                        \
     }()
 #else
-#define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(result, call)                  \
+#define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(call, ...)                        \
     [&]() {                                                                 \
         const Magnum::Vk::Result _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) = Magnum::Vk::Result(call); \
-        if(_CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) != Magnum::Vk::Result::Success && _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) != Magnum::Vk::Result::result) { \
-            Corrade::Utility::Error{Corrade::Utility::Error::defaultOutput()} << "Call " #call " failed with" << _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) << "at " __FILE__ ":" CORRADE_LINE_STRING; \
-            std::abort();                                                   \
+        for(const Magnum::Vk::Result _CORRADE_HELPER_PASTE(magnumVkResultCandidate, __LINE__): {Magnum::Vk::Result::Success, __VA_ARGS__}) { \
+            if(_CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) == _CORRADE_HELPER_PASTE(magnumVkResultCandidate, __LINE__)) \
+                return _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__);     \
         }                                                                   \
-        return _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__);             \
+        Corrade::Utility::Error{Corrade::Utility::Error::defaultOutput()} << "Call " #call " failed with" << _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) << "at " __FILE__ ":" CORRADE_LINE_STRING; \
+        std::abort();                                                       \
+        return Magnum::Vk::Result();                                        \
     }()
 #endif
 #endif

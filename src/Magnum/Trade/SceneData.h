@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::Trade::SceneData
  */
 
-#include <string>
 #include <vector>
 
 #include "Magnum/Types.h"

@@ -25,8 +25,9 @@
 
 #include "State.h"
 
-#include <algorithm>
-#include <Corrade/Utility/DebugStl.h>
+#include <tuple>
+#include <Corrade/Containers/ArrayTuple.h>
+#include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -48,40 +49,127 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
-State::State(Context& context, std::ostream* const out) {
-    /* List of extensions used in current context. Guesstimate count to avoid
-       unnecessary reallocations. */
-    std::vector<std::string> extensions;
+std::pair<Containers::ArrayTuple, State&> State::allocate(Context& context, std::ostream* const out) {
+    /* TextureState needs to track state per texture / image binding, fetch
+       how many of them is there and allocate here as well so we don't need to
+       do another nested allocation */
+    GLint maxTextureUnits{};
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+    CORRADE_INTERNAL_ASSERT(maxTextureUnits > 0);
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    GLint maxImageUnits{};
     #ifndef MAGNUM_TARGET_GLES
-    extensions.reserve(32);
+    if(context.isExtensionSupported<Extensions::ARB::shader_image_load_store>())
     #else
-    extensions.reserve(8);
+    if(context.isVersionSupported(Version::GLES310))
+    #endif
+    {
+        glGetIntegerv(GL_MAX_IMAGE_UNITS, &maxImageUnits);
+        CORRADE_INTERNAL_ASSERT(maxImageUnits > 0);
+    }
     #endif
 
-    buffer.reset(new BufferState{context, extensions});
-    this->context.reset(new ContextState{context, extensions});
+    /* I have to say, the ArrayTuple is quite a crazy thing */
+    Containers::ArrayView<State> stateView;
+    Containers::ArrayView<BufferState> bufferStateView;
+    Containers::ArrayView<ContextState> contextStateView;
     #ifndef MAGNUM_TARGET_WEBGL
-    debug.reset(new DebugState{context, extensions});
+    Containers::ArrayView<DebugState> debugStateView;
     #endif
-    framebuffer.reset(new FramebufferState{context, extensions});
-    mesh.reset(new MeshState{context, *this->context, extensions});
-    query.reset(new QueryState{context, extensions});
-    renderer.reset(new RendererState{context, *this->context, extensions});
-    shader.reset(new ShaderState(context, extensions));
-    shaderProgram.reset(new ShaderProgramState{context, extensions});
-    texture.reset(new TextureState{context, extensions});
+    Containers::ArrayView<FramebufferState> framebufferStateView;
+    Containers::ArrayView<MeshState> meshStateView;
+    Containers::ArrayView<QueryState> queryStateView;
+    Containers::ArrayView<RendererState> rendererStateView;
+    Containers::ArrayView<ShaderState> shaderStateView;
+    Containers::ArrayView<ShaderProgramState> shaderProgramStateView;
+    Containers::ArrayView<TextureState> textureStateView;
+    Containers::ArrayView<std::pair<GLenum, GLuint>> textureBindings;
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    Containers::ArrayView<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings;
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
-    transformFeedback.reset(new TransformFeedbackState{context, extensions});
+    Containers::ArrayView<TransformFeedbackState> transformFeedbackStateView;
+    #endif
+    Containers::ArrayTuple data{
+        {NoInit, 1, stateView},
+        {NoInit, 1, bufferStateView},
+        {NoInit, 1, contextStateView},
+        #ifndef MAGNUM_TARGET_WEBGL
+        {NoInit, 1, debugStateView},
+        #endif
+        {NoInit, 1, framebufferStateView},
+        {NoInit, 1, meshStateView},
+        {NoInit, 1, queryStateView},
+        {NoInit, 1, rendererStateView},
+        {NoInit, 1, shaderStateView},
+        {NoInit, 1, shaderProgramStateView},
+        {NoInit, 1, textureStateView},
+        {ValueInit, std::size_t(maxTextureUnits), textureBindings},
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        {ValueInit, std::size_t(maxImageUnits), imageBindings},
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        {NoInit, 1, transformFeedbackStateView}
+        #endif
+    };
+
+    #ifdef MAGNUM_TARGET_GLES
+    /* This whole thing would be trivially destructible except for MeshState
+       which has to delete scratch VAOs on desktop in a custom destructor. */
+    CORRADE_INTERNAL_ASSERT(!data.deleter());
     #endif
 
-    /* Sort the features and remove duplicates */
-    std::sort(extensions.begin(), extensions.end());
-    extensions.erase(std::unique(extensions.begin(), extensions.end()), extensions.end());
+    /* Extensions that might get used by current context. The State classes
+       will set strings based on Extension::index() and then we'll go through
+       the list and print ones that aren't null. It's 1.5 kB of temporary data
+       but I think in terms of code size and overhead it's better than
+       populating a heap array and then std::sort() it to remove duplicates. */
+    const char* extensions[Implementation::ExtensionCount]{};
+
+    State& state = *(new(&stateView.front()) State{
+        bufferStateView.front(),
+        contextStateView.front(),
+        #ifndef MAGNUM_TARGET_WEBGL
+        debugStateView.front(),
+        #endif
+        framebufferStateView.front(),
+        meshStateView.front(),
+        queryStateView.front(),
+        rendererStateView.front(),
+        shaderStateView.front(),
+        shaderProgramStateView.front(),
+        textureStateView.front(),
+        #ifndef MAGNUM_TARGET_GLES2
+        transformFeedbackStateView.front()
+        #endif
+    });
+
+    new(&state.buffer) BufferState{context, extensions};
+    new(&state.context) ContextState{context, extensions};
+    #ifndef MAGNUM_TARGET_WEBGL
+    new(&state.debug) DebugState{context, extensions};
+    #endif
+    new(&state.framebuffer) FramebufferState{context, extensions};
+    new(&state.mesh) MeshState{context, stateView.front().context, extensions};
+    new(&state.query) QueryState{context, extensions};
+    new(&state.renderer) RendererState{context, stateView.front().context, extensions};
+    new(&state.shader) ShaderState(context, extensions);
+    new(&state.shaderProgram) ShaderProgramState{context, extensions};
+    new(&state.texture) TextureState{context, textureBindings,
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        imageBindings,
+        #endif
+        extensions};
+    #ifndef MAGNUM_TARGET_GLES2
+    new(&state.transformFeedback) TransformFeedbackState{context, extensions};
+    #endif
 
     Debug{out} << "Using optional features:";
-    for(const auto& ext: extensions) Debug(out) << "   " << ext;
-}
+    for(const char* extension: extensions)
+        if(extension) Debug(out) << "   " << extension;
 
-State::~State() = default;
+    return {std::move(data), state};
+}
 
 }}}

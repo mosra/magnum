@@ -139,7 +139,9 @@ enum class Result: Int {
     ErrorFormatNotSupported = VK_ERROR_FORMAT_NOT_SUPPORTED,
 
     /**
-     * A pool allocation has failed due to fragmentation of the pool's memory
+     * A pool allocation has failed due to fragmentation of the pool's memory.
+     * @see @ref DescriptorPool::allocate(),
+     *      @ref DescriptorPoolCreateInfo::Flag::FreeDescriptorSet
      */
     ErrorFragmentedPool = VK_ERROR_FRAGMENTED_POOL,
 
@@ -152,7 +154,8 @@ enum class Result: Int {
     /**
      * A pool memory allocation has failed.
      * @see @ref Result::ErrorOutOfHostMemory,
-     *      @ref Result::ErrorOutOfDeviceMemory
+     *      @ref Result::ErrorOutOfDeviceMemory,
+     *      @ref DescriptorPool::allocate()
      * @requires_vk11 Extension @vk_extension{KHR,maintenance1}
      */
     ErrorOutOfPoolMemory = VK_ERROR_OUT_OF_POOL_MEMORY,

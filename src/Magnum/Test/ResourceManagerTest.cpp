@@ -457,7 +457,7 @@ void ResourceManagerTest::loader() {
 
     {
         ResourceManager rm;
-        Containers::Pointer<IntResourceLoader> loaderPtr{Containers::InPlaceInit, rm};
+        Containers::Pointer<IntResourceLoader> loaderPtr{InPlaceInit, rm};
         IntResourceLoader& loader = *loaderPtr;
         rm.setLoader<Int>(std::move(loaderPtr));
 
@@ -507,7 +507,7 @@ void ResourceManagerTest::loaderSetNullptr() {
     };
 
     ResourceManager rm;
-    Containers::Pointer<IntResourceLoader> loaderPtr{Containers::InPlaceInit};
+    Containers::Pointer<IntResourceLoader> loaderPtr{InPlaceInit};
     IntResourceLoader& loader = *loaderPtr;
     rm.setLoader<Int>(std::move(loaderPtr));
 

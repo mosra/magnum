@@ -25,9 +25,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <vector>
+#include <Corrade/Utility/StlForwardString.h>
 
+#include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/OpenGL.h"
 
@@ -41,11 +41,11 @@
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct ShaderState {
-    explicit ShaderState(Context& context, std::vector<std::string>& extensions);
+    explicit ShaderState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
 
     enum: std::size_t {
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        StageCount = 4
+        StageCount = 6
         #else
         StageCount = 2
         #endif

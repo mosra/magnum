@@ -34,16 +34,56 @@
 #include "Magnum/Types.h"
 #include "Magnum/Math/Math.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum {
 
 /* Bring whole Corrade namespace */
 using namespace Corrade;
 
-/* Bring debugging facility from Corrade::Utility namespace */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+/**
+@brief Alias for debug output
+
+A shorthand for the fully-qualified name in Corrade.
+@see @ref Warning, @ref Error, @ref Fatal,
+    @ref Corrade::TestSuite::Tester::Debug
+*/
+typedef Corrade::Utility::Debug Debug;
+
+/**
+@brief Alias for warning output
+
+A shorthand for the fully-qualified name in Corrade.
+@see @ref Debug, @ref Error, @ref Fatal,
+    @ref Corrade::TestSuite::Tester::Warning
+*/
+typedef Corrade::Utility::Warning Warning;
+
+/**
+@brief Alias for error output
+
+A shorthand for the fully-qualified name in Corrade.
+@see @ref Debug, @ref Warning, @ref Fatal,
+    @ref Corrade::TestSuite::Tester::Error
+*/
+typedef Corrade::Utility::Error Error;
+
+/**
+@brief Alias for fatal output
+
+A shorthand for the fully-qualified name in Corrade.
+@see @ref Debug, @ref Warning, @ref Error
+*/
+typedef Corrade::Utility::Fatal Fatal;
+#else
 using Corrade::Utility::Debug;
 using Corrade::Utility::Warning;
 using Corrade::Utility::Error;
 using Corrade::Utility::Fatal;
+#endif
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
 /**
@@ -1129,10 +1169,12 @@ typedef Math::Frustum<Double> Frustumd;
  */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt, class T> class Array;
-template<class T> class Array1D;
-template<class T> class Array2D;
-template<class T> class Array3D;
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt, class T> class CORRADE_DEPRECATED("use Math::Vector instead") Array;
+template<class T> class CORRADE_DEPRECATED("use Math::Vector instead") Array1D;
+template<class T> class CORRADE_DEPRECATED("use Math::Vector2 instead") Array2D;
+template<class T> class CORRADE_DEPRECATED("use Math::Vector3 instead") Array3D;
+#endif
 
 enum class InputFileCallbackPolicy: UnsignedByte;
 

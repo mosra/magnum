@@ -70,10 +70,22 @@ different.
 
 Android allows to run arbitrary console utilities and tests via ADB. Assuming
 you have Magnum installed in the NDK path as described in @ref building-cross-android,
-build your project as below. The `CMAKE_FIND_ROOT_PATH` is unfortunately needed
-for CMake to correctly find Android libraries, otherwise it falls back to
-looking in native system locations. Adapt paths to your system, Android ABI and
-version and NDK location as needed:
+build your project as below. Adapt paths to your system, Android ABI and
+version and NDK location as needed.
+
+<b></b>
+
+@m_class{m-note m-warning}
+
+@par
+    Unfortunately, CMake before version 3.20 needs extra help with
+    `CMAKE_FIND_ROOT_PATH` and `CMAKE_FIND_LIBRARY_CUSTOM_LIB_SUFFIX` to
+    correctly find Android libraries, as shown below. Otherwise it falls back
+    to looking in native system locations. Again, adapt them to your system,
+    Android ABI and version and NDK location as needed.
+@par
+    CMake 3.20 and newer [is now able to detect everything on its own](https://gitlab.kitware.com/cmake/cmake/-/merge_requests/5357)
+    and you don't need to supply these anymore.
 
 @m_class{m-console-wrap}
 
@@ -84,7 +96,8 @@ cmake .. \
     -DCMAKE_SYSTEM_VERSION=24 \
     -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
-    -DCMAKE_FIND_ROOT_PATH="/opt/android-ndk/platforms/android-24/arch-arm64;/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot" \
+    -DCMAKE_FIND_ROOT_PATH=/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot \
+    -DCMAKE_FIND_LIBRARY_CUSTOM_LIB_SUFFIX=/aarch64-linux-android/24 \
     -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 @endcode
@@ -409,7 +422,10 @@ After that, you can add the additional ABIs to the `abiFilters` list in your
 `build.gradle`.
 
 For example, building Magnum for 32-bit and 64-bit ARM with SDK version 24
-could look like this:
+could look like this. The same note regarding CMake 3.20 applies here --- on
+versions before, you need the `CMAKE_FIND_ROOT_PATH` and
+`CMAKE_FIND_LIBRARY_CUSTOM_LIB_SUFFIX` variables as well (and have them in sync
+with the ABI and API version level), on 3.20 and newer you can omit them.
 
 @m_class{m-console-wrap}
 
@@ -421,9 +437,9 @@ cmake .. \
     -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=<ndk>/platforms/android-24/arch-arm/usr \
-    -DCMAKE_FIND_ROOT_PATH="<ndk>platforms/android-24/arch-arm;<ndk>/toolchains/llvm/prebuilt/linux-x86_64/sysroot" \
-    -DMAGNUM_INCLUDE_INSTALL_PREFIX=<ndk>/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr
+    -DCMAKE_INSTALL_PREFIX=<ndk>/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr \
+    -DCMAKE_FIND_ROOT_PATH=<ndk>/toolchains/llvm/prebuilt/linux-x86_64/sysroot \
+    -DCMAKE_FIND_LIBRARY_CUSTOM_LIB_SUFFIX=/arm-linux-androideabi/24
 cmake --build . --target install
 
 cd ..
@@ -435,9 +451,9 @@ cmake .. \
     -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=<ndk>/platforms/android-24/arch-arm64/usr \
-    -DCMAKE_FIND_ROOT_PATH="<ndk>platforms/android-24/arch-arm64;<ndk>/toolchains/llvm/prebuilt/linux-x86_64/sysroot" \
-    -DMAGNUM_INCLUDE_INSTALL_PREFIX=<ndk>/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr
+    -DCMAKE_INSTALL_PREFIX=<ndk>/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr \
+    -DCMAKE_FIND_ROOT_PATH=<ndk>/toolchains/llvm/prebuilt/linux-x86_64/sysroot \
+    -DCMAKE_FIND_LIBRARY_CUSTOM_LIB_SUFFIX=/aarch64-linux-android/24
 cmake --build . --target install
 @endcode
 

@@ -160,7 +160,7 @@ template<class T, class ...U
 
     /* Create output buffer only if we have some attributes */
     if(attributeCount && attributeCount != ~std::size_t(0)) {
-        Containers::Array<char> data{Containers::ValueInit, attributeCount*stride};
+        Containers::Array<char> data{ValueInit, attributeCount*stride};
         Implementation::writeInterleaved(stride, data.begin(), first, next...);
 
         return data;

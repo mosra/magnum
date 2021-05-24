@@ -74,6 +74,18 @@ bool WindowlessIosContext::makeCurrent() {
     return false;
 }
 
+bool WindowlessIosContext::release() {
+    if([EAGLContext setCurrentContext:nil])
+        return true;
+
+    Error() << "Platform::WindowlessIosContext::release(): cannot release current context";
+    return false;
+}
+
+WindowlessIosContext::Configuration::Configuration() {
+    GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag::Windowless);
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessIosApplication::WindowlessIosApplication(const Arguments& arguments): WindowlessIosApplication{arguments, Configuration{}} {}
 #endif
@@ -82,7 +94,7 @@ WindowlessIosApplication::WindowlessIosApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessIosApplication::WindowlessIosApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessIosApplication::WindowlessIosApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{NoCreate, arguments.argc, arguments.argv} {}
 
 void WindowlessIosApplication::createContext() { createContext({}); }
 
@@ -91,10 +103,10 @@ void WindowlessIosApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessIosApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessIosApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context.version() == GL::Version::None, "Platform::WindowlessIosApplication::tryCreateContext(): context already created", false);
 
-    WindowlessIosContext glContext{configuration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+    WindowlessIosContext glContext{configuration, &_context};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context.tryCreate())
         return false;
 
     _glContext = std::move(glContext);

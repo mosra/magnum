@@ -86,7 +86,7 @@ if(WITH_GL)
     add_library(snippets-MagnumGL STATIC
         MagnumGL.cpp
         MagnumMeshTools-gl.cpp
-        MagnumShaders.cpp
+        MagnumShaders-gl.cpp
         MagnumText.cpp)
     target_link_libraries(snippets-MagnumGL PRIVATE MagnumGL)
     set_target_properties(snippets-MagnumGL PROPERTIES FOLDER "Magnum/doc/snippets")

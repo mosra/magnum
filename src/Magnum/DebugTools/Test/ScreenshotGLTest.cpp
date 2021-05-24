@@ -311,7 +311,7 @@ void ScreenshotGLTest::saveFailed() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(!succeeded);
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::exportToFile(): cannot determine the format of image.poo\n");
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.poo\n");
 }
 
 }}}}

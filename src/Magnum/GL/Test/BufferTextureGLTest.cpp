@@ -95,10 +95,10 @@ BufferTextureGLTest::BufferTextureGLTest() {
 void BufferTextureGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
-        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() << "is not supported.");
     #endif
 
     {
@@ -123,10 +123,10 @@ void BufferTextureGLTest::constructMove() {
 void BufferTextureGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
-        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() << "is not supported.");
     #endif
 
     GLuint id;
@@ -146,10 +146,10 @@ void BufferTextureGLTest::wrap() {
 void BufferTextureGLTest::bind() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
-        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() << "is not supported.");
     #endif
 
     BufferTexture texture;
@@ -173,12 +173,12 @@ void BufferTextureGLTest::bind() {
 void BufferTextureGLTest::bindImage() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::shader_image_load_store>())
-        CORRADE_SKIP(Extensions::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::shader_image_load_store::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
-        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() << "is not supported.");
     if(!Context::current().isVersionSupported(Version::GLES310))
         CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
     #endif
@@ -210,10 +210,10 @@ void BufferTextureGLTest::bindImage() {
 void BufferTextureGLTest::setBuffer() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
-        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() << "is not supported.");
     #endif
 
     BufferTexture texture;
@@ -240,10 +240,10 @@ void BufferTextureGLTest::setBuffer() {
 void BufferTextureGLTest::setBufferEmptyFirst() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
-        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() << "is not supported.");
     #endif
 
     BufferTexture texture;
@@ -276,12 +276,12 @@ void BufferTextureGLTest::setBufferEmptyFirst() {
 void BufferTextureGLTest::setBufferOffset() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_range>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_range::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_range::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
-        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() << "is not supported.");
     #endif
 
     /* Check that we have correct offset alignment */
@@ -314,10 +314,10 @@ void BufferTextureGLTest::setBufferOffset() {
 void BufferTextureGLTest::resetBuffer() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
-        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() << "is not supported.");
     #endif
 
     BufferTexture texture;
@@ -351,7 +351,7 @@ void BufferTextureGLTest::resetBuffer() {
 #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
 void BufferTextureGLTest::appleSetBufferSubData() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
 
     BufferTexture texture;
     Buffer buffer{Buffer::TargetHint::Texture};
@@ -373,7 +373,7 @@ void BufferTextureGLTest::appleSetBufferSubData() {
 
 void BufferTextureGLTest::appleSetUnrelatedBufferData() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
 
     BufferTexture texture;
     Buffer buffer{Buffer::TargetHint::Texture};
@@ -396,7 +396,7 @@ void BufferTextureGLTest::appleSetUnrelatedBufferData() {
 
 void BufferTextureGLTest::appleSetBufferQueryData() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
 
     BufferTexture texture;
     Buffer buffer{Buffer::TargetHint::Texture};
@@ -419,7 +419,7 @@ void BufferTextureGLTest::appleSetBufferQueryData() {
 
 void BufferTextureGLTest::appleSetBufferMap() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
 
     BufferTexture texture;
     Buffer buffer{Buffer::TargetHint::Texture};
@@ -445,7 +445,7 @@ void BufferTextureGLTest::appleSetBufferMap() {
 
 void BufferTextureGLTest::appleSetBufferMapRange() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
 
     BufferTexture texture;
     Buffer buffer{Buffer::TargetHint::Texture};
@@ -476,7 +476,7 @@ void BufferTextureGLTest::appleSetBufferMapRange() {
 
 void BufferTextureGLTest::appleBindUnrelatedTextureInBetween() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
-        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
 
     BufferTexture texture;
     Buffer buffer{Buffer::TargetHint::Texture};

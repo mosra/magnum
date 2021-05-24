@@ -41,6 +41,16 @@ See also:
 @subsection changelog-latest-new New features
 
 -   New @ref NoAllocate constructor tag, to be used by the @ref Vk library
+-   New @ref DefaultInit constructor tag, simply an alias to the existing
+    @ref Corrade::DefaultInit tag
+-   New @ref PixelFormat::Depth16Unorm, @relativeref{PixelFormat,Depth24Unorm},
+    @relativeref{PixelFormat,Depth32F}, @relativeref{PixelFormat,Stencil8UI},
+    @relativeref{PixelFormat,Depth16UnormStencil8UI},
+    @relativeref{PixelFormat,Depth24UnormStencil8UI},
+    @relativeref{PixelFormat,Depth32FStencil8UI} generic pixel formats,
+    including mapping to @ref GL::PixelFormat / @ref GL::PixelType,
+    @ref GL::TextureFormat and @ref Vk::PixelFormat and (partial) support in
+    @ref DebugTools::CompareImage
 
 @subsubsection changelog-latest-new-debugtools DebugTools library
 
@@ -49,6 +59,18 @@ See also:
 
 @subsubsection changelog-latest-new-gl GL library
 
+-   New @ref GL::Context::Configuration class providing runtime alternatives to
+    the `--magnum-log`, `--magnum-gpu-validation`, `--magnum-disable-extensions`
+    and `--magnum-disable-workarounds` command line options. The class is then
+    inherited by all @ref Platform::Sdl2Application::GLConfiguration "Platform::*Application::GLConfiguration"
+    and @ref Platform::WindowlessEglApplication::Configuration "Platform::Windowless*Application::Configuration"
+    classes.
+-   The `--magnum-gpu-validation` option accepts a new value, `no-error`, which
+    creates OpenGL contexts without error reporting. Those may result in better
+    performance on certain drivers, however note that errors on such context
+    have undefined behavior and may cause stability issues. This option is also
+    programatically settable via a new
+    @ref GL::Context::Configuration::Flag::GpuValidationNoError flag.
 -   Implemented @gl_extension{EXT,texture_norm16} and
     @webgl_extension{EXT,texture_norm16} ES and WebGL extensions, making
     normalized 16-bit texture and renderbuffer formats available on all
@@ -97,6 +119,9 @@ See also:
     create a transformation from a rotation and translation part (see
     [mosra/magnum#471](https://github.com/mosra/magnum/pull/471))
 -   Added @ref Math::Intersection::rayRange() (see [mosra/magnum#484](https://github.com/mosra/magnum/pull/484))
+-   Added @ref Math::RectangularMatrix::RectangularMatrix(IdentityInitT, T)
+    constructor as it might be useful to create non-square identity matrices as
+    well
 
 @subsubsection changelog-latest-new-meshtools MeshTools library
 
@@ -108,16 +133,28 @@ See also:
 -   It's now possible to have multiple @ref Platform::EmscriptenApplication
     canvases on a single page (see [mosra/magnum#480](https://github.com/mosra/magnum/pull/480),
     [mosra/magnum#481](https://github.com/mosra/magnum/pull/481))
+-   Added @relativeref{Platform::WindowlessEglContext,release()} as a
+    counterpart to @relativeref{Platform::WindowlessEglContext,makeCurrent()}
+    to all @cpp Platform::Windowless*Context @ce classes. Useful for
+    transferring OpenGL contexts between threads, see also
+    [mosra/magnum#495](https://github.com/mosra/magnum/pull/495).
+-   Implemented @relativeref{Platform::WindowlessEglApplication,Configuration::Flag::NoError}
+    in @ref Platform::WindowlessEglApplication,
+    @ref Platform::WindowlessGlxApplication,
+    @ref Platform::WindowlessWglApplication,
+    @ref Platform::WindowlessWindowsEglApplication and
+    @ref Platform::Sdl2Application
 
 @subsubsection changelog-latest-new-shaders Shaders library
 
--   Added @ref Shaders::Phong::setNormalTextureScale(), consuming the recently
-    added @ref Trade::MaterialAttribute::NormalTextureScale material attribute
--   @ref Shaders::Phong was reworked to support directional and
+-   Added @ref Shaders::PhongGL::setNormalTextureScale(), consuming the
+    recently added @ref Trade::MaterialAttribute::NormalTextureScale material
+    attribute
+-   @ref Shaders::PhongGL was reworked to support directional and
     range-attenuated point lights to follow the additions to
     @ref Trade::LightData
--   Added @ref Shaders::Phong::setLightSpecularColors() for better control over
-    speculat highlights
+-   Added @ref Shaders::PhongGL::setLightSpecularColors() for better control
+    over specular highlights
 
 @subsubsection changelog-latest-new-shadertools ShaderTools library
 
@@ -148,8 +185,14 @@ See also:
 -   New @ref Trade::SkinData class and @ref Trade::AbstractImporter::skin2D() /
     @ref Trade::AbstractImporter::skin3D() family of APIs for skin import, as
     well as support in @ref Trade::AnySceneImporter "AnySceneImporter"
+-   1D and 3D image support in @ref Trade::AbstractImageConverter
 -   @ref Trade::LightData got extended to support light attenuation and range
     parameters as well and spot light inner and outer angle
+-   @ref Trade::AbstractImporter, @ref Trade::AbstractImageConverter and
+    @ref Trade::AbstractSceneConverter now has @relativeref{Trade::AbstractImporter,addFlags()} and
+    @relativeref{Trade::AbstractImporter,clearFlags()} convenience helpers that
+    are encouraged over @relativeref{Trade::AbstractImporter,setFlags()} as it
+    avoid accidentally clearing default flags potentially added in the future.
 
 @subsubsection changelog-latest-new-vk Vk library
 
@@ -173,8 +216,23 @@ See also:
 
 @subsection changelog-latest-changes Changes and improvements
 
+@subsubsection changelog-latest-changes-debugtools DebugTools library
+
+-   @ref DebugTools::CompareImage now supports comparing half-float pixel
+    formats as well
+
 @subsubsection changelog-latest-changes-gl GL library
 
+-   The @ref GL::Context class got significantly optimized in terms of compile
+    time, header size and runtime as well, significantly reducing the amount of
+    allocations done at startup.
+-   To make working with cube map images easier,
+    @ref GL::CubeMapTexture::setSubImage() and
+    @ref GL::CubeMapTexture::subImage() taking 3D images are now exposed on all
+    platforms, not just desktop OpenGL 4.5+, with a fall back to slice-by-slice
+    upload/download where needed. The compressed variant is still only GL 4.5+,
+    as that needs the @ref CompressedImageView APIs to be aware of compression
+    format properties, which isn't implemented yet.
 -   Added @ref GL::Framebuffer::Status::IncompleteDimensions for ES2. This enum
     isn't available on ES3 or desktop GL, but NVidia drivers are known to emit
     it, which is why it got added.
@@ -182,18 +240,34 @@ See also:
     now advertised as a @cpp "intel-windows-chatty-shader-compiler" @ce
     workaround, instead of being done silently. See @ref opengl-workarounds for
     more information.
+-   @ref Platform::WindowlessEglApplication "Platform::Windowless*Application"
+    instances no longer touch default framebuffer state in order to avoid
+    potential race conditions with a windowed context on another thread. This
+    is also exposed via a new @ref GL::Context::Configuration::Flag::Windowless
+    flag for integration with custom-created OpenGL contexts. See also
+    [mosra/magnum#493](https://github.com/mosra/magnum/pull/493) and
+    [mosra/magnum#494](https://github.com/mosra/magnum/pull/494).
 
 @subsubsection changelog-latest-changes-math Math library
 
 -   Added @ref Math::castInto() overloads for casting between @ref UnsignedByte
-    and @ref UnsignedShort or @ref Byte and @ref Short
+    and @ref UnsignedShort or @ref Byte and @ref Short, and for casting between
+    @ref Float and @ref Double
+-   @ref Math::RectangularMatrix is now explicitly convertible from matrices of
+    different sizes, with a possibility to specify whether to fill the diagonal
+    or leave it as zeros. This was originally available only on (square)
+    @ref Math::Matrix from other square matrices where it implicitly filled the
+    diagonal to an identity, but is now generalized for arbitrary rectangular
+    matrices, and with the default on @ref Math::RectangularMatrix being
+    zero-fill while @ref Math::Matrix stays with the identity for consistency
+    with other constructors.
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
 -   Added a `--bounds` option to @ref magnum-sceneconverter "magnum-sceneconverter",
     showing data ranges of known attributes
--   @ref magnum-sceneconverter "magnum-sceneconverter" now lists also lights,
-    materials and textures in `--info`
+-   @ref magnum-sceneconverter "magnum-sceneconverter" now lists also
+    animations, lights, materials and textures in `--info`
 
 @subsubsection changelog-latest-changes-platform Platform libraries
 
@@ -217,16 +291,29 @@ See also:
     @ref Platform::EmscriptenApplication and @ref Platform::Sdl2Application now
     notify about that in the verbose output (enabled with `?magnum-log=verbose`),
     previously only autodetected canvas size got printed
+-   Added @ref Platform::WindowlessIosContext::glContext() for consistency with
+    other context classes
+-   Undefining even more noise from `Xlib.h` (see
+    [mosra/magnum#498](https://github.com/mosra/magnum/pull/498))
+-   Added @ref Platform::EmscriptenApplication::Configuration::addWindowFlags()
+    and @ref Platform::EmscriptenApplication::Configuration::clearWindowFlags()
+    for consistency with other application implementations
+
+@subsubsection changelog-latest-changes-scenegraph SceneGraph library
+
+-   @ref SceneGraph trees are now destructed in a way that preserves
+    @ref SceneGraph::Object::parent() links up to the root as well as
+    @ref SceneGraph::AbstractFeature::object() references
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
--   In the original implementation of normal mapping in @ref Shaders::Phong,
+-   In the original implementation of normal mapping in @ref Shaders::PhongGL,
     there shader didn't provide a way to supply bitangent direction, forcing
     users to patch normal maps. This is now possible using newly added
-    @ref Shaders::Phong::Tangent4, @ref Shaders::Phong::Bitangent attributes
-    and a @ref Shaders::Phong::Flag::Bitangent flag, implementing support for
-    both four-component tangents (used by glTF, for example) and separate
-    tangent and bitangent direction (used by Assimp).
+    @ref Shaders::PhongGL::Tangent4, @ref Shaders::PhongGL::Bitangent
+    attributes and a @ref Shaders::PhongGL::Flag::Bitangent flag, implementing
+    support for both four-component tangents (used by glTF, for example) and
+    separate tangent and bitangent direction (used by Assimp).
 
 @subsubsection changelog-latest-changes-trade Trade library
 
@@ -273,12 +360,35 @@ See also:
 -   The Homebrew package now uses `std_cmake_args` instead of hardcoded build
     type and install prefix, which resolves certain build issues (see
     [mosra/homebrew-magnum#6](https://github.com/mosra/homebrew-magnum/pull/6))
+-   Various changes to Vcpkg packages to account for newly added libraries and
+    plugin interfaces ([mosra/magnum#485](https://github.com/mosra/magnum/issues/485))
+-   The `FindSDL2.cmake` module was updated to allow using SDL2 as a
+    subproject. See the @ref Platform-Sdl2Application-usage "Platform::Sdl2Application docs"
+    for more information. See also [mosra/magnum#496](https://github.com/mosra/magnum/issues/496).
+-   With CMake 3.20 and newer it's possible to compile for Android NDK r19+
+    without explicitly supplying various system paths. Additionally, when `CMAKE_INSTALL_PREFIX` points to Android NDK sysroot, the `LIB_SUFFIX`
+    gets autodetected to a correct triplet + API level version subdirectory,
+    making the installed project discoverable by both vanilla CMake and Gradle.
+    On CMake 3.16 to 3.19 it's required to set two extra variables for the
+    same effect. See @ref building-cross-android, @ref platforms-android and
+    [mosra/magnum#310](https://github.com/mosra/magnum/issues/310) for more
+    information.
+-   Suppressing a CMake policy-related warning if the global `CMAKE_AUTOMOC` is
+    set on CMake 3.10+ (see [mosra/magnum#504](https://github.com/mosra/magnum/pull/504))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   @ref GL::Context move constructor was not marked @cpp noexcept @ce by
-    accident
+    accident and it was also not really moving everything properly, especially
+    when delayed creation was done on the moved-to object
+-   @ref GL::OpenGLTester::addBenchmarks() taking a setup/teardown function
+    passed the arguments to the base @relativeref{Corrade,TestSuite::Tester}
+    implementation in a wrong order, failing to compile if this function was
+    used in a test
 -   @ref GL::Renderer::MemoryBarrier::ShaderStorage had an incorrect value
+-   @ref GL::Shader limit queries for a particular shader stage on desktop were
+    out-of-bounds array accesses, causing wrong or random values being returned
+    for most shader-related limits
 -   Fixed assertions related to OpenGL driver workarounds when the proprietary
     AMDGPU PRO drivers are used on Linux
 -   @ref Platform::EmscriptenApplication randomly created antialiased contexts
@@ -291,10 +401,10 @@ See also:
 -   For meshes with multiple sets of vertex attributes (such as texture
     coordinates), @ref MeshTools::compile() should be using only the first set
     but it wasn't.
--   @ref Shaders::Phong was normalizing light direction in vertex shader,
+-   @ref Shaders::PhongGL was normalizing light direction in vertex shader,
     causing the fragment-interpolated direction being incorrect with visible
     artifacts on long polygons under low light angle
--   @ref Shaders::Phong wasn't normalizing normals coming from normal textures,
+-   @ref Shaders::PhongGL wasn't normalizing normals coming from normal textures,
     which may have caused slight artifacts due to limited precision of 8-bit
     pixel formats
 -   @ref Text::AbstractFontConverter::exportFontToData() and
@@ -308,6 +418,8 @@ See also:
 -   Fixed canvas size setup in @ref Platform::EmscriptenApplication to be the
     same in the @ref Platform::EmscriptenApplication::Configuration::WindowFlag::Contextless "Contextless"
     case as for a WebGL-enabled context
+-   Fixed a crash in @ref Platform::GlfwApplication::setCursor() on the
+    upcoming GLFW 3.4
 -   @ref SceneGraph::BasicMatrixTransformation2D,
     @ref SceneGraph::BasicMatrixTransformation3D,
     @ref SceneGraph::BasicRigidMatrixTransformation2D and
@@ -321,6 +433,18 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   The @cpp Array @ce, @cpp Array1D @ce, @cpp Array2D @ce and
+    @cpp Array3D @ce types that were used exclusively for specifying
+    @ref SamplerWrapping in various texture APIs are deprecated in favor of
+    @ref Math::Vector and its subclasses and all existing APIs were switched to
+    it. The only advantage of this type compared to @ref Math::Vector was that
+    it provided an implicit constructor from a single value (whereas
+    @ref Math::Vector has it @cpp explicit @ce), and that's now solved by
+    simply providing an overload with just a single value where it matters.
+    It was also commonly confused with @relativeref{Corrade,Containers::Array},
+    which is a type with totally different semantics. To avoid breaking
+    existing code, conversion from and to @ref Math::Vector is now provided and
+    this type is included in all places where it was originally used.
 -   Markup styling for Emscripten application was switched to prefer using
     CSS classes instead of the @cb{.css} #container @ce, @cb{.css} #sizer @ce,
     @cb{.css} #expander @ce, @cb{.css} #listener @ce, @cb{.css} #canvas @ce,
@@ -331,23 +455,44 @@ See also:
     the canvas and status elements from the JS `Module`. See
     @ref platforms-html5-apps and [mosra/magnum#481](https://github.com/mosra/magnum/pull/481)
     for details.
--   @ref Shaders::Phong::setLightPositions() and
-    @ref Shaders::Phong::setLightPosition() taking three-component vectors are
-    deprecated in favor of variants taking four-component vectors, where the
+-   @cpp DebugTools::GLFrameProfiler @ce is deprecated in favor of
+    @ref DebugTools::FrameProfilerGL. The new name plays better with IDE
+    autocompletion and makes the GL-specific class appear next to the
+    API-independent base in alphabetically sorted lists.
+-   @cpp Shaders::AbstractVector @ce, @cpp Shaders::DistanceFieldVector @ce,
+    @cpp Shaders::Flat @ce, @cpp Shaders::Generic @ce,
+    @cpp Shaders::MeshVisualizer2D @ce, @cpp Shaders::MeshVisualizer3D @ce,
+    @cpp Shaders::Phong @ce, @cpp Shaders::Vector @ce,
+    @cpp Shaders::VertexColor @ce and related 2D/3D typedefs are deprecated in
+    favor of @ref Shaders::AbstractVectorGL,
+    @ref Shaders::DistanceFieldVectorGL, @ref Shaders::FlatGL,
+    @ref Shaders::GenericGL, @ref Shaders::MeshVisualizerGL2D,
+    @ref Shaders::MeshVisualizerGL3D, @ref Shaders::PhongGL,
+    @ref Shaders::VectorGL, @ref Shaders::VertexColorGL and correspondingly
+    renamed typedefs to make room for Vulkan shaders and functionality shared
+    between OpenGL and Vulkan implementation such as uniform buffer layout
+    definitions
+-   @ref Shaders::PhongGL::setLightPositions() and
+    @ref Shaders::PhongGL::setLightPosition() taking three-component vectors
+    are deprecated in favor of variants taking four-component vectors, where the
     last component distinguishes between directional and point lights
--   @cpp Shaders::Phong::setLightPosition(const Vector3&) @ce is deprecated in
-    favor of @ref Shaders::Phong::setLightPositions() with a single item ---
+-   @cpp Shaders::PhongGL::setLightPosition(const Vector3&) @ce is deprecated
+    in favor of @ref Shaders::PhongGL::setLightPositions() with a single item ---
     it's short enough to not warrant the existence of a dedicated overload
--   @ref Shaders::Phong::setLightColors() and
-    @ref Shaders::Phong::setLightColor() taking four-component colors are
+-   @ref Shaders::PhongGL::setLightColors() and
+    @ref Shaders::PhongGL::setLightColor() taking four-component colors are
     deprecated in favor of variants taking just three-component colors, as the
     alpha had no meaningful use anyway.
--   @cpp Shaders::Phong::setLightColor(const Magnum::Color4&) @ce is deprecated
-    in favor of @ref Shaders::Phong::setLightColors() with a single item ---
+-   @cpp Shaders::PhongGL::setLightColor(const Magnum::Color4&) @ce is deprecated
+    in favor of @ref Shaders::PhongGL::setLightColors() with a single item ---
     it's short enough to not warrant the existence of a dedicated overload
 -   @cpp Trade::AbstractMaterialData @ce as well as its containing header
     `Magnum/Trade/AbstractMaterialData.h` is now a deprecated alias to the new
     and more flexible @ref Trade::MaterialData.
+-   @cpp Trade::LightData::Type::Infinite @ce, originally adapted from the
+    OpenGEX specification, is deprecated in favor of
+    @ref Trade::LightData::Type::Directional as that's the more commonly used
+    term
 -   @cpp Trade::PhongMaterialData::ambientCoordinateSet() @ce,
     @cpp diffuseCoordinateSet() @ce, @cpp specularCoordinateSet() @ce and
     @cpp normalCoordinateSet() @ce are deprecated in favor of more consistently
@@ -377,6 +522,34 @@ See also:
     @ref MAGNUM_BUILD_DEPRECATED is enabled, the returned type acts as a
     @ref Corrade::Containers::Optional but has (deprecated) implicit conversion
     to a @ref Corrade::Containers::Pointer to avoid breaking user code.
+-   @cpp Trade::ImageConverterFeature::ConvertImage @ce and
+    @cpp Trade::ImageConverterFeature::ConvertCompressedImage @ce;
+    @cpp Trade::AbstractImageConverter::exportToImage() @ce and
+    @cpp Trade::AbstractImageConverter::exportToCompressedImage() @ce are
+    deprecated in favor of an unifying
+    @ref Trade::ImageConverterFeature::Convert2D and a corresponding
+    @ref Trade::AbstractImageConverter::convert() that returns an
+    @ref Trade::ImageData2D and thus can handle both cases and follows a naming
+    scheme used elsewhere
+-   @cpp Trade::ImageConverterFeature::ConvertFile @ce,
+    @cpp Trade::ImageConverterFeature::ConvertCompressedFile @ce,
+    @cpp Trade::ImageConverterFeature::ConvertData @ce and
+    @cpp Trade::ImageConverterFeature::ConvertCompressedData @ce are deprecated
+    in favor of @ref Trade::ImageConverterFeature::Convert2DToFile,
+    @ref Trade::ImageConverterFeature::ConvertCompressed2DToFile,
+    @ref Trade::ImageConverterFeature::Convert2DToData and
+    @ref Trade::ImageConverterFeature::ConvertCompressed2DToData that more
+    clearly imply what's converted to what and make room for 3D image
+    conversion as well
+-   @cpp Trade::AbstractImageConverter::exportToData() @ce and
+    @cpp Trade::AbstractImageConverter::exportToFile() @ce are deprecated in
+    favor of @ref Trade::AbstractImageConverter::convertToData() and
+    @ref Trade::AbstractImageConverter::convertToFile() that follow a naming
+    scheme used elsewhere
+-   The signature of @ref Trade::AbstractSceneConverter::convertToFile() was
+    changed to have input first and output second, for consistency with other
+    interfaces, together with a switch to @ref Containers::StringView. The
+    original signature is marked as deprecated.
 -   @cpp Vk::hasVkFormat(Magnum::VertexFormat) @ce,
     @cpp Vk::hasVkFormat(Magnum::PixelFormat) @ce,
     @cpp Vk::hasVkFormat(Magnum::CompressedPixelFormat) @ce,
@@ -428,9 +601,9 @@ See also:
         function instead.
     -   `Platform::Sdl2Application::Configuration::WindowFlags::AllowHighDpi`,
         had no effect anymore
-    -   `Shaders::Generic::Color` and `Shaders::VertexColor::Color`, use
-        @ref Shaders::VertexColor::Color3 or @ref Shaders::VertexColor::Color4
-        instead
+    -   `Shaders::GenericGL::Color` and `Shaders::VertexColorGL::Color`, use
+        @ref Shaders::VertexColorGL::Color3 or
+        @ref Shaders::VertexColorGL::Color4 instead
     -   @ref Trade::CameraData constructor not taking an explicit type enum,
         use @ref Trade::CameraData::CameraData(CameraType, Rad, Float, Float, Float, const void*)
         instead
@@ -447,6 +620,20 @@ See also:
     @ref Corrade::Containers::ArrayView are now removed. This should have a
     significant positive effect on compile times of code using the @ref GL,
     @ref Audio, @ref Trade and @ref Text libraries
+-   As part of the ongoing STL header dependency cleanup,
+    @ref GL::Context::vendorString(),
+    @relativeref{GL::Context,rendererString()},
+    @relativeref{GL::Context,versionString()},
+    @relativeref{GL::Context,shadingLanguageVersionString()},
+    @relativeref{GL::Context,shadingLanguageVersionStrings()} and
+    @relativeref{GL::Context,extensionStrings()} now return
+    @relativeref{Corrade,Containers::StringView} or a
+    @relativeref{Corrade,Containers::Array} /
+    @relativeref{Corrade,Containers::ArrayView} of them, instead of a
+    @ref std::string and a @ref std::vector. For at least some backwards
+    compatibility the @ref Corrade/Containers/StringStl.h header is included to
+    provide implicit conversions to a @ref std::string, but in most cases
+    you'll be forced to change the code that uses those APIs.
 -   @ref GL::TextureFormat::SR8 and @ref GL::TextureFormat::SRG8 were present
     on ES2 builds by mistake --- the @gl_extension{EXT,texture_sRGB_R8} and
     @gl_extension{EXT,texture_sRGB_RG8} extensions require OpenGL ES 3.0 at
@@ -457,7 +644,13 @@ See also:
     afterwards. This can cause compilation breakages in case the type
     constructor has the parent parameter non-optional, pass the parent
     explicitly in that case.
--   Due to the rework of @ref Shaders::Phong to support directional and
+-   @ref SceneGraph trees are now destructed in a way that preserves
+    @ref SceneGraph::Object::parent() links up to the root as well as
+    @ref SceneGraph::AbstractFeature::object() references. Previous behavior
+    made both @cpp nullptr @ce even before the object/feature destructors were
+    called and so it's assumed no code relied on such behavior, nevertheless
+    it's a subtle change worth mentioning.
+-   Due to the rework of @ref Shaders::PhongGL to support directional and
     attenuated point lights, the original behavior of unattenuated point lights
     isn't available anymore. For backwards compatibility, light positions
     supplied through three-component vectors are now represented as directional
@@ -483,16 +676,20 @@ See also:
     interfaces, which are also @cpp const @ce and can't fail. Documentation of
     each function was expanded to suggest a recommended place for potential
     error handling.
--   @cpp Trade::LightData::Type::Infinite @ce, originally adapted from the
-    OpenGEX specification, is deprecated in favor of
-    @ref Trade::LightData::Type::Directional as that's the more commonly used
-    term
+-   @ref Trade::TextureData constructor was not @cpp explicit @ce by mistake,
+    now it is
 
 @subsection changelog-latest-documentation Documentation
 
 -   Added a note about MinGW GCC and Clang ABI incompatibility to
     @ref platforms-windows "Windows platform docs" (see [mosra/magnum#227](https://github.com/mosra/magnum/issues/227) and
     [mosra/magnum#439](https://github.com/mosra/magnum/issues/439))
+-   Various documentation fixes (see [mosra/magnum#492](https://github.com/mosra/magnum/issues/492))
+-   @ref Corrade::Utility::Debug and friends were always brought to the )
+    @ref Magnum namespace via a @cpp using @ce directive, but this was never
+    reflected in the docs and thus hidden from users. Now it's shown in the
+    docs as a set of @ref Debug etc typedefs instead, to make them more
+    discoverable.
 
 @section changelog-2020-06 2020.06
 
@@ -718,21 +915,22 @@ Released 2020-06-27, tagged as
 
 @subsubsection changelog-2020-06-new-shaders Shaders library
 
--   New @ref Shaders::MeshVisualizer2D for 2D mesh visualization
--   Tangent space visualization in @ref Shaders::MeshVisualizer3D
+-   New @cpp Shaders::MeshVisualizer2D @ce for 2D mesh visualization
+-   Tangent space visualization in @cpp Shaders::MeshVisualizer3D @ce
 -   Object, vertex and primitive ID visualization in
-    @ref Shaders::MeshVisualizer2D and @ref Shaders::MeshVisualizer3D
--   Texture coordinate transformation in @ref Shaders::DistanceFieldVector,
-    @ref Shaders::Flat, @ref Shaders::Phong and @ref Shaders::Vector
--   Ability to render per-instance / per-vertex object ID in @ref Shaders::Flat
-    and @ref Shaders::Phong, in addition to uniform object ID
+    @cpp Shaders::MeshVisualizer2D @ce and @cpp Shaders::MeshVisualizer3D @ce
+-   Texture coordinate transformation in @cpp Shaders::DistanceFieldVector @ce,
+    @cpp Shaders::Flat @ce, @cpp Shaders::Phong @ce and @cpp Shaders::Vector @ce
+-   Ability to render per-instance / per-vertex object ID in
+    @cpp Shaders::Flat @ce and @cpp Shaders::Phong @ce, in addition to uniform
+    object ID
 -   New attribute definitions and an location allocation scheme in
-    @ref Shaders::Generic --- @ref Shaders::Generic::Tangent4,
-    @ref Shaders::Generic::Bitangent, @ref Shaders::Generic::ObjectId plus
-    @ref Shaders::Generic::TransformationMatrix,
-    @ref Shaders::Generic::NormalMatrix and
-    @ref Shaders::Generic::TextureOffset for instancing
--   Instancing in @ref Shaders::Flat and @ref Shaders::Phong
+    @cpp Shaders::Generic @ce --- @cpp Shaders::Generic::Tangent4 @ce,
+    @cpp Shaders::Generic::Bitangent @ce, @cpp Shaders::Generic::ObjectId @ce
+    plus @cpp Shaders::Generic::TransformationMatrix @ce,
+    @cpp Shaders::Generic::NormalMatrix @ce and
+    @cpp Shaders::Generic::TextureOffset @ce for instancing
+-   Instancing in @cpp Shaders::Flat @ce and @cpp Shaders::Phong @ce
 
 @subsubsection changelog-2020-06-new-trade Trade library
 
@@ -800,10 +998,10 @@ Released 2020-06-27, tagged as
     `Magnum/version.h` header. This header is not included by any other header
     to avoid trigerring a full rebuild when Git commit changes. If Git is not
     found, only the first two defines are present.
--   @ref Shaders::MeshVisualizer3D::Flag::Wireframe now implicitly enables
-    @ref Shaders::MeshVisualizer3D::Flag::NoGeometryShader also on WebGL in
+-   @cpp Shaders::MeshVisualizer3D::Flag::Wireframe @ce now implicitly enables
+    @cpp Shaders::MeshVisualizer3D::Flag::NoGeometryShader @ce also on WebGL in
     addition to ES2, since this platform doesn't have a possibility to have
-    geometry shaders either. Same is done for @ref Shaders::MeshVisualizer2D.
+    geometry shaders either. Same is done for @cpp Shaders::MeshVisualizer2D @ce.
 
 @subsubsection changelog-2020-06-changes-audio Audio library
 
@@ -1040,9 +1238,9 @@ Released 2020-06-27, tagged as
 -   @ref Resource was unnecessarily querying the @ref ResourceManager for
     updated data even in cases where no resource update was done since last
     check
--   For a @ref Shaders::Phong with zero lights, alpha mask default value was
-    incorrectly @cpp 0.0f @ce instead of @cpp 0.5f @ce on OpenGL ES
--   @ref Shaders::MeshVisualizer3D accidentally didn't enable
+-   For a @cpp Shaders::Phong @ce with zero lights, alpha mask default value
+    was incorrectly @cpp 0.0f @ce instead of @cpp 0.5f @ce on OpenGL ES
+-   @cpp Shaders::MeshVisualizer3D @ce accidentally didn't enable
     @glsl noperspective @ce interpolation on desktop, resulting in minor
     wireframe rendering artifacts
 -   @ref Math::angle() got fixed to not produce NaN results for vectors,
@@ -1144,14 +1342,14 @@ Released 2020-06-27, tagged as
     @ref Primitives::GridFlag::TextureCoordinates and
     @ref Primitives::GridFlag::Normals for naming consistency
 -   @cpp Shaders::MeshVisualizer @ce is deprecated as the shader can now handle
-    both 2D and 3D, use @ref Shaders::MeshVisualizer3D instead
--   Default constructor of @ref Shaders::MeshVisualizer3D is deprecated, you're
-    now required to enable at least one visualization feature when constructing
-    it
+    both 2D and 3D, use @cpp Shaders::MeshVisualizer3D @ce instead
+-   Default constructor of @cpp Shaders::MeshVisualizer3D @ce is deprecated,
+    you're now required to enable at least one visualization feature when
+    constructing it
 -   @cpp Shaders::MeshVisualizer::setTransformationProjectionMatrix() @ce is
     deprecated on the 3D variant, use separate
-    @ref Shaders::MeshVisualizer3D::setTransformationMatrix() and
-    @ref Shaders::MeshVisualizer3D::setProjectionMatrix() instead
+    @cpp Shaders::MeshVisualizer3D::setTransformationMatrix() @ce and
+    @cpp Shaders::MeshVisualizer3D::setProjectionMatrix() @ce instead
 -   Mutable access to @ref Trade::PhongMaterialData color and texture
     information is deprecated. This was mainly used to populate the contents
     in asset importers, but the class was redesigned and this is no longer
@@ -1208,13 +1406,13 @@ Released 2020-06-27, tagged as
     for new attributes and use cases. This may break custom shaders if these
     rely on generic attribute definitions or are used together with
     @ref MeshTools::compile(). To avoid further breakages you're advised to
-    reuse the definitions from @ref Shaders::Generic (and propagating them to
-    shader code as well) instead of hardcoding the locations directly.
-    -   @ref Shaders::Generic::Color3 / @ref Shaders::Generic::Color4 location
-        changed from @cpp 3 @ce to @cpp 2 @ce
-    -   @ref Shaders::Generic::Normal location changed from @cpp 2 @ce to
+    reuse the definitions from @cpp Shaders::Generic @ce (and propagating them
+    to shader code as well) instead of hardcoding the locations directly.
+    -   @cpp Shaders::Generic::Color3 @ce / @cpp Shaders::Generic::Color4 @ce
+        location changed from @cpp 3 @ce to @cpp 2 @ce
+    -   @cpp Shaders::Generic::Normal @ce location changed from @cpp 2 @ce to
         @cpp 5 @ce
-    -   @ref Shaders::Generic::Tangent location changed from @cpp 4 @ce to
+    -   @cpp Shaders::Generic::Tangent @ce location changed from @cpp 4 @ce to
         @cpp 3 @ce
 -   Removed remaining APIs deprecated in version 2018.04:
     -   @cpp Audio::Buffer::Format @ce, use @ref Audio::BufferFormat instead
@@ -1224,12 +1422,12 @@ Released 2020-06-27, tagged as
         @cpp Shaders::Phong::setDiffuseTexture() @ce,
         @cpp Shaders::Phong::setSpecularTexture() @ce and
         @cpp Shaders::Phong::setTextures() @ce, use
-        @ref Shaders::AbstractVector::bindVectorTexture() "Shaders::*Vector::bindVectorTexture()",
-        @ref Shaders::Flat::bindTexture(),
-        @ref Shaders::Phong::bindAmbientTexture(),
-        @ref Shaders::Phong::bindDiffuseTexture(),
-        @ref Shaders::Phong::bindSpecularTexture() and
-        @ref Shaders::Phong::bindTextures() instead
+        @cpp Shaders::*Vector::bindVectorTexture() @ce,
+        @cpp Shaders::Flat::bindTexture() @ce,
+        @cpp Shaders::Phong::bindAmbientTexture() @ce,
+        @cpp Shaders::Phong::bindDiffuseTexture() @ce,
+        @cpp Shaders::Phong::bindSpecularTexture() @ce and
+        @cpp Shaders::Phong::bindTextures() @ce instead
 -   @ref MeshPrimitive is now four bytes instead of one, to allow wrapping
     implementation-specific values using @ref meshPrimitiveWrap() and
     @ref meshPrimitiveUnwrap()
@@ -1249,7 +1447,7 @@ Released 2020-06-27, tagged as
     [mosra/magnum#394](https://github.com/mosra/magnum/pull/394),
     [mosra/magnum#418](https://github.com/mosra/magnum/pull/418),
     [mosra/magnum#424](https://github.com/mosra/magnum/pull/424))
--   @ref Shaders::Generic now shows the recommended way how to propagate
+-   @cpp Shaders::Generic @ce now shows the recommended way how to propagate
     generic attribute locations to custom shader code (see
     [mosra/magnum#443](https://github.com/mosra/magnum/issues/443))
 
@@ -1384,7 +1582,8 @@ Released 2019-10-24, tagged as
     (see the @cpp "swiftshader-broken-shader-vertex-id" @ce workaround in
     @ref opengl-workarounds for more information). This pseudo-extension can be
     also explicitly disabled using the usual `--magnum-disable-extensions`
-    @ref GL-Context-command-line "command-line option" for testing purposes.
+    @ref GL-Context-usage-command-line "command-line option" for testing
+    purposes.
 -   An assorted collection of workarounds for Intel Windows drivers "fixing"
     various issues related to @gl_extension{ARB,direct_state_access} by using a
     non-DSA code path in the affected cases --- see
@@ -1435,7 +1634,7 @@ Released 2019-10-24, tagged as
     a defined output. On core and ES/WebGL contexts this is enabled implicitly,
     but for example NVidia drivers have @cpp gl_PointCoord @ce undefined when
     `GL_POINT_SPRITE` is not enabled on compatibility contexts.
--   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+-   New `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
     @gl_extension{KHR,debug} debug output. This flag also causes
     @ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "GLConfiguration::Flag::Debug"
@@ -1448,7 +1647,7 @@ Released 2019-10-24, tagged as
     @ref GL::Buffer::setData() / @ref GL::Buffer::setSubData() for a succint
     upload of basic types
 -   Added an ability to use Magnum with multiple OpenGL contexts using
-    @ref GL::Context::makeCurrent(), see @ref GL-Context-multiple for more
+    @ref GL::Context::makeCurrent(), see @ref GL-Context-usage-multiple for more
     information
 -   @ref GL::AbstractFramebuffer::read(), @ref GL::Texture::image(),
     @ref GL::Texture::subImage(), @ref GL::Texture::compressedImage(),
@@ -1552,10 +1751,11 @@ Released 2019-10-24, tagged as
 
 @subsubsection changelog-2019-10-new-shaders Shaders library
 
--   Normal texture support in @ref Shaders::Phong
--   Added @ref Shaders::Generic3D::Tangent generic vertex attribute definition
--   Object ID output in @ref Shaders::Flat and @ref Shaders::Phong
--   Vertex color support in @ref Shaders::Flat and @ref Shaders::Phong
+-   Normal texture support in @cpp Shaders::Phong @ce
+-   Added @cpp Shaders::Generic3D::Tangent @ce generic vertex attribute
+    definition
+-   Object ID output in @cpp Shaders::Flat @ce and @cpp Shaders::Phong @ce
+-   Vertex color support in @cpp Shaders::Flat @ce and @cpp Shaders::Phong @ce
 
 @subsubsection changelog-2019-10-new-text Text library
 
@@ -1650,7 +1850,7 @@ Released 2019-10-24, tagged as
 -   @ref GL::OpenGLTester no longer implicitly enables @ref GL::DebugOutput as
     it can be quite spammy when complex shaders or benchmarks are allowed. For
     easier debugging, users are encouraged to use the new
-    `--magnum-gpu-validation` @ref GL-Context-command-line "command line option"
+    `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command line option"
     instead.
 -   Added an ability to create @ref GL::DynamicAttribute directly from a
     @ref GL::Attribute
@@ -1700,12 +1900,12 @@ Released 2019-10-24, tagged as
 
 -   All shaders now have rendering output tests, making them more robust for
     future additions and refactorings. See also [mosra/magnum#382](https://github.com/mosra/magnum/pull/382).
--   @ref Shaders::Phong now clamps the specular factor to minimize artifacts
+-   @cpp Shaders::Phong @ce now clamps the specular factor to minimize artifacts
     when shininess is near zero
--   @ref Shaders::Phong can now handle zero lights, in which case its output is
-    equivalent to @ref Shaders::Flat3D. See @ref Shaders-Phong-lights-zero for
-    more information.
--   @ref Shaders::MeshVisualizer is fixed to work properly on Intel Windows
+-   @cpp Shaders::Phong @ce can now handle zero lights, in which case its output
+    is equivalent to @cpp Shaders::Flat3D @ce. See
+    @ref Shaders-PhongGL-lights-zero for more information.
+-   @cpp Shaders::MeshVisualizer @ce is fixed to work properly on Intel Windows
     drivers, adding a new
     @cpp "intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped" @ce
     workaround
@@ -1914,8 +2114,8 @@ Released 2019-10-24, tagged as
     passing a freshly created @ref GL::Buffer to it was causing
     @ref GL::Renderer::Error::InvalidOperation on systems without
     @gl_extension{ARB,direct_state_access}.
--   Fixed @ref Shaders::Vector and @ref Shaders::DistanceFieldVector to work
-    on iOS, which has only 8 texture binding slots in total (see
+-   Fixed @cpp Shaders::Vector @ce and @cpp Shaders::DistanceFieldVector @ce to
+    work on iOS, which has only 8 texture binding slots in total (see
     [mosra/magnum-examples#65](https://github.com/mosra/magnum-examples/issues/65)
     and [mosra/magnum#374](https://github.com/mosra/magnum/pull/374))
 
@@ -2080,10 +2280,10 @@ Released 2019-10-24, tagged as
     to indicate an invalid format, better catching accidentally forgotten
     initialization. Valid code shouldn't be affected by this change, but broken
     code that seemingly worked before might start throwing assertions now.
--   @ref Shaders::MeshVisualizer now asserts if its wireframe-related setters
-    are called when the @ref Shaders::MeshVisualizer::Flag::Wireframe flag was
-    not set, consistently with other shaders. This might cause failures in code
-    that was calling them unnecessarily before.
+-   @cpp Shaders::MeshVisualizer @ce now asserts if its wireframe-related
+    setters are called when the @cpp Shaders::MeshVisualizer::Flag::Wireframe @ce
+    flag was not set, consistently with other shaders. This might cause
+    failures in code that was calling them unnecessarily before.
 
 @section changelog-2019-01 2019.01
 
@@ -2478,15 +2678,17 @@ Released 2018-10-23, tagged as
 
 @subsubsection changelog-2018-10-new-shaders Shaders library
 
--   New dedicated @ref Shaders::VertexColor::Color3 and
-    @ref Shaders::VertexColor::Color4 attribute specifiers for more convenient
-    distinction between three- and four-component vertex color attribute.
--   Support for multiple lights in @ref Shaders::Phong
--   Classical alpha masking support in @ref Shaders::Flat and
-    @ref Shaders::Phong
--   Debug output for the @ref Shaders::Flat::Flag / @ref Shaders::Flat::Flags,
-    @ref Shaders::MeshVisualizer::Flag / @ref Shaders::MeshVisualizer::Flags
-    and @ref Shaders::Phong::Flag / @ref Shaders::Phong::Flags enums / enum
+-   New dedicated @cpp Shaders::VertexColor::Color3 @ce and
+    @cpp Shaders::VertexColor::Color4 @ce attribute specifiers for more
+    convenient distinction between three- and four-component vertex color
+    attribute.
+-   Support for multiple lights in @cpp Shaders::Phong @ce
+-   Classical alpha masking support in @cpp Shaders::Flat @ce and
+    @cpp Shaders::Phong @ce
+-   Debug output for the @cpp Shaders::Flat::Flag @ce /
+    @cpp Shaders::Flat::Flags @ce, @cpp Shaders::MeshVisualizer::Flag @ce /
+    @cpp Shaders::MeshVisualizer::Flags @ce and
+    @cpp Shaders::Phong::Flag @ce / @cpp Shaders::Phong::Flags @ce enums / enum
     sets
 
 @subsubsection changelog-2018-10-new-trade Trade library
@@ -2620,13 +2822,14 @@ Released 2018-10-23, tagged as
 
 -   All shaders now have reasonable default values for uniforms in order to
     further simplify and remove friction from quick prototyping use cases
--   @ref Shaders::Flat::bindTexture(), @ref Shaders::Phong::bindAmbientTexture(),
-    @ref Shaders::Phong::bindDiffuseTexture(),
-    @ref Shaders::Phong::bindSpecularTexture() and
-    @ref Shaders::Phong::bindTextures() now assert that the shader was created
-    with the corresponding flag enabled to prevent accidental "black screen of
-    death" errors.
--   Ambient color in untextured @ref Shaders::Phong now defaults to
+-   @cpp Shaders::Flat::bindTexture() @ce,
+    @cpp Shaders::Phong::bindAmbientTexture() @ce,
+    @cpp Shaders::Phong::bindDiffuseTexture() @ce,
+    @cpp Shaders::Phong::bindSpecularTexture() @ce and
+    @cpp Shaders::Phong::bindTextures() @ce now assert that the shader was
+    created with the corresponding flag enabled to prevent accidental "black
+    screen of death" errors.
+-   Ambient color in untextured @cpp Shaders::Phong @ce now defaults to
     @cpp 0x00000000_rgbaf @ce in order to support alpha-masked drawing out of
     the box
 
@@ -2699,8 +2902,8 @@ Released 2018-10-23, tagged as
 -   Vertex attribute divisor in @ref GL::Mesh::addVertexBufferInstanced() was
     not properly cleaned up after when @gl_extension{ARB,vertex_array_object}
     was disabled, causing subsequent draws to misbehave
--   Fixed @ref Shaders::DistanceFieldVector and @ref Shaders::Vector to be
-    properly movable
+-   Fixed @cpp Shaders::DistanceFieldVector @ce and @cpp Shaders::Vector @ce to
+    be properly movable
 -   Restored backwards compatibility to the templated @ref GL::Buffer::map()
     overload --- it was not possible to call it with @cpp void @ce template
     parameter
@@ -2793,9 +2996,9 @@ Released 2018-10-23, tagged as
     tuple was deprecated, use the simpler version taking just
     @cpp Trade::MeshData2D @ce / @cpp Trade::MeshData3D @ce and directly
     returning a @ref GL::Mesh instead
--   `Shaders::VertexColor::Color` is deprecated, use the direct
-    @ref Shaders::VertexColor::Color3 or @ref Shaders::VertexColor::Color4
-    alternatives instead
+-   @cpp Shaders::VertexColor::Color @ce is deprecated, use the direct
+    @cpp Shaders::VertexColor::Color3 @ce or
+    @cpp Shaders::VertexColor::Color4 @ce alternatives instead
 -   @cpp Trade::AbstractMaterialData @ce constructor taking just two parameters
     and @ref Trade::PhongMaterialData constructor taking three parameters are
     deprecated, use @cpp Trade::AbstractMaterialData::AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*) @ce
@@ -2839,14 +3042,15 @@ Released 2018-10-23, tagged as
     are no longer @cpp virtual @ce functions. If you need to override their
     functionality, simply call the subclass implementation directly instead of
     calling it through a @ref SceneGraph::Camera.
--   @ref Shaders::Flat::bindTexture(), @ref Shaders::Phong::bindAmbientTexture(),
-    @ref Shaders::Phong::bindDiffuseTexture(),
-    @ref Shaders::Phong::bindSpecularTexture() and
-    @ref Shaders::Phong::bindTextures() now assert that the shader was created
-    with the corresponding flag enabled to prevent accidental "black screen of
-    death" errors. This might cause your application to abort if it was calling
-    these functions when not needed.
--   Ambient color in untextured @ref Shaders::Phong now defaults to
+-   @cpp Shaders::Flat::bindTexture() @ce,
+    @cpp Shaders::Phong::bindAmbientTexture() @ce,
+    @cpp Shaders::Phong::bindDiffuseTexture() @ce,
+    @cpp Shaders::Phong::bindSpecularTexture() @ce and
+    @cpp Shaders::Phong::bindTextures() @ce now assert that the shader was
+    created with the corresponding flag enabled to prevent accidental "black
+    screen of death" errors. This might cause your application to abort if it
+    was calling these functions when not needed.
+-   Ambient color in untextured @cpp Shaders::Phong @ce now defaults to
     @cpp 0x00000000_rgbaf @ce in order to support alpha-masked drawing out of
     the box. This may break code that assumed the alpha channel being opaque by
     default.

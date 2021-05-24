@@ -698,20 +698,29 @@ installed files. The following variables are supported:
 
 -   `LIB_SUFFIX` --- Setting this variable to `64` can be used to tell CMake to
     install to `lib64/` instead of `lib/`. In most cases this variable is
-    autodetected, so you don't need to set it yourself.
+    autodetected, so you don't need to set it yourself. On
+    @ref CORRADE_TARGET_ANDROID "Android", if `CMAKE_INSTALL_PREFIX` points to
+    the NDK sysroot, it gets automatically set to
+    `/${CMAKE_ANDROID_ARCH_TRIPLE}/${CMAKE_SYSTEM_VERSION}` to put the binaries
+    to correct location for given architecture and API level version.
 -   `MAGNUM_DEPLOY_PREFIX` --- Used on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
     to override location where web demos and utilities (such as @ref magnum-gl-info)
     are installed, so you can have libraries installed to a system location and
     utilities to your webserver, for example. Defaults to ``.``. If a relative
     path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
--   `MAGNUM_INCLUDE_INSTALL_PREFIX` --- Used on @ref CORRADE_TARGET_ANDROID "Android"
-    to override location where platform-independent include files, CMake
-    scripts and other files are installed. CMake on Android by default searches
-    for binaries in <tt>&lt;ndk&gt;/platforms/android-&lt;api&gt;/arch-&lt;arch&gt;/usr</tt>
-    based on target API and platform, but looks for headers in a central
-    location at <tt>&lt;ndk&gt;/toolchains/llvm/prebuilt/&lt;host&gt;/sysroot/usr</tt>.
-    Defaults to ``.``. If a relative path is used, it's relative to
-    `CMAKE_INSTALL_PREFIX`.
+
+The following variables are deprecated and provided only for backwards
+compatibility if `BUILD_DEPRECATED` isn't disabled.
+
+-   `MAGNUM_INCLUDE_INSTALL_PREFIX` --- Overrides location where
+    platform-independent include files, CMake scripts and other files are
+    installed. For NDK versions before r19, CMake on Android by default
+    searched for binaries in <tt>&lt;ndk&gt;/platforms/android-&lt;api&gt;/arch-&lt;arch&gt;/usr</tt>
+    based on target API and platform, but for headers in a central location at
+    <tt>&lt;ndk&gt;/toolchains/llvm/prebuilt/&lt;host&gt;/sysroot/usr</tt> and
+    this was used to handle that case. Nowadays please use NDK r19 and newer,
+    with the unified sysroot layout. Defaults to ``.``. If a relative path is
+    used, it's relative to `CMAKE_INSTALL_PREFIX`.
 
 Various plugin interfaces search for plugins in locations and order documented
 in @ref Corrade::PluginManager::implicitPluginSearchPaths(),
@@ -1059,22 +1068,33 @@ Create a build directory and run `cmake` and the build command in it. Set
 ABI. Check the [CMake Android cross-compiling documentation](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling-for-android)
 for further information. You can omit specifying `CORRADE_RC_EXECUTABLE` if
 @ref building-cross-corrade-rc "natively-built corrade-rc" is accessible
-through `PATH`.
+through `PATH`. Note that `BUILD_STATIC` is implicitly enabled, because
+manually loading all depending shared libraries using JNI would be too
+inconvenient. The engine is built for OpenGL ES 2.0 by default, switch to 3.0
+by disabling `TARGET_GLES2`.
 
 If you set `CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of the particular
-Android platform sysroot, the package will get found automatically when
-compiling depending projects. Gradle and other Android buildsystems expect
-platform-independent includes and other files to be stored in a central
-location, you can point `MAGNUM_INCLUDE_INSTALL_PREFIX` there to install the
-includes separately. Another option is to explicitly set `CMAKE_PREFIX_PATH`
-to the install location in depending projects. Unfortunately, CMake needs extra
-help with `CMAKE_FIND_ROOT_PATH` to correctly find Android libraries, otherwise
-it falls back to looking in native system locations. Adapt them to your
-system, Android ABI and version and NDK location as needed.
+Android platform sysroot (as shown below), Magnum's buildsystem will also pick
+a `LIB_SUFFIX` corresponding to a particular ABI and version, which in turn
+makes the package automatically discoverable when compiling depending projects,
+both with vanilla CMake and with Gradle. Another option is to explicitly set
+`CMAKE_PREFIX_PATH` to the install location in depending projects.
 
-Note that `BUILD_STATIC` is implicitly enabled, because manually loading all
-depending shared libraries using JNI would be too inconvenient. The engine is
-built for OpenGL ES 2.0 by default, switch to 3.0 by disabling `TARGET_GLES2`.
+<b></b>
+
+@m_class{m-note m-warning}
+
+@par
+    Unfortunately, CMake before version 3.20 needs extra help with
+    `CMAKE_FIND_ROOT_PATH` and `CMAKE_FIND_LIBRARY_CUSTOM_LIB_SUFFIX` to
+    correctly find Android libraries, as shown below. Otherwise it falls back
+    to looking in native system locations. Adapt them to your system, Android
+    ABI and version and NDK location as needed.
+@par
+    CMake 3.20 and newer [is now able to detect everything on its own](https://gitlab.kitware.com/cmake/cmake/-/merge_requests/5357)
+    and you don't need to supply these anymore.
+
+<b></b>
 
 @m_class{m-console-wrap}
 
@@ -1086,10 +1106,10 @@ cmake .. \
     -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-24/arch-arm64/usr \
-    -DCMAKE_FIND_ROOT_PATH="/opt/android-ndk/platforms/android-24/arch-arm64;/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot" \
+    -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr \
+    -DCMAKE_FIND_ROOT_PATH=/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot \
+    -DCMAKE_FIND_LIBRARY_CUSTOM_LIB_SUFFIX=/aarch64-linux-android/24 \
     -DCORRADE_RC_EXECUTABLE=/path/to/corrade-rc \
-    -DMAGNUM_INCLUDE_INSTALL_PREFIX=/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr \
     -DTARGET_GLES2=OFF \
     -DWITH_ANDROIDAPPLICATION=ON
 cmake --build .

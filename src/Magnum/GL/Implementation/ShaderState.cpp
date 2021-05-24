@@ -27,12 +27,16 @@
 
 /* Needed only for Emscripten+pthread- / Windows+Intel-specific workarounds,
    but I won't bother crafting the preprocessor logic for this. */
+#include <Corrade/Containers/StringView.h>
+
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Shader.h"
 
 namespace Magnum { namespace GL { namespace Implementation {
 
-ShaderState::ShaderState(Context& context, std::vector<std::string>&):
+using namespace Containers::Literals;
+
+ShaderState::ShaderState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*>):
     maxVertexOutputComponents{}, maxFragmentInputComponents{},
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     maxTessellationControlInputComponents{}, maxTessellationControlOutputComponents{}, maxTessellationControlTotalOutputComponents{}, maxTessellationEvaluationInputComponents{}, maxTessellationEvaluationOutputComponents{}, maxGeometryInputComponents{}, maxGeometryOutputComponents{}, maxGeometryTotalOutputComponents{}, maxAtomicCounterBuffers{}, maxCombinedAtomicCounterBuffers{}, maxAtomicCounters{}, maxCombinedAtomicCounters{}, maxImageUniforms{}, maxCombinedImageUniforms{}, maxShaderStorageBlocks{}, maxCombinedShaderStorageBlocks{},
@@ -47,7 +51,7 @@ ShaderState::ShaderState(Context& context, std::vector<std::string>&):
     #endif
 {
     #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
-    if(!context.isDriverWorkaroundDisabled("emscripten-pthreads-broken-unicode-shader-sources")) {
+    if(!context.isDriverWorkaroundDisabled("emscripten-pthreads-broken-unicode-shader-sources"_s)) {
         addSourceImplementation = &Shader::addSourceImplementationEmscriptenPthread;
     } else
     #endif
@@ -56,7 +60,7 @@ ShaderState::ShaderState(Context& context, std::vector<std::string>&):
     }
 
     #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-    if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-chatty-shader-compiler")) {
+    if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-chatty-shader-compiler"_s)) {
         cleanLogImplementation = &Shader::cleanLogImplementationIntelWindows;
     } else
     #endif

@@ -30,7 +30,6 @@
  * @m_since_latest
  */
 
-#include <Corrade/Containers/Pointer.h>
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"

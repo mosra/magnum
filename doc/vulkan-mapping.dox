@@ -58,24 +58,26 @@ Vulkan handle                           | Matching API
 @type_vk{DeferredOperationKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{DebugReportCallbackEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
 @type_vk{DebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT** | |
-@type_vk{DescriptorPool}                | |
-@type_vk{DescriptorSet}                 | |
-@type_vk{DescriptorSetLayout}           | |
+@type_vk{DescriptorPool}                | @ref DescriptorPool
+@type_vk{DescriptorSet}                 | @ref DescriptorSet
+@type_vk{DescriptorSetLayout}           | @ref DescriptorSetLayout
 @type_vk{DescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{Device}                        | @ref Device
 @type_vk{DeviceMemory}                  | @ref Memory
+@type_vk{Event}                         | |
 @type_vk{Fence}                         | @ref Fence
 @type_vk{Framebuffer}                   | @ref Framebuffer
 @type_vk{Image}                         | @ref Image
 @type_vk{ImageView}                     | @ref ImageView
 @type_vk{Instance}                      | @ref Instance
+@type_vk{PipelineCache}                 | |
 @type_vk{PhysicalDevice}                | @ref DeviceProperties
 @type_vk{Pipeline}                      | @ref Pipeline
 @type_vk{PipelineLayout}                | @ref PipelineLayout
 @type_vk{QueryPool}                     | |
 @type_vk{Queue}                         | @ref Queue
 @type_vk{RenderPass}                    | @ref RenderPass
-@type_vk{Sampler}                       | |
+@type_vk{Sampler}                       | @ref Sampler
 @type_vk{SamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{Semaphore}                     | |
 @type_vk{ShaderModule}                  | @ref Shader
@@ -89,7 +91,7 @@ Vulkan handle                           | Matching API
 Vulkan function                         | Matching API
 --------------------------------------- | ------------
 @fn_vk{AllocateCommandBuffers}, \n @fn_vk{FreeCommandBuffers} | @ref CommandPool::allocate(), @ref CommandBuffer destructor
-@fn_vk{AllocateDescriptorSets}, \n @fn_vk{FreeDescriptorSets} | |
+@fn_vk{AllocateDescriptorSets}, \n @fn_vk{FreeDescriptorSets} | @ref DescriptorPool::allocate(), @ref DescriptorSet destructor
 @fn_vk{AllocateMemory}, \n @fn_vk{FreeMemory} | @ref Memory constructor and destructor
 
 @subsection vulkan-mapping-functions-b B
@@ -188,8 +190,8 @@ Vulkan function                         | Matching API
 @fn_vk{CreateDebugReportCallbackEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{DestroyDebugReportCallbackEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CreateDebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{DestroyDebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CreateDeferredOperationKHR} @m_class{m-label m-flat m-warning} **KHR**, \n @fn_vk{DestroyDeferredOperationKHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@fn_vk{CreateDescriptorPool}, \n @fn_vk{DestroyDescriptorPool} | |
-@fn_vk{CreateDescriptorSetLayout}, \n @fn_vk{DestroyDescriptorSetLayout} | |
+@fn_vk{CreateDescriptorPool}, \n @fn_vk{DestroyDescriptorPool} | @ref DescriptorPool constructor and destructor
+@fn_vk{CreateDescriptorSetLayout}, \n @fn_vk{DestroyDescriptorSetLayout} | @ref DescriptorSetLayout constructor and destructor
 @fn_vk{CreateDescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @fn_vk{DestroyDescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{CreateDevice}, \n @fn_vk{DestroyDevice} | @ref Device constructor and destructor
 @fn_vk{CreateEvent}, \n @fn_vk{DestroyEvent} | |
@@ -203,7 +205,7 @@ Vulkan function                         | Matching API
 @fn_vk{CreatePipelineLayout}, \n @fn_vk{DestroyPipelineLayout} | @ref PipelineLayout constructor and destructor
 @fn_vk{CreateQueryPool}, \n @fn_vk{DestroyQueryPool} | |
 @fn_vk{CreateRenderPass}, \n @fn_vk{CreateRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{DestroyRenderPass} | @ref RenderPass constructor and destructor
-@fn_vk{CreateSampler}, \n @fn_vk{DestroySampler} | |
+@fn_vk{CreateSampler}, \n @fn_vk{DestroySampler} | @ref Sampler constructor and destructor
 @fn_vk{CreateSamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** , \n @fn_vk{DestroySamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{CreateSemaphore}, \n @fn_vk{DestroySemaphore} | |
 @fn_vk{CreateShaderModule}, \n @fn_vk{DestroyShaderModule} | @ref Shader constructor and destructor
@@ -323,7 +325,7 @@ Vulkan function                         | Matching API
 --------------------------------------- | ------------
 @fn_vk{ResetCommandBuffer}              | @ref CommandBuffer::reset()
 @fn_vk{ResetCommandPool}                | @ref CommandPool::reset()
-@fn_vk{ResetDescriptorPool}             | |
+@fn_vk{ResetDescriptorPool}             | @ref DescriptorPool::reset()
 @fn_vk{ResetFences}                     | @ref Fence::reset()
 @fn_vk{ResetQueryPool} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
 
@@ -461,15 +463,14 @@ Vulkan structure                        | Matching API
 @type_vk{DebugUtilsObjectTagInfoEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @type_vk{DescriptorBufferInfo}          | |
 @type_vk{DescriptorImageInfo}           | |
-@type_vk{DescriptorPoolCreateInfo}      | |
-@type_vk{DescriptorPoolSize}            | |
-@type_vk{DescriptorSetAllocateInfo}     | |
-@type_vk{DescriptorSetLayoutBinding}    | |
-@type_vk{DescriptorSetLayoutBindingFlagsCreateInfo} | |
-@type_vk{DescriptorSetLayoutCreateInfo} | |
-@type_vk{DescriptorSetLayoutBindingFlagsCreateInfo} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{DescriptorPoolCreateInfo}      | @ref DescriptorPoolCreateInfo
+@type_vk{DescriptorPoolSize}            | @ref DescriptorPoolCreateInfo
+@type_vk{DescriptorSetAllocateInfo}     | not exposed, internal to @ref DescriptorPool::allocate(VkDescriptorSetLayout)
+@type_vk{DescriptorSetLayoutBinding}    | @ref DescriptorSetLayoutBinding
+@type_vk{DescriptorSetLayoutBindingFlagsCreateInfo} @m_class{m-label m-flqat m-success} **EXT, 1.2** | @ref DescriptorSetLayoutCreateInfo
+@type_vk{DescriptorSetLayoutCreateInfo} | @ref DescriptorSetLayoutCreateInfo
 @type_vk{DescriptorSetLayoutSupport} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@type_vk{DescriptorSetVariableDescriptorCountAllocateInfo} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{DescriptorSetVariableDescriptorCountAllocateInfo} @m_class{m-label m-flat m-success} **EXT, 1.2** | not exposed, internal to @ref DescriptorPool::allocate(VkDescriptorSetLayout, UnsignedInt)
 @type_vk{DescriptorSetVariableDescriptorCountLayoutSupport} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
 @type_vk{DescriptorUpdateTemplateEntry} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{DescriptorUpdateTemplateCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
@@ -705,7 +706,7 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
-@type_vk{SamplerCreateInfo}             | |
+@type_vk{SamplerCreateInfo}             | @ref SamplerCreateInfo
 @type_vk{SamplerReductionModeCreateInfo} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
 @type_vk{SamplerYcbcrConversionCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{SamplerYcbcrConversionImageFormatProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
@@ -824,13 +825,13 @@ Vulkan enum                             | Matching API
 @type_vk{DebugReportObjectTypeEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
 @type_vk{DebugUtilsMessageSeverityFlagBitsEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @type_vk{DebugUtilsMessageTypeFlagsEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @type_vk{DependencyFlagBits}, \n @type_vk{DependencyFlags} | @ref DependencyFlag, \n @ref DependencyFlags
-@type_vk{DescriptorBindingFlagBits} @m_class{m-label m-flat m-success} **EXT, 1.2**, \n @type_vk{DescriptorBindingFlags} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
-@type_vk{DescriptorPoolCreateFlagBits}, \n @type_vk{DescriptorPoolCreateFlags} | |
-@type_vk{DescriptorSetLayoutCreateFlagBits}, \n @type_vk{DescriptorSetLayoutCreateFlags} | |
+@type_vk{DescriptorBindingFlagBits} @m_class{m-label m-flat m-success} **EXT, 1.2**, \n @type_vk{DescriptorBindingFlags} @m_class{m-label m-flat m-success} **EXT, 1.2** | @ref DescriptorSetLayoutBinding::Flag, \n @ref DescriptorSetLayoutBinding::Flags
+@type_vk{DescriptorPoolCreateFlagBits}, \n @type_vk{DescriptorPoolCreateFlags} | @ref DescriptorPoolCreateInfo::Flag, \n @ref DescriptorPoolCreateInfo::Flags
+@type_vk{DescriptorSetLayoutCreateFlagBits}, \n @type_vk{DescriptorSetLayoutCreateFlags} | @ref DescriptorSetLayoutCreateInfo::Flag, \n @ref DescriptorSetLayoutCreateInfo::Flags
 @type_vk{DescriptorUpdateTemplateType} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@type_vk{DescriptorType}                | |
+@type_vk{DescriptorType}                | @ref DescriptorType
 @type_vk{DeviceQueueCreateFlagBits}, \n @type_vk{DeviceQueueCreateFlags} | |
-@type_vk{DriverId} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{DriverId} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceDriver
 @type_vk{DynamicState}                  | @ref DynamicRasterizationState
 
 @subsection vulkan-mapping-enums-e E
@@ -852,7 +853,7 @@ Vulkan enum                             | Matching API
 
 Vulkan enum                             | Matching API
 --------------------------------------- | ------------
-@type_vk{Filter}                        | only @ref vkFilter()
+@type_vk{Filter}                        | @ref SamplerFilter
 @type_vk{Format}                        | @ref PixelFormat, @ref VertexFormat
 @type_vk{FormatFeatureFlagBits}, \n @type_vk{FormatFeatureFlags} | |
 @type_vk{FramebufferCreateFlagBits}, \n @type_vk{FramebufferCreateFlags} | @ref FramebufferCreateInfo::Flag, \n @ref FramebufferCreateInfo::Flags
@@ -926,7 +927,7 @@ Vulkan enum                             | Matching API
 @type_vk{PipelineStageFlagBits}, \n @type_vk{PipelineStageFlags} | @ref PipelineStage, \n @ref PipelineStages
 @type_vk{PointClippingBehavior} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PolygonMode}                   | |
-@type_vk{PrimitveTopology}              | @ref MeshPrimitive
+@type_vk{PrimitiveTopology}             | @ref MeshPrimitive
 
 @subsection vulkan-mapping-enums-q Q
 
@@ -958,9 +959,9 @@ Vulkan enum                             | Matching API
 Vulkan enum                             | Matching API
 --------------------------------------- | ------------
 @type_vk{SampleCountFlagBits}, \n @type_vk{SampleCountFlags} | not exposed, using plain integers instead
-@type_vk{SamplerAddressMode}            | only @ref vkSamplerAddressMode()
-@type_vk{SamplerMipmapMode}             | only @ref vkSamplerMipmapMode()
-@type_vk{SamplerCreateFlagBits}, \n @type_vk{SamplerCreateFlags} | |
+@type_vk{SamplerAddressMode}            | @ref SamplerWrapping
+@type_vk{SamplerMipmapMode}             | @ref SamplerMipmap
+@type_vk{SamplerCreateFlagBits}, \n @type_vk{SamplerCreateFlags} | @ref SamplerCreateInfo::Flag, \n @ref SamplerCreateInfo::Flags
 @type_vk{SamplerReductionMode} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
 @type_vk{SamplerYcbcrModelConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{SamplerYcbcrRange} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
@@ -968,8 +969,8 @@ Vulkan enum                             | Matching API
 @type_vk{SemaphoreWaitFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @type_vk{SemaphoreWaitFlags} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{ShaderFloatControlsIndependence} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{ShaderGroupShaderKHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@type_vk{ShaderModuleCreateFlagBits}, \n @type_vk{ShaderModuleCreateFlags} | @ref ShaderCreateInfo::Flags
-@type_vk{ShaderStageFlagBits}, \n @type_vk{ShaderStageFlags} | @ref ShaderStage
+@type_vk{ShaderModuleCreateFlagBits}, \n @type_vk{ShaderModuleCreateFlags} | @ref ShaderCreateInfo::Flag, \n @ref ShaderCreateInfo::Flags
+@type_vk{ShaderStageFlagBits}, \n @type_vk{ShaderStageFlags} | @ref ShaderStage, \n @ref ShaderStages
 @type_vk{SharingMode}                   | |
 @type_vk{SparseImageFormatFlagBits}, \n @type_vk{SparseImageFormatFlags} | |
 @type_vk{SparseMemoryBindFlagBits}, \n @type_vk{SparseMemoryBindFlags} | |

@@ -47,7 +47,7 @@
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/Primitives/Plane.h"
 #include "Magnum/Primitives/Square.h"
-#include "Magnum/Shaders/Vector.h"
+#include "Magnum/Shaders/VectorGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/MeshData.h"
@@ -99,22 +99,22 @@ using namespace Math::Literals;
 
 constexpr struct {
     const char* name;
-    Vector2D::Flags flags;
+    VectorGL2D::Flags flags;
 } ConstructData[]{
     {"", {}},
-    {"texture transformation", Vector2D::Flag::TextureTransformation}
+    {"texture transformation", VectorGL2D::Flag::TextureTransformation}
 };
 
 const struct {
     const char* name;
-    Vector2D::Flags flags;
+    VectorGL2D::Flags flags;
     Matrix3 textureTransformation;
     Color4 backgroundColor, color;
     const char* file2D;
     const char* file3D;
     bool flip;
 } RenderData[] {
-    {"texture transformation", Vector2D::Flag::TextureTransformation,
+    {"texture transformation", VectorGL2D::Flag::TextureTransformation,
         Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
         0x00000000_rgbaf, 0xffffff_rgbf,
         "defaults.tga", "defaults.tga", true},
@@ -176,7 +176,7 @@ template<UnsignedInt dimensions> void VectorGLTest::construct() {
     auto&& data = ConstructData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    Vector<dimensions> shader{data.flags};
+    VectorGL<dimensions> shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
@@ -192,21 +192,21 @@ template<UnsignedInt dimensions> void VectorGLTest::construct() {
 template<UnsignedInt dimensions> void VectorGLTest::constructMove() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    Vector<dimensions> a{Vector<dimensions>::Flag::TextureTransformation};
+    VectorGL<dimensions> a{VectorGL<dimensions>::Flag::TextureTransformation};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Vector<dimensions> b{std::move(a)};
+    VectorGL<dimensions> b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
-    CORRADE_COMPARE(b.flags(), Vector<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(b.flags(), VectorGL<dimensions>::Flag::TextureTransformation);
     CORRADE_VERIFY(!a.id());
 
-    Vector<dimensions> c{NoCreate};
+    VectorGL<dimensions> c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
-    CORRADE_COMPARE(c.flags(), Vector<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(c.flags(), VectorGL<dimensions>::Flag::TextureTransformation);
     CORRADE_VERIFY(!b.id());
 }
 
@@ -220,11 +220,11 @@ template<UnsignedInt dimensions> void VectorGLTest::setTextureMatrixNotEnabled()
     std::ostringstream out;
     Error redirectError{&out};
 
-    Vector<dimensions> shader;
+    VectorGL<dimensions> shader;
     shader.setTextureMatrix({});
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::Vector::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
+        "Shaders::VectorGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
 constexpr Vector2i RenderSize{80, 80};
@@ -288,7 +288,7 @@ void VectorGLTest::renderDefaults2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    Vector2D{}
+    VectorGL2D{}
         .bindVectorTexture(texture)
         .draw(square);
 
@@ -335,7 +335,7 @@ void VectorGLTest::renderDefaults3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    Vector3D{}
+    VectorGL3D{}
         .bindVectorTexture(texture)
         .draw(plane);
 
@@ -385,7 +385,7 @@ void VectorGLTest::render2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    Vector2D shader{data.flags};
+    VectorGL2D shader{data.flags};
     shader.setBackgroundColor(data.backgroundColor)
         .setColor(data.color)
         .bindVectorTexture(texture);
@@ -447,7 +447,7 @@ void VectorGLTest::render3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    Vector3D shader{data.flags};
+    VectorGL3D shader{data.flags};
     shader.setBackgroundColor(data.backgroundColor)
         .setColor(data.color)
         .bindVectorTexture(texture);

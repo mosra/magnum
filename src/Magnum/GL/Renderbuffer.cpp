@@ -37,7 +37,7 @@
 namespace Magnum { namespace GL {
 
 Int Renderbuffer::maxSize() {
-    GLint& value = Context::current().state().framebuffer->maxRenderbufferSize;
+    GLint& value = Context::current().state().framebuffer.maxRenderbufferSize;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -53,7 +53,7 @@ Int Renderbuffer::maxSamples() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().framebuffer->maxSamples;
+    GLint& value = Context::current().state().framebuffer.maxSamples;
 
     /* Get the value, if not already cached */
     if(value == 0) {
@@ -69,7 +69,7 @@ Int Renderbuffer::maxSamples() {
 #endif
 
 Renderbuffer::Renderbuffer(): _flags{ObjectFlag::DeleteOnDestruction} {
-    (this->*Context::current().state().framebuffer->createRenderbufferImplementation)();
+    (this->*Context::current().state().framebuffer.createRenderbufferImplementation)();
 }
 
 void Renderbuffer::createImplementationDefault() {
@@ -88,7 +88,7 @@ Renderbuffer::~Renderbuffer() {
     if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     /* If bound, remove itself from state */
-    GLuint& binding = Context::current().state().framebuffer->renderbufferBinding;
+    GLuint& binding = Context::current().state().framebuffer.renderbufferBinding;
     if(binding == _id) binding = 0;
 
     glDeleteRenderbuffers(1, &_id);
@@ -108,28 +108,28 @@ inline void Renderbuffer::createIfNotAlready() {
 #ifndef MAGNUM_TARGET_WEBGL
 std::string Renderbuffer::label() {
     createIfNotAlready();
-    return Context::current().state().debug->getLabelImplementation(GL_RENDERBUFFER, _id);
+    return Context::current().state().debug.getLabelImplementation(GL_RENDERBUFFER, _id);
 }
 
 Renderbuffer& Renderbuffer::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
-    Context::current().state().debug->labelImplementation(GL_RENDERBUFFER, _id, label);
+    Context::current().state().debug.labelImplementation(GL_RENDERBUFFER, _id, label);
     return *this;
 }
 #endif
 
 void Renderbuffer::setStorage(const RenderbufferFormat internalFormat, const Vector2i& size) {
-    (this->*Context::current().state().framebuffer->renderbufferStorageImplementation)(internalFormat, size);
+    (this->*Context::current().state().framebuffer.renderbufferStorageImplementation)(internalFormat, size);
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void Renderbuffer::setStorageMultisample(const Int samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
-    (this->*Context::current().state().framebuffer->renderbufferStorageMultisampleImplementation)(samples, internalFormat, size);
+    (this->*Context::current().state().framebuffer.renderbufferStorageMultisampleImplementation)(samples, internalFormat, size);
 }
 #endif
 
 void Renderbuffer::bind() {
-    GLuint& binding = Context::current().state().framebuffer->renderbufferBinding;
+    GLuint& binding = Context::current().state().framebuffer.renderbufferBinding;
 
     if(binding == _id) return;
 

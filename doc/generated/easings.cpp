@@ -40,6 +40,7 @@
     attribute to the <svg> element if you'd ever need that.
 */
 
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/String.h>

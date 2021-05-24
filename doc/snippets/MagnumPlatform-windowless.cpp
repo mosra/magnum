@@ -24,7 +24,7 @@
 */
 
 /* [windowless] */
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Containers/StringView.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/Platform/WindowlessEglApplication.h>
 

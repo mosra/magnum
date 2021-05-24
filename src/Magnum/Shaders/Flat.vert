@@ -32,6 +32,8 @@
 #define out varying
 #endif
 
+/* Uniforms */
+
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -62,6 +64,8 @@ uniform mediump mat3 textureMatrix
     ;
 #endif
 
+/* Inputs */
+
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
@@ -78,8 +82,6 @@ in highp vec4 position;
 layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
 #endif
 in mediump vec2 textureCoordinates;
-
-out mediump vec2 interpolatedTextureCoordinates;
 #endif
 
 #ifdef VERTEX_COLOR
@@ -87,8 +89,6 @@ out mediump vec2 interpolatedTextureCoordinates;
 layout(location = COLOR_ATTRIBUTE_LOCATION)
 #endif
 in lowp vec4 vertexColor;
-
-out lowp vec4 interpolatedVertexColor;
 #endif
 
 #ifdef INSTANCED_OBJECT_ID
@@ -96,8 +96,6 @@ out lowp vec4 interpolatedVertexColor;
 layout(location = OBJECT_ID_ATTRIBUTE_LOCATION)
 #endif
 in highp uint instanceObjectId;
-
-flat out highp uint interpolatedInstanceObjectId;
 #endif
 
 #ifdef INSTANCED_TRANSFORMATION
@@ -118,6 +116,20 @@ in highp mat4 instancedTransformationMatrix;
 layout(location = TEXTURE_OFFSET_ATTRIBUTE_LOCATION)
 #endif
 in mediump vec2 instancedTextureOffset;
+#endif
+
+/* Outputs */
+
+#ifdef TEXTURED
+out mediump vec2 interpolatedTextureCoordinates;
+#endif
+
+#ifdef VERTEX_COLOR
+out lowp vec4 interpolatedVertexColor;
+#endif
+
+#ifdef INSTANCED_OBJECT_ID
+flat out highp uint interpolatedInstanceObjectId;
 #endif
 
 void main() {

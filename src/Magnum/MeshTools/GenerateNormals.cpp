@@ -53,7 +53,7 @@ void generateFlatNormalsInto(const Containers::StridedArrayView1D<const Vector3>
 }
 
 Containers::Array<Vector3> generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>& positions) {
-    Containers::Array<Vector3> out{Containers::NoInit, positions.size()};
+    Containers::Array<Vector3> out{NoInit, positions.size()};
     generateFlatNormalsInto(positions, Containers::arrayView(out));
     return out;
 }
@@ -120,7 +120,7 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     /* Turn that into a running offset array:
        triangleOffset[i + 1] - triangleOffset[i] is triangle count for vertex i
        triangleOffset[i] is offset into an triangle ID array for vertex i */
-    Containers::Array<UnsignedInt> triangleOffset{Containers::NoInit, positions.size() + 1};
+    Containers::Array<UnsignedInt> triangleOffset{NoInit, positions.size() + 1};
     triangleOffset[0] = 0;
     for(std::size_t i = 0; i != triangleCount.size(); ++i)
         triangleOffset[i + 1] = triangleOffset[i] + triangleCount[i];
@@ -130,7 +130,7 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     /* Gather triangle IDs for every vertex. For vertex i,
        triangleIds[triangleOffset[i]] until triangleIds[triangleOffset[i + 1]]
        contains IDs of triangles that contain it. */
-    Containers::Array<T> triangleIds{Containers::NoInit, indices.size()};
+    Containers::Array<T> triangleIds{NoInit, indices.size()};
     for(std::size_t i = 0; i != indices.size(); ++i) {
         const T triangleId = i/3;
         const T vertexId = indices[i];
@@ -251,7 +251,7 @@ void generateSmoothNormalsInto(const Containers::StridedArrayView2D<const char>&
 namespace {
 
 template<class T> inline Containers::Array<Vector3> generateSmoothNormalsImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions) {
-    Containers::Array<Vector3> out{Containers::NoInit, positions.size()};
+    Containers::Array<Vector3> out{NoInit, positions.size()};
     generateSmoothNormalsInto(indices, positions, out);
     return out;
 }
@@ -272,7 +272,7 @@ Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayV
 }
 
 Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<const Vector3>& positions) {
-    Containers::Array<Vector3> out{Containers::NoInit, positions.size()};
+    Containers::Array<Vector3> out{NoInit, positions.size()};
     generateSmoothNormalsInto(indices, positions, out);
     return out;
 }

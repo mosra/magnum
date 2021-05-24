@@ -120,10 +120,10 @@ void BufferTest::createInfoConstructNoInit() {
     new(&info) BufferCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<BufferCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<BufferCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, BufferCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, BufferCreateInfo>::value);
 }
 
 void BufferTest::createInfoConstructFromVk() {
@@ -141,7 +141,7 @@ void BufferTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Buffer>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Buffer>::value);
 }
 
 void BufferTest::constructCopy() {
@@ -176,10 +176,10 @@ void BufferTest::bufferCopyConstructNoInit() {
     new(&copy) BufferCopy{NoInit};
     CORRADE_COMPARE(copy->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<BufferCopy, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<BufferCopy, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, BufferCopy>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, BufferCopy>::value);
 }
 
 template<class From, class To> void BufferTest::bufferCopyConstructFromVk() {
@@ -242,10 +242,10 @@ void BufferTest::copyBufferInfoConstructNoInit() {
     new(&info) CopyBufferInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CopyBufferInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CopyBufferInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, CopyBufferInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, CopyBufferInfo>::value);
 }
 
 void BufferTest::copyBufferInfoConstructFromVk() {

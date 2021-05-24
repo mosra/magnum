@@ -49,7 +49,7 @@ struct AnyConverter::State {
 
 AnyConverter::AnyConverter(PluginManager::Manager<AbstractConverter>& manager): AbstractConverter{manager} {}
 
-AnyConverter::AnyConverter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractConverter{manager, plugin}, _state{Containers::InPlaceInit} {}
+AnyConverter::AnyConverter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractConverter{manager, plugin}, _state{InPlaceInit} {}
 
 AnyConverter::~AnyConverter() = default;
 
@@ -361,13 +361,13 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
     return converter->convertFileToFile(stage, from, to);
 }
 
-Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, const Containers::StringView from) {
+Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
     /* Prefer the explicitly set input format. If not set, fall back to
        detecting based on input and output extension. */
     const Containers::StringView formatFrom = stringForFormat(
-        _state->inputFormat != Format::Unspecified ? _state->inputFormat : formatForExtension("ShaderTools::AnyConverter::convertFileToData():", from)
+        _state->inputFormat != Format::Unspecified ? _state->inputFormat : formatForExtension("ShaderTools::AnyConverter::convertFileToData():", filename)
     );
     if(formatFrom.isEmpty()) return {};
     if(_state->outputFormat == Format::Unspecified) {
@@ -439,7 +439,7 @@ Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, con
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
-    return converter->convertFileToData(stage, from);
+    return converter->convertFileToData(stage, filename);
 }
 
 Containers::Array<char> AnyConverter::doConvertDataToData(const Stage stage, const Containers::ArrayView<const char> from) {

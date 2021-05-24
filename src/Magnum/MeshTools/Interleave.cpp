@@ -216,7 +216,7 @@ Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vert
         return Trade::MeshData{data.primitive(), vertexCount};
 
     /* Allocate new data array */
-    Containers::Array<char> vertexData{Containers::NoInit, attributeData[0].stride()*vertexCount};
+    Containers::Array<char> vertexData{NoInit, attributeData[0].stride()*vertexCount};
 
     /* Convert the attributes from offset-only and zero vertex count to
        absolute, referencing the above-allocated data array */

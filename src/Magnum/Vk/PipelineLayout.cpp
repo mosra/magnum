@@ -26,15 +26,31 @@
 #include "PipelineLayout.h"
 #include "PipelineLayoutCreateInfo.h"
 
+#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Utility/Algorithms.h>
+
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Result.h"
 
 namespace Magnum { namespace Vk {
 
-PipelineLayoutCreateInfo::PipelineLayoutCreateInfo(): _info{} {
+PipelineLayoutCreateInfo::PipelineLayoutCreateInfo(const Containers::ArrayView<const VkDescriptorSetLayout> descriptorSetLayouts): _info{} {
+    /* Make a copy of the descriptor set layout list */
+    Containers::ArrayView<VkDescriptorSetLayout> descriptorSetLayoutsCopy;
+    _data = Containers::ArrayTuple{
+        {NoInit, descriptorSetLayouts.size(), descriptorSetLayoutsCopy}
+    };
+    Utility::copy(descriptorSetLayouts, descriptorSetLayoutsCopy);
+
     _info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    _info.setLayoutCount = descriptorSetLayoutsCopy.size();
+    _info.pSetLayouts = descriptorSetLayoutsCopy;
 }
+
+PipelineLayoutCreateInfo::PipelineLayoutCreateInfo(): PipelineLayoutCreateInfo{Containers::ArrayView<const VkDescriptorSetLayout>{}} {}
+
+PipelineLayoutCreateInfo::PipelineLayoutCreateInfo(const std::initializer_list<VkDescriptorSetLayout> descriptorSetLayouts): PipelineLayoutCreateInfo{Containers::arrayView(descriptorSetLayouts)} {}
 
 PipelineLayoutCreateInfo::PipelineLayoutCreateInfo(NoInitT) noexcept {}
 
@@ -42,6 +58,31 @@ PipelineLayoutCreateInfo::PipelineLayoutCreateInfo(const VkPipelineLayoutCreateI
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _info(info) {}
+
+PipelineLayoutCreateInfo::PipelineLayoutCreateInfo(PipelineLayoutCreateInfo&& other) noexcept:
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(other._info),
+    _data{std::move(other._data)}
+{
+    /* Ensure the previous instance doesn't reference state that's now ours */
+    /** @todo this is now more like a destructible move, do it more selectively
+        and clear only what's really ours and not external? */
+    other._info.pNext = nullptr;
+    other._info.setLayoutCount = 0;
+    other._info.pSetLayouts = nullptr;
+    other._info.pushConstantRangeCount = 0;
+    other._info.pPushConstantRanges = nullptr;
+}
+
+PipelineLayoutCreateInfo::~PipelineLayoutCreateInfo() = default;
+
+PipelineLayoutCreateInfo& PipelineLayoutCreateInfo::operator=(PipelineLayoutCreateInfo&& other) noexcept {
+    using std::swap;
+    swap(other._info, _info);
+    swap(other._data, _data);
+    return *this;
+}
 
 PipelineLayout PipelineLayout::wrap(Device& device, const VkPipelineLayout handle, const HandleFlags flags) {
     PipelineLayout out{NoCreate};

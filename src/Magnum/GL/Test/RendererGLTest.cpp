@@ -240,10 +240,10 @@ void RendererGLTest::pointCoord() {
 void RendererGLTest::patchParameters() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::tessellation_shader>())
-        CORRADE_SKIP(Extensions::ARB::tessellation_shader::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::tessellation_shader::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::tessellation_shader>())
-        CORRADE_SKIP(Extensions::EXT::tessellation_shader::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::tessellation_shader::string() << "is not supported.");
     #endif
 
     /* All we can do is check for GL errors */
@@ -260,10 +260,10 @@ void RendererGLTest::patchParameters() {
 void RendererGLTest::drawBuffersIndexed() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::draw_buffers2>())
-        CORRADE_SKIP(Extensions::EXT::draw_buffers2::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::draw_buffers2::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::draw_buffers_indexed>())
-        CORRADE_SKIP(Extensions::EXT::draw_buffers_indexed::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::draw_buffers_indexed::string() << "is not supported.");
     #endif
 
     /* Call the draw-buffer dependent functions, only expect that no GL error
@@ -277,10 +277,10 @@ void RendererGLTest::drawBuffersIndexed() {
 void RendererGLTest::drawBuffersBlend() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_buffers_blend>())
-        CORRADE_SKIP(Extensions::ARB::draw_buffers_blend::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::draw_buffers_blend::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::draw_buffers_indexed>())
-        CORRADE_SKIP(Extensions::EXT::draw_buffers_indexed::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::draw_buffers_indexed::string() << "is not supported.");
     #endif
 
     /* Call the draw-buffer dependent functions, only expect that no GL error

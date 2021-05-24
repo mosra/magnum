@@ -129,7 +129,7 @@ template<class T> class Vector2: public Vector<2, T> {
         /** @copydoc Vector::Vector(const Vector<size, U>&) */
         template<class U> constexpr explicit Vector2(const Vector<2, U>& other) noexcept: Vector<2, T>(other) {}
 
-        /** @brief Construct vector from external representation */
+        /** @brief Construct a vector from external representation */
         template<class U, class V =
             #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
             decltype(Implementation::VectorConverter<2, T, U>::from(std::declval<U>()))

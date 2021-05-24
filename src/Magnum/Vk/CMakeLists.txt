@@ -29,6 +29,9 @@ find_package(Vulkan REQUIRED)
 set(MagnumVk_SRCS
     CommandBuffer.cpp
     CommandPool.cpp
+    DescriptorSet.cpp
+    DescriptorSetLayout.cpp
+    DescriptorType.cpp
     Extensions.cpp
     Fence.cpp
     Framebuffer.cpp
@@ -46,10 +49,10 @@ set(MagnumVk_SRCS
 
 set(MagnumVk_GracefulAssert_SRCS
     Buffer.cpp
+    DescriptorPool.cpp
     Device.cpp
     DeviceProperties.cpp
     DeviceFeatures.cpp
-    Enums.cpp
     ExtensionProperties.cpp
     Image.cpp
     ImageView.cpp
@@ -61,6 +64,7 @@ set(MagnumVk_GracefulAssert_SRCS
     Pipeline.cpp
     PixelFormat.cpp
     RenderPass.cpp
+    Sampler.cpp
     ShaderSet.cpp
     VertexFormat.cpp)
 
@@ -72,11 +76,16 @@ set(MagnumVk_HEADERS
     CommandPool.h
     CommandPoolCreateInfo.h
     ComputePipelineCreateInfo.h
+    DescriptorPool.h
+    DescriptorPoolCreateInfo.h
+    DescriptorSet.h
+    DescriptorSetLayout.h
+    DescriptorSetLayoutCreateInfo.h
+    DescriptorType.h
     Device.h
     DeviceCreateInfo.h
     DeviceFeatures.h
     DeviceProperties.h
-    Enums.h
     Extensions.h
     ExtensionProperties.h
     Fence.h
@@ -105,6 +114,8 @@ set(MagnumVk_HEADERS
     RenderPass.h
     RenderPassCreateInfo.h
     Result.h
+    Sampler.h
+    SamplerCreateInfo.h
     Shader.h
     ShaderCreateInfo.h
     ShaderSet.h
@@ -129,6 +140,11 @@ set(MagnumVk_PRIVATE_HEADERS
     Implementation/pixelFormatMapping.hpp
     Implementation/structureHelpers.h
     Implementation/vertexFormatMapping.hpp)
+
+if(MAGNUM_BUILD_DEPRECATED)
+    list(APPEND MagnumVk_SRCS Enums.cpp)
+    list(APPEND MagnumVk_HEADERS Enums.h)
+endif()
 
 # Objects shared between main and test library
 add_library(MagnumVkObjects OBJECT

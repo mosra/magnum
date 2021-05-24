@@ -47,7 +47,7 @@
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/Primitives/Plane.h"
 #include "Magnum/Primitives/Square.h"
-#include "Magnum/Shaders/DistanceFieldVector.h"
+#include "Magnum/Shaders/DistanceFieldVectorGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/MeshData.h"
@@ -99,15 +99,15 @@ using namespace Math::Literals;
 
 constexpr struct {
     const char* name;
-    DistanceFieldVector2D::Flags flags;
+    DistanceFieldVectorGL2D::Flags flags;
 } ConstructData[]{
     {"", {}},
-    {"texture transformation", DistanceFieldVector2D::Flag::TextureTransformation}
+    {"texture transformation", DistanceFieldVectorGL2D::Flag::TextureTransformation}
 };
 
 const struct {
     const char* name;
-    DistanceFieldVector2D::Flags flags;
+    DistanceFieldVectorGL2D::Flags flags;
     Matrix3 textureTransformation;
     Color4 color, outlineColor;
     Float outlineRangeStart, outlineRangeEnd, smoothness;
@@ -115,7 +115,7 @@ const struct {
     const char* file3D;
     bool flip;
 } RenderData[] {
-    {"texture transformation", DistanceFieldVector2D::Flag::TextureTransformation,
+    {"texture transformation", DistanceFieldVectorGL2D::Flag::TextureTransformation,
         Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
         0xffffff_rgbf, 0x00000000_rgbaf, 0.5f, 1.0f, 0.04f,
         "defaults-distancefield.tga", "defaults-distancefield.tga", true},
@@ -181,7 +181,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::construct() {
     auto&& data = ConstructData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    DistanceFieldVector<dimensions> shader{data.flags};
+    DistanceFieldVectorGL<dimensions> shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
@@ -197,21 +197,21 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::construct() {
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMove() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    DistanceFieldVector<dimensions> a{DistanceFieldVector<dimensions>::Flag::TextureTransformation};
+    DistanceFieldVectorGL<dimensions> a{DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    DistanceFieldVector<dimensions> b{std::move(a)};
+    DistanceFieldVectorGL<dimensions> b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
-    CORRADE_COMPARE(b.flags(), DistanceFieldVector<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(b.flags(), DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation);
     CORRADE_VERIFY(!a.id());
 
-    DistanceFieldVector<dimensions> c{NoCreate};
+    DistanceFieldVectorGL<dimensions> c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
-    CORRADE_COMPARE(c.flags(), DistanceFieldVector<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(c.flags(), DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation);
     CORRADE_VERIFY(!b.id());
 }
 
@@ -225,11 +225,11 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setTextureMatri
     std::ostringstream out;
     Error redirectError{&out};
 
-    DistanceFieldVector<dimensions> shader;
+    DistanceFieldVectorGL<dimensions> shader;
     shader.setTextureMatrix({});
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::DistanceFieldVector::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
+        "Shaders::DistanceFieldVectorGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
 constexpr Vector2i RenderSize{80, 80};
@@ -293,7 +293,7 @@ void DistanceFieldVectorGLTest::renderDefaults2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVector2D{}
+    DistanceFieldVectorGL2D{}
         .bindVectorTexture(texture)
         .draw(square);
 
@@ -349,7 +349,7 @@ void DistanceFieldVectorGLTest::renderDefaults3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVector2D{}
+    DistanceFieldVectorGL2D{}
         .bindVectorTexture(texture)
         .draw(plane);
 
@@ -408,7 +408,7 @@ void DistanceFieldVectorGLTest::render2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVector2D shader{data.flags};
+    DistanceFieldVectorGL2D shader{data.flags};
     shader
         /** @todo implement background color */
         .setColor(data.color)
@@ -474,7 +474,7 @@ void DistanceFieldVectorGLTest::render3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVector3D shader{data.flags};
+    DistanceFieldVectorGL3D shader{data.flags};
     shader
         /** @todo implement background color */
         .setColor(data.color)

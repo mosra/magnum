@@ -224,10 +224,10 @@ void PipelineTest::rasterizationCreateInfoConstructNoInit() {
     new(&info) RasterizationPipelineCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<RasterizationPipelineCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<RasterizationPipelineCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, RasterizationPipelineCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, RasterizationPipelineCreateInfo>::value);
 }
 
 void PipelineTest::rasterizationCreateInfoConstructFromVk() {
@@ -306,11 +306,11 @@ void PipelineTest::rasterizationCreateInfoConstructMove() {
 
     MeshLayout meshLayout{MeshPrimitive::Triangles};
 
-    Containers::Pointer<RasterizationPipelineCreateInfo> a{Containers::InPlaceInit, shaderSet, meshLayout, VkPipelineLayout{}, VkRenderPass{}, 0u, 3u};
+    Containers::Pointer<RasterizationPipelineCreateInfo> a{InPlaceInit, shaderSet, meshLayout, VkPipelineLayout{}, VkRenderPass{}, 0u, 3u};
     (*a).setViewport(Range3D{})
         .setDynamicStates(DynamicRasterizationState::CullMode);
 
-    Containers::Pointer<RasterizationPipelineCreateInfo> b{Containers::InPlaceInit, std::move(*a)};
+    Containers::Pointer<RasterizationPipelineCreateInfo> b{InPlaceInit, std::move(*a)};
     CORRADE_COMPARE((**a).stageCount, 0);
     CORRADE_VERIFY(!(**a).pStages);
     CORRADE_VERIFY(!(**a).pVertexInputState);
@@ -344,7 +344,7 @@ void PipelineTest::rasterizationCreateInfoConstructMove() {
     CORRADE_VERIFY((**b).pDynamicState);
     CORRADE_COMPARE((**b).pDynamicState->sType, VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO);
 
-    Containers::Pointer<RasterizationPipelineCreateInfo> c{Containers::InPlaceInit, VkGraphicsPipelineCreateInfo{}};
+    Containers::Pointer<RasterizationPipelineCreateInfo> c{InPlaceInit, VkGraphicsPipelineCreateInfo{}};
     *c = std::move(*b);
     CORRADE_COMPARE((**b).stageCount, 0);
     CORRADE_VERIFY(!(**b).pStages);
@@ -581,10 +581,10 @@ void PipelineTest::computeCreateInfoConstructNoInit() {
     new(&info) ComputePipelineCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<ComputePipelineCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<ComputePipelineCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, ComputePipelineCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, ComputePipelineCreateInfo>::value);
 }
 
 void PipelineTest::computeCreateInfoConstructFromVk() {
@@ -602,7 +602,7 @@ void PipelineTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Pipeline>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Pipeline>::value);
 }
 
 void PipelineTest::constructCopy() {
@@ -622,10 +622,10 @@ void PipelineTest::memoryBarrierConstructNoInit() {
     new(&barrier) MemoryBarrier{NoInit};
     CORRADE_COMPARE(barrier->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<MemoryBarrier, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<MemoryBarrier, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, MemoryBarrier>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, MemoryBarrier>::value);
 }
 
 void PipelineTest::memoryBarrierConstructFromVk() {
@@ -651,10 +651,10 @@ void PipelineTest::bufferMemoryBarrierConstructNoInit() {
     new(&barrier) BufferMemoryBarrier{NoInit};
     CORRADE_COMPARE(barrier->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<BufferMemoryBarrier, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<BufferMemoryBarrier, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, BufferMemoryBarrier>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, BufferMemoryBarrier>::value);
 }
 
 void PipelineTest::bufferMemoryBarrierConstructFromVk() {
@@ -705,10 +705,10 @@ void PipelineTest::imageMemoryBarrierConstructNoInit() {
     new(&barrier) ImageMemoryBarrier{NoInit};
     CORRADE_COMPARE(barrier->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<ImageMemoryBarrier, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<ImageMemoryBarrier, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, ImageMemoryBarrier>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, ImageMemoryBarrier>::value);
 }
 
 void PipelineTest::imageMemoryBarrierConstructFromVk() {

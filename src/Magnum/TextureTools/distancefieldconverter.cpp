@@ -108,12 +108,12 @@ Arguments:
 -   `--output-size "X Y"` --- size of output image
 -   `--radius N` --- distance field computation radius
 -   `--magnum-...` --- engine-specific options (see
-    @ref GL-Context-command-line for details)
+    @ref GL-Context-usage-command-line for details)
 
 Images with @ref PixelFormat::R8Unorm, @ref PixelFormat::RGB8Unorm or
 @ref PixelFormat::RGBA8Unorm are accepted on input.
 
-The resulting image can be then used with @ref Shaders::DistanceFieldVector
+The resulting image can be then used with @ref Shaders::DistanceFieldVectorGL
 shader. See also @ref TextureTools::DistanceField for more information about
 the algorithm and parameters.
 
@@ -215,7 +215,7 @@ int DistanceFieldConverter::exec() {
     /* Save image */
     Image2D result{PixelFormat::R8Unorm};
     output.image(0, result);
-    if(!converter->exportToFile(result, args.value("output"))) {
+    if(!converter->convertToFile(result, args.value("output"))) {
         Error() << "Cannot save file" << args.value("output");
         return 5;
     }

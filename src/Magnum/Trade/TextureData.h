@@ -29,9 +29,14 @@
  * @brief Class @ref Magnum::Trade::TextureData
  */
 
-#include "Magnum/Array.h"
 #include "Magnum/Sampler.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For implicit conversions to Vector<SamplerWrapping>, not used otherwise */
+#include "Magnum/Array.h"
+#endif
 
 namespace Magnum { namespace Trade {
 
@@ -64,7 +69,15 @@ class TextureData {
          * @param image                 Texture image ID
          * @param importerState         Importer-specific state
          */
-        TextureData(Type type, SamplerFilter minificationFilter, SamplerFilter magnificationFilter, SamplerMipmap mipmapFilter, Array3D<SamplerWrapping> wrapping, UnsignedInt image, const void* importerState = nullptr) noexcept: _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
+        explicit TextureData(Type type, SamplerFilter minificationFilter, SamplerFilter magnificationFilter, SamplerMipmap mipmapFilter, const Math::Vector3<SamplerWrapping>& wrapping, UnsignedInt image, const void* importerState = nullptr) noexcept: _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
+
+        /**
+         * @brief Construct with the same wrapping for all dimensions
+         *
+         * Same as calling @ref TextureData(Type, SamplerFilter, SamplerFilter, SamplerMipmap, const Math::Vector3<SamplerWrapping>&, UnsignedInt, const void*)
+         * with the same @p wrapping value for all dimensions.
+         */
+        explicit TextureData(Type type, SamplerFilter minificationFilter, SamplerFilter magnificationFilter, SamplerMipmap mipmapFilter, SamplerWrapping wrapping, UnsignedInt image, const void* importerState = nullptr) noexcept: _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
 
         /** @brief Copying is not allowed */
         TextureData(const TextureData&) = delete;
@@ -91,7 +104,7 @@ class TextureData {
         SamplerMipmap mipmapFilter() const { return _mipmapFilter; }
 
         /** @brief Wrapping */
-        Array3D<SamplerWrapping> wrapping() const { return _wrapping; }
+        Math::Vector3<SamplerWrapping> wrapping() const { return _wrapping; }
 
         /**
          * @brief Image ID
@@ -115,7 +128,7 @@ class TextureData {
         Type _type;
         SamplerFilter _minificationFilter, _magnificationFilter;
         SamplerMipmap _mipmapFilter;
-        Array3D<SamplerWrapping> _wrapping;
+        Math::Vector3<SamplerWrapping> _wrapping;
         UnsignedInt _image;
         const void* _importerState;
 };

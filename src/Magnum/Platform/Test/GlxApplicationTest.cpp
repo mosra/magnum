@@ -42,6 +42,7 @@ GlxApplicationTest::GlxApplicationTest(const Arguments& arguments): Platform::Ap
     Utility::Arguments args;
     args.addSkippedPrefix("magnum", "engine-specific options")
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
+        .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
         .parse(arguments.argc, arguments.argv);
 
     if(args.isSet("exit-immediately")) {
@@ -49,7 +50,10 @@ GlxApplicationTest::GlxApplicationTest(const Arguments& arguments): Platform::Ap
         return;
     }
 
-    create(Configuration{});
+    if(args.isSet("quiet"))
+        create(Configuration{}, GLConfiguration{}.addFlags(GLConfiguration::Flag::QuietLog));
+    else
+        create();
 }
 
 }}}}

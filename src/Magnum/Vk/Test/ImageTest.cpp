@@ -327,10 +327,10 @@ void ImageTest::createInfoConstructNoInit() {
     new(&info) ImageCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<ImageCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<ImageCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, ImageCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, ImageCreateInfo>::value);
 }
 
 void ImageTest::createInfoConstructFromVk() {
@@ -371,7 +371,7 @@ void ImageTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Image>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Image>::value);
 }
 
 void ImageTest::constructCopy() {
@@ -414,10 +414,10 @@ void ImageTest::imageCopyConstructNoInit() {
     new(&copy) ImageCopy{NoInit};
     CORRADE_COMPARE(copy->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<ImageCopy, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<ImageCopy, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, ImageCopy>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, ImageCopy>::value);
 }
 
 template<class From, class To> void ImageTest::imageCopyConstructFromVk() {
@@ -510,10 +510,10 @@ void ImageTest::copyImageInfoConstructNoInit() {
     new(&info) CopyImageInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CopyImageInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CopyImageInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, CopyImageInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, CopyImageInfo>::value);
 }
 
 void ImageTest::copyImageInfoConstructFromVk() {
@@ -656,10 +656,10 @@ void ImageTest::bufferImageCopyConstructNoInit() {
     new(&copy) BufferImageCopy{NoInit};
     CORRADE_COMPARE(copy->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<BufferImageCopy, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<BufferImageCopy, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, BufferImageCopy>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, BufferImageCopy>::value);
 }
 
 template<class From, class To> void ImageTest::bufferImageCopyConstructFromVk() {
@@ -744,10 +744,10 @@ void ImageTest::copyBufferToImageInfoConstructNoInit() {
     new(&info) CopyBufferToImageInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CopyBufferToImageInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CopyBufferToImageInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, CopyBufferToImageInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, CopyBufferToImageInfo>::value);
 }
 
 void ImageTest::copyBufferToImageInfoConstructFromVk() {
@@ -797,10 +797,10 @@ void ImageTest::copyImageToBufferInfoConstructNoInit() {
     new(&info) CopyImageToBufferInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CopyImageToBufferInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CopyImageToBufferInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, CopyImageToBufferInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, CopyImageToBufferInfo>::value);
 }
 
 void ImageTest::copyImageToBufferInfoConstructFromVk() {

@@ -25,9 +25,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <vector>
-
 #include "Magnum/GL/Framebuffer.h"
 
 #ifdef _MSC_VER
@@ -42,7 +39,7 @@ namespace Magnum { namespace GL { namespace Implementation {
 struct FramebufferState {
     constexpr static const Range2Di DisengagedViewport{{}, {-1, -1}};
 
-    explicit FramebufferState(Context& context, std::vector<std::string>& extensions);
+    explicit FramebufferState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
 
     void reset();
 

@@ -25,6 +25,7 @@
 
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -59,12 +60,12 @@
 #include <Magnum/Primitives/Circle.h>
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/Primitives/UVSphere.h>
-#include <Magnum/Shaders/Flat.h>
-#include <Magnum/Shaders/MeshVisualizer.h>
-#include <Magnum/Shaders/Phong.h>
-#include <Magnum/Shaders/VertexColor.h>
-#include <Magnum/Shaders/Vector.h>
-#include <Magnum/Shaders/DistanceFieldVector.h>
+#include <Magnum/Shaders/FlatGL.h>
+#include <Magnum/Shaders/MeshVisualizerGL.h>
+#include <Magnum/Shaders/PhongGL.h>
+#include <Magnum/Shaders/VertexColorGL.h>
+#include <Magnum/Shaders/VectorGL.h>
+#include <Magnum/Shaders/DistanceFieldVectorGL.h>
 #include <Magnum/Trade/AbstractImageConverter.h>
 #include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData.h>
@@ -145,7 +146,7 @@ int ShaderVisualizer::exec() {
 
         GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
         Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-        converter->exportToFile(result, Utility::Directory::join("../", "shaders-" + filename));
+        converter->convertToFile(result, Utility::Directory::join("../", "shaders-" + filename));
     }
 
     _importer.reset();
@@ -161,7 +162,7 @@ namespace {
 }
 
 std::string ShaderVisualizer::phong() {
-    Shaders::Phong{}
+    Shaders::PhongGL{}
         .setAmbientColor(0x22272e_srgbf)
         .setDiffuseColor(BaseColor)
         .setShininess(200.0f)
@@ -179,7 +180,7 @@ std::string ShaderVisualizer::meshVisualizer2D() {
         Matrix3::projection(Vector2{3.0f})*
         Matrix3::rotation(13.7_degf);
 
-    Shaders::MeshVisualizer2D{Shaders::MeshVisualizer2D::Flag::Wireframe}
+    Shaders::MeshVisualizerGL2D{Shaders::MeshVisualizerGL2D::Flag::Wireframe}
         .setColor(BaseColor)
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)
@@ -205,7 +206,7 @@ std::string ShaderVisualizer::meshVisualizer2DPrimitiveId() {
         .setStorage(1, GL::TextureFormat::SRGB8Alpha8, size)
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
 
-    Shaders::MeshVisualizer2D{Shaders::MeshVisualizer2D::Flag::PrimitiveId}
+    Shaders::MeshVisualizerGL2D{Shaders::MeshVisualizerGL2D::Flag::PrimitiveId}
         .setTransformationProjectionMatrix(projection)
         .setColorMapTransformation(1.0f/255.0f, 1.0f/8.0f)
         .bindColorMapTexture(colorMapTexture)
@@ -219,10 +220,10 @@ std::string ShaderVisualizer::meshVisualizer3D() {
         Matrix4::rotationZ(13.7_degf)*
         Matrix4::rotationX(-12.6_degf);
 
-    Shaders::MeshVisualizer3D{Shaders::MeshVisualizer3D::Flag::Wireframe|
-                              Shaders::MeshVisualizer3D::Flag::TangentDirection|
-                              Shaders::MeshVisualizer3D::Flag::BitangentFromTangentDirection|
-                              Shaders::MeshVisualizer3D::Flag::NormalDirection}
+    Shaders::MeshVisualizerGL3D{Shaders::MeshVisualizerGL3D::Flag::Wireframe|
+                              Shaders::MeshVisualizerGL3D::Flag::TangentDirection|
+                              Shaders::MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|
+                              Shaders::MeshVisualizerGL3D::Flag::NormalDirection}
         .setColor(BaseColor)
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)
@@ -252,7 +253,7 @@ std::string ShaderVisualizer::meshVisualizer3DPrimitiveId() {
         .setStorage(1, GL::TextureFormat::SRGB8Alpha8, size)
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
 
-    Shaders::MeshVisualizer3D{Shaders::MeshVisualizer3D::Flag::PrimitiveId}
+    Shaders::MeshVisualizerGL3D{Shaders::MeshVisualizerGL3D::Flag::PrimitiveId}
         .setTransformationMatrix(transformation)
         .setProjectionMatrix(Projection)
         .setColorMapTransformation(1.0f/255.0f, 1.0f/32.0f)
@@ -263,7 +264,7 @@ std::string ShaderVisualizer::meshVisualizer3DPrimitiveId() {
 }
 
 std::string ShaderVisualizer::flat() {
-    Shaders::Flat3D{}
+    Shaders::FlatGL3D{}
         .setColor(BaseColor)
         .setTransformationProjectionMatrix(Projection*Transformation)
         .draw(MeshTools::compile(Primitives::uvSphereSolid(16, 32)));
@@ -289,11 +290,11 @@ std::string ShaderVisualizer::vertexColor() {
     mesh.setPrimitive(GL::MeshPrimitive::Triangles)
         .setCount(sphere.indexCount())
         .addVertexBuffer(vertices, 0,
-            Shaders::VertexColor3D::Position{},
-            Shaders::VertexColor3D::Color3{})
+            Shaders::VertexColorGL3D::Position{},
+            Shaders::VertexColorGL3D::Color3{})
         .setIndexBuffer(indices, 0, GL::MeshIndexType::UnsignedInt);
 
-    Shaders::VertexColor3D shader;
+    Shaders::VertexColorGL3D shader;
     shader.setTransformationProjectionMatrix(Projection*Transformation)
         .draw(mesh);
 
@@ -318,7 +319,7 @@ std::string ShaderVisualizer::vector() {
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
     GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
 
-    Shaders::Vector2D{}
+    Shaders::VectorGL2D{}
         .setColor(BaseColor)
         .bindVectorTexture(texture)
         .setTransformationProjectionMatrix({})
@@ -347,7 +348,7 @@ std::string ShaderVisualizer::distanceFieldVector() {
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
     GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
 
-    Shaders::DistanceFieldVector2D{}
+    Shaders::DistanceFieldVectorGL2D{}
         .setColor(BaseColor)
         .setOutlineColor(OutlineColor)
         .setOutlineRange(0.6f, 0.4f)

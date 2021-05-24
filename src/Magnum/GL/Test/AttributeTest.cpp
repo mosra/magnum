@@ -178,7 +178,7 @@ AttributeTest::AttributeTest() {
 
 void AttributeTest::attributeScalar() {
     typedef Attribute<3, Float> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Float>{});
     CORRADE_COMPARE(Attribute::Location, 3);
     CORRADE_COMPARE(Attribute::Vectors, 1);
 
@@ -214,7 +214,7 @@ void AttributeTest::attributeScalar() {
 void AttributeTest::attributeScalarInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef Attribute<2, Int> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Int>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Int>{});
     CORRADE_COMPARE(Attribute::Vectors, 1);
 
     /* Default constructor */
@@ -248,7 +248,7 @@ void AttributeTest::attributeScalarInt() {
 void AttributeTest::attributeScalarUnsignedInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef Attribute<3, UnsignedInt> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, UnsignedInt>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, UnsignedInt>{});
     CORRADE_COMPARE(Attribute::Vectors, 1);
 
     /* Default constructor */
@@ -282,7 +282,7 @@ void AttributeTest::attributeScalarUnsignedInt() {
 void AttributeTest::attributeScalarDouble() {
     #ifndef MAGNUM_TARGET_GLES
     typedef Attribute<3, Double> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Double>{});
     CORRADE_COMPARE(Attribute::Vectors, 1);
 
     /* Default constructor */
@@ -303,7 +303,7 @@ void AttributeTest::attributeScalarDouble() {
 
 void AttributeTest::attributeVector() {
     typedef Attribute<3, Vector3> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Float>{});
     CORRADE_COMPARE(Attribute::Vectors, 1);
 
     /* Default constructor */
@@ -351,7 +351,7 @@ void AttributeTest::attributeVector() {
 void AttributeTest::attributeVectorInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef Attribute<3, Vector2i> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Int>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Int>{});
     CORRADE_COMPARE(Attribute::Vectors, 1);
 
     /* Default constructor */
@@ -387,7 +387,7 @@ void AttributeTest::attributeVectorInt() {
 void AttributeTest::attributeVectorUnsignedInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef Attribute<3, Vector4ui> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, UnsignedInt>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, UnsignedInt>{});
     CORRADE_COMPARE(Attribute::Vectors, 1);
 
     /* Default constructor */
@@ -423,7 +423,7 @@ void AttributeTest::attributeVectorUnsignedInt() {
 void AttributeTest::attributeVectorDouble() {
     #ifndef MAGNUM_TARGET_GLES
     typedef Attribute<3, Vector2d> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Double>{});
     CORRADE_COMPARE(Attribute::Vectors, 1);
 
     /* Default constructor */
@@ -458,7 +458,7 @@ void AttributeTest::attributeVectorDouble() {
 
 void AttributeTest::attributeVector4() {
     typedef Attribute<3, Vector4> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Float>{});
     CORRADE_COMPARE(Attribute::Vectors, 1);
 
     /* Custom type */
@@ -501,7 +501,7 @@ void AttributeTest::attributeVector4() {
 void AttributeTest::attributeVectorBGRA() {
     #ifndef MAGNUM_TARGET_GLES
     typedef Attribute<3, Vector4> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Float>{});
     CORRADE_COMPARE(Attribute::Vectors, 1);
 
     /* BGRA */
@@ -522,7 +522,7 @@ void AttributeTest::attributeVectorBGRA() {
 
 void AttributeTest::attributeMatrixNxN() {
     typedef Attribute<3, Matrix3> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Float>{});
     CORRADE_COMPARE(Attribute::Vectors, 3);
 
     /* Default constructor */
@@ -542,7 +542,7 @@ void AttributeTest::attributeMatrixNxN() {
 
 void AttributeTest::attributeMatrixNxNCustomStride() {
     typedef Attribute<3, Matrix3> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Float>{});
     CORRADE_COMPARE(Attribute::Vectors, 3);
 
     /* Default stride */
@@ -577,7 +577,7 @@ void AttributeTest::attributeMatrixNxNCustomStride() {
 #ifndef MAGNUM_TARGET_GLES2
 void AttributeTest::attributeMatrixMxN() {
     typedef Attribute<3, Matrix3x4> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Float>{});
     CORRADE_COMPARE(Attribute::Vectors, 3);
 
     /* Default constructor */
@@ -599,7 +599,7 @@ void AttributeTest::attributeMatrixMxN() {
 void AttributeTest::attributeMatrixNxNd() {
     #ifndef MAGNUM_TARGET_GLES
     typedef Attribute<3, Matrix4d> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Double>{});
     CORRADE_COMPARE(Attribute::Vectors, 4);
 
     /* Default constructor */
@@ -623,7 +623,7 @@ void AttributeTest::attributeMatrixNxNd() {
 void AttributeTest::attributeMatrixMxNd() {
     #ifndef MAGNUM_TARGET_GLES
     typedef Attribute<3, Matrix4x2d> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>{}));
+    CORRADE_VERIFY(std::is_same<Attribute::ScalarType, Double>{});
     CORRADE_COMPARE(Attribute::Vectors, 4);
 
     /* Default constructor */

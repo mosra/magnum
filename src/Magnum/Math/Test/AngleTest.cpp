@@ -33,6 +33,7 @@
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/TweakableParser.h>
 #endif
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Angle.h"
 
@@ -150,11 +151,11 @@ void AngleTest::construct() {
     CORRADE_COMPARE(Double(n), 3.14);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Float, Rad>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Double, Degd>::value));
+    CORRADE_VERIFY(!std::is_convertible<Float, Rad>::value);
+    CORRADE_VERIFY(!std::is_convertible<Double, Degd>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, Float>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Rad, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Deg, Float>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Rad, Float>::value);
 }
 
 void AngleTest::constructDefault() {
@@ -169,12 +170,12 @@ void AngleTest::constructDefault() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Deg>::value);
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Rad>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, ZeroInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Rad, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Deg, ZeroInitT>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Rad, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Deg>::value));
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Rad>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Deg>::value);
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Rad>::value);
 }
 
 void AngleTest::constructNoInit() {
@@ -198,12 +199,12 @@ void AngleTest::constructNoInit() {
         #endif
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, Magnum::NoInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Rad, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Deg, Magnum::NoInitT>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Rad, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Deg>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Rad>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Deg>::value);
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Rad>::value);
 }
 
 void AngleTest::constructConversion() {
@@ -216,11 +217,11 @@ void AngleTest::constructConversion() {
     CORRADE_COMPARE(Double(d), 25.0);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Degd, Deg>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Rad, Radd>::value));
+    CORRADE_VERIFY(!std::is_convertible<Degd, Deg>::value);
+    CORRADE_VERIFY(!std::is_convertible<Rad, Radd>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, Degd>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Radd, Rad>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Deg, Degd>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Radd, Rad>::value);
 }
 
 void AngleTest::constructCopy() {
@@ -232,6 +233,12 @@ void AngleTest::constructCopy() {
     constexpr Radd d(b);
     CORRADE_COMPARE(d, b);
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Deg>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Rad>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Deg>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Rad>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Deg>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Rad>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Deg>::value);
@@ -240,17 +247,17 @@ void AngleTest::constructCopy() {
 
 void AngleTest::literals() {
     constexpr auto a = 25.0_deg;
-    CORRADE_VERIFY((std::is_same<decltype(a), const Degd>::value));
+    CORRADE_VERIFY(std::is_same<decltype(a), const Degd>::value);
     CORRADE_COMPARE(Double(a), 25.0);
     constexpr auto b = 25.0_degf;
-    CORRADE_VERIFY((std::is_same<decltype(b), const Deg>::value));
+    CORRADE_VERIFY(std::is_same<decltype(b), const Deg>::value);
     CORRADE_COMPARE(Float(b), 25.0f);
 
     constexpr auto m = 3.14_rad;
-    CORRADE_VERIFY((std::is_same<decltype(m), const Radd>::value));
+    CORRADE_VERIFY(std::is_same<decltype(m), const Radd>::value);
     CORRADE_COMPARE(Double(m), 3.14);
     constexpr auto n = 3.14_radf;
-    CORRADE_VERIFY((std::is_same<decltype(n), const Rad>::value));
+    CORRADE_VERIFY(std::is_same<decltype(n), const Rad>::value);
     CORRADE_COMPARE(Float(n), 3.14f);
 }
 

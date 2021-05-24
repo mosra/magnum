@@ -45,7 +45,8 @@ namespace Magnum { namespace Vk {
 @brief Fence
 @m_since_latest
 
-Wraps a @type_vk_keyword{Fence}.
+Wraps a @type_vk_keyword{Fence}, which is used for synchronizing the CPU to a
+queue execution done on a Vulkan device.
 
 @section Vk-Fence-creation Fence creation
 

@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2019, 2020 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -34,6 +35,7 @@
 #ifdef MAGNUM_TARGET_GL
 #include <string>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pointer.h>
 
 #include <X11/Xlib.h>
@@ -59,9 +61,8 @@ typedef int Bool;
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/GL.h"
 #include "Magnum/Math/Vector2.h"
-#include "Magnum/Platform/Platform.h"
+#include "Magnum/Platform/GLContext.h"
 
 namespace Magnum { namespace Platform {
 
@@ -318,7 +319,9 @@ class AbstractXApplication {
         Atom _deleteWindow{};
 
         Containers::Pointer<Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>> _contextHandler;
-        Containers::Pointer<Platform::GLContext> _context;
+        /* Has to be in an Optional because it gets explicitly destroyed before
+           the GL context */
+        Containers::Optional<Platform::GLContext> _context;
         int _exitCode = 0;
 
         /** @todo Get this from the created window */
@@ -335,10 +338,95 @@ Double-buffered OpenGL context.
     @ref Configuration, @ref create(), @ref tryCreate()
 @todo GLX_ARB_create_context_robustness/EGL_EXT_create_context_robustness
 */
-class AbstractXApplication::GLConfiguration {
+class AbstractXApplication::GLConfiguration: public GL::Context::Configuration {
     public:
+        /**
+         * @brief Context flag
+         *
+         * Includes also everything from @ref GL::Context::Configuration::Flag
+         * except for @relativeref{GL::Context::Configuration,Flag::Windowless},
+         * which is not meant to be enabled for windowed apps.
+         * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
+         */
+        enum class Flag: UnsignedLong {
+            /**
+             * @copydoc GL::Context::Configuration::Flag::QuietLog
+             * @m_since_latest
+             */
+            QuietLog = UnsignedLong(GL::Context::Configuration::Flag::QuietLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::VerboseLog
+             * @m_since_latest
+             */
+            VerboseLog = UnsignedLong(GL::Context::Configuration::Flag::VerboseLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidation
+             * @m_since_latest
+             */
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidationNoError
+             * @m_since_latest
+             */
+            GpuValidationNoError = UnsignedLong(GL::Context::Configuration::Flag::GpuValidationNoError)
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        typedef Containers::EnumSet<Flag> Flags;
+
         explicit GLConfiguration();
         ~GLConfiguration();
+
+        /** @brief Context flags */
+        Flags flags() const {
+            return Flag(UnsignedLong(GL::Context::Configuration::flags()));
+        }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. To avoid clearing default flags by accident,
+         * prefer to use @ref addFlags() and @ref clearFlags() instead.
+         * @see @ref GL::Context::flags()
+         */
+        GLConfiguration& setFlags(Flags flags) {
+            GL::Context::Configuration::setFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
+            return *this;
+        }
+
+        /**
+         * @brief Add context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        GLConfiguration& addFlags(Flags flags) {
+            GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
+            return *this;
+        }
+
+        /**
+         * @brief Clear context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        GLConfiguration& clearFlags(Flags flags) {
+            GL::Context::Configuration::clearFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
+            return *this;
+        }
 
         /** @copydoc Sdl2Application::GLConfiguration::version() */
         GL::Version version() const { return _version; }
@@ -348,6 +436,11 @@ class AbstractXApplication::GLConfiguration {
             _version = version;
             return *this;
         }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(GLConfiguration)
+        #endif
 
     private:
         GL::Version _version;

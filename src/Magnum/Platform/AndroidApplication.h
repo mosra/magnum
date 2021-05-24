@@ -32,13 +32,14 @@
 #endif
 
 #include <EGL/egl.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/GL.h"
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Platform/Platform.h"
+#include "Magnum/Platform/GLContext.h"
 
 //Is it ok?
 #include "Corrade/Containers/Array.h"
@@ -443,7 +444,9 @@ class AndroidApplication {
            */
         Containers::Array<Vector2i> _previousMouseMovePosition{Containers::InPlaceInit, {{-1,-1}}};
 
-        Containers::Pointer<Platform::GLContext> _context;
+        /* Has to be in an Optional because it gets explicitly destroyed before
+           the GL context */
+        Containers::Optional<Platform::GLContext> _context;
         Containers::Pointer<LogOutput> _logOutput;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
@@ -456,9 +459,94 @@ Double-buffered RGBA canvas with depth and stencil buffers.
 @see @ref AndroidApplication(), @ref Configuration, @ref create(),
     @ref tryCreate()
 */
-class AndroidApplication::GLConfiguration {
+class AndroidApplication::GLConfiguration: public GL::Context::Configuration {
     public:
+        /**
+         * @brief Context flag
+         *
+         * Includes also everything from @ref GL::Context::Configuration::Flag
+         * except for @relativeref{GL::Context::Configuration,Flag::Windowless},
+         * which is not meant to be enabled for windowed apps.
+         * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
+         */
+        enum class Flag: UnsignedLong {
+            /**
+             * @copydoc GL::Context::Configuration::Flag::QuietLog
+             * @m_since_latest
+             */
+            QuietLog = UnsignedLong(GL::Context::Configuration::Flag::QuietLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::VerboseLog
+             * @m_since_latest
+             */
+            VerboseLog = UnsignedLong(GL::Context::Configuration::Flag::VerboseLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidation
+             * @m_since_latest
+             */
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidationNoError
+             * @m_since_latest
+             */
+            GpuValidationNoError = UnsignedLong(GL::Context::Configuration::Flag::GpuValidationNoError)
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        typedef Containers::EnumSet<Flag> Flags;
+
         /*implicit*/ GLConfiguration();
+
+        /** @brief Context flags */
+        Flags flags() const {
+            return Flag(UnsignedLong(GL::Context::Configuration::flags()));
+        }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. To avoid clearing default flags by accident,
+         * prefer to use @ref addFlags() and @ref clearFlags() instead.
+         * @see @ref GL::Context::flags()
+         */
+        GLConfiguration& setFlags(Flags flags) {
+            GL::Context::Configuration::setFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
+            return *this;
+        }
+
+        /**
+         * @brief Add context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        GLConfiguration& addFlags(Flags flags) {
+            GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
+            return *this;
+        }
+
+        /**
+         * @brief Clear context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        GLConfiguration& clearFlags(Flags flags) {
+            GL::Context::Configuration::clearFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
+            return *this;
+        }
 
         /**
          * @brief Set context version
@@ -512,6 +600,11 @@ class AndroidApplication::GLConfiguration {
             return *this;
         }
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(GLConfiguration)
+        #endif
+
     private:
         Vector4i _colorBufferSize;
         Int _depthBufferSize, _stencilBufferSize;
@@ -520,7 +613,6 @@ class AndroidApplication::GLConfiguration {
 /**
 @brief Configuration
 
-Double-buffered RGBA canvas with depth and stencil buffers.
 @see @ref AndroidApplication(), @ref GLConfiguration, @ref create(),
     @ref tryCreate()
 */

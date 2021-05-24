@@ -25,6 +25,8 @@
 
 #include "MeshState.h"
 
+#include <Corrade/Containers/StringView.h>
+
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/MeshView.h"
@@ -33,7 +35,9 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
-MeshState::MeshState(Context& context, ContextState& contextState, std::vector<std::string>& extensions): currentVAO(0)
+using namespace Containers::Literals;
+
+MeshState::MeshState(Context& context, ContextState& contextState, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions): currentVAO(0)
     #ifndef MAGNUM_TARGET_GLES2
     , maxElementIndex{0}, maxElementsIndices{0}, maxElementsVertices{0}
     #endif
@@ -48,24 +52,27 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.emplace_back(Extensions::ARB::vertex_array_object::string());
+        extensions[Extensions::ARB::vertex_array_object::Index] =
+                   Extensions::ARB::vertex_array_object::string();
         #elif defined(MAGNUM_TARGET_GLES2)
-        extensions.push_back(Extensions::OES::vertex_array_object::string());
+        extensions[Extensions::OES::vertex_array_object::Index] =
+                   Extensions::OES::vertex_array_object::string();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
             #ifdef CORRADE_TARGET_WINDOWS
             && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
-            context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-vao-dsa"))
+            context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-vao-dsa"_s))
             #endif
         ) {
-            extensions.emplace_back(Extensions::ARB::direct_state_access::string());
+            extensions[Extensions::ARB::direct_state_access::Index] =
+                       Extensions::ARB::direct_state_access::string();
 
             /* Intel Windows drivers are ... special */
             #ifdef CORRADE_TARGET_WINDOWS
             if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
-               !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-integer-vertex-attributes"))
+               !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-integer-vertex-attributes"_s))
             {
                 attributePointerImplementation = &Mesh::attributePointerImplementationVAODSAIntelWindows;
             } else
@@ -118,7 +125,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     } else
     #endif
     if(context.isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()) {
-        extensions.push_back(Extensions::EXT::draw_elements_base_vertex::string());
+        extensions[Extensions::EXT::draw_elements_base_vertex::Index] =
+                   Extensions::EXT::draw_elements_base_vertex::string();
 
         drawElementsBaseVertexImplementation = glDrawElementsBaseVertexEXT;
         #ifndef MAGNUM_TARGET_GLES2
@@ -126,7 +134,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
         drawElementsInstancedBaseVertexImplementation = glDrawElementsInstancedBaseVertexEXT;
         #endif
     } else if(context.isExtensionSupported<Extensions::OES::draw_elements_base_vertex>()) {
-        extensions.push_back(Extensions::OES::draw_elements_base_vertex::string());
+        extensions[Extensions::OES::draw_elements_base_vertex::Index] =
+                   Extensions::OES::draw_elements_base_vertex::string();
 
         drawElementsBaseVertexImplementation = glDrawElementsBaseVertexOES;
         #ifndef MAGNUM_TARGET_GLES2
@@ -136,7 +145,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     } else
     #else
     if(context.isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>()) {
-        extensions.push_back(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string());
+        extensions[Extensions::WEBGL::draw_instanced_base_vertex_base_instance::Index] =
+                   Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string();
 
         /* The WEBGL extension uses the same entrypoints as the ANGLE extension
            it was based on, however we wrap it to supply trivial instance count
@@ -167,7 +177,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     #ifndef MAGNUM_TARGET_WEBGL
     #ifndef MAGNUM_TARGET_GLES2
     if(context.isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()) {
-        extensions.push_back(Extensions::ANGLE::base_vertex_base_instance::string());
+        extensions[Extensions::ANGLE::base_vertex_base_instance::Index] =
+                   Extensions::ANGLE::base_vertex_base_instance::string();
 
         drawArraysInstancedBaseInstanceImplementation = glDrawArraysInstancedBaseInstanceANGLE;
         /* This variant isn't in the ext, emulated using
@@ -178,7 +189,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     #endif
     #else
     if(context.isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>()) {
-        extensions.push_back(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string());
+        extensions[Extensions::WEBGL::draw_instanced_base_vertex_base_instance::Index] =
+                   Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string();
 
         /* The WEBGL extension uses the same entrypoints as the ANGLE extension
            it was based on. Only available since 1.39.15:
@@ -217,19 +229,22 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     {
         #ifndef MAGNUM_TARGET_WEBGL
         if(context.isExtensionSupported<Extensions::EXT::multi_draw_arrays>()) {
-            extensions.push_back(Extensions::EXT::multi_draw_arrays::string());
+            extensions[Extensions::EXT::multi_draw_arrays::Index] =
+                       Extensions::EXT::multi_draw_arrays::string();
 
             multiDrawArraysImplementation = glMultiDrawArraysEXT;
             multiDrawElementsImplementation = glMultiDrawElementsEXT;
         } else if(context.isExtensionSupported<Extensions::ANGLE::multi_draw>()) {
-            extensions.push_back(Extensions::ANGLE::multi_draw::string());
+            extensions[Extensions::ANGLE::multi_draw::Index] =
+                       Extensions::ANGLE::multi_draw::string();
 
             multiDrawArraysImplementation = glMultiDrawArraysANGLE;
             multiDrawElementsImplementation = glMultiDrawElementsANGLE;
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         #else
         {
-            extensions.push_back(Extensions::WEBGL::multi_draw::string());
+            extensions[Extensions::WEBGL::multi_draw::Index] =
+                       Extensions::WEBGL::multi_draw::string();
 
             /* The WEBGL extension uses the same entrypoints as the ANGLE
                extension it was based on. Only available since 2.0.0:
@@ -250,11 +265,13 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         #ifndef MAGNUM_TARGET_WEBGL
         if(context.isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()) {
-            extensions.push_back(Extensions::EXT::draw_elements_base_vertex::string());
+            extensions[Extensions::EXT::draw_elements_base_vertex::Index] =
+                       Extensions::EXT::draw_elements_base_vertex::string();
 
             multiDrawElementsBaseVertexImplementation = glMultiDrawElementsBaseVertexEXT;
         } else if(context.isExtensionSupported<Extensions::OES::draw_elements_base_vertex>()) {
-            extensions.push_back(Extensions::OES::draw_elements_base_vertex::string());
+            extensions[Extensions::OES::draw_elements_base_vertex::Index] =
+                       Extensions::OES::draw_elements_base_vertex::string();
 
             /* Yes, it's really EXT, the same as with
                EXT_draw_elements_base_vertex. I have no idea why the two
@@ -263,7 +280,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
         } else
         #else
         if(context.isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>()) {
-            extensions.push_back(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string());
+            extensions[Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::Index] =
+                       Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string();
 
             /* The WEBGL extension uses the same entrypoints as the ANGLE
                extension it was based on, however we wrap it and supply trivial
@@ -291,7 +309,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     #ifdef MAGNUM_TARGET_GLES2
     /* Instanced draw ímplementation on ES2 */
     if(context.isExtensionSupported<Extensions::ANGLE::instanced_arrays>()) {
-        extensions.push_back(Extensions::ANGLE::instanced_arrays::string());
+        extensions[Extensions::ANGLE::instanced_arrays::Index] =
+                   Extensions::ANGLE::instanced_arrays::string();
 
         drawArraysInstancedImplementation = glDrawArraysInstancedANGLE;
         drawElementsInstancedImplementation = glDrawElementsInstancedANGLE;
@@ -299,18 +318,22 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     #ifndef MAGNUM_TARGET_WEBGL
     else if(context.isExtensionSupported<Extensions::EXT::instanced_arrays>() ||
             context.isExtensionSupported<Extensions::EXT::draw_instanced>()) {
-        extensions.push_back(context.isExtensionSupported<Extensions::EXT::instanced_arrays>() ?
-            Extensions::EXT::instanced_arrays::string() :
-            Extensions::EXT::draw_instanced::string());
+        if(context.isExtensionSupported<Extensions::EXT::instanced_arrays>())
+            extensions[Extensions::EXT::instanced_arrays::Index] =
+                       Extensions::EXT::instanced_arrays::string();
+        else extensions[Extensions::EXT::draw_instanced::Index] =
+                        Extensions::EXT::draw_instanced::string();
 
         drawArraysInstancedImplementation = glDrawArraysInstancedEXT;
         drawElementsInstancedImplementation = glDrawElementsInstancedEXT;
 
     } else if(context.isExtensionSupported<Extensions::NV::instanced_arrays>() ||
               context.isExtensionSupported<Extensions::NV::draw_instanced>()) {
-        extensions.push_back(context.isExtensionSupported<Extensions::NV::instanced_arrays>() ?
-            Extensions::NV::instanced_arrays::string() :
-            Extensions::NV::draw_instanced::string());
+        if(context.isExtensionSupported<Extensions::NV::instanced_arrays>())
+            extensions[Extensions::NV::instanced_arrays::Index] =
+                       Extensions::NV::instanced_arrays::string();
+        else extensions[Extensions::NV::draw_instanced::Index] =
+                        Extensions::NV::draw_instanced::string();
 
         drawArraysInstancedImplementation = glDrawArraysInstancedNV;
         drawElementsInstancedImplementation = glDrawElementsInstancedNV;
@@ -326,29 +349,39 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
         #ifdef CORRADE_TARGET_WINDOWS
         && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
-        context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-vao-dsa"))
+        context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-vao-dsa"_s))
         #endif
-    )
+    ) {
+        extensions[Extensions::ARB::direct_state_access::Index] =
+                   Extensions::ARB::direct_state_access::string();
+
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationVAODSA;
-    else if(context.isExtensionSupported<Extensions::ARB::vertex_array_object>())
+    } else if(context.isExtensionSupported<Extensions::ARB::vertex_array_object>()) {
+        extensions[Extensions::ARB::vertex_array_object::Index] =
+                   Extensions::ARB::vertex_array_object::string();
+
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationVAO;
-    else
+    } else {
         vertexAttribDivisorImplementation = nullptr;
+    }
     #elif defined(MAGNUM_TARGET_GLES2)
     /* Instanced arrays implementation on ES2 */
     if(context.isExtensionSupported<Extensions::ANGLE::instanced_arrays>()) {
-        /* Extension added above */
+        extensions[Extensions::ANGLE::instanced_arrays::Index] =
+                   Extensions::ANGLE::instanced_arrays::string();
 
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationANGLE;
     }
     #ifndef MAGNUM_TARGET_WEBGL
     else if(context.isExtensionSupported<Extensions::EXT::instanced_arrays>()) {
-        extensions.push_back(Extensions::EXT::instanced_arrays::string());
+        extensions[Extensions::EXT::instanced_arrays::Index] =
+                   Extensions::EXT::instanced_arrays::string();
 
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationEXT;
 
     } else if(context.isExtensionSupported<Extensions::NV::instanced_arrays>()) {
-        extensions.push_back(Extensions::NV::instanced_arrays::string());
+        extensions[Extensions::NV::instanced_arrays::Index] =
+                   Extensions::NV::instanced_arrays::string();
 
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationNV;
     }
@@ -372,15 +405,15 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES
 MeshState::~MeshState() {
-    #ifndef MAGNUM_TARGET_GLES
     /* If the default VAO was created, we need to delete it to avoid leaks.
        Delete also the scratch VAO if the engine was so unlucky to have to run
        awful external GL code (it was created in Context::resetState()). */
     if(defaultVAO) glDeleteVertexArrays(1, &defaultVAO);
     if(scratchVAO) glDeleteVertexArrays(1, &scratchVAO);
-    #endif
 }
+#endif
 
 void MeshState::reset() {
     currentVAO = State::DisengagedBinding;

@@ -40,8 +40,9 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
-#include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractImporter.h"
 
@@ -53,7 +54,7 @@ struct CompareImageTest: TestSuite::Tester {
     explicit CompareImageTest();
 
     void formatUnknown();
-    void formatHalf();
+    void formatPackedDepthStencil();
     void formatImplementationSpecific();
 
     void calculateDelta();
@@ -69,6 +70,7 @@ struct CompareImageTest: TestSuite::Tester {
     void pixelDelta();
     void pixelDeltaEmpty();
     void pixelDeltaOverflow();
+    void pixelDeltaHalf();
     void pixelDeltaSpecials();
 
     void compareDifferentSize();
@@ -124,7 +126,7 @@ struct CompareImageTest: TestSuite::Tester {
 
 CompareImageTest::CompareImageTest() {
     addTests({&CompareImageTest::formatUnknown,
-              &CompareImageTest::formatHalf,
+              &CompareImageTest::formatPackedDepthStencil,
               &CompareImageTest::formatImplementationSpecific,
 
               &CompareImageTest::calculateDelta,
@@ -140,6 +142,7 @@ CompareImageTest::CompareImageTest() {
               &CompareImageTest::pixelDelta,
               &CompareImageTest::pixelDeltaEmpty,
               &CompareImageTest::pixelDeltaOverflow,
+              &CompareImageTest::pixelDeltaHalf,
               &CompareImageTest::pixelDeltaSpecials,
 
               &CompareImageTest::compareDifferentSize,
@@ -216,6 +219,8 @@ CompareImageTest::CompareImageTest() {
        setupExternalPluginManager() function */
 }
 
+using namespace Math::Literals;
+
 const Float ActualRedData[] = {
      0.3f, 1.0f, 0.9f,
      0.9f, 0.6f, 0.2f,
@@ -251,7 +256,7 @@ void CompareImageTest::formatUnknown() {
     CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: unknown format PixelFormat(0xdead)\n");
 }
 
-void CompareImageTest::formatHalf() {
+void CompareImageTest::formatPackedDepthStencil() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -259,10 +264,10 @@ void CompareImageTest::formatHalf() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    ImageView2D image{PixelFormat::RG16F, {}};
+    ImageView2D image{PixelFormat::Depth24UnormStencil8UI, {}};
     Implementation::calculateImageDelta(image.format(), image.pixels(), image);
 
-    CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: half-float formats are not supported yet\n");
+    CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: packed depth/stencil formats are not supported yet\n");
 }
 
 void CompareImageTest::formatImplementationSpecific() {
@@ -312,10 +317,10 @@ void CompareImageTest::calculateDeltaStorage() {
     Float max, mean;
     std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualRgb.format(), ActualRgb.pixels(), ExpectedRgb);
 
-    CORRADE_COMPARE_AS(delta, (Containers::Array<Float>{Containers::InPlaceInit, {
+    CORRADE_COMPARE_AS(delta, Containers::arrayView<Float>({
         1.0f/3.0f, (55.0f + 1.0f)/3.0f,
         48.0f/3.0f, 117.0f/3.0f
-    }}), TestSuite::Compare::Container);
+    }), TestSuite::Compare::Container);
     CORRADE_COMPARE(max, 117.0f/3.0f);
     CORRADE_COMPARE(mean, 18.5f);
 }
@@ -376,9 +381,9 @@ void CompareImageTest::calculateDeltaSpecials3() {
     Containers::Array<Float> delta;
     Float max, mean;
     std::tie(delta, max, mean) = Implementation::calculateImageDelta(actualSpecials3.format(), actualSpecials3.pixels(), expectedSpecials3);
-    CORRADE_COMPARE_AS(delta, (Containers::Array<Float>{Containers::InPlaceInit, {
+    CORRADE_COMPARE_AS(delta, Containers::arrayView<Float>({
         Constants::nan(), Constants::nan(), 1.15f
-    }}), TestSuite::Compare::Container);
+    }), TestSuite::Compare::Container);
     /* Max and mean should be calculated *without* the specials because
        otherwise every other potential difference will be zero compared to
        infinity */
@@ -514,6 +519,36 @@ void CompareImageTest::pixelDeltaOverflow() {
         "          [1,2] Vector(1), expected Vector(0) (Δ = 1)\n"
         "          [0,0] Vector(0.3), expected Vector(0.65) (Δ = 0.35)\n"
         "          [2,0] Vector(0.9), expected Vector(0.6) (Δ = 0.3)");
+}
+
+const Vector2h ActualHalfData[]{
+    {0.3_h, 1.0_h}, { 0.9_h, 0.9_h},
+    {0.6_h, 0.2_h}, {-0.1_h, 1.0_h},
+};
+
+const Vector2h ExpectedHalfData[]{
+    {0.65_h, 1.0_h}, {0.6_h, 0.91_h},
+    {0.6_h, 0.1_h}, {0.02_h, 0.0_h}
+};
+
+const Float DeltaHalf[] {
+    0.35f/2.0f, 0.31f/2.0f,
+    0.01f/2.0f, 0.22f/2.0f
+};
+
+const ImageView2D ActualHalf{PixelFormat::RG16F, {2, 2}, ActualHalfData};
+const ImageView2D ExpectedHalf{PixelFormat::RG16F, {2, 2}, ExpectedHalfData};
+
+void CompareImageTest::pixelDeltaHalf() {
+    std::ostringstream out;
+    Debug d{&out, Debug::Flag::DisableColors};
+    Implementation::printPixelDeltas(d, DeltaHalf, ActualHalf.format(), ActualHalf.pixels(), ExpectedHalf.pixels(), 0.5f, 0.1f, 10);
+
+    CORRADE_COMPARE(out.str(), "\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [0,0] Vector(0.3, 1), expected Vector(0.6499, 1) (Δ = 0.175)\n"
+        "          [1,0] Vector(0.8999, 0.8999), expected Vector(0.6001, 0.9102) (Δ = 0.155)\n"
+        "          [1,1] Vector(-0.09998, 1), expected Vector(0.02, 0) (Δ = 0.11)");
 }
 
 void CompareImageTest::pixelDeltaSpecials() {
@@ -1155,7 +1190,7 @@ void CompareImageTest::imageFileExpectedLoadFailed() {
 }
 
 void CompareImageTest::imageFileActualIsCompressed() {
-    PluginManager::Manager<Trade::AbstractImporter> manager;
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
     if(manager.load("AnyImageImporter") < PluginManager::LoadState::Loaded ||
        manager.load("DdsImporter") < PluginManager::LoadState::Loaded)
         CORRADE_SKIP("AnyImageImporter or DdsImporter plugins can't be loaded.");
@@ -1178,7 +1213,7 @@ void CompareImageTest::imageFileActualIsCompressed() {
 }
 
 void CompareImageTest::imageFileExpectedIsCompressed() {
-    PluginManager::Manager<Trade::AbstractImporter> manager;
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
     if(manager.load("AnyImageImporter") < PluginManager::LoadState::Loaded ||
        manager.load("DdsImporter") < PluginManager::LoadState::Loaded)
         CORRADE_SKIP("AnyImageImporter or DdsImporter plugins can't be loaded.");
@@ -1354,7 +1389,7 @@ void CompareImageTest::imageToFileExpectedLoadFailed() {
 }
 
 void CompareImageTest::imageToFileExpectedIsCompressed() {
-    PluginManager::Manager<Trade::AbstractImporter> manager;
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
     if(manager.load("AnyImageImporter") < PluginManager::LoadState::Loaded ||
        manager.load("DdsImporter") < PluginManager::LoadState::Loaded)
             CORRADE_SKIP("AnyImageImporter or DdsImporter plugins can't be loaded.");
@@ -1493,7 +1528,7 @@ void CompareImageTest::fileToImageActualLoadFailed() {
 }
 
 void CompareImageTest::fileToImageActualIsCompressed() {
-    PluginManager::Manager<Trade::AbstractImporter> manager;
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
     if(manager.load("AnyImageImporter") < PluginManager::LoadState::Loaded ||
        manager.load("DdsImporter") < PluginManager::LoadState::Loaded)
             CORRADE_SKIP("AnyImageImporter or DdsImporter plugins can't be loaded.");

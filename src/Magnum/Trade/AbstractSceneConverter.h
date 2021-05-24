@@ -59,7 +59,7 @@ enum class SceneConverterFeature: UnsignedByte {
 
     /**
      * Converting a mesh to a file with
-     * @ref AbstractSceneConverter::convertToFile(const std::string&, const MeshData&).
+     * @ref AbstractSceneConverter::convertToFile(const MeshData&, Containers::StringView).
      */
     ConvertMeshToFile = 1 << 2,
 
@@ -98,6 +98,9 @@ enum class SceneConverterFlag: UnsignedByte {
      * Print verbose diagnostic during conversion. By default the converter
      * only prints messages on error or when some operation might cause
      * unexpected data modification or loss.
+     *
+     * Corresponds to the `-v` / `--verbose` option in
+     * @ref magnum-sceneconverter "magnum-sceneconverter".
      */
     Verbose = 1 << 0
 
@@ -168,8 +171,9 @@ checked by the implementation:
     @ref SceneConverterFeature::ConvertMeshInPlace is supported.
 -   The function @ref doConvertToData(const MeshData&) is called only if
     @ref SceneConverterFeature::ConvertMeshToData is supported.
--   The function @ref doConvertToFile(const std::string&, const MeshData&) is
-    called only if @ref SceneConverterFeature::ConvertMeshToFile is supported.
+-   The function @ref doConvertToFile(const MeshData&, Containers::StringView)
+    is called only if @ref SceneConverterFeature::ConvertMeshToFile is
+    supported.
 
 @m_class{m-block m-warning}
 
@@ -228,9 +232,34 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * Some flags can be set only if the converter supports particular
          * features, see documentation of each @ref SceneConverterFlag for more
-         * information. By default no flags are set.
+         * information. By default no flags are set. To avoid clearing
+         * potential future default flags by accident, prefer to use
+         * @ref addFlags() and @ref clearFlags() instead.
+         *
+         * Corresponds to the `-v` / `--verbose` option in
+         * @ref magnum-sceneconverter "magnum-sceneconverter".
          */
         void setFlags(SceneConverterFlags flags);
+
+        /**
+         * @brief Add converter flags
+         * @m_since_latest
+         *
+         * Calls @ref setFlags() with the existing flags ORed with @p flags.
+         * Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        void addFlags(SceneConverterFlags flags);
+
+        /**
+         * @brief Clear converter flags
+         * @m_since_latest
+         *
+         * Calls @ref setFlags() with the existing flags ANDed with inverse of
+         * @p flags. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        void clearFlags(SceneConverterFlags flags);
 
         /**
          * @brief Convert a mesh
@@ -270,6 +299,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
 
         /**
          * @brief Convert a mesh to a file
+         * @m_since_latest
          *
          * Available only if @ref SceneConverterFeature::ConvertMeshToFile or
          * @ref SceneConverterFeature::ConvertMeshToData is supported. Returns
@@ -277,7 +307,16 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @cpp false @ce otherwise.
          * @see @ref features(), @ref convertToData()
          */
-        bool convertToFile(const std::string& filename, const MeshData& mesh);
+        bool convertToFile(const MeshData& mesh, Containers::StringView filename);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief convertToFile(const MeshData&, Containers::StringView)
+         * @m_deprecated_since_latest Use @ref convertToFile(const MeshData&, Containers::StringView)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use convertToFile(const MeshData&, Containers::StringView) instead") bool convertToFile(const std::string& filename, const MeshData& mesh);
+        #endif
 
     private:
         /**
@@ -312,13 +351,13 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         virtual Containers::Array<char> doConvertToData(const MeshData& mesh);
 
         /**
-         * @brief Implementation for @ref convertToFile(const std::string&, const MeshData&)
+         * @brief Implementation for @ref convertToFile(const MeshData&, Containers::StringView)
          *
          * If @ref SceneConverterFeature::ConvertMeshToData is supported,
          * default implementation calls @ref doConvertToData(const MeshData&)
          * and saves the result to given file.
          */
-        virtual bool doConvertToFile(const std::string& filename, const MeshData& mesh);
+        virtual bool doConvertToFile(const MeshData& mesh, Containers::StringView filename);
 
         SceneConverterFlags _flags;
 };

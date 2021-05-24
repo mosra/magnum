@@ -7,6 +7,7 @@
                 2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2013 <https://github.com/ArEnSc>
     Copyright © 2014 Travis Watkins <https://github.com/amaranth>
+    Copyright © 2021 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -34,12 +35,9 @@
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include <Corrade/Containers/Pointer.h>
-
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/OpenGL.h"
-#include "Magnum/Platform/Platform.h"
+#include "Magnum/Platform/GLContext.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define GL_SILENCE_DEPRECATION /* YES I KNOW, APPLE! FFS */
@@ -122,9 +120,22 @@ class WindowlessCglContext {
          * @brief Make the context current
          *
          * Prints error message and returns @cpp false @ce on failure,
-         * otherwise returns @cpp true @ce.
+         * otherwise returns @cpp true @ce. If the context is current on
+         * another thread, you have to @ref release() it there first --- an
+         * OpenGL context can't be current in multiple threads at the same
+         * time.
          */
         bool makeCurrent();
+
+        /**
+         * @brief Release current context
+         * @m_since_latest
+         *
+         * Releases a context previously made current using @ref makeCurrent().
+         * Prints error message and returns @cpp false @ce on failure,
+         * otherwise returns @cpp true @ce.
+         */
+        bool release();
 
         /**
          * @brief Underlying OpenGL context
@@ -150,9 +161,94 @@ class WindowlessCglContext {
     @ref WindowlessCglApplication::createContext(),
     @ref WindowlessCglApplication::tryCreateContext()
 */
-class WindowlessCglContext::Configuration {
+class WindowlessCglContext::Configuration: public GL::Context::Configuration {
     public:
-        constexpr /*implicit*/ Configuration() {}
+        /**
+         * @brief Context flag
+         *
+         * Includes also everything from @ref GL::Context::Configuration::Flag
+         * except for @relativeref{GL::Context::Configuration,Flag::Windowless},
+         * which is enabled implicitly by default.
+         * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
+         */
+        enum class Flag: UnsignedLong {
+            /**
+             * @copydoc GL::Context::Configuration::Flag::QuietLog
+             * @m_since_latest
+             */
+            QuietLog = UnsignedLong(GL::Context::Configuration::Flag::QuietLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::VerboseLog
+             * @m_since_latest
+             */
+            VerboseLog = UnsignedLong(GL::Context::Configuration::Flag::VerboseLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidation
+             * @m_since_latest
+             */
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidationNoError
+             * @m_since_latest
+             */
+            GpuValidationNoError = UnsignedLong(GL::Context::Configuration::Flag::GpuValidationNoError)
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        typedef Containers::EnumSet<Flag> Flags;
+
+        /*implicit*/ Configuration();
+
+        /** @brief Context flags */
+        Flags flags() const {
+            return Flag(UnsignedLong(GL::Context::Configuration::flags()));
+        }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. To avoid clearing default flags by accident,
+         * prefer to use @ref addFlags() and @ref clearFlags() instead.
+         * @see @ref GL::Context::flags()
+         */
+        Configuration& setFlags(Flags flags) {
+            GL::Context::Configuration::setFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
+            return *this;
+        }
+
+        /**
+         * @brief Add context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        Configuration& addFlags(Flags flags) {
+            GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
+            return *this;
+        }
+
+        /**
+         * @brief Clear context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        Configuration& clearFlags(Flags flags) {
+            GL::Context::Configuration::clearFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
+            return *this;
+        }
 
         /**
          * @brief Create a shared context
@@ -177,6 +273,11 @@ class WindowlessCglContext::Configuration {
          * @m_since{2020,06}
          */
         CGLContextObj sharedContext() const { return _sharedContext; }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(Configuration)
+        #endif
 
     private:
         CGLContextObj _sharedContext = nullptr;
@@ -370,7 +471,7 @@ class WindowlessCglApplication {
 
     private:
         WindowlessCglContext _glContext;
-        Containers::Pointer<Platform::GLContext> _context;
+        Platform::GLContext _context;
 };
 
 /** @hideinitializer

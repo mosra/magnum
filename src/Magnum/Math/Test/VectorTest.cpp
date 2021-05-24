@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Vector.h"
@@ -197,7 +198,7 @@ void VectorTest::construct() {
     constexpr Vector4 a = {1.0f, 2.0f, -3.0f, 4.5f};
     CORRADE_COMPARE(a, Vector4(1.0f, 2.0f, -3.0f, 4.5f));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, Float, Float, Float, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector4, Float, Float, Float, Float>::value);
 }
 
 void VectorTest::constructFromData() {
@@ -231,10 +232,10 @@ void VectorTest::constructDefault() {
     CORRADE_COMPARE(b, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Vector4>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector4, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Vector4>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Vector4>::value);
 }
 
 void VectorTest::constructNoInit() {
@@ -247,10 +248,10 @@ void VectorTest::constructNoInit() {
         CORRADE_COMPARE(a, (Vector4{1.0f, 2.0f, -3.0f, 4.5f}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector4, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Vector4>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Vector4>::value);
 }
 
 void VectorTest::constructOneValue() {
@@ -259,9 +260,9 @@ void VectorTest::constructOneValue() {
     CORRADE_COMPARE(a, Vector4(7.25f, 7.25f, 7.25f, 7.25f));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Float, Vector4>::value));
+    CORRADE_VERIFY(!std::is_convertible<Float, Vector4>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector4, Float>::value);
 }
 
 void VectorTest::constructOneComponent() {
@@ -271,7 +272,7 @@ void VectorTest::constructOneComponent() {
     constexpr Vector1 vec = 1.0f;
     CORRADE_COMPARE(vec, Vector1(1));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector1, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector1, Float>::value);
 }
 
 void VectorTest::constructConversion() {
@@ -281,9 +282,9 @@ void VectorTest::constructConversion() {
     CORRADE_COMPARE(b, Vector4i(1, 2, -15, 7));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Vector4, Vector4i>::value));
+    CORRADE_VERIFY(!std::is_convertible<Vector4, Vector4i>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, Vector4i>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector4, Vector4i>::value);
 }
 
 void VectorTest::constructCopy() {
@@ -291,6 +292,10 @@ void VectorTest::constructCopy() {
     constexpr Vector4 b(a);
     CORRADE_COMPARE(b, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Vector4>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Vector4>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Vector4>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Vector4>::value);
 }
@@ -310,8 +315,8 @@ void VectorTest::convert() {
     CORRADE_COMPARE(d.z, a.z);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Vec3, Vector3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Vector3, Vec3>::value));
+    CORRADE_VERIFY(!std::is_convertible<Vec3, Vector3>::value);
+    CORRADE_VERIFY(!std::is_convertible<Vector3, Vec3>::value);
 }
 
 void VectorTest::isZeroFloat() {
@@ -321,8 +326,8 @@ void VectorTest::isZeroFloat() {
 }
 
 void VectorTest::isZeroInteger() {
-    CORRADE_VERIFY(!(Math::Vector<3, Int>{0, 1, 0}.isZero()));
-    CORRADE_VERIFY((Math::Vector<3, Int>{0, 0, 0}.isZero()));
+    CORRADE_VERIFY(!Math::Vector<3, Int>{0, 1, 0}.isZero());
+    CORRADE_VERIFY(Math::Vector<3, Int>{0, 0, 0}.isZero());
 }
 
 void VectorTest::isNormalized() {
@@ -630,71 +635,71 @@ typedef BasicVec2<Int> Vec2i;
 void VectorTest::subclassTypes() {
     Float* const data = nullptr;
     const Float* const cdata = nullptr;
-    CORRADE_VERIFY((std::is_same<decltype(Vec2::from(data)), Vec2&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(Vec2::from(cdata)), const Vec2&>::value));
+    CORRADE_VERIFY(std::is_same<decltype(Vec2::from(data)), Vec2&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(Vec2::from(cdata)), const Vec2&>::value);
 
     Vector<1, Float> one;
-    CORRADE_VERIFY((std::is_same<decltype(Vec2::pad(one)), Vec2>::value));
+    CORRADE_VERIFY(std::is_same<decltype(Vec2::pad(one)), Vec2>::value);
 
     /* Const operators */
     const Vec2 c;
     const Vec2 c2;
-    CORRADE_VERIFY((std::is_same<decltype(-c), Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c + c), Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c*1.0f), Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(1.0f*c), Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c/1.0f), Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(1.0f/c), Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c*c2), Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c/c2), Vec2>::value));
+    CORRADE_VERIFY(std::is_same<decltype(-c), Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c + c), Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c*1.0f), Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(1.0f*c), Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c/1.0f), Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(1.0f/c), Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c*c2), Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c/c2), Vec2>::value);
 
     /* Assignment operators */
     Vec2 a;
-    CORRADE_VERIFY((std::is_same<decltype(a = c), Vec2&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a += c), Vec2&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a -= c), Vec2&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a *= 1.0f), Vec2&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a /= 1.0f), Vec2&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a *= c), Vec2&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a /= c), Vec2&>::value));
+    CORRADE_VERIFY(std::is_same<decltype(a = c), Vec2&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a += c), Vec2&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a -= c), Vec2&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a *= 1.0f), Vec2&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a /= 1.0f), Vec2&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a *= c), Vec2&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a /= c), Vec2&>::value);
 
     /* Modulo operations */
     const Vec2i ci;
     Vec2i i;
     const Int j = {};
-    CORRADE_VERIFY((std::is_same<decltype(ci % j), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(i %= j), Vec2i&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(ci % ci), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(i %= ci), Vec2i&>::value));
+    CORRADE_VERIFY(std::is_same<decltype(ci % j), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(i %= j), Vec2i&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(ci % ci), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(i %= ci), Vec2i&>::value);
 
     /* Bitwise operations */
-    CORRADE_VERIFY((std::is_same<decltype(~ci), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(ci & ci), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(ci | ci), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(ci ^ ci), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(ci << 1), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(ci >> 1), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(i &= ci), Vec2i&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(i |= ci), Vec2i&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(i ^= ci), Vec2i&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(i <<= 1), Vec2i&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(i >>= 1), Vec2i&>::value));
+    CORRADE_VERIFY(std::is_same<decltype(~ci), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(ci & ci), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(ci | ci), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(ci ^ ci), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(ci << 1), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(ci >> 1), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(i &= ci), Vec2i&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(i |= ci), Vec2i&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(i ^= ci), Vec2i&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(i <<= 1), Vec2i&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(i >>= 1), Vec2i&>::value);
 
     /* Integer multiplication/division */
-    CORRADE_VERIFY((std::is_same<decltype(ci*1.0f), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(1.0f*ci), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c*ci), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(ci*c), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(ci/c), Vec2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(i *= c), Vec2i&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(i /= c), Vec2i&>::value));
+    CORRADE_VERIFY(std::is_same<decltype(ci*1.0f), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(1.0f*ci), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c*ci), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(ci*c), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(ci/c), Vec2i>::value);
+    CORRADE_VERIFY(std::is_same<decltype(i *= c), Vec2i&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(i /= c), Vec2i&>::value);
 
     /* Functions */
-    CORRADE_VERIFY((std::is_same<decltype(c.normalized()), Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c.resized(1.0f)), Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c.projected(c2)), Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c.projectedOntoNormalized(c2)), Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c.flipped()), Vec2>::value));
+    CORRADE_VERIFY(std::is_same<decltype(c.normalized()), Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c.resized(1.0f)), Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c.projected(c2)), Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c.projectedOntoNormalized(c2)), Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c.flipped()), Vec2>::value);
 }
 
 void VectorTest::subclass() {

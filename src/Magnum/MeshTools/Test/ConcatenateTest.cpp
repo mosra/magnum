@@ -379,9 +379,9 @@ void ConcatenateTest::concatenateInto() {
     Containers::Array<Trade::MeshAttributeData> attributeData{2};
     Containers::Array<char> vertexData;
     Containers::Array<char> indexData;
-    arrayResize(vertexData, Containers::DirectInit, (sizeof(Vector2) + sizeof(Vector3))*7, '\xff');
+    arrayResize(vertexData, DirectInit, (sizeof(Vector2) + sizeof(Vector3))*7, '\xff');
     arrayResize(vertexData, 0);
-    arrayResize(indexData, Containers::DirectInit, sizeof(UnsignedInt)*9, '\xff');
+    arrayResize(indexData, DirectInit, sizeof(UnsignedInt)*9, '\xff');
     arrayResize(indexData, 0);
     const void* attributeDataPointer = attributeData;
     const void* vertexDataPointer = vertexData;

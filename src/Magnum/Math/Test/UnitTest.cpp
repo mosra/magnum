@@ -25,6 +25,7 @@
 
 #include <new>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Unit.h"
@@ -38,6 +39,8 @@ struct UnitTest: Corrade::TestSuite::Tester {
     void constructDefault();
     void constructNoInit();
     void constructConversion();
+    void constructCopy();
+
     void compare();
     void compareNaN();
 
@@ -51,6 +54,8 @@ UnitTest::UnitTest() {
               &UnitTest::constructDefault,
               &UnitTest::constructNoInit,
               &UnitTest::constructConversion,
+              &UnitTest::constructCopy,
+
               &UnitTest::compare,
               &UnitTest::compareNaN,
 
@@ -73,10 +78,10 @@ void UnitTest::construct() {
     CORRADE_COMPARE(Float(a), 25.0f);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Float, Sec>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Sec, Float>::value));
+    CORRADE_VERIFY(!std::is_convertible<Float, Sec>::value);
+    CORRADE_VERIFY(!std::is_convertible<Sec, Float>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Sec, Float>::value);
 }
 
 void UnitTest::constructDefault() {
@@ -86,10 +91,10 @@ void UnitTest::constructDefault() {
     CORRADE_COMPARE(b, Sec(0.0f));
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Sec>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Sec, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Sec>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Sec>::value);
 }
 
 void UnitTest::constructNoInit() {
@@ -102,10 +107,10 @@ void UnitTest::constructNoInit() {
         CORRADE_COMPARE(a, Sec{25.0f});
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Sec, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Sec>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Sec>::value);
 }
 
 void UnitTest::constructConversion() {
@@ -114,9 +119,23 @@ void UnitTest::constructConversion() {
     CORRADE_COMPARE(b, Sec(25.0f));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Sec, Seci>::value));
+    CORRADE_VERIFY(!std::is_convertible<Sec, Seci>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, Seci>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Sec, Seci>::value);
+}
+
+void UnitTest::constructCopy() {
+    constexpr Sec a{25.0f};
+
+    constexpr Sec b{a};
+    CORRADE_COMPARE(b, a);
+
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<Sec>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<Sec>::value);
+    #endif
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Sec>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Sec>::value);
 }
 
 void UnitTest::compare() {

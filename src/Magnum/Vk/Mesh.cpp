@@ -91,10 +91,10 @@ Mesh::Mesh(MeshLayout&& layout): _layout{std::move(layout)} {
     if(const UnsignedInt count = _layout.vkPipelineVertexInputStateCreateInfo().vertexBindingDescriptionCount) {
         _state.emplace();
         _state->vertexBufferData = Containers::ArrayTuple{
-            {Containers::ValueInit, count, _state->vertexBuffers},
-            {Containers::ValueInit, count, _state->vertexBufferOffsets},
-            {Containers::ValueInit, count, _state->vertexBufferStrides},
-            {Containers::NoInit, count, _state->ownedVertexBuffers}
+            {ValueInit, count, _state->vertexBuffers},
+            {ValueInit, count, _state->vertexBufferOffsets},
+            {ValueInit, count, _state->vertexBufferStrides},
+            {NoInit, count, _state->ownedVertexBuffers}
         };
 
         /** @tod use DirectInit once ArrayTuple can do that */

@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
 
 #include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/CubicHermite.h"
@@ -230,7 +231,7 @@ void CubicHermiteTest::constructScalar() {
     CORRADE_COMPARE(a.outTangent(), -0.5f);
     CORRADE_COMPARE(b.outTangent(), -0.5f);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermite1D, Float, Float, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermite1D, Float, Float, Float>::value);
 }
 
 void CubicHermiteTest::constructVector() {
@@ -244,7 +245,7 @@ void CubicHermiteTest::constructVector() {
     CORRADE_COMPARE(a.outTangent(), (Vector2{3.0f, -0.5f}));
     CORRADE_COMPARE(b.outTangent(), (Vector2{3.0f, -0.5f}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermite2D, Vector2, Vector2, Vector2>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermite2D, Vector2, Vector2, Vector2>::value);
 }
 
 void CubicHermiteTest::constructComplex() {
@@ -258,7 +259,7 @@ void CubicHermiteTest::constructComplex() {
     CORRADE_COMPARE(a.outTangent(), (Complex{3.0f, -0.5f}));
     CORRADE_COMPARE(b.outTangent(), (Complex{3.0f, -0.5f}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteComplex, Complex, Complex, Complex>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermiteComplex, Complex, Complex, Complex>::value);
 }
 
 void CubicHermiteTest::constructQuaternion() {
@@ -278,7 +279,7 @@ void CubicHermiteTest::constructQuaternion() {
     CORRADE_COMPARE(a.outTangent(), (Quaternion{{3.0f, -0.5f, 1.2f}, 0.3f}));
     CORRADE_COMPARE(b.outTangent(), (Quaternion{{3.0f, -0.5f, 1.2f}, 0.3f}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteQuaternion, Quaternion, Quaternion, Quaternion>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermiteQuaternion, Quaternion, Quaternion, Quaternion>::value);
 }
 
 void CubicHermiteTest::constructDefaultScalar() {
@@ -289,7 +290,7 @@ void CubicHermiteTest::constructDefaultScalar() {
     CORRADE_COMPARE(a, (CubicHermite1D{0.0f, 0.0f, 0.0f}));
     CORRADE_COMPARE(b, (CubicHermite1D{0.0f, 0.0f, 0.0f}));
 
-    CORRADE_VERIFY((std::is_nothrow_default_constructible<CubicHermite1D>::value));
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<CubicHermite1D>::value);
 }
 
 void CubicHermiteTest::constructDefaultVector() {
@@ -300,7 +301,7 @@ void CubicHermiteTest::constructDefaultVector() {
     CORRADE_COMPARE(a, (CubicHermite2D{{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}}));
     CORRADE_COMPARE(b, (CubicHermite2D{{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}}));
 
-    CORRADE_VERIFY((std::is_nothrow_default_constructible<CubicHermite2D>::value));
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<CubicHermite2D>::value);
 }
 
 void CubicHermiteTest::constructDefaultComplex() {
@@ -311,7 +312,7 @@ void CubicHermiteTest::constructDefaultComplex() {
     CORRADE_COMPARE(a, (CubicHermiteComplex{{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}}));
     CORRADE_COMPARE(b, (CubicHermiteComplex{{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}}));
 
-    CORRADE_VERIFY((std::is_nothrow_default_constructible<CubicHermiteComplex>::value));
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<CubicHermiteComplex>::value);
 }
 
 void CubicHermiteTest::constructDefaultQuaternion() {
@@ -328,7 +329,7 @@ void CubicHermiteTest::constructDefaultQuaternion() {
         {{0.0f, 0.0f, 0.0f}, 1.0f},
         {{0.0f, 0.0f, 0.0f}, 0.0f}}));
 
-    CORRADE_VERIFY((std::is_nothrow_default_constructible<CubicHermiteQuaternion>::value));
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<CubicHermiteQuaternion>::value);
 }
 
 void CubicHermiteTest::constructZeroScalar() {
@@ -338,10 +339,10 @@ void CubicHermiteTest::constructZeroScalar() {
     CORRADE_COMPARE(a, (CubicHermite1D{0.0f, 0.0f, 0.0f}));
     CORRADE_COMPARE(b, (CubicHermite1D{0.0f, 0.0f, 0.0f}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermite1D, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermite1D, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, CubicHermite1D>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, CubicHermite1D>::value);
 }
 
 void CubicHermiteTest::constructZeroVector() {
@@ -351,10 +352,10 @@ void CubicHermiteTest::constructZeroVector() {
     CORRADE_COMPARE(a, (CubicHermite2D{{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}}));
     CORRADE_COMPARE(b, (CubicHermite2D{{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermite2D, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermite2D, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, CubicHermite2D>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, CubicHermite2D>::value);
 }
 
 void CubicHermiteTest::constructZeroComplex() {
@@ -364,10 +365,10 @@ void CubicHermiteTest::constructZeroComplex() {
     CORRADE_COMPARE(a, (CubicHermiteComplex{{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}}));
     CORRADE_COMPARE(b, (CubicHermiteComplex{{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteComplex, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermiteComplex, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, CubicHermiteComplex>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, CubicHermiteComplex>::value);
 }
 
 void CubicHermiteTest::constructZeroQuaternion() {
@@ -383,18 +384,18 @@ void CubicHermiteTest::constructZeroQuaternion() {
         {{0.0f, 0.0f, 0.0f}, 0.0f},
         {{0.0f, 0.0f, 0.0f}, 0.0f}}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteQuaternion, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermiteQuaternion, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, CubicHermiteQuaternion>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, CubicHermiteQuaternion>::value);
 }
 
 void CubicHermiteTest::constructIdentityScalar() {
-    CORRADE_VERIFY(!(std::is_constructible<CubicHermite1D, IdentityInitT>::value));
+    CORRADE_VERIFY(!std::is_constructible<CubicHermite1D, IdentityInitT>::value);
 }
 
 void CubicHermiteTest::constructIdentityVector() {
-    CORRADE_VERIFY(!(std::is_constructible<CubicHermite2D, IdentityInitT>::value));
+    CORRADE_VERIFY(!std::is_constructible<CubicHermite2D, IdentityInitT>::value);
 }
 
 void CubicHermiteTest::constructIdentityComplex() {
@@ -404,10 +405,10 @@ void CubicHermiteTest::constructIdentityComplex() {
     CORRADE_COMPARE(a, (CubicHermiteComplex{{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}}));
     CORRADE_COMPARE(b, (CubicHermiteComplex{{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteComplex, IdentityInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermiteComplex, IdentityInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, CubicHermiteComplex>::value));
+    CORRADE_VERIFY(!std::is_convertible<IdentityInitT, CubicHermiteComplex>::value);
 }
 
 void CubicHermiteTest::constructIdentityQuaternion() {
@@ -423,10 +424,10 @@ void CubicHermiteTest::constructIdentityQuaternion() {
         {{0.0f, 0.0f, 0.0f}, 1.0f},
         {{0.0f, 0.0f, 0.0f}, 0.0f}}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteComplex, IdentityInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermiteComplex, IdentityInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, CubicHermiteQuaternion>::value));
+    CORRADE_VERIFY(!std::is_convertible<IdentityInitT, CubicHermiteQuaternion>::value);
 }
 
 void CubicHermiteTest::constructNoInitScalar() {
@@ -439,10 +440,10 @@ void CubicHermiteTest::constructNoInitScalar() {
         CORRADE_COMPARE(spline, (CubicHermite1D{2.0f, -2.0f, -0.5f}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermite1D, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermite1D, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, CubicHermite1D>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, CubicHermite1D>::value);
 }
 
 void CubicHermiteTest::constructNoInitVector() {
@@ -455,10 +456,10 @@ void CubicHermiteTest::constructNoInitVector() {
         CORRADE_COMPARE(spline, (CubicHermite2D{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermite2D, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermite2D, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, CubicHermite2D>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, CubicHermite2D>::value);
 }
 
 void CubicHermiteTest::constructNoInitComplex() {
@@ -471,10 +472,10 @@ void CubicHermiteTest::constructNoInitComplex() {
         CORRADE_COMPARE(spline, (CubicHermiteComplex{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteComplex, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermiteComplex, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, CubicHermiteComplex>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, CubicHermiteComplex>::value);
 }
 
 void CubicHermiteTest::constructNoInitQuaternion() {
@@ -493,10 +494,10 @@ void CubicHermiteTest::constructNoInitQuaternion() {
             {{3.0f, -0.5f, 1.2f}, 0.3f}}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteQuaternion, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermiteQuaternion, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, CubicHermiteQuaternion>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, CubicHermiteQuaternion>::value);
 }
 
 void CubicHermiteTest::constructConversionScalar() {
@@ -509,9 +510,9 @@ void CubicHermiteTest::constructConversionScalar() {
     CORRADE_COMPARE(c, (CubicHermite1Di{2, -2, 0}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<CubicHermite1D, CubicHermite1Di>::value));
+    CORRADE_VERIFY(!std::is_convertible<CubicHermite1D, CubicHermite1Di>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermite1D, CubicHermite1Di>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermite1D, CubicHermite1Di>::value);
 }
 
 void CubicHermiteTest::constructConversionVector() {
@@ -524,9 +525,9 @@ void CubicHermiteTest::constructConversionVector() {
     CORRADE_COMPARE(c, (CubicHermite2Di{{1, 2}, {1, -2}, {3, 0}}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<CubicHermite2D, CubicHermite2Di>::value));
+    CORRADE_VERIFY(!std::is_convertible<CubicHermite2D, CubicHermite2Di>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermite2D, CubicHermite2Di>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermite2D, CubicHermite2Di>::value);
 }
 
 void CubicHermiteTest::constructConversionComplex() {
@@ -539,9 +540,9 @@ void CubicHermiteTest::constructConversionComplex() {
     CORRADE_COMPARE(c, (CubicHermiteComplexi{{1, 2}, {1, -2}, {3, 0}}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<CubicHermiteComplex, CubicHermiteComplexi>::value));
+    CORRADE_VERIFY(!std::is_convertible<CubicHermiteComplex, CubicHermiteComplexi>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteComplex, CubicHermiteComplexi>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermiteComplex, CubicHermiteComplexi>::value);
 }
 
 void CubicHermiteTest::constructConversionQuaternion() {
@@ -563,9 +564,9 @@ void CubicHermiteTest::constructConversionQuaternion() {
         {{3, 0, 1}, 0}}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<CubicHermiteQuaternion, CubicHermiteQuaternioni>::value));
+    CORRADE_VERIFY(!std::is_convertible<CubicHermiteQuaternion, CubicHermiteQuaternioni>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteQuaternion, CubicHermiteQuaternioni>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<CubicHermiteQuaternion, CubicHermiteQuaternioni>::value);
 }
 
 void CubicHermiteTest::constructFromBezier() {
@@ -588,6 +589,10 @@ void CubicHermiteTest::constructCopyScalar() {
 
     CORRADE_COMPARE(b, (CubicHermite1D{2.0f, -2.0f, -0.5f}));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<CubicHermite1D>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<CubicHermite1D>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<CubicHermite1D>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<CubicHermite1D>::value);
 }
@@ -598,6 +603,10 @@ void CubicHermiteTest::constructCopyVector() {
 
     CORRADE_COMPARE(b, (CubicHermite2D{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}}));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<CubicHermite2D>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<CubicHermite2D>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<CubicHermite2D>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<CubicHermite2D>::value);
 }
@@ -608,6 +617,10 @@ void CubicHermiteTest::constructCopyComplex() {
 
     CORRADE_COMPARE(b, (CubicHermiteComplex{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}}));
 
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<CubicHermiteComplex>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<CubicHermiteComplex>::value);
+    #endif
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<CubicHermiteComplex>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<CubicHermiteComplex>::value);
 }
@@ -624,8 +637,12 @@ void CubicHermiteTest::constructCopyQuaternion() {
         {{1.5f, -2.0f, 0.1f}, 1.1f},
         {{3.0f, -0.5f, 1.2f}, 0.3f}}));
 
-    CORRADE_VERIFY(std::is_nothrow_copy_constructible<CubicHermiteComplex>::value);
-    CORRADE_VERIFY(std::is_nothrow_copy_assignable<CubicHermiteComplex>::value);
+    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<CubicHermiteQuaternion>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<CubicHermiteQuaternion>::value);
+    #endif
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<CubicHermiteQuaternion>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<CubicHermiteQuaternion>::value);
 }
 
 void CubicHermiteTest::dataScalar() {
@@ -723,35 +740,35 @@ void CubicHermiteTest::dataQuaternion() {
 }
 
 void CubicHermiteTest::compareScalar() {
-    CORRADE_VERIFY((CubicHermite1D{3.0f, 1.0f, 2.0f} == CubicHermite1D{3.0f, 1.0f + TypeTraits<Float>::epsilon()/2, 2.0f}));
-    CORRADE_VERIFY((CubicHermite1D{3.0f, 1.0f, 2.0f} != CubicHermite1D{3.0f + TypeTraits<Float>::epsilon()*6, 1.0f, 2.0f}));
+    CORRADE_VERIFY(CubicHermite1D{3.0f, 1.0f, 2.0f} == CubicHermite1D{3.0f, 1.0f + TypeTraits<Float>::epsilon()/2, 2.0f});
+    CORRADE_VERIFY(CubicHermite1D{3.0f, 1.0f, 2.0f} != CubicHermite1D{3.0f + TypeTraits<Float>::epsilon()*6, 1.0f, 2.0f});
 }
 
 void CubicHermiteTest::compareVector() {
-    CORRADE_VERIFY((CubicHermite2D{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}}) == (CubicHermite2D{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f + TypeTraits<Float>::epsilon()/2}}));
-    CORRADE_VERIFY((CubicHermite2D{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}}) != (CubicHermite2D{{1.0f + TypeTraits<Float>::epsilon()*2, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}}));
+    CORRADE_VERIFY(CubicHermite2D{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}} == CubicHermite2D{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f + TypeTraits<Float>::epsilon()/2}});
+    CORRADE_VERIFY(CubicHermite2D{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}} != CubicHermite2D{{1.0f + TypeTraits<Float>::epsilon()*2, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}});
 }
 
 void CubicHermiteTest::compareComplex() {
-    CORRADE_VERIFY((CubicHermiteComplex{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}}) == (CubicHermiteComplex{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f + TypeTraits<Float>::epsilon()/2}}));
-    CORRADE_VERIFY((CubicHermiteComplex{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}}) != (CubicHermiteComplex{{1.0f + TypeTraits<Float>::epsilon()*2, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}}));
+    CORRADE_VERIFY(CubicHermiteComplex{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}} == CubicHermiteComplex{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f + TypeTraits<Float>::epsilon()/2}});
+    CORRADE_VERIFY(CubicHermiteComplex{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}} != CubicHermiteComplex{{1.0f + TypeTraits<Float>::epsilon()*2, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}});
 }
 
 void CubicHermiteTest::compareQuaternion() {
-    CORRADE_VERIFY((CubicHermiteQuaternion{
+    CORRADE_VERIFY(CubicHermiteQuaternion{
         {{1.0f, 3.0f, -1.0f}, 3.0f},
         {{1.5f, -2.0f, 0.1f}, 1.0f},
-        {{3.0f, -0.5f, 2.0f}, 0.3f}}) == (CubicHermiteQuaternion{
+        {{3.0f, -0.5f, 2.0f}, 0.3f}} == CubicHermiteQuaternion{
         {{1.0f, 3.0f, -1.0f}, 3.0f},
         {{1.5f, -2.0f, 0.1f}, 1.0f + TypeTraits<Float>::epsilon()/2},
-        {{3.0f, -0.5f, 2.0f}, 0.3f}}));
-    CORRADE_VERIFY((CubicHermiteQuaternion{
+        {{3.0f, -0.5f, 2.0f}, 0.3f}});
+    CORRADE_VERIFY(CubicHermiteQuaternion{
         {{1.0f, 3.0f, -1.0f}, 3.0f},
         {{1.5f, -2.0f, 0.1f}, 1.0f},
-        {{3.0f, -0.5f, 2.0f}, 0.3f}}) != (CubicHermiteQuaternion{
+        {{3.0f, -0.5f, 2.0f}, 0.3f}} != CubicHermiteQuaternion{
         {{1.0f + TypeTraits<Float>::epsilon()*2, 3.0f, -1.0f}, 3.0f},
         {{1.5f, -2.0f, 0.1f}, 1.0f},
-        {{3.0f, -0.5f, 2.0f}, 0.3f}}));
+        {{3.0f, -0.5f, 2.0f}, 0.3f}});
 }
 
 void CubicHermiteTest::selectScalar() {

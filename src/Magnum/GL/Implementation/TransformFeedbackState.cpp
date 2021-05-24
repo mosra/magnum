@@ -7,7 +7,7 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
-TransformFeedbackState::TransformFeedbackState(Context& context, std::vector<std::string>& extensions): maxInterleavedComponents{0}, maxSeparateAttributes{0}, maxSeparateComponents{0},
+TransformFeedbackState::TransformFeedbackState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions): maxInterleavedComponents{0}, maxSeparateAttributes{0}, maxSeparateComponents{0},
     #ifndef MAGNUM_TARGET_GLES
     maxBuffers{0}, maxVertexStreams{0},
     #endif
@@ -15,7 +15,8 @@ TransformFeedbackState::TransformFeedbackState(Context& context, std::vector<std
 {
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
-        extensions.emplace_back(Extensions::ARB::direct_state_access::string());
+        extensions[Extensions::ARB::direct_state_access::Index] =
+                   Extensions::ARB::direct_state_access::string();
 
         createImplementation = &TransformFeedback::createImplementationDSA;
         attachRangeImplementation = &TransformFeedback::attachImplementationDSA;

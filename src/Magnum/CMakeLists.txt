@@ -75,7 +75,6 @@ set(Magnum_GracefulAssert_SRCS
 
 set(Magnum_HEADERS
     AbstractResourceLoader.h
-    Array.h
     British.h
     DimensionTraits.h
     FileCallback.h
@@ -103,6 +102,10 @@ set(Magnum_PRIVATE_HEADERS
     Implementation/compressedPixelFormatMapping.hpp
     Implementation/pixelFormatMapping.hpp
     Implementation/vertexFormatMapping.hpp)
+
+if(MAGNUM_BUILD_DEPRECATED)
+    list(APPEND Magnum_HEADERS Array.h)
+endif()
 
 # Functionality specific to static Windows builds
 if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT AND MAGNUM_BUILD_STATIC)

@@ -48,7 +48,7 @@ void LayerPropertiesTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, LayerProperties>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, LayerProperties>::value);
 }
 
 void LayerPropertiesTest::constructCopy() {

@@ -35,7 +35,7 @@
    "static symbol not used" warning when using this file for TextureTools */
 #if defined(MAGNUM_BUILD_STATIC) && defined(MAGNUM_SHADERS_EXPORT)
 static void importShaderResources() {
-    CORRADE_RESOURCE_INITIALIZE(MagnumShaders_RCS)
+    CORRADE_RESOURCE_INITIALIZE(MagnumShaders_RESOURCES_GL)
 }
 #endif
 

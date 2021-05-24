@@ -117,7 +117,7 @@ void ForceRendererGLTest::render2D() {
        the arrowhead to be on a different place (but the rest is okay and the
        3D case matches exactly), however to avoid false negatives elsewhere I'm
        making it conditional. */
-    Containers::Optional<CompareImageToFile> comparator{Containers::InPlaceInit, _manager};
+    Containers::Optional<CompareImageToFile> comparator{InPlaceInit, _manager};
     #ifdef CORRADE_TARGET_ANDROID
     if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::ArmMali)
         comparator.emplace(_manager, 79.0f, 0.22f);

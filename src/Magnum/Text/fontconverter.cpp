@@ -103,7 +103,7 @@ Arguments:
     field computation will not be used. (default: `"256 256"`)
 -   `--radius N` --- distance field computation radius (default: `24`)
 -   `--magnum-...` --- engine-specific options (see
-    @ref GL-Context-command-line for details)
+    @ref GL-Context-usage-command-line for details)
 
 The resulting font files can be then used as specified in the documentation of
 `converter` plugin.

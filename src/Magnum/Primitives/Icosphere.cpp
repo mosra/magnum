@@ -96,8 +96,8 @@ Trade::MeshData icosphereSolid(const UnsignedInt subdivisions) {
         Vector3 normal;
     };
     Containers::Array<char> vertexData;
-    Containers::arrayResize<Trade::ArrayAllocator>(vertexData,
-        Containers::NoInit, sizeof(Vertex)*vertexCount);
+    Containers::arrayResize<Trade::ArrayAllocator>(vertexData, NoInit,
+        sizeof(Vertex)*vertexCount);
 
     /* Build up the subdivided positions */
     {

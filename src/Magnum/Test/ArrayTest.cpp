@@ -41,6 +41,7 @@ struct ArrayTest: TestSuite::Tester {
     void debug();
 };
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 typedef Magnum::Array1D<Int> Array1D;
 typedef Magnum::Array2D<Int> Array2D;
 typedef Magnum::Array3D<Int> Array3D;
@@ -77,8 +78,8 @@ void ArrayTest::construct() {
 }
 
 void ArrayTest::equality() {
-    CORRADE_VERIFY((Array<3, Int>(5, 6, 7) == Array<3, Int>(5, 6, 7)));
-    CORRADE_VERIFY((Array<3, Int>(5, 6, 7) != Array<3, Int>(5, 6, 8)));
+    CORRADE_VERIFY(Array<3, Int>(5, 6, 7) == Array<3, Int>(5, 6, 7));
+    CORRADE_VERIFY(Array<3, Int>(5, 6, 7) != Array<3, Int>(5, 6, 8));
 }
 
 void ArrayTest::access() {
@@ -121,6 +122,7 @@ void ArrayTest::debug() {
     Debug{&out} << Array<4, Int>{5, 6, 7, 8} << Array1D{13} << Array2D{71, 2} << Array3D{1, 2, 3};
     CORRADE_COMPARE(out.str(), "Array(5, 6, 7, 8) Array(13) Array(71, 2) Array(1, 2, 3)\n");
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "VertexColor.h"
+#include "VertexColorGL.h"
 
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
@@ -39,18 +39,20 @@
 
 namespace Magnum { namespace Shaders {
 
-template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL() {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumShaders"))
+    if(!Utility::Resource::hasGroup("MagnumShadersGL"))
         importShaderResources();
     #endif
-    Utility::Resource rs("MagnumShaders");
+    Utility::Resource rs("MagnumShadersGL");
+
+    const GL::Context& context = GL::Context::current();
 
     #ifndef MAGNUM_TARGET_GLES
-    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
+    const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
     #else
-    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
+    const GL::Version version = context.supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
@@ -69,7 +71,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
@@ -80,7 +82,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
@@ -92,12 +94,12 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
     #endif
 }
 
-template<UnsignedInt dimensions> VertexColor<dimensions>& VertexColor<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
+template<UnsignedInt dimensions> VertexColorGL<dimensions>& VertexColorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     setUniform(_transformationProjectionMatrixUniform, matrix);
     return *this;
 }
 
-template class VertexColor<2>;
-template class VertexColor<3>;
+template class MAGNUM_SHADERS_EXPORT VertexColorGL<2>;
+template class MAGNUM_SHADERS_EXPORT VertexColorGL<3>;
 
 }}

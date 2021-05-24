@@ -3,7 +3,8 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
-    Copyright © 2016 Jonathan Hale <squareys@googlemail.com>
+    Copyright © 2016, 2018 Jonathan Hale <squareys@googlemail.com>
+    Copyright © 2019 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
     Copyright © 2019, 2020 Marco Melorio <m.melorio@icloud.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,7 +28,6 @@
 
 #include "GlfwApplication.h"
 
-#include <cstring>
 #include <tuple>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
@@ -43,10 +43,11 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 #endif
 
 namespace Magnum { namespace Platform {
+
+using namespace Containers::Literals;
 
 #ifdef GLFW_TRUE
 /* The docs say that it's the same, verify that just in case */
@@ -79,7 +80,7 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
 {
     Utility::Arguments args{Implementation::windowScalingArguments()};
     #ifdef MAGNUM_TARGET_GL
-    _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});
+    _context.emplace(NoCreate, args, arguments.argc, arguments.argv);
     #else
     /** @todo this is duplicated here and in Sdl2Application, figure out a nice
         non-duplicated way to handle this */
@@ -427,10 +428,15 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     glfwWindowHint(GLFW_SAMPLES, glConfiguration.sampleCount());
     glfwWindowHint(GLFW_SRGB_CAPABLE, glConfiguration.isSrgbCapable());
 
-    /* Request debug context if --magnum-gpu-validation is enabled */
+    /* Request debug context if GpuValidation is enabled either via the
+       configuration or via command-line */
     GLConfiguration::Flags glFlags = glConfiguration.flags();
-    if(_context->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+    if((glFlags & GLConfiguration::Flag::GpuValidation) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         glFlags |= GLConfiguration::Flag::Debug;
+    #ifdef GLFW_CONTEXT_NO_ERROR
+    else if((glFlags & GLConfiguration::Flag::GpuValidationNoError) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidationNoError))
+        glFlags |= GLConfiguration::Flag::NoError;
+    #endif
 
     #ifdef GLFW_CONTEXT_NO_ERROR
     glfwWindowHint(GLFW_CONTEXT_NO_ERROR, glFlags >= GLConfiguration::Flag::NoError);
@@ -495,9 +501,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
        succeeds, make the context current so we can query GL_VENDOR below.
        If we are on Wayland, this is causing a segfault; a blinking window is
        acceptable in this case. */
-    constexpr const char waylandString[] = "wayland";
-    const char* const xdgSessionType = std::getenv("XDG_SESSION_TYPE");
-    if(!xdgSessionType || std::strncmp(xdgSessionType, waylandString, sizeof(waylandString)) != 0)
+    if(std::getenv("XDG_SESSION_TYPE") != "wayland"_s)
         glfwWindowHint(GLFW_VISIBLE, false);
     else if(_verboseLog)
         Warning{} << "Platform::GlfwApplication: Wayland detected, GL context has to be created with the window visible and may cause flicker on startup";
@@ -512,27 +516,19 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
        version, they force the version to the one specified, which is
        completely useless behavior. */
     #ifndef CORRADE_TARGET_APPLE
-    constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
-    #ifdef CORRADE_TARGET_WINDOWS
-    constexpr static const char intelVendorString[] = "Intel";
-    #endif
-    constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
-    const char* vendorString;
+    Containers::StringView vendorString;
     #endif
     if(glConfiguration.version() == GL::Version::None && (!_window
         #ifndef CORRADE_TARGET_APPLE
-        /* If context creation fails *really bad*, glGetString() may actually
-           return nullptr. Check for that to avoid crashes deep inside
-           strncmp(). Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE
-           WORKAROUNDS */
+        /* Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE WORKAROUNDS */
         || (vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR)),
-        vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+        (vendorString == "NVIDIA Corporation"_s ||
          #ifdef CORRADE_TARGET_WINDOWS
-         std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
+         vendorString == "Intel"_s ||
          #endif
-         std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0)
-         && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"))
-         #endif
+         vendorString == "ATI Technologies Inc."_s)
+        && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s))
+        #endif
     )) {
         /* Don't print any warning when doing the workaround, because the bug
            will be there probably forever */
@@ -575,7 +571,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     glfwMakeContextCurrent(_window);
 
     /* Destroy everything when the Magnum context creation fails */
-    if(!_context->tryCreate()) {
+    if(!_context->tryCreate(glConfiguration)) {
         glfwDestroyWindow(_window);
         _window = nullptr;
     }
@@ -664,6 +660,12 @@ void GlfwApplication::setupCallbacks() {
 }
 
 GlfwApplication::~GlfwApplication() {
+    #ifdef MAGNUM_TARGET_GL
+    /* Destroy Magnum context first to avoid it potentially accessing the
+       now-destroyed GL context after */
+    _context = Containers::NullOpt;
+    #endif
+
     glfwDestroyWindow(_window);
     for(auto& cursor: _cursors)
         glfwDestroyCursor(cursor);
@@ -797,7 +799,7 @@ constexpr Int CursorMap[] {
 }
 
 void GlfwApplication::setCursor(Cursor cursor) {
-    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(_cursors));
+    CORRADE_ASSERT(_window, "Platform::GlfwApplication::setCursor(): no window opened", );
 
     _cursor = cursor;
 
@@ -810,6 +812,11 @@ void GlfwApplication::setCursor(Cursor cursor) {
     } else {
         glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
+
+    /* The second condition could be a static assert but it doesn't let me
+       because "this pointer only accessible in a constexpr function". Thanks
+       for nothing, C++. */
+    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(_cursors) && Containers::arraySize(_cursors) == Containers::arraySize(CursorMap));
 
     if(!_cursors[UnsignedInt(cursor)])
         _cursors[UnsignedInt(cursor)] = glfwCreateStandardCursor(CursorMap[UnsignedInt(cursor)]);
@@ -886,13 +893,12 @@ void GlfwApplication::stopTextInput() {
 #ifdef MAGNUM_TARGET_GL
 GlfwApplication::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 8}, _depthBufferSize{24}, _stencilBufferSize{0},
-    _sampleCount{0}, _version{GL::Version::None},
+    _sampleCount{0}, _version{GL::Version::None}, _srgbCapable{false}
+{
     #ifndef MAGNUM_TARGET_GLES
-    _flags{Flag::ForwardCompatible},
-    #else
-    _flags{},
+    addFlags(Flag::ForwardCompatible);
     #endif
-    _srgbCapable{false} {}
+}
 
 GlfwApplication::GLConfiguration::~GLConfiguration() = default;
 #endif

@@ -162,7 +162,7 @@ template<UnsignedInt dimensions> class ForceRenderer: public SceneGraph::Drawabl
         const VectorTypeFor<dimensions, Float>& _force;
 
         Resource<ForceRendererOptions> _options;
-        Resource<GL::AbstractShaderProgram, Shaders::Flat<dimensions>> _shader;
+        Resource<GL::AbstractShaderProgram, Shaders::FlatGL<dimensions>> _shader;
         Resource<GL::Mesh> _mesh;
 };
 

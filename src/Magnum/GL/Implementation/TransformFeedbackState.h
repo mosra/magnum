@@ -25,9 +25,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <vector>
+#include <initializer_list>
+#include <Corrade/Utility/StlForwardTuple.h>
 
+#include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/OpenGL.h"
 
@@ -45,7 +46,7 @@
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct TransformFeedbackState {
-    explicit TransformFeedbackState(Context& context, std::vector<std::string>& extensions);
+    explicit TransformFeedbackState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
 
     void reset();
 

@@ -27,12 +27,14 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/Shaders/Phong.h"
+#include "Magnum/Shaders/PhongGL.h"
 
 namespace Magnum { namespace Shaders { namespace Test { namespace {
 
-struct PhongTest: TestSuite::Tester {
-    explicit PhongTest();
+/* There's an underscore between GL and Test to disambiguate from GLTest, which
+   is a common suffix used to mark tests that need a GL context. Ugly, I know. */
+struct PhongGL_Test: TestSuite::Tester {
+    explicit PhongGL_Test();
 
     void constructNoCreate();
     void constructCopy();
@@ -42,63 +44,63 @@ struct PhongTest: TestSuite::Tester {
     void debugFlagsSupersets();
 };
 
-PhongTest::PhongTest() {
-    addTests({&PhongTest::constructNoCreate,
-              &PhongTest::constructCopy,
+PhongGL_Test::PhongGL_Test() {
+    addTests({&PhongGL_Test::constructNoCreate,
+              &PhongGL_Test::constructCopy,
 
-              &PhongTest::debugFlag,
-              &PhongTest::debugFlags,
-              &PhongTest::debugFlagsSupersets});
+              &PhongGL_Test::debugFlag,
+              &PhongGL_Test::debugFlags,
+              &PhongGL_Test::debugFlagsSupersets});
 }
 
-void PhongTest::constructNoCreate() {
+void PhongGL_Test::constructNoCreate() {
     {
-        Phong shader{NoCreate};
+        PhongGL shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
-        CORRADE_COMPARE(shader.flags(), Phong::Flags{});
+        CORRADE_COMPARE(shader.flags(), PhongGL::Flags{});
         CORRADE_COMPARE(shader.lightCount(), 0);
     }
 
     CORRADE_VERIFY(true);
 }
 
-void PhongTest::constructCopy() {
-    CORRADE_VERIFY(!std::is_copy_constructible<Phong>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<Phong>{});
+void PhongGL_Test::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<PhongGL>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<PhongGL>{});
 }
 
-void PhongTest::debugFlag() {
+void PhongGL_Test::debugFlag() {
     std::ostringstream out;
 
-    Debug{&out} << Phong::Flag::AmbientTexture << Phong::Flag(0xf0);
-    CORRADE_COMPARE(out.str(), "Shaders::Phong::Flag::AmbientTexture Shaders::Phong::Flag(0xf0)\n");
+    Debug{&out} << PhongGL::Flag::AmbientTexture << PhongGL::Flag(0xf0);
+    CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::AmbientTexture Shaders::PhongGL::Flag(0xf0)\n");
 }
 
-void PhongTest::debugFlags() {
+void PhongGL_Test::debugFlags() {
     std::ostringstream out;
 
-    Debug{&out} << (Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture) << Phong::Flags{};
-    CORRADE_COMPARE(out.str(), "Shaders::Phong::Flag::DiffuseTexture|Shaders::Phong::Flag::SpecularTexture Shaders::Phong::Flags{}\n");
+    Debug{&out} << (PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture) << PhongGL::Flags{};
+    CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::DiffuseTexture|Shaders::PhongGL::Flag::SpecularTexture Shaders::PhongGL::Flags{}\n");
 }
 
-void PhongTest::debugFlagsSupersets() {
+void PhongGL_Test::debugFlagsSupersets() {
     #ifndef MAGNUM_TARGET_GLES2
     /* InstancedObjectId is a superset of ObjectId so only one should be
        printed */
     {
         std::ostringstream out;
-        Debug{&out} << (Phong::Flag::ObjectId|Phong::Flag::InstancedObjectId);
-        CORRADE_COMPARE(out.str(), "Shaders::Phong::Flag::InstancedObjectId\n");
+        Debug{&out} << (PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedObjectId);
+        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::InstancedObjectId\n");
     }
     #endif
 
     /* InstancedTextureOffset is a superset of TextureTransformation so only
        one should be printed */
     std::ostringstream out;
-    Debug{&out} << (Phong::Flag::InstancedTextureOffset|Phong::Flag::TextureTransformation);
-    CORRADE_COMPARE(out.str(), "Shaders::Phong::Flag::InstancedTextureOffset\n");
+    Debug{&out} << (PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::TextureTransformation);
+    CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::InstancedTextureOffset\n");
 }
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::PhongTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::PhongGL_Test)

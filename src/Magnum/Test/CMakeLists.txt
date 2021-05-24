@@ -23,7 +23,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(ArrayTest ArrayTest.cpp LIBRARIES Magnum)
 corrade_add_test(FileCallbackTest FileCallbackTest.cpp LIBRARIES Magnum)
 corrade_add_test(ImageTest ImageTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(ImageViewTest ImageViewTest.cpp LIBRARIES MagnumTestLib)
@@ -32,7 +31,8 @@ corrade_add_test(PixelFormatTest PixelFormatTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(PixelStorageTest PixelStorageTest.cpp LIBRARIES Magnum)
 corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES Magnum)
 corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES MagnumTestLib)
-corrade_add_test(TagsTest TagsTest.cpp LIBRARIES Magnum)
+# Prefixed with project name to avoid conflicts with TagsTest in Corrade
+corrade_add_test(MagnumTagsTest TagsTest.cpp LIBRARIES Magnum)
 
 # Prefixed with project name to avoid conflicts with VersionTest in Corrade and
 # other repos
@@ -41,7 +41,6 @@ corrade_add_test(MagnumVersionTest VersionTest.cpp LIBRARIES Magnum)
 corrade_add_test(VertexFormatTest VertexFormatTest.cpp LIBRARIES MagnumTestLib)
 
 set_target_properties(
-    ArrayTest
     ImageTest
     ImageViewTest
     MeshTest
@@ -49,10 +48,15 @@ set_target_properties(
     PixelStorageTest
     ResourceManagerTest
     SamplerTest
-    TagsTest
+    MagnumTagsTest
     MagnumVersionTest
     VertexFormatTest
     PROPERTIES FOLDER "Magnum/Test")
+
+if(MAGNUM_BUILD_DEPRECATED)
+    corrade_add_test(ArrayTest ArrayTest.cpp LIBRARIES Magnum)
+    set_target_properties(ArrayTest PROPERTIES FOLDER "Magnum/Test")
+endif()
 
 set_property(TARGET
     MeshTest

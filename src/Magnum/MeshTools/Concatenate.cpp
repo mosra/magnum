@@ -208,9 +208,9 @@ Trade::MeshData concatenate(const Containers::ArrayView<const Containers::Refere
        Index data are allocated with NoInit as the whole array will be written,
        however vertex data might have holes and thus it's zero-initialized. */
     const std::pair<UnsignedInt, UnsignedInt> indexVertexCount = Implementation::concatenateIndexVertexCount(meshes);
-    Containers::Array<char> indexData{Containers::NoInit,
+    Containers::Array<char> indexData{NoInit,
         indexVertexCount.first*sizeof(UnsignedInt)};
-    Containers::Array<char> vertexData{Containers::ValueInit,
+    Containers::Array<char> vertexData{ValueInit,
         attributeData.empty() ? 0 : (attributeData[0].stride()*indexVertexCount.second)};
     return Implementation::concatenate(std::move(indexData), indexVertexCount.second, std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenate():");
 }

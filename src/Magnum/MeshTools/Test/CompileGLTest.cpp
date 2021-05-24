@@ -48,10 +48,10 @@
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/MeshTools/Duplicate.h"
-#include "Magnum/Shaders/Flat.h"
-#include "Magnum/Shaders/Phong.h"
-#include "Magnum/Shaders/VertexColor.h"
-#include "Magnum/Shaders/MeshVisualizer.h"
+#include "Magnum/Shaders/FlatGL.h"
+#include "Magnum/Shaders/PhongGL.h"
+#include "Magnum/Shaders/VertexColorGL.h"
+#include "Magnum/Shaders/MeshVisualizerGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -118,22 +118,22 @@ struct CompileGLTest: GL::OpenGLTester {
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
 
-        Shaders::Flat2D _flat2D;
-        Shaders::Flat2D _flatTextured2D{Shaders::Flat2D::Flag::Textured};
+        Shaders::FlatGL2D _flat2D;
+        Shaders::FlatGL2D _flatTextured2D{Shaders::FlatGL2D::Flag::Textured};
         #ifndef MAGNUM_TARGET_GLES2
-        Shaders::Flat2D _flatObjectId2D{NoCreate};
+        Shaders::FlatGL2D _flatObjectId2D{NoCreate};
         #endif
-        Shaders::Flat3D _flat3D;
-        Shaders::Flat3D _flatTextured3D{Shaders::Flat3D::Flag::Textured};
+        Shaders::FlatGL3D _flat3D;
+        Shaders::FlatGL3D _flatTextured3D{Shaders::FlatGL3D::Flag::Textured};
         #ifndef MAGNUM_TARGET_GLES2
-        Shaders::Flat3D _flatObjectId3D{NoCreate};
+        Shaders::FlatGL3D _flatObjectId3D{NoCreate};
         #endif
-        Shaders::VertexColor2D _color2D;
-        Shaders::VertexColor3D _color3D;
-        Shaders::Phong _phong;
+        Shaders::VertexColorGL2D _color2D;
+        Shaders::VertexColorGL3D _color3D;
+        Shaders::PhongGL _phong;
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Shaders::MeshVisualizer3D _meshVisualizer3D{NoCreate};
-        Shaders::MeshVisualizer3D _meshVisualizerBitangentsFromTangents3D{NoCreate};
+        Shaders::MeshVisualizerGL3D _meshVisualizer3D{NoCreate};
+        Shaders::MeshVisualizerGL3D _meshVisualizerBitangentsFromTangents3D{NoCreate};
         #endif
 
         GL::Renderbuffer _color;
@@ -315,14 +315,14 @@ CompileGLTest::CompileGLTest() {
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
     #endif
     {
-        _flatObjectId2D = Shaders::Flat2D{Shaders::Flat2D::Flag::InstancedObjectId};
-        _flatObjectId3D = Shaders::Flat3D{Shaders::Flat3D::Flag::InstancedObjectId};
+        _flatObjectId2D = Shaders::FlatGL2D{Shaders::FlatGL2D::Flag::InstancedObjectId};
+        _flatObjectId3D = Shaders::FlatGL3D{Shaders::FlatGL3D::Flag::InstancedObjectId};
         _objectId.setStorage(GL::RenderbufferFormat::R32UI, {32, 32});
         _framebuffer
             .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
             .mapForDraw({
-                {Shaders::Generic3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
-                {Shaders::Generic3D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+                {Shaders::GenericGL3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+                {Shaders::GenericGL3D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
             });
     }
     #endif
@@ -335,14 +335,14 @@ CompileGLTest::CompileGLTest() {
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
     #endif
     {
-        _meshVisualizer3D = Shaders::MeshVisualizer3D{
-            Shaders::MeshVisualizer3D::Flag::TangentDirection|
-            Shaders::MeshVisualizer3D::Flag::BitangentDirection|
-            Shaders::MeshVisualizer3D::Flag::NormalDirection};
-        _meshVisualizerBitangentsFromTangents3D = Shaders::MeshVisualizer3D{
-            Shaders::MeshVisualizer3D::Flag::TangentDirection|
-            Shaders::MeshVisualizer3D::Flag::BitangentFromTangentDirection|
-            Shaders::MeshVisualizer3D::Flag::NormalDirection};
+        _meshVisualizer3D = Shaders::MeshVisualizerGL3D{
+            Shaders::MeshVisualizerGL3D::Flag::TangentDirection|
+            Shaders::MeshVisualizerGL3D::Flag::BitangentDirection|
+            Shaders::MeshVisualizerGL3D::Flag::NormalDirection};
+        _meshVisualizerBitangentsFromTangents3D = Shaders::MeshVisualizerGL3D{
+            Shaders::MeshVisualizerGL3D::Flag::TangentDirection|
+            Shaders::MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|
+            Shaders::MeshVisualizerGL3D::Flag::NormalDirection};
     }
     #endif
 }
@@ -380,7 +380,7 @@ template<class T> void CompileGLTest::twoDimensions() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(data.flags & Flag::ObjectId && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -558,7 +558,7 @@ template<class T> void CompileGLTest::threeDimensions() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(data.flags & Flag::ObjectId && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -852,10 +852,10 @@ template<class T> void CompileGLTest::threeDimensions() {
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
         #else
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
         #endif
 
         _framebuffer.clear(GL::FramebufferClear::Color);

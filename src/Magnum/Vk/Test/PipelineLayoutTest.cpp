@@ -24,6 +24,7 @@
 */
 
 #include <new>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Vk/PipelineLayoutCreateInfo.h"
@@ -34,8 +35,11 @@ struct PipelineLayoutTest: TestSuite::Tester {
     explicit PipelineLayoutTest();
 
     void createInfoConstruct();
+    void createInfoConstructDescriptorSetLayouts();
     void createInfoConstructNoInit();
     void createInfoConstructFromVk();
+    void createInfoConstructCopy();
+    void createInfoConstructMove();
 
     void constructNoCreate();
     void constructCopy();
@@ -43,8 +47,11 @@ struct PipelineLayoutTest: TestSuite::Tester {
 
 PipelineLayoutTest::PipelineLayoutTest() {
     addTests({&PipelineLayoutTest::createInfoConstruct,
+              &PipelineLayoutTest::createInfoConstructDescriptorSetLayouts,
               &PipelineLayoutTest::createInfoConstructNoInit,
               &PipelineLayoutTest::createInfoConstructFromVk,
+              &PipelineLayoutTest::createInfoConstructCopy,
+              &PipelineLayoutTest::createInfoConstructMove,
 
               &PipelineLayoutTest::constructNoCreate,
               &PipelineLayoutTest::constructCopy});
@@ -52,8 +59,20 @@ PipelineLayoutTest::PipelineLayoutTest() {
 
 void PipelineLayoutTest::createInfoConstruct() {
     PipelineLayoutCreateInfo info;
-    /** @todo expand once there's actually something */
     CORRADE_COMPARE(info->flags, 0);
+    CORRADE_COMPARE(info->setLayoutCount, 0);
+}
+
+void PipelineLayoutTest::createInfoConstructDescriptorSetLayouts() {
+    VkDescriptorSetLayout layouts[]{reinterpret_cast<VkDescriptorSetLayout>(0xdead), reinterpret_cast<VkDescriptorSetLayout>(0xbeef)};
+
+    PipelineLayoutCreateInfo info{layouts};
+    CORRADE_COMPARE(info->setLayoutCount, 2);
+    CORRADE_VERIFY(info->pSetLayouts);
+    /* The contents should be copied */
+    CORRADE_VERIFY(info->pSetLayouts != layouts);
+    CORRADE_COMPARE(info->pSetLayouts[0], reinterpret_cast<VkDescriptorSetLayout>(0xdead));
+    CORRADE_COMPARE(info->pSetLayouts[1], reinterpret_cast<VkDescriptorSetLayout>(0xbeef));
 }
 
 void PipelineLayoutTest::createInfoConstructNoInit() {
@@ -62,10 +81,10 @@ void PipelineLayoutTest::createInfoConstructNoInit() {
     new(&info) PipelineLayoutCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<PipelineLayoutCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<PipelineLayoutCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, PipelineLayoutCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, PipelineLayoutCreateInfo>::value);
 }
 
 void PipelineLayoutTest::createInfoConstructFromVk() {
@@ -76,6 +95,32 @@ void PipelineLayoutTest::createInfoConstructFromVk() {
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 }
 
+void PipelineLayoutTest::createInfoConstructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<PipelineLayoutCreateInfo>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<PipelineLayoutCreateInfo>{});
+}
+
+void PipelineLayoutTest::createInfoConstructMove() {
+    PipelineLayoutCreateInfo a{reinterpret_cast<VkDescriptorSetLayout>(0xdead), reinterpret_cast<VkDescriptorSetLayout>(0xbeef)};
+    CORRADE_COMPARE(a->setLayoutCount, 2);
+    CORRADE_VERIFY(a->pSetLayouts);
+
+    PipelineLayoutCreateInfo b = std::move(a);
+    CORRADE_COMPARE(a->setLayoutCount, 0);
+    CORRADE_VERIFY(!a->pSetLayouts);
+    CORRADE_COMPARE(b->setLayoutCount, 2);
+    CORRADE_VERIFY(b->pSetLayouts);
+    CORRADE_COMPARE(b->pSetLayouts[1], reinterpret_cast<VkDescriptorSetLayout>(0xbeef));
+
+    PipelineLayoutCreateInfo c;
+    c = std::move(b);
+    CORRADE_COMPARE(b->setLayoutCount, 0);
+    CORRADE_VERIFY(!b->pSetLayouts);
+    CORRADE_COMPARE(c->setLayoutCount, 2);
+    CORRADE_VERIFY(c->pSetLayouts);
+    CORRADE_COMPARE(c->pSetLayouts[1], reinterpret_cast<VkDescriptorSetLayout>(0xbeef));
+}
+
 void PipelineLayoutTest::constructNoCreate() {
     {
         PipelineLayout layout{NoCreate};
@@ -83,7 +128,7 @@ void PipelineLayoutTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, PipelineLayout>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, PipelineLayout>::value);
 }
 
 void PipelineLayoutTest::constructCopy() {

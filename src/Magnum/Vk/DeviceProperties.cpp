@@ -379,7 +379,7 @@ Containers::ArrayView<const VkQueueFamilyProperties2> DeviceProperties::queueFam
         UnsignedInt count;
         _state->getQueueFamilyPropertiesImplementation(*this, count, nullptr);
 
-        _state->queueFamilyProperties = Containers::Array<VkQueueFamilyProperties2>{Containers::ValueInit, count};
+        _state->queueFamilyProperties = Containers::Array<VkQueueFamilyProperties2>{ValueInit, count};
         for(VkQueueFamilyProperties2& i: _state->queueFamilyProperties)
             i.sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2;
         _state->getQueueFamilyPropertiesImplementation(*this, count, _state->queueFamilyProperties);
@@ -562,7 +562,7 @@ UnsignedInt enumerateDevicesInto(Instance& instance, Containers::ArrayView<Devic
     /* Allocate memory for the output, fetch the handles into it */
     Containers::ArrayView<VkPhysicalDevice> handles{reinterpret_cast<VkPhysicalDevice*>(out.data()), out.size()};
     UnsignedInt count = out.size();
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, instance->EnumeratePhysicalDevices(instance, &count, handles.data()));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(instance->EnumeratePhysicalDevices(instance, &count, handles.data()), Result::Incomplete);
 
     /* Expect the final count isn't larger than the output array */
     CORRADE_INTERNAL_ASSERT(count <= out.size());
@@ -587,7 +587,7 @@ Containers::Array<DeviceProperties> enumerateDevices(Instance& instance) {
 
     /* Fetch device handles, expect the device count didn't change between
        calls */
-    Containers::Array<DeviceProperties> out{Containers::NoInit, count};
+    Containers::Array<DeviceProperties> out{NoInit, count};
     CORRADE_INTERNAL_ASSERT_OUTPUT(Implementation::enumerateDevicesInto(instance, out) == out.size());
 
     return out;
@@ -599,7 +599,7 @@ Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance) {
 
     /* Pick the first by default */
     if(args.value("device").empty()) {
-        Containers::Array1<DeviceProperties> devices{Containers::NoInit};
+        Containers::Array1<DeviceProperties> devices{NoInit};
         if(!Implementation::enumerateDevicesInto(instance, devices)) {
             Error{} << "Vk::tryPickDevice(): no Vulkan devices found";
             return {};
@@ -611,7 +611,7 @@ Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance) {
     /* Pick by ID */
     if(args.value("device")[0] >= '0' && args.value("device")[0] <= '9') {
         const UnsignedInt id = args.value<UnsignedInt>("device");
-        Containers::Array<DeviceProperties> devices{Containers::NoInit, id + 1};
+        Containers::Array<DeviceProperties> devices{NoInit, id + 1};
         const UnsignedInt count = Implementation::enumerateDevicesInto(instance, devices);
         if(id >= count) {
             Error{} << "Vk::tryPickDevice(): index" << id << "out of bounds for" << count << "Vulkan devices";

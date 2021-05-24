@@ -30,7 +30,6 @@
 #include <android_native_app_glue.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
 #include "Implementation/Egl.h"
@@ -71,12 +70,16 @@ AndroidApplication::AndroidApplication(const Arguments& arguments, const Configu
     create(configuration, glConfiguration);
 }
 
-AndroidApplication::AndroidApplication(const Arguments& arguments, NoCreateT): _state{arguments}, _context{new GLContext{NoCreate, 0, nullptr}} {
+AndroidApplication::AndroidApplication(const Arguments& arguments, NoCreateT): _state{arguments}, _context{InPlaceInit, NoCreate} {
     /* Redirect debug output to Android log */
     _logOutput.reset(new LogOutput);
 }
 
 AndroidApplication::~AndroidApplication() {
+    /* Destroy Magnum context first to avoid it potentially accessing the
+       now-destroyed GL context after */
+    _context = Containers::NullOpt;
+
     eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     eglDestroyContext(_display, _glContext);
     eglDestroySurface(_display, _surface);
@@ -167,7 +170,7 @@ bool AndroidApplication::tryCreate(const Configuration& configuration, const GLC
     CORRADE_INTERNAL_ASSERT_OUTPUT(eglMakeCurrent(_display, _surface, _surface, _glContext));
 
     /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    return _context->tryCreate(glConfiguration);
 }
 
 Vector2i AndroidApplication::framebufferSize() const {

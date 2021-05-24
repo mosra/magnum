@@ -242,7 +242,7 @@ template<class> struct Traits;
         static const char* name() { return #type "2"; }                     \
         /* So we have the same interface in both cases */                   \
         static Containers::Array<Vk ## type ## 2> convert(const type& instance) { \
-            return {Containers::InPlaceInit, {*instance}};                  \
+            return {InPlaceInit, {*instance}};                              \
         }                                                                   \
     };
 _c(AttachmentDescription)
@@ -296,10 +296,10 @@ void RenderPassTest::attachmentDescriptionConstructNoInit() {
     new(&description) AttachmentDescription{NoInit};
     CORRADE_COMPARE(description->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<AttachmentDescription, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<AttachmentDescription, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, AttachmentDescription>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, AttachmentDescription>::value);
 }
 
 template<class From, class To> void RenderPassTest::attachmentDescriptionConstructFromVk() {
@@ -381,10 +381,10 @@ void RenderPassTest::attachmentReferenceConstructNoInit() {
     new(&reference) AttachmentReference{NoInit};
     CORRADE_COMPARE(reference->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<AttachmentReference, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<AttachmentReference, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, AttachmentReference>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, AttachmentReference>::value);
 }
 
 template<class From, class To> void RenderPassTest::attachmentReferenceConstructFromVk() {
@@ -443,10 +443,10 @@ void RenderPassTest::subpassDescriptionConstructNoInit() {
     new(&description) SubpassDescription{NoInit};
     CORRADE_COMPARE(description->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<SubpassDescription, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<SubpassDescription, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, SubpassDescription>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, SubpassDescription>::value);
 }
 
 void RenderPassTest::subpassDescriptionConstructInputAttachments() {
@@ -619,8 +619,8 @@ template<class From, class To> void RenderPassTest::subpassDescriptionConstructF
 }
 
 void RenderPassTest::subpassDescriptionConstructCopy() {
-    CORRADE_VERIFY(!(std::is_copy_constructible<SubpassDescription>{}));
-    CORRADE_VERIFY(!(std::is_copy_assignable<SubpassDescription>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<SubpassDescription>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<SubpassDescription>{});
 }
 
 void RenderPassTest::subpassDescriptionConstructMove() {
@@ -795,10 +795,10 @@ void RenderPassTest::subpassDependencyConstructNoInit() {
     new(&dependency) SubpassDependency{NoInit};
     CORRADE_COMPARE(dependency->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<SubpassDependency, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<SubpassDependency, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, SubpassDependency>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, SubpassDependency>::value);
 }
 
 template<class From, class To> void RenderPassTest::subpassDependencyConstructFromVk() {
@@ -876,10 +876,10 @@ void RenderPassTest::createInfoConstructNoInit() {
     new(&info) RenderPassCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<RenderPassCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<RenderPassCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, RenderPassCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, RenderPassCreateInfo>::value);
 }
 
 void RenderPassTest::createInfoConstructAttachments() {
@@ -1121,7 +1121,7 @@ void RenderPassTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, RenderPass>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, RenderPass>::value);
 }
 
 void RenderPassTest::constructCopy() {
@@ -1174,10 +1174,10 @@ void RenderPassTest::beginInfoConstructNoInit() {
     new(&info) RenderPassBeginInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<RenderPassBeginInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<RenderPassBeginInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, RenderPassBeginInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, RenderPassBeginInfo>::value);
 }
 
 void RenderPassTest::beginInfoConstructClears() {
@@ -1206,8 +1206,8 @@ void RenderPassTest::beginInfoConstructFromVk() {
 }
 
 void RenderPassTest::beginInfoConstructCopy() {
-    CORRADE_VERIFY(!(std::is_copy_constructible<RenderPassBeginInfo>{}));
-    CORRADE_VERIFY(!(std::is_copy_assignable<RenderPassBeginInfo>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<RenderPassBeginInfo>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<RenderPassBeginInfo>{});
 }
 
 void RenderPassTest::beginInfoConstructMove() {
@@ -1244,10 +1244,10 @@ void RenderPassTest::subpassBeginInfoConstructNoInit() {
     new(&info) SubpassBeginInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<SubpassBeginInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<SubpassBeginInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, SubpassBeginInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, SubpassBeginInfo>::value);
 }
 
 void RenderPassTest::subpassBeginInfoConstructFromVk() {
@@ -1269,10 +1269,10 @@ void RenderPassTest::subpassEndInfoConstructNoInit() {
     new(&info) SubpassEndInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<SubpassEndInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<SubpassEndInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, SubpassEndInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, SubpassEndInfo>::value);
 }
 
 void RenderPassTest::subpassEndInfoConstructFromVk() {

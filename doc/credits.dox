@@ -95,6 +95,8 @@ Are the below lists missing your name or something's wrong?
     @ref Audio::WavImporter "WavAudioImporter" plugin
 -   **Andrew ([\@sheerluck](https://github.com/sheerluck))** --- Gentoo package
     fixes
+-   **Andy Maloney** ([\@asmaloney](https://github.com/asmaloney)) --- CMake
+    fixes
 -   **Andy Somogyi** ([\@andysomogyi](https://github.com/andysomogyi)) ---
     bugreports, API design improvement suggestions
 -   **[\@ArEnSc](https://github.com/ArEnSc)** --- initial implementation of

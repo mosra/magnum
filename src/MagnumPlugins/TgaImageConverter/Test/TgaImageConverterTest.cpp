@@ -63,8 +63,8 @@ constexpr struct {
 } VerboseData[] {
     {"", {}, "", ""},
     {"verbose", ImageConverterFlag::Verbose,
-        "Trade::TgaImageConverter::exportToData(): converting from RGB to BGR\n",
-        "Trade::TgaImageConverter::exportToData(): converting from RGBA to BGRA\n"}
+        "Trade::TgaImageConverter::convertToData(): converting from RGB to BGR\n",
+        "Trade::TgaImageConverter::convertToData(): converting from RGBA to BGRA\n"}
 };
 
 /* Padded to four byte alignment (the resulting file is *not* padded) */
@@ -118,9 +118,9 @@ void TgaImageConverterTest::wrongFormat() {
     Error redirectError{&out};
 
     Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
-    const auto data = converter->exportToData(image);
+    const auto data = converter->convertToData(image);
     CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported pixel format PixelFormat::RG8Unorm\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::convertToData(): unsupported pixel format PixelFormat::RG8Unorm\n");
 }
 
 void TgaImageConverterTest::rgb() {
@@ -134,7 +134,7 @@ void TgaImageConverterTest::rgb() {
     Containers::Array<char> array;
     {
         Debug redirectOutput{&out};
-        array = converter->exportToData(OriginalRGB);
+        array = converter->convertToData(OriginalRGB);
     }
     CORRADE_VERIFY(out);
 
@@ -165,7 +165,7 @@ void TgaImageConverterTest::rgba() {
     Containers::Array<char> array;
     {
         Debug redirectOutput{&out};
-        array = converter->exportToData(OriginalRGBA);
+        array = converter->convertToData(OriginalRGBA);
     }
     CORRADE_VERIFY(out);
 

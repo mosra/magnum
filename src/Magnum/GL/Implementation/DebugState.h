@@ -25,9 +25,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <vector>
-
 #include "Magnum/GL/DebugOutput.h"
 #include "Magnum/GL/GL.h"
 
@@ -38,7 +35,7 @@
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct DebugState {
-    explicit DebugState(Context& context, std::vector<std::string>& extensions);
+    explicit DebugState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
 
     std::string(*getLabelImplementation)(GLenum, GLuint);
     void(*labelImplementation)(GLenum, GLuint, Containers::ArrayView<const char>);

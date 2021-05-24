@@ -37,12 +37,7 @@
 #define const
 #endif
 
-#ifdef AMBIENT_TEXTURE
-#ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 0)
-#endif
-uniform lowp sampler2D ambientTexture;
-#endif
+/* Uniforms */
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 4)
@@ -58,12 +53,6 @@ uniform lowp vec4 ambientColor
     ;
 
 #if LIGHT_COUNT
-#ifdef DIFFUSE_TEXTURE
-#ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 1)
-#endif
-uniform lowp sampler2D diffuseTexture;
-#endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 5)
@@ -73,20 +62,6 @@ uniform lowp vec4 diffuseColor
     = vec4(1.0)
     #endif
     ;
-
-#ifdef SPECULAR_TEXTURE
-#ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 2)
-#endif
-uniform lowp sampler2D specularTexture;
-#endif
-
-#ifdef NORMAL_TEXTURE
-#ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 3)
-#endif
-uniform lowp sampler2D normalTexture;
-#endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 6)
@@ -170,6 +145,40 @@ uniform lowp float lightRanges[LIGHT_COUNT]
     ;
 #endif
 
+/* Textures */
+
+#ifdef AMBIENT_TEXTURE
+#ifdef EXPLICIT_TEXTURE_LAYER
+layout(binding = 0)
+#endif
+uniform lowp sampler2D ambientTexture;
+#endif
+
+#if LIGHT_COUNT
+#ifdef DIFFUSE_TEXTURE
+#ifdef EXPLICIT_TEXTURE_LAYER
+layout(binding = 1)
+#endif
+uniform lowp sampler2D diffuseTexture;
+#endif
+
+#ifdef SPECULAR_TEXTURE
+#ifdef EXPLICIT_TEXTURE_LAYER
+layout(binding = 2)
+#endif
+uniform lowp sampler2D specularTexture;
+#endif
+
+#ifdef NORMAL_TEXTURE
+#ifdef EXPLICIT_TEXTURE_LAYER
+layout(binding = 3)
+#endif
+uniform lowp sampler2D normalTexture;
+#endif
+#endif
+
+/* Inputs */
+
 #if LIGHT_COUNT
 in mediump vec3 transformedNormal;
 #ifdef NORMAL_TEXTURE
@@ -195,6 +204,8 @@ in lowp vec4 interpolatedVertexColor;
 #ifdef INSTANCED_OBJECT_ID
 flat in highp uint interpolatedInstanceObjectId;
 #endif
+
+/* Outputs */
 
 #ifdef NEW_GLSL
 #ifdef EXPLICIT_ATTRIB_LOCATION

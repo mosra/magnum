@@ -52,7 +52,9 @@ namespace Implementation {
 @m_since_latest
 
 Wraps a @type_vk_keyword{Instance} and stores instance-specific Vulkan function
-pointers.
+pointers. An instance provides device enumeration and management of Vulkan
+layers that enable additional functionality such as command validation or
+tracing / debugging.
 
 @section Vk-Instance-creation Instance creation
 

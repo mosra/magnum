@@ -38,35 +38,65 @@
 namespace Magnum { namespace Shaders {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt> class DistanceFieldVector;
-typedef DistanceFieldVector<2> DistanceFieldVector2D;
-typedef DistanceFieldVector<3> DistanceFieldVector3D;
+template<UnsignedInt> class AbstractVectorGL;
+typedef AbstractVectorGL<2> AbstractVectorGL2D;
+typedef AbstractVectorGL<3> AbstractVectorGL3D;
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions> using AbstractVector CORRADE_DEPRECATED_ALIAS("use AbstractVectorGL instead") = AbstractVectorGL<dimensions>;
+typedef CORRADE_DEPRECATED("use AbstractVectorGL2D instead") AbstractVectorGL2D AbstractVector2D;
+typedef CORRADE_DEPRECATED("use AbstractVectorGL3D instead") AbstractVectorGL3D AbstractVector3D;
+#endif
 
-template<UnsignedInt> class AbstractVector;
-typedef AbstractVector<2> AbstractVector2D;
-typedef AbstractVector<3> AbstractVector3D;
+template<UnsignedInt> class DistanceFieldVectorGL;
+typedef DistanceFieldVectorGL<2> DistanceFieldVectorGL2D;
+typedef DistanceFieldVectorGL<3> DistanceFieldVectorGL3D;
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions> using DistanceFieldVector CORRADE_DEPRECATED_ALIAS("use DistanceFieldVectorGL instead") = DistanceFieldVectorGL<dimensions>;
+typedef CORRADE_DEPRECATED("use DistanceFieldVectorGL2D instead") DistanceFieldVectorGL2D DistanceFieldVector2D;
+typedef CORRADE_DEPRECATED("use DistanceFieldVectorGL3D instead") DistanceFieldVectorGL3D DistanceFieldVector3D;
+#endif
 
-template<UnsignedInt> class Flat;
-typedef Flat<2> Flat2D;
-typedef Flat<3> Flat3D;
+template<UnsignedInt> class FlatGL;
+typedef FlatGL<2> FlatGL2D;
+typedef FlatGL<3> FlatGL3D;
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions> using Flat CORRADE_DEPRECATED_ALIAS("use FlatGL instead") = FlatGL<dimensions>;
+typedef CORRADE_DEPRECATED("use FlatGL2D instead") FlatGL2D Flat2D;
+typedef CORRADE_DEPRECATED("use FlatGL3D instead") FlatGL3D Flat3D;
+#endif
 
 /* Generic is used only statically */
 
-class MeshVisualizer2D;
-class MeshVisualizer3D;
+class MeshVisualizerGL2D;
+class MeshVisualizerGL3D;
 #ifdef MAGNUM_BUILD_DEPRECATED
-typedef CORRADE_DEPRECATED("use MeshVisualizer3D instead") MeshVisualizer3D MeshVisualizer;
+typedef CORRADE_DEPRECATED("use MeshVisualizerGL2D instead") MeshVisualizerGL2D MeshVisualizer2D;
+typedef CORRADE_DEPRECATED("use MeshVisualizerGL3D instead") MeshVisualizerGL3D MeshVisualizer3D;
+typedef CORRADE_DEPRECATED("use MeshVisualizerGL3D instead") MeshVisualizerGL3D MeshVisualizer;
 #endif
 
-class Phong;
+class PhongGL;
+#ifdef MAGNUM_BUILD_DEPRECATED
+typedef CORRADE_DEPRECATED("use PhongGL instead") PhongGL Phong;
+#endif
 
-template<UnsignedInt> class Vector;
-typedef Vector<2> Vector2D;
-typedef Vector<3> Vector3D;
+template<UnsignedInt> class VectorGL;
+typedef VectorGL<2> VectorGL2D;
+typedef VectorGL<3> VectorGL3D;
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions> using Vector CORRADE_DEPRECATED_ALIAS("use VectorGL instead") = VectorGL<dimensions>;
+typedef CORRADE_DEPRECATED("use VectorGL2D instead") VectorGL2D Vector2D;
+typedef CORRADE_DEPRECATED("use VectorGL3D instead") VectorGL3D Vector3D;
+#endif
 
-template<UnsignedInt> class VertexColor;
-typedef VertexColor<2> VertexColor2D;
-typedef VertexColor<3> VertexColor3D;
+template<UnsignedInt> class VertexColorGL;
+typedef VertexColorGL<2> VertexColorGL2D;
+typedef VertexColorGL<3> VertexColorGL3D;
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions> using VertexColor CORRADE_DEPRECATED_ALIAS("use VertexColorGL instead") = VertexColorGL<dimensions>;
+typedef CORRADE_DEPRECATED("use VertexColorGL2D instead") VertexColorGL2D VertexColor2D;
+typedef CORRADE_DEPRECATED("use VertexColorGL3D instead") VertexColorGL3D VertexColor3D;
+#endif
 #endif
 
 }}

@@ -25,15 +25,26 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::Array, @ref Magnum::Array1D, @ref Magnum::Array2D, @ref Magnum::Array3D
+ * @m_deprecated_since_latest Use @ref Magnum/Math/Vector3.h instead.
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <type_traits>
 #include <Corrade/Containers/sequenceHelpers.h>
 #include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Math/Vector3.h"
+
+/* No CORRADE_DEPRECATED_FILE() as a lot of other headers include this for
+   implicit conversions */
 
 namespace Magnum {
 
@@ -45,13 +56,12 @@ namespace Implementation {
 @brief Array
 @tparam dimensions  Dimension count
 @tparam T           Data type
+@m_deprecated_since_latest Use @ref Math::Vector instead.
 
-Similar to @ref Math::Vector, but more suitable for storing enum values which
-don't need any math operations and fuzzy comparison (e.g. enum values). Unlike
-@ref Math::Vector this class has implicit constructor from one value.
+Unlike @ref Math::Vector this class has implicit constructor from one value.
 @see @ref Array1D, @ref Array2D, @ref Array3D
 */
-template<UnsignedInt dimensions, class T> class Array {
+template<UnsignedInt dimensions, class T> class CORRADE_DEPRECATED("use Math::Vector instead") Array {
     public:
         typedef T Type;                 /**< @brief Data type */
 
@@ -85,6 +95,12 @@ template<UnsignedInt dimensions, class T> class Array {
         constexpr /*implicit*/ Array(U value): Array(typename Containers::Implementation::GenerateSequence<dimensions>::Type{}, value) {}
         #endif
 
+        /** @brief Convert to a vector */
+        /*implicit*/ operator Math::Vector<dimensions, T>() const {
+            return Math::Vector<dimensions, T>::from(_data);
+        }
+
+        CORRADE_IGNORE_DEPRECATED_PUSH
         /** @brief Equality */
         bool operator==(const Array<dimensions, T>& other) const {
             for(UnsignedInt i = 0; i != dimensions; ++i)
@@ -96,6 +112,7 @@ template<UnsignedInt dimensions, class T> class Array {
         bool operator!=(const Array<dimensions, T>& other) const {
             return !operator==(other);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Value at given position */
         T& operator[](UnsignedInt pos) { return _data[pos]; }
@@ -120,11 +137,13 @@ template<UnsignedInt dimensions, class T> class Array {
         template<std::size_t ...sequence> constexpr explicit Array(Containers::Implementation::Sequence<sequence...>, T value): _data{Implementation::repeat(value, sequence)...} {}
 };
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 /**
 @brief One-dimensional array
 @tparam T           Data type
+@m_deprecated_since_latest Use @ref Math::Vector instead.
 */
-template<class T> class Array1D: public Array<1, T> {
+template<class T> class CORRADE_DEPRECATED("use Math::Vector instead") Array1D: public Array<1, T> {
     public:
         /** @copydoc Array::Array() */
         constexpr /*implicit*/ Array1D() = default;
@@ -135,8 +154,8 @@ template<class T> class Array1D: public Array<1, T> {
          */
         constexpr /*implicit*/ Array1D(T x): Array<1, T>(x) {}
 
-        /** @brief Copy constructor */
-        constexpr Array1D(const Array<1, T>& other): Array<1, T>(other) {}
+        /** @brief Construct from a vector */
+        constexpr /*implicit*/ Array1D(const Math::Vector<1, T>& vector): Array1D{vector[0]} {}
 
         T& x() { return Array<1, T>::_data[0]; } /**< @brief X component */
         constexpr T x() const { return Array<1, T>::_data[0]; } /**< @overload */
@@ -145,8 +164,9 @@ template<class T> class Array1D: public Array<1, T> {
 /**
 @brief Two-dimensional array
 @tparam T           Data type
+@m_deprecated_since_latest Use @ref Math::Vector2 instead.
 */
-template<class T> class Array2D: public Array<2, T> {
+template<class T> class CORRADE_DEPRECATED("use Math::Vector2 instead")  Array2D: public Array<2, T> {
     public:
         /** @copydoc Array::Array() */
         constexpr /*implicit*/ Array2D() = default;
@@ -158,11 +178,16 @@ template<class T> class Array2D: public Array<2, T> {
          */
         constexpr /*implicit*/ Array2D(T x, T y): Array<2, T>(x, y) {}
 
+        /** @brief Construct from a vector */
+        constexpr /*implicit*/ Array2D(const Math::Vector2<T>& vector): Array2D{vector.x(), vector.y()} {}
+
         /** @brief Initializer-list constructor */
         constexpr /*implicit*/ Array2D(T value): Array<2, T>(value, value) {}
 
-        /** @brief Copy constructor */
-        constexpr Array2D(const Array<2, T>& other): Array<2, T>(other) {}
+        /** @brief Convert to a vector */
+        /*implicit*/ operator Math::Vector2<T>() const {
+            return Math::Vector2<T>::from(Array<2, T>::_data);
+        }
 
         T& x() { return Array<2, T>::_data[0]; } /**< @brief X component */
         constexpr T x() const { return Array<2, T>::_data[0]; } /**< @overload */
@@ -173,8 +198,9 @@ template<class T> class Array2D: public Array<2, T> {
 /**
 @brief Three-dimensional array
 @tparam T           Data type
+@m_deprecated_since_latest Use @ref Math::Vector3 instead.
 */
-template<class T> class Array3D: public Array<3, T> {
+template<class T> class CORRADE_DEPRECATED("use Math::Vector3 instead") Array3D: public Array<3, T> {
     public:
         /** @copydoc Array::Array() */
         constexpr /*implicit*/ Array3D() {}
@@ -187,11 +213,16 @@ template<class T> class Array3D: public Array<3, T> {
          */
         constexpr /*implicit*/ Array3D(T x, T y, T z): Array<3, T>(x, y, z) {}
 
+        /** @brief Construct from a vector */
+        constexpr /*implicit*/ Array3D(const Math::Vector3<T>& vector): Array3D{vector.x(), vector.y(), vector.z()} {}
+
         /** @brief Initializer-list constructor */
         constexpr /*implicit*/ Array3D(T value): Array<3, T>(value, value, value) {}
 
-        /** @brief Copy constructor */
-        constexpr Array3D(const Array<3, T>& other): Array<3, T>(other) {}
+        /** @brief Convert to a vector */
+        /*implicit*/ operator Math::Vector3<T>() const {
+            return Math::Vector3<T>::from(Array<3, T>::_data);
+        }
 
         T& x() { return Array<3, T>::_data[0]; } /**< @brief X component */
         constexpr T x() const { return Array<3, T>::_data[0]; } /**< @overload */
@@ -210,7 +241,10 @@ template<class T> class Array3D: public Array<3, T> {
         } /**< @overload */
 };
 
-/** @debugoperator{Array} */
+/**
+@debugoperator{Array}
+@m_deprecated_since_latest Use @ref Math::Vector instead.
+*/
 template<UnsignedInt dimensions, class T> Debug& operator<<(Debug& debug, const Array<dimensions, T>& value) {
     debug << "Array(" << Debug::nospace;
     for(UnsignedInt i = 0; i != dimensions; ++i) {
@@ -220,21 +254,34 @@ template<UnsignedInt dimensions, class T> Debug& operator<<(Debug& debug, const 
     return debug << Debug::nospace << ")";
 }
 
-/** @debugoperator{Array1D} */
+/**
+@debugoperator{Array1D}
+@m_deprecated_since_latest Use @ref Math::Vector instead.
+*/
 template<class T> inline Debug& operator<<(Debug& debug, const Array1D<T>& value) {
     return debug << static_cast<const Array<1, T>&>(value);
 }
 
-/** @debugoperator{Array2D} */
+/**
+@debugoperator{Array2D}
+@m_deprecated_since_latest Use @ref Math::Vector2 instead.
+*/
 template<class T> inline Debug& operator<<(Debug& debug, const Array2D<T>& value) {
     return debug << static_cast<const Array<2, T>&>(value);
 }
 
-/** @debugoperator{Array3D} */
+/**
+@debugoperator{Array3D}
+@m_deprecated_since_latest Use @ref Math::Vector3 instead.
+*/
 template<class T> inline Debug& operator<<(Debug& debug, const Array3D<T>& value) {
     return debug << static_cast<const Array<3, T>&>(value);
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }
+#else
+#error use Magnum/Math/Vector3.h instead
+#endif
 
 #endif

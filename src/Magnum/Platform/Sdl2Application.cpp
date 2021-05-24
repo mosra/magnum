@@ -26,7 +26,7 @@
 
 #include "Sdl2Application.h"
 
-#include <cstring>
+#include <cstring> /** @todo remove, needed for std::strlen() in TextInputEvent */
 #ifdef CORRADE_TARGET_CLANG_CL
 /* SDL does #pragma pack(push,8) and #pragma pack(pop,8) in different headers
    (begin_code.h and end_code.h) and clang-cl doesn't like that, even though it
@@ -56,7 +56,6 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 #endif
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
@@ -68,6 +67,8 @@
 #endif
 
 namespace Magnum { namespace Platform {
+
+using namespace Containers::Literals;
 
 namespace {
 
@@ -123,7 +124,7 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
 {
     Utility::Arguments args{Implementation::windowScalingArguments()};
     #ifdef MAGNUM_TARGET_GL
-    _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});
+    _context.emplace(NoCreate, args, arguments.argc, arguments.argv);
     #else
     /** @todo this is duplicated here and in GlfwApplication, figure out a nice
         non-duplicated way to handle this */
@@ -463,10 +464,19 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     _dpiScaling = dpiScaling(configuration);
     const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
-    /* Request debug context if --magnum-gpu-validation is enabled */
+    /* Request debug context if GpuValidation is enabled either via the
+       configuration or via command-line */
     GLConfiguration::Flags glFlags = glConfiguration.flags();
-    if(_context->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+    if((glFlags & GLConfiguration::Flag::GpuValidation) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         glFlags |= GLConfiguration::Flag::Debug;
+    #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006
+    else if((glFlags & GLConfiguration::Flag::GpuValidationNoError) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidationNoError))
+        glFlags |= GLConfiguration::Flag::NoError;
+    #endif
+
+    #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_NO_ERROR, glFlags >= GLConfiguration::Flag::NoError);
+    #endif
 
     /* Set context version, if user-specified */
     if(glConfiguration.version() != GL::Version::None) {
@@ -482,7 +492,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         #endif
 
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glFlags));
+        /* Mask out the upper 32bits used for other flags */
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(UnsignedLong(glFlags) & 0xffffffffu));
 
     /* Request usable version otherwise */
     } else {
@@ -499,7 +510,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         #endif
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glFlags));
+        /* Mask out the upper 32bits used for other flags */
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(UnsignedLong(glFlags) & 0xffffffffu));
         #else
         /* For ES the major context version is compile-time constant */
         #ifdef MAGNUM_TARGET_GLES3
@@ -541,26 +553,18 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
        version, they force the version to the one specified, which is
        completely useless behavior. */
     #ifndef CORRADE_TARGET_APPLE
-    constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
-    #ifdef CORRADE_TARGET_WINDOWS
-    constexpr static const char intelVendorString[] = "Intel";
-    #endif
-    constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
-    const char* vendorString;
+    Containers::StringView vendorString;
     #endif
     if(glConfiguration.version() == GL::Version::None && (!_glContext
         #ifndef CORRADE_TARGET_APPLE
-        /* If context creation fails *really bad*, glGetString() may actually
-           return nullptr. Check for that to avoid crashes deep inside
-           strncmp(). Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE
-           WORKAROUNDS */
+        /* Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE WORKAROUNDS */
         || (vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR)),
-        vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+        (vendorString == "NVIDIA Corporation"_s ||
          #ifdef CORRADE_TARGET_WINDOWS
-         std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
+         vendorString == "Intel"_s ||
          #endif
-         std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0)
-         && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"))
+         vendorString == "ATI Technologies Inc."_s)
+        && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s))
         #endif
     )) {
         /* Don't print any warning when doing the workaround, because the bug
@@ -577,8 +581,10 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
         /* Discard the ForwardCompatible flag for the fallback. Having it set
            makes the fallback context creation fail on Mesa's Zink (which is
-           just 2.1) and I assume on others as well. */
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glFlags) & int(~GLConfiguration::Flag::ForwardCompatible));
+           just 2.1) and I assume on others as well.
+
+           Also mask out the upper 32bits used for other flags. */
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(UnsignedLong(glFlags & ~GLConfiguration::Flag::ForwardCompatible) & 0xffffffffu));
 
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -664,7 +670,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     #endif
 
     /* Destroy everything also when the Magnum context creation fails */
-    if(!_context->tryCreate()) {
+    if(!_context->tryCreate(glConfiguration)) {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_GL_DeleteContext(_glContext);
         SDL_DestroyWindow(_window);
@@ -789,7 +795,9 @@ Sdl2Application::~Sdl2Application() {
        all. */
 
     #ifdef MAGNUM_TARGET_GL
-    _context.reset();
+    /* Destroy Magnum context first to avoid it potentially accessing the
+       now-destroyed GL context after */
+    _context = Containers::NullOpt;
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     if(_glContext) SDL_GL_DeleteContext(_glContext);
@@ -1052,7 +1060,7 @@ constexpr const char* CursorMap[] {
 
 void Sdl2Application::setCursor(Cursor cursor) {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(_cursors));
+    CORRADE_ASSERT(_window, "Platform::Sdl2Application::setCursor(): no window opened", );
 
     if(cursor == Cursor::Hidden) {
         SDL_ShowCursor(SDL_DISABLE);
@@ -1069,11 +1077,17 @@ void Sdl2Application::setCursor(Cursor cursor) {
         SDL_SetRelativeMouseMode(SDL_FALSE);
     }
 
+    /* The second condition could be a static assert but it doesn't let me
+       because "this pointer only accessible in a constexpr function". Thanks
+       for nothing, C++. */
+    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(_cursors) && Containers::arraySize(_cursors) == Containers::arraySize(CursorMap));
+
     if(!_cursors[UnsignedInt(cursor)])
         _cursors[UnsignedInt(cursor)] = SDL_CreateSystemCursor(CursorMap[UnsignedInt(cursor)]);
 
     SDL_SetCursor(_cursors[UnsignedInt(cursor)]);
     #else
+    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::setCursor(): no window opened", );
     _cursor = cursor;
     CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(CursorMap));
     #pragma GCC diagnostic push
@@ -1176,15 +1190,13 @@ Sdl2Application::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 8}, _depthBufferSize{24}, _stencilBufferSize{0},
     _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    , _version(GL::Version::None),
+    , _version{GL::Version::None}, _srgbCapable{false}
+    #endif
+{
     #ifndef MAGNUM_TARGET_GLES
-    _flags{Flag::ForwardCompatible},
-    #else
-    _flags{},
+    addFlags(Flag::ForwardCompatible);
     #endif
-    _srgbCapable{false}
-    #endif
-    {}
+}
 
 Sdl2Application::GLConfiguration::~GLConfiguration() = default;
 #endif
