@@ -32,10 +32,6 @@
 #define const
 #endif
 
-#ifndef EXPLICIT_UNIFORM_LOCATION
-#define layout(arg)
-#endif
-
 #if defined(WIREFRAME_RENDERING) && defined(GL_ES) && __VERSION__ < 300
 #extension GL_OES_standard_derivatives : enable
 #endif
