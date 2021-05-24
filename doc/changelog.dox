@@ -403,6 +403,9 @@ See also:
 -   For meshes with multiple sets of vertex attributes (such as texture
     coordinates), @ref MeshTools::compile() should be using only the first set
     but it wasn't.
+-   @ref Shaders::MeshVisualizerGL3D "Shaders::MeshVisualizerGL*D" shader
+    compilation failed with missing @glsl gl_PrimitiveID @ce due to GLSL 3.20
+    not being properly used for the @glsl #version @ce directive
 -   @ref Shaders::PhongGL was normalizing light direction in vertex shader,
     causing the fragment-interpolated direction being incorrect with visible
     artifacts on long polygons under low light angle

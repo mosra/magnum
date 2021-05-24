@@ -137,7 +137,8 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
     /* Extended in MeshVisualizerGL3D for TBN visualization */
     CORRADE_INTERNAL_ASSERT(!(_flags & FlagBase::Wireframe) || _flags & FlagBase::NoGeometryShader || version >= GL::Version::GL320);
     #elif !defined(MAGNUM_TARGET_WEBGL)
-    const GL::Version version = context.supportedVersion({GL::Version::GLES310, GL::Version::GLES300, GL::Version::GLES200});
+    /* ES 3.2 needed for gl_PrimitiveID */
+    const GL::Version version = context.supportedVersion({GL::Version::GLES320, GL::Version::GLES310, GL::Version::GLES300, GL::Version::GLES200});
     /* Extended in MeshVisualizerGL3D for TBN visualization */
     CORRADE_INTERNAL_ASSERT(!(_flags & FlagBase::Wireframe) || _flags & FlagBase::NoGeometryShader || version >= GL::Version::GLES310);
     #else
