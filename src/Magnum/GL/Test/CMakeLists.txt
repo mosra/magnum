@@ -168,6 +168,14 @@ if(BUILD_GL_TESTS)
         if(WITH_TGAIMPORTER)
             target_link_libraries(GLRendererGLTest PRIVATE TgaImporter)
         endif()
+    else()
+        # So the plugins get properly built when building the test
+        if(WITH_ANYIMAGEIMPORTER)
+            add_dependencies(GLRendererGLTest AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            add_dependencies(GLRendererGLTest TgaImporter)
+        endif()
     endif()
 
     corrade_add_test(GLShaderGLTest ShaderGLTest.cpp
