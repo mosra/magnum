@@ -76,6 +76,17 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
     if(flags >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
     #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flags >= Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_draw_parameters);
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ANGLE::multi_draw);
+        #else
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::WEBGL::multi_draw);
+        #endif
+    }
+    #endif
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
@@ -102,6 +113,7 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
             drawCount));
+        vert.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
     vert.addSource(rs.get("generic.glsl"))
@@ -214,6 +226,7 @@ Debug& operator<<(Debug& debug, const VertexColorGLFlag value) {
         #define _c(v) case VertexColorGLFlag::v: return debug << "::" #v;
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
+        _c(MultiDraw)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -225,6 +238,7 @@ Debug& operator<<(Debug& debug, const VertexColorGLFlag value) {
 Debug& operator<<(Debug& debug, const VertexColorGLFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "Shaders::VertexColorGL::Flags{}", {
         #ifndef MAGNUM_TARGET_GLES2
+        VertexColorGLFlag::MultiDraw, /* Superset of UniformBuffers */
         VertexColorGLFlag::UniformBuffers
         #endif
     });

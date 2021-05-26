@@ -129,24 +129,27 @@ struct DistanceFieldVectorGLTest: GL::OpenGLTester {
     Rendering tests done:
 
     [B] base
-    [O] draw offset
+    [O] UBOs + draw offset
+    [M] multidraw
 
-    Mesa Intel                      BO
-               ES2                   x
-               ES3                  BO
+    Mesa Intel                      BOM
+               ES2                   xx
+               ES3                  BOx
     Mesa AMD                        B
     Mesa llvmpipe                   B
-    SwiftShader ES2                 Bx
+    SwiftShader ES2                 Bxx
                 ES3                 B
-    ARM Mali (Huawei P10) ES2       Bx
-                          ES3       BO
-    WebGL (on Mesa Intel) 1.0       Bx
-                          2.0       BO
+    ANGLE ES2                        xx
+          ES3                       BOM
+    ARM Mali (Huawei P10) ES2       Bxx
+                          ES3       BOx
+    WebGL (on Mesa Intel) 1.0       Bxx
+                          2.0       BOM
     NVidia
     Intel Windows
-    AMD macOS
-    Intel macOS                     BO
-    iPhone 6 w/ iOS 12.4 ES3        B
+    AMD macOS                         x
+    Intel macOS                     BOx
+    iPhone 6 w/ iOS 12.4 ES3        B x
 */
 
 using namespace Math::Literals;
@@ -171,6 +174,7 @@ constexpr struct {
     /* SwiftShader has 256 uniform vectors at most, per-draw is 4+1 in 3D case
        and 3+1 in 2D, per-material 4 */
     {"multiple materials, draws", DistanceFieldVectorGL2D::Flag::UniformBuffers, 16, 48},
+    {"multidraw with all the things", DistanceFieldVectorGL2D::Flag::MultiDraw|DistanceFieldVectorGL2D::Flag::TextureTransformation, 16, 48}
 };
 
 constexpr struct {
@@ -213,16 +217,21 @@ constexpr struct {
     const char* name;
     const char* expected2D;
     const char* expected3D;
+    DistanceFieldVectorGL2D::Flags flags;
     UnsignedInt materialCount, drawCount;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
     {"bind with offset", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
-        1, 1, 16,
+        {}, 1, 1, 16,
         /* Minor differences on ARM Mali */
         1.67f, 0.012f},
     {"draw offset", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
-        2, 3, 1,
+        {}, 2, 3, 1,
+        /* Minor differences on ARM Mali */
+        1.67f, 0.012f},
+    {"multidraw", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
+        DistanceFieldVectorGL2D::Flag::MultiDraw, 2, 3, 1,
         /* Minor differences on ARM Mali */
         1.67f, 0.012f},
 };
@@ -368,6 +377,19 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
     if((data.flags & DistanceFieldVectorGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
+
+    if(data.flags >= DistanceFieldVectorGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
 
     DistanceFieldVectorGL<dimensions> shader{data.flags, data.materialCount, data.drawCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
@@ -1036,6 +1058,19 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    if(data.flags >= DistanceFieldVectorGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1131,7 +1166,7 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
         .setMaterialId(data.drawCount == 1 ? 0 : 0);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    DistanceFieldVectorGL2D shader{DistanceFieldVectorGL2D::Flag::UniformBuffers|DistanceFieldVectorGL2D::Flag::TextureTransformation, data.materialCount, data.drawCount};
+    DistanceFieldVectorGL2D shader{DistanceFieldVectorGL2D::Flag::UniformBuffers|DistanceFieldVectorGL2D::Flag::TextureTransformation|data.flags, data.materialCount, data.drawCount};
     shader.bindVectorTexture(vector);
 
     /* Just one draw, rebinding UBOs each time */
@@ -1178,18 +1213,23 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
             sizeof(TextureTransformationUniform));
         shader.draw(triangle);
 
-    /* Otherwise using the draw offset */
+    /* Otherwise using the draw offset / multidraw */
     } else {
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform)
             .bindTextureTransformationBuffer(textureTransformationUniform);
-        shader.setDrawOffset(0)
-            .draw(circle);
-        shader.setDrawOffset(1)
-            .draw(square);
-        shader.setDrawOffset(2)
-            .draw(triangle);
+
+        if(data.flags >= DistanceFieldVectorGL2D::Flag::MultiDraw)
+            shader.draw({circle, square, triangle});
+        else {
+            shader.setDrawOffset(0)
+                .draw(circle);
+            shader.setDrawOffset(1)
+                .draw(square);
+            shader.setDrawOffset(2)
+                .draw(triangle);
+        }
     }
 
     /*
@@ -1213,6 +1253,19 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
+
+    if(data.flags >= DistanceFieldVectorGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -1314,7 +1367,7 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
         .setMaterialId(data.drawCount == 1 ? 0 : 0);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    DistanceFieldVectorGL3D shader{DistanceFieldVectorGL3D::Flag::UniformBuffers|DistanceFieldVectorGL3D::Flag::TextureTransformation, data.materialCount, data.drawCount};
+    DistanceFieldVectorGL3D shader{DistanceFieldVectorGL3D::Flag::UniformBuffers|DistanceFieldVectorGL3D::Flag::TextureTransformation|data.flags, data.materialCount, data.drawCount};
     shader.bindVectorTexture(vector);
 
     /* Just one draw, rebinding UBOs each time */
@@ -1361,18 +1414,23 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
             sizeof(TextureTransformationUniform));
         shader.draw(cone);
 
-    /* Otherwise using the draw offset */
+    /* Otherwise using the draw offset / multidraw */
     } else {
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform)
             .bindTextureTransformationBuffer(textureTransformationUniform);
-        shader.setDrawOffset(0)
-            .draw(sphere);
-        shader.setDrawOffset(1)
-            .draw(plane);
-        shader.setDrawOffset(2)
-            .draw(cone);
+
+        if(data.flags >= DistanceFieldVectorGL3D::Flag::MultiDraw)
+            shader.draw({sphere, plane, cone});
+        else {
+            shader.setDrawOffset(0)
+                .draw(sphere);
+            shader.setDrawOffset(1)
+                .draw(plane);
+            shader.setDrawOffset(2)
+                .draw(cone);
+        }
     }
 
     /*

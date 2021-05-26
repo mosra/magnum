@@ -41,6 +41,9 @@ struct VertexColorGL_Test: TestSuite::Tester {
 
     void debugFlag();
     void debugFlags();
+    #ifndef MAGNUM_TARGET_GLES2
+    void debugFlagsSupersets();
+    #endif
 };
 
 VertexColorGL_Test::VertexColorGL_Test() {
@@ -52,7 +55,11 @@ VertexColorGL_Test::VertexColorGL_Test() {
         &VertexColorGL_Test::constructCopy<3>,
 
         &VertexColorGL_Test::debugFlag,
-        &VertexColorGL_Test::debugFlags});
+        &VertexColorGL_Test::debugFlags,
+        #ifndef MAGNUM_TARGET_GLES2
+        &VertexColorGL_Test::debugFlagsSupersets
+        #endif
+    });
 }
 
 template<UnsignedInt dimensions> void VertexColorGL_Test::constructNoCreate() {
@@ -96,6 +103,15 @@ void VertexColorGL_Test::debugFlags() {
     CORRADE_COMPARE(out.str(), "Shaders::VertexColorGL::Flag(0xf0) Shaders::VertexColorGL::Flags{}\n");
     #endif
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void VertexColorGL_Test::debugFlagsSupersets() {
+    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
+    std::ostringstream out;
+    Debug{&out} << (VertexColorGL3D::Flag::MultiDraw|VertexColorGL3D::Flag::UniformBuffers);
+    CORRADE_COMPARE(out.str(), "Shaders::VertexColorGL::Flag::MultiDraw\n");
+}
+#endif
 
 }}}}
 

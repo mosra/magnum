@@ -102,9 +102,20 @@ void FlatGL_Test::debugFlagsSupersets() {
 
     /* InstancedTextureOffset is a superset of TextureTransformation so only
        one should be printed */
-    std::ostringstream out;
-    Debug{&out} << (FlatGL3D::Flag::InstancedTextureOffset|FlatGL3D::Flag::TextureTransformation);
-    CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::InstancedTextureOffset\n");
+    {
+        std::ostringstream out;
+        Debug{&out} << (FlatGL3D::Flag::InstancedTextureOffset|FlatGL3D::Flag::TextureTransformation);
+        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::InstancedTextureOffset\n");
+    }
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
+    {
+        std::ostringstream out;
+        Debug{&out} << (FlatGL3D::Flag::MultiDraw|FlatGL3D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::MultiDraw\n");
+    }
+    #endif
 }
 
 }}}}

@@ -87,6 +87,7 @@ uniform lowp float smoothness
 /* Uniform buffers */
 
 #else
+#ifndef MULTI_DRAW
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -95,6 +96,7 @@ uniform highp uint drawOffset
     = 0u
     #endif
     ;
+#endif
 
 /* Keep in sync with MeshVisualizer.vert and MeshVisualizer.frag. Can't
    "outsource" to a common file because the #extension directives need to be
@@ -166,6 +168,10 @@ in highp float interpolatedVsMappedVertexId[];
 flat in highp uint interpolatedVsPrimitiveId[];
 #endif
 
+#ifdef MULTI_DRAW
+flat in highp uint vsDrawId[];
+#endif
+
 /* Outputs */
 
 layout(triangle_strip, max_vertices = MAX_VERTICES) out;
@@ -184,6 +190,10 @@ out highp float interpolatedMappedVertexId;
 #endif
 #ifdef PRIMITIVE_ID_FROM_VERTEX_ID
 flat out highp uint interpolatedPrimitiveId;
+#endif
+
+#ifdef MULTI_DRAW
+flat out highp uint drawId;
 #endif
 
 #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
@@ -255,7 +265,13 @@ void emitQuad(
 
 void main() {
     #ifdef UNIFORM_BUFFERS
-    mediump const uint materialId = draws[drawOffset].draw_materialIdReserved & 0xffffu;
+    #ifdef MULTI_DRAW
+    drawId = vsDrawId[0];
+    #else
+    #define drawId drawOffset
+    #endif
+
+    mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
     #if (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)) && (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID))
     lowp const vec4 color = materials[materialId].color;
     lowp const vec4 wireframeColor = materials[materialId].wireframeColor;

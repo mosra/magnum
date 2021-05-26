@@ -180,23 +180,26 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     [D] primitive/vertex/object ID
     [T] TBN visualization
     [O] draw offset
+    [M] multidraw
 
-    Mesa Intel                      WDTO
-               ES2                     x
-               ES3
+    Mesa Intel                      WDTOM
+               ES2                     xx
+               ES3                      x
     Mesa AMD                        WDT
     Mesa llvmpipe                   WDT
-    SwiftShader ES2                 WDxx
+    SwiftShader ES2                 WDxxx
                 ES3                 WDx
-    ARM Mali (Huawei P10) ES2       W xx
-                          ES3       W  O (WDT big diffs, needs investigation)
-    WebGL (on Mesa Intel) 1.0       W xx
-                          2.0       W x
+    ANGLE ES2                          xx
+          ES3                       WDxOM
+    ARM Mali (Huawei P10) ES2       W xxx
+                          ES3       W  Ox (WDT big diffs, needs investigation)
+    WebGL (on Mesa Intel) 1.0       W xxx
+                          2.0       W x M
     NVidia
     Intel Windows
     AMD macOS
-    Intel macOS                     WDTO
-    iPhone 6 w/ iOS 12.4 ES3        W x
+    Intel macOS                     WDTOx
+    iPhone 6 w/ iOS 12.4 ES3        W x x
 */
 
 using namespace Math::Literals;
@@ -232,6 +235,10 @@ constexpr struct {
     /* SwiftShader has 256 uniform vectors at most, per-2D-draw is 4,
        per-material 4, two need to be left for drawOffset + viewportSize */
     {"multiple materials, draws", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 8, 55},
+    {"multidraw with wireframe w/o GS and vertex ID", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader|MeshVisualizerGL2D::Flag::VertexId, 8, 55},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw with wireframe and primitive ID", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::PrimitiveId, 8, 55},
+    #endif
     /* The rest is basically a copy of ConstructData2D with UniformBuffers
        added */
     #ifndef MAGNUM_TARGET_WEBGL
@@ -293,6 +300,10 @@ constexpr struct {
     /* SwiftShader has 256 uniform vectors at most, per-3D-draw is 4+4,
        per-material 4, plus 4 for projection */
     {"multiple materials, draws", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 6, 28},
+    {"multidraw with wireframe w/o GS and vertex ID", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader|MeshVisualizerGL3D::Flag::VertexId, 6, 28},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw with wireframe, primitive ID and TBN", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::PrimitiveId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 6, 28},
+    #endif
     /* The rest is basically a copy of ConstructData2D with UniformBuffers
        added */
     #ifndef MAGNUM_TARGET_WEBGL
@@ -605,6 +616,23 @@ constexpr struct {
         2, 3, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, wireframe", "multidraw-wireframe2D.tga",
+        MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe,
+        2, 3, 1,
+        /* Minor differences on ARM Mali */
+        0.67f, 0.01f},
+    #endif
+    {"multidraw, wireframe w/o GS", "multidraw-wireframe-nogeo2D.tga",
+        MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
+        2, 3, 1,
+        /* Minor differences on ARM Mali */
+        0.67f, 0.02f},
+    {"multidraw, vertex ID", "multidraw-vertexid2D.tga",
+        MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::VertexId,
+        2, 3, 1,
+        /* Minor differences on ARM Mali */
+        0.67f, 0.01f},
 };
 
 constexpr struct {
@@ -648,6 +676,24 @@ constexpr struct {
         6.0f, 0.04f},
     {"draw offset, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::VertexId,
+        2, 3, 1,
+        /* Minor differences on ARM Mali */
+        0.67f, 0.01f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, wireframe", "multidraw-wireframe3D.tga",
+        MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe,
+        2, 3, 1, 0.0f, 0.0f},
+    {"multidraw, wireframe + TBN", "multidraw-wireframe-tbn3D.tga",
+        MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
+        2, 3, 1, 0.0f, 0.0f},
+    #endif
+    {"multidraw, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
+        MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
+        2, 3, 1,
+        /* Minor differences on ARM Mali */
+        6.0f, 0.04f},
+    {"multidraw, vertex ID", "multidraw-vertexid3D.tga",
+        MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::VertexId,
         2, 3, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
@@ -998,6 +1044,19 @@ void MeshVisualizerGLTest::constructUniformBuffers2D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    if(data.flags >= MeshVisualizerGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
     MeshVisualizerGL2D shader{data.flags, data.materialCount, data.drawCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
@@ -1122,6 +1181,19 @@ void MeshVisualizerGLTest::constructUniformBuffers3D() {
     if(data.flags & MeshVisualizerGL3D::Flag::UniformBuffers && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
+
+    if(data.flags >= MeshVisualizerGL3D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
 
     MeshVisualizerGL3D shader{data.flags, data.materialCount, data.drawCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
@@ -3158,6 +3230,19 @@ void MeshVisualizerGLTest::renderMulti2D() {
     }
     #endif
 
+    if(data.flags >= MeshVisualizerGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
     /* Circle is a fan, plane is a strip, make it indexed first */
     Trade::MeshData circleData = MeshTools::generateIndices(Primitives::circle2DSolid(8));
     Trade::MeshData squareData = MeshTools::generateIndices(Primitives::squareSolid());
@@ -3273,17 +3358,22 @@ void MeshVisualizerGLTest::renderMulti2D() {
             sizeof(MeshVisualizerDrawUniform2D));
         shader.draw(triangle);
 
-    /* Otherwise using the draw offset */
+    /* Otherwise using the draw offset / multidraw */
     } else {
         shader.bindMaterialBuffer(materialUniform)
             .bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform);
-        shader.setDrawOffset(0)
-            .draw(circle);
-        shader.setDrawOffset(1)
-            .draw(square);
-        shader.setDrawOffset(2)
-            .draw(triangle);
+
+        if(data.flags >= MeshVisualizerGL2D::Flag::MultiDraw)
+            shader.draw({circle, square, triangle});
+        else {
+            shader.setDrawOffset(0)
+                .draw(circle);
+            shader.setDrawOffset(1)
+                .draw(square);
+            shader.setDrawOffset(2)
+                .draw(triangle);
+        }
     };
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -3332,6 +3422,19 @@ void MeshVisualizerGLTest::renderMulti3D() {
         #endif
     }
     #endif
+
+    if(data.flags >= MeshVisualizerGL3D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
 
     Trade::MeshData sphereData = MeshTools::interleave(Primitives::icosphereSolid(0), {
         /* The icosphere doesn't have tangents and we don't use them, but
@@ -3462,17 +3565,22 @@ void MeshVisualizerGLTest::renderMulti3D() {
             sizeof(MeshVisualizerDrawUniform3D));
         shader.draw(cone);
 
-    /* Otherwise using the draw offset */
+    /* Otherwise using the draw offset / multidraw */
     } else {
         shader.bindMaterialBuffer(materialUniform)
             .bindTransformationBuffer(transformationUniform)
             .bindDrawBuffer(drawUniform);
-        shader.setDrawOffset(0)
-            .draw(sphere);
-        shader.setDrawOffset(1)
-            .draw(plane);
-        shader.setDrawOffset(2)
-            .draw(cone);
+
+        if(data.flags >= MeshVisualizerGL3D::Flag::MultiDraw)
+            shader.draw({sphere, plane, cone});
+        else {
+            shader.setDrawOffset(0)
+                .draw(sphere);
+            shader.setDrawOffset(1)
+                .draw(plane);
+            shader.setDrawOffset(2)
+                .draw(cone);
+        }
     };
 
     MAGNUM_VERIFY_NO_GL_ERROR();

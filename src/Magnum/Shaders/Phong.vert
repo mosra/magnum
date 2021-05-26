@@ -27,6 +27,14 @@
 #extension GL_EXT_gpu_shader4: require
 #endif
 
+#ifdef MULTI_DRAW
+#ifndef GL_ES
+#extension GL_ARB_shader_draw_parameters: require
+#else /* covers WebGL as well */
+#extension GL_ANGLE_multi_draw: require
+#endif
+#endif
+
 #ifndef NEW_GLSL
 #define in attribute
 #define out varying
@@ -273,17 +281,33 @@ out highp vec4 lightDirections[LIGHT_COUNT];
 out highp vec3 cameraDirection;
 #endif
 
+#ifdef MULTI_DRAW
+flat out highp uint drawId;
+#endif
+
 void main() {
     #ifdef UNIFORM_BUFFERS
-    highp const mat4 transformationMatrix = transformationMatrices[drawOffset];
+    #ifdef MULTI_DRAW
+    drawId = drawOffset + uint(
+        #ifndef GL_ES
+        gl_DrawIDARB /* Using GL_ARB_shader_draw_parameters, not GLSL 4.6 */
+        #else
+        gl_DrawID
+        #endif
+        );
+    #else
+    #define drawId drawOffset
+    #endif
+
+    highp const mat4 transformationMatrix = transformationMatrices[drawId];
     #if LIGHT_COUNT
-    mediump const mat3 normalMatrix = draws[drawOffset].normalMatrix;
+    mediump const mat3 normalMatrix = draws[drawId].normalMatrix;
     #endif
     #ifdef TEXTURE_TRANSFORMATION
-    mediump const mat3 textureMatrix = mat3(textureTransformations[drawOffset].rotationScaling.xy, 0.0, textureTransformations[drawOffset].rotationScaling.zw, 0.0, textureTransformations[drawOffset].textureTransformation_offset, 1.0);
+    mediump const mat3 textureMatrix = mat3(textureTransformations[drawId].rotationScaling.xy, 0.0, textureTransformations[drawId].rotationScaling.zw, 0.0, textureTransformations[drawId].textureTransformation_offset, 1.0);
     #endif
     #if LIGHT_COUNT
-    mediump const uint lightOffset = draws[drawOffset].draw_lightOffset;
+    mediump const uint lightOffset = draws[drawId].draw_lightOffset;
     #endif
     #endif
 
@@ -328,7 +352,7 @@ void main() {
     #ifndef UNIFORM_BUFFERS
     for(int i = 0; i < LIGHT_COUNT; ++i)
     #else
-    for(uint i = 0u, actualLightCount = min(uint(LIGHT_COUNT), draws[drawOffset].draw_lightCount); i < actualLightCount; ++i)
+    for(uint i = 0u, actualLightCount = min(uint(LIGHT_COUNT), draws[drawId].draw_lightCount); i < actualLightCount; ++i)
     #endif
     {
         highp const vec4 lightPosition =

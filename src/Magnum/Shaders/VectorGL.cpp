@@ -81,6 +81,17 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
     if(flags >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
     #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flags >= Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_draw_parameters);
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ANGLE::multi_draw);
+        #else
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::WEBGL::multi_draw);
+        #endif
+    }
+    #endif
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
@@ -108,6 +119,7 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
             drawCount));
+        vert.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
     vert.addSource(rs.get("generic.glsl"))
@@ -118,6 +130,7 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
             drawCount));
+        frag.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
     frag.addSource(rs.get("generic.glsl"))
@@ -308,6 +321,7 @@ Debug& operator<<(Debug& debug, const VectorGLFlag value) {
         _c(TextureTransformation)
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
+        _c(MultiDraw)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -320,6 +334,7 @@ Debug& operator<<(Debug& debug, const VectorGLFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "Shaders::VectorGL::Flags{}", {
         VectorGLFlag::TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2
+        VectorGLFlag::MultiDraw, /* Superset of UniformBuffers */
         VectorGLFlag::UniformBuffers
         #endif
     });

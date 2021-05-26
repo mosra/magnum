@@ -53,6 +53,7 @@ uniform lowp vec4 color
 /* Uniform buffers */
 
 #else
+#ifndef MULTI_DRAW
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -61,6 +62,8 @@ uniform highp uint drawOffset
     = 0u
     #endif
     ;
+#define drawId drawOffset
+#endif
 
 struct DrawUniform {
     lowp vec4 color;
@@ -88,6 +91,10 @@ uniform lowp sampler2D vectorTexture;
 
 in mediump vec2 interpolatedTextureCoordinates;
 
+#ifdef MULTI_DRAW
+flat in highp uint drawId;
+#endif
+
 /* Outputs */
 
 #ifdef NEW_GLSL
@@ -99,8 +106,8 @@ out lowp vec4 fragmentColor;
 
 void main() {
     #ifdef UNIFORM_BUFFERS
-    lowp const vec4 color = draws[drawOffset].color;
-    lowp const vec4 backgroundColor = draws[drawOffset].backgroundColor;
+    lowp const vec4 color = draws[drawId].color;
+    lowp const vec4 backgroundColor = draws[drawId].backgroundColor;
     #endif
 
     lowp float intensity = texture(vectorTexture, interpolatedTextureCoordinates).r;

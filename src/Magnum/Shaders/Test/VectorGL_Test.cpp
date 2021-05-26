@@ -41,17 +41,25 @@ struct VectorGL_Test: TestSuite::Tester {
 
     void debugFlag();
     void debugFlags();
+    #ifndef MAGNUM_TARGET_GLES2
+    void debugFlagsSupersets();
+    #endif
 };
 
 VectorGL_Test::VectorGL_Test() {
-    addTests({&VectorGL_Test::constructNoCreate<2>,
-              &VectorGL_Test::constructNoCreate<3>,
+    addTests({
+        &VectorGL_Test::constructNoCreate<2>,
+        &VectorGL_Test::constructNoCreate<3>,
 
-              &VectorGL_Test::constructCopy<2>,
-              &VectorGL_Test::constructCopy<3>,
+        &VectorGL_Test::constructCopy<2>,
+        &VectorGL_Test::constructCopy<3>,
 
-              &VectorGL_Test::debugFlag,
-              &VectorGL_Test::debugFlags});
+        &VectorGL_Test::debugFlag,
+        &VectorGL_Test::debugFlags,
+        #ifndef MAGNUM_TARGET_GLES2
+        &VectorGL_Test::debugFlagsSupersets
+        #endif
+    });
 }
 
 template<UnsignedInt dimensions> void VectorGL_Test::constructNoCreate() {
@@ -86,6 +94,15 @@ void VectorGL_Test::debugFlags() {
     Debug{&out} << VectorGL3D::Flags{VectorGL3D::Flag::TextureTransformation|VectorGL3D::Flag(0xf0)} << VectorGL3D::Flags{};
     CORRADE_COMPARE(out.str(), "Shaders::VectorGL::Flag::TextureTransformation|Shaders::VectorGL::Flag(0xf0) Shaders::VectorGL::Flags{}\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void VectorGL_Test::debugFlagsSupersets() {
+    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
+    std::ostringstream out;
+    Debug{&out} << (VectorGL3D::Flag::MultiDraw|VectorGL3D::Flag::UniformBuffers);
+    CORRADE_COMPARE(out.str(), "Shaders::VectorGL::Flag::MultiDraw\n");
+}
+#endif
 
 }}}}
 

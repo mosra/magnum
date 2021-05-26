@@ -97,6 +97,17 @@ MeshVisualizerGLBase::MeshVisualizerGLBase(FlagsBase flags
     if(flags >= FlagBase::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
     #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flags >= FlagBase::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_draw_parameters);
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ANGLE::multi_draw);
+        #else
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::WEBGL::multi_draw);
+        #endif
+    }
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     if(_flags & FlagBase::Wireframe && !(_flags & FlagBase::NoGeometryShader)) {
@@ -169,6 +180,7 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
             "#define MATERIAL_COUNT {}\n",
             _drawCount,
             _materialCount));
+        vert.addSource(_flags >= FlagBase::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
     frag.addSource(_flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
@@ -189,6 +201,7 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
             "#define MATERIAL_COUNT {}\n",
             _drawCount,
             _materialCount));
+        frag.addSource(_flags >= FlagBase::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
 
@@ -358,6 +371,7 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags
                 "#define MATERIAL_COUNT {}\n",
                 _drawCount,
                 _materialCount));
+            geom->addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
         }
         #endif
         geom->addSource(rs.get("MeshVisualizer.geom"));
@@ -673,6 +687,7 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
                 "#define MATERIAL_COUNT {}\n",
                 _drawCount,
                 _materialCount));
+            geom->addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
         }
         #endif
         geom->addSource(rs.get("MeshVisualizer.geom"));
@@ -990,6 +1005,7 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flag value) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
+        _c(MultiDraw)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -1022,6 +1038,7 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flag value) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
+        _c(MultiDraw)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -1044,6 +1061,7 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flags value) {
         MeshVisualizerGL2D::Flag::PrimitiveId,
         #endif
         #ifndef MAGNUM_TARGET_GLES2
+        MeshVisualizerGL2D::Flag::MultiDraw, /* Superset of UniformBuffers */
         MeshVisualizerGL2D::Flag::UniformBuffers
         #endif
         #endif
@@ -1070,6 +1088,7 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flags value) {
         MeshVisualizerGL3D::Flag::PrimitiveId,
         #endif
         #ifndef MAGNUM_TARGET_GLES2
+        MeshVisualizerGL3D::Flag::MultiDraw, /* Superset of UniformBuffers */
         MeshVisualizerGL3D::Flag::UniformBuffers
         #endif
         #endif

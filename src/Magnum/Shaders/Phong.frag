@@ -148,6 +148,7 @@ uniform lowp float lightRanges[LIGHT_COUNT]
 /* Uniform buffers */
 
 #else
+#ifndef MULTI_DRAW
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -156,6 +157,8 @@ uniform highp uint drawOffset
     = 0u
     #endif
     ;
+#define drawId drawOffset
+#endif
 
 /* Keep in sync with Phong.vert. Can't "outsource" to a common file because
    the #extension directive needs to be always before any code. */
@@ -277,6 +280,10 @@ in lowp vec4 interpolatedVertexColor;
 flat in highp uint interpolatedInstanceObjectId;
 #endif
 
+#ifdef MULTI_DRAW
+flat in highp uint drawId;
+#endif
+
 /* Outputs */
 
 #ifdef NEW_GLSL
@@ -296,9 +303,9 @@ out highp uint fragmentObjectId;
 void main() {
     #ifdef UNIFORM_BUFFERS
     #ifdef OBJECT_ID
-    highp const uint objectId = draws[drawOffset].draw_objectId;
+    highp const uint objectId = draws[drawId].draw_objectId;
     #endif
-    mediump const uint materialId = draws[drawOffset].draw_materialIdReserved & 0xffffu;
+    mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
     lowp const vec4 ambientColor = materials[materialId].ambientColor;
     #if LIGHT_COUNT
     lowp const vec4 diffuseColor = materials[materialId].diffuseColor;
@@ -312,7 +319,7 @@ void main() {
     lowp const float alphaMask = materials[materialId].material_alphaMask;
     #endif
     #if LIGHT_COUNT
-    mediump const uint lightOffset = draws[drawOffset].draw_lightOffset;
+    mediump const uint lightOffset = draws[drawId].draw_lightOffset;
     #endif
     #endif
 
@@ -370,7 +377,7 @@ void main() {
     #ifndef UNIFORM_BUFFERS
     for(int i = 0; i < LIGHT_COUNT; ++i)
     #else
-    for(uint i = 0u, actualLightCount = min(uint(LIGHT_COUNT), draws[drawOffset].draw_lightCount); i < actualLightCount; ++i)
+    for(uint i = 0u, actualLightCount = min(uint(LIGHT_COUNT), draws[drawId].draw_lightCount); i < actualLightCount; ++i)
     #endif
     {
         lowp const vec3 lightColor =

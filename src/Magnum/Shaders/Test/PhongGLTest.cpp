@@ -168,24 +168,27 @@ struct PhongGLTest: GL::OpenGLTester {
     [D] object ID
     [L] point lights
     [I] instancing
-    [O] draw offset
+    [O] UBOs + draw offset
+    [M] multidraw
 
-    Mesa Intel                      BADLIO
-               ES2                       x
-               ES3                  BADLIO
+    Mesa Intel                      BADLIOM
+               ES2                       xx
+               ES3                  BADLIOx
     Mesa AMD                        BAD I
     Mesa llvmpipe                   BAD I
-    SwiftShader ES2                 BADLIx
+    SwiftShader ES2                 BADLIxx
                 ES3                 BADLI
-    ARM Mali (Huawei P10) ES2       BAD  x
-                          ES3       BADLIO
-    WebGL (on Mesa Intel) 1.0       BAD  x
-                          2.0       BADLIO
+    ANGLE ES2                            xx
+          ES3                       BADLIOM
+    ARM Mali (Huawei P10) ES2       BAD  xx
+                          ES3       BADLIOx
+    WebGL (on Mesa Intel) 1.0       BAD  xx
+                          2.0       BADLIOM
     NVidia                          BAD
     Intel Windows                   BAD
     AMD macOS                       BAD
-    Intel macOS                     BADLIO
-    iPhone 6 w/ iOS 12.4 ES3        BAD
+    Intel macOS                     BADLIOx
+    iPhone 6 w/ iOS 12.4 ES3        BAD   x
 */
 
 constexpr struct {
@@ -244,7 +247,8 @@ constexpr struct {
     {"normal texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture, 1, 1, 1},
     {"normal texture + separate bitangents", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1, 1, 1},
     {"alpha mask", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AlphaMask, 1, 1, 1},
-    {"object ID", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId, 1, 1, 1}
+    {"object ID", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId, 1, 1, 1},
+    {"multidraw with all the things", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId, 8, 16, 24}
 };
 #endif
 
@@ -617,6 +621,16 @@ constexpr struct {
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
+    {"multidraw, colored", "multidraw.tga",
+        PhongGL::Flag::MultiDraw,
+        4, 2, 3, 1,
+        /* Minor differences on ARM Mali */
+        3.34f, 0.01f},
+    {"multidraw, textured", "multidraw-textured.tga",
+        PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
+        4, 2, 3, 1,
+        /* Minor differences on ARM Mali */
+        4.67f, 0.02f},
 };
 #endif
 
@@ -874,6 +888,19 @@ void PhongGLTest::constructUniformBuffers() {
     if((data.flags & PhongGL::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
+
+    if(data.flags >= PhongGL::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
 
     PhongGL shader{data.flags, data.lightCount, data.materialCount, data.drawCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
@@ -2971,6 +2998,19 @@ void PhongGLTest::renderMulti() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    if(data.flags >= PhongGL::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
     GL::Texture2D diffuse;
     if(data.flags & PhongGL::Flag::DiffuseTexture) {
         if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
@@ -3176,7 +3216,7 @@ void PhongGLTest::renderMulti() {
             sizeof(TextureTransformationUniform));
         shader.draw(cone);
 
-    /* Otherwise using the draw offset */
+    /* Otherwise using the draw offset / multidraw */
     } else {
         shader.bindTransformationBuffer(transformationUniform)
             .bindDrawBuffer(drawUniform)
@@ -3184,12 +3224,17 @@ void PhongGLTest::renderMulti() {
             .bindLightBuffer(lightUniform);
         if(data.flags & PhongGL::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
-        shader.setDrawOffset(0)
-            .draw(sphere);
-        shader.setDrawOffset(1)
-            .draw(plane);
-        shader.setDrawOffset(2)
-            .draw(cone);
+
+        if(data.flags >= PhongGL::Flag::MultiDraw)
+            shader.draw({sphere, plane, cone});
+        else {
+            shader.setDrawOffset(0)
+                .draw(sphere);
+            shader.setDrawOffset(1)
+                .draw(plane);
+            shader.setDrawOffset(2)
+                .draw(cone);
+        }
     }
 
     /*

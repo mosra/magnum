@@ -40,7 +40,8 @@ namespace Magnum { namespace Shaders {
 namespace Implementation {
     enum class VertexColorGLFlag: UnsignedByte {
         #ifndef MAGNUM_TARGET_GLES2
-        UniformBuffers = 1 << 0
+        UniformBuffers = 1 << 0,
+        MultiDraw = UniformBuffers|(1 << 1)
         #endif
     };
     typedef Containers::EnumSet<VertexColorGLFlag> VertexColorGLFlags;
@@ -136,7 +137,31 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
              *      1.0.
              * @m_since_latest
              */
-            UniformBuffers = 1 << 0
+            UniformBuffers = 1 << 0,
+
+            /**
+             * Enable multidraw functionality. Implies @ref Flag::UniformBuffers
+             * and adds the value from @ref setDrawOffset() with the
+             * @glsl gl_DrawID @ce builtin, which makes draws submitted via
+             * @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
+             * pick up per-draw parameters directly, without having to rebind
+             * the uniform buffers or specify @ref setDrawOffset() before each
+             * draw. In a non-multidraw scenario, @glsl gl_DrawID @ce is
+             * @cpp 0 @ce, which means a shader with this flag enabled can be
+             * used for regular draws as well.
+             * @requires_gl46 Extension @gl_extension{ARB,uniform_buffer_object}
+             *      and @gl_extension{ARB,shader_draw_parameters}
+             * @requires_es_extension OpenGL ES 3.0 and extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt) (unlisted).
+             *      While the extension alone needs only OpenGL ES 2.0, the
+             *      shader implementation relies on uniform buffers, which
+             *      require OpenGL ES 3.0.
+             * @requires_webgl_extension WebGL 2.0 Extension @webgl_extension{ANGLE,multi_draw}.
+             *      While the extension alone needs only WebGL 1.0, the shader
+             *      implementation relies on uniform buffers, which require
+             *      WebGL 2.0.
+             * @m_since_latest
+             */
+            MultiDraw = UniformBuffers|(1 << 1)
             #endif
         };
 
@@ -279,6 +304,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          * @ref bindTransformationProjectionBuffer() should be used for current
          * draw. Expects that @ref Flag::UniformBuffers is set and @p offset is
          * less than @ref drawCount(). Initial value is @cpp 0 @ce.
+         *
+         * If @ref Flag::MultiDraw is set, @glsl gl_DrawID @ce is added to this
+         * value, which makes each draw submitted via
+         * @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
+         * pick up its own per-draw parameters.
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.

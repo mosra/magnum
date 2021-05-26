@@ -110,6 +110,7 @@ uniform lowp vec2 colorMapOffsetScale
 /* Uniform buffers */
 
 #else
+#ifndef MULTI_DRAW
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -118,6 +119,8 @@ uniform highp uint drawOffset
     = 0u
     #endif
     ;
+#define drawId drawOffset
+#endif
 
 /* Keep in sync with MeshVisualizer.vert and MeshVisualizer.geom. Can't
    "outsource" to a common file because the extension directives need to be
@@ -202,6 +205,10 @@ in lowp vec4 backgroundColor;
 in lowp vec4 lineColor;
 #endif
 
+#ifdef MULTI_DRAW
+flat in highp uint drawId;
+#endif
+
 /* Outputs */
 
 #ifdef NEW_GLSL
@@ -213,7 +220,7 @@ out lowp vec4 fragmentColor;
 
 void main() {
     #ifdef UNIFORM_BUFFERS
-    mediump const uint materialId = draws[drawOffset].draw_materialIdReserved & 0xffffu;
+    mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
     #if (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)) && !defined(TBN_DIRECTION)
     lowp const vec4 color = materials[materialId].color;
     lowp const vec4 wireframeColor = materials[materialId].wireframeColor;

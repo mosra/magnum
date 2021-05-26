@@ -84,6 +84,17 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     if(flags >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
     #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flags >= Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_draw_parameters);
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ANGLE::multi_draw);
+        #else
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::WEBGL::multi_draw);
+        #endif
+    }
+    #endif
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
@@ -118,6 +129,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
             drawCount));
+        vert.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
     vert.addSource(rs.get("generic.glsl"))
@@ -136,6 +148,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
             drawCount));
+        frag.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
     frag.addSource(rs.get("generic.glsl"))
@@ -370,6 +383,7 @@ Debug& operator<<(Debug& debug, const FlatGLFlag value) {
         _c(InstancedTextureOffset)
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
+        _c(MultiDraw)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -391,6 +405,7 @@ Debug& operator<<(Debug& debug, const FlatGLFlags value) {
         #endif
         FlatGLFlag::InstancedTransformation,
         #ifndef MAGNUM_TARGET_GLES2
+        FlatGLFlag::MultiDraw, /* Superset of UniformBuffers */
         FlatGLFlag::UniformBuffers
         #endif
     });

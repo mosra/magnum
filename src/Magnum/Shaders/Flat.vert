@@ -27,6 +27,14 @@
 #extension GL_EXT_gpu_shader4: require
 #endif
 
+#ifdef MULTI_DRAW
+#ifndef GL_ES
+#extension GL_ARB_shader_draw_parameters: require
+#else /* covers WebGL as well */
+#extension GL_ANGLE_multi_draw: require
+#endif
+#endif
+
 #ifndef NEW_GLSL
 #define in attribute
 #define out varying
@@ -182,8 +190,24 @@ out lowp vec4 interpolatedVertexColor;
 flat out highp uint interpolatedInstanceObjectId;
 #endif
 
+#ifdef MULTI_DRAW
+flat out highp uint drawId;
+#endif
+
 void main() {
     #ifdef UNIFORM_BUFFERS
+    #ifdef MULTI_DRAW
+    drawId = drawOffset + uint(
+        #ifndef GL_ES
+        gl_DrawIDARB /* Using GL_ARB_shader_draw_parameters, not GLSL 4.6 */
+        #else
+        gl_DrawID
+        #endif
+        );
+    #else
+    #define drawId drawOffset
+    #endif
+
     highp const
         #ifdef TWO_DIMENSIONS
         mat3
@@ -192,9 +216,9 @@ void main() {
         #else
         #error
         #endif
-        transformationProjectionMatrix = transformationProjectionMatrices[drawOffset];
+        transformationProjectionMatrix = transformationProjectionMatrices[drawId];
     #ifdef TEXTURE_TRANSFORMATION
-    mediump const mat3 textureMatrix = mat3(textureTransformations[drawOffset].rotationScaling.xy, 0.0, textureTransformations[drawOffset].rotationScaling.zw, 0.0, textureTransformations[drawOffset].textureTransformation_offset, 1.0);
+    mediump const mat3 textureMatrix = mat3(textureTransformations[drawId].rotationScaling.xy, 0.0, textureTransformations[drawId].rotationScaling.zw, 0.0, textureTransformations[drawId].textureTransformation_offset, 1.0);
     #endif
     #endif
 

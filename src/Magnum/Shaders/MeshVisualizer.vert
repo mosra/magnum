@@ -27,6 +27,14 @@
 #extension GL_EXT_gpu_shader4: require
 #endif
 
+#ifdef MULTI_DRAW
+#ifndef GL_ES
+#extension GL_ARB_shader_draw_parameters: require
+#else /* covers WebGL as well */
+#extension GL_ANGLE_multi_draw: require
+#endif
+#endif
+
 #ifndef NEW_GLSL
 #define in attribute
 #define out varying
@@ -279,19 +287,47 @@ out highp vec4 bitangentEndpoint;
 out highp vec4 normalEndpoint;
 #endif
 
+#ifdef MULTI_DRAW
+flat out highp uint
+    #ifdef NO_GEOMETRY_SHADER
+    drawId
+    #else
+    vsDrawId
+    #endif
+    ;
+#endif
+
 void main() {
     #ifdef UNIFORM_BUFFERS
+    #ifdef MULTI_DRAW
+    #ifdef NO_GEOMETRY_SHADER
+    drawId
+    #else
+    vsDrawId
+    #define drawId vsDrawId
+    #endif
+    = drawOffset + uint(
+        #ifndef GL_ES
+        gl_DrawIDARB /* Using GL_ARB_shader_draw_parameters, not GLSL 4.6 */
+        #else
+        gl_DrawID
+        #endif
+        );
+    #else
+    #define drawId drawOffset
+    #endif
+
     #ifdef TWO_DIMENSIONS
-    highp const mat3 transformationProjectionMatrix = transformationProjectionMatrices[drawOffset];
+    highp const mat3 transformationProjectionMatrix = transformationProjectionMatrices[drawId];
     #elif defined(THREE_DIMENSIONS)
-    highp const mat4 transformationMatrix = transformationMatrices[drawOffset];
+    highp const mat4 transformationMatrix = transformationMatrices[drawId];
     #else
     #error
     #endif
     #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
-    mediump const mat3 normalMatrix = draws[drawOffset].normalMatrix;
+    mediump const mat3 normalMatrix = draws[drawId].normalMatrix;
     #endif
-    mediump const uint materialId = draws[drawOffset].draw_materialIdReserved & 0xffffu;
+    mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
     lowp float colorMapOffset = materials[materialId].material_colorMapOffset;
     lowp float colorMapScale = materials[materialId].material_colorMapScale;
     highp float lineLength = materials[materialId].material_lineLength;

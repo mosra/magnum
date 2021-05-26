@@ -75,6 +75,7 @@ uniform highp uint objectId; /* defaults to zero */
 /* Uniform buffers */
 
 #else
+#ifndef MULTI_DRAW
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -83,6 +84,8 @@ uniform highp uint drawOffset
     = 0u
     #endif
     ;
+#define drawId drawOffset
+#endif
 
 struct DrawUniform {
     lowp vec4 color;
@@ -139,14 +142,18 @@ layout(location = OBJECT_ID_OUTPUT_ATTRIBUTE_LOCATION)
 out highp uint fragmentObjectId;
 #endif
 
+#ifdef MULTI_DRAW
+flat in highp uint drawId;
+#endif
+
 void main() {
     #ifdef UNIFORM_BUFFERS
-    lowp const vec4 color = draws[drawOffset].color;
+    lowp const vec4 color = draws[drawId].color;
     #ifdef OBJECT_ID
-    highp const uint objectId = draws[drawOffset].draw_objectId;
+    highp const uint objectId = draws[drawId].draw_objectId;
     #endif
     #ifdef ALPHA_MASK
-    lowp const float alphaMask = uintBitsToFloat(draws[drawOffset].draw_alphaMask);
+    lowp const float alphaMask = uintBitsToFloat(draws[drawId].draw_alphaMask);
     #endif
     #endif
 

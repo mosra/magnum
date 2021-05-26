@@ -41,17 +41,25 @@ struct DistanceFieldVectorGL_Test: TestSuite::Tester {
 
     void debugFlag();
     void debugFlags();
+    #ifndef MAGNUM_TARGET_GLES2
+    void debugFlagsSupersets();
+    #endif
 };
 
 DistanceFieldVectorGL_Test::DistanceFieldVectorGL_Test() {
-    addTests({&DistanceFieldVectorGL_Test::constructNoCreate<2>,
-              &DistanceFieldVectorGL_Test::constructNoCreate<3>,
+    addTests({
+        &DistanceFieldVectorGL_Test::constructNoCreate<2>,
+        &DistanceFieldVectorGL_Test::constructNoCreate<3>,
 
-              &DistanceFieldVectorGL_Test::constructCopy<2>,
-              &DistanceFieldVectorGL_Test::constructCopy<3>,
+        &DistanceFieldVectorGL_Test::constructCopy<2>,
+        &DistanceFieldVectorGL_Test::constructCopy<3>,
 
-              &DistanceFieldVectorGL_Test::debugFlag,
-              &DistanceFieldVectorGL_Test::debugFlags});
+        &DistanceFieldVectorGL_Test::debugFlag,
+        &DistanceFieldVectorGL_Test::debugFlags,
+        #ifndef MAGNUM_TARGET_GLES2
+        &DistanceFieldVectorGL_Test::debugFlagsSupersets
+        #endif
+    });
 }
 
 template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::constructNoCreate() {
@@ -86,6 +94,15 @@ void DistanceFieldVectorGL_Test::debugFlags() {
     Debug{&out} << DistanceFieldVectorGL3D::Flags{DistanceFieldVectorGL3D::Flag::TextureTransformation|DistanceFieldVectorGL3D::Flag(0xf0)} << DistanceFieldVectorGL3D::Flags{};
     CORRADE_COMPARE(out.str(), "Shaders::DistanceFieldVectorGL::Flag::TextureTransformation|Shaders::DistanceFieldVectorGL::Flag(0xf0) Shaders::DistanceFieldVectorGL::Flags{}\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void DistanceFieldVectorGL_Test::debugFlagsSupersets() {
+    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
+    std::ostringstream out;
+    Debug{&out} << (DistanceFieldVectorGL3D::Flag::MultiDraw|DistanceFieldVectorGL3D::Flag::UniformBuffers);
+    CORRADE_COMPARE(out.str(), "Shaders::DistanceFieldVectorGL::Flag::MultiDraw\n");
+}
+#endif
 
 }}}}
 

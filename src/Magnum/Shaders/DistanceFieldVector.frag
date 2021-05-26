@@ -71,6 +71,7 @@ uniform lowp float smoothness
 /* Uniform buffers */
 
 #else
+#ifndef MULTI_DRAW
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -79,6 +80,8 @@ uniform highp uint drawOffset
     = 0u
     #endif
     ;
+#define drawId drawOffset
+#endif
 
 struct DrawUniform {
     highp uvec4 materialIdReservedReservedReservedReserved;
@@ -122,6 +125,10 @@ uniform lowp sampler2D vectorTexture;
 
 in mediump vec2 interpolatedTextureCoordinates;
 
+#ifdef MULTI_DRAW
+flat in highp uint drawId;
+#endif
+
 /* OUtput */
 
 #ifdef NEW_GLSL
@@ -133,7 +140,7 @@ out lowp vec4 fragmentColor;
 
 void main() {
     #ifdef UNIFORM_BUFFERS
-    mediump const uint materialId = draws[drawOffset].draw_materialIdReserved & 0xffffu;
+    mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
     lowp const float smoothness = materials[materialId].material_smoothness;
     lowp const vec4 color = materials[materialId].color;
     lowp const vec4 outlineColor = materials[materialId].outlineColor;

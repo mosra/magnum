@@ -23,6 +23,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MULTI_DRAW
+#ifndef GL_ES
+#extension GL_ARB_shader_draw_parameters: require
+#else /* covers WebGL as well */
+#extension GL_ANGLE_multi_draw: require
+#endif
+#endif
+
 #ifndef NEW_GLSL
 #define in attribute
 #define out varying
@@ -107,6 +115,18 @@ out lowp vec4 interpolatedColor;
 
 void main() {
     #ifdef UNIFORM_BUFFERS
+    #ifdef MULTI_DRAW
+    highp uint drawId = drawOffset + uint(
+        #ifndef GL_ES
+        gl_DrawIDARB /* Using GL_ARB_shader_draw_parameters, not GLSL 4.6 */
+        #else
+        gl_DrawID
+        #endif
+        );
+    #else
+    #define drawId drawOffset
+    #endif
+
     highp const
         #ifdef TWO_DIMENSIONS
         mat3
@@ -115,7 +135,7 @@ void main() {
         #else
         #error
         #endif
-        transformationProjectionMatrix = transformationProjectionMatrices[drawOffset];
+        transformationProjectionMatrix = transformationProjectionMatrices[drawId];
     #endif
 
     #ifdef TWO_DIMENSIONS

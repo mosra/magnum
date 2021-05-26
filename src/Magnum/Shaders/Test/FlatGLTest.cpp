@@ -161,24 +161,27 @@ struct FlatGLTest: GL::OpenGLTester {
     [A] alpha mask
     [D] object ID
     [I] instancing
-    [O] draw offset
+    [O] UBOs + draw offset
+    [M] multidraw
 
-    Mesa Intel                      BADIO
-               ES2                      x
-               ES3                  BADIO
+    Mesa Intel                      BADIOM
+               ES2                      xx
+               ES3                  BADIOx
     Mesa AMD                        BADI
     Mesa llvmpipe                   BADI
-    SwiftShader ES2                 BADIx
+    SwiftShader ES2                 BADIxx
                 ES3                 BADI
-    ARM Mali (Huawei P10) ES2       BAD x
-                          ES3       BADIO
-    WebGL (on Mesa Intel) 1.0       BAD x
-                          2.0       BADIO
+    ANGLE ES2                           xx
+          ES3                       BADIOM
+    ARM Mali (Huawei P10) ES2       BAD xx
+                          ES3       BADIOx
+    WebGL (on Mesa Intel) 1.0       BAD xx
+                          2.0       BADIOM
     NVidia                          BAD
     Intel Windows                   BAD
     AMD macOS                       BAD
-    Intel macOS                     BADIO
-    iPhone 6 w/ iOS 12.4 ES3        BAD
+    Intel macOS                     BADIOx
+    iPhone 6 w/ iOS 12.4 ES3        BAD  x
 */
 
 using namespace Math::Literals;
@@ -216,7 +219,8 @@ constexpr struct {
     {"multiple draws", FlatGL2D::Flag::UniformBuffers, 42},
     {"texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1},
     {"alpha mask", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask, 1},
-    {"object ID", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId, 1}
+    {"object ID", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId, 1},
+    {"multidraw with all the things", FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId, 42}
 };
 #endif
 
@@ -290,9 +294,17 @@ constexpr struct {
         /* Minor differences on ARM Mali */
         2.34f, 0.01f},
     {"draw offset, colored", "multidraw2D.tga", "multidraw3D.tga",
-        {}, 3, 1, 0.0f, 0.0f},
+        {},
+        3, 1, 0.0f, 0.0f},
     {"draw offset, textured", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
+        3, 1,
+        /* Minor differences on ARM Mali */
+        2.34f, 0.01f},
+    {"multidraw, colored", "multidraw2D.tga", "multidraw3D.tga",
+        FlatGL2D::Flag::MultiDraw, 3, 1, 0.0f, 0.0f},
+    {"multidraw, textured", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+        FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
         3, 1,
         /* Minor differences on ARM Mali */
         2.34f, 0.01f}
@@ -531,6 +543,19 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
     if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
+
+    if(data.flags >= FlatGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
 
     FlatGL<dimensions> shader{data.flags, data.drawCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
@@ -2266,6 +2291,19 @@ void FlatGLTest::renderMulti2D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    if(data.flags >= FlatGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
     GL::Texture2D texture;
     if(data.flags & FlatGL2D::Flag::Textured) {
         if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
@@ -2402,18 +2440,23 @@ void FlatGLTest::renderMulti2D() {
             sizeof(TextureTransformationUniform));
         shader.draw(triangle);
 
-    /* Otherwise using the draw offset */
+    /* Otherwise using the draw offset / multidraw */
     } else {
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform);
         if(data.flags & FlatGL2D::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
-        shader.setDrawOffset(0)
-            .draw(circle);
-        shader.setDrawOffset(1)
-            .draw(square);
-        shader.setDrawOffset(2)
-            .draw(triangle);
+
+        if(data.flags >= FlatGL2D::Flag::MultiDraw)
+            shader.draw({circle, square, triangle});
+        else {
+            shader.setDrawOffset(0)
+                .draw(circle);
+            shader.setDrawOffset(1)
+                .draw(square);
+            shader.setDrawOffset(2)
+                .draw(triangle);
+        }
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -2468,6 +2511,19 @@ void FlatGLTest::renderMulti3D() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
+
+    if(data.flags >= FlatGL3D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
 
     GL::Texture2D texture;
     if(data.flags & FlatGL3D::Flag::Textured) {
@@ -2611,18 +2667,23 @@ void FlatGLTest::renderMulti3D() {
             sizeof(TextureTransformationUniform));
         shader.draw(cone);
 
-    /* Otherwise using the draw offset */
+    /* Otherwise using the draw offset / multidraw */
     } else {
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform);
         if(data.flags & FlatGL3D::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
-        shader.setDrawOffset(0)
-            .draw(sphere);
-        shader.setDrawOffset(1)
-            .draw(plane);
-        shader.setDrawOffset(2)
-            .draw(cone);
+
+        if(data.flags >= FlatGL3D::Flag::MultiDraw)
+            shader.draw({sphere, plane, cone});
+        else {
+            shader.setDrawOffset(0)
+                .draw(sphere);
+            shader.setDrawOffset(1)
+                .draw(plane);
+            shader.setDrawOffset(2)
+                .draw(cone);
+        }
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();

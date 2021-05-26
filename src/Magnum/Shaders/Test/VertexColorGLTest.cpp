@@ -115,24 +115,27 @@ struct VertexColorGLTest: GL::OpenGLTester {
     Rendering tests done:
 
     [B] base
-    [O] draw offset
+    [O] UBOs + draw offset
+    [M] multidraw
 
-    Mesa Intel                      BO
-               ES2                   x
-               ES3                  BO
+    Mesa Intel                      BOM
+               ES2                   xx
+               ES3                  BOx
     Mesa AMD                        B
     Mesa llvmpipe                   B
-    SwiftShader ES2                 Bx
+    SwiftShader ES2                 Bxx
                 ES3                 B
-    ARM Mali (Huawei P10) ES2       Bx
-                          ES3       BO
-    WebGL (on Mesa Intel) 1.0       Bx
-                          2.0       BO
+    ANGLE ES2                        xx
+          ES3                       BOM
+    ARM Mali (Huawei P10) ES2       Bxx
+                          ES3       BOx
+    WebGL (on Mesa Intel) 1.0       Bxx
+                          2.0       BOM
     NVidia
     Intel Windows
-    AMD macOS
-    Intel macOS                     BO
-    iPhone 6 w/ iOS 12.4 ES3        B
+    AMD macOS                         x
+    Intel macOS                     BOx
+    iPhone 6 w/ iOS 12.4 ES3        B x
 */
 
 using namespace Math::Literals;
@@ -147,7 +150,8 @@ constexpr struct {
     {"", VertexColorGL2D::Flag::UniformBuffers, 1},
     /* SwiftShader has 256 uniform vectors at most, per-draw is 4 in 3D case
        and 3 in 2D; one needs to be reserved for drawOffset */
-    {"multiple draws", VertexColorGL2D::Flag::UniformBuffers, 63}
+    {"multiple draws", VertexColorGL2D::Flag::UniformBuffers, 63},
+    {"multidraw with all the things", VertexColorGL2D::Flag::MultiDraw, 63}
 };
 #endif
 
@@ -156,18 +160,23 @@ constexpr struct {
     const char* name;
     const char* expected2D;
     const char* expected3D;
+    VertexColorGL2D::Flags flags;
     UnsignedInt drawCount;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
     {"bind with offset", "multidraw2D.tga", "multidraw3D.tga",
-        1, 16,
+        {}, 1, 16,
         /* Minor differences on ARM Mali */
         0.34f, 0.01f},
     {"draw offset", "multidraw2D.tga", "multidraw3D.tga",
-        3, 1,
+        {}, 3, 1,
         /* Minor differences on ARM Mali */
         0.34f, 0.01f},
+    {"multidraw", "multidraw2D.tga", "multidraw3D.tga",
+        VertexColorGL2D::Flag::MultiDraw, 3, 1,
+        /* Minor differences on ARM Mali */
+        0.34f, 0.01f}
 };
 #endif
 
@@ -304,6 +313,19 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
     if((data.flags & VertexColorGL<dimensions>::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
+
+    if(data.flags >= VertexColorGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
 
     VertexColorGL<dimensions> shader{data.flags, data.drawCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
@@ -758,6 +780,19 @@ void VertexColorGLTest::renderMulti2D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    if(data.flags >= VertexColorGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
     /* Circle is a fan, plane is a strip, make it indexed first */
     Trade::MeshData circleData = MeshTools::generateIndices(Primitives::circle2DSolid(32));
     Trade::MeshData squareData = MeshTools::generateIndices(Primitives::squareSolid());
@@ -806,7 +841,7 @@ void VertexColorGLTest::renderMulti2D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    VertexColorGL2D shader{VertexColorGL2D::Flag::UniformBuffers, data.drawCount};
+    VertexColorGL2D shader{VertexColorGL2D::Flag::UniformBuffers|data.flags, data.drawCount};
 
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {
@@ -825,15 +860,20 @@ void VertexColorGLTest::renderMulti2D() {
             sizeof(TransformationProjectionUniform2D));
         shader.draw(triangle);
 
-    /* Otherwise using the draw offset */
+    /* Otherwise using the draw offset / multidraw */
     } else {
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform);
-        shader.setDrawOffset(0)
-            .draw(circle);
-        shader.setDrawOffset(1)
-            .draw(square);
-        shader.setDrawOffset(2)
-            .draw(triangle);
+
+        if(data.flags >= VertexColorGL2D::Flag::MultiDraw)
+            shader.draw({circle, square, triangle});
+        else {
+            shader.setDrawOffset(0)
+                .draw(circle);
+            shader.setDrawOffset(1)
+                .draw(square);
+            shader.setDrawOffset(2)
+                .draw(triangle);
+        }
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -862,6 +902,19 @@ void VertexColorGLTest::renderMulti3D() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
+
+    if(data.flags >= VertexColorGL3D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32);
     /* Plane is a strip, make it indexed first */
@@ -914,7 +967,7 @@ void VertexColorGLTest::renderMulti3D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    VertexColorGL3D shader{VertexColorGL3D::Flag::UniformBuffers, data.drawCount};
+    VertexColorGL3D shader{VertexColorGL3D::Flag::UniformBuffers|data.flags, data.drawCount};
 
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {
@@ -933,15 +986,20 @@ void VertexColorGLTest::renderMulti3D() {
             sizeof(TransformationProjectionUniform3D));
         shader.draw(cone);
 
-    /* Otherwise using the draw offset */
+    /* Otherwise using the draw offset / multidraw */
     } else {
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform);
-        shader.setDrawOffset(0)
-            .draw(sphere);
-        shader.setDrawOffset(1)
-            .draw(plane);
-        shader.setDrawOffset(2)
-            .draw(cone);
+
+        if(data.flags >= VertexColorGL3D::Flag::MultiDraw)
+            shader.draw({sphere, plane, cone});
+        else {
+            shader.setDrawOffset(0)
+                .draw(sphere);
+            shader.setDrawOffset(1)
+                .draw(plane);
+            shader.setDrawOffset(2)
+                .draw(cone);
+        }
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
