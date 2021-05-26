@@ -31,6 +31,7 @@
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -58,8 +59,6 @@
 #include "Magnum/Trade/MeshData.h"
 
 #ifndef MAGNUM_TARGET_GLES2
-#include <Corrade/Utility/FormatStl.h>
-
 #include "Magnum/GL/MeshView.h"
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/GenerateIndices.h"
@@ -85,7 +84,7 @@ struct PhongGLTest: GL::OpenGLTester {
     void constructMoveUniformBuffers();
     #endif
 
-    void constructTextureTransformationNotTextured();
+    void constructInvalid();
     #ifndef MAGNUM_TARGET_GLES2
     void constructUniformBuffersInvalid();
     #endif
@@ -220,7 +219,12 @@ constexpr struct {
     {"zero lights", {}, 0},
     {"instanced transformation", PhongGL::Flag::InstancedTransformation, 3},
     {"instanced specular texture offset", PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset, 3},
-    {"instanced normal texture offset", PhongGL::Flag::NormalTexture|PhongGL::Flag::InstancedTextureOffset, 3}
+    {"instanced normal texture offset", PhongGL::Flag::NormalTexture|PhongGL::Flag::InstancedTextureOffset, 3},
+    #ifndef MAGNUM_TARGET_GLES2
+    /* InstancedObjectId|Bitangent is disallowed (checked in
+       ConstructInvalidData), but this should work */
+    {"object ID + normal texture with bitangent from tangent", PhongGL::Flag::InstancedObjectId|PhongGL::Flag::NormalTexture, 1}
+    #endif
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -242,7 +246,24 @@ constexpr struct {
     {"alpha mask", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AlphaMask, 1, 1, 1},
     {"object ID", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId, 1, 1, 1}
 };
+#endif
 
+constexpr struct {
+    const char* name;
+    PhongGL::Flags flags;
+    const char* message;
+} ConstructInvalidData[] {
+    {"texture transformation but not textured",
+        PhongGL::Flag::TextureTransformation,
+        "texture transformation enabled but the shader is not textured"},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"conflicting bitangent and instanced object id attribute",
+        PhongGL::Flag::Bitangent|PhongGL::Flag::InstancedObjectId,
+        "Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead"},
+    #endif
+};
+
+#ifndef MAGNUM_TARGET_GLES2
 constexpr struct {
     const char* name;
     PhongGL::Flags flags;
@@ -613,8 +634,10 @@ PhongGLTest::PhongGLTest() {
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::constructMoveUniformBuffers,
         #endif
+    });
 
-        &PhongGLTest::constructTextureTransformationNotTextured});
+    addInstancedTests({&PhongGLTest::constructInvalid},
+        Containers::arraySize(ConstructInvalidData));
 
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({
@@ -922,16 +945,19 @@ void PhongGLTest::constructMoveUniformBuffers() {
 }
 #endif
 
-void PhongGLTest::constructTextureTransformationNotTextured() {
+void PhongGLTest::constructInvalid() {
+    auto&& data = ConstructInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
     std::ostringstream out;
     Error redirectError{&out};
-    PhongGL{PhongGL::Flag::TextureTransformation};
-    CORRADE_COMPARE(out.str(),
-        "Shaders::PhongGL: texture transformation enabled but the shader is not textured\n");
+    PhongGL{data.flags};
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Shaders::PhongGL: {}\n", data.message));
 }
 
 #ifndef MAGNUM_TARGET_GLES2

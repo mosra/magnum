@@ -572,6 +572,11 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
         "Shaders::MeshVisualizerGL3D: at least Flag::Wireframe has to be enabled", );
     #endif
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    CORRADE_ASSERT(!(flags & Flag::InstancedObjectId) || !(flags & Flag::BitangentDirection),
+        "Shaders::MeshVisualizerGL3D: Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead", );
+    #endif
+
     /* Has to be here and not in the base class in order to have it exit the
        constructor when testing for asserts -- GLSL compilation would fail
        otherwise */

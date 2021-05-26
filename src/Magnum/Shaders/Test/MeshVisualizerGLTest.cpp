@@ -275,7 +275,10 @@ constexpr struct {
     {"wireframe + vertex id", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId},
     {"wireframe + t/n direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
     {"wireframe + object id + t/n direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
-    {"wireframe + vertex id + t/b direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection}
+    {"wireframe + vertex id + t/b direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection},
+    /* InstancedObjectId|BitangentDirection is disallowed (checked in
+       ConstructInvalidData3D), but this should work */
+    {"object id + bitangent from tangent direction", MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection},
     #endif
 };
 
@@ -381,7 +384,10 @@ constexpr struct {
         "3D: geometry shader has to be enabled when rendering TBN direction"},
     {"conflicting bitangent input",
         MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection,
-        "3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive"}
+        "3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive"},
+    {"conflicting bitangent and instanced object id attribute",
+        MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::InstancedObjectId,
+        "3D: Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead"},
     #endif
 };
 
