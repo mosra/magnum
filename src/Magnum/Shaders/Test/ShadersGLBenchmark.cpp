@@ -150,6 +150,7 @@ const struct {
     {"UBO single", FlatGL2D::Flag::UniformBuffers, 1},
     {"UBO single, texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1},
     {"UBO multi", FlatGL2D::Flag::UniformBuffers, 128},
+    {"multidraw", FlatGL2D::Flag::MultiDraw, 128},
     #endif
 };
 
@@ -183,6 +184,7 @@ const struct {
     {"UBO single five lights", PhongGL::Flag::UniformBuffers, 5, 1, 1},
     {"UBO single, ADS textures + transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1},
     {"UBO multi, one light", PhongGL::Flag::UniformBuffers, 1, 32, 128},
+    {"multidraw, one light", PhongGL::Flag::MultiDraw, 1, 32, 128},
     #endif
 };
 
@@ -195,6 +197,7 @@ const struct {
     #ifndef MAGNUM_TARGET_GLES2
     {"UBO single", VertexColorGL2D::Flag::UniformBuffers, 1},
     {"UBO multi", VertexColorGL2D::Flag::UniformBuffers, 128},
+    {"multidraw", VertexColorGL2D::Flag::MultiDraw, 128}
     #endif
 };
 
@@ -210,6 +213,7 @@ const struct {
     {"UBO single, texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1},
     {"UBO multi", VectorGL2D::Flag::UniformBuffers, 128},
     {"UBO multi, texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 128},
+    {"multidraw", VectorGL2D::Flag::MultiDraw, 128},
     #endif
 };
 
@@ -225,6 +229,7 @@ const struct {
     {"UBO single, texture transformation", DistanceFieldVectorGL2D::Flag::UniformBuffers|DistanceFieldVectorGL2D::Flag::TextureTransformation, 1, 1},
     {"UBO multi", DistanceFieldVectorGL2D::Flag::UniformBuffers, 32, 128},
     {"UBO multi, texture transformation", DistanceFieldVectorGL2D::Flag::UniformBuffers|DistanceFieldVectorGL2D::Flag::TextureTransformation, 32, 128},
+    {"multidraw", DistanceFieldVectorGL2D::Flag::MultiDraw, 32, 128},
     #endif
 };
 
@@ -256,6 +261,11 @@ const struct {
     #endif
     {"UBO multi, wireframe w/o a GS", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 32, 128},
     {"UBO multi, vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::VertexId, 32, 128},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, wireframe", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe, 32, 128},
+    #endif
+    {"multidraw, wireframe w/o a GS", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 32, 128},
+    {"multidraw, vertex ID", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::VertexId, 32, 128},
     #endif
 };
 
@@ -287,6 +297,11 @@ const struct {
     #endif
     {"UBO multi, wireframe w/o a GS", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 32, 128},
     {"UBO multi, vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::VertexId, 32, 128},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, wireframe", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe, 32, 128},
+    #endif
+    {"multidraw, wireframe w/o a GS", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 32, 128},
+    {"multidraw, vertex ID", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::VertexId, 32, 128},
     #endif
 };
 
@@ -509,6 +524,21 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::flat() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags >= FlatGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     FlatGL<dimensions> shader{data.flags
         #ifndef MAGNUM_TARGET_GLES2
         , data.drawCount
@@ -592,6 +622,21 @@ void ShadersGLBenchmark::phong() {
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & PhongGL::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags >= PhongGL::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
     #endif
 
     PhongGL shader{data.flags, data.lightCount
@@ -702,6 +747,21 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vertexColor() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags >= VertexColorGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     VertexColorGL<dimensions> shader{data.flags
         #ifndef MAGNUM_TARGET_GLES2
         , data.drawCount
@@ -744,6 +804,21 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vector() {
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & VectorGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags >= VectorGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
     #endif
 
     VectorGL<dimensions> shader{data.flags
@@ -798,6 +873,21 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::distanceFieldVector() 
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & DistanceFieldVectorGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags >= DistanceFieldVectorGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
     #endif
 
     DistanceFieldVectorGL<dimensions> shader{data.flags
@@ -893,6 +983,21 @@ void ShadersGLBenchmark::meshVisualizer2D() {
         #ifdef MAGNUM_TARGET_GLES
         if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
             CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
+        #endif
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags >= MeshVisualizerGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
         #endif
     }
     #endif
@@ -1012,6 +1117,21 @@ void ShadersGLBenchmark::meshVisualizer3D() {
         #ifdef MAGNUM_TARGET_GLES
         if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
             CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
+        #endif
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags >= MeshVisualizerGL3D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
         #endif
     }
     #endif

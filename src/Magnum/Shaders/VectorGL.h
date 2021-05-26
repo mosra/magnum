@@ -150,14 +150,15 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
              * used for regular draws as well.
              * @requires_gl46 Extension @gl_extension{ARB,uniform_buffer_object}
              *      and @gl_extension{ARB,shader_draw_parameters}
-             * @requires_es_extension OpenGL ES 3.0 and extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt) (unlisted).
-             *      While the extension alone needs only OpenGL ES 2.0, the
-             *      shader implementation relies on uniform buffers, which
-             *      require OpenGL ES 3.0.
-             * @requires_webgl_extension WebGL 2.0 Extension @webgl_extension{ANGLE,multi_draw}.
-             *      While the extension alone needs only WebGL 1.0, the shader
-             *      implementation relies on uniform buffers, which require
-             *      WebGL 2.0.
+             * @requires_es_extension OpenGL ES 3.0 and extension
+             *      @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+             *      (unlisted). While the extension alone needs only OpenGL ES
+             *      2.0, the shader implementation relies on uniform buffers,
+             *      which require OpenGL ES 3.0.
+             * @requires_webgl_extension WebGL 2.0 and extension
+             *      @webgl_extension{ANGLE,multi_draw}. While the extension
+             *      alone needs only WebGL 1.0, the shader implementation
+             *      relies on uniform buffers, which require WebGL 2.0.
              * @m_since_latest
              */
             MultiDraw = UniformBuffers|(1 << 2)
