@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Struct @ref Magnum::Shaders::FlatDrawUniform
+ * @brief Struct @ref Magnum::Shaders::FlatDrawUniform, @ref Magnum::Shaders::FlatMaterialUniform
  */
 
 #include "Magnum/Magnum.h"
@@ -47,24 +47,29 @@ namespace Magnum { namespace Shaders {
 Together with the generic @ref TransformationProjectionUniform2D /
 @ref TransformationProjectionUniform3D contains parameters that are specific to
 each draw call. Texture transformation, if needed, is supplied separately in a
-@ref TextureTransformationUniform.
+@ref TextureTransformationUniform; material-related properties are expected to
+be shared among multiple draw calls and thus are provided in a separate
+@ref FlatMaterialUniform structure, referenced by @ref materialId.
 @see @ref FlatGL::bindDrawBuffer()
 */
 struct FlatDrawUniform {
     /** @brief Construct with default parameters */
-    constexpr explicit FlatDrawUniform(DefaultInitT = DefaultInit) noexcept: color{1.0f, 1.0f, 1.0f, 1.0f}, objectId{0},
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        /* Otherwise it refuses to constexpr, on 3.8 at least */
-        _pad0{}, _pad1{},
+    constexpr explicit FlatDrawUniform(DefaultInitT = DefaultInit) noexcept:
+        #if ((defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)) && defined(CORRADE_TARGET_BIG_ENDIAN)
+        _pad0{}, /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif
-        alphaMask{0.5f}
+        materialId{0},
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8) && !defined(CORRADE_TARGET_BIG_ENDIAN)
+        _pad0{},
+        #endif
+        objectId{0}
         #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        , _pad2{}
+        , _pad1{}, _pad2{}
         #endif
         {}
 
     /** @brief Construct without initializing the contents */
-    explicit FlatDrawUniform(NoInitT) noexcept: color{NoInit} {}
+    explicit FlatDrawUniform(NoInitT) noexcept {}
 
     /** @{
      * @name Convenience setters
@@ -76,6 +81,15 @@ struct FlatDrawUniform {
      */
 
     /**
+     * @brief Set the @ref materialId field
+     * @return Reference to self (for method chaining)
+     */
+    FlatDrawUniform& setMaterialId(UnsignedInt id) {
+        materialId = id;
+        return *this;
+    }
+
+    /**
      * @brief Set the @ref objectId field
      * @return Reference to self (for method chaining)
      */
@@ -85,10 +99,103 @@ struct FlatDrawUniform {
     }
 
     /**
+     * @}
+     */
+
+    /** @var materialId
+     * @brief Material ID
+     *
+     * References a particular material from a @ref FlatMaterialUniform array.
+     * Useful when an UBO with more than one material is supplied or in a
+     * multi-draw scenario. Should be less than the material count passed to
+     * the @ref FlatGL::FlatGL(Flags, UnsignedInt, UnsignedInt) constructor.
+     * Default value is @cpp 0 @ce, meaning the first material gets used.
+     */
+
+    /* This field is an UnsignedInt in the shader and materialId is extracted
+       as (value & 0xffff), so the order has to be different on BE */
+    #ifndef CORRADE_TARGET_BIG_ENDIAN
+    UnsignedShort materialId;
+    /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
+       I MADE THOSE UNNAMED, YOU DUMB FOOL */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    UnsignedShort
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :16; /* reserved for skinOffset */
+    #endif
+    #else
+    UnsignedShort
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :16; /* reserved for skinOffset */
+    UnsignedShort materialId;
+    #endif
+
+    /**
+     * @brief Object ID
+     *
+     * Used only for the object ID framebuffer output, not to access any other
+     * uniform data. Default value is @cpp 0 @ce.
+     *
+     * Used only if @ref FlatGL::Flag::ObjectId is enabled, ignored otherwise.
+     * If @ref FlatGL::Flag::InstancedObjectId is enabled as well, this value
+     * is added to the ID coming from the @ref FlatGL::ObjectId attribute.
+     * @see @ref FlatGL::setObjectId()
+     */
+    UnsignedInt objectId;
+
+    /* warning: Member __pad1__ is not documented. FFS DOXYGEN WHY DO YOU THINK
+       I MADE THOSE UNNAMED, YOU DUMB FOOL */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad2 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
+    #endif
+};
+
+/**
+@brief Material uniform for flat shaders
+@m_since_latest
+
+Describes material properties referenced from
+@ref FlatDrawUniform::materialId.
+@see @ref FlatGL::bindMaterialBuffer()
+*/
+struct FlatMaterialUniform {
+    /** @brief Construct with default parameters */
+    constexpr explicit FlatMaterialUniform(DefaultInitT = DefaultInit) noexcept: color{1.0f, 1.0f, 1.0f, 1.0f}, alphaMask{0.5f}
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        , _pad0{}, _pad1{}, _pad2{}
+        #endif
+        {}
+
+    /** @brief Construct without initializing the contents */
+    explicit FlatMaterialUniform(NoInitT) noexcept: color{NoInit} {}
+
+    /** @{
+     * @name Convenience setters
+     *
+     * Provided to allow the use of method chaining for populating a structure
+     * in a single expression, otherwise equivalent to accessing the fields
+     * directly. Also guaranteed to provide backwards compatibility when
+     * packing of the actual fields changes.
+     */
+
+    /**
      * @brief Set the @ref alphaMask field
      * @return Reference to self (for method chaining)
      */
-    FlatDrawUniform& setAlphaMask(Float alphaMask) {
+    FlatMaterialUniform& setAlphaMask(Float alphaMask) {
         this->alphaMask = alphaMask;
         return *this;
     }
@@ -97,7 +204,7 @@ struct FlatDrawUniform {
      * @brief Set the @ref color field
      * @return Reference to self (for method chaining)
      */
-    FlatDrawUniform& setColor(const Color4& color) {
+    FlatMaterialUniform& setColor(const Color4& color) {
         this->color = color;
         return *this;
     }
@@ -119,49 +226,6 @@ struct FlatDrawUniform {
     Color4 color;
 
     /**
-     * @brief Object ID
-     *
-     * Used only for the object ID framebuffer output, not to access any other
-     * uniform data. Default value is @cpp 0 @ce.
-     *
-     * Used only if @ref FlatGL::Flag::ObjectId is enabled, ignored otherwise.
-     * If @ref FlatGL::Flag::InstancedObjectId is enabled as well, this value
-     * is added to the ID coming from the @ref FlatGL::ObjectId attribute.
-     * @see @ref FlatGL::setObjectId()
-     */
-    UnsignedInt objectId;
-
-    /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
-       I MADE THOSE UNNAMED, YOU DUMB FOOL */
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    /* This field is an UnsignedInt in the shader and skinOffset is extracted
-       as (value >> 16), so the order has to be different on BE */
-    #ifndef CORRADE_TARGET_BIG_ENDIAN
-    UnsignedShort
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :16;
-    UnsignedShort
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :16; /* reserved for skinOffset */
-    #else
-    UnsignedShort
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :16; /* reserved for skinOffset */
-    UnsignedShort
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :16;
-    #endif
-    #endif
-
-    /**
      * @brief Alpha mask value
      *
      * Fragments with alpha values smaller than the mask value will be
@@ -172,9 +236,19 @@ struct FlatDrawUniform {
      */
     Float alphaMask;
 
-    /* warning: Member __pad2__ is not documented. FFS DOXYGEN WHY DO YOU THINK
+    /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
     Int
         #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
         _pad2 /* Otherwise it refuses to constexpr, on 3.8 at least */

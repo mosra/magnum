@@ -27,10 +27,6 @@
 #extension GL_EXT_gpu_shader4: require
 #endif
 
-#if defined(UNIFORM_BUFFERS) && defined(ALPHA_MASK) && !defined(GL_ES)
-#extension GL_ARB_shader_bit_encoding: require
-#endif
-
 #ifndef NEW_GLSL
 #define fragmentColor gl_FragColor
 #define texture texture2D
@@ -88,10 +84,9 @@ uniform highp uint drawOffset
 #endif
 
 struct DrawUniform {
-    lowp vec4 color;
-    highp uvec4 objectIdReservedAlphaMaskReserved;
-    #define draw_objectId objectIdReservedAlphaMaskReserved.x
-    #define draw_alphaMask objectIdReservedAlphaMaskReserved.z
+    highp uvec4 materialIdReservedObjectIdReservedReserved;
+    #define draw_materialIdReserved materialIdReservedObjectIdReservedReserved.x
+    #define draw_objectId materialIdReservedObjectIdReservedReserved.y
 };
 
 layout(std140
@@ -100,6 +95,20 @@ layout(std140
     #endif
 ) uniform Draw {
     DrawUniform draws[DRAW_COUNT];
+};
+
+struct MaterialUniform {
+    lowp vec4 color;
+    highp vec4 alphaMaskReservedReservedReserved;
+    #define material_alphaMask alphaMaskReservedReservedReserved.x
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 4
+    #endif
+) uniform Material {
+    MaterialUniform materials[MATERIAL_COUNT];
 };
 #endif
 
@@ -148,12 +157,13 @@ flat in highp uint drawId;
 
 void main() {
     #ifdef UNIFORM_BUFFERS
-    lowp const vec4 color = draws[drawId].color;
     #ifdef OBJECT_ID
     highp const uint objectId = draws[drawId].draw_objectId;
     #endif
+    mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
+    lowp const vec4 color = materials[materialId].color;
     #ifdef ALPHA_MASK
-    lowp const float alphaMask = uintBitsToFloat(draws[drawId].draw_alphaMask);
+    lowp const float alphaMask = materials[materialId].material_alphaMask;
     #endif
     #endif
 

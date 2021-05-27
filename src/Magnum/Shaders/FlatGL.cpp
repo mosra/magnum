@@ -57,25 +57,28 @@ namespace {
            bound to the same buffer for the whole time */
         TransformationProjectionBufferBinding = 1,
         DrawBufferBinding = 2,
-        TextureTransformationBufferBinding = 3
+        TextureTransformationBufferBinding = 3,
+        MaterialBufferBinding = 4
     };
     #endif
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     #ifndef MAGNUM_TARGET_GLES2
-    , const UnsignedInt drawCount
+    , const UnsignedInt materialCount, const UnsignedInt drawCount
     #endif
 ):
     _flags{flags}
     #ifndef MAGNUM_TARGET_GLES2
-    , _drawCount{drawCount}
+    , _materialCount{materialCount}, _drawCount{drawCount}
     #endif
 {
     CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & Flag::Textured),
         "Shaders::FlatGL: texture transformation enabled but the shader is not textured", );
 
     #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
+        "Shaders::FlatGL: material count can't be zero", );
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
         "Shaders::FlatGL: draw count can't be zero", );
     #endif
@@ -146,8 +149,10 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     if(flags >= Flag::UniformBuffers) {
         frag.addSource(Utility::formatString(
             "#define UNIFORM_BUFFERS\n"
-            "#define DRAW_COUNT {}\n",
-            drawCount));
+            "#define DRAW_COUNT {}\n"
+            "#define MATERIAL_COUNT {}\n",
+            drawCount,
+            materialCount));
         frag.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
@@ -219,6 +224,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
             setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
             if(flags & Flag::TextureTransformation)
                 setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
         }
         #endif
     }
@@ -242,7 +248,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags): FlatGL{flags, 1} {}
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags): FlatGL{flags, 1, 1} {}
 #endif
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
@@ -349,6 +355,20 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindTex
     CORRADE_ASSERT(_flags & Flag::TextureTransformation,
         "Shaders::FlatGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
     buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding, offset, size);
+    return *this;
+}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindMaterialBuffer(GL::Buffer& buffer) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::FlatGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding);
+    return *this;
+}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindMaterialBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::FlatGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
     return *this;
 }
 #endif

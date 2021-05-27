@@ -130,27 +130,27 @@ constexpr std::size_t BenchmarkRepeats{4};
 const struct {
     const char* name;
     FlatGL2D::Flags flags;
-    UnsignedInt drawCount;
+    UnsignedInt materialCount, drawCount;
 } FlatData[] {
-    {"", {}, 1},
-    {"vertex color", FlatGL2D::Flag::VertexColor, 1},
+    {"", {}, 1, 1},
+    {"vertex color", FlatGL2D::Flag::VertexColor, 1, 1},
     #ifndef MAGNUM_TARGET_GLES2
-    {"object ID", FlatGL2D::Flag::ObjectId, 1},
+    {"object ID", FlatGL2D::Flag::ObjectId, 1, 1},
     #endif
-    {"textured", FlatGL2D::Flag::Textured, 1},
-    {"textured + alpha mask", FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask, 1},
-    {"texture transformation", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1},
-    {"instanced transformation", FlatGL2D::Flag::InstancedTransformation, 1},
-    {"instanced transformation + color", FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::VertexColor, 1},
+    {"textured", FlatGL2D::Flag::Textured, 1, 1},
+    {"textured + alpha mask", FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask, 1, 1},
+    {"texture transformation", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1, 1},
+    {"instanced transformation", FlatGL2D::Flag::InstancedTransformation, 1, 1},
+    {"instanced transformation + color", FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::VertexColor, 1, 1},
     #ifndef MAGNUM_TARGET_GLES2
-    {"instanced transformation + object ID", FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId, 1},
+    {"instanced transformation + object ID", FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId, 1, 1},
     #endif
-    {"instanced transformation + texture offset", FlatGL2D::Flag::Textured|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedTextureOffset, 1},
+    {"instanced transformation + texture offset", FlatGL2D::Flag::Textured|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedTextureOffset, 1, 1},
     #ifndef MAGNUM_TARGET_GLES2
-    {"UBO single", FlatGL2D::Flag::UniformBuffers, 1},
-    {"UBO single, texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1},
-    {"UBO multi", FlatGL2D::Flag::UniformBuffers, 128},
-    {"multidraw", FlatGL2D::Flag::MultiDraw, 128},
+    {"UBO single", FlatGL2D::Flag::UniformBuffers, 1, 1},
+    {"UBO single, texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1, 1},
+    {"UBO multi", FlatGL2D::Flag::UniformBuffers, 32, 128},
+    {"multidraw", FlatGL2D::Flag::MultiDraw, 32, 128},
     #endif
 };
 
@@ -541,7 +541,7 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::flat() {
 
     FlatGL<dimensions> shader{data.flags
         #ifndef MAGNUM_TARGET_GLES2
-        , data.drawCount
+        , data.materialCount, data.drawCount
         #endif
     };
 
@@ -549,13 +549,16 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::flat() {
     GL::Buffer transformationProjectionUniform{NoCreate};
     GL::Buffer drawUniform{NoCreate};
     GL::Buffer textureTransformationUniform{NoCreate};
+    GL::Buffer materialUniform{NoCreate};
     if(data.flags & FlatGL2D::Flag::UniformBuffers) {
         transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{data.drawCount}};
-        Containers::Array<FlatDrawUniform> drawData{data.drawCount};
-        drawData[0].setAlphaMask(0.0f);
-        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, drawData};
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<FlatDrawUniform>{data.drawCount}};
+        Containers::Array<FlatMaterialUniform> materialData{data.materialCount};
+        materialData[0].setAlphaMask(0.0f);
+        materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, materialData};
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
-            .bindDrawBuffer(drawUniform);
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform);
         if(data.flags & FlatGL2D::Flag::TextureTransformation) {
             textureTransformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TextureTransformationUniform>{data.drawCount}};
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
