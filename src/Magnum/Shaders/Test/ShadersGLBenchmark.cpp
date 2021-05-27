@@ -204,16 +204,16 @@ const struct {
 const struct {
     const char* name;
     VectorGL2D::Flags flags;
-    UnsignedInt drawCount;
+    UnsignedInt materialCount, drawCount;
 } VectorData[] {
-    {"", {}, 1},
-    {"texture transformation", VectorGL2D::Flag::TextureTransformation, 1},
+    {"", {}, 1, 1},
+    {"texture transformation", VectorGL2D::Flag::TextureTransformation, 1, 1},
     #ifndef MAGNUM_TARGET_GLES2
-    {"UBO single", VectorGL2D::Flag::UniformBuffers, 1},
-    {"UBO single, texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1},
-    {"UBO multi", VectorGL2D::Flag::UniformBuffers, 128},
-    {"UBO multi, texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 128},
-    {"multidraw", VectorGL2D::Flag::MultiDraw, 128},
+    {"UBO single", VectorGL2D::Flag::UniformBuffers, 1, 1},
+    {"UBO single, texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1, 1},
+    {"UBO multi", VectorGL2D::Flag::UniformBuffers, 32, 128},
+    {"UBO multi, texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 32, 128},
+    {"multidraw", VectorGL2D::Flag::MultiDraw, 32, 128},
     #endif
 };
 
@@ -826,7 +826,7 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vector() {
 
     VectorGL<dimensions> shader{data.flags
         #ifndef MAGNUM_TARGET_GLES2
-        , data.drawCount
+        , data.materialCount, data.drawCount
         #endif
     };
     shader.bindVectorTexture(_textureWhite);
@@ -835,11 +835,14 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vector() {
     GL::Buffer transformationProjectionUniform{NoCreate};
     GL::Buffer drawUniform{NoCreate};
     GL::Buffer textureTransformationUniform{NoCreate};
+    GL::Buffer materialUniform{NoCreate};
     if(data.flags & VectorGL2D::Flag::UniformBuffers) {
         transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{data.drawCount}};
         drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<VectorDrawUniform>{data.drawCount}};
+        materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<VectorMaterialUniform>{data.materialCount}};
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
-            .bindDrawBuffer(drawUniform);
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform);
         if(data.flags & VectorGL2D::Flag::TextureTransformation) {
             textureTransformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, {
                 TextureTransformationUniform{}

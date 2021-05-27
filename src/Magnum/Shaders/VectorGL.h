@@ -127,8 +127,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
             /**
              * Use uniform buffers. Expects that uniform data are supplied via
              * @ref bindTransformationProjectionBuffer(),
-             * @ref bindDrawBuffer() and @ref bindTextureTransformationBuffer()
-             * instead of direct uniform setters.
+             * @ref bindDrawBuffer(), @ref bindTextureTransformationBuffer()
+             * and @ref bindMaterialBuffer() instead of direct uniform setters.
              * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
              * @requires_gles30 Uniform buffers are not available in OpenGL ES
              *      2.0.
@@ -185,7 +185,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          *
          * While this function is meant mainly for the classic uniform
          * scenario (without @ref Flag::UniformBuffers set), it's equivalent to
-         * @ref VectorGL(Flags, UnsignedInt) with @p drawCount set to @cpp 1 @ce.
+         * @ref VectorGL(Flags, UnsignedInt, UnsignedInt) with @p materialCount
+         * and @p drawCount set to @cpp 1 @ce.
          */
         explicit VectorGL(Flags flags = {});
 
@@ -193,16 +194,19 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
         /**
          * @brief Construct for a multi-draw scenario
          * @param flags         Flags
+         * @param materialCount Size of a @ref VectorMaterialUniform buffer
+         *      bound with @ref bindMaterialBuffer()
          * @param drawCount     Size of a @ref TransformationProjectionUniform2D
          *      / @ref TransformationProjectionUniform3D /
          *      @ref VectorDrawUniform / @ref TextureTransformationUniform
          *      buffer bound with @ref bindTransformationProjectionBuffer(),
          *      @ref bindDrawBuffer() and @ref bindTextureTransformationBuffer()
          *
-         * If @p flags contains @ref Flag::UniformBuffers @p drawCount
-         * describes the uniform buffer sizes as these are required to have a
-         * statically defined size. The draw offset is then set via
-         * @ref setDrawOffset().
+         * If @p flags contains @ref Flag::UniformBuffers, @p materialCount and
+         * @p drawCount describe the uniform buffer sizes as these are required
+         * to have a statically defined size. The draw offset is then set via
+         * @ref setDrawOffset() and the per-draw materials specified via
+         * @ref VectorDrawUniform::materialId.
          *
          * If @p flags don't contain @ref Flag::UniformBuffers, @p drawCount is
          * ignored and the constructor behaves the same as @ref VectorGL(Flags).
@@ -217,7 +221,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
             (accepting pairs of parameter type and value like in GL context
             creation, e.g., which will probably need a new enum as reusing Flag
             for this might be too confusing) */
-        explicit VectorGL(Flags flags, UnsignedInt drawCount);
+        explicit VectorGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
         #endif
 
         /**
@@ -253,6 +257,18 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
         Flags flags() const { return _flags; }
 
         #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Material count
+         * @m_since_latest
+         *
+         * Statically defined size of the @ref VectorMaterialUniform uniform
+         * buffer. Has use only if @ref Flag::UniformBuffers is set.
+         * @see @ref bindMaterialBuffer()
+         * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined on WebGL 1.0 builds.
+         */
+        UnsignedInt materialCount() const { return _materialCount; }
+
         /**
          * @brief Draw count
          * @m_since_latest
@@ -310,8 +326,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * Initial value is @cpp 0x00000000_rgbaf @ce.
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
-         * @ref VectorDrawUniform::backgroundColor and call
-         * @ref bindDrawBuffer() instead.
+         * @ref VectorMaterialUniform::backgroundColor and call
+         * @ref bindMaterialBuffer() instead.
          * @see @ref setColor()
          */
         VectorGL<dimensions>& setBackgroundColor(const Color4& color);
@@ -323,7 +339,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * Initial value is @cpp 0xffffffff_rgbaf @ce.
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
-         * @ref VectorDrawUniform::color and call @ref bindDrawBuffer()
+         * @ref VectorMaterialUniform::color and call @ref bindMaterialBuffer()
          * instead.
          * @see @ref setBackgroundColor()
          */
@@ -373,7 +389,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * expected to contain @ref drawCount() instances of
          * @ref TransformationProjectionUniform2D /
          * @ref TransformationProjectionUniform3D. At the very least you need
-         * to call also @ref bindDrawBuffer().
+         * to call also @ref bindDrawBuffer() and @ref bindMaterialBuffer().
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -393,7 +409,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * Expects that @ref Flag::UniformBuffers is set. The buffer is
          * expected to contain @ref drawCount() instances of
          * @ref VectorDrawUniform. At the very least you need to call also
-         * @ref bindTransformationProjectionBuffer().
+         * @ref bindTransformationProjectionBuffer() and
+         * @ref bindMaterialBuffer().
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -424,6 +441,26 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * @m_since_latest
          */
         VectorGL<dimensions>& bindTextureTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /**
+         * @brief Set a material uniform buffer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that @ref Flag::UniformBuffers is set. The buffer is
+         * expected to contain @ref materialCount() instances of
+         * @ref VectorMaterialUniform. At the very least you need to call also
+         * @ref bindTransformationProjectionBuffer() and @ref bindDrawBuffer().
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        VectorGL<dimensions>& bindMaterialBuffer(GL::Buffer& buffer);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        VectorGL<dimensions>& bindMaterialBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
          * @}
@@ -457,7 +494,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
 
         Flags _flags;
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt _drawCount{};
+        UnsignedInt _materialCount{}, _drawCount{};
         #endif
         Int _transformationProjectionMatrixUniform{0},
             _textureMatrixUniform{1},

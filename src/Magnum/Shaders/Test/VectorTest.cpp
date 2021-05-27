@@ -38,14 +38,25 @@ struct VectorTest: TestSuite::Tester {
     void drawUniformConstructDefault();
     void drawUniformConstructNoInit();
     void drawUniformSetters();
+    void drawUniformMaterialIdPacking();
+
+    void materialUniformConstructDefault();
+    void materialUniformConstructNoInit();
+    void materialUniformSetters();
 };
 
 VectorTest::VectorTest() {
     addTests({&VectorTest::uniformSizeAlignment<VectorDrawUniform>,
+              &VectorTest::uniformSizeAlignment<VectorMaterialUniform>,
 
               &VectorTest::drawUniformConstructDefault,
               &VectorTest::drawUniformConstructNoInit,
-              &VectorTest::drawUniformSetters});
+              &VectorTest::drawUniformSetters,
+              &VectorTest::drawUniformMaterialIdPacking,
+
+              &VectorTest::materialUniformConstructDefault,
+              &VectorTest::materialUniformConstructNoInit,
+              &VectorTest::materialUniformSetters});
 }
 
 using namespace Math::Literals;
@@ -53,6 +64,9 @@ using namespace Math::Literals;
 template<class> struct UniformTraits;
 template<> struct UniformTraits<VectorDrawUniform> {
     static const char* name() { return "VectorDrawUniform"; }
+};
+template<> struct UniformTraits<VectorMaterialUniform> {
+    static const char* name() { return "VectorMaterialUniform"; }
 };
 
 template<class T> void VectorTest::uniformSizeAlignment() {
@@ -72,17 +86,13 @@ template<class T> void VectorTest::uniformSizeAlignment() {
 void VectorTest::drawUniformConstructDefault() {
     VectorDrawUniform a;
     VectorDrawUniform b{DefaultInit};
-    CORRADE_COMPARE(a.color, 0xffffffff_rgbaf);
-    CORRADE_COMPARE(b.color, 0xffffffff_rgbaf);
-    CORRADE_COMPARE(a.backgroundColor, 0x00000000_rgbaf);
-    CORRADE_COMPARE(b.backgroundColor, 0x00000000_rgbaf);
+    CORRADE_COMPARE(a.materialId, 0);
+    CORRADE_COMPARE(b.materialId, 0);
 
     constexpr VectorDrawUniform ca;
     constexpr VectorDrawUniform cb{DefaultInit};
-    CORRADE_COMPARE(ca.color, 0xffffffff_rgbaf);
-    CORRADE_COMPARE(cb.color, 0xffffffff_rgbaf);
-    CORRADE_COMPARE(ca.backgroundColor, 0x00000000_rgbaf);
-    CORRADE_COMPARE(cb.backgroundColor, 0x00000000_rgbaf);
+    CORRADE_COMPARE(ca.materialId, 0);
+    CORRADE_COMPARE(cb.materialId, 0);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<VectorDrawUniform>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<VectorDrawUniform, DefaultInitT>::value);
@@ -94,16 +104,14 @@ void VectorTest::drawUniformConstructDefault() {
 void VectorTest::drawUniformConstructNoInit() {
     /* Testing only some fields, should be enough */
     VectorDrawUniform a;
-    a.color = 0x354565fc_rgbaf;
-    a.backgroundColor = 0x98769facb_rgbaf;
+    a.materialId = 5;
 
     new(&a) VectorDrawUniform{NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
-        CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
-        CORRADE_COMPARE(a.backgroundColor, 0x98769facb_rgbaf);
+        CORRADE_COMPARE(a.materialId, 5);
     }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<VectorDrawUniform, NoInitT>::value);
@@ -114,6 +122,63 @@ void VectorTest::drawUniformConstructNoInit() {
 
 void VectorTest::drawUniformSetters() {
     VectorDrawUniform a;
+    a.setMaterialId(5);
+    CORRADE_COMPARE(a.materialId, 5);
+}
+
+void VectorTest::drawUniformMaterialIdPacking() {
+    VectorDrawUniform a;
+    a.setMaterialId(13765);
+    /* materialId should be right at the beginning, in the low 16 bits on both
+       LE and BE */
+    CORRADE_COMPARE(reinterpret_cast<UnsignedInt*>(&a)[0] & 0xffff, 13765);
+}
+
+void VectorTest::materialUniformConstructDefault() {
+    VectorMaterialUniform a;
+    VectorMaterialUniform b{DefaultInit};
+    CORRADE_COMPARE(a.color, 0xffffffff_rgbaf);
+    CORRADE_COMPARE(b.color, 0xffffffff_rgbaf);
+    CORRADE_COMPARE(a.backgroundColor, 0x00000000_rgbaf);
+    CORRADE_COMPARE(b.backgroundColor, 0x00000000_rgbaf);
+
+    constexpr VectorMaterialUniform ca;
+    constexpr VectorMaterialUniform cb{DefaultInit};
+    CORRADE_COMPARE(ca.color, 0xffffffff_rgbaf);
+    CORRADE_COMPARE(cb.color, 0xffffffff_rgbaf);
+    CORRADE_COMPARE(ca.backgroundColor, 0x00000000_rgbaf);
+    CORRADE_COMPARE(cb.backgroundColor, 0x00000000_rgbaf);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<VectorMaterialUniform>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<VectorMaterialUniform, DefaultInitT>::value);
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<DefaultInitT, VectorMaterialUniform>::value);
+}
+
+void VectorTest::materialUniformConstructNoInit() {
+    /* Testing only some fields, should be enough */
+    VectorMaterialUniform a;
+    a.color = 0x354565fc_rgbaf;
+    a.backgroundColor = 0x98769facb_rgbaf;
+
+    new(&a) VectorMaterialUniform{NoInit};
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
+        CORRADE_COMPARE(a.backgroundColor, 0x98769facb_rgbaf);
+    }
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<VectorMaterialUniform, NoInitT>::value);
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, VectorMaterialUniform>::value);
+}
+
+void VectorTest::materialUniformSetters() {
+    VectorMaterialUniform a;
     a.setColor(0x354565fc_rgbaf)
      .setBackgroundColor(0x98769facb_rgbaf);
     CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);

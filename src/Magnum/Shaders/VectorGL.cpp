@@ -57,22 +57,25 @@ namespace {
            bound to the same buffer for the whole time */
         TransformationProjectionBufferBinding = 1,
         DrawBufferBinding = 2,
-        TextureTransformationBufferBinding = 3
+        TextureTransformationBufferBinding = 3,
+        MaterialBufferBinding = 4
     };
     #endif
 }
 
 template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags
     #ifndef MAGNUM_TARGET_GLES2
-    , const UnsignedInt drawCount
+    , const UnsignedInt materialCount, const UnsignedInt drawCount
     #endif
 ):
     _flags{flags}
     #ifndef MAGNUM_TARGET_GLES2
-    , _drawCount{drawCount}
+    , _materialCount{materialCount}, _drawCount{drawCount}
     #endif
 {
     #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
+        "Shaders::VectorGL: material count can't be zero", );
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
         "Shaders::VectorGL: draw count can't be zero", );
     #endif
@@ -128,8 +131,10 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
     if(flags >= Flag::UniformBuffers) {
         frag.addSource(Utility::formatString(
             "#define UNIFORM_BUFFERS\n"
-            "#define DRAW_COUNT {}\n",
-            drawCount));
+            "#define DRAW_COUNT {}\n"
+            "#define MATERIAL_COUNT {}\n",
+            drawCount,
+            materialCount));
         frag.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
@@ -182,6 +187,7 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
             setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
             if(flags & Flag::TextureTransformation)
                 setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
         }
         #endif
     }
@@ -204,7 +210,7 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags): VectorGL{flags, 1} {}
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags): VectorGL{flags, 1, 1} {}
 #endif
 
 template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
@@ -298,6 +304,20 @@ template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::bin
     CORRADE_ASSERT(_flags & Flag::TextureTransformation,
         "Shaders::VectorGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
     buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding, offset, size);
+    return *this;
+}
+
+template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::bindMaterialBuffer(GL::Buffer& buffer) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::VectorGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding);
+    return *this;
+}
+
+template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::bindMaterialBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::VectorGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
     return *this;
 }
 #endif

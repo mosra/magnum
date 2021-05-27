@@ -29,6 +29,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -85,7 +86,7 @@ struct VectorGLTest: GL::OpenGLTester {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    template<UnsignedInt dimensions> void constructUniformBuffersZeroDraws();
+    template<UnsignedInt dimensions> void constructUniformBuffersInvalid();
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -165,15 +166,29 @@ constexpr struct {
 constexpr struct {
     const char* name;
     VectorGL2D::Flags flags;
-    UnsignedInt drawCount;
+    UnsignedInt materialCount, drawCount;
 } ConstructUniformBuffersData[]{
-    {"classic fallback", {}, 1},
-    {"", VectorGL2D::Flag::UniformBuffers, 1},
-    {"texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1},
-    /* SwiftShader has 256 uniform vectors at most, per-draw is 4+3 in 3D case
-       and 3+3 in 2D */
-    {"multiple draws", VectorGL2D::Flag::UniformBuffers, 36},
-    {"multidraw with all the things", VectorGL2D::Flag::MultiDraw|VectorGL2D::Flag::TextureTransformation, 36}
+    {"classic fallback", {}, 1, 1},
+    {"", VectorGL2D::Flag::UniformBuffers, 1, 1},
+    {"texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1, 1},
+    /* SwiftShader has 256 uniform vectors at most, per-draw is 4+1 in 3D case
+       and 3+1 in 2D, per-material 3 */
+    {"multiple materials, draws", VectorGL2D::Flag::UniformBuffers, 15, 42},
+    {"multidraw with all the things", VectorGL2D::Flag::MultiDraw|VectorGL2D::Flag::TextureTransformation, 15, 42}
+};
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    VectorGL2D::Flags flags;
+    UnsignedInt materialCount, drawCount;
+    const char* message;
+} ConstructUniformBuffersInvalidData[]{
+    {"zero draws", VectorGL2D::Flag::UniformBuffers, 1, 0,
+        "draw count can't be zero"},
+    {"zero materials", VectorGL2D::Flag::UniformBuffers, 0, 1,
+        "material count can't be zero"},
 };
 #endif
 
@@ -200,20 +215,20 @@ constexpr struct {
     const char* expected2D;
     const char* expected3D;
     VectorGL2D::Flags flags;
-    UnsignedInt drawCount;
+    UnsignedInt materialCount, drawCount;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
     {"bind with offset", "multidraw2D.tga", "multidraw3D.tga",
-        {}, 1, 16,
+        {}, 1, 1, 16,
         /* Minor differences on ARM Mali */
         1.34f, 0.02f},
     {"draw offset", "multidraw2D.tga", "multidraw3D.tga",
-        {}, 3, 1,
+        {}, 2, 3, 1,
         /* Minor differences on ARM Mali */
         1.34f, 0.02f},
     {"multidraw", "multidraw2D.tga", "multidraw3D.tga",
-        VectorGL2D::Flag::MultiDraw, 3, 1,
+        VectorGL2D::Flag::MultiDraw, 2, 3, 1,
         /* Minor differences on ARM Mali */
         1.34f, 0.02f},
 };
@@ -240,12 +255,16 @@ VectorGLTest::VectorGLTest() {
         &VectorGLTest::constructMoveUniformBuffers<2>,
         &VectorGLTest::constructMoveUniformBuffers<3>,
         #endif
+        });
 
-        #ifndef MAGNUM_TARGET_GLES2
-        &VectorGLTest::constructUniformBuffersZeroDraws<2>,
-        &VectorGLTest::constructUniformBuffersZeroDraws<3>,
-        #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests<VectorGLTest>({
+        &VectorGLTest::constructUniformBuffersInvalid<2>,
+        &VectorGLTest::constructUniformBuffersInvalid<3>},
+        Containers::arraySize(ConstructUniformBuffersInvalidData));
+    #endif
 
+    addTests<VectorGLTest>({
         #ifndef MAGNUM_TARGET_GLES2
         &VectorGLTest::setUniformUniformBuffersEnabled<2>,
         &VectorGLTest::setUniformUniformBuffersEnabled<3>,
@@ -369,7 +388,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffers() {
         #endif
     }
 
-    VectorGL<dimensions> shader{data.flags, data.drawCount};
+    VectorGL<dimensions> shader{data.flags, data.materialCount, data.drawCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
     CORRADE_VERIFY(shader.id());
@@ -414,7 +433,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructMoveUniformBuffers(
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    VectorGL<dimensions> a{VectorGL<dimensions>::Flag::UniformBuffers, 5};
+    VectorGL<dimensions> a{VectorGL<dimensions>::Flag::UniformBuffers, 2, 5};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -423,6 +442,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructMoveUniformBuffers(
     VectorGL<dimensions> b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), VectorGL<dimensions>::Flag::UniformBuffers);
+    CORRADE_COMPARE(b.materialCount(), 2);
     CORRADE_COMPARE(b.drawCount(), 5);
     CORRADE_VERIFY(!a.id());
 
@@ -430,14 +450,17 @@ template<UnsignedInt dimensions> void VectorGLTest::constructMoveUniformBuffers(
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), VectorGL<dimensions>::Flag::UniformBuffers);
+    CORRADE_COMPARE(c.materialCount(), 2);
     CORRADE_COMPARE(c.drawCount(), 5);
     CORRADE_VERIFY(!b.id());
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersZeroDraws() {
+template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersInvalid() {
+    auto&& data = ConstructUniformBuffersInvalidData[testCaseInstanceId()];
     setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseDescription(data.name);
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -450,9 +473,9 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersZeroD
 
     std::ostringstream out;
     Error redirectError{&out};
-    VectorGL<dimensions>{VectorGL<dimensions>::Flag::UniformBuffers, 0};
-    CORRADE_COMPARE(out.str(),
-        "Shaders::VectorGL: draw count can't be zero\n");
+    VectorGL<dimensions>{data.flags, data.materialCount, data.drawCount};
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Shaders::VectorGL: {}\n", data.message));
 }
 #endif
 
@@ -502,6 +525,8 @@ template<UnsignedInt dimensions> void VectorGLTest::bindBufferUniformBuffersNotE
           .bindDrawBuffer(buffer, 0, 16)
           .bindTextureTransformationBuffer(buffer)
           .bindTextureTransformationBuffer(buffer, 0, 16)
+          .bindMaterialBuffer(buffer)
+          .bindMaterialBuffer(buffer, 0, 16)
           .setDrawOffset(0);
     CORRADE_COMPARE(out.str(),
         "Shaders::VectorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
@@ -510,6 +535,8 @@ template<UnsignedInt dimensions> void VectorGLTest::bindBufferUniformBuffersNotE
         "Shaders::VectorGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::VectorGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::VectorGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::VectorGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::VectorGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::VectorGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
 }
 #endif
@@ -572,7 +599,7 @@ template<UnsignedInt dimensions> void VectorGLTest::setWrongDrawOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    VectorGL<dimensions>{VectorGL<dimensions>::Flag::UniformBuffers, 5}
+    VectorGL<dimensions>{VectorGL<dimensions>::Flag::UniformBuffers, 2, 5}
         .setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::VectorGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
@@ -665,8 +692,12 @@ template<VectorGL2D::Flag flag> void VectorGLTest::renderDefaults2D() {
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             VectorDrawUniform{}
         }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            VectorMaterialUniform{}
+        }};
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
             .draw(square);
     }
     #endif
@@ -740,8 +771,12 @@ template<VectorGL3D::Flag flag> void VectorGLTest::renderDefaults3D() {
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             VectorDrawUniform{}
         }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            VectorMaterialUniform{}
+        }};
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
             .draw(plane);
     }
     #endif
@@ -829,17 +864,21 @@ template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             VectorDrawUniform{}
-                .setBackgroundColor(data.backgroundColor)
-                .setColor(data.color)
         }};
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
                 .setTextureMatrix(data.textureTransformation)
         }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            VectorMaterialUniform{}
+                .setBackgroundColor(data.backgroundColor)
+                .setColor(data.color)
+        }};
         if(data.flags & VectorGL2D::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
             .draw(square);
     }
     #endif
@@ -934,17 +973,21 @@ template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             VectorDrawUniform{}
-                .setBackgroundColor(data.backgroundColor)
-                .setColor(data.color)
         }};
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
                 .setTextureMatrix(data.textureTransformation)
         }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            VectorMaterialUniform{}
+                .setBackgroundColor(data.backgroundColor)
+                .setColor(data.color)
+        }};
         if(data.flags & VectorGL3D::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
             .draw(plane);
     }
     #endif
@@ -1031,6 +1074,15 @@ void VectorGLTest::renderMulti2D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
+    Containers::Array<VectorMaterialUniform> materialData{data.uniformIncrement + 1};
+    materialData[0*data.uniformIncrement] = VectorMaterialUniform{}
+        .setColor(0xff0000_rgbf)
+        .setBackgroundColor(0xffcccc_rgbf);
+    materialData[1*data.uniformIncrement] = VectorMaterialUniform{}
+        .setColor(0x00ff00_rgbf)
+        .setBackgroundColor(0xccffcc_rgbf);
+    GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
+
     Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
         .setTransformationProjectionMatrix(
@@ -1069,22 +1121,24 @@ void VectorGLTest::renderMulti2D() {
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
     Containers::Array<VectorDrawUniform> drawData{2*data.uniformIncrement + 1};
+    /* Material offsets are zero if we have single draw, as those are done with
+       UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = VectorDrawUniform{}
-        .setColor(0x00ff00_rgbf)
-        .setBackgroundColor(0xccffcc_rgbf);
+        .setMaterialId(data.drawCount == 1 ? 0 : 1);
     drawData[1*data.uniformIncrement] = VectorDrawUniform{}
-        .setColor(0xff0000_rgbf)
-        .setBackgroundColor(0xffcccc_rgbf);
+        .setMaterialId(data.drawCount == 1 ? 0 : 0);
     drawData[2*data.uniformIncrement] = VectorDrawUniform{}
-        .setColor(0x00ff00_rgbf)
-        .setBackgroundColor(0xccffcc_rgbf);
+        .setMaterialId(data.drawCount == 1 ? 0 : 1);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    VectorGL2D shader{VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation|data.flags, data.drawCount};
+    VectorGL2D shader{VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation|data.flags, data.materialCount, data.drawCount};
     shader.bindVectorTexture(vector);
 
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(VectorMaterialUniform),
+            sizeof(VectorMaterialUniform));
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
             0*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
             sizeof(TransformationProjectionUniform2D));
@@ -1096,6 +1150,9 @@ void VectorGLTest::renderMulti2D() {
             sizeof(TextureTransformationUniform));
         shader.draw(circle);
 
+        shader.bindMaterialBuffer(materialUniform,
+            0*data.uniformIncrement*sizeof(VectorMaterialUniform),
+            sizeof(VectorMaterialUniform));
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
             1*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
             sizeof(TransformationProjectionUniform2D));
@@ -1107,6 +1164,9 @@ void VectorGLTest::renderMulti2D() {
             sizeof(TextureTransformationUniform));
         shader.draw(square);
 
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(VectorMaterialUniform),
+            sizeof(VectorMaterialUniform));
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
             2*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
             sizeof(TransformationProjectionUniform2D));
@@ -1122,7 +1182,8 @@ void VectorGLTest::renderMulti2D() {
     } else {
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
-            .bindTextureTransformationBuffer(textureTransformationUniform);
+            .bindTextureTransformationBuffer(textureTransformationUniform)
+            .bindMaterialBuffer(materialUniform);
 
         if(data.flags >= VectorGL2D::Flag::MultiDraw)
             shader.draw({circle, square, triangle});
@@ -1209,6 +1270,15 @@ void VectorGLTest::renderMulti3D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
+    Containers::Array<VectorMaterialUniform> materialData{data.uniformIncrement + 1};
+    materialData[0*data.uniformIncrement] = VectorMaterialUniform{}
+        .setColor(0xff0000_rgbf)
+        .setBackgroundColor(0xffcccc_rgbf);
+    materialData[1*data.uniformIncrement] = VectorMaterialUniform{}
+        .setColor(0x00ff00_rgbf)
+        .setBackgroundColor(0xccffcc_rgbf);
+    GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
+
     Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform3D{}
         .setTransformationProjectionMatrix(
@@ -1252,22 +1322,24 @@ void VectorGLTest::renderMulti3D() {
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
     Containers::Array<VectorDrawUniform> drawData{2*data.uniformIncrement + 1};
+    /* Material offsets are zero if we have single draw, as those are done with
+       UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = VectorDrawUniform{}
-        .setColor(0x00ff00_rgbf)
-        .setBackgroundColor(0xccffcc_rgbf);
+        .setMaterialId(data.drawCount == 1 ? 0 : 1);
     drawData[1*data.uniformIncrement] = VectorDrawUniform{}
-        .setColor(0xff0000_rgbf)
-        .setBackgroundColor(0xffcccc_rgbf);
+        .setMaterialId(data.drawCount == 1 ? 0 : 0);
     drawData[2*data.uniformIncrement] = VectorDrawUniform{}
-        .setColor(0x00ff00_rgbf)
-        .setBackgroundColor(0xccffcc_rgbf);
+        .setMaterialId(data.drawCount == 1 ? 0 : 1);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    VectorGL3D shader{VectorGL3D::Flag::UniformBuffers|VectorGL3D::Flag::TextureTransformation|data.flags, data.drawCount};
+    VectorGL3D shader{VectorGL3D::Flag::UniformBuffers|VectorGL3D::Flag::TextureTransformation|data.flags, data.materialCount, data.drawCount};
     shader.bindVectorTexture(vector);
 
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(VectorMaterialUniform),
+            sizeof(VectorMaterialUniform));
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
             0*data.uniformIncrement*sizeof(TransformationProjectionUniform3D),
             sizeof(TransformationProjectionUniform3D));
@@ -1279,6 +1351,9 @@ void VectorGLTest::renderMulti3D() {
             sizeof(TextureTransformationUniform));
         shader.draw(sphere);
 
+        shader.bindMaterialBuffer(materialUniform,
+            0*data.uniformIncrement*sizeof(VectorMaterialUniform),
+            sizeof(VectorMaterialUniform));
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
             1*data.uniformIncrement*sizeof(TransformationUniform3D),
             sizeof(TransformationUniform3D));
@@ -1290,6 +1365,9 @@ void VectorGLTest::renderMulti3D() {
             sizeof(TextureTransformationUniform));
         shader.draw(plane);
 
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(VectorMaterialUniform),
+            sizeof(VectorMaterialUniform));
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
             2*data.uniformIncrement*sizeof(TransformationUniform3D),
             sizeof(TransformationUniform3D));
@@ -1305,7 +1383,8 @@ void VectorGLTest::renderMulti3D() {
     } else {
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
-            .bindTextureTransformationBuffer(textureTransformationUniform);
+            .bindTextureTransformationBuffer(textureTransformationUniform)
+            .bindMaterialBuffer(materialUniform);
 
         if(data.flags >= VectorGL3D::Flag::MultiDraw)
             shader.draw({sphere, plane, cone});

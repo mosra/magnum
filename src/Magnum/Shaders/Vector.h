@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Struct @ref Magnum::Shaders::VectorDrawUniform
+ * @brief Struct @ref Magnum::Shaders::VectorDrawUniform, @ref Magnum::Shaders::VectorMaterialUniform
  */
 
 #include "Magnum/Magnum.h"
@@ -47,20 +47,121 @@ namespace Magnum { namespace Shaders {
 Together with the generic @ref TransformationProjectionUniform2D /
 @ref TransformationProjectionUniform3D contains parameters that are specific to
 each draw call. Texture transformation, if needed, is supplied separately in a
-@ref TextureTransformationUniform.
+@ref TextureTransformationUniform; material-related properties are expected to
+be shared among multiple draw calls and thus are provided in a separate
+@ref VectorMaterialUniform structure, referenced by @ref materialId.
 @see @ref VectorGL::bindDrawBuffer()
 */
 struct VectorDrawUniform {
     /** @brief Construct with default parameters */
-    constexpr explicit VectorDrawUniform(DefaultInitT = DefaultInit) noexcept: color{1.0f, 1.0f, 1.0f, 1.0f}, backgroundColor{0.0f, 0.0f, 0.0f, 0.0f}
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        /* Otherwise it refuses to constexpr, on 3.8 at least */
-        , _pad0{}, _pad1{}, _pad2{}, _pad3{}, _pad4{}
+    constexpr explicit VectorDrawUniform(DefaultInitT = DefaultInit) noexcept:
+        #if ((defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)) && defined(CORRADE_TARGET_BIG_ENDIAN)
+        _pad0{}, /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        materialId{0}
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8) && !defined(CORRADE_TARGET_BIG_ENDIAN)
+        , _pad0{}, _pad1{}, _pad2{}, _pad3{}
         #endif
         {}
 
     /** @brief Construct without initializing the contents */
-    explicit VectorDrawUniform(NoInitT) noexcept: color{NoInit}, backgroundColor{NoInit} {}
+    explicit VectorDrawUniform(NoInitT) noexcept {}
+
+    /** @{
+     * @name Convenience setters
+     *
+     * Provided to allow the use of method chaining for populating a structure
+     * in a single expression, otherwise equivalent to accessing the fields
+     * directly. Also guaranteed to provide backwards compatibility when
+     * packing of the actual fields changes.
+     */
+
+    /**
+     * @brief Set the @ref materialId field
+     * @return Reference to self (for method chaining)
+     */
+    VectorDrawUniform& setMaterialId(UnsignedInt id) {
+        materialId = id;
+        return *this;
+    }
+
+    /**
+     * @}
+     */
+
+    /** @var materialId
+     * @brief Material ID
+     *
+     * References a particular material from a @ref VectorMaterialUniform
+     * array. Useful when an UBO with more than one material is supplied or in
+     * a multi-draw scenario. Should be less than the material count passed to
+     * the @ref VectorGL::VectorGL(Flags, UnsignedInt, UnsignedInt)
+     * constructor. Default value is @cpp 0 @ce, meaning the first material
+     * gets used.
+     */
+
+    /* This field is an UnsignedInt in the shader and materialId is extracted
+       as (value & 0xffff), so the order has to be different on BE */
+    #ifndef CORRADE_TARGET_BIG_ENDIAN
+    alignas(4) UnsignedShort materialId;
+    /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
+       I MADE THOSE UNNAMED, YOU DUMB FOOL */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    UnsignedShort
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :16; /* reserved for skinOffset */
+    #endif
+    #else
+    alignas(4) UnsignedShort
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :16; /* reserved for skinOffset */
+    UnsignedShort materialId;
+    #endif
+
+    /* warning: Member __pad1__ is not documented. FFS DOXYGEN WHY DO YOU THINK
+       I MADE THOSE UNNAMED, YOU DUMB FOOL */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32; /* reserved for objectId */
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad2 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
+    Int
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        _pad3 /* Otherwise it refuses to constexpr, on 3.8 at least */
+        #endif
+        :32;
+    #endif
+};
+
+/**
+@brief Material uniform for vector shaders
+@m_since_latest
+
+Describes material properties referenced from
+@ref VectorDrawUniform::materialId.
+@see @ref VectorGL::bindMaterialBuffer()
+*/
+struct VectorMaterialUniform {
+    /** @brief Construct with default parameters */
+    constexpr explicit VectorMaterialUniform(DefaultInitT = DefaultInit) noexcept: color{1.0f, 1.0f, 1.0f, 1.0f}, backgroundColor{0.0f, 0.0f, 0.0f, 0.0f}
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        /* Otherwise it refuses to constexpr, on 3.8 at least */
+        , _pad0{}, _pad1{}, _pad2{}, _pad3{}
+        #endif
+        {}
+
+    /** @brief Construct without initializing the contents */
+    explicit VectorMaterialUniform(NoInitT) noexcept: color{NoInit}, backgroundColor{NoInit} {}
 
     /** @{
      * @name Convenience setters
@@ -75,7 +176,7 @@ struct VectorDrawUniform {
      * @brief Set the @ref color field
      * @return Reference to self (for method chaining)
      */
-    VectorDrawUniform& setColor(const Color4& color) {
+    VectorMaterialUniform& setColor(const Color4& color) {
         this->color = color;
         return *this;
     }
@@ -84,7 +185,7 @@ struct VectorDrawUniform {
      * @brief Set the @ref backgroundColor field
      * @return Reference to self (for method chaining)
      */
-    VectorDrawUniform& setBackgroundColor(const Color4& color) {
+    VectorMaterialUniform& setBackgroundColor(const Color4& color) {
         backgroundColor = color;
         return *this;
     }
@@ -112,44 +213,24 @@ struct VectorDrawUniform {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    /* This field is an UnsignedInt in the shader and skinOffset is extracted
-       as (value >> 16), so the order has to be different on BE */
-    #ifndef CORRADE_TARGET_BIG_ENDIAN
-    UnsignedShort
+    Int
         #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
         _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif
-        :16;
-    UnsignedShort
+        :32; /* reserved for alpha mask */
+    Int
         #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
         _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif
-        :16; /* reserved for skinOffset */
-    #else
-    UnsignedShort
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :16; /* reserved for skinOffset */
-    UnsignedShort
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :16;
-    #endif
+        :32;
     Int
         #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
         _pad2 /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif
-        :32; /* reserved for objectId */
+        :32;
     Int
         #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
         _pad3 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32; /* reserved for alphaMask */
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad4 /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif
         :32;
     #endif

@@ -66,9 +66,8 @@ uniform highp uint drawOffset
 #endif
 
 struct DrawUniform {
-    lowp vec4 color;
-    lowp vec4 backgroundColor;
-    lowp uvec4 reserved;
+    highp uvec4 materialIdReservedReservedReservedReserved;
+    #define draw_materialIdReserved materialIdReservedReservedReservedReserved.x
 };
 
 layout(std140
@@ -77,6 +76,20 @@ layout(std140
     #endif
 ) uniform Draw {
     DrawUniform draws[DRAW_COUNT];
+};
+
+struct MaterialUniform {
+    lowp vec4 color;
+    lowp vec4 backgroundColor;
+    lowp uvec4 reserved;
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 4
+    #endif
+) uniform Material {
+    MaterialUniform materials[MATERIAL_COUNT];
 };
 #endif
 
@@ -106,8 +119,9 @@ out lowp vec4 fragmentColor;
 
 void main() {
     #ifdef UNIFORM_BUFFERS
-    lowp const vec4 color = draws[drawId].color;
-    lowp const vec4 backgroundColor = draws[drawId].backgroundColor;
+    mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
+    lowp const vec4 color = materials[materialId].color;
+    lowp const vec4 backgroundColor = materials[materialId].backgroundColor;
     #endif
 
     lowp float intensity = texture(vectorTexture, interpolatedTextureCoordinates).r;
