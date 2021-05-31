@@ -49,6 +49,7 @@
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/Math/Swizzle.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/Primitives/Plane.h"
@@ -173,21 +174,21 @@ struct PhongGLTest: GL::OpenGLTester {
 
     Mesa Intel                      BADLIOM
                ES2                       xx
-               ES3                  BADLIOx
-    Mesa AMD                        BAD I
-    Mesa llvmpipe                   BAD I
-    SwiftShader ES2                 BADLIxx
-                ES3                 BADLI
+               ES3                  BADL Ox
+    Mesa AMD                        BAD
+    Mesa llvmpipe                   BAD
+    SwiftShader ES2                 BADL xx
+                ES3                 BADL
     ANGLE ES2                            xx
-          ES3                       BADLIOM
+          ES3                       BADL OM
     ARM Mali (Huawei P10) ES2       BAD  xx
-                          ES3       BADLIOx
+                          ES3       BADL Ox
     WebGL (on Mesa Intel) 1.0       BAD  xx
-                          2.0       BADLIOM
+                          2.0       BADL OM
     NVidia                          BAD
     Intel Windows                   BAD
     AMD macOS                       BAD
-    Intel macOS                     BADLIOx
+    Intel macOS                     BADL Ox
     iPhone 6 w/ iOS 12.4 ES3        BAD   x
 */
 
@@ -555,24 +556,14 @@ constexpr struct {
     PhongGL::Flags flags;
     Float maxThreshold, meanThreshold;
 } RenderInstancedData[] {
-    {"diffuse", "instanced.tga", {},
-        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        /* AMD has one off pixel; SwiftShader a bit more */
-        96.34f, 0.113f,
-        #else
-        /* WebGL 1 doesn't have 8bit renderbuffer storage */
-        96.34f, 0.113f,
-        #endif
-        },
-    {"diffuse + normal", "instanced-normal.tga", PhongGL::Flag::NormalTexture,
-        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        /* AMD has one off pixel, llvmpipe more */
-        96.0f, 0.333f,
-        #else
-        /* WebGL 1 doesn't have 8bit renderbuffer storage */
-        96.0f, 0.333f,
-        #endif
-        }
+    {"diffuse color", "instanced.tga", {},
+        /* Minor differences on SwiftShader */
+        81.0f, 0.06f},
+    {"diffuse texture", "instanced-textured.tga",
+        PhongGL::Flag::DiffuseTexture|PhongGL::Flag::InstancedTextureOffset,
+        /* Minor differences on SwiftShader */
+        112.0f, 0.09f},
+    /** @todo test normal when there's usable texture */
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -614,6 +605,7 @@ constexpr struct {
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
+    /** @todo test normal and per-draw scaling when there's usable texture */
 };
 #endif
 
@@ -2833,16 +2825,13 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     #endif
     #endif
 
-    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
-       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
-
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates|
         Primitives::UVSphereFlag::Tangents));
 
-    /* Three spheres, each in a different location, differently rotated to
-       ensure the normal matrix is properly used as well. */
+    /* Three spheres, each in a different location. To test normal matrix
+       concatenation, everything is rotated 90° on Y, thus X is now -Z and Z is
+       now X. */
     struct {
         Matrix4 transformation;
         Matrix3x3 normal;
@@ -2850,18 +2839,22 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         Vector2 textureOffset;
         UnsignedInt objectId;
     } instanceData[] {
-        {Matrix4::translation({-1.25f, -1.25f, 0.0f})*
-         Matrix4::rotationX(90.0_degf),
-            {}, 0xff3333_rgbf, {0.0f, 0.0f}, 211},
-        {Matrix4::translation({ 1.25f, -1.25f, 0.0f})*
-         Matrix4::rotationY(90.0_degf),
-            {}, 0x33ff33_rgbf, {1.0f, 0.0f}, 4627},
-        {Matrix4::translation({  0.0f,  1.0f, 1.0f})*
-         Matrix4::rotationZ(90.0_degf),
-            {}, 0x9999ff_rgbf, {0.5f, 1.0f}, 35363}
+        {Matrix4::translation(Math::gather<'z', 'y', 'x'>(Vector3{-1.25f, -1.25f, 0.0f}))*Matrix4::rotationY(-90.0_degf)*Matrix4::rotationX(90.0_degf),
+            /* to test also per-instance normal matrix is applied properly --
+               the texture should look the same as in the case of Flat 3D
+               instanced textured */
+            (Matrix4::rotationY(-90.0_degf)*Matrix4::rotationX(90.0_degf)).normalMatrix(),
+            data.flags & PhongGL::Flag::DiffuseTexture ? 0xffffff_rgbf : 0xffff00_rgbf,
+            {0.0f, 0.0f}, 211},
+        {Matrix4::translation(Math::gather<'z', 'y', 'x'>(Vector3{ 1.25f, -1.25f, 0.0f})),
+            {},
+            data.flags & PhongGL::Flag::DiffuseTexture ? 0xffffff_rgbf : 0x00ffff_rgbf,
+            {1.0f, 0.0f}, 4627},
+        {Matrix4::translation(Math::gather<'z', 'y', 'x'>(Vector3{  0.0f,  1.0f, -1.0f})),
+            {},
+            data.flags & PhongGL::Flag::DiffuseTexture ? 0xffffff_rgbf : 0xff00ff_rgbf,
+            {0.5f, 1.0f}, 35363}
     };
-    for(auto& instance: instanceData)
-        instance.normal = instance.transformation.normalMatrix();
 
     sphere
         .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
@@ -2877,31 +2870,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         )
         .setInstanceCount(3);
 
-    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
-    CORRADE_VERIFY(importer);
-
-    Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
-    GL::Texture2D diffuse;
-    diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, TextureFormatRGB, image->size())
-        .setSubImage(0, {}, *image);
-
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/normal-texture.tga")) && (image = importer->image2D(0)));
-    GL::Texture2D normal;
-    normal.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, TextureFormatRGB, image->size())
-        .setSubImage(0, {}, *image);
-
     /* Enable also Object ID, if supported */
-    PhongGL::Flags flags = PhongGL::Flag::DiffuseTexture|
-          PhongGL::Flag::VertexColor|
-          PhongGL::Flag::InstancedTransformation|
-          PhongGL::Flag::InstancedTextureOffset|data.flags|flag;
+    PhongGL::Flags flags = PhongGL::Flag::VertexColor|
+          PhongGL::Flag::InstancedTransformation|data.flags|flag;
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -2911,25 +2882,58 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     }
     #endif
     PhongGL shader{flags, 2};
-    shader.bindDiffuseTexture(diffuse);
-    if(data.flags & PhongGL::Flag::NormalTexture)
-        shader.bindNormalTexture(normal);
+
+    GL::Texture2D diffuse;
+    GL::Texture2D normal;
+    if(data.flags & (PhongGL::Flag::DiffuseTexture|PhongGL::Flag::NormalTexture)) {
+        if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+          !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+            CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+        Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+        CORRADE_VERIFY(importer);
+
+        if(data.flags & PhongGL::Flag::DiffuseTexture) {
+            Containers::Optional<Trade::ImageData2D> image;
+            CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+            diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, image->size())
+                .setSubImage(0, {}, *image);
+            shader.bindDiffuseTexture(diffuse);
+        }
+
+        if(data.flags & PhongGL::Flag::NormalTexture) {
+            Containers::Optional<Trade::ImageData2D> image;
+            CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/normal-texture.tga")) && (image = importer->image2D(0)));
+            normal.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, image->size())
+                .setSubImage(0, {}, *image);
+            shader.bindNormalTexture(normal);
+        }
+    }
 
     if(flag == PhongGL::Flag{}) {
         shader
             .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
                                 { 3.0f, -3.0f, 2.0f, 0.0f}})
+            .setLightColors({0x999999_rgbf, 0x999999_rgbf})
+            .setLightSpecularColors({0x0000ff_rgbf, 0x00ff00_rgbf})
             .setTransformationMatrix(
-                Matrix4::translation(Vector3::zAxis(-1.75f))*
-                Matrix4::rotationY(-15.0_degf)*
-                Matrix4::rotationX(15.0_degf)*
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(90.0_degf)*
                 Matrix4::scaling(Vector3{0.4f}))
-            .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
-                Matrix4::rotationX(15.0_degf)).normalMatrix())
+            .setNormalMatrix(Matrix4::rotationY(90.0_degf).normalMatrix())
             .setProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-            .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
-            .setDiffuseColor(0xffff99_rgbf);
+            .setDiffuseColor(data.flags & PhongGL::Flag::DiffuseTexture ?
+            0xffffff_rgbf : 0xffff00_rgbf);
+
+        if(data.flags & PhongGL::Flag::TextureTransformation)
+            shader.setTextureMatrix(Matrix3::scaling(Vector2{0.5f}));
 
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
@@ -2951,34 +2955,39 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         }};
         GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationUniform3D{}.setTransformationMatrix(
-                Matrix4::translation(Vector3::zAxis(-1.75f))*
-                Matrix4::rotationY(-15.0_degf)*
-                Matrix4::rotationX(15.0_degf)*
+                Matrix4::translation(Vector3::zAxis(-2.15f))*
+                Matrix4::rotationY(90.0_degf)*
                 Matrix4::scaling(Vector3{0.4f})
             )
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             PhongDrawUniform{}
-                .setNormalMatrix(
-                    (Matrix4::rotationY(-15.0_degf)*
-                    Matrix4::rotationX(15.0_degf)).normalMatrix())
+                .setNormalMatrix(Matrix4::rotationY(90.0_degf).normalMatrix())
                 .setObjectId(1000) /* gets added to the per-instance ID */
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             PhongMaterialUniform{}
-                .setDiffuseColor(0xffff99_rgbf)
+                .setDiffuseColor(data.flags & PhongGL::Flag::DiffuseTexture ?
+            0xffffff_rgbf : 0xffff00_rgbf)
         }};
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
                 .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
         }};
         GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
-            PhongLightUniform{}.setPosition(Vector4{-3.0f, -3.0f, 2.0f, 0.0f}),
-            PhongLightUniform{}.setPosition(Vector4{3.0f, -3.0f, 2.0f, 0.0f})
+            PhongLightUniform{}
+                .setPosition({-3.0f, -3.0f, 2.0f, 0.0f})
+                .setColor(0x999999_rgbf)
+                .setSpecularColor(0x0000ff_rgbf),
+            PhongLightUniform{}
+                .setPosition({3.0f, -3.0f, 2.0f, 0.0f})
+                .setColor(0x999999_rgbf)
+                .setSpecularColor(0x00ff00_rgbf)
         }};
+        if(data.flags & PhongGL::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindProjectionBuffer(projectionUniform)
             .bindTransformationBuffer(transformationUniform)
-            .bindTextureTransformationBuffer(textureTransformationUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform)
             .bindLightBuffer(lightUniform)
@@ -2987,6 +2996,25 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     #endif
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
+    /*
+        Colored case:
+
+        -   First should be lower left, yellow with a blue and green highlight
+            on bottom left and right part
+        -   Second lower right, cyan with a yellow light, so green, the same
+            highlight at the same position
+        -   Third up center, magenta with a yellow light, so red, the same
+            highlight at the same position
+
+        Textured case:
+
+        -   Lower left has bottom left numbers, so light 7881, rotated (78
+            visible, should look the same as the multidraw case or as Flat)
+        -   Lower light has bottom right, 1223, rotated (23 visible, looking at
+            the left side of the sphere in the equivalent Flat test)
+        -   Up center has 6778, rotated (78 visible, looking at the left side
+            of the sphere in the equivalent Flat test)
+    */
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */

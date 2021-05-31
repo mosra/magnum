@@ -152,6 +152,8 @@ if(BUILD_GL_TESTS)
             FlatTestFiles/defaults.tga
             FlatTestFiles/instanced2D.tga
             FlatTestFiles/instanced3D.tga
+            FlatTestFiles/instanced-textured2D.tga
+            FlatTestFiles/instanced-textured3D.tga
             FlatTestFiles/textured2D.tga
             FlatTestFiles/textured3D.tga
             FlatTestFiles/textured2D-alpha.tga

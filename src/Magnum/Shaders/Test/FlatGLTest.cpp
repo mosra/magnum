@@ -166,21 +166,21 @@ struct FlatGLTest: GL::OpenGLTester {
 
     Mesa Intel                      BADIOM
                ES2                      xx
-               ES3                  BADIOx
-    Mesa AMD                        BADI
-    Mesa llvmpipe                   BADI
-    SwiftShader ES2                 BADIxx
-                ES3                 BADI
+               ES3                  BAD Ox
+    Mesa AMD                        BAD
+    Mesa llvmpipe                   BAD
+    SwiftShader ES2                 BAD xx
+                ES3                 BAD
     ANGLE ES2                           xx
-          ES3                       BADIOM
+          ES3                       BAD OM
     ARM Mali (Huawei P10) ES2       BAD xx
-                          ES3       BADIOx
+                          ES3       BAD Ox
     WebGL (on Mesa Intel) 1.0       BAD xx
-                          2.0       BADIOM
+                          2.0       BAD OM
     NVidia                          BAD
     Intel Windows                   BAD
     AMD macOS                       BAD
-    Intel macOS                     BADIOx
+    Intel macOS                     BAD Ox
     iPhone 6 w/ iOS 12.4 ES3        BAD  x
 */
 
@@ -272,6 +272,23 @@ const struct {
         FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask, 0.5f},
     {"masking 1.0", "TestFiles/alpha-mask1.0.tga", "TestFiles/alpha-mask1.0.tga", false,
         FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask, 1.0f}
+};
+
+constexpr struct {
+    const char* name;
+    const char* expected2D;
+    const char* expected3D;
+    FlatGL2D::Flags flags;
+    Float maxThreshold, meanThreshold;
+} RenderInstancedData[] {
+    {"colored", "instanced2D.tga", "instanced3D.tga",
+        {},
+        /* Minor differences on SwiftShader */
+        164.4f, 0.094f},
+    {"textured", "instanced-textured2D.tga", "instanced-textured3D.tga",
+        FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::Textured,
+        /* Minor differences on SwiftShader */
+        192.67f, 0.140f},
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -462,7 +479,7 @@ FlatGLTest::FlatGLTest() {
     #endif
 
     /* MSVC needs explicit type due to default template args */
-    addTests<FlatGLTest>({
+    addInstancedTests<FlatGLTest>({
         &FlatGLTest::renderInstanced2D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderInstanced2D<FlatGL2D::Flag::UniformBuffers>,
@@ -472,6 +489,7 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderInstanced3D<FlatGL3D::Flag::UniformBuffers>
         #endif
         },
+        Containers::arraySize(RenderInstancedData),
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderObjectIdSetup,
         &FlatGLTest::renderObjectIdTeardown
@@ -2090,6 +2108,9 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
 #endif
 
 template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
+    auto&& data = RenderInstancedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifndef MAGNUM_TARGET_GLES2
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
@@ -2116,10 +2137,6 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
     #endif
     #endif
 
-    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
-       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
-
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32,
         Primitives::Circle2DFlag::TextureCoordinates));
 
@@ -2130,11 +2147,14 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         Vector2 textureOffset;
         UnsignedInt objectId;
     } instanceData[] {
-        {Matrix3::translation({-1.25f, -1.25f}), 0xff3333_rgbf,
+        {Matrix3::translation({-1.25f, -1.25f}),
+            data.flags & FlatGL2D::Flag::Textured ? 0xffffff_rgbf : 0xffff00_rgbf,
             {0.0f, 0.0f}, 211},
-        {Matrix3::translation({ 1.25f, -1.25f}), 0x33ff33_rgbf,
+        {Matrix3::translation({ 1.25f, -1.25f}),
+            data.flags & FlatGL2D::Flag::Textured ? 0xffffff_rgbf : 0x00ffff_rgbf,
             {1.0f, 0.0f}, 4627},
-        {Matrix3::translation({ 0.00f,  1.25f}), 0x9999ff_rgbf,
+        {Matrix3::translation({ 0.00f,  1.25f}),
+            data.flags & FlatGL2D::Flag::Textured ? 0xffffff_rgbf : 0xff00ff_rgbf,
             {0.5f, 1.0f}, 35363},
     };
 
@@ -2151,22 +2171,9 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         )
         .setInstanceCount(3);
 
-    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
-    CORRADE_VERIFY(importer);
-
-    GL::Texture2D texture;
-    Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
-    texture.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, TextureFormatRGB, image->size())
-        .setSubImage(0, {}, *image);
-
     /* Enable also Object ID, if supported */
-    FlatGL2D::Flags flags = FlatGL2D::Flag::Textured|
-        FlatGL2D::Flag::VertexColor|FlatGL2D::Flag::InstancedTransformation|
-        FlatGL2D::Flag::InstancedTextureOffset|flag;
+    FlatGL2D::Flags flags = FlatGL2D::Flag::VertexColor|
+        FlatGL2D::Flag::InstancedTransformation|data.flags|flag;
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -2176,14 +2183,36 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
     }
     #endif
     FlatGL2D shader{flags};
-    shader.bindTexture(texture);
+
+    GL::Texture2D texture;
+    if(data.flags & FlatGL3D::Flag::Textured) {
+        if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+          !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+            CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+        Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+        CORRADE_VERIFY(importer);
+
+        Containers::Optional<Trade::ImageData2D> image;
+        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+        texture.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGB, image->size())
+            .setSubImage(0, {}, *image);
+
+        shader.bindTexture(texture);
+    }
 
     if(flag == FlatGL2D::Flag{}) {
-        shader.setColor(0xffff99_rgbf)
+        shader
+            .setColor(data.flags & FlatGL2D::Flag::Textured ? 0xffffff_rgbf : 0xffff00_rgbf)
             .setTransformationProjectionMatrix(
                 Matrix3::projection({2.1f, 2.1f})*
-                Matrix3::scaling(Vector2{0.4f}))
-            .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}));
+                Matrix3::scaling(Vector2{0.4f}));
+
+        if(data.flags & FlatGL3D::Flag::Textured)
+            shader.setTextureMatrix(Matrix3::scaling(Vector2{0.5f}));
 
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
@@ -2215,11 +2244,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             FlatMaterialUniform{}
-                .setColor(0xffff99_rgbf)
+                .setColor(data.flags & FlatGL2D::Flag::Textured ? 0xffffff_rgbf : 0xffff00_rgbf)
         }};
+        if(data.flags & FlatGL3D::Flag::Textured)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
-            .bindTextureTransformationBuffer(textureTransformationUniform)
             .bindMaterialBuffer(materialUniform)
             .draw(circle);
     }
@@ -2228,18 +2258,29 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    /* Minor differences on AMD, SwiftShader a bit more */
-    const Float maxThreshold = 3.0f, meanThreshold = 0.018f;
-    #else
-    /* WebGL 1 doesn't have 8bit renderbuffer storage */
-    const Float maxThreshold = 3.0f, meanThreshold = 0.018f;
-    #endif
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    /*
+        Colored case:
+
+        -   First should be lower left, yellow with a yellow base color, so
+            yellow
+        -   Second lower right, cyan with a yellow base color, so green
+        -   Third up center, magenta with a yellow base color, so red
+
+        Textured case:
+
+        -   Lower left has bottom left numbers, so light 7881
+        -   Lower light has bottom right, 1223
+        -   Up center has 6778
+    */
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "FlatTestFiles/instanced2D.tga"),
-        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+        Utility::Directory::join({_testDir, "FlatTestFiles", data.expected2D}),
+        (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 
     #ifndef MAGNUM_TARGET_GLES2
     /* Object ID -- no need to verify the whole image, just check that pixels
@@ -2263,6 +2304,9 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
 }
 
 template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
+    auto&& data = RenderInstancedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifndef MAGNUM_TARGET_GLES2
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
@@ -2289,10 +2333,6 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
     #endif
     #endif
 
-    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
-       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
-
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
@@ -2303,11 +2343,17 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         Vector2 textureOffset;
         UnsignedInt objectId;
     } instanceData[] {
-        {Matrix4::translation({-1.25f, -1.25f, 0.0f}), 0xff3333_rgbf,
+        {Matrix4::translation({-1.25f, -1.25f, 0.0f})*
+            /* To be consistent with Phong's output where it tests that the
+               normal matrix is applied properly */
+            Matrix4::rotationX(90.0_degf),
+            data.flags & FlatGL3D::Flag::Textured ? 0xffffff_rgbf : 0xffff00_rgbf,
             {0.0f, 0.0f}, 211},
-        {Matrix4::translation({ 1.25f, -1.25f, 0.0f}), 0x33ff33_rgbf,
+        {Matrix4::translation({ 1.25f, -1.25f, 0.0f}),
+            data.flags & FlatGL3D::Flag::Textured ? 0xffffff_rgbf : 0x00ffff_rgbf,
             {1.0f, 0.0f}, 4627},
-        {Matrix4::translation({  0.0f,  1.0f, 1.0f}), 0x9999ff_rgbf,
+        {Matrix4::translation({  0.0f,  1.0f, 1.0f}),
+            data.flags & FlatGL3D::Flag::Textured ? 0xffffff_rgbf : 0xff00ff_rgbf,
             {0.5f, 1.0f}, 35363}
     };
 
@@ -2324,22 +2370,9 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         )
         .setInstanceCount(3);
 
-    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
-    CORRADE_VERIFY(importer);
-
-    GL::Texture2D texture;
-    Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
-    texture.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, TextureFormatRGB, image->size())
-        .setSubImage(0, {}, *image);
-
     /* Enable also Object ID, if supported */
-    FlatGL3D::Flags flags = FlatGL3D::Flag::Textured|
-        FlatGL3D::Flag::VertexColor|FlatGL3D::Flag::InstancedTransformation|
-        FlatGL3D::Flag::InstancedTextureOffset|flag;
+    FlatGL3D::Flags flags = FlatGL3D::Flag::VertexColor|
+        FlatGL3D::Flag::InstancedTransformation|data.flags|flag;
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -2349,15 +2382,37 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
     }
     #endif
     FlatGL3D shader{flags};
-    shader.bindTexture(texture);
+
+    GL::Texture2D texture;
+    if(data.flags & FlatGL2D::Flag::Textured) {
+        if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+          !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+            CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+        Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+        CORRADE_VERIFY(importer);
+
+        Containers::Optional<Trade::ImageData2D> image;
+        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+        texture.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGB, image->size())
+            .setSubImage(0, {}, *image);
+
+        shader.bindTexture(texture);
+    }
 
     if(flag == FlatGL3D::Flag{}) {
-        shader.setColor(0xffff99_rgbf)
+        shader
+            .setColor(data.flags & FlatGL2D::Flag::Textured ? 0xffffff_rgbf : 0xffff00_rgbf)
             .setTransformationProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
                 Matrix4::translation(Vector3::zAxis(-2.15f))*
-                Matrix4::scaling(Vector3{0.4f}))
-            .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}));
+                Matrix4::scaling(Vector3{0.4f}));
+
+        if(data.flags & FlatGL3D::Flag::Textured)
+            shader.setTextureMatrix(Matrix3::scaling(Vector2{0.5f}));
 
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
@@ -2390,11 +2445,12 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             FlatMaterialUniform{}
-                .setColor(0xffff99_rgbf)
+                .setColor(data.flags & FlatGL3D::Flag::Textured ? 0xffffff_rgbf : 0xffff00_rgbf)
         }};
+        if(data.flags & FlatGL3D::Flag::Textured)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
-            .bindTextureTransformationBuffer(textureTransformationUniform)
             .bindMaterialBuffer(materialUniform)
             .draw(sphere);
     }
@@ -2403,18 +2459,30 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    /* Minor differences on AMD, SwiftShader a bit more */
-    const Float maxThreshold = 67.67f, meanThreshold = 0.062f;
-    #else
-    /* WebGL 1 doesn't have 8bit renderbuffer storage */
-    const Float maxThreshold = 67.67f, meanThreshold = 0.062f;
-    #endif
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    /*
+        Colored case:
+
+        -   First should be lower left, yellow with a yellow base color, so
+            yellow
+        -   Second lower right, cyan with a yellow base color, so green
+        -   Third up center, magenta with a yellow base color, so red
+
+        Textured case:
+
+        -   Lower left has bottom left numbers, so light 7881, rotated (78
+            visible)
+        -   Lower light has bottom right, 1223
+        -   Up center has 6778
+    */
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "FlatTestFiles/instanced3D.tga"),
-        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+        Utility::Directory::join({_testDir, "FlatTestFiles", data.expected3D}),
+        (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 
     #ifndef MAGNUM_TARGET_GLES2
     /* Object ID -- no need to verify the whole image, just check that pixels
