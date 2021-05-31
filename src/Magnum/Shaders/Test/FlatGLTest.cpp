@@ -277,23 +277,6 @@ const struct {
 #ifndef MAGNUM_TARGET_GLES2
 constexpr struct {
     const char* name;
-    FlatGL2D::Flags flags;
-    UnsignedInt uniformId;
-    UnsignedInt instanceCount;
-    UnsignedInt expected;
-} RenderObjectIdData[] {
-    {"", /* Verify that it can hold 16 bits at least */
-        FlatGL2D::Flag::ObjectId, 48526, 0, 48526},
-    {"instanced, first instance",
-        FlatGL2D::Flag::InstancedObjectId, 13524, 1, 24526},
-    {"instanced, second instance",
-        FlatGL2D::Flag::InstancedObjectId, 13524, 2, 62347}
-};
-#endif
-
-#ifndef MAGNUM_TARGET_GLES2
-constexpr struct {
-    const char* name;
     const char* expected2D;
     const char* expected3D;
     FlatGL2D::Flags flags;
@@ -469,12 +452,11 @@ FlatGLTest::FlatGLTest() {
 
     #ifndef MAGNUM_TARGET_GLES2
     /* MSVC needs explicit type due to default template args */
-    addInstancedTests<FlatGLTest>({
+    addTests<FlatGLTest>({
         &FlatGLTest::renderObjectId2D,
         &FlatGLTest::renderObjectId2D<FlatGL2D::Flag::UniformBuffers>,
         &FlatGLTest::renderObjectId3D,
         &FlatGLTest::renderObjectId3D<FlatGL3D::Flag::UniformBuffers>},
-        Containers::arraySize(RenderObjectIdData),
         &FlatGLTest::renderObjectIdSetup,
         &FlatGLTest::renderObjectIdTeardown);
     #endif
@@ -490,8 +472,14 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderInstanced3D<FlatGL3D::Flag::UniformBuffers>
         #endif
         },
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::renderObjectIdSetup,
+        &FlatGLTest::renderObjectIdTeardown
+        #else
         &FlatGLTest::renderSetup,
-        &FlatGLTest::renderTeardown);
+        &FlatGLTest::renderTeardown
+        #endif
+        );
 
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&FlatGLTest::renderMulti2D,
@@ -1929,9 +1917,6 @@ void FlatGLTest::renderObjectIdTeardown() {
 }
 
 template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
-    auto&& data = RenderObjectIdData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
     #ifndef MAGNUM_TARGET_GLES2
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
@@ -1952,18 +1937,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
 
-    if(data.instanceCount) circle
-        .setInstanceCount(data.instanceCount)
-        .addVertexBufferInstanced(
-            GL::Buffer{Containers::arrayView({11002u, 48823u})},
-            1, 0, FlatGL2D::ObjectId{});
-
-    FlatGL2D shader{data.flags|flag};
+    FlatGL2D shader{FlatGL2D::Flag::ObjectId|flag};
 
     if(flag == FlatGL2D::Flag{}) {
         shader.setColor(0x9999ff_rgbf)
             .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-            .setObjectId(data.uniformId)
+            .setObjectId(48526)
             .draw(circle);
     } else if(flag == FlatGL2D::Flag::UniformBuffers) {
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
@@ -1972,7 +1951,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             FlatDrawUniform{}
-                .setObjectId(data.uniformId)
+                .setObjectId(48526)
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             FlatMaterialUniform{}
@@ -2014,13 +1993,10 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
     /* Outside of the object, cleared to 27 */
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
     /* Inside of the object */
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], data.expected);
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 48526);
 }
 
 template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
-    auto&& data = RenderObjectIdData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
     #ifndef MAGNUM_TARGET_GLES2
     if(flag == FlatGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
@@ -2041,13 +2017,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    if(data.instanceCount) sphere
-        .setInstanceCount(data.instanceCount)
-        .addVertexBufferInstanced(
-            GL::Buffer{Containers::arrayView({11002u, 48823u})},
-            1, 0, FlatGL2D::ObjectId{});
-
-    FlatGL3D shader{data.flags|flag};
+    FlatGL3D shader{FlatGL3D::Flag::ObjectId|flag};
 
     if(flag == FlatGL3D::Flag{}) {
         shader.setColor(0x9999ff_rgbf)
@@ -2056,7 +2026,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
                 Matrix4::translation(Vector3::zAxis(-2.15f))*
                 Matrix4::rotationY(-15.0_degf)*
                 Matrix4::rotationX(15.0_degf))
-            .setObjectId(data.uniformId)
+            .setObjectId(48526)
             .draw(sphere);
     } else if(flag == FlatGL3D::Flag::UniformBuffers) {
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
@@ -2070,7 +2040,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             FlatDrawUniform{}
-                .setObjectId(data.uniformId)
+                .setObjectId(48526)
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             FlatMaterialUniform{}
@@ -2115,7 +2085,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
     /* Outside of the object, cleared to 27 */
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
     /* Inside of the object */
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], data.expected);
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 48526);
 }
 #endif
 
@@ -2158,20 +2128,27 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         Matrix3 transformation;
         Color3 color;
         Vector2 textureOffset;
+        UnsignedInt objectId;
     } instanceData[] {
         {Matrix3::translation({-1.25f, -1.25f}), 0xff3333_rgbf,
-            {0.0f, 0.0f}},
+            {0.0f, 0.0f}, 211},
         {Matrix3::translation({ 1.25f, -1.25f}), 0x33ff33_rgbf,
-            {1.0f, 0.0f}},
+            {1.0f, 0.0f}, 4627},
         {Matrix3::translation({ 0.00f,  1.25f}), 0x9999ff_rgbf,
-            {0.5f, 1.0f}}
+            {0.5f, 1.0f}, 35363},
     };
 
     circle
         .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
             FlatGL2D::TransformationMatrix{},
             FlatGL2D::Color3{},
-            FlatGL2D::TextureOffset{})
+            FlatGL2D::TextureOffset{},
+            #ifndef MAGNUM_TARGET_GLES2
+            FlatGL2D::ObjectId{}
+            #else
+            4
+            #endif
+        )
         .setInstanceCount(3);
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
@@ -2186,10 +2163,19 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    FlatGL2D shader{FlatGL2D::Flag::Textured|
-           FlatGL2D::Flag::VertexColor|
-           FlatGL2D::Flag::InstancedTransformation|
-           FlatGL2D::Flag::InstancedTextureOffset|flag};
+    /* Enable also Object ID, if supported */
+    FlatGL2D::Flags flags = FlatGL2D::Flag::Textured|
+        FlatGL2D::Flag::VertexColor|FlatGL2D::Flag::InstancedTransformation|
+        FlatGL2D::Flag::InstancedTextureOffset|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        flags |= FlatGL2D::Flag::InstancedObjectId;
+    }
+    #endif
+    FlatGL2D shader{flags};
     shader.bindTexture(texture);
 
     if(flag == FlatGL2D::Flag{}) {
@@ -2197,8 +2183,18 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
             .setTransformationProjectionMatrix(
                 Matrix3::projection({2.1f, 2.1f})*
                 Matrix3::scaling(Vector2{0.4f}))
-            .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
-            .draw(circle);
+            .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}));
+
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        #endif
+        {
+            shader.setObjectId(1000); /* gets added to the per-instance ID */
+        }
+        #endif
+
+        shader.draw(circle);
     }
     #ifndef MAGNUM_TARGET_GLES2
     else if(flag == FlatGL2D::Flag::UniformBuffers) {
@@ -2211,6 +2207,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             FlatDrawUniform{}
+                .setObjectId(1000) /* gets added to the per-instance ID */
         }};
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
@@ -2243,6 +2240,26 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(_testDir, "FlatTestFiles/instanced2D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Object ID -- no need to verify the whole image, just check that pixels
+       on known places have expected values. SwiftShader insists that the read
+       format has to be 32bit, so the renderbuffer format is that too to make
+       it the same (ES3 Mesa complains if these don't match). */
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+        CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+        Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[5][5], 27); /* Outside */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], 1211);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], 5627);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], 36363);
+    }
+    #endif
 }
 
 template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
@@ -2284,20 +2301,27 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         Matrix4 transformation;
         Color3 color;
         Vector2 textureOffset;
+        UnsignedInt objectId;
     } instanceData[] {
         {Matrix4::translation({-1.25f, -1.25f, 0.0f}), 0xff3333_rgbf,
-            {0.0f, 0.0f}},
+            {0.0f, 0.0f}, 211},
         {Matrix4::translation({ 1.25f, -1.25f, 0.0f}), 0x33ff33_rgbf,
-            {1.0f, 0.0f}},
+            {1.0f, 0.0f}, 4627},
         {Matrix4::translation({  0.0f,  1.0f, 1.0f}), 0x9999ff_rgbf,
-            {0.5f, 1.0f}}
+            {0.5f, 1.0f}, 35363}
     };
 
     sphere
         .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
             FlatGL3D::TransformationMatrix{},
             FlatGL3D::Color3{},
-            FlatGL3D::TextureOffset{})
+            FlatGL3D::TextureOffset{},
+            #ifndef MAGNUM_TARGET_GLES2
+            FlatGL2D::ObjectId{}
+            #else
+            4
+            #endif
+        )
         .setInstanceCount(3);
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
@@ -2312,10 +2336,19 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    FlatGL3D shader{FlatGL3D::Flag::Textured|
-           FlatGL3D::Flag::VertexColor|
-           FlatGL3D::Flag::InstancedTransformation|
-           FlatGL3D::Flag::InstancedTextureOffset|flag};
+    /* Enable also Object ID, if supported */
+    FlatGL3D::Flags flags = FlatGL3D::Flag::Textured|
+        FlatGL3D::Flag::VertexColor|FlatGL3D::Flag::InstancedTransformation|
+        FlatGL3D::Flag::InstancedTextureOffset|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        flags |= FlatGL2D::Flag::InstancedObjectId;
+    }
+    #endif
+    FlatGL3D shader{flags};
     shader.bindTexture(texture);
 
     if(flag == FlatGL3D::Flag{}) {
@@ -2324,8 +2357,18 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
                 Matrix4::translation(Vector3::zAxis(-2.15f))*
                 Matrix4::scaling(Vector3{0.4f}))
-            .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
-            .draw(sphere);
+            .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}));
+
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        #endif
+        {
+            shader.setObjectId(1000); /* gets added to the per-instance ID */
+        }
+        #endif
+
+        shader.draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
     else if(flag == FlatGL2D::Flag::UniformBuffers) {
@@ -2339,6 +2382,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             FlatDrawUniform{}
+                .setObjectId(1000) /* gets added to the per-instance ID */
         }};
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
@@ -2371,6 +2415,26 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(_testDir, "FlatTestFiles/instanced3D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Object ID -- no need to verify the whole image, just check that pixels
+       on known places have expected values. SwiftShader insists that the read
+       format has to be 32bit, so the renderbuffer format is that too to make
+       it the same (ES3 Mesa complains if these don't match). */
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+        CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+        Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[5][5], 27); /* Outside */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], 1211);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], 5627);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], 36363);
+    }
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES2

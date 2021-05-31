@@ -433,23 +433,6 @@ const struct {
         0xffffffff_rgbaf, 0x9999ff00_rgbaf}
 };
 
-#ifndef MAGNUM_TARGET_GLES2
-constexpr struct {
-    const char* name;
-    PhongGL::Flags flags;
-    UnsignedInt uniformId;
-    UnsignedInt instanceCount;
-    UnsignedInt expected;
-} RenderObjectIdData[] {
-    {"", /* Verify that it can hold 16 bits at least */
-        PhongGL::Flag::ObjectId, 48526, 0, 48526},
-    {"instanced, first instance",
-        PhongGL::Flag::InstancedObjectId, 13524, 1, 24526},
-    {"instanced, second instance",
-        PhongGL::Flag::InstancedObjectId, 13524, 2, 62347}
-};
-#endif
-
 const struct {
     const char* name;
     const char* file;
@@ -772,10 +755,9 @@ PhongGLTest::PhongGLTest() {
 
     #ifndef MAGNUM_TARGET_GLES2
     /* MSVC needs explicit type due to default template args */
-    addInstancedTests<PhongGLTest>({
+    addTests<PhongGLTest>({
         &PhongGLTest::renderObjectId,
         &PhongGLTest::renderObjectId<PhongGL::Flag::UniformBuffers>},
-        Containers::arraySize(RenderObjectIdData),
         &PhongGLTest::renderObjectIdSetup,
         &PhongGLTest::renderObjectIdTeardown);
     #endif
@@ -820,8 +802,14 @@ PhongGLTest::PhongGLTest() {
         #endif
         },
         Containers::arraySize(RenderInstancedData),
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderObjectIdSetup,
+        &PhongGLTest::renderObjectIdTeardown
+        #else
         &PhongGLTest::renderSetup,
-        &PhongGLTest::renderTeardown);
+        &PhongGLTest::renderTeardown
+        #endif
+    );
 
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&PhongGLTest::renderMulti},
@@ -2349,9 +2337,6 @@ void PhongGLTest::renderObjectIdTeardown() {
 }
 
 template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
-    auto&& data = RenderObjectIdData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
     #ifndef MAGNUM_TARGET_GLES2
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
@@ -2372,13 +2357,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    if(data.instanceCount) sphere
-        .setInstanceCount(data.instanceCount)
-        .addVertexBufferInstanced(
-            GL::Buffer{Containers::arrayView({11002u, 48823u})},
-            1, 0, PhongGL::ObjectId{});
-
-    PhongGL shader{data.flags|flag, 2};
+    PhongGL shader{PhongGL::Flag::ObjectId|flag, 2};
 
     if(flag == PhongGL::Flag{}) {
         shader
@@ -2390,7 +2369,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
             .setSpecularColor(0x6666ff_rgbf)
             .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
             .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-            .setObjectId(data.uniformId)
+            .setObjectId(48526)
             .draw(sphere);
     } else if(flag == PhongGL::Flag::UniformBuffers) {
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
@@ -2404,7 +2383,8 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
             )
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
-            PhongDrawUniform{}.setObjectId(data.uniformId)
+            PhongDrawUniform{}
+                .setObjectId(48526)
         }};
         GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
             PhongLightUniform{}
@@ -2460,7 +2440,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
     /* Outside of the object, cleared to 27 */
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
     /* Inside of the object */
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], data.expected);
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 48526);
 }
 #endif
 
@@ -2868,17 +2848,17 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         Matrix3x3 normal;
         Color3 color;
         Vector2 textureOffset;
-        /* instanced ObjectId tested directly in renderObjectId() */
+        UnsignedInt objectId;
     } instanceData[] {
         {Matrix4::translation({-1.25f, -1.25f, 0.0f})*
          Matrix4::rotationX(90.0_degf),
-            {}, 0xff3333_rgbf, {0.0f, 0.0f}},
+            {}, 0xff3333_rgbf, {0.0f, 0.0f}, 211},
         {Matrix4::translation({ 1.25f, -1.25f, 0.0f})*
          Matrix4::rotationY(90.0_degf),
-            {}, 0x33ff33_rgbf, {1.0f, 0.0f}},
+            {}, 0x33ff33_rgbf, {1.0f, 0.0f}, 4627},
         {Matrix4::translation({  0.0f,  1.0f, 1.0f})*
          Matrix4::rotationZ(90.0_degf),
-            {}, 0x9999ff_rgbf, {0.5f, 1.0f}}
+            {}, 0x9999ff_rgbf, {0.5f, 1.0f}, 35363}
     };
     for(auto& instance: instanceData)
         instance.normal = instance.transformation.normalMatrix();
@@ -2888,7 +2868,13 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
             PhongGL::TransformationMatrix{},
             PhongGL::NormalMatrix{},
             PhongGL::Color3{},
-            PhongGL::TextureOffset{})
+            PhongGL::TextureOffset{},
+            #ifndef MAGNUM_TARGET_GLES2
+            PhongGL::ObjectId{}
+            #else
+            4
+            #endif
+        )
         .setInstanceCount(3);
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
@@ -2911,10 +2897,20 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    PhongGL shader{PhongGL::Flag::DiffuseTexture|
+    /* Enable also Object ID, if supported */
+    PhongGL::Flags flags = PhongGL::Flag::DiffuseTexture|
           PhongGL::Flag::VertexColor|
           PhongGL::Flag::InstancedTransformation|
-          PhongGL::Flag::InstancedTextureOffset|data.flags|flag, 2};
+          PhongGL::Flag::InstancedTextureOffset|data.flags|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        flags |= PhongGL::Flag::InstancedObjectId;
+    }
+    #endif
+    PhongGL shader{flags, 2};
     shader.bindDiffuseTexture(diffuse);
     if(data.flags & PhongGL::Flag::NormalTexture)
         shader.bindNormalTexture(normal);
@@ -2933,8 +2929,18 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
             .setProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
             .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
-            .setDiffuseColor(0xffff99_rgbf)
-            .draw(sphere);
+            .setDiffuseColor(0xffff99_rgbf);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        #endif
+        {
+            shader.setObjectId(1000); /* gets added to the per-instance ID */
+        }
+        #endif
+
+        shader.draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
     else if(flag == PhongGL::Flag::UniformBuffers) {
@@ -2952,10 +2958,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
             )
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
-            PhongDrawUniform{}.setNormalMatrix(
-                (Matrix4::rotationY(-15.0_degf)*
-                 Matrix4::rotationX(15.0_degf)).normalMatrix()
-            )
+            PhongDrawUniform{}
+                .setNormalMatrix(
+                    (Matrix4::rotationY(-15.0_degf)*
+                    Matrix4::rotationX(15.0_degf)).normalMatrix())
+                .setObjectId(1000) /* gets added to the per-instance ID */
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             PhongMaterialUniform{}
@@ -2986,6 +2993,26 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join({_testDir, "PhongTestFiles", data.file}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Object ID -- no need to verify the whole image, just check that pixels
+       on known places have expected values. SwiftShader insists that the read
+       format has to be 32bit, so the renderbuffer format is that too to make
+       it the same (ES3 Mesa complains if these don't match). */
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+        CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+        Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[5][5], 27); /* Outside */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], 1211);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], 5627);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], 36363);
+    }
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES2
