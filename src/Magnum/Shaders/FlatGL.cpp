@@ -43,6 +43,7 @@
 #include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/TextureArray.h"
 #endif
 
 namespace Magnum { namespace Shaders {
@@ -83,6 +84,13 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
         "Shaders::FlatGL: draw count can't be zero", );
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(flags & Flag::TextureArrays) || (flags & Flag::Textured),
+        "Shaders::FlatGL: texture arrays enabled but the shader is not textured", );
+    CORRADE_ASSERT(!(flags & Flag::UniformBuffers) || !(flags & Flag::TextureArrays) || flags >= (Flag::TextureArrays|Flag::TextureTransformation),
+        "Shaders::FlatGL: texture arrays require texture transformation enabled as well if uniform buffers are used", );
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     if(flags >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
@@ -97,6 +105,10 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::WEBGL::multi_draw);
         #endif
     }
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    if(flags >= Flag::TextureArrays)
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::EXT::texture_array);
     #endif
 
     #ifdef MAGNUM_BUILD_STATIC
@@ -120,6 +132,9 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     vert.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         .addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
+        #ifndef MAGNUM_TARGET_GLES2
+        .addSource(flags & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
+        #endif
         .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n")
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
@@ -138,6 +153,9 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Flat.vert"));
     frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
+        #ifndef MAGNUM_TARGET_GLES2
+        .addSource(flags & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
+        #endif
         .addSource(flags & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
@@ -205,6 +223,10 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
             _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
             if(flags & Flag::TextureTransformation)
                 _textureMatrixUniform = uniformLocation("textureMatrix");
+            #ifndef MAGNUM_TARGET_GLES2
+            if(flags & Flag::TextureArrays)
+                _textureLayerUniform = uniformLocation("textureLayer");
+            #endif
             _colorUniform = uniformLocation("color");
             if(flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
             #ifndef MAGNUM_TARGET_GLES2
@@ -240,6 +262,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
         setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
         if(flags & Flag::TextureTransformation)
             setTextureMatrix(Matrix3{Math::IdentityInit});
+        /* Texture layer is zero by default */
         setColor(Magnum::Color4{1.0f});
         if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
         /* Object ID is zero by default */
@@ -270,6 +293,17 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setText
     setUniform(_textureMatrixUniform, matrix);
     return *this;
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setTextureLayer(UnsignedInt id) {
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::FlatGL::setTextureLayer(): the shader was created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(_flags & Flag::TextureArrays,
+        "Shaders::FlatGL::setTextureLayer(): the shader was not created with texture arrays enabled", *this);
+    setUniform(_textureLayerUniform, id);
+    return *this;
+}
+#endif
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setColor(const Magnum::Color4& color) {
     #ifndef MAGNUM_TARGET_GLES2
@@ -376,9 +410,24 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindMat
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::Textured,
         "Shaders::FlatGL::bindTexture(): the shader was not created with texturing enabled", *this);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags & Flag::TextureArrays),
+        "Shaders::FlatGL::bindTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
+    #endif
     texture.bind(TextureUnit);
     return *this;
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindTexture(GL::Texture2DArray& texture) {
+    CORRADE_ASSERT(_flags & Flag::Textured,
+        "Shaders::FlatGL::bindTexture(): the shader was not created with texturing enabled", *this);
+    CORRADE_ASSERT(_flags & Flag::TextureArrays,
+        "Shaders::FlatGL::bindTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead", *this);
+    texture.bind(TextureUnit);
+    return *this;
+}
+#endif
 
 template class MAGNUM_SHADERS_EXPORT FlatGL<2>;
 template class MAGNUM_SHADERS_EXPORT FlatGL<3>;
@@ -404,6 +453,7 @@ Debug& operator<<(Debug& debug, const FlatGLFlag value) {
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
         _c(MultiDraw)
+        _c(TextureArrays)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -426,7 +476,8 @@ Debug& operator<<(Debug& debug, const FlatGLFlags value) {
         FlatGLFlag::InstancedTransformation,
         #ifndef MAGNUM_TARGET_GLES2
         FlatGLFlag::MultiDraw, /* Superset of UniformBuffers */
-        FlatGLFlag::UniformBuffers
+        FlatGLFlag::UniformBuffers,
+        FlatGLFlag::TextureArrays
         #endif
     });
 }

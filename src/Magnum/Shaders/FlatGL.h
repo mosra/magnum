@@ -51,7 +51,8 @@ namespace Implementation {
         InstancedTextureOffset = (1 << 7)|TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2
         UniformBuffers = 1 << 8,
-        MultiDraw = UniformBuffers|(1 << 9)
+        MultiDraw = UniformBuffers|(1 << 9),
+        TextureArrays = 1 << 10
         #endif
     };
     typedef Containers::EnumSet<FlatGLFlag> FlatGLFlags;
@@ -231,8 +232,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief (Instanced) texture offset
          * @m_since{2020,06}
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector2. Used
-         * only if @ref Flag::InstancedTextureOffset is set.
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector2. Use
+         * either this or the @ref TextureOffsetLayer attribute. Used only if
+         * @ref Flag::InstancedTextureOffset is set.
          * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
          * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
          *      @gl_extension{EXT,instanced_arrays} or
@@ -241,6 +243,24 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          *      in WebGL 1.0.
          */
         typedef typename GenericGL<dimensions>::TextureOffset TextureOffset;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief (Instanced) texture offset and layer
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector3, with
+         * the last component interpreted as an integer. Use either this or the
+         * @ref TextureOffset attribute. First two components used only if
+         * @ref Flag::InstancedTextureOffset is set, third component only if
+         * @ref Flag::TextureArrays is set.
+         * @requires_gl33 Extension @gl_extension{EXT,texture_array} and
+         *      @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+         */
+        typedef typename GenericGL<dimensions>::TextureOffsetLayer TextureOffsetLayer;
+        #endif
 
         enum: UnsignedInt {
             /**
@@ -366,6 +386,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
              * specify that only via the uniform @ref setTextureMatrix().
              * Implicitly enables @ref Flag::TextureTransformation. See
              * @ref Shaders-FlatGL-instancing for more information.
+             *
+             * If @ref Flag::TextureArrays is set as well, a three-component
+             * @ref TextureOffsetLayer attribute can be used instead of
+             * @ref TextureOffset to specify per-instance texture layer, which
+             * gets added to the uniform layer numbers set by
+             * @ref setTextureLayer() or
+             * @ref TextureTransformationUniform::layer.
              * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
              * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
              *      @gl_extension{EXT,instanced_arrays} or
@@ -414,7 +441,25 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
              *      relies on uniform buffers, which require WebGL 2.0.
              * @m_since_latest
              */
-            MultiDraw = UniformBuffers|(1 << 9)
+            MultiDraw = UniformBuffers|(1 << 9),
+
+            /**
+             * Use 2D texture arrays. Expects that the texture is supplied via
+             * @ref bindTexture(GL::Texture2DArray&) instead of
+             * @ref bindTexture(GL::Texture2D&) and the layer is set via
+             * @ref setTextureLayer() or
+             * @ref TextureTransformationUniform::layer. If
+             * @ref Flag::InstancedTextureOffset is set as well and a
+             * three-component @ref TextureOffsetLayer attribute is used
+             * instead of @ref TextureOffset, the per-instance and uniform
+             * layer numbers are added together.
+             * @requires_gl30 Extension @gl_extension{EXT,texture_array}
+             * @requires_gles30 Texture arrays are not available in OpenGL ES
+             *      2.0.
+             * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+             * @m_since_latest
+             */
+            TextureArrays = 1 << 10
             #endif
         };
 
@@ -573,6 +618,29 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @ref bindTextureTransformationBuffer() instead.
          */
         FlatGL<dimensions>& setTextureMatrix(const Matrix3& matrix);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set texture array layer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with @ref Flag::TextureArrays
+         * enabled. Initial value is @cpp 0 @ce. If
+         * @ref Flag::InstancedTextureOffset is set and a three-component
+         * @ref TextureOffsetLayer attribute is used instead of
+         * @ref TextureOffset, this value is added to the layer coming from the
+         * third component.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref TextureTransformationUniform::layer and call
+         * @ref bindTextureTransformationBuffer() instead.
+         * @requires_gl30 Extension @gl_extension{EXT,texture_array}
+         * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& setTextureLayer(UnsignedInt layer);
+        #endif
 
         /**
          * @brief Set color
@@ -760,11 +828,33 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @return Reference to self (for method chaining)
          *
          * Expects that the shader was created with @ref Flag::Textured
-         * enabled.
+         * enabled. If @ref Flag::TextureArrays is enabled as well, use
+         * @ref bindTexture(GL::Texture2DArray&) instead.
          * @see @ref setColor(), @ref Flag::TextureTransformation,
          *      @ref setTextureMatrix()
          */
         FlatGL<dimensions>& bindTexture(GL::Texture2D& texture);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Bind a color array texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with both @ref Flag::Textured
+         * and @ref Flag::TextureArrays enabled. If @ref Flag::UniformBuffers
+         * is not enabled, the layer is set via @ref setTextureLayer(); if
+         * @ref Flag::UniformBuffers is enabled,
+         * @ref Flag::TextureTransformation has to be enabled as well and the
+         * layer is set via @ref TextureTransformationUniform::layer.
+         * @see @ref setColor(), @ref Flag::TextureTransformation,
+         *      @ref setTextureLayer()
+         * @requires_gl30 Extension @gl_extension{EXT,texture_array}
+         * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& bindTexture(GL::Texture2DArray& texture);
+        #endif
 
         /**
          * @}
@@ -785,10 +875,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         #endif
         Int _transformationProjectionMatrixUniform{0},
             _textureMatrixUniform{1},
-            _colorUniform{2},
-            _alphaMaskUniform{3};
+            #ifndef MAGNUM_TARGET_GLES2
+            _textureLayerUniform{2},
+            #endif
+            _colorUniform{3},
+            _alphaMaskUniform{4};
         #ifndef MAGNUM_TARGET_GLES2
-        Int _objectIdUniform{4};
+        Int _objectIdUniform{5};
         /* Used instead of all other uniforms when Flag::UniformBuffers is set,
            so it can alias them */
         Int _drawOffsetUniform{0};

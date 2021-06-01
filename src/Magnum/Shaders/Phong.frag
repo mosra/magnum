@@ -41,7 +41,7 @@
 
 #ifndef UNIFORM_BUFFERS
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 4)
+layout(location = 5)
 #endif
 uniform lowp vec4 ambientColor
     #ifndef GL_ES
@@ -55,7 +55,7 @@ uniform lowp vec4 ambientColor
 
 #if LIGHT_COUNT
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 5)
+layout(location = 6)
 #endif
 uniform lowp vec4 diffuseColor
     #ifndef GL_ES
@@ -64,7 +64,7 @@ uniform lowp vec4 diffuseColor
     ;
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 6)
+layout(location = 7)
 #endif
 uniform lowp vec4 specularColor
     #ifndef GL_ES
@@ -73,7 +73,7 @@ uniform lowp vec4 specularColor
     ;
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 7)
+layout(location = 8)
 #endif
 uniform mediump float shininess
     #ifndef GL_ES
@@ -84,7 +84,7 @@ uniform mediump float shininess
 
 #ifdef NORMAL_TEXTURE
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 8)
+layout(location = 9)
 #endif
 uniform mediump float normalTextureScale
     #ifndef GL_ES
@@ -95,7 +95,7 @@ uniform mediump float normalTextureScale
 
 #ifdef ALPHA_MASK
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 9)
+layout(location = 10)
 #endif
 uniform lowp float alphaMask
     #ifndef GL_ES
@@ -106,16 +106,16 @@ uniform lowp float alphaMask
 
 #ifdef OBJECT_ID
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 10)
+layout(location = 11)
 #endif
 /* mediump is just 2^10, which might not be enough, this is 2^16 */
 uniform highp uint objectId; /* defaults to zero */
 #endif
 
 #if LIGHT_COUNT
-/* Needs to be last because it uses locations 11 + LIGHT_COUNT to
-   11 + 2*LIGHT_COUNT - 1. Location 11 is lightPositions. Also it can't be
-   specified as 11 + LIGHT_COUNT because that requires ARB_enhanced_layouts.
+/* Needs to be last because it uses locations 12 + LIGHT_COUNT to
+   12 + 2*LIGHT_COUNT - 1. Location 12 is lightPositions. Also it can't be
+   specified as 12 + LIGHT_COUNT because that requires ARB_enhanced_layouts.
    Same for lightSpecularColors and lightRanges below. */
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = LIGHT_COLORS_LOCATION) /* I fear this will blow up some drivers */
@@ -226,7 +226,13 @@ layout(std140
 #ifdef EXPLICIT_BINDING
 layout(binding = 0)
 #endif
-uniform lowp sampler2D ambientTexture;
+uniform lowp
+    #ifndef TEXTURE_ARRAYS
+    sampler2D
+    #else
+    sampler2DArray
+    #endif
+    ambientTexture;
 #endif
 
 #if LIGHT_COUNT
@@ -234,21 +240,39 @@ uniform lowp sampler2D ambientTexture;
 #ifdef EXPLICIT_BINDING
 layout(binding = 1)
 #endif
-uniform lowp sampler2D diffuseTexture;
+uniform lowp
+    #ifndef TEXTURE_ARRAYS
+    sampler2D
+    #else
+    sampler2DArray
+    #endif
+    diffuseTexture;
 #endif
 
 #ifdef SPECULAR_TEXTURE
 #ifdef EXPLICIT_BINDING
 layout(binding = 2)
 #endif
-uniform lowp sampler2D specularTexture;
+uniform lowp
+    #ifndef TEXTURE_ARRAYS
+    sampler2D
+    #else
+    sampler2DArray
+    #endif
+    specularTexture;
 #endif
 
 #ifdef NORMAL_TEXTURE
 #ifdef EXPLICIT_BINDING
 layout(binding = 3)
 #endif
-uniform lowp sampler2D normalTexture;
+uniform lowp
+    #ifndef TEXTURE_ARRAYS
+    sampler2D
+    #else
+    sampler2DArray
+    #endif
+    normalTexture;
 #endif
 #endif
 
@@ -269,7 +293,13 @@ in highp vec3 cameraDirection;
 #endif
 
 #if defined(AMBIENT_TEXTURE) || defined(DIFFUSE_TEXTURE) || defined(SPECULAR_TEXTURE) || defined(NORMAL_TEXTURE)
-in mediump vec2 interpolatedTextureCoordinates;
+in mediump
+    #ifndef TEXTURE_ARRAYS
+    vec2
+    #else
+    vec3
+    #endif
+    interpolatedTextureCoordinates;
 #endif
 
 #ifdef VERTEX_COLOR

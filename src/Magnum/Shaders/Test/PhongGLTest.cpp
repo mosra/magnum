@@ -61,6 +61,7 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/MeshView.h"
+#include "Magnum/GL/TextureArray.h"
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/GenerateIndices.h"
 #include "Magnum/Primitives/Cone.h"
@@ -94,10 +95,15 @@ struct PhongGLTest: GL::OpenGLTester {
     void setUniformUniformBuffersEnabled();
     void bindBufferUniformBuffersNotEnabled();
     #endif
-    void bindTexturesNotEnabled();
+    void bindTexturesInvalid();
+    #ifndef MAGNUM_TARGET_GLES2
+    void bindTextureArraysInvalid();
+    #endif
     void setAlphaMaskNotEnabled();
     void setTextureMatrixNotEnabled();
+    void setNormalTextureScaleNotEnabled();
     #ifndef MAGNUM_TARGET_GLES2
+    void setTextureLayerNotArray();
     void bindTextureTransformBufferNotEnabled();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
@@ -171,19 +177,20 @@ struct PhongGLTest: GL::OpenGLTester {
     [I] instancing
     [O] UBOs + draw offset
     [M] multidraw
+    [L] texture arrays
 
-    Mesa Intel                      BADLIOM
-               ES2                       xx
+    Mesa Intel                      BADLIOML
+               ES2                       xxx
                ES3                  BADL Ox
     Mesa AMD                        BAD
     Mesa llvmpipe                   BAD
-    SwiftShader ES2                 BADL xx
+    SwiftShader ES2                 BADL xxx
                 ES3                 BADL
-    ANGLE ES2                            xx
+    ANGLE ES2                            xxx
           ES3                       BADL OM
-    ARM Mali (Huawei P10) ES2       BAD  xx
+    ARM Mali (Huawei P10) ES2       BAD  xxx
                           ES3       BADL Ox
-    WebGL (on Mesa Intel) 1.0       BAD  xx
+    WebGL (on Mesa Intel) 1.0       BAD  xxx
                           2.0       BADL OM
     NVidia                          BAD
     Intel Windows                   BAD
@@ -210,6 +217,10 @@ constexpr struct {
     {"diffuse + specular texture", PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1},
     {"ambient + diffuse + specular texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1},
     {"ambient + diffuse + specular + normal texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture, 1},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"ambient + diffuse + specular + normal texture arrays", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays, 1},
+    {"ambient + diffuse + specular + normal texture arrays + texture transformation", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1},
+    #endif
     {"alpha mask", PhongGL::Flag::AlphaMask, 1},
     {"alpha mask + diffuse texture", PhongGL::Flag::AlphaMask|PhongGL::Flag::DiffuseTexture, 1},
     {"vertex colors", PhongGL::Flag::VertexColor, 1},
@@ -245,11 +256,12 @@ constexpr struct {
     {"zero lights", PhongGL::Flag::UniformBuffers, 0, 16, 24},
     {"ambient + diffuse + specular texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1, 1, 1},
     {"ambient + diffuse + specular texture + texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1},
+    {"ambient + diffuse + specular texture array + texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1, 1, 1},
     {"normal texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture, 1, 1, 1},
     {"normal texture + separate bitangents", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1, 1, 1},
     {"alpha mask", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AlphaMask, 1, 1, 1},
     {"object ID", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId, 1, 1, 1},
-    {"multidraw with all the things", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId, 8, 16, 24}
+    {"multidraw with all the things", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId, 8, 16, 24}
 };
 #endif
 
@@ -262,6 +274,8 @@ constexpr struct {
         PhongGL::Flag::TextureTransformation,
         "texture transformation enabled but the shader is not textured"},
     #ifndef MAGNUM_TARGET_GLES2
+    {"texture arrays but not textured", PhongGL::Flag::TextureArrays,
+        "texture arrays enabled but the shader is not textured"},
     {"conflicting bitangent and instanced object id attribute",
         PhongGL::Flag::Bitangent|PhongGL::Flag::InstancedObjectId,
         "Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead"},
@@ -279,6 +293,48 @@ constexpr struct {
         "draw count can't be zero"},
     {"zero materials", PhongGL::Flag::UniformBuffers, 1, 0, 1,
         "material count can't be zero"},
+    {"texture arrays but no transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays, 1, 1, 1,
+        "texture arrays require texture transformation enabled as well if uniform buffers are used"}
+};
+#endif
+
+constexpr struct {
+    const char* name;
+    PhongGL::Flags flags;
+    const char* message;
+} BindTexturesInvalidData[]{
+    {"not textured", {},
+        "Shaders::PhongGL::bindAmbientTexture(): the shader was not created with ambient texture enabled\n"
+        "Shaders::PhongGL::bindDiffuseTexture(): the shader was not created with diffuse texture enabled\n"
+        "Shaders::PhongGL::bindSpecularTexture(): the shader was not created with specular texture enabled\n"
+        "Shaders::PhongGL::bindNormalTexture(): the shader was not created with normal texture enabled\n"
+        "Shaders::PhongGL::bindTextures(): the shader was not created with any textures enabled\n"},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"array", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays,
+        "Shaders::PhongGL::bindAmbientTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead\n"
+        "Shaders::PhongGL::bindDiffuseTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead\n"
+        "Shaders::PhongGL::bindSpecularTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead\n"
+        "Shaders::PhongGL::bindNormalTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead\n"
+        "Shaders::PhongGL::bindTextures(): the shader was created with texture arrays enabled, use a Texture2DArray instead\n"}
+    #endif
+};
+
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    PhongGL::Flags flags;
+    const char* message;
+} BindTextureArraysInvalidData[]{
+    {"not textured", {},
+        "Shaders::PhongGL::bindAmbientTexture(): the shader was not created with ambient texture enabled\n"
+        "Shaders::PhongGL::bindDiffuseTexture(): the shader was not created with diffuse texture enabled\n"
+        "Shaders::PhongGL::bindSpecularTexture(): the shader was not created with specular texture enabled\n"
+        "Shaders::PhongGL::bindNormalTexture(): the shader was not created with normal texture enabled\n"},
+    {"not array", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture,
+        "Shaders::PhongGL::bindAmbientTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead\n"
+        "Shaders::PhongGL::bindDiffuseTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead\n"
+        "Shaders::PhongGL::bindSpecularTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead\n"
+        "Shaders::PhongGL::bindNormalTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead\n"}
 };
 #endif
 
@@ -297,10 +353,16 @@ const struct {
 
 constexpr struct {
     const char* name;
+    PhongGL::Flags flags;
+    Int layer;
     bool multiBind;
 } RenderSinglePixelTexturedData[]{
-    {"", false},
-    {"multi bind", true}
+    {"", {}, 0, false},
+    {"multi bind", {}, 0, true},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"array, first layer", PhongGL::Flag::TextureArrays, 0, false},
+    {"array, arbitrary layer", PhongGL::Flag::TextureArrays, 6, false},
+    #endif
 };
 
 const struct {
@@ -308,15 +370,31 @@ const struct {
     const char* expected;
     PhongGL::Flags flags;
     Matrix3 textureTransformation;
+    Int layer;
 } RenderTexturedData[]{
-    {"all", "textured.tga", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, {}},
-    {"ambient", "textured-ambient.tga", PhongGL::Flag::AmbientTexture, {}},
-    {"diffuse", "textured-diffuse.tga", PhongGL::Flag::DiffuseTexture, {}},
+    {"all", "textured.tga",
+        PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture,
+        {}, 0},
+    {"ambient", "textured-ambient.tga", PhongGL::Flag::AmbientTexture,
+        {}, 0},
+    {"diffuse", "textured-diffuse.tga", PhongGL::Flag::DiffuseTexture,
+        {}, 0},
     {"diffuse transformed", "textured-diffuse-transformed.tga",
         PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureTransformation,
-        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f})
-    },
-    {"specular", "textured-specular.tga", PhongGL::Flag::SpecularTexture, {}}
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}), 0},
+    {"specular", "textured-specular.tga", PhongGL::Flag::SpecularTexture,
+        {}, 0},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"all, array, first layer", "textured.tga",
+        PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays,
+        {}, 0},
+    {"all, array, arbitrary layer", "textured.tga",
+        PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays,
+        {}, 6},
+    {"diffuse, array, texture transformation, arbitrary layer", "textured-diffuse-transformed.tga",
+        PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}), 6},
+    #endif
 };
 
 /* MSVC 2015 doesn't like constexpr here due to the angles */
@@ -331,47 +409,58 @@ const struct {
     PhongGL::Tangent4::Components tangentComponents;
     bool flipNormalY;
     PhongGL::Flags flags;
+    Int layer;
 } RenderTexturedNormalData[]{
     {"", "textured-normal.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        PhongGL::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}, 0},
     {"multi bind", "textured-normal.tga", true, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        PhongGL::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}, 0},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"texture arrays, first layer", "textured-normal.tga", false, {}, 1.0f,
+        {1.0f, 0.0f, 0.0f, 1.0f}, {},
+        PhongGL::Tangent4::Components::Four, false,
+        PhongGL::Flag::TextureArrays, 0},
+    {"texture arrays, arbitrary layer", "textured-normal.tga", false, {}, 1.0f,
+        {1.0f, 0.0f, 0.0f, 1.0f}, {},
+        PhongGL::Tangent4::Components::Four, false,
+        PhongGL::Flag::TextureArrays, 6},
+    #endif
     {"rotated 90°", "textured-normal.tga", false, 90.0_degf, 1.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        PhongGL::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}, 0},
     {"rotated -90°", "textured-normal.tga", false, -90.0_degf, 1.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        PhongGL::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}, 0},
     {"0.5 scale", "textured-normal0.5.tga", false, {}, 0.5f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        PhongGL::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}, 0},
     {"0.0 scale", "textured-normal0.0.tga", false, {}, 0.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        PhongGL::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}, 0},
     /* The fourth component, if missing, gets automatically filled up to 1,
        so this should work */
     {"implicit bitangent direction", "textured-normal.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, 0.0f}, {},
-        PhongGL::Tangent4::Components::Three, false, {}},
+        PhongGL::Tangent4::Components::Three, false, {}, 0},
     {"separate bitangents", "textured-normal.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f},
         PhongGL::Tangent4::Components::Three, false,
-        PhongGL::Flag::Bitangent},
+        PhongGL::Flag::Bitangent, 0},
     {"right-handed, flipped Y", "textured-normal-left.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, 1.0f}, {},
-        PhongGL::Tangent4::Components::Four, true, {}},
+        PhongGL::Tangent4::Components::Four, true, {}, 0},
     {"left-handed", "textured-normal-left.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, -1.0f}, {},
-        PhongGL::Tangent4::Components::Four, false, {}},
+        PhongGL::Tangent4::Components::Four, false, {}, 0},
     {"left-handed, separate bitangents", "textured-normal-left.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
         PhongGL::Tangent4::Components::Three, false,
-        PhongGL::Flag::Bitangent},
+        PhongGL::Flag::Bitangent, 0},
     {"left-handed, flipped Y", "textured-normal.tga", false, {}, 1.0f,
         {1.0f, 0.0f, 0.0f, -1.0f}, {},
-        PhongGL::Tangent4::Components::Four, true, {}}
+        PhongGL::Tangent4::Components::Four, true, {}, 0},
 };
 
 const struct {
@@ -432,6 +521,7 @@ const struct {
         PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AlphaMask, 1.0f,
         "alpha-texture.tga", "diffuse-texture.tga",
         0xffffffff_rgbaf, 0x9999ff00_rgbaf}
+    /* texture arrays are orthogonal to this, no need to be tested here */
 };
 
 const struct {
@@ -564,6 +654,14 @@ constexpr struct {
         /* Minor differences on SwiftShader */
         112.0f, 0.09f},
     /** @todo test normal when there's usable texture */
+    #ifndef MAGNUM_TARGET_GLES2
+    {"diffuse texture array", "instanced-textured.tga",
+        PhongGL::Flag::DiffuseTexture|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::TextureArrays,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around); minor differences on
+           SwiftShader */
+        112.0f, 0.099f}
+    #endif
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -585,6 +683,14 @@ constexpr struct {
         2, 1, 1, 16,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"bind with offset, texture array", "multidraw-textured.tga",
+        PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
+        2, 1, 1, 16,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around) */
+        50.34f, 0.131f},
+    #endif
     {"draw offset, colored", "multidraw.tga",
         {},
         4, 2, 3, 1,
@@ -595,6 +701,14 @@ constexpr struct {
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"draw offset, texture array", "multidraw-textured.tga",
+        PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
+        4, 2, 3, 1,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around) */
+        50.34f, 0.131f},
+    #endif
     {"multidraw, colored", "multidraw.tga",
         PhongGL::Flag::MultiDraw,
         4, 2, 3, 1,
@@ -605,6 +719,14 @@ constexpr struct {
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"multidraw, texture array", "multidraw-textured.tga",
+        PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
+        4, 2, 3, 1,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around) */
+        50.34f, 0.131f},
+    #endif
     /** @todo test normal and per-draw scaling when there's usable texture */
 };
 #endif
@@ -634,14 +756,26 @@ PhongGLTest::PhongGLTest() {
         Containers::arraySize(ConstructUniformBuffersInvalidData));
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    addTests({&PhongGLTest::setUniformUniformBuffersEnabled,
+              &PhongGLTest::bindBufferUniformBuffersNotEnabled});
+    #endif
+
+    addInstancedTests({&PhongGLTest::bindTexturesInvalid},
+        Containers::arraySize(BindTexturesInvalidData));
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&PhongGLTest::bindTextureArraysInvalid},
+        Containers::arraySize(BindTextureArraysInvalidData));
+    #endif
+
     addTests({
-        #ifndef MAGNUM_TARGET_GLES2
-        &PhongGLTest::setUniformUniformBuffersEnabled,
-        &PhongGLTest::bindBufferUniformBuffersNotEnabled,
-        #endif
-        &PhongGLTest::bindTexturesNotEnabled,
         &PhongGLTest::setAlphaMaskNotEnabled,
         &PhongGLTest::setTextureMatrixNotEnabled,
+        &PhongGLTest::setNormalTextureScaleNotEnabled,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::setTextureLayerNotArray,
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::bindTextureTransformBufferNotEnabled,
         #endif
@@ -841,6 +975,8 @@ void PhongGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & PhongGL::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
     PhongGL shader{data.flags, data.lightCount};
@@ -867,6 +1003,8 @@ void PhongGLTest::constructUniformBuffers() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     if((data.flags & PhongGL::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
     if(data.flags >= PhongGL::Flag::MultiDraw) {
@@ -1015,6 +1153,7 @@ void PhongGLTest::setUniformUniformBuffersEnabled() {
           .setNormalMatrix({})
           .setProjectionMatrix({})
           .setTextureMatrix({})
+          .setTextureLayer({})
           .setLightPositions(std::initializer_list<Vector4>{})
           .setLightPosition(0, Vector4{})
           .setLightColors(std::initializer_list<Color3>{})
@@ -1035,6 +1174,7 @@ void PhongGLTest::setUniformUniformBuffersEnabled() {
         "Shaders::PhongGL::setNormalMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::PhongGL::setProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::PhongGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setTextureLayer(): the shader was created with uniform buffers enabled\n"
         "Shaders::PhongGL::setLightPositions(): the shader was created with uniform buffers enabled\n"
         "Shaders::PhongGL::setLightPosition(): the shader was created with uniform buffers enabled\n"
         "Shaders::PhongGL::setLightColors(): the shader was created with uniform buffers enabled\n"
@@ -1085,31 +1225,60 @@ void PhongGLTest::bindBufferUniformBuffersNotEnabled() {
 }
 #endif
 
-void PhongGLTest::bindTexturesNotEnabled() {
+void PhongGLTest::bindTexturesInvalid() {
+    auto&& data = BindTexturesInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
     std::ostringstream out;
     Error redirectError{&out};
 
     GL::Texture2D texture;
-    PhongGL shader;
+    PhongGL shader{data.flags};
     shader.bindAmbientTexture(texture)
           .bindDiffuseTexture(texture)
           .bindSpecularTexture(texture)
           .bindNormalTexture(texture)
-          .setNormalTextureScale(0.5f)
           .bindTextures(&texture, &texture, &texture, &texture);
 
-    CORRADE_COMPARE(out.str(),
-        "Shaders::PhongGL::bindAmbientTexture(): the shader was not created with ambient texture enabled\n"
-        "Shaders::PhongGL::bindDiffuseTexture(): the shader was not created with diffuse texture enabled\n"
-        "Shaders::PhongGL::bindSpecularTexture(): the shader was not created with specular texture enabled\n"
-        "Shaders::PhongGL::bindNormalTexture(): the shader was not created with normal texture enabled\n"
-        "Shaders::PhongGL::setNormalTextureScale(): the shader was not created with normal texture enabled\n"
-        "Shaders::PhongGL::bindTextures(): the shader was not created with any textures enabled\n");
+    CORRADE_COMPARE(out.str(), data.message);
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::bindTextureArraysInvalid() {
+    auto&& data = BindTextureArraysInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Texture2DArray textureArray;
+    PhongGL shader{data.flags};
+    shader.bindAmbientTexture(textureArray)
+          .bindDiffuseTexture(textureArray)
+          .bindSpecularTexture(textureArray)
+          .bindNormalTexture(textureArray);
+
+    CORRADE_COMPARE(out.str(), data.message);
+}
+#endif
 
 void PhongGLTest::setAlphaMaskNotEnabled() {
     #ifdef CORRADE_NO_ASSERT
@@ -1140,6 +1309,38 @@ void PhongGLTest::setTextureMatrixNotEnabled() {
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
+
+void PhongGLTest::setNormalTextureScaleNotEnabled() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    PhongGL shader;
+    shader.setNormalTextureScale({});
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::PhongGL::setNormalTextureScale(): the shader was not created with normal texture enabled\n");
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::setTextureLayerNotArray() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    PhongGL shader;
+    shader.setTextureLayer(37);
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::PhongGL::setTextureLayer(): the shader was not created with texture arrays enabled\n");
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::bindTextureTransformBufferNotEnabled() {
@@ -1457,43 +1658,92 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
+    PhongGL::Flags flags = PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|data.flags|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers && (data.flags & PhongGL::Flag::TextureArrays) && !(data.flags & PhongGL::Flag::TextureTransformation)) {
+        CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= PhongGL::Flag::TextureTransformation;
+    }
+    #endif
+    PhongGL shader{flags, 2};
+
     const Color4ub ambientData[]{ 0x330033_rgb };
     ImageView2D ambientImage{PixelFormat::RGBA8Unorm, Vector2i{1}, ambientData};
-    GL::Texture2D ambient;
-    ambient.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, TextureFormatRGBA, Vector2i{1})
-        .setSubImage(0, {}, ambientImage);
 
     const Color4ub diffuseData[]{ 0xccffcc_rgb };
     ImageView2D diffuseImage{PixelFormat::RGBA8Unorm, Vector2i{1}, diffuseData};
-    GL::Texture2D diffuse;
-    diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, TextureFormatRGBA, Vector2i{1})
-        .setSubImage(0, {}, diffuseImage);
 
     const Color4ub specularData[]{ 0x6666ff_rgb };
     ImageView2D specularImage{PixelFormat::RGBA8Unorm, Vector2i{1}, specularData};
-    GL::Texture2D specular;
-    specular.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, TextureFormatRGBA, Vector2i{1})
-        .setSubImage(0, {}, specularImage);
 
-    PhongGL shader{PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|flag, 2};
-    if(data.multiBind)
-        shader.bindTextures(&ambient, &diffuse, &specular, nullptr);
-    else shader
-        .bindAmbientTexture(ambient)
-        .bindDiffuseTexture(diffuse)
-        .bindSpecularTexture(specular);
+    GL::Texture2D ambient;
+    GL::Texture2D diffuse;
+    GL::Texture2D specular;
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray ambientArray{NoCreate};
+    GL::Texture2DArray diffuseArray{NoCreate};
+    GL::Texture2DArray specularArray{NoCreate};
+    if(data.flags & PhongGL::Flag::TextureArrays) {
+        ambientArray = GL::Texture2DArray{};
+        ambientArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGBA, Vector3i{1, 1, data.layer + 1})
+            .setSubImage(0, {0, 0, data.layer}, ambientImage);
+        diffuseArray = GL::Texture2DArray{};
+        diffuseArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGBA, Vector3i{1, 1, data.layer + 1})
+            .setSubImage(0, {0, 0, data.layer}, diffuseImage);
+        specularArray = GL::Texture2DArray{};
+        specularArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGBA, Vector3i{1, 1, data.layer + 1})
+            .setSubImage(0, {0, 0, data.layer}, specularImage);
+        shader
+            .bindAmbientTexture(ambientArray)
+            .bindDiffuseTexture(diffuseArray)
+            .bindSpecularTexture(specularArray);
+        if(flag != PhongGL::Flag::UniformBuffers && data.layer != 0)
+            shader.setTextureLayer(data.layer); /* to verify the default */
+    } else
+    #endif
+    {
+        ambient = GL::Texture2D{};
+        ambient.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGBA, Vector2i{1})
+            .setSubImage(0, {}, ambientImage);
+        diffuse = GL::Texture2D{};
+        diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGBA, Vector2i{1})
+            .setSubImage(0, {}, diffuseImage);
+        specular = GL::Texture2D{};
+        specular.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGBA, Vector2i{1})
+            .setSubImage(0, {}, specularImage);
+        if(data.multiBind)
+            shader.bindTextures(&ambient, &diffuse, &specular, nullptr);
+        else shader
+            .bindAmbientTexture(ambient)
+            .bindDiffuseTexture(diffuse)
+            .bindSpecularTexture(specular);
+    }
 
     if(flag == PhongGL::Flag{}) {
         shader.setLightColors({0x993366_rgbf, 0x669933_rgbf})
@@ -1516,6 +1766,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             PhongDrawUniform{}
         }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setLayer(data.layer)
+        }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             PhongMaterialUniform{}
                 /* Has to be set because the default is black regardless of
@@ -1531,6 +1785,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
                 .setPosition({ 3.0f, -3.0f, 2.0f, 0.0f})
                 .setColor(0x669933_rgbf)
         }};
+        /* Also take into account the case when texture transform needs to be
+           enabled for texture arrays, so not data.flags but flags */
+        if(flags & PhongGL::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindProjectionBuffer(projectionUniform)
             .bindTransformationBuffer(transformationUniform)
             .bindDrawBuffer(drawUniform)
@@ -1566,6 +1824,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
     auto&& data = RenderTexturedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES2
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
@@ -1584,47 +1847,104 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
-    PhongGL shader{data.flags|flag, 2};
+    PhongGL::Flags flags = data.flags|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers && (data.flags & PhongGL::Flag::TextureArrays) && !(data.flags & PhongGL::Flag::TextureTransformation)) {
+        CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= PhongGL::Flag::TextureTransformation;
+    }
+    #endif
+    PhongGL shader{flags, 2};
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
 
-    GL::Texture2D ambient;
+    GL::Texture2D ambient{NoCreate};
+    GL::Texture2D diffuse{NoCreate};
+    GL::Texture2D specular{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray ambientArray{NoCreate};
+    GL::Texture2DArray diffuseArray{NoCreate};
+    GL::Texture2DArray specularArray{NoCreate};
+    #endif
     if(data.flags & PhongGL::Flag::AmbientTexture) {
         Containers::Optional<Trade::ImageData2D> image;
         CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/ambient-texture.tga")) && (image = importer->image2D(0)));
-        ambient.setMinificationFilter(GL::SamplerFilter::Linear)
-            .setMagnificationFilter(GL::SamplerFilter::Linear)
-            .setWrapping(GL::SamplerWrapping::ClampToEdge)
-            .setStorage(1, TextureFormatRGB, image->size())
-            .setSubImage(0, {}, *image);
-        shader.bindAmbientTexture(ambient);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.flags & PhongGL::Flag::TextureArrays) {
+            ambientArray = GL::Texture2DArray{};
+            ambientArray.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, {image->size(), data.layer + 1})
+                .setSubImage(0, {0, 0, data.layer}, ImageView2D{*image});
+            shader.bindAmbientTexture(ambientArray);
+        } else
+        #endif
+        {
+            ambient = GL::Texture2D{};
+            ambient.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, image->size())
+                .setSubImage(0, {}, *image);
+            shader.bindAmbientTexture(ambient);
+        }
     }
 
     /* If no diffuse texture is present, dial down the default diffuse color
        so ambient/specular is visible */
-    GL::Texture2D diffuse;
     if(data.flags & PhongGL::Flag::DiffuseTexture) {
         Containers::Optional<Trade::ImageData2D> image;
         CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
-        diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
-            .setMagnificationFilter(GL::SamplerFilter::Linear)
-            .setWrapping(GL::SamplerWrapping::ClampToEdge)
-            .setStorage(1, TextureFormatRGB, image->size())
-            .setSubImage(0, {}, *image);
-        shader.bindDiffuseTexture(diffuse);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.flags & PhongGL::Flag::TextureArrays) {
+            diffuseArray = GL::Texture2DArray{};
+            diffuseArray.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, {image->size(), data.layer + 1})
+                .setSubImage(0, {0, 0, data.layer}, ImageView2D{*image});
+            shader.bindDiffuseTexture(diffuseArray);
+        } else
+        #endif
+        {
+            diffuse = GL::Texture2D{};
+            diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, image->size())
+                .setSubImage(0, {}, *image);
+            shader.bindDiffuseTexture(diffuse);
+        }
     }
 
-    GL::Texture2D specular;
     if(data.flags & PhongGL::Flag::SpecularTexture) {
         Containers::Optional<Trade::ImageData2D> image;
         CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/specular-texture.tga")) && (image = importer->image2D(0)));
-        specular.setMinificationFilter(GL::SamplerFilter::Linear)
-            .setMagnificationFilter(GL::SamplerFilter::Linear)
-            .setWrapping(GL::SamplerWrapping::ClampToEdge)
-            .setStorage(1, TextureFormatRGB, image->size())
-            .setSubImage(0, {}, *image);
-        shader.bindSpecularTexture(specular);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.flags & PhongGL::Flag::TextureArrays) {
+            specularArray = GL::Texture2DArray{};
+            specularArray.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, {image->size(), data.layer + 1})
+                .setSubImage(0, {0, 0, data.layer}, ImageView2D{*image});
+            shader.bindSpecularTexture(specularArray);
+        } else
+        #endif
+        {
+            specular = GL::Texture2D{};
+            specular.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, image->size())
+                .setSubImage(0, {}, *image);
+            shader.bindSpecularTexture(specular);
+        }
     }
 
     if(flag == PhongGL::Flag{}) {
@@ -1643,6 +1963,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
             /* Colorized. Case without a color (where it should be white) is
                tested in renderSinglePixelTextured() */
             shader.setSpecularColor(0x99ff99_rgbf);
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.layer != 0) /* to verify the default */
+            shader.setTextureLayer(data.layer);
+        #endif
 
         /* Using default (white) light colors to have the texture data visible
            better */
@@ -1680,6 +2004,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
                 .setTextureMatrix(data.textureTransformation)
+                .setLayer(data.layer)
         }};
         GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
             PhongLightUniform{}.setPosition({-3.0f, -3.0f, 2.0f, 0.0f}),
@@ -1697,7 +2022,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
             materialUniformData->setSpecularColor(0x99ff99_rgbf);
         GL::Buffer materialUniform{materialUniformData};
 
-        if(data.textureTransformation != Matrix3{})
+        /* Also take into account the case when texture transform needs to be
+           enabled for texture arrays, so not data.flags but flags */
+        if(flags & PhongGL::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindProjectionBuffer(projectionUniform)
             .bindTransformationBuffer(transformationUniform)
@@ -1741,6 +2068,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1755,12 +2087,40 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
         for(Color3ub& pixel: row)
             pixel.y() = 255 - pixel.y();
 
-    GL::Texture2D normal;
-    normal.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, TextureFormatRGB, image->size())
-        .setSubImage(0, {}, *image);
+    PhongGL::Flags flags = PhongGL::Flag::NormalTexture|data.flags|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == PhongGL::Flag::UniformBuffers && (data.flags & PhongGL::Flag::TextureArrays) && !(data.flags & PhongGL::Flag::TextureTransformation)) {
+        CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= PhongGL::Flag::TextureTransformation;
+    }
+    #endif
+    PhongGL shader{flags, 2};
+
+    GL::Texture2D normal{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray normalArray{NoCreate};
+    if(data.flags & PhongGL::Flag::TextureArrays) {
+        normalArray = GL::Texture2DArray{};
+        normalArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGB, {image->size(), data.layer + 1})
+            .setSubImage(0, {0, 0, data.layer}, ImageView2D{*image});
+        shader.bindNormalTexture(normalArray);
+    } else
+    #endif
+    {
+        normal = GL::Texture2D{};
+        normal.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGB, image->size())
+            .setSubImage(0, {}, *image);
+        if(data.multiBind)
+            shader.bindTextures(nullptr, nullptr, nullptr, &normal);
+        else
+            shader.bindNormalTexture(normal);
+    }
 
     GL::Mesh plane = MeshTools::compile(Primitives::planeSolid( Primitives::PlaneFlag::TextureCoordinates));
 
@@ -1781,16 +2141,14 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
     /* Rotating the view a few times (together with light positions). If the
        tangent transformation in the shader is correct, it should result in
        exactly the same images. */
-    PhongGL shader{PhongGL::Flag::NormalTexture|data.flags|flag, 2};
-    if(data.multiBind)
-        shader.bindTextures(nullptr, nullptr, nullptr, &normal);
-    else
-        shader.bindNormalTexture(normal);
-
     if(flag == PhongGL::Flag{}) {
-        /* Verify the default is working properly */
+        /* Verify the defaults are working properly */
         if(data.scale != 1.0f)
             shader.setNormalTextureScale(data.scale);
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.layer != 0)
+            shader.setTextureLayer(data.layer);
+        #endif
 
         shader.setLightPositions({
                 Matrix4::rotationZ(data.rotation)*Vector4{-3.0f, -3.0f, 2.0f, 0.0f},
@@ -1833,10 +2191,18 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
                 .setDiffuseColor(0x999999_rgbf)
                 .setNormalTextureScale(data.scale)
         }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setLayer(data.layer)
+        }};
         GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
             PhongLightUniform{}.setPosition(Matrix4::rotationZ(data.rotation)*Vector4{-3.0f, -3.0f, 2.0f, 0.0f}),
             PhongLightUniform{}.setPosition(Matrix4::rotationZ(data.rotation)*Vector4{3.0f, -3.0f, 2.0f, 0.0f})
         }};
+        /* Also take into account the case when texture transform needs to be
+           enabled for texture arrays, so not data.flags but flags */
+        if(flags & PhongGL::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindProjectionBuffer(projectionUniform)
             .bindTransformationBuffer(transformationUniform)
             .bindDrawBuffer(drawUniform)
@@ -2811,6 +3177,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
         CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
@@ -2836,7 +3207,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         Matrix4 transformation;
         Matrix3x3 normal;
         Color3 color;
-        Vector2 textureOffset;
+        Vector3 textureOffsetLayer;
         UnsignedInt objectId;
     } instanceData[] {
         {Matrix4::translation(Math::gather<'z', 'y', 'x'>(Vector3{-1.25f, -1.25f, 0.0f}))*Matrix4::rotationY(-90.0_degf)*Matrix4::rotationX(90.0_degf),
@@ -2845,15 +3216,18 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
                instanced textured */
             (Matrix4::rotationY(-90.0_degf)*Matrix4::rotationX(90.0_degf)).normalMatrix(),
             data.flags & PhongGL::Flag::DiffuseTexture ? 0xffffff_rgbf : 0xffff00_rgbf,
-            {0.0f, 0.0f}, 211},
+            {0.0f, 0.0f, 0.0f}, 211},
         {Matrix4::translation(Math::gather<'z', 'y', 'x'>(Vector3{ 1.25f, -1.25f, 0.0f})),
             {},
             data.flags & PhongGL::Flag::DiffuseTexture ? 0xffffff_rgbf : 0x00ffff_rgbf,
-            {1.0f, 0.0f}, 4627},
+            {1.0f, 0.0f, 1.0f}, 4627},
         {Matrix4::translation(Math::gather<'z', 'y', 'x'>(Vector3{  0.0f,  1.0f, -1.0f})),
             {},
             data.flags & PhongGL::Flag::DiffuseTexture ? 0xffffff_rgbf : 0xff00ff_rgbf,
-            {0.5f, 1.0f}, 35363}
+            #ifndef MAGNUM_TARGET_GLES2
+            data.flags & PhongGL::Flag::TextureArrays ? Vector3{0.0f, 0.0f, 2.0f} :
+            #endif
+            Vector3{0.5f, 1.0f, 2.0f}, 35363}
     };
 
     sphere
@@ -2861,7 +3235,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
             PhongGL::TransformationMatrix{},
             PhongGL::NormalMatrix{},
             PhongGL::Color3{},
+            #ifndef MAGNUM_TARGET_GLES2
+            PhongGL::TextureOffsetLayer{},
+            #else
             PhongGL::TextureOffset{},
+            4,
+            #endif
             #ifndef MAGNUM_TARGET_GLES2
             PhongGL::ObjectId{}
             #else
@@ -2883,8 +3262,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     #endif
     PhongGL shader{flags, 2};
 
-    GL::Texture2D diffuse;
-    GL::Texture2D normal;
+    GL::Texture2D diffuse{NoCreate};
+    GL::Texture2D normal{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray diffuseArray{NoCreate};
+    GL::Texture2DArray normalArray{NoCreate};
+    #endif
     if(data.flags & (PhongGL::Flag::DiffuseTexture|PhongGL::Flag::NormalTexture)) {
         if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
           !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -2896,17 +3279,104 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         if(data.flags & PhongGL::Flag::DiffuseTexture) {
             Containers::Optional<Trade::ImageData2D> image;
             CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
-            diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
-                .setMagnificationFilter(GL::SamplerFilter::Linear)
-                .setWrapping(GL::SamplerWrapping::ClampToEdge)
-                .setStorage(1, TextureFormatRGB, image->size())
-                .setSubImage(0, {}, *image);
-            shader.bindDiffuseTexture(diffuse);
+
+            #ifndef MAGNUM_TARGET_GLES2
+            if(data.flags & PhongGL::Flag::TextureArrays) {
+                /** @todo implement image slicing, ffs */
+                const ImageView2D first{
+                    image->storage().setRowLength(image->size().x())
+                        .setImageHeight(image->size().y())
+                        .setSkip({0, 0, 0}),
+                    image->format(), image->size()/2, image->data()};
+                const ImageView2D second{
+                    image->storage().setRowLength(image->size().x())
+                        .setImageHeight(image->size().y())
+                        .setSkip({image->size().x()/2, 0, 0}),
+                    image->format(), image->size()/2, image->data()};
+                const ImageView2D third{
+                    image->storage().setRowLength(image->size().x())
+                        .setImageHeight(image->size().y())
+                        .setSkip({image->size().x()/4, image->size().y()/2, 0}),
+                    image->format(), image->size()/2, image->data()};
+
+                diffuseArray = GL::Texture2DArray{};
+                diffuseArray.setMinificationFilter(GL::SamplerFilter::Linear)
+                    .setMagnificationFilter(GL::SamplerFilter::Linear)
+                    .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                    /* Three slices with 2 extra as a base offset, each slice
+                       has half the height */
+                    .setStorage(1, TextureFormatRGB, {image->size().x(), image->size().y()/2, 2 + 3})
+                    .setSubImage(0, {0, 0, 2}, first)
+                    /* Put the second image on the right half to test that the
+                       per-instance offset is used together with the layer */
+                    .setSubImage(0, {image->size().x()/2, 0, 3}, second)
+                    .setSubImage(0, {0, 0, 4}, third);
+                shader.bindDiffuseTexture(diffuseArray);
+                if(flag != PhongGL::Flag::UniformBuffers)
+                    shader.setTextureLayer(2); /* base offset */
+
+            } else
+            #endif
+            {
+                diffuse = GL::Texture2D{};
+                diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
+                    .setMagnificationFilter(GL::SamplerFilter::Linear)
+                    .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                    .setStorage(1, TextureFormatRGB, image->size())
+                    .setSubImage(0, {}, *image);
+                shader.bindDiffuseTexture(diffuse);
+            }
         }
 
         if(data.flags & PhongGL::Flag::NormalTexture) {
             Containers::Optional<Trade::ImageData2D> image;
             CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/normal-texture.tga")) && (image = importer->image2D(0)));
+
+            #ifndef MAGNUM_TARGET_GLES2
+            if(data.flags & PhongGL::Flag::TextureArrays) {
+                /** @todo implement image slicing, ffs */
+                const ImageView2D first{
+                    image->storage().setRowLength(image->size().x())
+                        .setImageHeight(image->size().y())
+                        .setSkip({0, 0, 0}),
+                    image->format(), image->size()/2, image->data()};
+                const ImageView2D second{
+                    image->storage().setRowLength(image->size().x())
+                        .setImageHeight(image->size().y())
+                        .setSkip({image->size().x()/2, 0, 0}),
+                    image->format(), image->size()/2, image->data()};
+                const ImageView2D third{
+                    image->storage().setRowLength(image->size().x())
+                        .setImageHeight(image->size().y())
+                        .setSkip({image->size().x()/4, image->size().y()/2, 0}),
+                    image->format(), image->size()/2, image->data()};
+
+                normalArray = GL::Texture2DArray{};
+                normalArray.setMinificationFilter(GL::SamplerFilter::Linear)
+                    .setMagnificationFilter(GL::SamplerFilter::Linear)
+                    .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                    /* Three slices with 2 extra as a base offset, each slice
+                       has half the height */
+                    .setStorage(1, TextureFormatRGB, {image->size().x(), image->size().y()/2, 2 + 3})
+                    .setSubImage(0, {0, 0, 2}, first)
+                    /* Put the second image on the right half to test that the
+                       per-instance offset is used together with the layer */
+                    .setSubImage(0, {image->size().x()/2, 0, 3}, second)
+                    .setSubImage(0, {0, 0, 4}, third);
+                shader.bindNormalTexture(normalArray);
+
+            } else
+            #endif
+            {
+                normal = GL::Texture2D{};
+                normal.setMinificationFilter(GL::SamplerFilter::Linear)
+                    .setMagnificationFilter(GL::SamplerFilter::Linear)
+                    .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                    .setStorage(1, TextureFormatRGB, image->size())
+                    .setSubImage(0, {}, *image);
+                shader.bindNormalTexture(normal);
+            }
+
             normal.setMinificationFilter(GL::SamplerFilter::Linear)
                 .setMagnificationFilter(GL::SamplerFilter::Linear)
                 .setWrapping(GL::SamplerWrapping::ClampToEdge)
@@ -2915,7 +3385,6 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
             shader.bindNormalTexture(normal);
         }
     }
-
     if(flag == PhongGL::Flag{}) {
         shader
             .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
@@ -2933,7 +3402,17 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
             0xffffff_rgbf : 0xffff00_rgbf);
 
         if(data.flags & PhongGL::Flag::TextureTransformation)
-            shader.setTextureMatrix(Matrix3::scaling(Vector2{0.5f}));
+            shader.setTextureMatrix(Matrix3::scaling(
+                #ifndef MAGNUM_TARGET_GLES2
+                /* Slices of the texture array have half the height */
+                data.flags & PhongGL::Flag::TextureArrays ? Vector2::xScale(0.5f) :
+                #endif
+                Vector2{0.5f}
+            ));
+        #ifndef MAGNUM_TARGET_GLES2
+        if((data.flags & PhongGL::Flag::TextureArrays) && flag != PhongGL::Flag::UniformBuffers)
+            shader.setTextureLayer(2); /* base offset */
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
@@ -2972,7 +3451,13 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         }};
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
-                .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
+                .setTextureMatrix(Matrix3::scaling(
+                    #ifndef MAGNUM_TARGET_GLES2
+                    /* Slices of the texture array have half the height */
+                    data.flags & PhongGL::Flag::TextureArrays ? Vector2::xScale(0.5f) :
+                    #endif
+                    Vector2{0.5f}))
+                .setLayer(2) /* base offset */
         }};
         GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
             PhongLightUniform{}
@@ -3051,6 +3536,8 @@ void PhongGLTest::renderMulti() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
     if(data.flags >= PhongGL::Flag::MultiDraw) {
@@ -3066,7 +3553,10 @@ void PhongGLTest::renderMulti() {
         #endif
     }
 
-    GL::Texture2D diffuse;
+    PhongGL shader{PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId|data.flags, data.lightCount, data.materialCount, data.drawCount};
+
+    GL::Texture2D diffuse{NoCreate};
+    GL::Texture2DArray diffuseArray{NoCreate};
     if(data.flags & PhongGL::Flag::DiffuseTexture) {
         if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
            !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -3078,11 +3568,48 @@ void PhongGLTest::renderMulti() {
         Containers::Optional<Trade::ImageData2D> image;
         CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
 
-        diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
-            .setMagnificationFilter(GL::SamplerFilter::Linear)
-            .setWrapping(GL::SamplerWrapping::ClampToEdge)
-            .setStorage(1, GL::TextureFormat::RGB8, image->size())
-            .setSubImage(0, {}, *image);
+        /* For arrays we upload three slices of the original image to half-high
+           slices */
+        if(data.flags & PhongGL::Flag::TextureArrays) {
+            /** @todo implement image slicing, ffs */
+            const ImageView2D first{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({0, 0, 0}),
+                image->format(), image->size()/2, image->data()};
+            const ImageView2D second{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({image->size().x()/2, 0, 0}),
+                image->format(), image->size()/2, image->data()};
+            const ImageView2D third{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({image->size().x()/4, image->size().y()/2, 0}),
+                image->format(), image->size()/2, image->data()};
+
+            diffuseArray = GL::Texture2DArray{};
+            diffuseArray.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                /* Each slice has half the height */
+                .setStorage(1, TextureFormatRGB, {image->size().x(), image->size().y()/2, 3})
+                .setSubImage(0, {0, 0, 0}, first)
+                /* Put the second image on the right half to test that the
+                   per-instance offset is used together with the layer */
+                .setSubImage(0, {image->size().x()/2, 0, 1}, second)
+                .setSubImage(0, {0, 0, 2}, third);
+            shader.bindDiffuseTexture(diffuseArray);
+
+        } else {
+            diffuse = GL::Texture2D{};
+            diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, image->size())
+                .setSubImage(0, {}, *image);
+            shader.bindDiffuseTexture(diffuse);
+        }
     }
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
@@ -3175,19 +3702,28 @@ void PhongGLTest::renderMulti() {
     Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
-            Matrix3::scaling(Vector2{0.5f})*
-            Matrix3::translation({0.0f, 0.0f})
-        );
+            data.flags & PhongGL::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({0.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({0.0f, 0.0f}))
+        .setLayer(0); /* ignored if not array */
     textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
-            Matrix3::scaling(Vector2{0.5f})*
-            Matrix3::translation({1.0f, 0.0f})
-        );
+            data.flags & PhongGL::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({1.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({1.0f, 0.0f}))
+        .setLayer(1); /* ignored if not array */
     textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
-            Matrix3::scaling(Vector2{0.5f})*
-            Matrix3::translation({0.5f, 1.0f})
-        );
+            data.flags & PhongGL::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({0.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({0.5f, 1.0f}))
+        .setLayer(2); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
     Containers::Array<PhongDrawUniform> drawData{2*data.uniformIncrement + 1};
@@ -3210,10 +3746,7 @@ void PhongGLTest::renderMulti() {
         .setObjectId(36363);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    PhongGL shader{PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId|data.flags, data.lightCount, data.materialCount, data.drawCount};
     shader.bindProjectionBuffer(projectionUniform);
-    if(data.flags & PhongGL::Flag::DiffuseTexture)
-        shader.bindDiffuseTexture(diffuse);
 
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {

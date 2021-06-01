@@ -58,6 +58,7 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/MeshView.h"
+#include "Magnum/GL/TextureArray.h"
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/GenerateIndices.h"
 #include "Magnum/Primitives/Cone.h"
@@ -84,7 +85,7 @@ struct FlatGLTest: GL::OpenGLTester {
     template<UnsignedInt dimensions> void constructMoveUniformBuffers();
     #endif
 
-    template<UnsignedInt dimensions> void constructTextureTransformationNotTextured();
+    template<UnsignedInt dimensions> void constructInvalid();
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void constructUniformBuffersInvalid();
     #endif
@@ -93,10 +94,14 @@ struct FlatGLTest: GL::OpenGLTester {
     template<UnsignedInt dimensions> void setUniformUniformBuffersEnabled();
     template<UnsignedInt dimensions> void bindBufferUniformBuffersNotEnabled();
     #endif
-    template<UnsignedInt dimensions> void bindTextureNotEnabled();
+    template<UnsignedInt dimensions> void bindTextureInvalid();
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void bindTextureArrayInvalid();
+    #endif
     template<UnsignedInt dimensions> void setAlphaMaskNotEnabled();
     template<UnsignedInt dimensions> void setTextureMatrixNotEnabled();
     #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void setTextureLayerNotArray();
     template<UnsignedInt dimensions> void bindTextureTransformBufferNotEnabled();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
@@ -163,19 +168,20 @@ struct FlatGLTest: GL::OpenGLTester {
     [I] instancing
     [O] UBOs + draw offset
     [M] multidraw
+    [L] texture arrays
 
-    Mesa Intel                      BADIOM
-               ES2                      xx
+    Mesa Intel                      BADIOML
+               ES2                      xxx
                ES3                  BAD Ox
     Mesa AMD                        BAD
     Mesa llvmpipe                   BAD
-    SwiftShader ES2                 BAD xx
+    SwiftShader ES2                 BAD xxx
                 ES3                 BAD
-    ANGLE ES2                           xx
+    ANGLE ES2                           xxx
           ES3                       BAD OM
-    ARM Mali (Huawei P10) ES2       BAD xx
+    ARM Mali (Huawei P10) ES2       BAD xxx
                           ES3       BAD Ox
-    WebGL (on Mesa Intel) 1.0       BAD xx
+    WebGL (on Mesa Intel) 1.0       BAD xxx
                           2.0       BAD OM
     NVidia                          BAD
     Intel Windows                   BAD
@@ -193,6 +199,10 @@ constexpr struct {
     {"", {}},
     {"textured", FlatGL2D::Flag::Textured},
     {"textured + texture transformation", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"texture arrays", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays},
+    {"texture arrays + texture transformation", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation},
+    #endif
     {"alpha mask", FlatGL2D::Flag::AlphaMask},
     {"alpha mask + textured", FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::Textured},
     {"vertex colors", FlatGL2D::Flag::VertexColor},
@@ -203,7 +213,10 @@ constexpr struct {
     {"object ID + alpha mask + textured", FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::Textured},
     #endif
     {"instanced transformation", FlatGL2D::Flag::InstancedTransformation},
-    {"instanced texture offset", FlatGL2D::Flag::Textured|FlatGL2D::Flag::InstancedTextureOffset}
+    {"instanced texture offset", FlatGL2D::Flag::Textured|FlatGL2D::Flag::InstancedTextureOffset},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"instanced texture array offset + layer", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::InstancedTextureOffset},
+    #endif
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -219,11 +232,26 @@ constexpr struct {
     {"multiple materials, draws", FlatGL2D::Flag::UniformBuffers, 8, 48},
     {"textured", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured, 1, 1},
     {"textured + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1, 1},
+    {"texture arrays + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1, 1},
     {"alpha mask", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask, 1, 1},
     {"object ID", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId, 1, 1},
-    {"multidraw with all the things", FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId, 8, 48}
+    {"instanced texture array offset + layer", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::InstancedTextureOffset, 1, 1},
+    {"multidraw with all the things", FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId, 8, 48}
 };
 #endif
+
+constexpr struct {
+    const char* name;
+    FlatGL2D::Flags flags;
+    const char* message;
+} ConstructInvalidData[]{
+    {"texture transformation but not textured", FlatGL2D::Flag::TextureTransformation,
+        "texture transformation enabled but the shader is not textured"},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"texture arrays but not textured", FlatGL2D::Flag::TextureArrays,
+        "texture arrays enabled but the shader is not textured"}
+    #endif
+};
 
 #ifndef MAGNUM_TARGET_GLES2
 constexpr struct {
@@ -236,20 +264,75 @@ constexpr struct {
         "draw count can't be zero"},
     {"zero materials", FlatGL2D::Flag::UniformBuffers, 0, 1,
         "material count can't be zero"},
+    {"texture arrays but no transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays, 1, 1,
+        "texture arrays require texture transformation enabled as well if uniform buffers are used"}
+};
+#endif
+
+constexpr struct {
+    const char* name;
+    FlatGL2D::Flags flags;
+    const char* message;
+} BindTextureInvalidData[]{
+    {"not textured", {},
+        "the shader was not created with texturing enabled"},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"array", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
+        "the shader was created with texture arrays enabled, use a Texture2DArray instead"}
+    #endif
+};
+
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    FlatGL2D::Flags flags;
+    const char* message;
+} BindTextureArrayInvalidData[]{
+    {"not textured", {},
+        "the shader was not created with texturing enabled"},
+    {"not array", FlatGL2D::Flag::Textured,
+        "the shader was not created with texture arrays enabled, use a Texture2D instead"}
 };
 #endif
 
 const struct {
     const char* name;
     FlatGL2D::Flags flags;
+    Int layer;
+} RenderSinglePixelTexturedData[]{
+    {"", {}, 0},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"array, first layer", FlatGL2D::Flag::TextureArrays, 0},
+    {"array, arbitrary layer", FlatGL2D::Flag::TextureArrays, 6},
+    #endif
+};
+
+const struct {
+    const char* name;
+    FlatGL2D::Flags flags;
     Matrix3 textureTransformation;
+    Int layer;
     bool flip;
 } RenderTexturedData[]{
-    {"", FlatGL2D::Flag::Textured, {}, false},
+    {"",
+        FlatGL2D::Flag::Textured,
+        {}, 0, false},
     {"texture transformation",
         FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation,
         Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
-        true},
+        0, true},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"array, first layer",
+        FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
+        {}, 0, false},
+    {"array, arbitrary layer",
+        FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
+        {}, 6, false},
+    {"array, texture transformation, arbitrary layer",
+        FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
+        6, true},
+    #endif
 };
 
 const struct {
@@ -272,6 +355,7 @@ const struct {
         FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask, 0.5f},
     {"masking 1.0", "TestFiles/alpha-mask1.0.tga", "TestFiles/alpha-mask1.0.tga", false,
         FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask, 1.0f}
+    /* texture arrays are orthogonal to this, no need to be tested here */
 };
 
 constexpr struct {
@@ -289,6 +373,14 @@ constexpr struct {
         FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::Textured,
         /* Minor differences on SwiftShader */
         192.67f, 0.140f},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"texture array", "instanced-textured2D.tga", "instanced-textured3D.tga",
+        FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around); minor differences on
+           SwiftShader */
+        192.67f, 0.398f},
+    #endif
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -308,6 +400,12 @@ constexpr struct {
         1, 1, 16,
         /* Minor differences on ARM Mali */
         2.34f, 0.01f},
+    {"bind with offset, texture array", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+        FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
+        1, 1, 16,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around) */
+        65.0f, 0.15f},
     {"draw offset, colored", "multidraw2D.tga", "multidraw3D.tga",
         {},
         2, 3, 1, 0.0f, 0.0f},
@@ -316,13 +414,25 @@ constexpr struct {
         2, 3, 1,
         /* Minor differences on ARM Mali */
         2.34f, 0.01f},
+    {"draw offset, texture array", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+        FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
+        2, 3, 1,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around) */
+        65.0f, 0.15f},
     {"multidraw, colored", "multidraw2D.tga", "multidraw3D.tga",
         FlatGL2D::Flag::MultiDraw, 2, 3, 1, 0.0f, 0.0f},
     {"multidraw, textured", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
         2, 3, 1,
         /* Minor differences on ARM Mali */
-        2.34f, 0.01f}
+        2.34f, 0.01f},
+    {"multidraw, texture array", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+        FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
+        2, 3, 1,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around) */
+        65.0f, 0.15f}
 };
 #endif
 
@@ -347,9 +457,12 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::constructMoveUniformBuffers<2>,
         &FlatGLTest::constructMoveUniformBuffers<3>,
         #endif
+        });
 
-        &FlatGLTest::constructTextureTransformationNotTextured<2>,
-        &FlatGLTest::constructTextureTransformationNotTextured<3>});
+    addInstancedTests<FlatGLTest>({
+        &FlatGLTest::constructInvalid<2>,
+        &FlatGLTest::constructInvalid<3>},
+        Containers::arraySize(ConstructInvalidData));
 
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests<FlatGLTest>({
@@ -365,12 +478,29 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::bindBufferUniformBuffersNotEnabled<2>,
         &FlatGLTest::bindBufferUniformBuffersNotEnabled<3>,
         #endif
-        &FlatGLTest::bindTextureNotEnabled<2>,
-        &FlatGLTest::bindTextureNotEnabled<3>,
+    });
+
+    addInstancedTests<FlatGLTest>({
+        &FlatGLTest::bindTextureInvalid<2>,
+        &FlatGLTest::bindTextureInvalid<3>},
+        Containers::arraySize(BindTextureInvalidData));
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests<FlatGLTest>({
+        &FlatGLTest::bindTextureArrayInvalid<2>,
+        &FlatGLTest::bindTextureArrayInvalid<3>},
+        Containers::arraySize(BindTextureArrayInvalidData));
+    #endif
+
+    addTests<FlatGLTest>({
         &FlatGLTest::setAlphaMaskNotEnabled<2>,
         &FlatGLTest::setAlphaMaskNotEnabled<3>,
         &FlatGLTest::setTextureMatrixNotEnabled<2>,
         &FlatGLTest::setTextureMatrixNotEnabled<3>,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::setTextureLayerNotArray<2>,
+        &FlatGLTest::setTextureLayerNotArray<3>,
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::bindTextureTransformBufferNotEnabled<2>,
         &FlatGLTest::bindTextureTransformBufferNotEnabled<3>,
@@ -403,6 +533,12 @@ FlatGLTest::FlatGLTest() {
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderColored3D<FlatGL3D::Flag::UniformBuffers>,
         #endif
+        },
+        &FlatGLTest::renderSetup,
+        &FlatGLTest::renderTeardown);
+
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<FlatGLTest>({
         &FlatGLTest::renderSinglePixelTextured2D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderSinglePixelTextured2D<FlatGL2D::Flag::UniformBuffers>,
@@ -412,6 +548,7 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderSinglePixelTextured3D<FlatGL2D::Flag::UniformBuffers>
         #endif
         },
+        Containers::arraySize(RenderSinglePixelTexturedData),
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
 
@@ -540,6 +677,8 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
     FlatGL<dimensions> shader{data.flags};
@@ -567,6 +706,8 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
     if(data.flags >= FlatGL2D::Flag::MultiDraw) {
@@ -651,8 +792,10 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMoveUniformBuffers() 
 }
 #endif
 
-template<UnsignedInt dimensions> void FlatGLTest::constructTextureTransformationNotTextured() {
+template<UnsignedInt dimensions> void FlatGLTest::constructInvalid() {
+    auto&& data = ConstructInvalidData[testCaseInstanceId()];
     setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseDescription(data.name);
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -660,9 +803,9 @@ template<UnsignedInt dimensions> void FlatGLTest::constructTextureTransformation
 
     std::ostringstream out;
     Error redirectError{&out};
-    FlatGL<dimensions>{FlatGL<dimensions>::Flag::TextureTransformation};
-    CORRADE_COMPARE(out.str(),
-        "Shaders::FlatGL: texture transformation enabled but the shader is not textured\n");
+    FlatGL<dimensions>{data.flags};
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Shaders::FlatGL: {}\n", data.message));
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -707,12 +850,14 @@ template<UnsignedInt dimensions> void FlatGLTest::setUniformUniformBuffersEnable
     FlatGL<dimensions> shader{FlatGL<dimensions>::Flag::UniformBuffers};
     shader.setTransformationProjectionMatrix({})
         .setTextureMatrix({})
+        .setTextureLayer({})
         .setColor({})
         .setAlphaMask({})
         .setObjectId({});
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::FlatGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::FlatGL::setTextureLayer(): the shader was created with uniform buffers enabled\n"
         "Shaders::FlatGL::setColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::FlatGL::setAlphaMask(): the shader was created with uniform buffers enabled\n"
         "Shaders::FlatGL::setObjectId(): the shader was created with uniform buffers enabled\n");
@@ -752,22 +897,55 @@ template<UnsignedInt dimensions> void FlatGLTest::bindBufferUniformBuffersNotEna
 }
 #endif
 
-template<UnsignedInt dimensions> void FlatGLTest::bindTextureNotEnabled() {
+template<UnsignedInt dimensions> void FlatGLTest::bindTextureInvalid() {
+    auto&& data = BindTextureInvalidData[testCaseInstanceId()];
     setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseDescription(data.name);
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL<dimensions>::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
+    FlatGL<dimensions> shader{data.flags};
     GL::Texture2D texture;
-    FlatGL<dimensions> shader;
     shader.bindTexture(texture);
-
-    CORRADE_COMPARE(out.str(), "Shaders::FlatGL::bindTexture(): the shader was not created with texturing enabled\n");
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Shaders::FlatGL::bindTexture(): {}\n", data.message));
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGLTest::bindTextureArrayInvalid() {
+    auto&& data = BindTextureArrayInvalidData[testCaseInstanceId()];
+    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseDescription(data.name);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    FlatGL<dimensions> shader{data.flags};
+    GL::Texture2DArray textureArray;
+    shader.bindTexture(textureArray);
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Shaders::FlatGL::bindTexture(): {}\n", data.message));
+}
+#endif
 
 template<UnsignedInt dimensions> void FlatGLTest::setAlphaMaskNotEnabled() {
     setTestCaseTemplateName(std::to_string(dimensions));
@@ -802,6 +980,25 @@ template<UnsignedInt dimensions> void FlatGLTest::setTextureMatrixNotEnabled() {
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGLTest::setTextureLayerNotArray() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    FlatGL<dimensions> shader;
+    shader.setTextureLayer(37);
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::FlatGL::setTextureLayer(): the shader was not created with texture arrays enabled\n");
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::bindTextureTransformBufferNotEnabled() {
@@ -1155,6 +1352,9 @@ constexpr GL::TextureFormat TextureFormatRGBA =
     ;
 
 template<FlatGL2D::Flag flag> void FlatGLTest::renderSinglePixelTextured2D() {
+    auto&& data = RenderSinglePixelTexturedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifndef MAGNUM_TARGET_GLES2
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
@@ -1166,20 +1366,50 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSinglePixelTextured2D() {
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32,
         Primitives::Circle2DFlag::TextureCoordinates));
 
-    const Color4ub diffuseData[]{ 0x9999ff_rgb };
-    ImageView2D diffuseImage{PixelFormat::RGBA8Unorm, Vector2i{1}, diffuseData};
-    GL::Texture2D texture;
-    texture.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, TextureFormatRGBA, Vector2i{1})
-        .setSubImage(0, {}, diffuseImage);
+    FlatGL2D::Flags flags = FlatGL2D::Flag::Textured|data.flags|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers && (data.flags & FlatGL2D::Flag::TextureArrays) && !(data.flags & FlatGL2D::Flag::TextureTransformation)) {
+        CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= FlatGL2D::Flag::TextureTransformation;
+    }
+    #endif
+    FlatGL2D shader{flags};
 
-    FlatGL2D shader{FlatGL2D::Flag::Textured|flag};
-    shader.bindTexture(texture);
+    const Color4ub imageData[]{ 0x9999ff_rgb };
+    ImageView2D image{PixelFormat::RGBA8Unorm, Vector2i{1}, imageData};
+
+    GL::Texture2D texture{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray textureArray{NoCreate};
+    if(data.flags & FlatGL3D::Flag::TextureArrays) {
+        textureArray = GL::Texture2DArray{};
+        textureArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGBA, Vector3i{1, 1, data.layer + 1})
+            .setSubImage(0, {0, 0, data.layer}, image);
+        shader.bindTexture(textureArray);
+        if(flag != FlatGL2D::Flag::UniformBuffers && data.layer != 0)
+            shader.setTextureLayer(data.layer); /* to verify the default */
+    } else
+    #endif
+    {
+        texture = GL::Texture2D{};
+        texture.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGBA, Vector2i{1})
+            .setSubImage(0, {}, image);
+        shader.bindTexture(texture);
+    }
 
     if(flag == FlatGL2D::Flag{}) {
         shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
@@ -1194,9 +1424,17 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSinglePixelTextured2D() {
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             FlatDrawUniform{}
         }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setLayer(data.layer)
+        }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             FlatMaterialUniform{}
         }};
+        /* Also take into account the case when texture transform needs to be
+           enabled for texture arrays, so not data.flags but flags */
+        if(flags & FlatGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform)
@@ -1226,6 +1464,9 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSinglePixelTextured2D() {
 }
 
 template<FlatGL3D::Flag flag> void FlatGLTest::renderSinglePixelTextured3D() {
+    auto&& data = RenderSinglePixelTexturedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifndef MAGNUM_TARGET_GLES2
     if(flag == FlatGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
@@ -1237,20 +1478,50 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderSinglePixelTextured3D() {
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
-    const Color4ub diffuseData[]{ 0x9999ff_rgb };
-    ImageView2D diffuseImage{PixelFormat::RGBA8Unorm, Vector2i{1}, diffuseData};
-    GL::Texture2D texture;
-    texture.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, TextureFormatRGBA, Vector2i{1})
-        .setSubImage(0, {}, diffuseImage);
+    FlatGL3D::Flags flags = FlatGL2D::Flag::Textured|data.flags|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL3D::Flag::UniformBuffers && (data.flags & FlatGL3D::Flag::TextureArrays) && !(data.flags & FlatGL3D::Flag::TextureTransformation)) {
+        CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= FlatGL3D::Flag::TextureTransformation;
+    }
+    #endif
+    FlatGL3D shader{flags};
 
-    FlatGL3D shader{FlatGL3D::Flag::Textured|flag};
-    shader.bindTexture(texture);
+    const Color4ub imageData[]{ 0x9999ff_rgb };
+    ImageView2D image{PixelFormat::RGBA8Unorm, Vector2i{1}, imageData};
+
+    GL::Texture2D texture{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray textureArray{NoCreate};
+    if(data.flags & FlatGL3D::Flag::TextureArrays) {
+        textureArray = GL::Texture2DArray{};
+        textureArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGBA, Vector3i{1, 1, data.layer + 1})
+            .setSubImage(0, {0, 0, data.layer}, image);
+        shader.bindTexture(textureArray);
+        if(flag != FlatGL2D::Flag::UniformBuffers && data.layer != 0)
+            shader.setTextureLayer(data.layer); /* to verify the default */
+    } else
+    #endif
+    {
+        texture = GL::Texture2D{};
+        texture.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGBA, Vector2i{1})
+            .setSubImage(0, {}, image);
+        shader.bindTexture(texture);
+    }
 
     if(flag == FlatGL3D::Flag{}) {
         shader.setTransformationProjectionMatrix(
@@ -1275,9 +1546,17 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderSinglePixelTextured3D() {
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             FlatDrawUniform{}
         }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setLayer(data.layer)
+        }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             FlatMaterialUniform{}
         }};
+        /* Also take into account the case when texture transform needs to be
+           enabled for texture arrays, so not data.flags but flags */
+        if(flags & FlatGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform)
@@ -1321,6 +1600,11 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderTextured2D() {
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1331,17 +1615,42 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderTextured2D() {
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
 
-    GL::Texture2D texture;
     Containers::Optional<Trade::ImageData2D> image;
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
-    texture.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, TextureFormatRGB, image->size())
-        .setSubImage(0, {}, *image);
 
-    FlatGL2D shader{data.flags|flag};
-    shader.bindTexture(texture);
+    FlatGL2D::Flags flags = data.flags|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers && (data.flags & FlatGL2D::Flag::TextureArrays) && !(data.flags & FlatGL2D::Flag::TextureTransformation)) {
+        CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= FlatGL2D::Flag::TextureTransformation;
+    }
+    #endif
+    FlatGL2D shader{flags};
+
+    GL::Texture2D texture{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray textureArray{NoCreate};
+    if(data.flags & FlatGL3D::Flag::TextureArrays) {
+        textureArray = GL::Texture2DArray{};
+        textureArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGB, {image->size(), data.layer + 1})
+            .setSubImage(0, {0, 0, data.layer}, ImageView2D{*image});
+        shader.bindTexture(textureArray);
+        if(flag != FlatGL2D::Flag::UniformBuffers && data.layer != 0)
+            shader.setTextureLayer(data.layer); /* to verify the default */
+    } else
+    #endif
+    {
+        texture = GL::Texture2D{};
+        texture.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGB, image->size())
+            .setSubImage(0, {}, *image);
+        shader.bindTexture(texture);
+    }
 
     if(flag == FlatGL2D::Flag{}) {
         if(data.textureTransformation != Matrix3{})
@@ -1364,12 +1673,15 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderTextured2D() {
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
                 .setTextureMatrix(data.textureTransformation)
+                .setLayer(data.layer)
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             FlatMaterialUniform{}
                 .setColor(0x9999ff_rgbf)
         }};
-        if(data.flags & FlatGL2D::Flag::TextureTransformation)
+        /* Also take into account the case when texture transform needs to be
+           enabled for texture arrays, so not data.flags but flags */
+        if(flags & FlatGL2D::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
@@ -1414,6 +1726,11 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderTextured3D() {
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1424,17 +1741,42 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderTextured3D() {
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
 
-    GL::Texture2D texture;
     Containers::Optional<Trade::ImageData2D> image;
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
-    texture.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, TextureFormatRGB, image->size())
-        .setSubImage(0, {}, *image);
 
-    FlatGL3D shader{data.flags|flag};
-    shader.bindTexture(texture);
+    FlatGL3D::Flags flags = data.flags|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == FlatGL2D::Flag::UniformBuffers && (data.flags & FlatGL3D::Flag::TextureArrays) && !(data.flags & FlatGL3D::Flag::TextureTransformation)) {
+        CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= FlatGL3D::Flag::TextureTransformation;
+    }
+    #endif
+    FlatGL3D shader{flags};
+
+    GL::Texture2D texture{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray textureArray{NoCreate};
+    if(data.flags & FlatGL3D::Flag::TextureArrays) {
+        textureArray = GL::Texture2DArray{};
+        textureArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGB, {image->size(), data.layer + 1})
+            .setSubImage(0, {0, 0, data.layer}, ImageView2D{*image});
+        shader.bindTexture(textureArray);
+        if(flag != FlatGL3D::Flag::UniformBuffers && data.layer != 0)
+            shader.setTextureLayer(data.layer); /* to verify the default */
+    } else
+    #endif
+    {
+        texture = GL::Texture2D{};
+        texture.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatRGB, image->size())
+            .setSubImage(0, {}, *image);
+        shader.bindTexture(texture);
+    }
 
     if(flag == FlatGL3D::Flag{}) {
         if(data.textureTransformation != Matrix3{})
@@ -1467,12 +1809,15 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderTextured3D() {
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
                 .setTextureMatrix(data.textureTransformation)
+                .setLayer(data.layer)
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             FlatMaterialUniform{}
                 .setColor(0x9999ff_rgbf)
         }};
-        if(data.flags & FlatGL3D::Flag::TextureTransformation)
+        /* Also take into account the case when texture transform needs to be
+           enabled for texture arrays */
+        if(flags & FlatGL3D::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
@@ -2123,6 +2468,11 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
         CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
@@ -2144,25 +2494,33 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
     struct {
         Matrix3 transformation;
         Color3 color;
-        Vector2 textureOffset;
+        Vector3 textureOffsetLayer;
         UnsignedInt objectId;
     } instanceData[] {
         {Matrix3::translation({-1.25f, -1.25f}),
             data.flags & FlatGL2D::Flag::Textured ? 0xffffff_rgbf : 0xffff00_rgbf,
-            {0.0f, 0.0f}, 211},
+            {0.0f, 0.0f, 0.0f}, 211},
         {Matrix3::translation({ 1.25f, -1.25f}),
             data.flags & FlatGL2D::Flag::Textured ? 0xffffff_rgbf : 0x00ffff_rgbf,
-            {1.0f, 0.0f}, 4627},
+            {1.0f, 0.0f, 1.0f}, 4627},
         {Matrix3::translation({ 0.00f,  1.25f}),
             data.flags & FlatGL2D::Flag::Textured ? 0xffffff_rgbf : 0xff00ff_rgbf,
-            {0.5f, 1.0f}, 35363},
+            #ifndef MAGNUM_TARGET_GLES2
+            data.flags & FlatGL2D::Flag::TextureArrays ? Vector3{0.0f, 0.0f, 2.0f} :
+            #endif
+            Vector3{0.5f, 1.0f, 2.0f}, 35363},
     };
 
     circle
         .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
             FlatGL2D::TransformationMatrix{},
             FlatGL2D::Color3{},
+            #ifndef MAGNUM_TARGET_GLES2
+            FlatGL2D::TextureOffsetLayer{},
+            #else
             FlatGL2D::TextureOffset{},
+            4,
+            #endif
             #ifndef MAGNUM_TARGET_GLES2
             FlatGL2D::ObjectId{}
             #else
@@ -2184,7 +2542,10 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
     #endif
     FlatGL2D shader{flags};
 
-    GL::Texture2D texture;
+    GL::Texture2D texture{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray textureArray{NoCreate};
+    #endif
     if(data.flags & FlatGL3D::Flag::Textured) {
         if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
           !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -2195,13 +2556,55 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
 
         Containers::Optional<Trade::ImageData2D> image;
         CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
-        texture.setMinificationFilter(GL::SamplerFilter::Linear)
-            .setMagnificationFilter(GL::SamplerFilter::Linear)
-            .setWrapping(GL::SamplerWrapping::ClampToEdge)
-            .setStorage(1, TextureFormatRGB, image->size())
-            .setSubImage(0, {}, *image);
 
-        shader.bindTexture(texture);
+        #ifndef MAGNUM_TARGET_GLES2
+        /* For arrays we upload three slices of the original image to half-high
+           slices */
+        if(data.flags & FlatGL2D::Flag::TextureArrays) {
+            /** @todo implement image slicing, ffs */
+            const ImageView2D first{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({0, 0, 0}),
+                image->format(), image->size()/2, image->data()};
+            const ImageView2D second{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({image->size().x()/2, 0, 0}),
+                image->format(), image->size()/2, image->data()};
+            const ImageView2D third{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({image->size().x()/4, image->size().y()/2, 0}),
+                image->format(), image->size()/2, image->data()};
+
+            textureArray = GL::Texture2DArray{};
+            textureArray.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                /* Three slices with 2 extra as a base offset, each slice has
+                   half the height */
+                .setStorage(1, TextureFormatRGB, {image->size().x(), image->size().y()/2, 2 + 3})
+                .setSubImage(0, {0, 0, 2}, first)
+                /* Put the second image on the right half to test that the
+                   per-instance offset is used together with the layer */
+                .setSubImage(0, {image->size().x()/2, 0, 3}, second)
+                .setSubImage(0, {0, 0, 4}, third);
+            shader.bindTexture(textureArray);
+            if(flag != FlatGL2D::Flag::UniformBuffers)
+                shader.setTextureLayer(2); /* base offset */
+
+        } else
+        #endif
+        {
+            texture = GL::Texture2D{};
+            texture.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, image->size())
+                .setSubImage(0, {}, *image);
+            shader.bindTexture(texture);
+        }
     }
 
     if(flag == FlatGL2D::Flag{}) {
@@ -2212,7 +2615,13 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
                 Matrix3::scaling(Vector2{0.4f}));
 
         if(data.flags & FlatGL3D::Flag::Textured)
-            shader.setTextureMatrix(Matrix3::scaling(Vector2{0.5f}));
+            shader.setTextureMatrix(Matrix3::scaling(
+                #ifndef MAGNUM_TARGET_GLES2
+                /* Slices of the texture array have half the height */
+                data.flags & FlatGL2D::Flag::TextureArrays ? Vector2::xScale(0.5f) :
+                #endif
+                Vector2{0.5f}
+            ));
 
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
@@ -2240,7 +2649,13 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         }};
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
-                .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
+                .setTextureMatrix(Matrix3::scaling(
+                    #ifndef MAGNUM_TARGET_GLES2
+                    /* Slices of the texture array have half the height */
+                    data.flags & FlatGL2D::Flag::TextureArrays ? Vector2::xScale(0.5f) :
+                    #endif
+                    Vector2{0.5f}))
+                .setLayer(2) /* base offset */
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             FlatMaterialUniform{}
@@ -2319,6 +2734,11 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
         CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
@@ -2340,7 +2760,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
     struct {
         Matrix4 transformation;
         Color3 color;
-        Vector2 textureOffset;
+        Vector3 textureOffsetLayer;
         UnsignedInt objectId;
     } instanceData[] {
         {Matrix4::translation({-1.25f, -1.25f, 0.0f})*
@@ -2348,20 +2768,28 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
                normal matrix is applied properly */
             Matrix4::rotationX(90.0_degf),
             data.flags & FlatGL3D::Flag::Textured ? 0xffffff_rgbf : 0xffff00_rgbf,
-            {0.0f, 0.0f}, 211},
+            {0.0f, 0.0f, 0.0f}, 211},
         {Matrix4::translation({ 1.25f, -1.25f, 0.0f}),
             data.flags & FlatGL3D::Flag::Textured ? 0xffffff_rgbf : 0x00ffff_rgbf,
-            {1.0f, 0.0f}, 4627},
+            {1.0f, 0.0f, 1.0f}, 4627},
         {Matrix4::translation({  0.0f,  1.0f, 1.0f}),
             data.flags & FlatGL3D::Flag::Textured ? 0xffffff_rgbf : 0xff00ff_rgbf,
-            {0.5f, 1.0f}, 35363}
+            #ifndef MAGNUM_TARGET_GLES2
+            data.flags & FlatGL2D::Flag::TextureArrays ? Vector3{0.0f, 0.0f, 2.0f} :
+            #endif
+            Vector3{0.5f, 1.0f, 2.0f}, 35363}
     };
 
     sphere
         .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
             FlatGL3D::TransformationMatrix{},
             FlatGL3D::Color3{},
-            FlatGL3D::TextureOffset{},
+            #ifndef MAGNUM_TARGET_GLES2
+            FlatGL2D::TextureOffsetLayer{},
+            #else
+            FlatGL2D::TextureOffset{},
+            4,
+            #endif
             #ifndef MAGNUM_TARGET_GLES2
             FlatGL2D::ObjectId{}
             #else
@@ -2383,7 +2811,10 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
     #endif
     FlatGL3D shader{flags};
 
-    GL::Texture2D texture;
+    GL::Texture2D texture{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray textureArray{NoCreate};
+    #endif
     if(data.flags & FlatGL2D::Flag::Textured) {
         if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
           !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -2394,13 +2825,55 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
 
         Containers::Optional<Trade::ImageData2D> image;
         CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
-        texture.setMinificationFilter(GL::SamplerFilter::Linear)
-            .setMagnificationFilter(GL::SamplerFilter::Linear)
-            .setWrapping(GL::SamplerWrapping::ClampToEdge)
-            .setStorage(1, TextureFormatRGB, image->size())
-            .setSubImage(0, {}, *image);
 
-        shader.bindTexture(texture);
+        #ifndef MAGNUM_TARGET_GLES2
+        /* For arrays we upload three slices of the original image to half-high
+           slices */
+        if(data.flags & FlatGL2D::Flag::TextureArrays) {
+            /** @todo implement image slicing, ffs */
+            const ImageView2D first{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({0, 0, 0}),
+                image->format(), image->size()/2, image->data()};
+            const ImageView2D second{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({image->size().x()/2, 0, 0}),
+                image->format(), image->size()/2, image->data()};
+            const ImageView2D third{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({image->size().x()/4, image->size().y()/2, 0}),
+                image->format(), image->size()/2, image->data()};
+
+            textureArray = GL::Texture2DArray{};
+            textureArray.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                /* Three slices with 2 extra as a base offset, each slice has
+                   half the height */
+                .setStorage(1, TextureFormatRGB, {image->size().x(), image->size().y()/2, 2 + 3})
+                .setSubImage(0, {0, 0, 2}, first)
+                /* Put the second image on the right half to test that the
+                   per-instance offset is used together with the layer */
+                .setSubImage(0, {image->size().x()/2, 0, 3}, second)
+                .setSubImage(0, {0, 0, 4}, third);
+            shader.bindTexture(textureArray);
+            if(flag != FlatGL2D::Flag::UniformBuffers)
+                shader.setTextureLayer(2); /* base offset */
+
+        } else
+        #endif
+        {
+            texture = GL::Texture2D{};
+            texture.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, image->size())
+                .setSubImage(0, {}, *image);
+            shader.bindTexture(texture);
+        }
     }
 
     if(flag == FlatGL3D::Flag{}) {
@@ -2412,7 +2885,13 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
                 Matrix4::scaling(Vector3{0.4f}));
 
         if(data.flags & FlatGL3D::Flag::Textured)
-            shader.setTextureMatrix(Matrix3::scaling(Vector2{0.5f}));
+            shader.setTextureMatrix(Matrix3::scaling(
+                #ifndef MAGNUM_TARGET_GLES2
+                /* Slices of the texture array have half the height */
+                data.flags & FlatGL2D::Flag::TextureArrays ? Vector2::xScale(0.5f) :
+                #endif
+                Vector2{0.5f}
+            ));
 
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
@@ -2441,7 +2920,13 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         }};
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
-                .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
+                .setTextureMatrix(Matrix3::scaling(
+                    #ifndef MAGNUM_TARGET_GLES2
+                    /* Slices of the texture array have half the height */
+                    data.flags & FlatGL2D::Flag::TextureArrays ? Vector2::xScale(0.5f) :
+                    #endif
+                    Vector2{0.5f}))
+                .setLayer(2) /* base offset */
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             FlatMaterialUniform{}
@@ -2513,6 +2998,8 @@ void FlatGLTest::renderMulti2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
     if(data.flags >= FlatGL2D::Flag::MultiDraw) {
@@ -2528,8 +3015,13 @@ void FlatGLTest::renderMulti2D() {
         #endif
     }
 
-    GL::Texture2D texture;
-    if(data.flags & FlatGL2D::Flag::Textured) {
+    FlatGL2D shader{FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId|data.flags, data.materialCount, data.drawCount};
+
+    GL::Texture2D texture{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray textureArray{NoCreate};
+    #endif
+    if(data.flags & FlatGL3D::Flag::Textured) {
         if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
           !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
             CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -2539,11 +3031,52 @@ void FlatGLTest::renderMulti2D() {
 
         Containers::Optional<Trade::ImageData2D> image;
         CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
-        texture.setMinificationFilter(GL::SamplerFilter::Linear)
-            .setMagnificationFilter(GL::SamplerFilter::Linear)
-            .setWrapping(GL::SamplerWrapping::ClampToEdge)
-            .setStorage(1, GL::TextureFormat::RGB8, image->size())
-            .setSubImage(0, {}, *image);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /* For arrays we upload three slices of the original image to half-high
+           slices */
+        if(data.flags & FlatGL2D::Flag::TextureArrays) {
+            /** @todo implement image slicing, ffs */
+            const ImageView2D first{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({0, 0, 0}),
+                image->format(), image->size()/2, image->data()};
+            const ImageView2D second{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({image->size().x()/2, 0, 0}),
+                image->format(), image->size()/2, image->data()};
+            const ImageView2D third{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({image->size().x()/4, image->size().y()/2, 0}),
+                image->format(), image->size()/2, image->data()};
+
+            textureArray = GL::Texture2DArray{};
+            textureArray.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                /* Each slice has half the height */
+                .setStorage(1, TextureFormatRGB, {image->size().x(), image->size().y()/2, 3})
+                .setSubImage(0, {0, 0, 0}, first)
+                /* Put the second image on the right half to test that the
+                   per-instance offset is used together with the layer */
+                .setSubImage(0, {image->size().x()/2, 0, 1}, second)
+                .setSubImage(0, {0, 0, 2}, third);
+            shader.bindTexture(textureArray);
+
+        } else
+        #endif
+        {
+            texture = GL::Texture2D{};
+            texture.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, image->size())
+                .setSubImage(0, {}, *image);
+            shader.bindTexture(texture);
+        }
     }
 
     /* Circle is a fan, plane is a strip, make it indexed first */
@@ -2601,19 +3134,28 @@ void FlatGLTest::renderMulti2D() {
     Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
-            Matrix3::scaling(Vector2{0.5f})*
-            Matrix3::translation({0.0f, 0.0f})
-        );
+            data.flags & FlatGL2D::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({0.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({0.0f, 0.0f}))
+        .setLayer(0); /* ignored if not array */
     textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
-            Matrix3::scaling(Vector2{0.5f})*
-            Matrix3::translation({1.0f, 0.0f})
-        );
+            data.flags & FlatGL2D::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({1.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({1.0f, 0.0f}))
+        .setLayer(1); /* ignored if not array */
     textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
-            Matrix3::scaling(Vector2{0.5f})*
-            Matrix3::translation({0.5f, 1.0f})
-        );
+            data.flags & FlatGL2D::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({0.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({0.5f, 1.0f}))
+        .setLayer(2); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
     Containers::Array<FlatDrawUniform> drawData{2*data.uniformIncrement + 1};
@@ -2629,10 +3171,6 @@ void FlatGLTest::renderMulti2D() {
         .setMaterialId(data.drawCount == 1 ? 0 : 1)
         .setObjectId(36363);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
-
-    FlatGL2D shader{FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId|data.flags, data.materialCount, data.drawCount};
-    if(data.flags & FlatGL2D::Flag::Textured)
-        shader.bindTexture(texture);
 
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {
@@ -2752,6 +3290,8 @@ void FlatGLTest::renderMulti3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
     if(data.flags >= FlatGL3D::Flag::MultiDraw) {
@@ -2767,7 +3307,10 @@ void FlatGLTest::renderMulti3D() {
         #endif
     }
 
-    GL::Texture2D texture;
+    FlatGL3D shader{FlatGL3D::Flag::UniformBuffers|FlatGL3D::Flag::ObjectId|data.flags, data.materialCount, data.drawCount};
+
+    GL::Texture2D texture{NoCreate};
+    GL::Texture2DArray textureArray{NoCreate};
     if(data.flags & FlatGL3D::Flag::Textured) {
         if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
           !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -2778,11 +3321,49 @@ void FlatGLTest::renderMulti3D() {
 
         Containers::Optional<Trade::ImageData2D> image;
         CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
-        texture.setMinificationFilter(GL::SamplerFilter::Linear)
-            .setMagnificationFilter(GL::SamplerFilter::Linear)
-            .setWrapping(GL::SamplerWrapping::ClampToEdge)
-            .setStorage(1, GL::TextureFormat::RGB8, image->size())
-            .setSubImage(0, {}, *image);
+
+        /* For arrays we upload three slices of the original image to half-high
+           slices */
+        if(data.flags & FlatGL2D::Flag::TextureArrays) {
+            /** @todo implement image slicing, ffs */
+            const ImageView2D first{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({0, 0, 0}),
+                image->format(), image->size()/2, image->data()};
+            const ImageView2D second{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({image->size().x()/2, 0, 0}),
+                image->format(), image->size()/2, image->data()};
+            const ImageView2D third{
+                image->storage().setRowLength(image->size().x())
+                    .setImageHeight(image->size().y())
+                    .setSkip({image->size().x()/4, image->size().y()/2, 0}),
+                image->format(), image->size()/2, image->data()};
+
+            textureArray = GL::Texture2DArray{};
+            textureArray.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                /* Each slice has half the height */
+                .setStorage(1, TextureFormatRGB, {image->size().x(), image->size().y()/2, 3})
+                .setSubImage(0, {0, 0, 0}, first)
+                /* Put the second image on the right half to test that the
+                   per-instance offset is used together with the layer */
+                .setSubImage(0, {image->size().x()/2, 0, 1}, second)
+                .setSubImage(0, {0, 0, 2}, third);
+            shader.bindTexture(textureArray);
+
+        } else {
+            texture = GL::Texture2D{};
+            texture.setMinificationFilter(GL::SamplerFilter::Linear)
+                .setMagnificationFilter(GL::SamplerFilter::Linear)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, TextureFormatRGB, image->size())
+                .setSubImage(0, {}, *image);
+            shader.bindTexture(texture);
+        }
     }
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
@@ -2846,19 +3427,28 @@ void FlatGLTest::renderMulti3D() {
     Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
-            Matrix3::scaling(Vector2{0.5f})*
-            Matrix3::translation({0.0f, 0.0f})
-        );
+            data.flags & FlatGL2D::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({0.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({0.0f, 0.0f}))
+        .setLayer(0); /* ignored if not array */
     textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
-            Matrix3::scaling(Vector2{0.5f})*
-            Matrix3::translation({1.0f, 0.0f})
-        );
+            data.flags & FlatGL2D::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({1.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({1.0f, 0.0f}))
+        .setLayer(1); /* ignored if not array */
     textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
-            Matrix3::scaling(Vector2{0.5f})*
-            Matrix3::translation({0.5f, 1.0f})
-        );
+            data.flags & FlatGL2D::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({0.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({0.5f, 1.0f}))
+        .setLayer(2); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
     Containers::Array<FlatDrawUniform> drawData{2*data.uniformIncrement + 1};
@@ -2874,10 +3464,6 @@ void FlatGLTest::renderMulti3D() {
         .setMaterialId(data.drawCount == 1 ? 0 : 1)
         .setObjectId(36363);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
-
-    FlatGL3D shader{FlatGL3D::Flag::UniformBuffers|FlatGL3D::Flag::ObjectId|data.flags, data.materialCount, data.drawCount};
-    if(data.flags & FlatGL3D::Flag::Textured)
-        shader.bindTexture(texture);
 
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {

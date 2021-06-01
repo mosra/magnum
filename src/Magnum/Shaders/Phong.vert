@@ -27,6 +27,10 @@
 #extension GL_EXT_gpu_shader4: require
 #endif
 
+#if defined(UNIFORM_BUFFERS) && defined(TEXTURE_ARRAYS) && !defined(GL_ES)
+#extension GL_ARB_shader_bit_encoding: require
+#endif
+
 #ifdef MULTI_DRAW
 #ifndef GL_ES
 #extension GL_ARB_shader_draw_parameters: require
@@ -87,10 +91,18 @@ uniform mediump mat3 textureMatrix
     ;
 #endif
 
+#ifdef TEXTURE_ARRAYS
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 4)
+#endif
+/* mediump is just 2^10, which might not be enough, this is 2^16 */
+uniform highp uint textureLayer; /* defaults to zero */
+#endif
+
 #if LIGHT_COUNT
 /* Needs to be last because it uses locations 11 to 11 + LIGHT_COUNT - 1 */
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 11)
+layout(location = 12)
 #endif
 uniform highp vec4 lightPositions[LIGHT_COUNT]
     #ifndef GL_ES
@@ -149,8 +161,9 @@ layout(std140
 #ifdef TEXTURE_TRANSFORMATION
 struct TextureTransformationUniform {
     highp vec4 rotationScaling;
-    highp vec4 offsetReservedReserved;
-    #define textureTransformation_offset offsetReservedReserved.xy
+    highp vec4 offsetLayerReserved;
+    #define textureTransformation_offset offsetLayerReserved.xy
+    #define textureTransformation_layer offsetLayerReserved.z
 };
 
 layout(std140
@@ -256,13 +269,25 @@ in highp mat3 instancedNormalMatrix;
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = TEXTURE_OFFSET_ATTRIBUTE_LOCATION)
 #endif
-in mediump vec2 instancedTextureOffset;
+in mediump
+    #ifndef TEXTURE_ARRAYS
+    vec2
+    #else
+    vec3
+    #endif
+    instancedTextureOffset;
 #endif
 
 /* Outputs */
 
 #ifdef TEXTURED
-out mediump vec2 interpolatedTextureCoordinates;
+out mediump
+    #ifndef TEXTURE_ARRAYS
+    vec2
+    #else
+    vec3
+    #endif
+    interpolatedTextureCoordinates;
 #endif
 
 #ifdef VERTEX_COLOR
@@ -311,6 +336,9 @@ void main() {
     #endif
     #ifdef TEXTURE_TRANSFORMATION
     mediump const mat3 textureMatrix = mat3(textureTransformations[drawId].rotationScaling.xy, 0.0, textureTransformations[drawId].rotationScaling.zw, 0.0, textureTransformations[drawId].textureTransformation_offset, 1.0);
+    #ifdef TEXTURE_ARRAYS
+    highp const uint textureLayer = floatBitsToUint(textureTransformations[drawId].textureTransformation_layer);
+    #endif
     #endif
     #if LIGHT_COUNT
     mediump const uint lightOffset = draws[drawId].draw_lightOffset;
@@ -380,17 +408,25 @@ void main() {
 
     #ifdef TEXTURED
     /* Texture coordinates, if needed */
-    interpolatedTextureCoordinates =
+    interpolatedTextureCoordinates.xy =
         #ifdef TEXTURE_TRANSFORMATION
         (textureMatrix*vec3(
             #ifdef INSTANCED_TEXTURE_OFFSET
-            instancedTextureOffset +
+            instancedTextureOffset.xy +
             #endif
             textureCoordinates, 1.0)).xy
         #else
         textureCoordinates
         #endif
         ;
+    #ifdef TEXTURE_ARRAYS
+    interpolatedTextureCoordinates.z = float(
+        #ifdef INSTANCED_TEXTURE_OFFSET
+        uint(instancedTextureOffset.z) +
+        #endif
+        textureLayer
+    );
+    #endif
     #endif
 
     #ifdef VERTEX_COLOR

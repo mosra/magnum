@@ -462,6 +462,14 @@ struct TextureTransformationUniform {
      *
      * Descibes which layer of a texture array to use. Default value is
      * @cpp 0.5f @ce.
+     *
+     * Used only if @ref FlatGL::Flag::TextureArrays /
+     * @ref PhongGL::Flag::TextureArrays is enabled, ignored otherwise. If
+     * @ref FlatGL::Flag::InstancedTextureOffset /
+     * @ref PhongGL::Flag::InstancedTextureOffset is enabled as well, the
+     * per-instance layer coming from the @ref FlatGL::TextureOffsetLayer /
+     * @ref PhongGL::TextureOffsetLayer attribute is added to this value.
+     * @see @ref FlatGL::setTextureLayer(), @ref PhongGL::setTextureLayer()
      */
     UnsignedInt layer;
 
