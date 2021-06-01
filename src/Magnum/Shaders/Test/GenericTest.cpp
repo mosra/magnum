@@ -378,6 +378,8 @@ void GenericTest::textureTransformationUniformConstructDefault() {
     }));
     CORRADE_COMPARE(a.offset, (Vector2{0.0f, 0.0f}));
     CORRADE_COMPARE(b.offset, (Vector2{0.0f, 0.0f}));
+    CORRADE_COMPARE(a.layer, 0);
+    CORRADE_COMPARE(b.layer, 0);
 
     constexpr TextureTransformationUniform ca;
     constexpr TextureTransformationUniform cb{DefaultInit};
@@ -391,6 +393,8 @@ void GenericTest::textureTransformationUniformConstructDefault() {
     }));
     CORRADE_COMPARE(ca.offset, (Vector2{0.0f, 0.0f}));
     CORRADE_COMPARE(cb.offset, (Vector2{0.0f, 0.0f}));
+    CORRADE_COMPARE(ca.layer, 0);
+    CORRADE_COMPARE(cb.layer, 0);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<TextureTransformationUniform>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<TextureTransformationUniform, DefaultInitT>::value);
@@ -403,6 +407,7 @@ void GenericTest::textureTransformationUniformConstructNoInit() {
     TextureTransformationUniform a;
     a.rotationScaling[1] = {2.5f, -3.0f};
     a.offset = {2.7f, 0.3f};
+    a.layer = 37;
 
     new(&a) TextureTransformationUniform{NoInit};
     {
@@ -411,6 +416,7 @@ void GenericTest::textureTransformationUniformConstructNoInit() {
         #endif
         CORRADE_COMPARE(a.rotationScaling[1], (Vector2{2.5f, -3.0f}));
         CORRADE_COMPARE(a.offset, (Vector2{2.7f, 0.3f}));
+        CORRADE_COMPARE(a.layer, 37);
     }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<TextureTransformationUniform, NoInitT>::value);
@@ -422,12 +428,14 @@ void GenericTest::textureTransformationUniformConstructNoInit() {
 void GenericTest::textureTransformationUniformSetters() {
     TextureTransformationUniform a;
     a.setTextureMatrix(Matrix3::translation({2.6f, 0.3f})*
-                       Matrix3::rotation(90.0_degf));
+                       Matrix3::rotation(90.0_degf))
+     .setLayer(37);
     CORRADE_COMPARE(a.rotationScaling, (Matrix2x2{
         Vector2{ 0.0f, 1.0f},
         Vector2{-1.0f, 0.0f}
     }));
     CORRADE_COMPARE(a.offset, (Vector2{2.6f, 0.3f}));
+    CORRADE_COMPARE(a.layer, 37);
 }
 
 }}}}

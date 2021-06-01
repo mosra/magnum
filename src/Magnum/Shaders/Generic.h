@@ -374,10 +374,9 @@ Used only if @ref DistanceFieldVectorGL::Flag::TextureTransformation,
 */
 struct TextureTransformationUniform {
     /** @brief Construct with default parameters */
-    constexpr explicit TextureTransformationUniform(DefaultInitT = DefaultInit) noexcept: rotationScaling{Math::IdentityInit}
+    constexpr explicit TextureTransformationUniform(DefaultInitT = DefaultInit) noexcept: rotationScaling{Math::IdentityInit}, offset{0.0f, 0.0f}, layer{0}
         #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        /* Otherwise it refuses to constexpr, on 3.8 at least */
-        , _pad0{}, _pad1{}
+        , _pad0{} /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif
         {}
     /** @brief Construct without initializing the contents */
@@ -404,6 +403,15 @@ struct TextureTransformationUniform {
     TextureTransformationUniform& setTextureMatrix(const Matrix3& transformation) {
         rotationScaling = transformation.rotationScaling();
         offset = transformation.translation();
+        return *this;
+    }
+
+    /**
+     * @brief Set the @ref layer field
+     * @return Reference to self (for method chaining)
+     */
+    TextureTransformationUniform& setLayer(UnsignedInt layer) {
+        this->layer = layer;
         return *this;
     }
 
@@ -449,17 +457,20 @@ struct TextureTransformationUniform {
      */
     Vector2 offset;
 
+    /**
+     * @brief Texture layer
+     *
+     * Descibes which layer of a texture array to use. Default value is
+     * @cpp 0.5f @ce.
+     */
+    UnsignedInt layer;
+
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
     Int
         #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
         _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32; /* reserved for layer */
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif
         :32; /* reserved for coordinateSet */
     #endif

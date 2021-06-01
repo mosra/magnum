@@ -186,9 +186,7 @@ rotation and scale
 <tr>
 <td>15</td>
 <td>
-@ref TextureOffset (instanced)
-
-* *Reserved* --- third component for a layer
+@ref TextureOffset / @ref TextureOffsetLayer (instanced)
 </td>
 <td>
 * *Reserved* --- a single component \n
@@ -420,8 +418,9 @@ template<UnsignedInt dimensions> struct GenericGL {
      * @brief (Instanced) texture offset
      * @m_since{2020,06}
      *
-     * @ref Magnum::Vector2 "Vector2". Currently doesn't have a corresponding
-     * @ref Trade::MeshAttribute.
+     * @ref Magnum::Vector2 "Vector2". Use either this or the
+     * @ref TextureOffsetLayer attribute. Currently doesn't have a
+     * corresponding @ref Trade::MeshAttribute.
      * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
      * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
      *      @gl_extension{EXT,instanced_arrays} or
@@ -430,6 +429,22 @@ template<UnsignedInt dimensions> struct GenericGL {
      *      in WebGL 1.0.
      */
     typedef GL::Attribute<15, Vector2> TextureOffset;
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /**
+     * @brief (Instanced) texture offset and layer
+     * @m_since_latest
+     *
+     * @ref Magnum::Vector3 "Vector3", with the last component interpreted as
+     * an integer. Use either this or the @ref TextureOffset attribute.
+     * Currently doesn't have a corresponding @ref Trade::MeshAttribute.
+     * @requires_gl33 Extension @gl_extension{EXT,texture_array} and
+     *      @gl_extension{ARB,instanced_arrays}
+     * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+     * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+     */
+    typedef GL::Attribute<15, Vector3> TextureOffsetLayer;
+    #endif
 };
 #endif
 
@@ -462,6 +477,9 @@ struct BaseGenericGL {
     #endif
 
     typedef GL::Attribute<15, Vector2> TextureOffset;
+    #ifndef MAGNUM_TARGET_GLES2
+    typedef GL::Attribute<15, Vector3> TextureOffsetLayer;
+    #endif
 };
 
 template<> struct GenericGL<2>: BaseGenericGL {
