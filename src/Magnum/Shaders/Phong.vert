@@ -224,8 +224,6 @@ in mediump vec3 bitangent;
 layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
 #endif
 in mediump vec2 textureCoordinates;
-
-out mediump vec2 interpolatedTextureCoordinates;
 #endif
 
 #ifdef VERTEX_COLOR
@@ -233,8 +231,6 @@ out mediump vec2 interpolatedTextureCoordinates;
 layout(location = COLOR_ATTRIBUTE_LOCATION)
 #endif
 in lowp vec4 vertexColor;
-
-out lowp vec4 interpolatedVertexColor;
 #endif
 
 #ifdef INSTANCED_OBJECT_ID
@@ -242,8 +238,6 @@ out lowp vec4 interpolatedVertexColor;
 layout(location = OBJECT_ID_ATTRIBUTE_LOCATION)
 #endif
 in highp uint instanceObjectId;
-
-flat out highp uint interpolatedInstanceObjectId;
 #endif
 
 #ifdef INSTANCED_TRANSFORMATION
@@ -266,6 +260,18 @@ in mediump vec2 instancedTextureOffset;
 #endif
 
 /* Outputs */
+
+#ifdef TEXTURED
+out mediump vec2 interpolatedTextureCoordinates;
+#endif
+
+#ifdef VERTEX_COLOR
+out lowp vec4 interpolatedVertexColor;
+#endif
+
+#ifdef INSTANCED_OBJECT_ID
+flat out highp uint interpolatedInstanceObjectId;
+#endif
 
 #if LIGHT_COUNT
 out mediump vec3 transformedNormal;
