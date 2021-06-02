@@ -1331,6 +1331,17 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          */
 
         /**
+         * @brief Bind an ambient texture
+         * @return Reference to self (for method chaining)
+         *
+         * Expects that the shader was created with @ref Flag::AmbientTexture
+         * enabled.
+         * @see @ref bindTextures(), @ref setAmbientColor(),
+         *      @ref Shaders-PhongGL-lights-ambient
+         */
+        PhongGL& bindAmbientTexture(GL::Texture2D& texture);
+
+        /**
          * @brief Bind a diffuse texture
          * @return Reference to self (for method chaining)
          *
@@ -1342,15 +1353,15 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& bindDiffuseTexture(GL::Texture2D& texture);
 
         /**
-         * @brief Bind an ambient texture
+         * @brief Bind a specular texture
          * @return Reference to self (for method chaining)
          *
-         * Expects that the shader was created with @ref Flag::AmbientTexture
-         * enabled.
-         * @see @ref bindTextures(), @ref setAmbientColor(),
-         *      @ref Shaders-PhongGL-lights-ambient
+         * Expects that the shader was created with @ref Flag::SpecularTexture
+         * enabled. If @ref lightCount() is zero, this function is a no-op, as
+         * specular color doesn't contribute to the output in that case.
+         * @see @ref bindTextures(), @ref setSpecularColor()
          */
-        PhongGL& bindAmbientTexture(GL::Texture2D& texture);
+        PhongGL& bindSpecularTexture(GL::Texture2D& texture);
 
         /**
          * @brief Bind a normal texture
@@ -1365,17 +1376,6 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *      @ref bindTextures(), @ref setNormalTextureScale()
          */
         PhongGL& bindNormalTexture(GL::Texture2D& texture);
-
-        /**
-         * @brief Bind a specular texture
-         * @return Reference to self (for method chaining)
-         *
-         * Expects that the shader was created with @ref Flag::SpecularTexture
-         * enabled. If @ref lightCount() is zero, this function is a no-op, as
-         * specular color doesn't contribute to the output in that case.
-         * @see @ref bindTextures(), @ref setSpecularColor()
-         */
-        PhongGL& bindSpecularTexture(GL::Texture2D& texture);
 
         /**
          * @brief Bind textures
