@@ -55,6 +55,7 @@
 #include "Magnum/Trade/MeshData.h"
 
 #ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/TextureArray.h"
 #include "Magnum/Shaders/DistanceFieldVector.h"
 #include "Magnum/Shaders/Flat.h"
 #include "Magnum/Shaders/Generic.h"
@@ -117,6 +118,9 @@ struct ShadersGLBenchmark: GL::OpenGLTester {
         GL::Mesh _mesh, _meshInstanced, _meshDuplicated;
 
         GL::Texture2D _textureWhite, _textureBlue;
+        #ifndef MAGNUM_TARGET_GLES2
+        GL::Texture2DArray _textureWhiteArray, _textureBlueArray;
+        #endif
 };
 
 using namespace Math::Literals;
@@ -138,6 +142,9 @@ const struct {
     {"object ID", FlatGL2D::Flag::ObjectId, 1, 1},
     #endif
     {"textured", FlatGL2D::Flag::Textured, 1, 1},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"texture array", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays, 1, 1},
+    #endif
     {"textured + alpha mask", FlatGL2D::Flag::Textured|FlatGL2D::Flag::AlphaMask, 1, 1},
     {"texture transformation", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1, 1},
     {"instanced transformation", FlatGL2D::Flag::InstancedTransformation, 1, 1},
@@ -149,6 +156,7 @@ const struct {
     #ifndef MAGNUM_TARGET_GLES2
     {"UBO single", FlatGL2D::Flag::UniformBuffers, 1, 1},
     {"UBO single, texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1, 1},
+    {"UBO single, texture array transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation, 1, 1},
     {"UBO multi", FlatGL2D::Flag::UniformBuffers, 32, 128},
     {"multidraw", FlatGL2D::Flag::MultiDraw, 32, 128},
     #endif
@@ -168,6 +176,9 @@ const struct {
     #endif
     {"diffuse texture", PhongGL::Flag::DiffuseTexture, 1, 1, 1},
     {"ADS textures", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1, 1, 1},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"ADS texture arrays", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays, 1, 1, 1},
+    #endif
     {"ADS textures + alpha mask", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::AlphaMask, 1, 1, 1},
     {"ADS textures + transformation", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1},
     {"normal texture", PhongGL::Flag::NormalTexture, 1, 1, 1},
@@ -183,6 +194,7 @@ const struct {
     {"UBO single, zero lights", PhongGL::Flag::UniformBuffers, 0, 1, 1},
     {"UBO single five lights", PhongGL::Flag::UniformBuffers, 5, 1, 1},
     {"UBO single, ADS textures + transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1},
+    {"UBO single, ADS texture arrays + transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1, 1, 1},
     {"UBO multi, one light", PhongGL::Flag::UniformBuffers, 1, 32, 128},
     {"multidraw, one light", PhongGL::Flag::MultiDraw, 1, 32, 128},
     #endif
@@ -452,6 +464,13 @@ ShadersGLBenchmark::ShadersGLBenchmark(): _framebuffer{{{}, RenderSize}} {
                 #endif
                 , {1, 1})
             .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, white});
+        #ifndef MAGNUM_TARGET_GLES2
+        _textureWhiteArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::RGBA8, {1, 1, 1})
+            .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, white});
+        #endif
     } {
         const Color4ub blue[1] { 0x0000ffff_rgba };
         _textureBlue.setMinificationFilter(GL::SamplerFilter::Linear)
@@ -465,6 +484,13 @@ ShadersGLBenchmark::ShadersGLBenchmark(): _framebuffer{{{}, RenderSize}} {
                 #endif
                 , {1, 1})
             .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, blue});
+        #ifndef MAGNUM_TARGET_GLES2
+        _textureBlueArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::RGBA8, {1, 1, 1})
+            .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, blue});
+        #endif
     }
 
     /* Load the plugins directly from the build tree. Otherwise they're either
@@ -569,8 +595,16 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::flat() {
         if(data.flags >= FlatGL2D::Flag::AlphaMask)
             shader.setAlphaMask(0.0f);
     }
-    if(data.flags >= FlatGL2D::Flag::Textured)
-        shader.bindTexture(_textureWhite);
+    if(data.flags >= FlatGL2D::Flag::Textured) {
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.flags & FlatGL2D::Flag::TextureArrays) {
+            shader.bindTexture(_textureWhiteArray);
+        } else
+        #endif
+        {
+            shader.bindTexture(_textureWhite);
+        }
+    }
 
     GL::Mesh* mesh;
     /* InstancedTextureOffset is a superset of TextureTransformation, so
@@ -685,14 +719,28 @@ void ShadersGLBenchmark::phong() {
         if(data.flags >= PhongGL::Flag::AlphaMask)
             shader.setAlphaMask(0.0f);
     }
-    if(data.flags >= PhongGL::Flag::AmbientTexture)
-        shader.bindAmbientTexture(_textureWhite);
-    if(data.flags >= PhongGL::Flag::DiffuseTexture)
-        shader.bindDiffuseTexture(_textureWhite);
-    if(data.flags >= PhongGL::Flag::SpecularTexture)
-        shader.bindSpecularTexture(_textureWhite);
-    if(data.flags >= PhongGL::Flag::NormalTexture)
-        shader.bindNormalTexture(_textureBlue);
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags & PhongGL::Flag::TextureArrays) {
+        if(data.flags >= PhongGL::Flag::AmbientTexture)
+            shader.bindAmbientTexture(_textureWhiteArray);
+        if(data.flags >= PhongGL::Flag::DiffuseTexture)
+            shader.bindDiffuseTexture(_textureWhiteArray);
+        if(data.flags >= PhongGL::Flag::SpecularTexture)
+            shader.bindSpecularTexture(_textureWhiteArray);
+        if(data.flags >= PhongGL::Flag::NormalTexture)
+            shader.bindNormalTexture(_textureBlueArray);
+    } else
+    #endif
+    {
+        if(data.flags >= PhongGL::Flag::AmbientTexture)
+            shader.bindAmbientTexture(_textureWhite);
+        if(data.flags >= PhongGL::Flag::DiffuseTexture)
+            shader.bindDiffuseTexture(_textureWhite);
+        if(data.flags >= PhongGL::Flag::SpecularTexture)
+            shader.bindSpecularTexture(_textureWhite);
+        if(data.flags >= PhongGL::Flag::NormalTexture)
+            shader.bindNormalTexture(_textureBlue);
+    }
 
     GL::Mesh* mesh;
     /* InstancedTextureOffset is a superset of TextureTransformation, so
