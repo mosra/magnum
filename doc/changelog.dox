@@ -228,6 +228,15 @@ See also:
 
 @subsubsection changelog-latest-changes-gl GL library
 
+-   @ref GL::AbstractShaderProgram::draw(),
+    @relativeref{GL::AbstractShaderProgram,drawTransformFeedback()} and
+    @relativeref{GL::AbstractShaderProgram,dispatchCompute()} APIs now return
+    a reference to self and all subclasses in @ref Shaders return a subclass
+    reference from these. The functions used to @cpp void @ce as that made more
+    sense in the classic workflow where a large set of uniforms had to be set
+    prior to every draw, however with the new multidraw workflows that's no
+    longer the case and the inability to chain draw calls proved to be
+    annoying.
 -   The @ref GL::Context class got significantly optimized in terms of compile
     time, header size and runtime as well, significantly reducing the amount of
     allocations done at startup.

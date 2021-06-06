@@ -269,11 +269,32 @@ enum: UnsignedInt {
 /* [AbstractShaderProgram-output-attributes] */
 
 #if !defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-/* [AbstractShaderProgram-hide-irrelevant] */
+/* [AbstractShaderProgram-return-hide-irrelevant] */
+public:
+    MyShader& draw(GL::Mesh& mesh) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
+    }
+    MyShader& draw(GL::Mesh&& mesh) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
+    }
+    MyShader& draw(GL::MeshView& mesh) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
+    }
+    MyShader& draw(GL::MeshView&& mesh) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
+    }
+    /* Omit these if the shader is not ready for multidraw */
+    MyShader& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(meshes));
+    }
+    MyShader& draw(std::initializer_list<Containers::Reference<GL::MeshView>> meshes) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(meshes));
+    }
+
 private:
     using GL::AbstractShaderProgram::drawTransformFeedback;
     using GL::AbstractShaderProgram::dispatchCompute;
-/* [AbstractShaderProgram-hide-irrelevant] */
+/* [AbstractShaderProgram-return-hide-irrelevant] */
 public:
 #endif
 

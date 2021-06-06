@@ -595,6 +595,28 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @}
          */
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MeshVisualizerGL2D& draw(GL::Mesh& mesh) {
+            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        MeshVisualizerGL2D& draw(GL::Mesh&& mesh) {
+            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        MeshVisualizerGL2D& draw(GL::MeshView& mesh) {
+            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        MeshVisualizerGL2D& draw(GL::MeshView&& mesh) {
+            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        MeshVisualizerGL2D& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
+            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(meshes));
+        }
+        MeshVisualizerGL2D& draw(std::initializer_list<Containers::Reference<GL::MeshView>> meshes) {
+            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(meshes));
+        }
+        #endif
+
     private:
         Int _transformationProjectionMatrixUniform{6};
 };
@@ -1573,6 +1595,28 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         /**
          * @}
          */
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MeshVisualizerGL3D& draw(GL::Mesh& mesh) {
+            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        MeshVisualizerGL3D& draw(GL::Mesh&& mesh) {
+            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        MeshVisualizerGL3D& draw(GL::MeshView& mesh) {
+            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        MeshVisualizerGL3D& draw(GL::MeshView&& mesh) {
+            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        MeshVisualizerGL3D& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
+            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(meshes));
+        }
+        MeshVisualizerGL3D& draw(std::initializer_list<Containers::Reference<GL::MeshView>> meshes) {
+            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(meshes));
+        }
+        #endif
 
     private:
         Int _transformationMatrixUniform{6},

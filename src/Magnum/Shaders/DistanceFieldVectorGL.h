@@ -531,6 +531,28 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @}
          */
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        DistanceFieldVectorGL<dimensions>& draw(GL::Mesh& mesh) {
+            return static_cast<DistanceFieldVectorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        DistanceFieldVectorGL<dimensions>& draw(GL::Mesh&& mesh) {
+            return static_cast<DistanceFieldVectorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        DistanceFieldVectorGL<dimensions>& draw(GL::MeshView& mesh) {
+            return static_cast<DistanceFieldVectorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        DistanceFieldVectorGL<dimensions>& draw(GL::MeshView&& mesh) {
+            return static_cast<DistanceFieldVectorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        DistanceFieldVectorGL<dimensions>& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
+            return static_cast<DistanceFieldVectorGL<dimensions>&>(GL::AbstractShaderProgram::draw(meshes));
+        }
+        DistanceFieldVectorGL<dimensions>& draw(std::initializer_list<Containers::Reference<GL::MeshView>> meshes) {
+            return static_cast<DistanceFieldVectorGL<dimensions>&>(GL::AbstractShaderProgram::draw(meshes));
+        }
+        #endif
+
     private:
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES

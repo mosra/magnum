@@ -87,12 +87,14 @@ functions and properties:
 
     @snippet MagnumGL.cpp AbstractShaderProgram-xfb
 </li>
-<li>And optionally, **hiding irrelevant draw/dispatch functions** to prevent
-    users from accidentally calling @ref draw() on compute shaders,
-    @ref drawTransformFeedback() on shaders that don't have transform feedback
-    or @ref dispatchCompute() on shaders that aren't compute. For example:
+<li>And optionally, **return derived type from relevant draw/dispatch functions**
+    to make it possible for users to easily chain draw calls, and on the other
+    hand **hide the irrelevant APIs** to prevent users from accidentally
+    calling @ref draw() on compute shaders, @ref drawTransformFeedback() on
+    shaders that don't have transform feedback or @ref dispatchCompute() on
+    shaders that aren't compute. For example:
 
-    @snippet MagnumGL.cpp AbstractShaderProgram-hide-irrelevant
+    @snippet MagnumGL.cpp AbstractShaderProgram-return-hide-irrelevant
 </ul>
 
 @subsection GL-AbstractShaderProgram-attribute-location Binding attribute and fragment data location
@@ -751,7 +753,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /**
          * @brief Draw a mesh
-         * @param mesh      Mesh to draw
+         * @return Reference to self (for method chaining)
          * @m_since{2020,06}
          *
          * Expects that @p mesh is compatible with this shader and is fully set
@@ -794,16 +796,19 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl Specifying base vertex for indexed meshes is not
          *      available in OpenGL ES or WebGL.
          */
-        void draw(Mesh& mesh);
+        AbstractShaderProgram& draw(Mesh& mesh);
 
         /**
          * @overload
          * @m_since{2020,06}
          */
-        void draw(Mesh&& mesh) { draw(mesh); }
+        AbstractShaderProgram& draw(Mesh&& mesh) {
+            return draw(mesh);
+        }
 
         /**
          * @brief Draw a mesh view
+         * @return Reference to self (for method chaining)
          * @m_since{2020,06}
          *
          * See @ref draw(Mesh&) for more information.
@@ -828,16 +833,19 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl Specifying base vertex for indexed meshes is not
          *      available in OpenGL ES or WebGL.
          */
-        void draw(MeshView& mesh);
+        AbstractShaderProgram& draw(MeshView& mesh);
 
         /**
          * @overload
          * @m_since{2020,06}
          */
-        void draw(MeshView&& mesh) { draw(mesh); }
+        AbstractShaderProgram& draw(MeshView&& mesh) {
+            return draw(mesh);
+        }
 
         /**
          * @brief Draw multiple meshes at once
+         * @return Reference to self (for method chaining)
          * @m_since{2020,06}
          *
          * On OpenGL ES, if neither @gl_extension{EXT,multi_draw_arrays} nor
@@ -872,13 +880,13 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      if the mesh is indexed and @ref MeshView::baseVertex() is not
          *      `0`
          */
-        void draw(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
+        AbstractShaderProgram& draw(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
 
         /**
          * @overload
          * @m_since{2020,06}
          */
-        void draw(std::initializer_list<Containers::Reference<MeshView>> meshes);
+        AbstractShaderProgram& draw(std::initializer_list<Containers::Reference<MeshView>> meshes);
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -886,6 +894,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @param mesh      Mesh to draw
          * @param xfb       Transform feedback to use for vertex count
          * @param stream    Transform feedback stream ID
+         * @return Reference to self (for method chaining)
          * @m_since{2020,06}
          *
          * Expects that @p mesh is compatible with this shader, is fully set up
@@ -911,10 +920,11 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl42 Extension @gl_extension{ARB,transform_feedback_instanced}
          *      if @ref Mesh::instanceCount() is more than `1`
          */
-        void drawTransformFeedback(Mesh& mesh, TransformFeedback& xfb, UnsignedInt stream = 0);
+        AbstractShaderProgram& drawTransformFeedback(Mesh& mesh, TransformFeedback& xfb, UnsignedInt stream = 0);
 
         /**
          * @brief Draw a mesh view with vertices coming out of transform feedback
+         * @return Reference to self (for method chaining)
          * @m_since{2020,06}
          *
          * Everything set by @ref MeshView::setCount(),
@@ -931,13 +941,14 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl42 Extension @gl_extension{ARB,transform_feedback_instanced}
          *      if @ref MeshView::instanceCount() is more than `1`
          */
-        void drawTransformFeedback(MeshView& mesh, TransformFeedback& xfb, UnsignedInt stream = 0);
+        AbstractShaderProgram& drawTransformFeedback(MeshView& mesh, TransformFeedback& xfb, UnsignedInt stream = 0);
         #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Dispatch compute
          * @param workgroupCount    Workgroup count in given dimension
+         * @return Reference to self (for method chaining)
          *
          * Valid only on programs with compute shader attached.
          * @see @fn_gl{DispatchCompute}
@@ -946,7 +957,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      and older.
          * @requires_gles Compute shaders are not available in WebGL.
          */
-        void dispatchCompute(const Vector3ui& workgroupCount);
+        AbstractShaderProgram& dispatchCompute(const Vector3ui& workgroupCount);
         #endif
 
     protected:

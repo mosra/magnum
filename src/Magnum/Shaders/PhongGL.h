@@ -1561,6 +1561,28 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @}
          */
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        PhongGL& draw(GL::Mesh& mesh) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        PhongGL& draw(GL::Mesh&& mesh) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        PhongGL& draw(GL::MeshView& mesh) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        PhongGL& draw(GL::MeshView&& mesh) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        PhongGL& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(meshes));
+        }
+        PhongGL& draw(std::initializer_list<Containers::Reference<GL::MeshView>> meshes) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(meshes));
+        }
+        #endif
+
     private:
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
