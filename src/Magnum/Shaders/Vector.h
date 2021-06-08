@@ -96,8 +96,9 @@ struct VectorDrawUniform {
      * array. Useful when an UBO with more than one material is supplied or in
      * a multi-draw scenario. Should be less than the material count passed to
      * the @ref VectorGL::VectorGL(Flags, UnsignedInt, UnsignedInt)
-     * constructor. Default value is @cpp 0 @ce, meaning the first material
-     * gets used.
+     * constructor, if material count is @cpp 1 @ce, this field is assumed to
+     * be @cpp 0 @ce and isn't even read by the shader. Default value is
+     * @cpp 0 @ce, meaning the first material gets used.
      */
 
     /* This field is an UnsignedInt in the shader and materialId is extracted

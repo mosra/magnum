@@ -339,7 +339,11 @@ void main() {
     #ifdef OBJECT_ID
     highp const uint objectId = draws[drawId].draw_objectId;
     #endif
+    #if MATERIAL_COUNT > 1
     mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
+    #else
+    #define materialId 0u
+    #endif
     lowp const vec4 ambientColor = materials[materialId].ambientColor;
     #if LIGHT_COUNT
     lowp const vec4 diffuseColor = materials[materialId].diffuseColor;

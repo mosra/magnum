@@ -144,7 +144,11 @@ out lowp vec4 fragmentColor;
 
 void main() {
     #ifdef UNIFORM_BUFFERS
+    #if MATERIAL_COUNT > 1
     mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
+    #else
+    #define materialId 0u
+    #endif
     lowp const float smoothness = materials[materialId].material_smoothness;
     lowp const vec4 color = materials[materialId].color;
     lowp const vec4 outlineColor = materials[materialId].outlineColor;

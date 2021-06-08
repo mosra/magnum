@@ -176,7 +176,11 @@ void main() {
     #ifdef OBJECT_ID
     highp const uint objectId = draws[drawId].draw_objectId;
     #endif
+    #if MATERIAL_COUNT > 1
     mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
+    #else
+    #define materialId 0u
+    #endif
     lowp const vec4 color = materials[materialId].color;
     #ifdef ALPHA_MASK
     lowp const float alphaMask = materials[materialId].material_alphaMask;
