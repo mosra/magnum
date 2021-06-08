@@ -132,7 +132,9 @@ layout(std140
     , binding = 1
     #endif
 ) uniform TransformationProjection {
-    highp mat3 transformationProjectionMatrices[DRAW_COUNT];
+    /* Can't be a mat3 because of ANGLE, see DrawUniform in Phong.vert for
+       details */
+    highp mat3x4 transformationProjectionMatrices[DRAW_COUNT];
 };
 #elif defined(THREE_DIMENSIONS)
 layout(std140
@@ -159,7 +161,8 @@ layout(std140
    always before any code. */
 struct DrawUniform {
     #ifdef THREE_DIMENSIONS
-    highp mat3 normalMatrix; /* actually mat3x4 */
+    /* Can't be a mat3 because of ANGLE, see Phong.vert for details */
+    highp mat3x4 normalMatrix;
     #elif !defined(TWO_DIMENSIONS)
     #error
     #endif
@@ -322,14 +325,14 @@ void main() {
     #endif
 
     #ifdef TWO_DIMENSIONS
-    highp const mat3 transformationProjectionMatrix = transformationProjectionMatrices[drawId];
+    highp const mat3 transformationProjectionMatrix = mat3(transformationProjectionMatrices[drawId]);
     #elif defined(THREE_DIMENSIONS)
     highp const mat4 transformationMatrix = transformationMatrices[drawId];
     #else
     #error
     #endif
     #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
-    mediump const mat3 normalMatrix = draws[drawId].normalMatrix;
+    mediump const mat3 normalMatrix = mat3(draws[drawId].normalMatrix);
     #endif
     mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
     lowp float colorMapOffset = materials[materialId].material_colorMapOffset;

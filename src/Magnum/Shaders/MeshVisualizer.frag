@@ -131,7 +131,8 @@ uniform highp uint drawOffset
    always before any code. */
 struct DrawUniform {
     #ifdef THREE_DIMENSIONS
-    highp mat3 normalMatrix; /* actually mat3x4 */
+    /* Can't be a mat3 because of ANGLE, see Phong.vert for details */
+    highp mat3x4 normalMatrix;
     #elif !defined(TWO_DIMENSIONS)
     #error
     #endif

@@ -130,7 +130,20 @@ uniform highp uint drawOffset
 /* Keep in sync with Phong.frag. Can't "outsource" to a common file because
    the #extension directive needs to be always before any code. */
 struct DrawUniform {
-    mediump mat3 normalMatrix; /* actually mat3x4 */
+    /* Of all drivers, I made the crucial mistake of expecting ANGLE to have
+       non-broken uniform packing. Of course everything including random phone
+       drivers worked, except ANGLE with a D3D backend, which blew up when
+       seeing `mat3` here. With all the coding guidelines, rules and automated
+       bullying from Clang Tidy in place over at Google, it seems the false
+       sense of security is so strong that they don't even bother testing what
+       they wrote. Or, how to code, the Google way:
+
+       1. Thoroughly document the packing rules and how the translation of
+          every GLSL type to the D3D equivalent is performed:
+          https://chromium.googlesource.com/angle/angle/+/refs/heads/main/src/libANGLE/renderer/d3d/d3d11/UniformBlockToStructuredBufferTranslation.md#std140-limitation
+       2. Forget to actually implement and test the damn thing.
+    */
+    mediump mat3x4 normalMatrix;
     highp uvec4 materialIdReservedObjectIdLightOffsetLightCount;
     #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCount.x
     #define draw_objectId materialIdReservedObjectIdLightOffsetLightCount.y
@@ -336,7 +349,7 @@ void main() {
 
     highp const mat4 transformationMatrix = transformationMatrices[drawId];
     #if LIGHT_COUNT
-    mediump const mat3 normalMatrix = draws[drawId].normalMatrix;
+    mediump const mat3 normalMatrix = mat3(draws[drawId].normalMatrix);
     #endif
     #ifdef TEXTURE_TRANSFORMATION
     mediump const mat3 textureMatrix = mat3(textureTransformations[drawId].rotationScaling.xy, 0.0, textureTransformations[drawId].rotationScaling.zw, 0.0, textureTransformations[drawId].textureTransformation_offset, 1.0);

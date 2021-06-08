@@ -167,7 +167,8 @@ uniform highp uint drawOffset
 /* Keep in sync with Phong.vert. Can't "outsource" to a common file because
    the #extension directive needs to be always before any code. */
 struct DrawUniform {
-    mediump mat3 normalMatrix; /* actually mat3x4 */
+    /* Can't be a mat3 because of ANGLE, see Phong.vert for details */
+    mediump mat3x4 normalMatrix;
     highp uvec4 materialIdReservedObjectIdLightOffsetLightCount;
     #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCount.x
     #define draw_objectId materialIdReservedObjectIdLightOffsetLightCount.y

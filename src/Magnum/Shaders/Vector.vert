@@ -96,7 +96,9 @@ layout(std140
 ) uniform TransformationProjection {
     highp
         #ifdef TWO_DIMENSIONS
-        mat3
+        /* Can't be a mat3 because of ANGLE, see DrawUniform in Phong.vert for
+           details */
+        mat3x4
         #elif defined(THREE_DIMENSIONS)
         mat4
         #else
@@ -162,15 +164,13 @@ void main() {
     #define drawId drawOffset
     #endif
 
-    highp const
-        #ifdef TWO_DIMENSIONS
-        mat3
-        #elif defined(THREE_DIMENSIONS)
-        mat4
-        #else
-        #error
-        #endif
-        transformationProjectionMatrix = transformationProjectionMatrices[drawId];
+    #ifdef TWO_DIMENSIONS
+    highp const mat3 transformationProjectionMatrix = mat3(transformationProjectionMatrices[drawId]);
+    #elif defined(THREE_DIMENSIONS)
+    highp const mat4 transformationProjectionMatrix = transformationProjectionMatrices[drawId];
+    #else
+    #error
+    #endif
     #ifdef TEXTURE_TRANSFORMATION
     mediump const mat3 textureMatrix = mat3(textureTransformations[drawId].rotationScaling.xy, 0.0, textureTransformations[drawId].rotationScaling.zw, 0.0, textureTransformations[drawId].textureTransformation_offset, 1.0);
     #endif
