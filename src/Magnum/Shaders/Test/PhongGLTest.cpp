@@ -1474,6 +1474,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderDefaults() {
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
         #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
     }
     #endif
 
@@ -1544,6 +1549,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderColored() {
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
         #endif
     }
     #endif
@@ -1654,6 +1664,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
         #endif
     }
     #endif
@@ -1836,6 +1851,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
         #endif
     }
     #endif
@@ -2065,6 +2085,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
         #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
     }
     #endif
 
@@ -2253,6 +2278,11 @@ template<class T, PhongGL::Flag flag> void PhongGLTest::renderVertexColor() {
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
         #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
     } else
     #endif
     {
@@ -2375,6 +2405,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
         #endif
     }
     #endif
@@ -2522,6 +2557,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
         #endif
     }
     #endif
@@ -2703,6 +2743,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
         #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
     }
     #endif
 
@@ -2813,6 +2858,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
         #endif
     }
     #endif
@@ -3172,6 +3222,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
         #endif
     }
     #endif
@@ -3552,6 +3607,11 @@ void PhongGLTest::renderMulti() {
             CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
         #endif
     }
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
 
     PhongGL shader{PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId|data.flags, data.lightCount, data.materialCount, data.drawCount};
 

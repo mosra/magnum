@@ -793,6 +793,11 @@ void VertexColorGLTest::renderMulti2D() {
         #endif
     }
 
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
+
     /* Circle is a fan, plane is a strip, make it indexed first */
     Trade::MeshData circleData = MeshTools::generateIndices(Primitives::circle2DSolid(32));
     Trade::MeshData squareData = MeshTools::generateIndices(Primitives::squareSolid());
@@ -915,6 +920,11 @@ void VertexColorGLTest::renderMulti3D() {
             CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
         #endif
     }
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32);
     /* Plane is a strip, make it indexed first */

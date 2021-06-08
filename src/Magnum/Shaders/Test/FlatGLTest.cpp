@@ -3015,6 +3015,11 @@ void FlatGLTest::renderMulti2D() {
         #endif
     }
 
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
+
     FlatGL2D shader{FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId|data.flags, data.materialCount, data.drawCount};
 
     GL::Texture2D texture{NoCreate};
@@ -3306,6 +3311,11 @@ void FlatGLTest::renderMulti3D() {
             CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
         #endif
     }
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
 
     FlatGL3D shader{FlatGL3D::Flag::UniformBuffers|FlatGL3D::Flag::ObjectId|data.flags, data.materialCount, data.drawCount};
 

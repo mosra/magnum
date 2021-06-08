@@ -1036,6 +1036,11 @@ void VectorGLTest::renderMulti2D() {
         #endif
     }
 
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1231,6 +1236,11 @@ void VectorGLTest::renderMulti3D() {
             CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
         #endif
     }
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
