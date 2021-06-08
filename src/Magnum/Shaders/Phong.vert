@@ -114,6 +114,7 @@ uniform highp vec4 lightPositions[LIGHT_COUNT]
 /* Uniform buffers */
 
 #else
+#if DRAW_COUNT > 1
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -122,6 +123,9 @@ uniform highp uint drawOffset
     = 0u
     #endif
     ;
+#else
+#define drawOffset 0u
+#endif
 
 /* Keep in sync with Phong.frag. Can't "outsource" to a common file because
    the #extension directive needs to be always before any code. */

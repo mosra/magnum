@@ -164,7 +164,7 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
     {
         #ifndef MAGNUM_TARGET_GLES2
         if(flags >= Flag::UniformBuffers) {
-            _drawOffsetUniform = uniformLocation("drawOffset");
+            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
         #endif
         {
@@ -257,7 +257,7 @@ template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::set
         "Shaders::VectorGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
     CORRADE_ASSERT(offset < _drawCount,
         "Shaders::VectorGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
-    setUniform(_drawOffsetUniform, offset);
+    if(_drawCount > 1) setUniform(_drawOffsetUniform, offset);
     return *this;
 }
 

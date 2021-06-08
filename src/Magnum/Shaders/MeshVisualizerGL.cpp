@@ -263,7 +263,7 @@ MeshVisualizerGLBase& MeshVisualizerGLBase::setDrawOffset(const UnsignedInt offs
         "Shaders::MeshVisualizerGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
     CORRADE_ASSERT(offset < _drawCount,
         "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
-    setUniform(_drawOffsetUniform, offset);
+    if(_drawCount > 1) setUniform(_drawOffsetUniform, offset);
     return *this;
 }
 
@@ -426,7 +426,7 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags
 
         #ifndef MAGNUM_TARGET_GLES2
         if(flags >= Flag::UniformBuffers) {
-            _drawOffsetUniform = uniformLocation("drawOffset");
+            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
         #endif
         {
@@ -757,7 +757,7 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
 
         #ifndef MAGNUM_TARGET_GLES2
         if(flags >= Flag::UniformBuffers) {
-            _drawOffsetUniform = uniformLocation("drawOffset");
+            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
         #endif
         {

@@ -54,6 +54,7 @@ uniform lowp vec4 color
 
 #else
 #ifndef MULTI_DRAW
+#if DRAW_COUNT > 1
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -62,6 +63,9 @@ uniform highp uint drawOffset
     = 0u
     #endif
     ;
+#else
+#define drawOffset 0u
+#endif
 #define drawId drawOffset
 #endif
 

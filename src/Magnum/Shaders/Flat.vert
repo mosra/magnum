@@ -92,6 +92,7 @@ uniform highp uint textureLayer; /* defaults to zero */
 /* Uniform buffers */
 
 #else
+#if DRAW_COUNT > 1
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -100,6 +101,9 @@ uniform highp uint drawOffset
     = 0u
     #endif
     ;
+#else
+#define drawOffset 0u
+#endif
 
 layout(std140
     #ifdef EXPLICIT_BINDING

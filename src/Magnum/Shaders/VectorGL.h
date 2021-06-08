@@ -401,7 +401,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * @ref bindDrawBuffer() and @ref bindTextureTransformationBuffer()
          * should be used for current draw. Expects that
          * @ref Flag::UniformBuffers is set and @p offset is less than
-         * @ref drawCount(). Initial value is @cpp 0 @ce.
+         * @ref drawCount(). Initial value is @cpp 0 @ce, if @ref drawCount()
+         * is @cpp 1 @ce, the function is a no-op as the shader assumes draw
+         * offset to be always zero.
          *
          * If @ref Flag::MultiDraw is set, @glsl gl_DrawID @ce is added to this
          * value, which makes each draw submitted via

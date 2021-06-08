@@ -216,7 +216,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     {
         #ifndef MAGNUM_TARGET_GLES2
         if(flags >= Flag::UniformBuffers) {
-            _drawOffsetUniform = uniformLocation("drawOffset");
+            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
         #endif
         {
@@ -342,7 +342,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setDraw
         "Shaders::FlatGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
     CORRADE_ASSERT(offset < _drawCount,
         "Shaders::FlatGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
-    setUniform(_drawOffsetUniform, offset);
+    if(_drawCount > 1) setUniform(_drawOffsetUniform, offset);
     return *this;
 }
 
