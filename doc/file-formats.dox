@@ -28,6 +28,7 @@ namespace Magnum {
 @brief Support tables for widely used image, scene, audio and font formats
 
 @tableofcontents
+@m_footernavigation
 
 The @ref Trade::AnyImageImporter "AnyImageImporter",
 @ref Trade::AnySceneImporter "AnySceneImporter",
