@@ -586,7 +586,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         static Int maxCombinedShaderOutputResources();
 
         /**
-         * @brief Max supported shader storage block size
+         * @brief Max supported shader storage block size in bytes
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither extension @gl_extension{ARB,shader_storage_buffer_object}
@@ -600,7 +600,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 
         /**
-         * @brief Max supported uniform block size
+         * @brief Max supported uniform block size in bytes
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @gl_extension{ARB,uniform_buffer_object}
