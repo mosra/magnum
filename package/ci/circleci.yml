@@ -16,9 +16,9 @@ executors:
   ubuntu-18_04:
     docker:
     - image: ubuntu:bionic-20200921
-  xcode-10_3:
+  xcode-11_2:
     macos:
-      xcode: 10.3.0
+      xcode: 11.2.1
   xcode-11_6:
     macos:
       xcode: 11.6.0
@@ -392,8 +392,9 @@ jobs:
 
   macos-gl:
     # Molten-vk isn't in (non-updated) Homebrew on the 9.4 or 10.0/1/2 image,
-    # have to use 10.3 instead
-    executor: xcode-10_3
+    # have to use 10.3 instead; since 2021-06-08 it refuses to work on 10.14 so
+    # have to use 11.2 at least
+    executor: xcode-11_2
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
@@ -425,8 +426,9 @@ jobs:
 
   macos-static:
     # Molten-vk isn't in (non-updated) Homebrew on the 9.4 or 10.0/1/2 image,
-    # have to use 10.3 instead
-    executor: xcode-10_3
+    # have to use 10.3 instead; since 2021-06-08 it refuses to work on 10.14 so
+    # have to use 11.2 at least
+    executor: xcode-11_2
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       BUILD_STATIC: "ON"
