@@ -188,6 +188,9 @@ struct PhongDrawUniform {
      * References the first light in the @ref PhongLightUniform array. Should
      * be less than the light count passed to @ref PhongGL constructor. Default
      * value is @cpp 0 @ce.
+     *
+     * Used only if @ref PhongGL::Flag::LightCulling is enabled, otherwise
+     * light offset is implicitly @cpp 0 @ce.
      */
     UnsignedInt lightOffset;
 
@@ -198,6 +201,9 @@ struct PhongDrawUniform {
      * @ref PhongLightUniform array. Gets clamped by the shader so it's
      * together with @ref lightOffset not larger than the light count passed to
      * @ref PhongGL constructor. Default value is @cpp 0xffffffffu @ce.
+     *
+     * Used only if @ref PhongGL::Flag::LightCulling is enabled, otherwise
+     * light count is implicitly @ref PhongGL::lightCount().
      */
     UnsignedInt lightCount;
 };
@@ -307,9 +313,9 @@ struct PhongMaterialUniform {
      *
      * Default value is @cpp 0xffffffff_rgbaf @ce.
      *
-     * Used only if @ref PhongDrawUniform::lightCount is not zero, ignored
-     * otherwise. If @ref PhongGL::Flag::VertexColor is enabled, the color is
-     * multiplied with a color coming from the @ref PhongGL::Color3 /
+     * Used only if the effective light count for given draw is not zero,
+     * ignored otherwise. If @ref PhongGL::Flag::VertexColor is enabled, the
+     * color is multiplied with a color coming from the @ref PhongGL::Color3 /
      * @ref PhongGL::Color4 attribute.
      * @see @ref PhongGL::setDiffuseColor()
      */
@@ -320,8 +326,8 @@ struct PhongMaterialUniform {
      *
      * Default value is @cpp 0xffffff00_rgbaf @ce.
      *
-     * Used only if @ref PhongDrawUniform::lightCount is not zero, ignored
-     * otherwise.
+     * Used only if the effective light count for given draw is not zero,
+     * ignored otherwise.
      * @see @ref PhongGL::setSpecularColor()
      */
     Color4 specularColor;
@@ -333,8 +339,8 @@ struct PhongMaterialUniform {
      * meaning the normal texture is not changed in any way; a value of
      * @cpp 0.0f @ce disables the normal texture effect altogether.
      *
-     * Used only if @ref PhongGL::Flag::NormalTexture is enabled and
-     * @ref PhongDrawUniform::lightCount is not zero, ignored otherwise.
+     * Used only if @ref PhongGL::Flag::NormalTexture is enabled and the
+     * effective light count for given draw is not zero, ignored otherwise.
      * @see @ref PhongGL::setNormalTextureScale()
      */
     Float normalTextureScale;
@@ -345,8 +351,8 @@ struct PhongMaterialUniform {
      * The larger value, the harder surface (smaller specular highlight).
      * Default value is @cpp 80.0f @ce.
      *
-     * Used only if @ref PhongDrawUniform::lightCount is not zero, ignored
-     * otherwise.
+     * Used only if the effective light count for given draw is not zero,
+     * ignored otherwise.
      * @see @ref PhongGL::setShininess()
      */
     Float shininess;
@@ -378,8 +384,10 @@ struct PhongMaterialUniform {
 @brief Light parameters for Phong shaders
 @m_since_latest
 
-Describes light properties referenced by the @ref PhongDrawUniform::lightOffset
-and @ref PhongDrawUniform::lightCount range.
+Describes light properties for each light used by the shader, either all
+@ref PhongGL::lightCount() or the subrange referenced by the
+@ref PhongDrawUniform::lightOffset and @ref PhongDrawUniform::lightCount range
+if @ref PhongGL::Flag::LightCulling is enabled.
 @see @ref PhongGL::bindLightBuffer()
 */
 struct PhongLightUniform {

@@ -147,6 +147,9 @@ struct PhongGLTest: GL::OpenGLTester {
     void renderLightsSetOneByOne();
     /* This tests just the algorithm, not affected by UBOs */
     void renderLowLightAngle();
+    #ifndef MAGNUM_TARGET_GLES2
+    void renderLightCulling();
+    #endif
 
     template<PhongGL::Flag flag = PhongGL::Flag{}> void renderZeroLights();
 
@@ -253,6 +256,7 @@ constexpr struct {
     /* SwiftShader has 256 uniform vectors at most, per-3D-draw is 4+4,
        per-material 4, per-light 4 plus 4 for projection */
     {"multiple lights, materials, draws", PhongGL::Flag::UniformBuffers, 8, 8, 24},
+    {"multiple lights, materials, draws + light culling", PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling, 8, 8, 24},
     {"zero lights", PhongGL::Flag::UniformBuffers, 0, 16, 24},
     {"ambient + diffuse + specular texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1, 1, 1},
     {"ambient + diffuse + specular texture + texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1},
@@ -261,7 +265,7 @@ constexpr struct {
     {"normal texture + separate bitangents", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1, 1, 1},
     {"alpha mask", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AlphaMask, 1, 1, 1},
     {"object ID", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId, 1, 1, 1},
-    {"multidraw with all the things", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId, 8, 16, 24}
+    {"multidraw with all the things", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::LightCulling, 8, 16, 24}
 };
 #endif
 
@@ -294,7 +298,9 @@ constexpr struct {
     {"zero materials", PhongGL::Flag::UniformBuffers, 1, 0, 1,
         "material count can't be zero"},
     {"texture arrays but no transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays, 1, 1, 1,
-        "texture arrays require texture transformation enabled as well if uniform buffers are used"}
+        "texture arrays require texture transformation enabled as well if uniform buffers are used"},
+    {"light culling but no UBOs", PhongGL::Flag::LightCulling, 1, 1, 1,
+        "light culling requires uniform buffers to be enabled"}
 };
 #endif
 
@@ -899,8 +905,13 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addTests({&PhongGLTest::renderLightsSetOneByOne,
-              &PhongGLTest::renderLowLightAngle},
+    addTests({
+        &PhongGLTest::renderLightsSetOneByOne,
+        &PhongGLTest::renderLowLightAngle,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderLightCulling
+        #endif
+        },
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
@@ -3044,6 +3055,80 @@ void PhongGLTest::renderLowLightAngle() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::renderLightCulling() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
+
+    GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
+
+    GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+        ProjectionUniform3D{}
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+    }};
+    GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+        TransformationUniform3D{}
+            .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
+    }};
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+        PhongDrawUniform{}
+            .setLightOffsetCount(57, 2)
+    }};
+    GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+        PhongMaterialUniform{}
+            .setAmbientColor(0x330033_rgbf)
+            .setDiffuseColor(0xccffcc_rgbf)
+            .setSpecularColor(0x6666ff_rgbf)
+    }};
+    /* Put one light into the first 32-bit component, one into the second to
+       test that both halves are checked correctly */
+    PhongLightUniform lights[64];
+    lights[57] = PhongLightUniform{}
+        .setPosition({-3.0f, -3.0f, 2.0f, 0.0f})
+        .setColor(0x993366_rgbf);
+    lights[58] = PhongLightUniform{}
+        .setPosition({3.0f, -3.0f, 2.0f, 0.0f})
+        .setColor(0x669933_rgbf);
+    GL::Buffer lightUniform{lights};
+
+    PhongGL shader{PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling, 64};
+    shader
+        .bindProjectionBuffer(projectionUniform)
+        .bindTransformationBuffer(transformationUniform)
+        .bindDrawBuffer(drawUniform)
+        .bindMaterialBuffer(materialUniform)
+        .bindLightBuffer(lightUniform)
+        .draw(sphere);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
+       and Apple A8 has bigger rounding differences. */
+    const Float maxThreshold = 8.34f, meanThreshold = 0.100f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 15.34f, meanThreshold = 3.33f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "PhongTestFiles/colored.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+#endif
+
 template<PhongGL::Flag flag> void PhongGLTest::renderZeroLights() {
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -3613,7 +3698,7 @@ void PhongGLTest::renderMulti() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
-    PhongGL shader{PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId|data.flags, data.lightCount, data.materialCount, data.drawCount};
+    PhongGL shader{PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId|PhongGL::Flag::LightCulling|data.flags, data.lightCount, data.materialCount, data.drawCount};
 
     GL::Texture2D diffuse{NoCreate};
     GL::Texture2DArray diffuseArray{NoCreate};

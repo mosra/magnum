@@ -197,7 +197,8 @@ const struct {
     {"UBO single, ADS texture arrays + transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1, 1, 1},
     {"UBO multi, one light", PhongGL::Flag::UniformBuffers, 1, 32, 128},
     {"multidraw, one light", PhongGL::Flag::MultiDraw, 1, 32, 128},
-    {"multidraw, 64 lights, five used", PhongGL::Flag::MultiDraw, 64, 32, 128},
+    {"multidraw, one light, light culling enabled", PhongGL::Flag::MultiDraw|PhongGL::Flag::LightCulling, 1, 32, 128},
+    {"multidraw, 64 lights, light culling enabled, five used", PhongGL::Flag::MultiDraw|PhongGL::Flag::LightCulling, 64, 32, 128},
     #endif
 };
 

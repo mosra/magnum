@@ -266,11 +266,12 @@ with one default light, would look like this:
 For a multidraw workflow enable @ref Flag::MultiDraw (and possibly
 @ref Flag::TextureArrays) and supply desired light, material and draw count in
 the @ref PhongGL(Flags, UnsignedInt, UnsignedInt, UnsignedInt) constructor. For
-every draw then specify material references and texture offsets/layers, it's
-also possible to perform per-draw light culling by supplying a subrange into
-the @ref PhongLightUniform array using @ref PhongDrawUniform::lightOffset and
-@relativeref{PhongDrawUniform,lightCount}. Besides that, the usage is similar
-for all shaders, see @ref shaders-usage-multidraw for an example.
+every draw then specify material references and texture offsets/layers. With
+@ref Flag::LightCulling it's also possible to perform per-draw light culling by
+supplying a subrange into the @ref PhongLightUniform array using
+@ref PhongDrawUniform::lightOffset and @relativeref{PhongDrawUniform,lightCount}.
+Besides that, the usage is similar for all shaders, see
+@ref shaders-usage-multidraw for an example.
 
 @requires_gl30 Extension @gl_extension{EXT,texture_array} for texture arrays.
 @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object} for uniform
@@ -689,7 +690,22 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
              * @m_since_latest
              */
-            TextureArrays = 1 << 14
+            TextureArrays = 1 << 14,
+
+            /**
+             * Enable light culling in uniform buffer workflows using the
+             * @ref PhongDrawUniform::lightOffset and
+             * @ref PhongDrawUniform::lightCount fields. If not enabled, all
+             * @ref lightCount() lights are used for every draw. Expects that
+             * @ref Flag::UniformBuffers is enabled as well.
+             * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+             * @requires_gles30 Uniform buffers are not available in OpenGL ES
+             *      2.0.
+             * @requires_webgl20 Uniform buffers are not available in WebGL
+             *      1.0.
+             * @m_since_latest
+             */
+            LightCulling = 1 << 15
             #endif
         };
 

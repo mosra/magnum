@@ -422,7 +422,7 @@ void main() {
     highp const vec3 cameraDirection = normalize(-transformedPosition);
 
     /* Add diffuse color for each light */
-    #ifndef UNIFORM_BUFFERS
+    #ifndef LIGHT_CULLING
     for(int i = 0; i < LIGHT_COUNT; ++i)
     #else
     for(uint i = 0u, actualLightCount = min(uint(LIGHT_COUNT), draws[drawId].draw_lightCount); i < actualLightCount; ++i)
@@ -432,21 +432,33 @@ void main() {
             #ifndef UNIFORM_BUFFERS
             lightColors[i]
             #else
-            lights[lightOffset + i].light_color
+            lights[
+                #ifdef LIGHT_CULLING
+                lightOffset +
+                #endif
+                i].light_color
             #endif
             ;
         lowp const vec3 lightSpecularColor =
             #ifndef UNIFORM_BUFFERS
             lightSpecularColors[i]
             #else
-            lights[lightOffset + i].light_specularColor
+            lights[
+                #ifdef LIGHT_CULLING
+                lightOffset +
+                #endif
+                i].light_specularColor
             #endif
             ;
         lowp const float lightRange =
             #ifndef UNIFORM_BUFFERS
             lightRanges[i]
             #else
-            lights[lightOffset + i].light_range
+            lights[
+                #ifdef LIGHT_CULLING
+                lightOffset +
+                #endif
+                i].light_range
             #endif
             ;
 
@@ -454,7 +466,11 @@ void main() {
             #ifndef UNIFORM_BUFFERS
             lightPositions[i]
             #else
-            lights[lightOffset + i].position
+            lights[
+                #ifdef LIGHT_CULLING
+                lightOffset +
+                #endif
+                i].position
             #endif
             ;
         highp const vec4 lightDirection = vec4(lightPosition.xyz - transformedPosition*lightPosition.w, lightPosition.w);

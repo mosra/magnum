@@ -107,6 +107,8 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
         "Shaders::PhongGL: texture arrays enabled but the shader is not textured", );
     CORRADE_ASSERT(!(flags & Flag::UniformBuffers) || !(flags & Flag::TextureArrays) || flags >= (Flag::TextureArrays|Flag::TextureTransformation),
         "Shaders::PhongGL: texture arrays require texture transformation enabled as well if uniform buffers are used", );
+    CORRADE_ASSERT(!(flags & Flag::LightCulling) || (flags & Flag::UniformBuffers),
+        "Shaders::PhongGL: light culling requires uniform buffers to be enabled", );
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -252,7 +254,8 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
             drawCount,
             materialCount,
             lightCount));
-        frag.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+        frag.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "")
+            .addSource(flags >= Flag::LightCulling ? "#define LIGHT_CULLING\n" : "");
     } else
     #endif
     {
@@ -915,6 +918,7 @@ Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
         _c(UniformBuffers)
         _c(MultiDraw)
         _c(TextureArrays)
+        _c(LightCulling)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -942,7 +946,8 @@ Debug& operator<<(Debug& debug, const PhongGL::Flags value) {
         #ifndef MAGNUM_TARGET_GLES2
         PhongGL::Flag::MultiDraw, /* Superset of UniformBuffers */
         PhongGL::Flag::UniformBuffers,
-        PhongGL::Flag::TextureArrays
+        PhongGL::Flag::TextureArrays,
+        PhongGL::Flag::LightCulling
         #endif
     });
 }
