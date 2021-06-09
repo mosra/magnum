@@ -469,13 +469,7 @@ void main() {
 
         highp vec3 normalizedLightDirection = normalize(lightDirection.xyz);
         lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection))*attenuation;
-        fragmentColor += vec4(finalDiffuseColor.rgb*lightColor*intensity, finalDiffuseColor.a/float(
-            #ifndef UNIFORM_BUFFERS
-            LIGHT_COUNT
-            #else
-            actualLightCount
-            #endif
-        ));
+        fragmentColor.rgb += finalDiffuseColor.rgb*lightColor*intensity;
 
         /* Add specular color, if needed */
         if(intensity > 0.001) {
@@ -485,6 +479,8 @@ void main() {
             fragmentColor += vec4(finalSpecularColor.rgb*lightSpecularColor.rgb*specularity, finalSpecularColor.a);
         }
     }
+
+    fragmentColor.a += finalDiffuseColor.a;
     #endif
 
     #ifdef ALPHA_MASK
