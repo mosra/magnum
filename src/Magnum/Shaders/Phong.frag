@@ -462,14 +462,15 @@ void main() {
         /* Attenuation. Directional lights have the .w component set to 0, use
            that to make the distance zero -- which will then ensure the
            attenuation is always 1.0 */
-        highp float dist = length(lightDirection.xyz)*lightDirection.w;
+        highp const float len = length(lightDirection.xyz);
+        highp const float dist = len*lightDirection.w;
         /* If range is 0 for whatever reason, clamp it to a small value to
            avoid a NaN when dist is 0 as well (which is the case for
            directional lights). */
         highp float attenuation = clamp(1.0 - pow(dist/max(lightRange, 0.0001), 4.0), 0.0, 1.0);
         attenuation = attenuation*attenuation/(1.0 + dist*dist);
 
-        highp vec3 normalizedLightDirection = normalize(lightDirection.xyz);
+        highp vec3 normalizedLightDirection = lightDirection.xyz/len;
         lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection))*attenuation;
         fragmentColor.rgb += finalDiffuseColor.rgb*lightColor*intensity;
 
