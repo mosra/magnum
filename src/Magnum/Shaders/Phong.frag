@@ -63,6 +63,7 @@ uniform lowp vec4 diffuseColor
     #endif
     ;
 
+#ifndef NO_SPECULAR
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 7)
 #endif
@@ -80,6 +81,7 @@ uniform mediump float shininess
     = 80.0
     #endif
     ;
+#endif
 #endif
 
 #ifdef NORMAL_TEXTURE
@@ -136,6 +138,7 @@ uniform lowp vec3 lightColors[LIGHT_COUNT]
     #endif
     ;
 
+#ifndef NO_SPECULAR
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = LIGHT_SPECULAR_COLORS_LOCATION)
 #endif
@@ -144,6 +147,7 @@ uniform lowp vec3 lightSpecularColors[LIGHT_COUNT]
     = vec3[](LIGHT_COLOR_INITIALIZER)
     #endif
     ;
+#endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = LIGHT_RANGES_LOCATION)
@@ -386,11 +390,13 @@ void main() {
         interpolatedVertexColor*
         #endif
         diffuseColor;
+    #ifndef NO_SPECULAR
     lowp const vec4 finalSpecularColor =
         #ifdef SPECULAR_TEXTURE
         texture(specularTexture, interpolatedTextureCoordinates)*
         #endif
         specularColor;
+    #endif
     #endif
 
     /* Ambient color */
@@ -439,6 +445,7 @@ void main() {
                 i].light_color
             #endif
             ;
+        #ifndef NO_SPECULAR
         lowp const vec3 lightSpecularColor =
             #ifndef UNIFORM_BUFFERS
             lightSpecularColors[i]
@@ -450,6 +457,7 @@ void main() {
                 i].light_specularColor
             #endif
             ;
+        #endif
         lowp const float lightRange =
             #ifndef UNIFORM_BUFFERS
             lightRanges[i]
@@ -490,6 +498,7 @@ void main() {
         lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection))*attenuation;
         fragmentColor.rgb += finalDiffuseColor.rgb*lightColor*intensity;
 
+        #ifndef NO_SPECULAR
         /* Add specular color, if needed */
         if(intensity > 0.001) {
             highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
@@ -497,6 +506,7 @@ void main() {
             mediump float specularity = clamp(pow(max(0.0, dot(cameraDirection, reflection)), shininess), 0.0, 1.0)*attenuation;
             fragmentColor += vec4(finalSpecularColor.rgb*lightSpecularColor.rgb*specularity, finalSpecularColor.a);
         }
+        #endif
     }
 
     fragmentColor.a += finalDiffuseColor.a;

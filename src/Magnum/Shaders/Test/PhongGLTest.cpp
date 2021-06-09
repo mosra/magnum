@@ -100,6 +100,7 @@ struct PhongGLTest: GL::OpenGLTester {
     void bindTextureArraysInvalid();
     #endif
     void setAlphaMaskNotEnabled();
+    void setSpecularDisabled();
     void setTextureMatrixNotEnabled();
     void setNormalTextureScaleNotEnabled();
     #ifndef MAGNUM_TARGET_GLES2
@@ -233,6 +234,7 @@ constexpr struct {
     {"instanced object ID", PhongGL::Flag::InstancedObjectId, 1},
     {"object ID + alpha mask + specular texture", PhongGL::Flag::ObjectId|PhongGL::Flag::AlphaMask|PhongGL::Flag::SpecularTexture, 1},
     #endif
+    {"no specular", PhongGL::Flag::NoSpecular, 1},
     {"five lights", {}, 5},
     {"zero lights", {}, 0},
     {"instanced transformation", PhongGL::Flag::InstancedTransformation, 3},
@@ -265,6 +267,7 @@ constexpr struct {
     {"normal texture + separate bitangents", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1, 1, 1},
     {"alpha mask", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AlphaMask, 1, 1, 1},
     {"object ID", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId, 1, 1, 1},
+    {"no specular", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NoSpecular, 1, 1, 1},
     {"multidraw with all the things", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::LightCulling, 8, 16, 24}
 };
 #endif
@@ -284,6 +287,9 @@ constexpr struct {
         PhongGL::Flag::Bitangent|PhongGL::Flag::InstancedObjectId,
         "Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead"},
     #endif
+    {"specular texture but no specular",
+        PhongGL::Flag::SpecularTexture|PhongGL::Flag::NoSpecular,
+        "specular texture requires the shader to not have specular disabled"}
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -472,14 +478,22 @@ const struct {
 const struct {
     const char* name;
     const char* expected;
+    PhongGL::Flags flags;
     Float shininess;
     Color4 specular;
 } RenderShininessData[] {
-    {"80", "shininess80.tga", 80.0f, 0xffffff_rgbf},
-    {"10", "shininess10.tga", 10.0f, 0xffffff_rgbf},
-    {"0", "shininess0.tga", 0.0f, 0xffffff_rgbf},
-    {"0.001", "shininess0.tga", 0.001f, 0xffffff_rgbf},
-    {"black specular", "shininess-black-specular.tga", 80.0f, 0x000000_rgbf}
+    {"80", "shininess80.tga",
+        {}, 80.0f, 0xffffff_rgbf},
+    {"10", "shininess10.tga",
+        {}, 10.0f, 0xffffff_rgbf},
+    {"0", "shininess0.tga",
+        {}, 0.0f, 0xffffff_rgbf},
+    {"0.001", "shininess0.tga",
+        {}, 0.001f, 0xffffff_rgbf},
+    {"black specular", "shininess-no-specular.tga",
+        {}, 80.0f, 0x000000_rgbf},
+    {"no specular", "shininess-no-specular.tga",
+        PhongGL::Flag::NoSpecular, 80.0f, 0xffffff_rgbf}
 };
 
 const struct {
@@ -777,6 +791,7 @@ PhongGLTest::PhongGLTest() {
 
     addTests({
         &PhongGLTest::setAlphaMaskNotEnabled,
+        &PhongGLTest::setSpecularDisabled,
         &PhongGLTest::setTextureMatrixNotEnabled,
         &PhongGLTest::setNormalTextureScaleNotEnabled,
         #ifndef MAGNUM_TARGET_GLES2
@@ -1304,6 +1319,27 @@ void PhongGLTest::setAlphaMaskNotEnabled() {
 
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setAlphaMask(): the shader was not created with alpha mask enabled\n");
+}
+
+void PhongGLTest::setSpecularDisabled() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Texture2D texture;
+    PhongGL shader{PhongGL::Flag::NoSpecular};
+    shader.setSpecularColor({})
+        .setShininess({})
+        .setLightSpecularColors({{}})
+        .setLightSpecularColor(0, {});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::PhongGL::setSpecularColor(): the shader was created with specular disabled\n"
+        "Shaders::PhongGL::setShininess(): the shader was created with specular disabled\n"
+        "Shaders::PhongGL::setLightSpecularColors(): the shader was created with specular disabled\n"
+        "Shaders::PhongGL::setLightSpecularColor(): the shader was created with specular disabled\n");
 }
 
 void PhongGLTest::setTextureMatrixNotEnabled() {
@@ -2427,13 +2463,14 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    PhongGL shader{flag};
+    PhongGL shader{flag|data.flags};
     if(flag == PhongGL::Flag{}) {
+        if(!(data.flags & PhongGL::Flag::NoSpecular)) shader
+            .setSpecularColor(data.specular)
+            .setShininess(data.shininess);
         shader
             .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f}})
             .setDiffuseColor(0xff3333_rgbf)
-            .setSpecularColor(data.specular)
-            .setShininess(data.shininess)
             .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
             .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
             .draw(sphere);
@@ -2459,8 +2496,8 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             PhongMaterialUniform{}
                 .setDiffuseColor(0xff3333_rgbf)
-                .setSpecularColor(data.specular)
-                .setShininess(data.shininess)
+                .setSpecularColor(data.specular) /* ignored if NoSpecular */
+                .setShininess(data.shininess) /* ignored if NoSpecular */
         }};
         shader
             .bindProjectionBuffer(projectionUniform)

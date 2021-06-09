@@ -171,6 +171,7 @@ const struct {
     {"", {}, 1, 1, 1, false},
     {"zero lights", {}, 0, 1, 1, false},
     {"five lights", {}, 5, 1, 1, false},
+    {"no specular", PhongGL::Flag::NoSpecular, 1, 1, 1, false},
     {"vertex color", PhongGL::Flag::VertexColor, 1, 1, 1, false},
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", PhongGL::Flag::ObjectId, 1, 1, 1, false},

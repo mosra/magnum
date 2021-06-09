@@ -111,6 +111,9 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
         "Shaders::PhongGL: light culling requires uniform buffers to be enabled", );
     #endif
 
+    CORRADE_ASSERT(!(flags & Flag::SpecularTexture) || !(flags & (Flag::NoSpecular)),
+        "Shaders::PhongGL: specular texture requires the shader to not have specular disabled", );
+
     #ifndef MAGNUM_TARGET_GLES
     if(flags >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
@@ -243,6 +246,7 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
         .addSource(flags & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
         .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         #endif
+        .addSource(flags & Flag::NoSpecular ? "#define NO_SPECULAR\n" : "")
         ;
     #ifndef MAGNUM_TARGET_GLES2
     if(flags >= Flag::UniformBuffers) {
@@ -338,13 +342,16 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
             if(lightCount) {
                 _normalMatrixUniform = uniformLocation("normalMatrix");
                 _diffuseColorUniform = uniformLocation("diffuseColor");
-                _specularColorUniform = uniformLocation("specularColor");
-                _shininessUniform = uniformLocation("shininess");
+                if(!(flags & Flag::NoSpecular)) {
+                    _specularColorUniform = uniformLocation("specularColor");
+                    _shininessUniform = uniformLocation("shininess");
+                }
                 if(flags & Flag::NormalTexture)
                     _normalTextureScaleUniform = uniformLocation("normalTextureScale");
                 _lightPositionsUniform = uniformLocation("lightPositions");
                 _lightColorsUniform = uniformLocation("lightColors");
-                _lightSpecularColorsUniform = uniformLocation("lightSpecularColors");
+                if(!(flags & Flag::NoSpecular))
+                    _lightSpecularColorsUniform = uniformLocation("lightSpecularColors");
                 _lightRangesUniform = uniformLocation("lightRanges");
             }
             if(flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
@@ -393,14 +400,17 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
         setProjectionMatrix(Matrix4{Math::IdentityInit});
         if(lightCount) {
             setDiffuseColor(Magnum::Color4{1.0f});
-            setSpecularColor(Magnum::Color4{1.0f, 0.0f});
-            setShininess(80.0f);
+            if(!(flags & Flag::NoSpecular)) {
+                setSpecularColor(Magnum::Color4{1.0f, 0.0f});
+                setShininess(80.0f);
+            }
             if(flags & Flag::NormalTexture)
                 setNormalTextureScale(1.0f);
             setLightPositions(Containers::Array<Vector4>{DirectInit, lightCount, Vector4{0.0f, 0.0f, 1.0f, 0.0f}});
             Containers::Array<Magnum::Color3> colors{DirectInit, lightCount, Magnum::Color3{1.0f}};
             setLightColors(colors);
-            setLightSpecularColors(colors);
+            if(!(flags & Flag::NoSpecular))
+                setLightSpecularColors(colors);
             setLightRanges(Containers::Array<Float>{DirectInit, lightCount, Constants::inf()});
             /* Light position is zero by default */
             setNormalMatrix(Matrix3x3{Math::IdentityInit});
@@ -441,6 +451,8 @@ PhongGL& PhongGL::setSpecularColor(const Magnum::Color4& color) {
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
         "Shaders::PhongGL::setSpecularColor(): the shader was created with uniform buffers enabled", *this);
     #endif
+    CORRADE_ASSERT(!(_flags >= Flag::NoSpecular),
+        "Shaders::PhongGL::setSpecularColor(): the shader was created with specular disabled", *this);
     if(_lightCount) setUniform(_specularColorUniform, color);
     return *this;
 }
@@ -450,6 +462,8 @@ PhongGL& PhongGL::setShininess(Float shininess) {
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
         "Shaders::PhongGL::setShininess(): the shader was created with uniform buffers enabled", *this);
     #endif
+    CORRADE_ASSERT(!(_flags >= Flag::NoSpecular),
+        "Shaders::PhongGL::setShininess(): the shader was created with specular disabled", *this);
     if(_lightCount) setUniform(_shininessUniform, shininess);
     return *this;
 }
@@ -651,6 +665,8 @@ PhongGL& PhongGL::setLightSpecularColors(const Containers::ArrayView<const Magnu
     #endif
     CORRADE_ASSERT(_lightCount == colors.size(),
         "Shaders::PhongGL::setLightSpecularColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
+    CORRADE_ASSERT(!(_flags >= Flag::NoSpecular),
+        "Shaders::PhongGL::setLightSpecularColors(): the shader was created with specular disabled", *this);
     if(_lightCount) setUniform(_lightSpecularColorsUniform, colors);
     return *this;
 }
@@ -666,6 +682,8 @@ PhongGL& PhongGL::setLightSpecularColor(const UnsignedInt id, const Magnum::Colo
     #endif
     CORRADE_ASSERT(id < _lightCount,
         "Shaders::PhongGL::setLightSpecularColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+    CORRADE_ASSERT(!(_flags >= Flag::NoSpecular),
+        "Shaders::PhongGL::setLightSpecularColor(): the shader was created with specular disabled", *this);
     setUniform(_lightSpecularColorsUniform + id, color);
     return *this;
 }
@@ -920,11 +938,12 @@ Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
         _c(TextureArrays)
         _c(LightCulling)
         #endif
+        _c(NoSpecular)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const PhongGL::Flags value) {
@@ -947,8 +966,9 @@ Debug& operator<<(Debug& debug, const PhongGL::Flags value) {
         PhongGL::Flag::MultiDraw, /* Superset of UniformBuffers */
         PhongGL::Flag::UniformBuffers,
         PhongGL::Flag::TextureArrays,
-        PhongGL::Flag::LightCulling
+        PhongGL::Flag::LightCulling,
         #endif
+        PhongGL::Flag::NoSpecular
     });
 }
 

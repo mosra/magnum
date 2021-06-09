@@ -161,6 +161,9 @@ See also:
     @ref Trade::LightData
 -   Added @ref Shaders::PhongGL::setLightSpecularColors() for better control
     over specular highlights
+-   Added @ref Shaders::PhongGL::Flag::NoSpecular as a significantly faster
+    alternative to setting specular color to @cpp 0x00000000_rgbaf @ce in case
+    specular highlights are not desired
 
 @subsubsection changelog-latest-new-shadertools ShaderTools library
 

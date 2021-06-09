@@ -72,8 +72,8 @@ void PhongGL_Test::constructCopy() {
 void PhongGL_Test::debugFlag() {
     std::ostringstream out;
 
-    Debug{&out} << PhongGL::Flag::AmbientTexture << PhongGL::Flag(0xf0);
-    CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::AmbientTexture Shaders::PhongGL::Flag(0xf0)\n");
+    Debug{&out} << PhongGL::Flag::AmbientTexture << PhongGL::Flag(0xcafedead);
+    CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::AmbientTexture Shaders::PhongGL::Flag(0xcafedead)\n");
 }
 
 void PhongGL_Test::debugFlags() {

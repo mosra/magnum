@@ -326,8 +326,8 @@ struct PhongMaterialUniform {
      *
      * Default value is @cpp 0xffffff00_rgbaf @ce.
      *
-     * Used only if the effective light count for given draw is not zero,
-     * ignored otherwise.
+     * Used only if the effective light count for given draw is not zero and
+     * @ref PhongGL::Flag::NoSpecular is not set, ignored otherwise.
      * @see @ref PhongGL::setSpecularColor()
      */
     Color4 specularColor;
@@ -351,8 +351,8 @@ struct PhongMaterialUniform {
      * The larger value, the harder surface (smaller specular highlight).
      * Default value is @cpp 80.0f @ce.
      *
-     * Used only if the effective light count for given draw is not zero,
-     * ignored otherwise.
+     * Used only if the effective light count for given draw is not zero and
+     * @ref PhongGL::Flag::NoSpecular is not set, ignored otherwise.
      * @see @ref PhongGL::setShininess()
      */
     Float shininess;

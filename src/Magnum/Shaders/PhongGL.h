@@ -484,7 +484,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * @see @ref Flags, @ref flags()
          */
-        enum class Flag: UnsignedShort {
+        enum class Flag: UnsignedInt {
             /**
              * Multiply ambient color with a texture.
              * @see @ref setAmbientColor(), @ref bindAmbientTexture()
@@ -705,8 +705,17 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              *      1.0.
              * @m_since_latest
              */
-            LightCulling = 1 << 15
+            LightCulling = 1 << 15,
             #endif
+
+            /**
+             * Disable specular contribution in light calculation. Can result
+             * in a significant performance improvement compared to calling
+             * @ref setSpecularColor() with @cpp 0x00000000_rgbaf @ce when
+             * specular highlights are not desired.
+             * @m_since_latest
+             */
+            NoSpecular = 1 << 16
         };
 
         /**
@@ -900,10 +909,13 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Set specular color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 0xffffff00_rgbaf @ce. If
+         * Initial value is @cpp 0xffffff00_rgbaf @ce. Expects that the shader
+         * was not created with @ref Flag::NoSpecular. If
          * @ref Flag::SpecularTexture is set, the color will be multiplied with
-         * the texture. If you want to have a fully diffuse material, set
-         * the specular color to @cpp 0x00000000_rgbaf @ce. If
+         * the texture. If you want to have a fully diffuse material, it's
+         * recommended to disable the specular contribution altogether with
+         * @ref Flag::NoSpecular. If having a dedicated shader variant is not
+         * possible, set the specular color to @cpp 0x00000000_rgbaf @ce. If
          * @ref lightCount() is zero, this function is a no-op, as specular
          * color doesn't contribute to the output in that case.
          *
@@ -1530,7 +1542,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * Expects that the shader was created with @ref Flag::SpecularTexture
-         * enabled. If @ref Flag::TextureArrays is enabled as well, use
+         * enabled and that @ref Flag::NoSpecular is not set. If
+         * @ref Flag::TextureArrays is enabled as well, use
          * @ref bindSpecularTexture(GL::Texture2DArray&) instead. If
          * @ref lightCount() is zero, this function is a no-op, as specular
          * color doesn't contribute to the output in that case.
@@ -1545,9 +1558,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @m_since_latest
          *
          * Expects that the shader was created with both
-         * @ref Flag::SpecularTexture and @ref Flag::TextureArrays enabled. If
-         * @ref Flag::UniformBuffers is not enabled, the layer is set via
-         * @ref setTextureLayer(); if @ref Flag::UniformBuffers is enabled,
+         * @ref Flag::SpecularTexture and @ref Flag::TextureArrays enabled and
+         * that @ref Flag::NoSpecular is not set. If @ref Flag::UniformBuffers
+         * is not enabled, the layer is set via @ref setTextureLayer(); if
+         * @ref Flag::UniformBuffers is enabled,
          * @ref Flag::TextureTransformation has to be enabled as well and the
          * layer is set via @ref TextureTransformationUniform::layer. If
          * @ref lightCount() is zero, this function is a no-op, as specular
