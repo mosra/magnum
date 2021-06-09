@@ -419,6 +419,8 @@ void main() {
     normalizedTransformedNormal = tbn*(normalize((texture(normalTexture, interpolatedTextureCoordinates).rgb*2.0 - vec3(1.0))*vec3(normalTextureScale, normalTextureScale, 1.0)));
     #endif
 
+    highp const vec3 cameraDirection = normalize(-transformedPosition);
+
     /* Add diffuse color for each light */
     #ifndef UNIFORM_BUFFERS
     for(int i = 0; i < LIGHT_COUNT; ++i)
@@ -475,7 +477,7 @@ void main() {
         if(intensity > 0.001) {
             highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
             /* Use attenuation for the specularity as well */
-            mediump float specularity = clamp(pow(max(0.0, dot(normalize(-transformedPosition), reflection)), shininess), 0.0, 1.0)*attenuation;
+            mediump float specularity = clamp(pow(max(0.0, dot(cameraDirection, reflection)), shininess), 0.0, 1.0)*attenuation;
             fragmentColor += vec4(finalSpecularColor.rgb*lightSpecularColor.rgb*specularity, finalSpecularColor.a);
         }
     }
