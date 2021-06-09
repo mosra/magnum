@@ -197,6 +197,7 @@ const struct {
     {"UBO single, ADS texture arrays + transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1, 1, 1},
     {"UBO multi, one light", PhongGL::Flag::UniformBuffers, 1, 32, 128},
     {"multidraw, one light", PhongGL::Flag::MultiDraw, 1, 32, 128},
+    {"multidraw, 64 lights, five used", PhongGL::Flag::MultiDraw, 64, 32, 128},
     #endif
 };
 
@@ -694,7 +695,10 @@ void ShadersGLBenchmark::phong() {
             ProjectionUniform3D{}
         }};
         transformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TransformationUniform3D>{data.drawCount}};
-        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<PhongDrawUniform>{data.drawCount}};
+        Containers::Array<PhongDrawUniform> drawData{data.drawCount};
+        drawData[0].lightCount = 5; /* Cap at 5 lights, even if more is set */
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, drawData};
+
         Containers::Array<PhongMaterialUniform> materialData{data.materialCount};
         materialData[0]
             /* White ambient so we always have a white output */
