@@ -166,39 +166,43 @@ const struct {
     const char* name;
     PhongGL::Flags flags;
     UnsignedInt lightCount, materialCount, drawCount;
+    bool bufferStorage;
 } PhongData[] {
-    {"", {}, 1, 1, 1},
-    {"zero lights", {}, 0, 1, 1},
-    {"five lights", {}, 5, 1, 1},
-    {"vertex color", PhongGL::Flag::VertexColor, 1, 1, 1},
+    {"", {}, 1, 1, 1, false},
+    {"zero lights", {}, 0, 1, 1, false},
+    {"five lights", {}, 5, 1, 1, false},
+    {"vertex color", PhongGL::Flag::VertexColor, 1, 1, 1, false},
     #ifndef MAGNUM_TARGET_GLES2
-    {"object ID", PhongGL::Flag::ObjectId, 1, 1, 1},
+    {"object ID", PhongGL::Flag::ObjectId, 1, 1, 1, false},
     #endif
-    {"diffuse texture", PhongGL::Flag::DiffuseTexture, 1, 1, 1},
-    {"ADS textures", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1, 1, 1},
+    {"diffuse texture", PhongGL::Flag::DiffuseTexture, 1, 1, 1, false},
+    {"ADS textures", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1, 1, 1, false},
     #ifndef MAGNUM_TARGET_GLES2
-    {"ADS texture arrays", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays, 1, 1, 1},
+    {"ADS texture arrays", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays, 1, 1, 1, false},
     #endif
-    {"ADS textures + alpha mask", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::AlphaMask, 1, 1, 1},
-    {"ADS textures + transformation", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1},
-    {"normal texture", PhongGL::Flag::NormalTexture, 1, 1, 1},
-    {"normal texture with separate bitangent", PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1, 1, 1},
-    {"instanced transformation", PhongGL::Flag::InstancedTransformation, 1, 1, 1},
-    {"instanced transformation + color", PhongGL::Flag::InstancedTransformation|PhongGL::Flag::VertexColor, 1, 1, 1},
+    {"ADS textures + alpha mask", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::AlphaMask, 1, 1, 1, false},
+    {"ADS textures + transformation", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1, false},
+    {"normal texture", PhongGL::Flag::NormalTexture, 1, 1, 1, false},
+    {"normal texture with separate bitangent", PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1, 1, 1, false},
+    {"instanced transformation", PhongGL::Flag::InstancedTransformation, 1, 1, 1, false},
+    {"instanced transformation + color", PhongGL::Flag::InstancedTransformation|PhongGL::Flag::VertexColor, 1, 1, 1, false},
     #ifndef MAGNUM_TARGET_GLES2
-    {"instanced transformation + object ID", PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId, 1, 1, 1},
+    {"instanced transformation + object ID", PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId, 1, 1, 1, false},
     #endif
-    {"instanced transformation + ADS texture offset", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedTextureOffset, 1, 1, 1},
+    {"instanced transformation + ADS texture offset", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedTextureOffset, 1, 1, 1, false},
     #ifndef MAGNUM_TARGET_GLES2
-    {"UBO single", PhongGL::Flag::UniformBuffers, 1, 1, 1},
-    {"UBO single, zero lights", PhongGL::Flag::UniformBuffers, 0, 1, 1},
-    {"UBO single five lights", PhongGL::Flag::UniformBuffers, 5, 1, 1},
-    {"UBO single, ADS textures + transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1},
-    {"UBO single, ADS texture arrays + transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1, 1, 1},
-    {"UBO multi, one light", PhongGL::Flag::UniformBuffers, 1, 32, 128},
-    {"multidraw, one light", PhongGL::Flag::MultiDraw, 1, 32, 128},
-    {"multidraw, one light, light culling enabled", PhongGL::Flag::MultiDraw|PhongGL::Flag::LightCulling, 1, 32, 128},
-    {"multidraw, 64 lights, light culling enabled, five used", PhongGL::Flag::MultiDraw|PhongGL::Flag::LightCulling, 64, 32, 128},
+    {"UBO single", PhongGL::Flag::UniformBuffers, 1, 1, 1, false},
+    {"UBO single, zero lights", PhongGL::Flag::UniformBuffers, 0, 1, 1, false},
+    {"UBO single five lights", PhongGL::Flag::UniformBuffers, 5, 1, 1, false},
+    {"UBO single, ADS textures + transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation, 1, 1, 1, false},
+    {"UBO single, ADS texture arrays + transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1, 1, 1, false},
+    {"UBO multi, one light", PhongGL::Flag::UniformBuffers, 1, 32, 128, false},
+    {"multidraw, one light", PhongGL::Flag::MultiDraw, 1, 32, 128, false},
+    #ifndef MAGNUM_TARGET_GLES
+    {"multidraw, one light, immutable buffer storage", PhongGL::Flag::MultiDraw, 1, 32, 128, true},
+    #endif
+    {"multidraw, one light, light culling enabled", PhongGL::Flag::MultiDraw|PhongGL::Flag::LightCulling, 1, 32, 128, false},
+    {"multidraw, 64 lights, light culling enabled, five used", PhongGL::Flag::MultiDraw|PhongGL::Flag::LightCulling, 64, 32, 128, false},
     #endif
 };
 
@@ -692,30 +696,58 @@ void ShadersGLBenchmark::phong() {
     GL::Buffer lightUniform{NoCreate};
     GL::Buffer textureTransformationUniform{NoCreate};
     if(data.flags & PhongGL::Flag::UniformBuffers) {
-        projectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, {
-            ProjectionUniform3D{}
-        }};
-        transformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TransformationUniform3D>{data.drawCount}};
+        projectionUniform = GL::Buffer{};
+        transformationUniform = GL::Buffer{};
+        drawUniform = GL::Buffer{};
+        materialUniform = GL::Buffer{};
+        lightUniform = GL::Buffer{};
+        textureTransformationUniform = GL::Buffer{};
+
+        Containers::Array<TransformationUniform3D> transformationData{data.drawCount};
         Containers::Array<PhongDrawUniform> drawData{data.drawCount};
         drawData[0].lightCount = 5; /* Cap at 5 lights, even if more is set */
-        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, drawData};
-
         Containers::Array<PhongMaterialUniform> materialData{data.materialCount};
         materialData[0]
             /* White ambient so we always have a white output */
             .setAmbientColor(0xffffffff_rgbaf)
             .setAlphaMask(0.0f);
-        materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, materialData};
-        lightUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<PhongLightUniform>{data.lightCount}};
+        Containers::Array<PhongLightUniform> lightData{data.lightCount};
+        Containers::Array<TextureTransformationUniform> textureTransformationData{data.drawCount};
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(data.bufferStorage) {
+            if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::buffer_storage>())
+                CORRADE_SKIP(GL::Extensions::ARB::buffer_storage::string() << "is not supported.");
+
+            projectionUniform.setStorage(Containers::arrayView({ProjectionUniform3D{}}), {});
+            transformationUniform.setStorage(transformationData, {});
+            drawUniform.setStorage(drawData, {});
+            materialUniform.setStorage(materialData, {});
+            lightUniform.setStorage(lightData, {});
+
+            if(data.flags & PhongGL::Flag::TextureTransformation)
+                textureTransformationUniform.setStorage(textureTransformationData, {});
+        } else
+        #endif
+        {
+            projectionUniform.setData({ProjectionUniform3D{}});
+            transformationUniform.setData(transformationData);
+            drawUniform.setData(drawData);
+            materialUniform.setData(materialData);
+            lightUniform.setData(lightData);
+
+            if(data.flags & PhongGL::Flag::TextureTransformation)
+                textureTransformationUniform.setData(textureTransformationData);
+        }
+
         shader.bindProjectionBuffer(projectionUniform)
             .bindTransformationBuffer(transformationUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform)
             .bindLightBuffer(lightUniform);
-        if(data.flags & PhongGL::Flag::TextureTransformation) {
-            textureTransformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TextureTransformationUniform>{data.drawCount}};
+        if(data.flags & PhongGL::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
-        }
+
     } else
     #endif
     {
