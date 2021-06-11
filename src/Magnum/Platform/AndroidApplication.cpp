@@ -256,7 +256,17 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                    always */
                 app._previousMouseMovePosition = {Int(AMotionEvent_getX(event, 0)), Int(AMotionEvent_getY(event, 0))};
                 MouseEvent e(event);
-                action == AMOTION_EVENT_ACTION_DOWN ? app.mousePressEvent(e) : app.mouseReleaseEvent(e);
+                if (action == AMOTION_EVENT_ACTION_DOWN) {
+                    app.mousePressEvent(e);
+                } else {
+                    app.mouseReleaseEvent(e);
+                    // reset the relative position
+                    // if the relative position is not reset, then
+                    // the relative position of mouse press will be
+                    // relative to the last location of mouse release
+                    // which differs from desktop behaviour
+                    app._previousMouseMovePosition = Vector2i{-1};
+                }
                 return e.isAccepted() ? 1 : 0;
             }
 
