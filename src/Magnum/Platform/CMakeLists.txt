@@ -508,6 +508,50 @@ if(WITH_WINDOWLESSEGLAPPLICATION)
     add_library(Magnum::WindowlessEglApplication ALIAS MagnumWindowlessEglApplication)
 endif()
 
+# Windowless android application
+if(WITH_WINDOWLESSANDROIDAPPLICATION)
+    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL Android)
+        message(FATAL_ERROR "WindowlessAndroidApplication is available only when targeting Android. Set WITH_WINDOWLESSANDROIDAPPLICATION to OFF to skip building it.")
+    endif()
+
+    find_package(EGL REQUIRED)
+    set(NEED_EGLCONTEXT 1)
+
+    set(MagnumWindowlessAndroidApplication_SRCS
+            WindowlessAndroidApplication.cpp
+            MotionEventSerializer.cpp
+            Implementation/Egl.cpp
+            $<TARGET_OBJECTS:MagnumEglContextObjects>)
+    set(MagnumWindowlessAndroidApplication_HEADERS
+            WindowlessAndroidApplication.h
+            MotionEventSerializer.h)
+    set(MagnumWindowlessAndroidApplication_PRIVATE_HEADERS
+            Implementation/Egl.h)
+
+    add_library(MagnumWindowlessAndroidApplication STATIC
+            ${MagnumWindowlessAndroidApplication_SRCS}
+            ${MagnumWindowlessAndroidApplication_HEADERS}
+            ${MagnumWindowlessAndroidApplication_PRIVATE_HEADERS})
+    set_target_properties(MagnumWindowlessAndroidApplication PROPERTIES
+            DEBUG_POSTFIX "-d"
+            FOLDER "Magnum/Platform")
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+    target_link_libraries(MagnumWindowlessAndroidApplication PUBLIC
+            MagnumGL
+            android
+            EGL::EGL)
+
+    install(FILES ${MagnumWindowlessAndroidApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumWindowlessAndroidApplication
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+
+    # Magnum AndroidApplication target alias for superprojects
+    add_library(Magnum::WindowlessAndroidApplication ALIAS MagnumWindowlessAndroidApplication)
+endif()
+
 # Windowless GLX application
 if(WITH_WINDOWLESSGLXAPPLICATION)
     if(NOT TARGET_GL)
