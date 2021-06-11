@@ -2,6 +2,10 @@
 // Created by Matthew Good on 7/6/21.
 //
 
+/*
+ * MotionEventSerializer.java: (JAVA COUNTERPART TO THIS C++ FILE)
+ * https://github.com/mgood7123/Crafter/blob/main/Android/src/main/java/com/smallville7123/crafter/MotionEventSerializer.java
+ */
 #include "MotionEventSerializer.h"
 
 MotionEventSerializer::IndexInfo::IndexInfo() {}
