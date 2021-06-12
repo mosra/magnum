@@ -680,16 +680,10 @@ class WindowlessAndroidApplication::MouseEvent: public InputEvent {
             None = 0,
 
             /**
-             * Left mouse button. Note that this button is not set if only
-             * touch or stylus event occured.
-             * @attention Available since Android 4.0 (API level 14), not
-             *      detectable in earlier versions.
+             * Left mouse button. Note that this button is set for
+             * compatibility with Desktop
              */
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
             Left = MotionEventSerializer::MOTION_EVENT_BUTTON_PRIMARY,
-            #else
-            Left = 1 << 0,
-            #endif
 
             /**
              * Middle mouse button or second stylus button
@@ -716,11 +710,10 @@ class WindowlessAndroidApplication::MouseEvent: public InputEvent {
 
         /** @brief Button */
         Button button() {
-            #if __ANDROID_API__ >= 14
-            return Button(button_state);
-            #else
-            return Button::None;
-            #endif
+            // redirect touch events to button left
+            // for compatibility with desktop
+            // button_state 0 is a touch on the touchscreen
+            return button_state == 0 ? Button::Left : Button(button_state);
         }
 
         /** @brief Position */
@@ -751,16 +744,10 @@ class WindowlessAndroidApplication::MouseMoveEvent: public InputEvent {
          */
         enum class Button: std::int32_t {
             /**
-             * Left mouse button. Note that this button is not set if only
-             * touch or stylus event occured.
-             * @attention Available since Android 4.0 (API level 14), not
-             *      detectable in earlier versions.
+             * Left mouse button. Note that this button set for
+             * compatibility with desktop
              */
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
             Left = MotionEventSerializer::MOTION_EVENT_BUTTON_PRIMARY,
-            #else
-            Left = 1 << 0,
-            #endif
 
             /**
              * Middle mouse button or second stylus button
@@ -810,11 +797,10 @@ class WindowlessAndroidApplication::MouseMoveEvent: public InputEvent {
 
         /** @brief Mouse buttons */
         Buttons buttons() const {
-            #if __ANDROID_API__ >= 14
-            return Button(button_state);
-            #else
-            return {};
-            #endif
+            // redirect touch events to button left
+            // for compatibility with desktop
+            // button_state 0 is a touch on the touchscreen
+            return button_state == 0 ? Button::Left : Button(button_state);
         }
 
     private:
