@@ -721,7 +721,7 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
     if(!disabledWorkarounds.isEmpty()) {
         const Containers::Array<Containers::StringView> split = disabledWorkarounds.splitWithoutEmptyParts();
         arrayReserve(_driverWorkarounds, split.size());
-        for(const Containers::StringView workaround: split)
+        for(const Containers::StringView & workaround: split)
             disableDriverWorkaround(workaround);
     }
 
@@ -732,7 +732,7 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
     if(!disabledExtensions.isEmpty()) {
         const Containers::Array<Containers::StringView> split = disabledExtensions.splitWithoutEmptyParts();
         arrayReserve(_disabledExtensions, split.size());
-        for(const Containers::StringView extension: split) {
+        for(const Containers::StringView & extension: split) {
             if(const Extension* found = findExtension(extension)) {
                 arrayAppend(_disabledExtensions, *found);
             }
@@ -795,7 +795,7 @@ bool Context::tryCreate(const Configuration& configuration) {
 
     /* Driver workarounds get merged. Not using disableDriverWorkaround() here
        since the Configuration already contains the internal string views. */
-    for(const Containers::StringView workaround: configuration.disabledWorkarounds())
+    for(const Containers::StringView & workaround: configuration.disabledWorkarounds())
         arrayAppend(_driverWorkarounds, InPlaceInit, workaround, true);
 
     /* Extensions get merged also. Here we had the chance to force users to
@@ -928,7 +928,7 @@ bool Context::tryCreate(const Configuration& configuration) {
 
     /* Check for presence of future and vendor extensions */
     const Containers::Array<Containers::StringView> extensions = extensionStrings();
-    for(const Containers::StringView extension: extensions) {
+    for(const Containers::StringView & extension: extensions) {
         if(const Extension* found = findExtension(extension, future)) {
             #ifdef MAGNUM_BUILD_DEPRECATED
             arrayAppend(_supportedExtensions, *found);
