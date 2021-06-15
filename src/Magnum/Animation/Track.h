@@ -234,13 +234,13 @@ template<class K, class V, class R
         Track(const Track<K, V, R>&) = delete;
 
         /** @brief Move constructor */
-        Track(Track<K, V, R>&&) = default;
+        Track(Track<K, V, R>&&) noexcept = default;
 
         /** @brief Copying is not allowed */
         Track<K, V, R>& operator=(const Track<K, V, R>&) = delete;
 
         /** @brief Move constructor */
-        Track<K, V, R>& operator=(Track<K, V, R>&&) = default;
+        Track<K, V, R>& operator=(Track<K, V, R>&&) noexcept = default;
 
         /** @brief Conversion to a view */
         operator TrackView<const K, const V, R>() const noexcept {

@@ -48,6 +48,9 @@ struct TrackTest: TestSuite::Tester {
     void constructInitializerListInterpolationInterpolator();
     void constructInitializerListInterpolationInterpolatorDefaults();
 
+    void constructCopy();
+    void constructMove();
+
     void convertView();
 
     void at();
@@ -105,6 +108,9 @@ TrackTest::TrackTest() {
               &TrackTest::constructInitializerListInterpolationDefaults,
               &TrackTest::constructInitializerListInterpolationInterpolator,
               &TrackTest::constructInitializerListInterpolationInterpolatorDefaults,
+
+              &TrackTest::constructCopy,
+              &TrackTest::constructMove,
 
               &TrackTest::convertView});
 
@@ -387,6 +393,20 @@ void TrackTest::constructInitializerListInterpolationInterpolatorDefaults() {
     CORRADE_COMPARE(a.data()[0], (std::pair<Float, Vector3>{1.0f, {3.0f, 1.0f, 0.1f}}));
     CORRADE_COMPARE(a.keys()[0], 1.0f);
     CORRADE_COMPARE(a.values()[0], (Vector3{3.0f, 1.0f, 0.1f}));
+}
+
+void TrackTest::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<Track<Float, Vector3>>::value);
+    CORRADE_VERIFY(!std::is_copy_assignable<Track<Float, Vector3>>::value);
+}
+
+void TrackTest::constructMove() {
+    /* The move is defaulted, so verify just the right attributes */
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Track<Float, Vector3>>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Track<Float, Vector3>>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Track<Float, Vector3>>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Track<Float, Vector3>>::value);
 }
 
 void TrackTest::convertView() {
