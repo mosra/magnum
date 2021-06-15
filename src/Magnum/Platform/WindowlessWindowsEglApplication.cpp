@@ -163,7 +163,7 @@ WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& co
         Error() << "Platform::WindowlessWindowsEglContext: cannot create window surface:" << Implementation::eglErrorString(eglGetError());
 }
 
-WindowlessWindowsEglContext::WindowlessWindowsEglContext(WindowlessWindowsEglContext&& other): _window{other._window}, _display{other._display}, _surface{other._surface}, _context{other._context} {
+WindowlessWindowsEglContext::WindowlessWindowsEglContext(WindowlessWindowsEglContext&& other) noexcept: _window{other._window}, _display{other._display}, _surface{other._surface}, _context{other._context} {
     other._window = {};
     other._display = {};
     other._surface = {};
@@ -177,7 +177,7 @@ WindowlessWindowsEglContext::~WindowlessWindowsEglContext() {
     if(_window) DestroyWindow(_window);
 }
 
-WindowlessWindowsEglContext& WindowlessWindowsEglContext::operator=(WindowlessWindowsEglContext&& other) {
+WindowlessWindowsEglContext& WindowlessWindowsEglContext::operator=(WindowlessWindowsEglContext&& other) noexcept {
     using std::swap;
     swap(other._window, _window);
     swap(other._display, _display);

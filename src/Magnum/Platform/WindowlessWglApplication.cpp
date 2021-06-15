@@ -266,7 +266,7 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
         Error() << "Platform::WindowlessWglContext: cannot create context:" << GetLastError();
 }
 
-WindowlessWglContext::WindowlessWglContext(WindowlessWglContext&& other): _window{other._window}, _deviceContext{other._deviceContext}, _context{other._context} {
+WindowlessWglContext::WindowlessWglContext(WindowlessWglContext&& other) noexcept: _window{other._window}, _deviceContext{other._deviceContext}, _context{other._context} {
     other._window = {};
     other._deviceContext = {};
     other._context = {};
@@ -277,7 +277,7 @@ WindowlessWglContext::~WindowlessWglContext() {
     if(_window) DestroyWindow(_window);
 }
 
-WindowlessWglContext& WindowlessWglContext::operator=(WindowlessWglContext&& other) {
+WindowlessWglContext& WindowlessWglContext::operator=(WindowlessWglContext&& other) noexcept {
     using std::swap;
     swap(other._window, _window);
     swap(other._deviceContext, _deviceContext);

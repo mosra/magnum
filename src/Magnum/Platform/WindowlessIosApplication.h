@@ -91,13 +91,13 @@ class WindowlessIosContext {
         WindowlessIosContext(const WindowlessIosContext&) = delete;
 
         /** @brief Move constructor */
-        WindowlessIosContext(WindowlessIosContext&& other);
+        WindowlessIosContext(WindowlessIosContext&& other) noexcept;
 
         /** @brief Copying is not allowed */
         WindowlessIosContext& operator=(const WindowlessIosContext&) = delete;
 
         /** @brief Move assignment */
-        WindowlessIosContext& operator=(WindowlessIosContext&& other);
+        WindowlessIosContext& operator=(WindowlessIosContext&& other) noexcept;
 
         /**
          * @brief Destructor
