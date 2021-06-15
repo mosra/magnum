@@ -751,7 +751,7 @@ Context::Context(Context&& other) noexcept:
     #ifdef MAGNUM_BUILD_DEPRECATED
     _supportedExtensions{std::move(other._supportedExtensions)},
     #endif
-    _state{std::move(other._state)},
+    _state{other._state},
     _detectedDrivers{std::move(other._detectedDrivers)},
     _driverWorkarounds{std::move(other._driverWorkarounds)},
     _disabledExtensions{std::move(other._disabledExtensions)},
