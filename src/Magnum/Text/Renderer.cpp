@@ -72,7 +72,7 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
     std::vector<Vertex> vertices;
     vertices.reserve(text.size()*4);
 
-    /* Total rendered bounds, intial line position, line increment, last+1
+    /* Total rendered bounds, initial line position, line increment, last+1
        vertex on previous line */
     Range2D rectangle;
     Vector2 linePosition;

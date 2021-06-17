@@ -85,7 +85,7 @@ Common rendering setup:
 If you want to use a texture, you need to provide also the
 @ref TextureCoordinates attribute. Pass @ref Flag::Textured to the constructor
 and then at render time don't forget to bind also the texture via
-@ref bindTexture(). The texture is multipled by the color, which is by default
+@ref bindTexture(). The texture is multiplied by the color, which is by default
 set to @cpp 0xffffffff_rgbaf @ce. Common mesh setup:
 
 @snippet MagnumShaders-gl.cpp FlatGL-usage-textured1

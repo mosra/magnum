@@ -114,7 +114,7 @@ enum class RenderbufferFormat: GLenum {
      * RGBA, each component normalized unsigned byte.
      * @requires_gles30 Extension @gl_extension{ARM,rgba8} or @gl_extension{OES,rgb8_rgba8}
      *      in OpenGL ES 2.0.
-     * @requires_webgl20 Not availabe in WebGL 1.0, use for example
+     * @requires_webgl20 Not available in WebGL 1.0, use for example
      *      @ref RenderbufferFormat::RGB565 or @ref RenderbufferFormat::RGBA4
      *      instead.
      */

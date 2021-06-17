@@ -128,7 +128,7 @@ much as possible:
 @section platform-windows-icon Executable icon
 
 In order to supply an icon for the executable, make an `*.ico` file
-(preferrably out of multiple different sizes) and create a `*.rc` file
+(preferably out of multiple different sizes) and create a `*.rc` file
 referencing it. The first argument can be anything (it can be used for
 retrieving the icon later at runtime via Windows APIs), Windows always pick the
 first icon in the `*.rc` file for the executable.

@@ -108,7 +108,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
-         * @brief Create dual complext from rotation complex and translation vector
+         * @brief Create dual complex from rotation complex and translation vector
          * @m_since_latest
          *
          * @f[
@@ -242,7 +242,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
-         * @brief Multipy with dual complex number
+         * @brief Multiply with dual complex number
          *
          * @f[
          *      \hat a \hat b = a_0 b_0 + \epsilon (a_0 b_\epsilon + a_\epsilon)

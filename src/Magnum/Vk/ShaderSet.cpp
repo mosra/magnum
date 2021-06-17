@@ -86,7 +86,7 @@ ShaderSet& ShaderSet::addShader(const ShaderStage stage, const VkShaderModule sh
     }
 
     /* Specialization, also only if there are any to avoid allocating the state
-       struct when not neccessary */
+       struct when not necessary */
     if(!specializations.empty()) {
         if(!_state) _state.emplace();
 

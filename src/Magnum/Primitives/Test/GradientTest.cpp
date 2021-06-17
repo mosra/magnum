@@ -60,7 +60,7 @@ GradientTest::GradientTest() {
 using namespace Magnum::Math::Literals;
 
 void GradientTest::gradient2D() {
-    /* The corners sould have 0.2, 0.4, 0.6, 0.8 blends */
+    /* The corners should have 0.2, 0.4, 0.6, 0.8 blends */
     Trade::MeshData gradient = Primitives::gradient2D(
         {-1.0f, 2.0f}, {0.2f, 0.6f, 1.0f},
         {1.0f, -2.0f}, {0.4f, 1.0f, 0.0f});
@@ -115,7 +115,7 @@ void GradientTest::gradient2DVertical() {
 }
 
 void GradientTest::gradient3D() {
-    /* The corners sould have 0.2, 0.4, 0.6, 0.8 blends */
+    /* The corners should have 0.2, 0.4, 0.6, 0.8 blends */
     Trade::MeshData gradient = Primitives::gradient3D(
         {-1.0f, 2.0f, -1.5f}, {0.2f, 0.6f, 1.0f},
         {1.0f, -2.0f, -1.5f}, {0.4f, 1.0f, 0.0f});

@@ -73,7 +73,7 @@ std::size_t removeDuplicatesInto(const Containers::StridedArrayView2D<const char
     CORRADE_ASSERT(indices.size() == dataSize,
         "MeshTools::removeDuplicatesInto(): output index array has" << indices.size() << "elements but expected" << dataSize, {});
 
-    /* Table containing index of first occurence for each unique entry.
+    /* Table containing index of first occurrence for each unique entry.
        Reserving more buckets than necessary (i.e. as if each entry was
        unique). */
     std::unordered_map<const void*, UnsignedInt, ArrayHash, ArrayEqual> table{
@@ -113,7 +113,7 @@ std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<cha
     CORRADE_ASSERT(indices.size() == dataSize,
         "MeshTools::removeDuplicatesInPlaceInto(): output index array has" << indices.size() << "elements but expected" << dataSize, {});
 
-    /* Table containing index of first occurence for each unique entry.
+    /* Table containing index of first occurrence for each unique entry.
        Reserving more buckets than necessary (i.e. as if each entry was
        unique). */
     std::unordered_map<const void*, UnsignedInt, ArrayHash, ArrayEqual> table{

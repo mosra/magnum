@@ -379,7 +379,7 @@ using a @cb{.css} padding-bottom @ce style with a percentage equal to inverse
 of the ratio for @cb{.css} div#expander @ce --- for example, a 2.35:1 ratio
 would be @cb{.html} <div class="mn-expander" style="padding-bottom: 42.553%"> @ce.
 
-Size of the canvas can be also overriden by specifying one of the
+Size of the canvas can be also overridden by specifying one of the
 @cb{.css} .mn-width-* @ce CSS classes on the
 @cb{.html} <div class="mn-container"> @ce:
 

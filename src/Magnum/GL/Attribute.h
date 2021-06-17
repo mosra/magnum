@@ -360,7 +360,7 @@ template<UnsignedInt location, class T> class Attribute {
          *
          * Used for describing matrix attributes. Implicitly the same as size
          * of given vector type (e.g. @cpp 9 @ce for a
-         * @ref Magnum::Matrix3 "Matrix3"), but can be overriden for example to
+         * @ref Magnum::Matrix3 "Matrix3"), but can be overridden for example to
          * ensure four-byte column alignment with 1- and 2-byte data types.
          * @see @ref Vectors
          */

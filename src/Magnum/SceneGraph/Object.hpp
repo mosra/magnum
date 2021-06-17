@@ -211,7 +211,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     /* Mark all original objects as joints and create initial list of joints
        from them */
     for(std::size_t i = 0; i != objects.size(); ++i) {
-        /* Multiple occurences of one object in the array, don't overwrite it
+        /* Multiple occurrences of one object in the array, don't overwrite it
            with different counter */
         if(objects[i].get().counter != 0xFFFFu) continue;
 
@@ -231,7 +231,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     /* Mark all objects up the hierarchy as visited */
     auto it = objects.begin();
     while(!objects.empty()) {
-        /* Already visited, remove and continue to next (duplicate occurence) */
+        /* Already visited, remove and continue to next (duplicate occurrence) */
         if(it->get().flags & Flag::Visited) {
             it = objects.erase(it);
             continue;
@@ -276,7 +276,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     for(std::size_t i = 0; i != jointTransformations.size(); ++i)
         computeJointTransformation(jointObjects, jointTransformations, i, finalTransformation);
 
-    /* Copy transformation for second or next occurences from first occurence
+    /* Copy transformation for second or next occurrences from first occurrence
        of duplicate object */
     for(std::size_t i = 0; i != objectCount; ++i) {
         if(jointObjects[i].get().counter != i)
@@ -285,7 +285,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
 
     /* All visited marks are now cleaned, clean joint marks and counters */
     for(auto i: jointObjects) {
-        /* All not-already cleaned objects (...duplicate occurences) should
+        /* All not-already cleaned objects (...duplicate occurrences) should
            have joint mark */
         CORRADE_INTERNAL_ASSERT(i.get().counter == 0xFFFFu || i.get().flags & Flag::Joint);
         i.get().flags &= ~Flag::Joint;
@@ -301,7 +301,7 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
     std::reference_wrapper<Object<Transformation>> o = jointObjects[joint];
 
     /* Transformation already computed ("unvisited" by this function before
-       either due to recursion or duplicate object occurences), done */
+       either due to recursion or duplicate object occurrences), done */
     if(!(o.get().flags & Flag::Visited)) return jointTransformations[joint];
 
     /* Initialize transformation */

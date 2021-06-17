@@ -50,7 +50,7 @@ class Renderer {
          * @see @ref error()
          */
         enum class Error: ALenum {
-            NoError = AL_NO_ERROR,          /**< No error occured */
+            NoError = AL_NO_ERROR,          /**< No error occurred */
             InvalidName = AL_INVALID_NAME,  /**< Invalid name parameter */
             InvalidEnum = AL_INVALID_ENUM,  /**< Invalid enum parameter */
             InvalidValue = AL_INVALID_VALUE, /**< Invalid enum value parameter */

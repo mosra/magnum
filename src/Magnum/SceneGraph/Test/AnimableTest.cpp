@@ -370,7 +370,7 @@ template<class T> void AnimableTest::pause() {
     CORRADE_COMPARE(animable.time, 1.5f);
 
     /* Unpausing, next step should continue from absolute time when pause
-       occured */
+       occurred */
     animable.setState(AnimationState::Running);
     group.step(5.0f, 0.5f);
     CORRADE_COMPARE(animable.state(), AnimationState::Running);
