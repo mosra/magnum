@@ -40,7 +40,7 @@
 namespace Magnum { namespace Vk {
 
 /* About naming -- I wonder why Vulkan tries *so hard* to avoid naming anything
-   a "mesh". It would so nicely group things togehter BUT NO, there's primitive
+   a "mesh". It would so nicely group things together BUT NO, there's primitive
    topology, and vertex input state, and input assembly and ugh. */
 
 /**

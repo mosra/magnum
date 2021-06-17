@@ -84,7 +84,7 @@ more information.
 
 While dynamic plugins work without buildsystem integration, static plugins are
 handled automagically with CMake and you need to replicate the magic manually
-when using a custom buildsystem. This is just about compiling an additonal
+when using a custom buildsystem. This is just about compiling an additional
 `*.cpp` file together with your final app, see @ref plugins-static for more
 information.
 

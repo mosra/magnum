@@ -111,7 +111,7 @@ layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 textureCoordinates;
 @endcode
 
-Similarly for ouput attributes, you can also specify blend equation color index
+Similarly for output attributes, you can also specify blend equation color index
 for them (see @ref Renderer::BlendFunction for more information about using
 color input index):
 

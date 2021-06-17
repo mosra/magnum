@@ -81,27 +81,27 @@ Float x11DpiScaling() {
        won't be and that's okay -- it may be using Wayland or something else. */
     void* xlib = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
     Containers::ScopeGuard closeXlib{xlib, dlclose};
-    #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/supressing_gcc_warnings */
+    #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/suppressing_gcc_warnings */
     __extension__
     #endif
     auto xOpenDisplay = reinterpret_cast<Display*(*)(char*)>(dlsym(xlib, "XOpenDisplay"));
-    #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/supressing_gcc_warnings */
+    #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/suppressing_gcc_warnings */
     __extension__
     #endif
     auto xCloseDisplay = reinterpret_cast<int(*)(Display*)>(dlsym(xlib, "XCloseDisplay"));
-    #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/supressing_gcc_warnings */
+    #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/suppressing_gcc_warnings */
     __extension__
     #endif
     auto xResourceManagerString = reinterpret_cast<char*(*)(Display*)>(dlsym(xlib, "XResourceManagerString"));
-    #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/supressing_gcc_warnings */
+    #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/suppressing_gcc_warnings */
     __extension__
     #endif
     auto xrmGetStringDatabase = reinterpret_cast<XrmDatabase(*)(const char*)>(dlsym(xlib, "XrmGetStringDatabase"));
-    #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/supressing_gcc_warnings */
+    #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/suppressing_gcc_warnings */
     __extension__
     #endif
     auto xrmGetResource = reinterpret_cast<int(*)(XrmDatabase, const char*, const char*, char**, XrmValue*)>(dlsym(xlib, "XrmGetResource"));
-    #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/supressing_gcc_warnings */
+    #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/suppressing_gcc_warnings */
     __extension__
     #endif
     auto xrmDestroyDatabase = reinterpret_cast<void(*)(XrmDatabase)>(dlsym(xlib, "XrmDestroyDatabase"));

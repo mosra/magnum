@@ -608,7 +608,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
             # Dynamic plugins don't have any prefix (e.g. `lib` on Linux),
             # search with empty prefix and then reset that back so we don't
-            # accidentaly break something else
+            # accidentally break something else
             set(_tmp_prefixes "${CMAKE_FIND_LIBRARY_PREFIXES}")
             set(CMAKE_FIND_LIBRARY_PREFIXES "${CMAKE_FIND_LIBRARY_PREFIXES};")
 

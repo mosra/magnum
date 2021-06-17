@@ -796,7 +796,7 @@ Released 2020-06-27, tagged as
     @cpp "intel-windows-crazy-broken-vao-dsa" @ce workarounds for Intel
     Windows drivers, disabling @gl_extension{ARB,direct_state_access} code
     paths in everything releated to buffers and meshes. There are several
-    issues occuring only in heavier apps, impossible to track down and
+    issues occurring only in heavier apps, impossible to track down and
     reproduce in a controlled environment. These two replace the previous
     @cpp "intel-windows-buggy-dsa-bufferdata-for-index-buffers" @ce workaround
     that attempted to fix this by doing an explicit buffer binding in some
@@ -1111,7 +1111,7 @@ Released 2020-06-27, tagged as
     [mosra/magnum#401](https://github.com/mosra/magnum/pull/401))
 -   HiDPI capability checking on macOS and iOS got fixed to behave correctly
     when the capability is explicitly set to @cb{.xml} <false/> @ce in the
-    `Info.plist` file and additionally, unless overriden, it's assumed to be
+    `Info.plist` file and additionally, unless overridden, it's assumed to be
     enabled by default on macOS 10.15+ and iOS 13+. Applications running on
     these platforms no longer need to supply a custom `Info.plist` in order to
     enable HiDPI. See @ref platforms-macos-hidpi for more information.
@@ -1428,7 +1428,7 @@ Released 2020-06-27, tagged as
     was deprecated in 2019.10 is now removed. Usually a deprecated feature is
     kept for at least a year before removal, but in this case it was severely
     limiting multithreaded applications and removing it was necessary.
--   Locations of generic shader attributes was changed in order to accomodate
+-   Locations of generic shader attributes was changed in order to accommodate
     for new attributes and use cases. This may break custom shaders if these
     rely on generic attribute definitions or are used together with
     @ref MeshTools::compile(). To avoid further breakages you're advised to
@@ -1548,7 +1548,7 @@ Released 2019-10-24, tagged as
 -   @ref DebugTools::CompareImage and @ref DebugTools::CompareImageToFile now
     accept also @ref Corrade::Containers::StridedArrayView2D on the left side
     of the comparison for added flexibility. See
-    @ref DebugTools-CompareImage-pixels for more infromation.
+    @ref DebugTools-CompareImage-pixels for more information.
 
 @subsubsection changelog-2019-10-new-gl GL library
 

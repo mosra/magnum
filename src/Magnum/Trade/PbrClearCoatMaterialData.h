@@ -72,7 +72,7 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * present or have the same value, and
          * @ref MaterialAttribute::LayerFactorTextureCoordinates and
          * @ref MaterialAttribute::RoughnessTextureCoordinates are both either
-         * not present or have the smae value; @cpp false @ce otherwise.
+         * not present or have the same value; @cpp false @ce otherwise.
          *
          * In other words, if this function returns @cpp true @ce,
          * @ref layerFactorTexture(), @ref layerFactorTextureMatrix() and

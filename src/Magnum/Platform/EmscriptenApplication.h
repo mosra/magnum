@@ -234,7 +234,7 @@ for a guide covering all platform differences.
 For this application in particular, @ref windowSize() can be different than
 @ref framebufferSize() on HiDPI displays --- which is different from
 @ref Sdl2Application behavior on Emscripten. By default, @ref dpiScaling() is
-@cpp 1.0f @ce in both dimensions but it can be overriden using custom DPI
+@cpp 1.0f @ce in both dimensions but it can be overridden using custom DPI
 scaling --- the `--magnum-dpi-scaling` command-line options are supported the
 same way as in @ref Sdl2Application, only in the form of URL GET parameters,
 similarly to all other @ref platforms-html5-environment "command-line options".

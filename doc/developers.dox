@@ -634,7 +634,7 @@ unless it doesn't affect public API at all.
     capabilities on the same platform (DSA / non-DSA is one of them), add
     separate code paths:
     -   new private and `MAGNUM_LOCAL` `thingImplementation*()` functions, each
-        implementing one code path, preferrably @cpp static @ce
+        implementing one code path, preferably @cpp static @ce
     -   a `thingImplementation` (member) function pointer in `src/Magnum/Implementation/SomeState.h`
         that gets populated in `src/Magnum/GL/Implementation/SomeState.cpp`
         based on extension / version availability
@@ -683,7 +683,7 @@ unless it doesn't affect public API at all.
     `KnownWorkarounds` array in `src/Magnum/GL/Implementation/driverSpecific.cpp`,
     ideally reuse some of the already existing vendor prefixes
 2.  If the workaround can be tied down to a particular platform / target, add
-    apropriate @cpp #ifdef @ce around it
+    appropriate @cpp #ifdef @ce around it
 3.  Create (or extend) a pair of (member) @cpp private @ce `MAGNUM_LOCAL`
     `*Implementation*()` functions in the affected class, `*ImplementationDefault()`
     having the optimistic default behavior, the other having the workaround.
@@ -706,7 +706,7 @@ unless it doesn't affect public API at all.
     @ref opengl-workarounds
 
 Removeing a workaround is simply a matter of searching for its string, removing
-all occurences of that string and removing all `*Implementation*()` functions
+all occurrences of that string and removing all `*Implementation*()` functions
 that were used only if the workaround was in place. No need to deprecate
 anything, users explicitly disabling given workaround will only be informed
 that such workaround does not exist anymore.
@@ -992,7 +992,7 @@ inverse.
     replace `... —` with `..., 20XZ —` there as well
 4.  Copy all `Find*.cmake` modules to dependent projects to update the
     copyright year in these as well
-5.  Update other occurences by hand:
+5.  Update other occurrences by hand:
     -   `package/debian/copyright`
     -   `doc/conf.py`
     -   All flextGL `*.template` files in `src/external/OpenGL` and
@@ -1061,7 +1061,7 @@ inverse.
     -   add a temporary <tt>\@<b></b>anchor changelog-latest</tt> (and
         equivalent in other repos) on top so the links from main page work
         properly
-8.  Convert all occurences of
+8.  Convert all occurrences of
     -   <tt>\@m_since_latest_{thing}</tt> to <tt>\@m_since_{thing,20XY,ab}</tt>
     -   <tt>\@m_since_latest</tt> to <tt>\@m_since{20XY,ab}</tt>
     -   <tt>\@m_deprecated_since_latest_{thing}</tt> to
@@ -1103,7 +1103,7 @@ inverse.
         new functionality
     -   add release annoucement link under the button on front page
 21. Publish the release announcement, verify it looks correct
-22. Advertise the release announcement, preferrably Monday 5 PM, never Friday
+22. Advertise the release announcement, preferably Monday 5 PM, never Friday
     or weekends
     -   come up with some 100-character-long extended title
     -   Twitter (extended title + url and some hashtags), first dry-run the

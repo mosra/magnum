@@ -39,7 +39,7 @@ overview the dependencies are color-coded:
     no license requirements, such as usage of public APIs like Vulkan or OpenAL
     or usage of platform-specific interfaces.
 -   A @m_class{m-label m-success} **green** label marks licenses that make the
-    dependency safe to use in a commerical setting without having to release
+    dependency safe to use in a commercial setting without having to release
     your source code, usually requiring you to give attribution.
 -   A @m_class{m-label m-primary} **light blue** label marks public domain
     software. In some countries there's no notion of public domain, in which
@@ -212,7 +212,7 @@ Are the below lists missing your name or something's wrong?
 -   **Thibault Jochem** ([\@Tryum](https://github.com/Tryum)) ---
     @ref Platform::GlfwApplication improvements
 -   **Thomas Tissot-Dupont** ([\@dolphineye](https://github.com/dolphineye))
-    --- OpenGL ES compatiblity improvements
+    --- OpenGL ES compatibility improvements
 -   **Travis Watkins** ([\@amaranth](https://github.com/amaranth)) --- support
     for windowless applications under macOS
 */

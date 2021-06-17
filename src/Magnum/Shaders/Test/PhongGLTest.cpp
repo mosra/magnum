@@ -653,7 +653,7 @@ const struct {
     {"point, range=0.0", "light-none.tga",
         {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, 0.0f, {}},
-    /* Distance is 0, which means the direction is always prependicular and
+    /* Distance is 0, which means the direction is always perpendicular and
        thus contributes nothing */
     {"point, distance=0", "light-none.tga",
         {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},

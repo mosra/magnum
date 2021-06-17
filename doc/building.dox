@@ -214,7 +214,7 @@ There are also ArchLinux packages for @ref building-plugins-packages-arch "Magnu
 @subsection building-packages-msys MSYS2 packages
 
 [MSYS2](https://www.msys2.org/) package for the latest stable release is
-mantained in the official repos. Installing is as simple as this:
+maintained in the official repos. Installing is as simple as this:
 
 @code{.sh}
 pacman -S mingw-w64-x86_64-magnum # or mingw-w64-i686-magnum

@@ -46,7 +46,7 @@ of them to any object.
 Basic usage involves instancing @ref DebugTools::ResourceManager and keeping it
 for the whole lifetime of debug renderers. Next you need some
 @ref SceneGraph::DrawableGroup instance. You can use the same group as for the
-rest of your scene, but preferrably use dedicated one for debug renderers, so
+rest of your scene, but preferably use dedicated one for debug renderers, so
 you can easily enable or disable debug rendering.
 
 Next step is to create configuration for your debug renderers and create

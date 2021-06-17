@@ -1470,7 +1470,7 @@ for a high-level overview.
 -   Support for @gl_extension{ARB,vertex_type_10f_11f_11f_rev} in
     @cpp AbstractShaderProgram::Attribute::DataType @ce
 -   New variants of @cpp Shader::compile() @ce and @cpp AbstractShaderProgram::link() @ce,
-    allowing the driver to perform paralell compilation in multiple threads.
+    allowing the driver to perform parallel compilation in multiple threads.
 -   Added @cpp *Texture::maxSize() @ce queries
 -   @ref MeshTools::compile() for automagic creation of 2D and 3D meshes from
     imported data

@@ -284,7 +284,7 @@ void EmscriptenApplication::create(const Configuration& configuration, const GLC
 Vector2 EmscriptenApplication::dpiScaling(const Configuration& configuration) const {
     std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
 
-    /* Use values from the configuration only if not overriden on command line.
+    /* Use values from the configuration only if not overridden on command line.
        In any case explicit scaling has a precedence before the policy. */
     if(!_commandLineDpiScaling.isZero()) {
         Debug{verbose} << "Platform::EmscriptenApplication: user-defined DPI scaling" << _commandLineDpiScaling;
@@ -824,7 +824,7 @@ void EmscriptenApplication::redraw() {
                is possible), and no amount of \\\\$$$ helps avoiding that
                xylophone); but doing so means we forever hardcode what
                functions are exported and thus whatever extra Emscripten needs
-               to export will be overriden by this, causing only pain and
+               to export will be overridden by this, causing only pain and
                misery.
 
                So instead we rely on the implementation details of dynCall,

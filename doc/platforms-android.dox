@@ -250,7 +250,7 @@ endif()
 @endcode
 
 On the first run, the macro will attempt to detect SDK location, Android Build
-Tools version and Android Platfrom version and it prints them to the output
+Tools version and Android Platform version and it prints them to the output
 like this:
 
 @code{.shell-session}
@@ -1137,7 +1137,7 @@ This for 3.3.0:
 @endcode
 
 And probably a dozen other variants, but I am not willing to waste my time any
-further by enumerating all possible embarrasing crashes of cursed tools. The
+further by enumerating all possible embarrassing crashes of cursed tools. The
 oldest Android Gradle plugin version that worked with Gradle 6.6.1 and NDK r19
 was 3.6.0, and to change it update the following entry in your `build.gradle`:
 

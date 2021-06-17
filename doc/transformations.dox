@@ -319,7 +319,7 @@ create helper functions, if you need them.
 
 The @ref SceneGraph API provides a hierarchical transformation hierarchy and a
 correct camera-relative transformation is calculated  automatically in the
-background, avoiding the need for manualy handling of  model / view
+background, avoiding the need for manually handling of  model / view
 transformations. In particular, camera position is always specified as relative
 to scene root and it gets inverted when calculating the final per-object
 transformation. See @ref scenegraph for detailed description.

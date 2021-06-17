@@ -1124,7 +1124,7 @@ class GlfwApplication::Configuration {
          * @brief DPI scaling policy
          *
          * DPI scaling policy when requesting a particular window size. Can
-         * be overriden on command-line using `--magnum-dpi-scaling` or via
+         * be overridden on command-line using `--magnum-dpi-scaling` or via
          * the `MAGNUM_DPI_SCALING` environment variable.
          * @see @ref setSize(), @ref Platform-Sdl2Application-dpi
          */

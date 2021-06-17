@@ -141,7 +141,7 @@ if(WITH_DEBUGTOOLS)
         # CompareImage documentation snippet. I need it executable so I can
         # copy&paste the output to the documentation. Also not using
         # corrade_add_test() because it shouldn't be run as part of CTest as it
-        # purposedly fails.
+        # purposely fails.
         add_executable(debugtools-compareimage debugtools-compareimage.cpp)
         target_link_libraries(debugtools-compareimage PRIVATE
             MagnumDebugTools

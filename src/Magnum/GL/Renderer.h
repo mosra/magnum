@@ -2114,7 +2114,7 @@ class MAGNUM_GL_EXPORT Renderer {
          *      WebGL.
          */
         enum class GraphicsResetStatus: GLenum {
-            /** No reset occured since last call. */
+            /** No reset occurred since last call. */
             NoError = GL_NO_ERROR,
 
             /**

@@ -419,25 +419,25 @@ The default is depending on the platform:
     @ref windowSize() and @ref framebufferSize() will differ depending on
     whether `NSHighResolutionCapable` is enabled in the `*.plist` file or not.
     By default, @ref dpiScaling() is @cpp 1.0f @ce in both dimensions but it
-    can be overriden using custom DPI scaling.
+    can be overridden using custom DPI scaling.
 -   On Windows, the default is @ref Configuration::DpiScalingPolicy::Framebuffer.
     The @ref windowSize() and @ref framebufferSize() is always the same.
     Depending on whether the DPI awareness was enabled in the manifest file or
     set by the `SetProcessDpiAwareness()` API, @ref dpiScaling() is either
     @cpp 1.0f @ce in both dimensions, indicating a low-DPI screen or a
     non-DPI-aware app, or some other value for HiDPI screens. In both cases the
-    value can be overriden using custom DPI scaling.
+    value can be overridden using custom DPI scaling.
 -   On Linux, the default is @ref Configuration::DpiScalingPolicy::Virtual,
     taken from the `Xft.dpi` property. If the property is not available, it
     falls back to @ref Configuration::DpiScalingPolicy::Physical, querying the
     monitor DPI value. The @ref windowSize() and @ref framebufferSize() is
     always the same, @ref dpiScaling() contains the queried DPI scaling value.
-    The value can be overriden using custom DPI scaling.
+    The value can be overridden using custom DPI scaling.
 -   On @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", the default is physical DPI
     scaling, taken from [Window.getDevicePixelRatio()](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio). The
     @ref windowSize() and @ref framebufferSize() is always the same,
     @ref dpiScaling() contains the queried DPI scaling value. The value can be
-    overriden using custom DPI scaling. Note that this is different from the
+    overridden using custom DPI scaling. Note that this is different from the
     behavior in @ref EmscriptenApplication --- Emscripten's SDL implementation
     has some additional emulation code that reports event coordinates in
     framebuffer pixels instead of CSS pixels. See
@@ -1755,7 +1755,7 @@ class Sdl2Application::Configuration {
          * @brief DPI scaling policy
          *
          * DPI scaling policy when requesting a particular window size. Can
-         * be overriden on command-line using `--magnum-dpi-scaling` or via
+         * be overridden on command-line using `--magnum-dpi-scaling` or via
          * the `MAGNUM_DPI_SCALING` environment variable.
          * @see @ref setSize(), @ref Platform-Sdl2Application-dpi
          */

@@ -758,7 +758,7 @@ class AndroidApplication::MouseEvent: public InputEvent {
 
             /**
              * Left mouse button. Note that this button is not set if only
-             * touch or stylus event occured.
+             * touch or stylus event occurred.
              * @attention Available since Android 4.0 (API level 14), not
              *      detectable in earlier versions.
              */
@@ -827,7 +827,7 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
         enum class Button: std::int32_t {
             /**
              * Left mouse button. Note that this button is not set if only
-             * touch or stylus event occured.
+             * touch or stylus event occurred.
              * @attention Available since Android 4.0 (API level 14), not
              *      detectable in earlier versions.
              */

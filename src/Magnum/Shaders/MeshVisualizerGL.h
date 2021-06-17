@@ -669,7 +669,7 @@ this, the mesh will be rendered in a single color.
 
 If you don't have geometry shaders, you need to enable @ref Flag::NoGeometryShader
 (done by default in OpenGL ES 2.0) and use only **non-indexed** triangle meshes
-(see @ref MeshTools::duplicate() for a possible solution). Additionaly, if you
+(see @ref MeshTools::duplicate() for a possible solution). Additionally, if you
 have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also the
 @ref VertexIndex attribute.
 
