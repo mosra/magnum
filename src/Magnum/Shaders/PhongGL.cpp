@@ -91,7 +91,7 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
         "Shaders::PhongGL: texture transformation enabled but the shader is not textured", );
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags & Flag::InstancedObjectId) || !(flags & Flag::Bitangent),
+    CORRADE_ASSERT(!(flags >= Flag::InstancedObjectId) || !(flags & Flag::Bitangent),
         "Shaders::PhongGL: Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead", );
     #endif
 
