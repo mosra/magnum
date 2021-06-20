@@ -887,7 +887,7 @@ bool Sdl2Application::mainLoopIteration() {
         switch(event.type) {
             case SDL_WINDOWEVENT:
                 switch(event.window.event) {
-                    /* Not using SDL_WINDOWEVENT_RESIZED, because that does't
+                    /* Not using SDL_WINDOWEVENT_RESIZED, because that doesn't
                        get fired when the window is resized programmatically
                        (such as through setMaxWindowSize()) */
                     case SDL_WINDOWEVENT_SIZE_CHANGED: {

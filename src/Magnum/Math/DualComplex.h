@@ -108,7 +108,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
-         * @brief Create dual complexity from rotation complex and translation vector
+         * @brief Create dual complex from rotation complex and translation vector
          * @m_since_latest
          *
          * @f[
