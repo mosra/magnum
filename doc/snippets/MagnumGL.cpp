@@ -121,7 +121,15 @@ carBumpTexture.setStorage(5, GL::TextureFormat::RGB8, {256, 256})
 #endif
 
 {
+#if defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11
+#pragma GCC diagnostic push
+/* Stupid thing. YES I WANT THIS TO BE A FUNCTION, CAN YOU SHUT UP */
+#pragma GCC diagnostic ignored "-Wvexing-parse"
+#endif
 auto importSomeMesh() -> std::tuple<GL::Mesh, GL::Buffer, GL::Buffer>;
+#if defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11
+#pragma GCC diagnostic pop
+#endif
 /* [opengl-wrapping-nocreate] */
 GL::Mesh mesh{NoCreate};
 GL::Buffer vertices{NoCreate}, indices{NoCreate};

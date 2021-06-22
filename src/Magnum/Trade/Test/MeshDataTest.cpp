@@ -1552,8 +1552,8 @@ void MeshDataTest::constructAttributelessNotOwned() {
 }
 
 void MeshDataTest::constructIndexlessAttributeless() {
-    int importerState;
-    MeshData data{MeshPrimitive::TriangleStrip, 37, &importerState};
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+    MeshData data{MeshPrimitive::TriangleStrip, 37, &state};
     /* These are both empty so it doesn't matter, but this is a nice
        non-restrictive default */
     CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -1562,7 +1562,7 @@ void MeshDataTest::constructIndexlessAttributeless() {
     CORRADE_VERIFY(!data.attributeData());
     CORRADE_COMPARE(data.indexData(), nullptr);
     CORRADE_COMPARE(data.vertexData(), nullptr);
-    CORRADE_COMPARE(data.importerState(), &importerState);
+    CORRADE_COMPARE(data.importerState(), &state);
 
     CORRADE_VERIFY(!data.isIndexed());
     CORRADE_COMPARE(data.vertexCount(), 37);
@@ -1570,13 +1570,13 @@ void MeshDataTest::constructIndexlessAttributeless() {
 }
 
 void MeshDataTest::constructIndexlessAttributelessZeroVertices() {
-    int importerState;
-    MeshData data{MeshPrimitive::TriangleStrip, 0, &importerState};
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+    MeshData data{MeshPrimitive::TriangleStrip, 0, &state};
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::TriangleStrip);
     CORRADE_VERIFY(!data.attributeData());
     CORRADE_COMPARE(data.indexData(), nullptr);
     CORRADE_COMPARE(data.vertexData(), nullptr);
-    CORRADE_COMPARE(data.importerState(), &importerState);
+    CORRADE_COMPARE(data.importerState(), &state);
 
     CORRADE_VERIFY(!data.isIndexed());
     CORRADE_COMPARE(data.vertexCount(), 0);
