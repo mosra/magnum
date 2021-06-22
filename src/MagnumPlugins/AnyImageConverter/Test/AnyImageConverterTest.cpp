@@ -43,12 +43,16 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct AnyImageConverterTest: TestSuite::Tester {
     explicit AnyImageConverterTest();
 
-    void convert();
-    void detect();
+    void convert2D();
+    void convertCompressed2D();
+    void detect2D();
+    void detectCompressed2D();
 
-    void unknown();
+    void unknown2D();
+    void unknownCompressed2D();
 
-    void propagateFlags();
+    void propagateFlags2D();
+    void propagateFlagsCompressed2D();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImageConverter> _manager{"nonexistent"};
@@ -76,15 +80,21 @@ constexpr struct {
 };
 
 AnyImageConverterTest::AnyImageConverterTest() {
-    addInstancedTests({&AnyImageConverterTest::convert},
+    addInstancedTests({&AnyImageConverterTest::convert2D},
         Containers::arraySize(ConvertData));
 
-    addInstancedTests({&AnyImageConverterTest::detect},
+    addTests({&AnyImageConverterTest::convertCompressed2D});
+
+    addInstancedTests({&AnyImageConverterTest::detect2D},
         Containers::arraySize(DetectData));
 
-    addTests({&AnyImageConverterTest::unknown,
+    addTests({&AnyImageConverterTest::detectCompressed2D,
 
-              &AnyImageConverterTest::propagateFlags});
+              &AnyImageConverterTest::unknown2D,
+              &AnyImageConverterTest::unknownCompressed2D,
+
+              &AnyImageConverterTest::propagateFlags2D,
+              &AnyImageConverterTest::propagateFlagsCompressed2D});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -108,7 +118,7 @@ constexpr const char Data[] = {
 
 const ImageView2D Image{PixelFormat::RGB8Unorm, {2, 3}, Data};
 
-void AnyImageConverterTest::convert() {
+void AnyImageConverterTest::convert2D() {
     auto&& data = ConvertData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -126,7 +136,11 @@ void AnyImageConverterTest::convert() {
     CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
-void AnyImageConverterTest::detect() {
+void AnyImageConverterTest::convertCompressed2D() {
+    CORRADE_SKIP("No file formats to store compressed data yet.");
+}
+
+void AnyImageConverterTest::detect2D() {
     auto&& data = DetectData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -145,7 +159,11 @@ void AnyImageConverterTest::detect() {
     #endif
 }
 
-void AnyImageConverterTest::unknown() {
+void AnyImageConverterTest::detectCompressed2D() {
+    CORRADE_SKIP("No file formats to store compressed data yet.");
+}
+
+void AnyImageConverterTest::unknown2D() {
     std::ostringstream output;
     Error redirectError{&output};
 
@@ -155,7 +173,11 @@ void AnyImageConverterTest::unknown() {
     CORRADE_COMPARE(output.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.xcf\n");
 }
 
-void AnyImageConverterTest::propagateFlags() {
+void AnyImageConverterTest::unknownCompressed2D() {
+    CORRADE_SKIP("No file formats to store compressed data yet.");
+}
+
+void AnyImageConverterTest::propagateFlags2D() {
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
@@ -176,6 +198,10 @@ void AnyImageConverterTest::propagateFlags() {
     CORRADE_COMPARE(out.str(),
         "Trade::AnyImageConverter::convertToFile(): using TgaImageConverter\n"
         "Trade::TgaImageConverter::convertToData(): converting from RGB to BGR\n");
+}
+
+void AnyImageConverterTest::propagateFlagsCompressed2D() {
+    CORRADE_SKIP("No file formats to store compressed data yet.");
 }
 
 }}}}
