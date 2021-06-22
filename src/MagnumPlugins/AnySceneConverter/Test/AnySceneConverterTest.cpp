@@ -41,12 +41,12 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct AnySceneConverterTest: TestSuite::Tester {
     explicit AnySceneConverterTest();
 
-    void load();
+    void convert();
     void detect();
 
     void unknown();
 
-    void verbose();
+    void propagateFlags();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractSceneConverter> _manager{"nonexistent"};
@@ -62,14 +62,14 @@ constexpr struct {
 };
 
 AnySceneConverterTest::AnySceneConverterTest() {
-    addTests({&AnySceneConverterTest::load});
+    addTests({&AnySceneConverterTest::convert});
 
     addInstancedTests({&AnySceneConverterTest::detect},
         Containers::arraySize(DetectData));
 
     addTests({&AnySceneConverterTest::unknown,
 
-              &AnySceneConverterTest::verbose});
+              &AnySceneConverterTest::propagateFlags});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -81,7 +81,7 @@ AnySceneConverterTest::AnySceneConverterTest() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Directory::mkpath(ANYSCENECONVERTER_TEST_OUTPUT_DIR));
 }
 
-void AnySceneConverterTest::load() {
+void AnySceneConverterTest::convert() {
     CORRADE_SKIP("No scene converter plugin available to test.");
 }
 
@@ -114,7 +114,7 @@ void AnySceneConverterTest::unknown() {
     CORRADE_COMPARE(output.str(), "Trade::AnySceneConverter::convertToFile(): cannot determine the format of mesh.obj\n");
 }
 
-void AnySceneConverterTest::verbose() {
+void AnySceneConverterTest::propagateFlags() {
     CORRADE_SKIP("No plugin available to test.");
 }
 

@@ -48,7 +48,7 @@ struct AnyImageConverterTest: TestSuite::Tester {
 
     void unknown();
 
-    void verbose();
+    void propagateFlags();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImageConverter> _manager{"nonexistent"};
@@ -84,7 +84,7 @@ AnyImageConverterTest::AnyImageConverterTest() {
 
     addTests({&AnyImageConverterTest::unknown,
 
-              &AnyImageConverterTest::verbose});
+              &AnyImageConverterTest::propagateFlags});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -155,7 +155,7 @@ void AnyImageConverterTest::unknown() {
     CORRADE_COMPARE(output.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.xcf\n");
 }
 
-void AnyImageConverterTest::verbose() {
+void AnyImageConverterTest::propagateFlags() {
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 

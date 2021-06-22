@@ -49,7 +49,7 @@ struct AnyImageImporterTest: TestSuite::Tester {
     void unknownSignature();
     void emptyData();
 
-    void verbose();
+    void propagateFlags();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
@@ -130,7 +130,7 @@ AnyImageImporterTest::AnyImageImporterTest() {
 
     addTests({&AnyImageImporterTest::emptyData});
 
-    addInstancedTests({&AnyImageImporterTest::verbose},
+    addInstancedTests({&AnyImageImporterTest::propagateFlags},
         Containers::arraySize(LoadData));
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
@@ -222,7 +222,7 @@ void AnyImageImporterTest::emptyData() {
     CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openData(): file is empty\n");
 }
 
-void AnyImageImporterTest::verbose() {
+void AnyImageImporterTest::propagateFlags() {
     auto&& data = LoadData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
