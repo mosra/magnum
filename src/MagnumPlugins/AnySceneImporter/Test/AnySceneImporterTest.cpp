@@ -182,24 +182,31 @@ void AnySceneImporterTest::unknown() {
 }
 
 void AnySceneImporterTest::propagateFlags() {
-    if(!(_manager.loadState("ObjImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
 
-    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+    if(manager.load("AssimpImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("AssimpImporter plugin can't be loaded.");
+    /* Ensure Assimp is used for PLY files and not our StanfordImporter */
+    manager.setPreferredPlugins("StanfordImporter", {"AssimpImporter"});
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
     importer->setFlags(ImporterFlag::Verbose);
 
     std::ostringstream out;
     {
         Debug redirectOutput{&out};
-        CORRADE_VERIFY(importer->openFile(OBJ_FILE));
+        CORRADE_VERIFY(importer->openFile(PLY_FILE));
         CORRADE_VERIFY(importer->mesh(0));
     }
-    CORRADE_COMPARE(out.str(),
-        "Trade::AnySceneImporter::openFile(): using ObjImporter\n");
 
-    /* We tested AnySceneImporter's verbose output, but can't actually test
-       the flag propagation in any way yet */
-    CORRADE_SKIP("No plugin with verbose output available to test flag propagation.");
+    Containers::StringView expected =
+        "Trade::AnySceneImporter::openFile(): using StanfordImporter (provided by AssimpImporter)\n"
+        "Trade::AssimpImporter: Info,  T0: Load " PLY_FILE "\n";
+    /** @todo use Compare::StringPrefix(?) when it exists */
+    CORRADE_COMPARE(out.str().substr(0, expected.size()), expected);
 }
 
 }}}}
