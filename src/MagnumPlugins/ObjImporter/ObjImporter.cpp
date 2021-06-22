@@ -189,7 +189,7 @@ void ObjImporter::parseMeshNames() {
 
         /* Index data, just mark that we found something for first unnamed
            object */
-        } else if(thisIsFirstMeshAndItHasNoData) for(const std::string& data: {"p", "l", "f"}) {
+        } else if(thisIsFirstMeshAndItHasNoData) for(const std::string data: {"p", "l", "f"}) {
             if(keyword == data) {
                 thisIsFirstMeshAndItHasNoData = false;
                 break;
