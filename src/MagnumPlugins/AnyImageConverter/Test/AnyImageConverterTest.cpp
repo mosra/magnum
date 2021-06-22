@@ -107,7 +107,7 @@ AnyImageConverterTest::AnyImageConverterTest() {
     #endif
 
     /* Create the output directory if it doesn't exist yet */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Directory::mkpath(ANYIMAGECONVERTER_TEST_DIR));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Directory::mkpath(ANYIMAGECONVERTER_TEST_OUTPUT_DIR));
 }
 
 constexpr const char Data[] = {
@@ -125,7 +125,7 @@ void AnyImageConverterTest::convert2D() {
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_DIR, data.filename);
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, data.filename);
 
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
@@ -181,7 +181,7 @@ void AnyImageConverterTest::propagateFlags2D() {
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_DIR, "output.tga");
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.tga");
 
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
