@@ -190,11 +190,11 @@ std::pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage sta
         Error{} << "ShaderTools::AnyConverter::validateFile(): cannot load the" << plugin << "plugin";
         return {};
     }
-    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ConverterFlag::Verbose) {
         Debug d;
         d << "ShaderTools::AnyConverter::validateFile(): using" << plugin;
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -243,11 +243,12 @@ std::pair<bool, Containers::String> AnyConverter::doValidateData(const Stage sta
         Error{} << "ShaderTools::AnyConverter::validateData(): cannot load the" << plugin << "plugin";
         return {};
     }
-    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ConverterFlag::Verbose) {
         Debug d;
         d << "ShaderTools::AnyConverter::validateData(): using" << plugin;
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -307,11 +308,12 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
         Error{} << "ShaderTools::AnyConverter::convertFileToFile(): cannot load the" << plugin << "plugin";
         return {};
     }
-    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ConverterFlag::Verbose) {
         Debug d;
         d << "ShaderTools::AnyConverter::convertFileToFile(): using" << plugin;
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -388,11 +390,12 @@ Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, con
         Error{} << "ShaderTools::AnyConverter::convertFileToData(): cannot load the" << plugin << "plugin";
         return {};
     }
-    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ConverterFlag::Verbose) {
         Debug d;
         d << "ShaderTools::AnyConverter::convertFileToData(): using" << plugin;
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -467,11 +470,12 @@ Containers::Array<char> AnyConverter::doConvertDataToData(const Stage stage, con
         Error{} << "ShaderTools::AnyConverter::convertDataToData(): cannot load the" << plugin << "plugin";
         return {};
     }
-    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ConverterFlag::Verbose) {
         Debug d;
         d << "ShaderTools::AnyConverter::convertDataToData(): using" << plugin;
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
