@@ -877,7 +877,7 @@ void AnyConverterTest::convertFileToFilePropagateOptimization() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->convertFileToFile(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv"), Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv")));
     CORRADE_COMPARE(out.str(),
-        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl, vulkanToWebGpu, webGpuToVulkan or empty but got 2\n");
+        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl or empty but got 2\n");
 }
 
 void AnyConverterTest::convertFileToData() {
@@ -1188,7 +1188,7 @@ void AnyConverterTest::convertFileToDataPropagateOptimization() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->convertFileToData(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv")));
     CORRADE_COMPARE(out.str(),
-        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl, vulkanToWebGpu, webGpuToVulkan or empty but got 2\n");
+        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl or empty but got 2\n");
 }
 
 void AnyConverterTest::convertDataToData() {
@@ -1506,7 +1506,7 @@ void AnyConverterTest::convertDataToDataPropagateOptimization() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->convertDataToData(Stage::Fragment, Utility::Directory::read(Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv"))));
     CORRADE_COMPARE(out.str(),
-        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl, vulkanToWebGpu, webGpuToVulkan or empty but got 2\n");
+        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl or empty but got 2\n");
 }
 
 void AnyConverterTest::detectValidate() {
