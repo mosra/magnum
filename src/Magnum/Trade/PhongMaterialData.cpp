@@ -44,13 +44,13 @@ PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientCol
     Containers::Array<MaterialAttributeData> data;
 
     if(flags & Flag::DoubleSided)
-        arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::DoubleSided, true);
+        arrayAppend(data, InPlaceInit, MaterialAttribute::DoubleSided, true);
     if(alphaMode == MaterialAlphaMode::Blend)
-        arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::AlphaBlend, true);
+        arrayAppend(data, InPlaceInit, MaterialAttribute::AlphaBlend, true);
     /* Include a mask also if it has a non-default value to stay compatible
        with existing behavior */
     if(alphaMode == MaterialAlphaMode::Mask || alphaMask != 0.0f)
-        arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::AlphaMask, alphaMask);
+        arrayAppend(data, InPlaceInit, MaterialAttribute::AlphaMask, alphaMask);
 
     CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)),
         "Trade::PhongMaterialData: texture transformation enabled but the material has no textures", data);
@@ -59,37 +59,37 @@ PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientCol
     CORRADE_ASSERT((flags & Flag::TextureCoordinateSets) || (ambientTextureCoordinates == 0 && diffuseTextureCoordinates == 0 && specularTextureCoordinates == 0 && normalTextureCoordinates == 0),
         "PhongMaterialData::PhongMaterialData: non-zero texture coordinate sets require Flag::TextureCoordinates to be enabled", data);
 
-    arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::AmbientColor, ambientColor);
+    arrayAppend(data, InPlaceInit, MaterialAttribute::AmbientColor, ambientColor);
     if(flags & Flag::AmbientTexture) {
-        arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::AmbientTexture, ambientTexture);
+        arrayAppend(data, InPlaceInit, MaterialAttribute::AmbientTexture, ambientTexture);
         if(ambientTextureCoordinates)
-            arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::AmbientTextureCoordinates, ambientTextureCoordinates);
+            arrayAppend(data, InPlaceInit, MaterialAttribute::AmbientTextureCoordinates, ambientTextureCoordinates);
     }
 
-    arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::DiffuseColor, diffuseColor);
+    arrayAppend(data, InPlaceInit, MaterialAttribute::DiffuseColor, diffuseColor);
     if(flags & Flag::DiffuseTexture) {
-        arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::DiffuseTexture, diffuseTexture);
+        arrayAppend(data, InPlaceInit, MaterialAttribute::DiffuseTexture, diffuseTexture);
         if(diffuseTextureCoordinates)
-            arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::DiffuseTextureCoordinates, diffuseTextureCoordinates);
+            arrayAppend(data, InPlaceInit, MaterialAttribute::DiffuseTextureCoordinates, diffuseTextureCoordinates);
     }
 
-    arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::SpecularColor, specularColor);
+    arrayAppend(data, InPlaceInit, MaterialAttribute::SpecularColor, specularColor);
     if(flags & Flag::SpecularTexture) {
-        arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::SpecularTexture, specularTexture);
+        arrayAppend(data, InPlaceInit, MaterialAttribute::SpecularTexture, specularTexture);
         if(specularTextureCoordinates)
-            arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::SpecularTextureCoordinates, specularTextureCoordinates);
+            arrayAppend(data, InPlaceInit, MaterialAttribute::SpecularTextureCoordinates, specularTextureCoordinates);
     }
 
     if(flags & Flag::NormalTexture) {
-        arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::NormalTexture, normalTexture);
+        arrayAppend(data, InPlaceInit, MaterialAttribute::NormalTexture, normalTexture);
         if(normalTextureCoordinates)
-            arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::NormalTextureCoordinates, normalTextureCoordinates);
+            arrayAppend(data, InPlaceInit, MaterialAttribute::NormalTextureCoordinates, normalTextureCoordinates);
     }
 
     if(flags & Flag::TextureTransformation)
-        arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::TextureMatrix, textureMatrix);
+        arrayAppend(data, InPlaceInit, MaterialAttribute::TextureMatrix, textureMatrix);
 
-    arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::Shininess, shininess);
+    arrayAppend(data, InPlaceInit, MaterialAttribute::Shininess, shininess);
 
     /* Convert back to a non-growable Array as importers don't allow custom
        deleters in plugin implementations */
