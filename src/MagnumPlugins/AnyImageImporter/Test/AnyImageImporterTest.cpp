@@ -28,10 +28,13 @@
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
+#include "Magnum/ImageView.h"
+#include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 
@@ -50,6 +53,10 @@ struct AnyImageImporterTest: TestSuite::Tester {
     void emptyData();
 
     void propagateFlags();
+    void propagateConfiguration();
+    void propagateConfigurationUnknown();
+    /* configuration propagation fully tested in AnySceneImporter, as there the
+       plugins have configuration subgroups as well */
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
@@ -64,7 +71,7 @@ constexpr struct {
     const char* name;
     const char* filename;
     Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
-    const char* verboseFunctionName;
+    const char* messageFunctionName;
 } LoadData[]{
     {"TGA", TGA_FILE, nullptr, "openFile"},
     {"TGA data", TGA_FILE, fileCallback, "openData"}
@@ -116,6 +123,15 @@ const struct {
     {"TIFF, but no zero byte", "MM\xff\x2a"_s, "4d4dff2a"}
 };
 
+constexpr struct {
+    const char* name;
+    const char* filename;
+    Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
+} PropagateConfigurationData[]{
+    {"EXR", EXR_FILE, nullptr},
+    {"EXR data", EXR_FILE, fileCallback}
+};
+
 AnyImageImporterTest::AnyImageImporterTest() {
     addInstancedTests({&AnyImageImporterTest::load},
         Containers::arraySize(LoadData));
@@ -131,6 +147,12 @@ AnyImageImporterTest::AnyImageImporterTest() {
     addTests({&AnyImageImporterTest::emptyData});
 
     addInstancedTests({&AnyImageImporterTest::propagateFlags},
+        Containers::arraySize(LoadData));
+
+    addInstancedTests({&AnyImageImporterTest::propagateConfiguration},
+        Containers::arraySize(PropagateConfigurationData));
+
+    addInstancedTests({&AnyImageImporterTest::propagateConfigurationUnknown},
         Containers::arraySize(LoadData));
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
@@ -244,7 +266,59 @@ void AnyImageImporterTest::propagateFlags() {
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Trade::AnyImageImporter::{}(): using TgaImporter\n"
         "Trade::TgaImporter::image2D(): converting from BGR to RGB\n",
-        data.verboseFunctionName));
+        data.messageFunctionName));
+}
+
+void AnyImageImporterTest::propagateConfiguration() {
+    auto&& data = PropagateConfigurationData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
+    importer->configuration().setValue("layer", "left");
+    importer->configuration().setValue("depth", "height");
+
+    Containers::Array<char> storage;
+    importer->setFileCallback(data.callback, storage);
+    CORRADE_VERIFY(importer->openFile(data.filename));
+
+    Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
+    CORRADE_VERIFY(image);
+
+    /* Comparing image contents to verify the custom channels were used */
+    const Float Depth32fData[] = {
+        0.125f, 0.250f, 0.375f,
+        0.500f, 0.625f, 0.750f
+    };
+    const ImageView2D Depth32f{PixelFormat::Depth32F, {3, 2}, Depth32fData};
+    CORRADE_COMPARE_AS(*image, Depth32f,
+        DebugTools::CompareImage);
+}
+
+void AnyImageImporterTest::propagateConfigurationUnknown() {
+    auto&& data = LoadData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    if(!(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, cannot test");
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
+    importer->configuration().setValue("noSuchOption", "isHere");
+
+    Containers::Array<char> storage;
+    importer->setFileCallback(data.callback, storage);
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(importer->openFile(data.filename));
+    CORRADE_COMPARE(out.str(), Utility::formatString("Trade::AnyImageImporter::{}(): option noSuchOption not recognized by TgaImporter\n", data.messageFunctionName));
 }
 
 }}}}

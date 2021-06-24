@@ -34,6 +34,7 @@
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Trade/ImageData.h"
+#include "MagnumPlugins/Implementation/propagateConfiguration.h"
 
 namespace Magnum { namespace Trade {
 
@@ -67,11 +68,12 @@ bool AnySceneConverter::doConvertToFile(const MeshData& mesh, const Containers::
         Error{} << "Trade::AnySceneConverter::convertToFile(): cannot load the" << plugin << "plugin";
         return false;
     }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & SceneConverterFlag::Verbose) {
         Debug d;
         d << "Trade::AnySceneConverter::convertToFile(): using" << plugin;
-        PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -79,6 +81,9 @@ bool AnySceneConverter::doConvertToFile(const MeshData& mesh, const Containers::
     /* Instantiate the plugin, propagate flags */
     Containers::Pointer<AbstractSceneConverter> converter = static_cast<PluginManager::Manager<AbstractSceneConverter>*>(manager())->instantiate(plugin);
     converter->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnySceneConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */

@@ -127,6 +127,20 @@ target_link_libraries(your-app PRIVATE Magnum::AnyImageImporter)
 
 See @ref building, @ref cmake, @ref plugins and @ref file-formats for more
 information.
+
+@section Audio-AnyImageImporter-proxy Interface proxying and option propagation
+
+On a call to @ref openFile() / @ref openData(), a file format is detected from
+the extension / file signature and a corresponding plugin is loaded. After
+that, flags set via @ref setFlags() and options set through
+@ref configuration() are propagated to the concrete implementation, with a
+warning emitted in case given option is not present in the default
+configuration of the target plugin.
+
+Calls to the @ref image2DCount(), @ref image2DLevelCount() and @ref image2D()
+functions are then proxied to the concrete implementation. The @ref close()
+function closes and discards the internally instantiated plugin;
+@ref isOpened() works as usual.
 */
 class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
     public:

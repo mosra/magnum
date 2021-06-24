@@ -35,6 +35,8 @@
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/String.h>
 
+#include "MagnumPlugins/Implementation/propagateConfiguration.h"
+
 namespace Magnum { namespace ShaderTools {
 
 struct AnyConverter::State {
@@ -223,6 +225,9 @@ std::pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage sta
     if(!_state->definitionViews.empty())
         converter->setDefinitions(_state->definitionViews);
 
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::validateFile():", {}, metadata->name(), configuration(), converter->configuration());
+
     /* Try to validate the file (error output should be printed by the plugin
        itself) */
     return converter->validateFile(stage, filename);
@@ -276,6 +281,9 @@ std::pair<bool, Containers::String> AnyConverter::doValidateData(const Stage sta
     /* Propagate definitions, if any */
     if(!_state->definitionViews.empty())
         converter->setDefinitions(_state->definitionViews);
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::validateData():", {}, metadata->name(), configuration(), converter->configuration());
 
     /* Try to validate the data (error output should be printed by the plugin
        itself) */
@@ -357,6 +365,9 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
         converter->setDebugInfoLevel(_state->debugInfoLevel);
     if(!_state->optimizationLevel.isEmpty())
         converter->setOptimizationLevel(_state->optimizationLevel);
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::convertFileToFile():", {}, metadata->name(), configuration(), converter->configuration());
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -440,6 +451,9 @@ Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, con
     if(!_state->optimizationLevel.isEmpty())
         converter->setOptimizationLevel(_state->optimizationLevel);
 
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::convertFileToData():", {}, metadata->name(), configuration(), converter->configuration());
+
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
     return converter->convertFileToData(stage, filename);
@@ -519,6 +533,9 @@ Containers::Array<char> AnyConverter::doConvertDataToData(const Stage stage, con
         converter->setDebugInfoLevel(_state->debugInfoLevel);
     if(!_state->optimizationLevel.isEmpty())
         converter->setOptimizationLevel(_state->optimizationLevel);
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::convertDataToData():", {}, metadata->name(), configuration(), converter->configuration());
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */

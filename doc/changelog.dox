@@ -336,6 +336,16 @@ See also:
 @subsubsection changelog-latest-changes-trade Trade library
 
 -   Recognizing TIFF file header magic in @ref Trade::AnyImageImporter "AnyImageImporter"
+-   @ref Audio::AnyImporter "AnyAudioImporter",
+    @relativeref{Trade,AnyImageImporter}, @relativeref{Trade,AnyImageConverter},
+    @relativeref{Trade,AnySceneImporter}, @relativeref{Trade,AnySceneConverter}
+    and @ref ShaderTools::AnyConverter "AnyShaderConverter" are now capable of
+    propagating configuration options to the concrete plugin, which is useful
+    mainly when using @ref magnum-imageconverter and other utilities as you can
+    now specify just the `-i` / `-c` options without having to specify which
+    plugin to apply the option to with `-I` / `-C`. For better usability, the
+    plugins also warn if the user specifies and option that is not present in
+    the target implementation.
 -   Added @ref Trade::PhongMaterialData::hasCommonTextureTransformation(),
     @ref Trade::PhongMaterialData::ambientTextureMatrix(),
     @ref Trade::PhongMaterialData::diffuseTextureMatrix(),

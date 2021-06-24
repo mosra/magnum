@@ -99,6 +99,18 @@ target_link_libraries(your-app PRIVATE Magnum::AnyAudioImporter)
 @endcode
 
 See @ref building, @ref cmake and @ref plugins for more information.
+
+@section Audio-AnyImporter-proxy Interface proxying and option propagation
+
+On a call to @ref openFile(), a file format is detected from the extension and
+a corresponding plugin is loaded. After that, options set through
+@ref configuration() are propagated to the concrete implementation, with a
+warning emitted in case given option is not present in the default
+configuration of the target plugin.
+
+Calls to the @ref format(), @ref frequency() and @ref data() functions are then
+proxied to the concrete implementation. The @ref close() function closes and
+discards the internally instantiated plugin; @ref isOpened() works as usual.
 */
 class MAGNUM_ANYAUDIOIMPORTER_EXPORT AnyImporter: public AbstractImporter {
     public:

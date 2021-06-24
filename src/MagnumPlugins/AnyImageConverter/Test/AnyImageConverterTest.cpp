@@ -27,6 +27,8 @@
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/File.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
@@ -53,6 +55,12 @@ struct AnyImageConverterTest: TestSuite::Tester {
 
     void propagateFlags2D();
     void propagateFlagsCompressed2D();
+    void propagateConfiguration2D();
+    void propagateConfigurationUnknown2D();
+    void propagateConfigurationCompressed2D();
+    void propagateConfigurationCompressedUnknown2D();
+    /* configuration propagation fully tested in AnySceneImporter, as there the
+       plugins have configuration subgroups as well */
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImageConverter> _manager{"nonexistent"};
@@ -94,7 +102,11 @@ AnyImageConverterTest::AnyImageConverterTest() {
               &AnyImageConverterTest::unknownCompressed2D,
 
               &AnyImageConverterTest::propagateFlags2D,
-              &AnyImageConverterTest::propagateFlagsCompressed2D});
+              &AnyImageConverterTest::propagateFlagsCompressed2D,
+              &AnyImageConverterTest::propagateConfiguration2D,
+              &AnyImageConverterTest::propagateConfigurationUnknown2D,
+              &AnyImageConverterTest::propagateConfigurationCompressed2D,
+              &AnyImageConverterTest::propagateConfigurationCompressedUnknown2D});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -201,6 +213,58 @@ void AnyImageConverterTest::propagateFlags2D() {
 }
 
 void AnyImageConverterTest::propagateFlagsCompressed2D() {
+    CORRADE_SKIP("No file formats to store compressed data yet.");
+}
+
+void AnyImageConverterTest::propagateConfiguration2D() {
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "depth32f-custom-channels.exr");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    const Float Depth32fData[] = {
+        0.125f, 0.250f, 0.375f,
+        0.500f, 0.625f, 0.750f
+    };
+
+    const ImageView2D Depth32f{PixelFormat::Depth32F, {3, 2}, Depth32fData};
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("layer", "left");
+    converter->configuration().setValue("depth", "height");
+    CORRADE_VERIFY(converter->convertToFile(Depth32f, filename));
+    /* Compare to an expected output to ensure the custom channels names were
+       used */
+    CORRADE_COMPARE_AS(filename, EXR_FILE, TestSuite::Compare::File);
+}
+
+void AnyImageConverterTest::propagateConfigurationUnknown2D() {
+    if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter->convertToFile(Image, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.tga")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by TgaImageConverter\n");
+}
+
+void AnyImageConverterTest::propagateConfigurationCompressed2D() {
+    CORRADE_SKIP("No file formats to store compressed data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationCompressedUnknown2D() {
     CORRADE_SKIP("No file formats to store compressed data yet.");
 }
 

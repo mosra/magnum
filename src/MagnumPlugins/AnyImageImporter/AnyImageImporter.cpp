@@ -35,6 +35,7 @@
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Trade/ImageData.h"
+#include "MagnumPlugins/Implementation/propagateConfiguration.h"
 
 namespace Magnum { namespace Trade {
 
@@ -124,11 +125,12 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
         Error{} << "Trade::AnyImageImporter::openFile(): cannot load the" << plugin << "plugin";
         return;
     }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ImporterFlag::Verbose) {
         Debug d;
         d << "Trade::AnyImageImporter::openFile(): using" << plugin;
-        PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -136,6 +138,9 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
     /* Instantiate the plugin, propagate flags */
     Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     importer->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageImporter::openFile():", {}, metadata->name(), configuration(), importer->configuration());
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */
@@ -219,11 +224,12 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
         Error{} << "Trade::AnyImageImporter::openData(): cannot load the" << plugin << "plugin";
         return;
     }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ImporterFlag::Verbose) {
         Debug d;
         d << "Trade::AnyImageImporter::openData(): using" << plugin;
-        PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -231,6 +237,9 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* Instantiate the plugin, propagate flags */
     Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     importer->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageImporter::openData():", {}, metadata->name(), configuration(), importer->configuration());
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */
