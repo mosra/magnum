@@ -56,8 +56,8 @@ namespace Magnum { namespace Trade {
 Detects file type based on file extension, loads corresponding plugin and then
 tries to open the file with it. Supported formats:
 
--   Basis Universal (`*.basis`), loaded @ref BasisImporter or any other plugin
-    that provides it
+-   Basis Universal (`*.basis` or data with corresponding signature), loaded
+    with @ref BasisImporter or any other plugin that provides it
 -   Windows Bitmap (`*.bmp`), loaded with any plugin that provides `BmpImporter`
 -   DirectDraw Surface (`*.dds` or data with corresponding signature), loaded
     with @ref DdsImporter or any other plugin that provides it
