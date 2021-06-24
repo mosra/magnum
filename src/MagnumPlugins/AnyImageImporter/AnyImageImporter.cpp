@@ -118,6 +118,12 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
         Error{} << "Trade::AnyImageImporter::openFile(): cannot determine the format of" << filename;
         return;
     }
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error{} << "Trade::AnyImageImporter::openFile(): cannot load the" << plugin << "plugin";
+        return;
+    }
     if(flags() & ImporterFlag::Verbose) {
         Debug d;
         d << "Trade::AnyImageImporter::openFile(): using" << plugin;
@@ -125,12 +131,6 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
         CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
-    }
-
-    /* Try to load the plugin */
-    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
-        Error{} << "Trade::AnyImageImporter::openFile(): cannot load the" << plugin << "plugin";
-        return;
     }
 
     /* Instantiate the plugin, propagate flags */
