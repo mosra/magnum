@@ -26,17 +26,19 @@
 #include "AnyImageConverter.h"
 
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h> /* for Directory */
+#include <Corrade/Containers/StringStl.h> /* for PluginManager */
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Trade/ImageData.h"
 #include "MagnumPlugins/Implementation/propagateConfiguration.h"
 
 namespace Magnum { namespace Trade {
+
+using namespace Containers::Literals;
 
 AnyImageConverter::AnyImageConverter(PluginManager::Manager<AbstractImageConverter>& manager): AbstractImageConverter{manager} {}
 
@@ -51,30 +53,31 @@ ImageConverterFeatures AnyImageConverter::doFeatures() const {
 bool AnyImageConverter::doConvertToFile(const ImageView2D& image, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo lowercase only the extension, once Directory::split() is done */
-    const std::string normalized = Utility::String::lowercase(filename);
+    /** @todo once Directory is std::string-free, use splitExtension(), but
+        only if we don't detect more than one extension yet */
+    const Containers::String normalized = Utility::String::lowercase(filename);
 
     /* Detect the plugin from extension */
-    std::string plugin;
-    if(Utility::String::endsWith(normalized, ".bmp"))
-        plugin = "BmpImageConverter";
-    else if(Utility::String::endsWith(normalized, ".basis"))
-        plugin = "BasisImageConverter";
-    else if(Utility::String::endsWith(normalized, ".exr"))
-        plugin = "OpenExrImageConverter";
-    else if(Utility::String::endsWith(normalized, ".hdr"))
-        plugin = "HdrImageConverter";
-    else if(Utility::String::endsWith(normalized, ".jpg") ||
-            Utility::String::endsWith(normalized, ".jpeg") ||
-            Utility::String::endsWith(normalized, ".jpe"))
-        plugin = "JpegImageConverter";
-    else if(Utility::String::endsWith(normalized, ".png"))
-        plugin = "PngImageConverter";
-    else if(Utility::String::endsWith(normalized, ".tga") ||
-            Utility::String::endsWith(normalized, ".vda") ||
-            Utility::String::endsWith(normalized, ".icb") ||
-            Utility::String::endsWith(normalized, ".vst"))
-        plugin = "TgaImageConverter";
+    Containers::StringView plugin;
+    if(normalized.hasSuffix(".bmp"_s))
+        plugin = "BmpImageConverter"_s;
+    else if(normalized.hasSuffix(".basis"_s))
+        plugin = "BasisImageConverter"_s;
+    else if(normalized.hasSuffix(".exr"_s))
+        plugin = "OpenExrImageConverter"_s;
+    else if(normalized.hasSuffix(".hdr"_s))
+        plugin = "HdrImageConverter"_s;
+    else if(normalized.hasSuffix(".jpg"_s) ||
+            normalized.hasSuffix(".jpeg"_s) ||
+            normalized.hasSuffix(".jpe"_s))
+        plugin = "JpegImageConverter"_s;
+    else if(normalized.hasSuffix(".png"_s))
+        plugin = "PngImageConverter"_s;
+    else if(normalized.hasSuffix(".tga"_s) ||
+            normalized.hasSuffix(".vda"_s) ||
+            normalized.hasSuffix(".icb"_s) ||
+            normalized.hasSuffix( ".vst"_s))
+        plugin = "TgaImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename;
         return false;

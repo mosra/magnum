@@ -26,17 +26,19 @@
 #include "AnySceneConverter.h"
 
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/StringStl.h> /* for PluginManager */
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Trade/ImageData.h"
 #include "MagnumPlugins/Implementation/propagateConfiguration.h"
 
 namespace Magnum { namespace Trade {
+
+using namespace Containers::Literals;
 
 AnySceneConverter::AnySceneConverter(PluginManager::Manager<AbstractSceneConverter>& manager): AbstractSceneConverter{manager} {}
 
@@ -51,13 +53,14 @@ SceneConverterFeatures AnySceneConverter::doFeatures() const {
 bool AnySceneConverter::doConvertToFile(const MeshData& mesh, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo lowercase only the extension, once Directory::split() is done */
-    const std::string normalized = Utility::String::lowercase(filename);
+    /** @todo once Directory is std::string-free, use splitExtension(), but
+        only if we don't detect more than one extension yet */
+    const Containers::StringView normalized = Utility::String::lowercase(filename);
 
     /* Detect the plugin from extension */
-    std::string plugin;
-    if(Utility::String::endsWith(normalized, ".ply"))
-        plugin = "StanfordSceneConverter";
+    Containers::StringView plugin;
+    if(normalized.hasSuffix(".ply"_s))
+        plugin = "StanfordSceneConverter"_s;
     else {
         Error{} << "Trade::AnySceneConverter::convertToFile(): cannot determine the format of" << filename;
         return false;
