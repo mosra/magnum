@@ -204,7 +204,7 @@ const Color3 success = 0x3bd267_srgbf;
 int main() {
     using namespace Animation::Easing;
 
-    #define _c(name) Utility::String::lowercase(#name), name
+    #define _c(name) Utility::String::lowercase(std::string{#name}), name
     generate(_c(linear), {},
 /* [linear] */
 CubicBezier2D{Vector2{0.0f}, Vector2{1.0f/3.0f},

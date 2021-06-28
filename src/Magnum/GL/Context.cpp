@@ -719,7 +719,7 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
        bother with String allocations. */
     const Containers::StringView disabledWorkarounds = args.value<Containers::StringView>("disable-workarounds");
     if(!disabledWorkarounds.isEmpty()) {
-        const Containers::Array<Containers::StringView> split = disabledWorkarounds.splitWithoutEmptyParts();
+        const Containers::Array<Containers::StringView> split = disabledWorkarounds.splitOnWhitespaceWithoutEmptyParts();
         arrayReserve(_driverWorkarounds, split.size());
         for(const Containers::StringView workaround: split)
             disableDriverWorkaround(workaround);
@@ -730,7 +730,7 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
        and another binary search in tryCreate(). */
     const Containers::StringView disabledExtensions = args.value<Containers::StringView>("disable-extensions");
     if(!disabledExtensions.isEmpty()) {
-        const Containers::Array<Containers::StringView> split = disabledExtensions.splitWithoutEmptyParts();
+        const Containers::Array<Containers::StringView> split = disabledExtensions.splitOnWhitespaceWithoutEmptyParts();
         arrayReserve(_disabledExtensions, split.size());
         for(const Containers::StringView extension: split) {
             if(const Extension* found = findExtension(extension)) {
@@ -1074,7 +1074,7 @@ Containers::Array<Containers::StringView> Context::extensionStrings() const {
 
     #ifndef MAGNUM_TARGET_GLES3
     /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
-    return Containers::StringView{reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)), Containers::StringViewFlag::Global}.splitWithoutEmptyParts();
+    return Containers::StringView{reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)), Containers::StringViewFlag::Global}.splitOnWhitespaceWithoutEmptyParts();
     #endif
 }
 
