@@ -162,6 +162,9 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* https://github.com/BinomialLLC/basis_universal/blob/7d784c728844c007d8c95d63231f7adcc0f65364/transcoder/basisu_file_headers.h#L78 */
     if(dataString.hasPrefix("sB"_s))
         plugin = "BasisImporter";
+    /* https://en.wikipedia.org/wiki/BMP_file_format#Bitmap_file_header */
+    else if(dataString.hasPrefix("BM"_s))
+        plugin = "BmpImporter";
     /* https://docs.microsoft.com/cs-cz/windows/desktop/direct3ddds/dx-graphics-dds-pguide */
     else if(dataString.hasPrefix("DDS "_s))
         plugin = "DdsImporter";

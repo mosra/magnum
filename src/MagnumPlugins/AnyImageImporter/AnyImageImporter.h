@@ -58,7 +58,8 @@ tries to open the file with it. Supported formats:
 
 -   Basis Universal (`*.basis` or data with corresponding signature), loaded
     with @ref BasisImporter or any other plugin that provides it
--   Windows Bitmap (`*.bmp`), loaded with any plugin that provides `BmpImporter`
+-   Windows Bitmap (`*.bmp` or data with corresponding signature), loaded with
+    any plugin that provides `BmpImporter`
 -   DirectDraw Surface (`*.dds` or data with corresponding signature), loaded
     with @ref DdsImporter or any other plugin that provides it
 -   Graphics Interchange Format (`*.gif`), loaded with any plugin that provides

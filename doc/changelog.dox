@@ -342,7 +342,7 @@ See also:
     @relativeref{Trade::AbstractImageConverter,doConvertToData()}, for example
     when the implementation only neeeds to do a format detection based on file
     extension
--   Recognizing TIFF file header magic in @ref Trade::AnyImageImporter "AnyImageImporter"
+-   Recognizing BMP and TIFF file header magic in @relativeref{Trade,AnyImageImporter}
 -   @ref Audio::AnyImporter "AnyAudioImporter",
     @relativeref{Trade,AnyImageImporter}, @relativeref{Trade,AnyImageConverter},
     @relativeref{Trade,AnySceneImporter}, @relativeref{Trade,AnySceneConverter}
