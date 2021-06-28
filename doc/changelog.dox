@@ -335,6 +335,13 @@ See also:
 
 @subsubsection changelog-latest-changes-trade Trade library
 
+-   @ref Trade::AbstractImageConverter::doConvertToFile() and
+    @ref Trade::AbstractSceneConverter::doConvertToFile() are now
+    @cpp protected @ce instead of @cpp private @ce to allow calling them from
+    plugin implementations and reuse the provided fallback to
+    @relativeref{Trade::AbstractImageConverter,doConvertToData()}, for example
+    when the implementation only neeeds to do a format detection based on file
+    extension
 -   Recognizing TIFF file header magic in @ref Trade::AnyImageImporter "AnyImageImporter"
 -   @ref Audio::AnyImporter "AnyAudioImporter",
     @relativeref{Trade,AnyImageImporter}, @relativeref{Trade,AnyImageConverter},

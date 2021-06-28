@@ -870,6 +870,82 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          */
         bool convertToFile(const ImageData3D& image, Containers::StringView filename);
 
+    protected:
+        /**
+         * @brief Implementation for @ref convertToFile(const ImageView1D&, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::Convert1DToData is supported, default
+         * implementation calls @ref doConvertToData(const ImageView1D&) and
+         * saves the result to given file. It is allowed to call this function
+         * from your @ref doConvertToFile() implementation, for example when
+         * you only need to do format detection based on file extension.
+         */
+        virtual bool doConvertToFile(const ImageView1D& image, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(const ImageView2D&, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::Convert2DToData is supported, default
+         * implementation calls @ref doConvertToData(const ImageView2D&) and
+         * saves the result to given file. It is allowed to call this function
+         * from your @ref doConvertToFile() implementation, for example when
+         * you only need to do format detection based on file extension.
+         */
+        virtual bool doConvertToFile(const ImageView2D& image, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(const ImageView3D&, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::Convert3DToData is supported, default
+         * implementation calls @ref doConvertToData(const ImageView3D&) and
+         * saves the result to given file. It is allowed to call this function
+         * from your @ref doConvertToFile() implementation, for example when
+         * you only need to do format detection based on file extension.
+         */
+        virtual bool doConvertToFile(const ImageView3D& image, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(const CompressedImageView1D&, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertCompressed1DToData is
+         * supported, default implementation calls @ref doConvertToData(const CompressedImageView1D&)
+         * and saves the result to given file. It is allowed to call this
+         * function from your @ref doConvertToFile() implementation, for
+         * example when you only need to do format detection based on file
+         * extension.
+         */
+        virtual bool doConvertToFile(const CompressedImageView1D& image, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(const CompressedImageView2D&, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertCompressed2DToData is
+         * supported, default implementation calls @ref doConvertToData(const CompressedImageView2D&)
+         * and saves the result to given file. It is allowed to call this
+         * function from your @ref doConvertToFile() implementation, for
+         * example when you only need to do format detection based on file
+         * extension.
+         */
+        virtual bool doConvertToFile(const CompressedImageView2D& image, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(const CompressedImageView3D&, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertCompressed3DToData is
+         * supported, default implementation calls @ref doConvertToData(const CompressedImageView3D&)
+         * and saves the result to given file. It is allowed to call this
+         * function from your @ref doConvertToFile() implementation, for
+         * example when you only need to do format detection based on file
+         * extension.
+         */
+        virtual bool doConvertToFile(const CompressedImageView3D& image, Containers::StringView filename);
+
     private:
         /** @brief Implementation for @ref features() */
         virtual ImageConverterFeatures doFeatures() const = 0;
@@ -961,66 +1037,6 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @m_since_latest
          */
         virtual Containers::Array<char> doConvertToData(const CompressedImageView3D& image);
-
-        /**
-         * @brief Implementation for @ref convertToFile(const ImageView1D&, Containers::StringView)
-         * @m_since_latest
-         *
-         * If @ref ImageConverterFeature::Convert1DToData is supported, default
-         * implementation calls @ref doConvertToData(const ImageView1D&) and
-         * saves the result to given file.
-         */
-        virtual bool doConvertToFile(const ImageView1D& image, Containers::StringView filename);
-
-        /**
-         * @brief Implementation for @ref convertToFile(const ImageView2D&, Containers::StringView)
-         * @m_since_latest
-         *
-         * If @ref ImageConverterFeature::Convert2DToData is supported, default
-         * implementation calls @ref doConvertToData(const ImageView2D&) and
-         * saves the result to given file.
-         */
-        virtual bool doConvertToFile(const ImageView2D& image, Containers::StringView filename);
-
-        /**
-         * @brief Implementation for @ref convertToFile(const ImageView3D&, Containers::StringView)
-         * @m_since_latest
-         *
-         * If @ref ImageConverterFeature::Convert3DToData is supported, default
-         * implementation calls @ref doConvertToData(const ImageView3D&) and
-         * saves the result to given file.
-         */
-        virtual bool doConvertToFile(const ImageView3D& image, Containers::StringView filename);
-
-        /**
-         * @brief Implementation for @ref convertToFile(const CompressedImageView1D&, Containers::StringView)
-         * @m_since_latest
-         *
-         * If @ref ImageConverterFeature::ConvertCompressed1DToData is
-         * supported, default implementation calls @ref doConvertToData(const CompressedImageView1D&)
-         * and saves the result to given file.
-         */
-        virtual bool doConvertToFile(const CompressedImageView1D& image, Containers::StringView filename);
-
-        /**
-         * @brief Implementation for @ref convertToFile(const CompressedImageView2D&, Containers::StringView)
-         * @m_since_latest
-         *
-         * If @ref ImageConverterFeature::ConvertCompressed2DToData is
-         * supported, default implementation calls @ref doConvertToData(const CompressedImageView2D&)
-         * and saves the result to given file.
-         */
-        virtual bool doConvertToFile(const CompressedImageView2D& image, Containers::StringView filename);
-
-        /**
-         * @brief Implementation for @ref convertToFile(const CompressedImageView3D&, Containers::StringView)
-         * @m_since_latest
-         *
-         * If @ref ImageConverterFeature::ConvertCompressed3DToData is
-         * supported, default implementation calls @ref doConvertToData(const CompressedImageView3D&)
-         * and saves the result to given file.
-         */
-        virtual bool doConvertToFile(const CompressedImageView3D& image, Containers::StringView filename);
 
         ImageConverterFlags _flags;
 };
