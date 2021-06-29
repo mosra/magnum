@@ -171,10 +171,26 @@ void DistanceTest::lineSegmentPoint3D() {
 }
 
 void DistanceTest::pointPlane() {
-    Vector3 point{0.0f, 0.0f, 0.0f};
-    Vector4 plane{3.0f, 0.0f, 4.0f, 5.0f};
-
-    CORRADE_COMPARE(Distance::pointPlane(point, plane), 1.0f);
+    {
+        Vector4 plane{3.0f, 0.0f, 4.0f, 5.0f};
+        CORRADE_COMPARE(Distance::pointPlane({}, plane), 1.0f);
+    }
+    {
+        /* Origin plane with normal {0, 1, 0} */
+        Vector4 plane{0.0f, 1.0f, 0.0f, 0.0f};
+        /* Point lies in front of plane, 2 units away */
+        CORRADE_COMPARE(Distance::pointPlane({0.0f, 2.0f, 0.0f}, plane), 2.0f);
+        /* Point lies in begind the plane, 2 units away */
+        CORRADE_COMPARE(Distance::pointPlane({0.0f, -2.0f, 0.0f}, plane), -2.0f);
+    }
+    {
+        /* Origin plane offset by 1 normal with normal {0, 1, 0} */
+        Vector4 plane{0.0f, 1.0f, 0.0f, -1.0f};
+        /* Point lies in front of plane, 2 units away */
+        CORRADE_COMPARE(Distance::pointPlane({0.0f, 2.0f, 0.0f}, plane), 1.0f);
+        /* Point lies in begind the plane, 2 units away */
+        CORRADE_COMPARE(Distance::pointPlane({0.0f, -2.0f, 0.0f}, plane), -3.0f);
+    }
 }
 
 void DistanceTest::pointPlaneScaled() {
