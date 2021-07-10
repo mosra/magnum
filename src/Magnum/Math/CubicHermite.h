@@ -137,7 +137,7 @@ template<class T> class CubicHermite {
         constexpr /*implicit*/ CubicHermite(const T& inTangent, const T& point, const T& outTangent) noexcept: _inTangent{inTangent}, _point{point}, _outTangent{outTangent} {}
 
         /**
-         * @brief Construct subic Hermite spline point from another of different type
+         * @brief Construct cubic Hermite spline point from another of different type
          *
          * Performs only default casting on the values, no rounding or
          * anything else.
