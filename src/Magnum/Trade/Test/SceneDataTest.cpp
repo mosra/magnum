@@ -33,9 +33,96 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct SceneDataTest: TestSuite::Tester {
     explicit SceneDataTest();
 
+    void customFieldName();
+    void customFieldNameTooLarge();
+    void customFieldNameNotCustom();
+    void debugFieldName();
+
+    template<class T> void fieldTypeSize();
+    void debugFieldType();
+    void debugObjectIndexType();
+
+    void constructField();
+    void constructFieldDefault();
+    void constructFieldCustom();
+    void constructField2D();
+    void constructField2DWrongSize();
+    void constructField2DNonContiguous();
+    void constructFieldTypeErased();
+    void constructFieldNonOwningArray();
+    void constructFieldOffsetOnly();
+    void constructFieldInconsistentViewSize();
+    void constructFieldWrongType();
+    void constructFieldWrongStride();
+    void constructFieldWrongDataAccess();
+
+    void constructArrayField();
+    void constructArrayFieldNonContiguous();
+    void constructArrayField2D();
+    void constructArrayField2DWrongSize();
+    void constructArrayField2DNonContiguous();
+    void constructArrayFieldTypeErased();
+    void constructArrayFieldOffsetOnly();
+    void constructArrayFieldNotAllowed();
+
+    // TODO where that sorted flag?
+
     void construct();
+    void constructZeroFields();
+    void constructZeroObjects();
+
+    void constructNotOwned();
+
+    void constructDuplicateField();
+    void constructInconsistentIndexType();
+    void constructIndexTypeTooSmall();
+    void constructNotOwnedFlagOwned();
+    void constructMismatchedTRSViews();
+    void constructMismatchedMaterialView();
+
     void constructCopy();
     void constructMove();
+
+    template<class T> void fieldObjectMappingAsArray();
+    void fieldObjectMappingAsArrayLongType();
+    void fieldObjectMappingIntoArrayInvalidSize();
+    template<class T> void parentsAsArray();
+    void parentsAsArrayLongType();
+    void parentsIntoArrayInvalidSize();
+    template<class T> void transformations2DAsArray();
+    template<class T> void transformations2DAsArrayTRS();
+    void transformations2DAsArrayBut3DType();
+    void transformations2DAsArrayBut3DTypeTRS();
+    void transformations2DIntoArrayInvalidSize();
+    template<class T> void transformations3DAsArray();
+    template<class T> void transformationsTRS3DAsArray();
+    void transformations3DIntoArrayInvalidSize();
+    void transformations3DBut2DType();
+    void transformations3DButTRS2DType();
+    template<class T> void meshIdsAsArray();
+    void meshIdsIntoArrayInvalidSize();
+    template<class T> void meshMaterialIdsAsArray();
+    void meshMaterialIdsIntoArrayInvalidSize();
+    template<class T> void lightIdsAsArray();
+    void lightIdsIntoArrayInvalidSize();
+    template<class T> void cameraIdsAsArray();
+    void cameraIdsIntoArrayInvalidSize();
+    template<class T> void skinIdsAsArray();
+    void skinIdsIntoArrayInvalidSize();
+
+    void arrayAttribute();
+    void arrayAttributeWrongAccess();
+
+    void mutableAccessNotAllowed();
+
+    void fieldObjectMappingNotFound();
+    void fieldObjectMappingWrongType();
+
+    void fieldNotFound();
+    void fieldWrongType();
+
+    void releaseData();
+    void releaseFieldData();
 };
 
 SceneDataTest::SceneDataTest() {
