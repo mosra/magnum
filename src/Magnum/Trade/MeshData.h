@@ -940,13 +940,13 @@ class MAGNUM_TRADE_EXPORT MeshData {
          */
         explicit MeshData(MeshPrimitive primitive, UnsignedInt vertexCount, const void* importerState = nullptr) noexcept;
 
-        ~MeshData();
-
         /** @brief Copying is not allowed */
         MeshData(const MeshData&) = delete;
 
         /** @brief Move constructor */
         MeshData(MeshData&&) noexcept;
+
+        ~MeshData();
 
         /** @brief Copying is not allowed */
         MeshData& operator=(const MeshData&) = delete;

@@ -576,8 +576,11 @@ void MeshDataTest::constructAttribute() {
     CORRADE_COMPARE(positions.offset(positionData), 0);
     CORRADE_COMPARE(positions.stride(), sizeof(Vector2));
     CORRADE_VERIFY(positions.data().data() == positionData);
-    /* This is allowed too for simplicity, it just ignores the parameter */
-    CORRADE_VERIFY(positions.data(positionData).data() == positionData);
+
+    /* This is allowed too for simplicity, the parameter has to be large enough
+       tho */
+    char someArray[3*sizeof(Vector2)];
+    CORRADE_VERIFY(positions.data(someArray).data() == positionData);
 
     constexpr MeshAttributeData cpositions{MeshAttribute::Position, Containers::arrayView(Positions)};
     constexpr bool isOffsetOnly = cpositions.isOffsetOnly();
@@ -889,7 +892,7 @@ void MeshDataTest::constructArrayAttribute2DNonContiguous() {
 void MeshDataTest::constructArrayAttributeTypeErased() {
     Vector2 vertexData[3*4];
     Containers::StridedArrayView1D<Vector2> attribute{vertexData, 3, 4*sizeof(Vector2)};
-    MeshAttributeData data{meshAttributeCustom(35), VertexFormat::Vector2, attribute, 4};
+    MeshAttributeData data{meshAttributeCustom(35), VertexFormat::Vector2, Containers::arrayCast<const char>(attribute), 4};
     CORRADE_VERIFY(!data.isOffsetOnly());
     CORRADE_COMPARE(data.name(), meshAttributeCustom(35));
     CORRADE_COMPARE(data.format(), VertexFormat::Vector2);
