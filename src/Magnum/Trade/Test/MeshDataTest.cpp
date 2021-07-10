@@ -605,6 +605,9 @@ void MeshDataTest::constructAttributeDefault() {
 }
 
 void MeshDataTest::constructAttributeCustom() {
+    /* Verifying it doesn't hit any assertion about disallowed type for given
+       attribute */
+
     const Short idData[3]{};
     MeshAttributeData ids{meshAttributeCustom(13), Containers::arrayView(idData)};
     CORRADE_COMPARE(ids.name(), meshAttributeCustom(13));
