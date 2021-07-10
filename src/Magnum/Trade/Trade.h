@@ -99,6 +99,11 @@ class PbrMetallicRoughnessMaterialData;
 class PbrSpecularGlossinessMaterialData;
 class PhongMaterialData;
 class TextureData;
+
+enum class SceneObjectType: UnsignedByte;
+enum class SceneField: UnsignedInt;
+enum class SceneFieldType: UnsignedShort;
+class SceneFieldData;
 class SceneData;
 
 template<UnsignedInt> class SkinData;

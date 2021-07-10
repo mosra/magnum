@@ -429,7 +429,7 @@ Vulkan structure                        | Matching API
 @type_vk{ClearColorValue}               | convertible from/to @ref Magnum::Vector3 "Vector3", @ref Magnum::Color3 "Color3", @ref Magnum::Vector4 "Vector4", @ref Magnum::Color4 "Color4", @ref Magnum::Vector4i "Vector4i", @ref Magnum::Vector4ui "Vector4ui" using @ref Magnum/Vk/Integration.h; only exposed through @ref RenderPassBeginInfo::clearColor() and @ref CommandBuffer::clearColorImage() overloads
 @type_vk{ClearDepthStencilValue}        | only exposed through @ref RenderPassBeginInfo::clearDepthStencil(), @ref CommandBuffer::clearDepthStencilImage() and friends
 @type_vk{ClearValue}                    | only exposed through @ref RenderPassBeginInfo::clearColor() and @relativeref{RenderPassBeginInfo,clearDepthStencil()} overloads
-@type_vk{ClearRect}                     | convertible from/to @ref Range3Di using @ref Magnum/Vk/Integration.h
+@type_vk{ClearRect}                     | convertible from/to @relativeref{Magnum,Range3Di} using @ref Magnum/Vk/Integration.h
 @type_vk{CommandBufferAllocateInfo}     | not exposed, internal to @ref CommandPool::allocate()
 @type_vk{CommandBufferBeginInfo}        | @ref CommandBufferBeginInfo
 @type_vk{CommandBufferInheritanceInfo}  | |
@@ -692,7 +692,7 @@ Vulkan structure                        | Matching API
 @type_vk{RayTracingPipelineCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{RayTracingPipelineInterfaceCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{RayTracingShaderGroupCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@type_vk{Rect2D}                        | convertible from/to @ref Range2Di using @ref Magnum/Vk/Integration.h
+@type_vk{Rect2D}                        | convertible from/to @relativeref{Magnum,Range2Di} using @ref Magnum/Vk/Integration.h
 @type_vk{RenderPassBeginInfo}           | @ref RenderPassBeginInfo
 @type_vk{RenderPassAttachmentBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{RenderPassCreateInfo}, \n @type_vk{RenderPassCreateInfo2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref RenderPassCreateInfo
@@ -755,7 +755,7 @@ Vulkan structure                        | Matching API
 @type_vk{VertexInputBindingDescription} | @ref MeshLayout
 @type_vk{VertexInputBindingDivisorDescriptionEXT} @m_class{m-label m-flat m-warning} **EXT** | @ref MeshLayout
 @type_vk{VertexInputAttributeDescription} | @ref MeshLayout
-@type_vk{Viewport}                      | convertible from/to @ref Range3D using @ref Magnum/Vk/Integration.h
+@type_vk{Viewport}                      | convertible from/to @relativeref{Magnum,Range3D} using @ref Magnum/Vk/Integration.h
 
 @subsection vulkan-mapping-structures-w W
 
