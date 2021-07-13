@@ -278,19 +278,20 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
             case AMOTION_EVENT_ACTION_POINTER_UP: {
                 // Extract the index of the pointer that left the touch sensor
                 // ! Don't mix up AMotionEvent_getAction(event) and 'action' !
+
+                // (i32 & 0xff00) >> 8  is less than 2^8 (or 256), so size_t is too much, 
+                // but AMotionEvent_getPointerId() uses size_t as an argument
                 const std::size_t pointerIndex = (AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) 
                     >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
 
+                // always >= 1
                 const std::size_t pointerCount = AMotionEvent_getPointerCount(event);
 
-                // Get the persistent id from the index
+                // Get the persistent id from the index (for what if we have a pointerIndex?)
                 std::int32_t pointerId = AMotionEvent_getPointerId(event, pointerIndex);
-                /* Do we need an assert or something like unordered_map in case of (pointerId < 0) or (pointerId > 2^(~20)) 
-                   or we can just trust AMotionEvent_getPointerId() ?
-                   
-                   Btw, looks like 'pointerIndex' works well.
-                    */
-                pointerId = (pointerId < 0 ? 0 : (size_t)pointerId);
+            
+
+                // pointerId = (pointerId < 0 ? 0 : (size_t)pointerId);
 
 
                 if(pointerId >= arraySize(app._previousMouseMovePosition))
