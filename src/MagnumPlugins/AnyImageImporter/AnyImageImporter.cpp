@@ -35,6 +35,7 @@
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Trade/ImageData.h"
+#include "MagnumPlugins/Implementation/propagateConfiguration.h"
 
 namespace Magnum { namespace Trade {
 
@@ -118,14 +119,6 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
         Error{} << "Trade::AnyImageImporter::openFile(): cannot determine the format of" << filename;
         return;
     }
-    if(flags() & ImporterFlag::Verbose) {
-        Debug d;
-        d << "Trade::AnyImageImporter::openFile(): using" << plugin;
-        PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
-        CORRADE_INTERNAL_ASSERT(metadata);
-        if(plugin != metadata->name())
-            d << "(provided by" << metadata->name() << Debug::nospace << ")";
-    }
 
     /* Try to load the plugin */
     if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
@@ -133,9 +126,21 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
         return;
     }
 
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
+    if(flags() & ImporterFlag::Verbose) {
+        Debug d;
+        d << "Trade::AnyImageImporter::openFile(): using" << plugin;
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
+
     /* Instantiate the plugin, propagate flags */
     Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     importer->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageImporter::openFile():", {}, metadata->name(), configuration(), importer->configuration());
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */
@@ -157,6 +162,9 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* https://github.com/BinomialLLC/basis_universal/blob/7d784c728844c007d8c95d63231f7adcc0f65364/transcoder/basisu_file_headers.h#L78 */
     if(dataString.hasPrefix("sB"_s))
         plugin = "BasisImporter";
+    /* https://en.wikipedia.org/wiki/BMP_file_format#Bitmap_file_header */
+    else if(dataString.hasPrefix("BM"_s))
+        plugin = "BmpImporter";
     /* https://docs.microsoft.com/cs-cz/windows/desktop/direct3ddds/dx-graphics-dds-pguide */
     else if(dataString.hasPrefix("DDS "_s))
         plugin = "DdsImporter";
@@ -219,11 +227,12 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
         Error{} << "Trade::AnyImageImporter::openData(): cannot load the" << plugin << "plugin";
         return;
     }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ImporterFlag::Verbose) {
         Debug d;
         d << "Trade::AnyImageImporter::openData(): using" << plugin;
-        PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -231,6 +240,9 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* Instantiate the plugin, propagate flags */
     Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     importer->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageImporter::openData():", {}, metadata->name(), configuration(), importer->configuration());
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */

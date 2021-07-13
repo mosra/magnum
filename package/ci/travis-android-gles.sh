@@ -83,7 +83,7 @@ ninja -j4
 echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
 emulator -avd test -no-audio -no-window &
 android-wait-for-emulator
-CORRADE_TEST_COLOR=ON ctest -V -E GLTest
+CORRADE_TEST_COLOR=ON ctest -V -E "GLTest|GLBenchmark"
 
 # Test install, after running the tests as for them it shouldn't be needed
 ninja install

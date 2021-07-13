@@ -39,7 +39,7 @@ template<class T> void tipsifyInPlaceImplementation(const Containers::StridedArr
     Containers::Array<UnsignedInt> liveTriangleCount, neighborOffset, neighbors;
     Implementation::buildAdjacency<T>(indices, vertexCount, liveTriangleCount, neighborOffset, neighbors);
 
-    /* Global time, per-vertex caching timestamps, per-triangle emmited flag */
+    /* Global time, per-vertex caching timestamps, per-triangle emitted flag */
     UnsignedInt time = cacheSize+1;
     Containers::Array<UnsignedInt> timestamp{vertexCount};
     /** @todo Have some bitset/staticbitset class for this */

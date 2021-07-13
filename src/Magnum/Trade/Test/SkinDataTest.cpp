@@ -56,7 +56,7 @@ SkinDataTest::SkinDataTest() {
 }
 
 void SkinDataTest::construct() {
-    int state;
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     SkinData3D data{{0, 2, 3}, {
         Matrix4::translation(Vector3::zAxis(0.0f)),
         Matrix4::translation(Vector3::zAxis(2.0f)),
@@ -102,7 +102,7 @@ void SkinDataTest::constructCopy() {
 }
 
 void SkinDataTest::constructMove() {
-    int state;
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     SkinData3D a{{0, 2, 3}, {
         Matrix4::translation(Vector3::zAxis(0.0f)),
         Matrix4::translation(Vector3::zAxis(2.0f)),

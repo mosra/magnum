@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
@@ -43,6 +44,9 @@ struct AnyImporterTest: TestSuite::Tester {
     void detect();
 
     void unknown();
+
+    void propagateConfiguration();
+    void propagateConfigurationUnknown();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
@@ -72,7 +76,10 @@ AnyImporterTest::AnyImporterTest() {
     addInstancedTests({&AnyImporterTest::detect},
         Containers::arraySize(DetectData));
 
-    addTests({&AnyImporterTest::unknown});
+    addTests({&AnyImporterTest::unknown,
+
+              &AnyImporterTest::propagateConfiguration,
+              &AnyImporterTest::propagateConfigurationUnknown});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -131,6 +138,23 @@ void AnyImporterTest::unknown() {
     CORRADE_VERIFY(!importer->openFile("sound.mid"));
 
     CORRADE_COMPARE(output.str(), "Audio::AnyImporter::openFile(): cannot determine the format of sound.mid\n");
+}
+
+void AnyImporterTest::propagateConfiguration() {
+    CORRADE_SKIP("No importer has any configuration options to test.");
+}
+
+void AnyImporterTest::propagateConfigurationUnknown() {
+    if(!(_manager.loadState("WavAudioImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("WavAudioImporter plugin not enabled, cannot test");
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
+    importer->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(importer->openFile(WAV_FILE));
+    CORRADE_COMPARE(out.str(), "Audio::AnyImporter::openFile(): option noSuchOption not recognized by WavAudioImporter\n");
 }
 
 }}}}

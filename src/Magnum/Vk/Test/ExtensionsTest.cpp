@@ -64,7 +64,7 @@ void ExtensionsTest::isInstanceExtension() {
     CORRADE_VERIFY(!Implementation::IsInstanceExtension<int>::value);
 
     /* Variadic check (used in variadic addEnabledExtensions()), check that it
-       properly fails for each occurence of a device extension */
+       properly fails for each occurrence of a device extension */
     CORRADE_VERIFY(Implementation::IsInstanceExtension<
         Extensions::KHR::get_physical_device_properties2,
         Extensions::KHR::external_memory_capabilities,
@@ -103,7 +103,7 @@ void ExtensionsTest::isExtension() {
     }
 
     /* Variadic check (used in variadic addEnabledExtensions()), check that it
-       properly fails for each occurence of a device extension */
+       properly fails for each occurrence of a device extension */
     CORRADE_VERIFY(Implementation::IsExtension<
         Extensions::KHR::external_memory,
         Extensions::KHR::depth_stencil_resolve,

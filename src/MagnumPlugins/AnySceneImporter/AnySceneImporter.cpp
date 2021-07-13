@@ -43,6 +43,7 @@
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/SkinData.h"
 #include "Magnum/Trade/TextureData.h"
+#include "MagnumPlugins/Implementation/propagateConfiguration.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
@@ -140,11 +141,12 @@ void AnySceneImporter::doOpenFile(const std::string& filename) {
         Error{} << "Trade::AnySceneImporter::openFile(): cannot load the" << plugin << "plugin";
         return;
     }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ImporterFlag::Verbose) {
         Debug d;
         d << "Trade::AnySceneImporter::openFile(): using" << plugin;
-        PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -152,6 +154,9 @@ void AnySceneImporter::doOpenFile(const std::string& filename) {
     /* Instantiate the plugin, propagate flags */
     Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     importer->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnySceneImporter::openFile():", {}, metadata->name(), configuration(), importer->configuration());
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */

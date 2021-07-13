@@ -29,8 +29,13 @@
 #define texture texture2D
 #endif
 
+#ifndef RUNTIME_CONST
+#define const
+#endif
+
 /* Uniforms */
 
+#ifndef UNIFORM_BUFFERS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2)
 #endif
@@ -63,10 +68,59 @@ uniform lowp float smoothness
     #endif
     ;
 
+/* Uniform buffers */
+
+#else
+#ifndef MULTI_DRAW
+#if DRAW_COUNT > 1
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform highp uint drawOffset
+    #ifndef GL_ES
+    = 0u
+    #endif
+    ;
+#else
+#define drawOffset 0u
+#endif
+#define drawId drawOffset
+#endif
+
+struct DrawUniform {
+    highp uvec4 materialIdReservedReservedReservedReserved;
+    #define draw_materialIdReserved materialIdReservedReservedReservedReserved.x
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 2
+    #endif
+) uniform Draw {
+    DrawUniform draws[DRAW_COUNT];
+};
+
+struct MaterialUniform {
+    lowp vec4 color;
+    lowp vec4 reserved;
+    lowp vec4 outlineColor;
+    lowp vec4 outlineRangeSmoothnessReserved;
+    #define material_outlineRange outlineRangeSmoothnessReserved.xy
+    #define material_smoothness outlineRangeSmoothnessReserved.z
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 4
+    #endif
+) uniform Material {
+    MaterialUniform materials[MATERIAL_COUNT];
+};
+#endif
+
 /* Textures */
 
-#ifdef EXPLICIT_TEXTURE_LAYER
-/* See AbstractVector.h for details about the ID */
+#ifdef EXPLICIT_BINDING
 layout(binding = 6)
 #endif
 uniform lowp sampler2D vectorTexture;
@@ -74,6 +128,10 @@ uniform lowp sampler2D vectorTexture;
 /* Inputs */
 
 in mediump vec2 interpolatedTextureCoordinates;
+
+#ifdef MULTI_DRAW
+flat in highp uint drawId;
+#endif
 
 /* OUtput */
 
@@ -85,6 +143,18 @@ out lowp vec4 fragmentColor;
 #endif
 
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    #if MATERIAL_COUNT > 1
+    mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
+    #else
+    #define materialId 0u
+    #endif
+    lowp const float smoothness = materials[materialId].material_smoothness;
+    lowp const vec4 color = materials[materialId].color;
+    lowp const vec4 outlineColor = materials[materialId].outlineColor;
+    lowp const vec2 outlineRange = materials[materialId].material_outlineRange;
+    #endif
+
     lowp float intensity = texture(vectorTexture, interpolatedTextureCoordinates).r;
 
     /* Fill color */

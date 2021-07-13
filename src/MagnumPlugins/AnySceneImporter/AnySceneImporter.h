@@ -127,6 +127,21 @@ target_link_libraries(your-app PRIVATE Magnum::AnySceneImporter)
 
 See @ref building, @ref cmake, @ref plugins and @ref file-formats for more
 information.
+
+@section Trade-AnySceneImporter-proxy Interface proxying and option propagation
+
+On a call to @ref openFile(), a file format is detected from the extension and
+a corresponding plugin is loaded. After that, flags set via @ref setFlags() and
+options set through @ref configuration() are propagated to the concrete
+implementation, with a warning emitted in case given option is not present in
+the default configuration of the target plugin.
+
+Calls to the @ref animation(), @ref scene(), @ref light(), @ref camera(),
+@ref object2D(), @ref object3D(), @ref skin2D(), @ref skin3D(), @ref mesh(),
+@ref material(), @ref texture(), @ref image1D(), @ref image2D(), @ref image3D()
+and corresponding count-/name-related functions are then proxied to the
+concrete implementation. The @ref close() function closes and discards the
+internally instantiated plugin; @ref isOpened() works as usual.
 */
 class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
     public:

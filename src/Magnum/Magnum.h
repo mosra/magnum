@@ -1171,9 +1171,9 @@ typedef Math::Frustum<Double> Frustumd;
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<UnsignedInt, class T> class CORRADE_DEPRECATED("use Math::Vector instead") Array;
-template<class T> class CORRADE_DEPRECATED("use Math::Vector instead") Array1D;
-template<class T> class CORRADE_DEPRECATED("use Math::Vector2 instead") Array2D;
-template<class T> class CORRADE_DEPRECATED("use Math::Vector3 instead") Array3D;
+template<class T> class CORRADE_DEPRECATED("use Math::Vector or Containers::Array1 instead") Array1D;
+template<class T> class CORRADE_DEPRECATED("use Math::Vector2 or Containers::Array2 instead") Array2D;
+template<class T> class CORRADE_DEPRECATED("use Math::Vector3 or Containers::Array3 instead") Array3D;
 #endif
 
 enum class InputFileCallbackPolicy: UnsignedByte;

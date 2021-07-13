@@ -447,7 +447,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * used in most @ref MeshTools algorithms.
          *
          * Additionally, for even more flexibility, the @p vertexCount can be
-         * overriden at @ref MeshData construction time, however all attributes
+         * overridden at @ref MeshData construction time, however all attributes
          * are still required to have the same vertex count to catch accidents.
          *
          * Note that due to the @cpp constexpr @ce nature of this constructor,

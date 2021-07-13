@@ -72,7 +72,7 @@ WindowlessCglContext::WindowlessCglContext(const Configuration& configuration, G
         Error() << "Platform::WindowlessCglContext: cannot create context";
 }
 
-WindowlessCglContext::WindowlessCglContext(WindowlessCglContext&& other): _pixelFormat{other._pixelFormat}, _context{other._context} {
+WindowlessCglContext::WindowlessCglContext(WindowlessCglContext&& other) noexcept: _pixelFormat{other._pixelFormat}, _context{other._context} {
     other._pixelFormat = {};
     other._context = {};
 }
@@ -82,7 +82,7 @@ WindowlessCglContext::~WindowlessCglContext() {
     if(_pixelFormat) CGLDestroyPixelFormat(_pixelFormat);
 }
 
-WindowlessCglContext& WindowlessCglContext::operator=(WindowlessCglContext&& other) {
+WindowlessCglContext& WindowlessCglContext::operator=(WindowlessCglContext&& other) noexcept {
     using std::swap;
     swap(other._pixelFormat, _pixelFormat);
     swap(other._context, _context);

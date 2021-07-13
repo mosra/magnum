@@ -48,21 +48,31 @@ struct MeshVisualizerGL_Test: TestSuite::Tester {
     void debugFlag3D();
     void debugFlags2D();
     void debugFlags3D();
+    #ifndef MAGNUM_TARGET_GLES2
+    void debugFlagsSupersets2D();
+    void debugFlagsSupersets3D();
+    #endif
 };
 
 MeshVisualizerGL_Test::MeshVisualizerGL_Test() {
-    addTests({&MeshVisualizerGL_Test::constructNoCreate2D,
-              &MeshVisualizerGL_Test::constructNoCreate3D,
+    addTests({
+        &MeshVisualizerGL_Test::constructNoCreate2D,
+        &MeshVisualizerGL_Test::constructNoCreate3D,
 
-              &MeshVisualizerGL_Test::constructCopy2D,
-              &MeshVisualizerGL_Test::constructCopy3D,
+        &MeshVisualizerGL_Test::constructCopy2D,
+        &MeshVisualizerGL_Test::constructCopy3D,
 
-              &MeshVisualizerGL_Test::vertexIndexSameAsObjectId,
+        &MeshVisualizerGL_Test::vertexIndexSameAsObjectId,
 
-              &MeshVisualizerGL_Test::debugFlag2D,
-              &MeshVisualizerGL_Test::debugFlag3D,
-              &MeshVisualizerGL_Test::debugFlags2D,
-              &MeshVisualizerGL_Test::debugFlags3D});
+        &MeshVisualizerGL_Test::debugFlag2D,
+        &MeshVisualizerGL_Test::debugFlag3D,
+        &MeshVisualizerGL_Test::debugFlags2D,
+        &MeshVisualizerGL_Test::debugFlags3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGL_Test::debugFlagsSupersets2D,
+        &MeshVisualizerGL_Test::debugFlagsSupersets3D,
+        #endif
+    });
 }
 
 void MeshVisualizerGL_Test::constructNoCreate2D() {
@@ -139,6 +149,22 @@ void MeshVisualizerGL_Test::debugFlags3D() {
     CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::Wireframe Shaders::MeshVisualizerGL3D::Flags{}\n");
     #endif
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGL_Test::debugFlagsSupersets2D() {
+    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
+    std::ostringstream out;
+    Debug{&out} << (MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::UniformBuffers);
+    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::MultiDraw\n");
+}
+
+void MeshVisualizerGL_Test::debugFlagsSupersets3D() {
+    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
+    std::ostringstream out;
+    Debug{&out} << (MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::UniformBuffers);
+    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::MultiDraw\n");
+}
+#endif
 
 }}}}
 

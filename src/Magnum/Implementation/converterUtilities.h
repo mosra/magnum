@@ -38,7 +38,7 @@ namespace Magnum { namespace Implementation {
 /* Used only in executables where we don't want it to be exported */
 namespace {
 
-void setOptions(PluginManager::AbstractPlugin& plugin, const std::string& options) {
+void setOptions(PluginManager::AbstractPlugin& plugin, const std::string& anyPluginName, const std::string& options) {
     for(const std::string& option: Utility::String::splitWithoutEmptyParts(options, ',')) {
         auto keyValue = Utility::String::partition(option, '=');
         Utility::String::trimInPlace(keyValue[0]);
@@ -60,8 +60,12 @@ void setOptions(PluginManager::AbstractPlugin& plugin, const std::string& option
         /* Provide a warning message in case the plugin doesn't define given
            option in its default config. The plugin is not *required* to have
            those tho (could be backward compatibility entries, for example), so
-           not an error. */
-        if(groupNotRecognized || !group->hasValue(keyParts.back())) {
+           not an error.
+
+           If it's an Any* plugin, then this check is provided by it directly,
+           and since the Any* plugin obviously don't expose the options of the concrete plugins, this warning would fire for them always, which
+           wouldn't help anything. */
+        if((groupNotRecognized || !group->hasValue(keyParts.back())) && plugin.plugin() != anyPluginName) {
             Warning{} << "Option" << keyValue[0] << "not recognized by" << plugin.plugin();
         }
 

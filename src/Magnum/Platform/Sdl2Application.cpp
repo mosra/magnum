@@ -207,7 +207,7 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
     /* Handled below, warning printed only when using virtual DPI scaling */
     #endif
 
-    /* Use values from the configuration only if not overriden on command line
+    /* Use values from the configuration only if not overridden on command line
        to something non-default. In any case explicit scaling has a precedence
        before the policy. */
     Implementation::Sdl2DpiScalingPolicy dpiScalingPolicy{};
@@ -887,7 +887,7 @@ bool Sdl2Application::mainLoopIteration() {
         switch(event.type) {
             case SDL_WINDOWEVENT:
                 switch(event.window.event) {
-                    /* Not using SDL_WINDOWEVENT_RESIZED, because that doens't
+                    /* Not using SDL_WINDOWEVENT_RESIZED, because that doesn't
                        get fired when the window is resized programmatically
                        (such as through setMaxWindowSize()) */
                     case SDL_WINDOWEVENT_SIZE_CHANGED: {

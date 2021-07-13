@@ -27,13 +27,30 @@
 #extension GL_EXT_gpu_shader4: require
 #endif
 
+#if defined(UNIFORM_BUFFERS) && defined(TEXTURE_ARRAYS) && !defined(GL_ES)
+#extension GL_ARB_shader_bit_encoding: require
+#endif
+
+#ifdef MULTI_DRAW
+#ifndef GL_ES
+#extension GL_ARB_shader_draw_parameters: require
+#else /* covers WebGL as well */
+#extension GL_ANGLE_multi_draw: require
+#endif
+#endif
+
 #ifndef NEW_GLSL
 #define in attribute
 #define out varying
 #endif
 
+#ifndef RUNTIME_CONST
+#define const
+#endif
+
 /* Uniforms */
 
+#ifndef UNIFORM_BUFFERS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -52,7 +69,7 @@ uniform highp mat4 projectionMatrix
     #endif
     ;
 
-#if LIGHT_COUNT
+#ifdef HAS_LIGHTS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2)
 #endif
@@ -74,16 +91,94 @@ uniform mediump mat3 textureMatrix
     ;
 #endif
 
-#if LIGHT_COUNT
-/* Needs to be last because it uses locations 11 to 11 + LIGHT_COUNT - 1 */
+#ifdef TEXTURE_ARRAYS
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 11)
+layout(location = 4)
 #endif
-uniform highp vec4 lightPositions[LIGHT_COUNT]
+/* mediump is just 2^10, which might not be enough, this is 2^16 */
+uniform highp uint textureLayer; /* defaults to zero */
+#endif
+
+/* Uniform buffers */
+
+#else
+#if DRAW_COUNT > 1
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform highp uint drawOffset
     #ifndef GL_ES
-    = vec4[](LIGHT_POSITION_INITIALIZER)
+    = 0u
     #endif
     ;
+#else
+#define drawOffset 0u
+#endif
+
+/* Keep in sync with Phong.frag. Can't "outsource" to a common file because
+   the #extension directive needs to be always before any code. */
+struct DrawUniform {
+    /* Of all drivers, I made the crucial mistake of expecting ANGLE to have
+       non-broken uniform packing. Of course everything including random phone
+       drivers worked, except ANGLE with a D3D backend, which blew up when
+       seeing `mat3` here. With all the coding guidelines, rules and automated
+       bullying from Clang Tidy in place over at Google, it seems the false
+       sense of security is so strong that they don't even bother testing what
+       they wrote. Or, how to code, the Google way:
+
+       1. Thoroughly document the packing rules and how the translation of
+          every GLSL type to the D3D equivalent is performed:
+          https://chromium.googlesource.com/angle/angle/+/refs/heads/main/src/libANGLE/renderer/d3d/d3d11/UniformBlockToStructuredBufferTranslation.md#std140-limitation
+       2. Forget to actually implement and test the damn thing.
+    */
+    mediump mat3x4 normalMatrix;
+    highp uvec4 materialIdReservedObjectIdLightOffsetLightCount;
+    #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCount.x
+    #define draw_objectId materialIdReservedObjectIdLightOffsetLightCount.y
+    #define draw_lightOffset materialIdReservedObjectIdLightOffsetLightCount.z
+    #define draw_lightCount materialIdReservedObjectIdLightOffsetLightCount.w
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 2
+    #endif
+) uniform Draw {
+    DrawUniform draws[DRAW_COUNT];
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 0
+    #endif
+) uniform Projection {
+    highp mat4 projectionMatrix;
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 1
+    #endif
+) uniform Transformation {
+    highp mat4 transformationMatrices[DRAW_COUNT];
+};
+
+#ifdef TEXTURE_TRANSFORMATION
+struct TextureTransformationUniform {
+    highp vec4 rotationScaling;
+    highp vec4 offsetLayerReserved;
+    #define textureTransformation_offset offsetLayerReserved.xy
+    #define textureTransformation_layer offsetLayerReserved.z
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 3
+    #endif
+) uniform TextureTransformation {
+    TextureTransformationUniform textureTransformations[DRAW_COUNT];
+};
+#endif
 #endif
 
 /* Inputs */
@@ -93,7 +188,7 @@ layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
 in highp vec4 position;
 
-#if LIGHT_COUNT
+#ifdef HAS_LIGHTS
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = NORMAL_ATTRIBUTE_LOCATION)
 #endif
@@ -125,8 +220,6 @@ in mediump vec3 bitangent;
 layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
 #endif
 in mediump vec2 textureCoordinates;
-
-out mediump vec2 interpolatedTextureCoordinates;
 #endif
 
 #ifdef VERTEX_COLOR
@@ -134,8 +227,6 @@ out mediump vec2 interpolatedTextureCoordinates;
 layout(location = COLOR_ATTRIBUTE_LOCATION)
 #endif
 in lowp vec4 vertexColor;
-
-out lowp vec4 interpolatedVertexColor;
 #endif
 
 #ifdef INSTANCED_OBJECT_ID
@@ -143,8 +234,6 @@ out lowp vec4 interpolatedVertexColor;
 layout(location = OBJECT_ID_ATTRIBUTE_LOCATION)
 #endif
 in highp uint instanceObjectId;
-
-flat out highp uint interpolatedInstanceObjectId;
 #endif
 
 #ifdef INSTANCED_TRANSFORMATION
@@ -163,12 +252,36 @@ in highp mat3 instancedNormalMatrix;
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = TEXTURE_OFFSET_ATTRIBUTE_LOCATION)
 #endif
-in mediump vec2 instancedTextureOffset;
+in mediump
+    #ifndef TEXTURE_ARRAYS
+    vec2
+    #else
+    vec3
+    #endif
+    instancedTextureOffset;
 #endif
 
 /* Outputs */
 
-#if LIGHT_COUNT
+#ifdef TEXTURED
+out mediump
+    #ifndef TEXTURE_ARRAYS
+    vec2
+    #else
+    vec3
+    #endif
+    interpolatedTextureCoordinates;
+#endif
+
+#ifdef VERTEX_COLOR
+out lowp vec4 interpolatedVertexColor;
+#endif
+
+#ifdef INSTANCED_OBJECT_ID
+flat out highp uint interpolatedInstanceObjectId;
+#endif
+
+#ifdef HAS_LIGHTS
 out mediump vec3 transformedNormal;
 #ifdef NORMAL_TEXTURE
 #ifndef BITANGENT
@@ -178,20 +291,51 @@ out mediump vec3 transformedTangent;
 out mediump vec3 transformedBitangent;
 #endif
 #endif
-out highp vec4 lightDirections[LIGHT_COUNT];
-out highp vec3 cameraDirection;
+out highp vec3 transformedPosition;
+#endif
+
+#ifdef MULTI_DRAW
+flat out highp uint drawId;
 #endif
 
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    #ifdef MULTI_DRAW
+    drawId = drawOffset + uint(
+        #ifndef GL_ES
+        gl_DrawIDARB /* Using GL_ARB_shader_draw_parameters, not GLSL 4.6 */
+        #else
+        gl_DrawID
+        #endif
+        );
+    #else
+    #define drawId drawOffset
+    #endif
+
+    highp const mat4 transformationMatrix = transformationMatrices[drawId];
+    #ifdef HAS_LIGHTS
+    mediump const mat3 normalMatrix = mat3(draws[drawId].normalMatrix);
+    #endif
+    #ifdef TEXTURE_TRANSFORMATION
+    mediump const mat3 textureMatrix = mat3(textureTransformations[drawId].rotationScaling.xy, 0.0, textureTransformations[drawId].rotationScaling.zw, 0.0, textureTransformations[drawId].textureTransformation_offset, 1.0);
+    #ifdef TEXTURE_ARRAYS
+    highp const uint textureLayer = floatBitsToUint(textureTransformations[drawId].textureTransformation_layer);
+    #endif
+    #endif
+    #endif
+
     /* Transformed vertex position */
     highp vec4 transformedPosition4 = transformationMatrix*
         #ifdef INSTANCED_TRANSFORMATION
         instancedTransformationMatrix*
         #endif
         position;
-    highp vec3 transformedPosition = transformedPosition4.xyz/transformedPosition4.w;
+    #ifndef HAS_LIGHTS
+    highp vec3
+    #endif
+    transformedPosition = transformedPosition4.xyz/transformedPosition4.w;
 
-    #if LIGHT_COUNT
+    #ifdef HAS_LIGHTS
     /* Transformed normal and tangent vector */
     transformedNormal = normalMatrix*
         #ifdef INSTANCED_TRANSFORMATION
@@ -218,14 +362,6 @@ void main() {
         bitangent;
     #endif
     #endif
-
-    /* Direction to the light. Directional lights have the last component set
-       to 0, which gets used to ignore the transformed position. */
-    for(int i = 0; i < LIGHT_COUNT; ++i)
-        lightDirections[i] = vec4(lightPositions[i].xyz - transformedPosition*lightPositions[i].w, lightPositions[i].w);
-
-    /* Direction to the camera */
-    cameraDirection = -transformedPosition;
     #endif
 
     /* Transform the position */
@@ -233,17 +369,25 @@ void main() {
 
     #ifdef TEXTURED
     /* Texture coordinates, if needed */
-    interpolatedTextureCoordinates =
+    interpolatedTextureCoordinates.xy =
         #ifdef TEXTURE_TRANSFORMATION
         (textureMatrix*vec3(
             #ifdef INSTANCED_TEXTURE_OFFSET
-            instancedTextureOffset +
+            instancedTextureOffset.xy +
             #endif
             textureCoordinates, 1.0)).xy
         #else
         textureCoordinates
         #endif
         ;
+    #ifdef TEXTURE_ARRAYS
+    interpolatedTextureCoordinates.z = float(
+        #ifdef INSTANCED_TEXTURE_OFFSET
+        uint(instancedTextureOffset.z) +
+        #endif
+        textureLayer
+    );
+    #endif
     #endif
 
     #ifdef VERTEX_COLOR

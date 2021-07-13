@@ -91,13 +91,13 @@ class WindowlessWindowsEglContext {
         WindowlessWindowsEglContext(const WindowlessWindowsEglContext&) = delete;
 
         /** @brief Move constructor */
-        WindowlessWindowsEglContext(WindowlessWindowsEglContext&& other);
+        WindowlessWindowsEglContext(WindowlessWindowsEglContext&& other) noexcept;
 
         /** @brief Copying is not allowed */
         WindowlessWindowsEglContext& operator=(const WindowlessWindowsEglContext&) = delete;
 
         /** @brief Move assignment */
-        WindowlessWindowsEglContext& operator=(WindowlessWindowsEglContext&& other);
+        WindowlessWindowsEglContext& operator=(WindowlessWindowsEglContext&& other) noexcept;
 
         /**
          * @brief Destructor

@@ -141,7 +141,7 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
        we don't need to bother with String allocations. */
     Containers::StringView disabledWorkarounds = args.value<Containers::StringView>("disable-workarounds");
     if(!disabledWorkarounds.isEmpty()) {
-        const Containers::Array<Containers::StringView> split = disabledWorkarounds.splitWithoutEmptyParts();
+        const Containers::Array<Containers::StringView> split = disabledWorkarounds.splitOnWhitespaceWithoutEmptyParts();
         arrayReserve(_state->encounteredWorkarounds, split.size());
         for(const Containers::StringView workaround: split)
             Implementation::disableWorkaround(_state->encounteredWorkarounds, workaround);
@@ -152,7 +152,7 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
     Containers::String disabledExtensions = args.value<Containers::String>("disable-extensions");
     if(!disabledExtensions.isEmpty()) {
         _state->disabledExtensionsStorage = std::move(disabledExtensions);
-        _state->disabledExtensions = Containers::StringView{_state->disabledExtensionsStorage}.splitWithoutEmptyParts();
+        _state->disabledExtensions = Containers::StringView{_state->disabledExtensionsStorage}.splitOnWhitespaceWithoutEmptyParts();
         std::sort(_state->disabledExtensions.begin(), _state->disabledExtensions.end());
     }
 
@@ -164,7 +164,7 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
         allocation-free, the strings will be turned into owning copies because
         none of them is null-terminated or global -- could be a better idea to
         just grow one giant string internally (once we have growable strings) */
-    addEnabledExtensions(args.value<Containers::StringView>("enable-extensions").splitWithoutEmptyParts());
+    addEnabledExtensions(args.value<Containers::StringView>("enable-extensions").splitOnWhitespaceWithoutEmptyParts());
 
     /* Enable implicit extensions unless that's forbidden */
     /** @todo move this somewhere else as this will grow significantly? */

@@ -366,7 +366,7 @@ see documentation of a particular converter for more information.)")
 
         /* Set options if passed */
         if(i < args.arrayValueCount("converter-options"))
-            Implementation::setOptions(*converter, args.arrayValue("converter-options", i));
+            Implementation::setOptions(*converter, "AnyShaderConverter", args.arrayValue("converter-options", i));
 
         /* Parse format, if passed. If --info is desired, implicitly set the
            output format to SPIR-V */

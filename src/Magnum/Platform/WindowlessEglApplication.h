@@ -108,13 +108,13 @@ class WindowlessEglContext {
         WindowlessEglContext(const WindowlessEglContext&) = delete;
 
         /** @brief Move constructor */
-        WindowlessEglContext(WindowlessEglContext&& other);
+        WindowlessEglContext(WindowlessEglContext&& other) noexcept;
 
         /** @brief Copying is not allowed */
         WindowlessEglContext& operator=(const WindowlessEglContext&) = delete;
 
         /** @brief Move assignment */
-        WindowlessEglContext& operator=(WindowlessEglContext&& other);
+        WindowlessEglContext& operator=(WindowlessEglContext&& other) noexcept;
 
         /**
          * @brief Destructor

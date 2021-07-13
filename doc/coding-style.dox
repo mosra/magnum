@@ -70,7 +70,7 @@ removing redundant prefixes) is encouraged.
 
 When a namespace has classes which are commonly forward-declared, consider
 making a forward declaration header --- it should have the same name as the
-namespace itself and contain foward declarations for all classes, enums and
+namespace itself and contain forward declarations for all classes, enums and
 copies of all meaningful typedefs. See @ref compilation-forward-declarations
 for more information.
 
@@ -312,7 +312,7 @@ CORRADE_COMPARE(b, Vector2(1, 0));
 CORRADE_VERIFY(!(std::is_convertible<Vector2, Vector2i>::value));
 @endcode
 
-If some type should be constructible also from base type (additionaly to copy
+If some type should be constructible also from base type (additionally to copy
 constructor), don't forget to test that too. The test is also usually needed
 only for low-level frequently used types (vectors, matrices) where such error
 would do largest harm. Depending on how copy constructor is implemented, you

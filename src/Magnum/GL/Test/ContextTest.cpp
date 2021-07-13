@@ -101,7 +101,7 @@ void ContextTest::isExtension() {
     }
 
     /* Variadic check (used in variadic Configuration::addDisabledExtensions()),
-       check that it properly fails for each occurence of a non-extension */
+       check that it properly fails for each occurrence of a non-extension */
     #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_VERIFY(Implementation::IsExtension<
         Extensions::KHR::debug,

@@ -28,16 +28,17 @@ namespace Magnum {
 @brief Support tables for widely used image, scene, audio and font formats
 
 @tableofcontents
+@m_footernavigation
 
-The @ref Trade::AnyImageImporter "AnyImageImporter",
-@ref Trade::AnySceneImporter "AnySceneImporter",
-@ref Trade::AnyImageConverter "AnyImageConverter",
-@ref Trade::AnySceneConverter "AnySceneConverter" and other `Any*` plugins can
-be used for generic handling of any of the recognized formats, they'll proxy
-the operation to a concrete plugin implementation. The following tables list
-the most widely used formats with alternative plugin implementations and known
-caveats for each. When one format is supported by more than one plugin, you
-can use @ref Corrade::PluginManager::AbstractManager::setPreferredPlugins() to
+The @ref Audio::AnyImporter "AnyAudioImporter",
+@relativeref{Trade,AnyImageImporter}, @relativeref{Trade,AnySceneImporter},
+@relativeref{Trade,AnyImageConverter}, @relativeref{Trade,AnySceneConverter}
+and @ref ShaderTools::AnyConverter "AnyShaderConverter" plugins can be used for
+generic handling of any of the recognized formats, they'll proxy the operation
+to a concrete plugin implementation. The following tables list the most widely
+used formats with alternative plugin implementations and known caveats for
+each. When one format is supported by more than one plugin, you can use
+@ref Corrade::PluginManager::AbstractManager::setPreferredPlugins() to
 prioritize a particular plugin implementation.
 
 See the @ref file-formats-legend section at the bottom of the page for a
@@ -610,7 +611,7 @@ mentioning requirements coming from the license:
     dependencies, which don't require anything from you in order to use them
     and put no restrictions on use
 -   @m_class{m-label m-success} **green** marks licenses that make the
-    dependency safe to use in a commerical setting without having to release
+    dependency safe to use in a commercial setting without having to release
     your source code, usually requiring you to give attribution.
 -   @m_class{m-label m-warning} **yellow** marks licenses that require you to
     either dynamically link to the software to be able to use it in a

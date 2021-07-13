@@ -120,7 +120,7 @@ const struct {
            initializer (not when there's just a struct and also not when
            the struct is only a chrono member itself). Keeping at least one
            instance here so I can monitor when this gets fixed. */
-        #if !defined(CORRADE_MSVC2017_COMPATIBILITY) || defined(CORRADE_MSVC2015_COMPATIBLITY)
+        #if !defined(CORRADE_MSVC2017_COMPATIBILITY) || defined(CORRADE_MSVC2015_COMPATIBILITY)
         std::chrono::hours{100*365*24},
         #else
         std::chrono::minutes{100*365*24*60},

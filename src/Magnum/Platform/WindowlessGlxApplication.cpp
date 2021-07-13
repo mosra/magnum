@@ -280,7 +280,7 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
     }
 }
 
-WindowlessGlxContext::WindowlessGlxContext(WindowlessGlxContext&& other): _display{other._display}, _pbuffer{other._pbuffer}, _context{other._context} {
+WindowlessGlxContext::WindowlessGlxContext(WindowlessGlxContext&& other) noexcept: _display{other._display}, _pbuffer{other._pbuffer}, _context{other._context} {
     other._display = {};
     other._context = {};
     other._pbuffer = {};
@@ -292,7 +292,7 @@ WindowlessGlxContext::~WindowlessGlxContext() {
     if(_display) XCloseDisplay(_display);
 }
 
-WindowlessGlxContext& WindowlessGlxContext::operator=(WindowlessGlxContext&& other) {
+WindowlessGlxContext& WindowlessGlxContext::operator=(WindowlessGlxContext&& other) noexcept {
     using std::swap;
     swap(other._display, _display);
     swap(other._pbuffer, _pbuffer);

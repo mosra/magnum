@@ -104,6 +104,17 @@ target_link_libraries(your-app PRIVATE Magnum::AnyImageConverter)
 
 See @ref building, @ref cmake, @ref plugins and @ref file-formats for more
 information.
+
+@section Trade-AnyImageConverter-proxy Interface proxying and option propagation
+
+On a call to @ref convertToFile(), a target file format is detected from the
+extension and a corresponding plugin is loaded. After that, flags set via
+@ref setFlags() and options set through @ref configuration() are propagated to
+the concrete implementation, with a warning emitted in case given option is not
+present in the default configuration of the target plugin.
+
+The output of the @ref convertToFile() function called on the concrete
+implementation is then proxied back.
 */
 class MAGNUM_ANYIMAGECONVERTER_EXPORT AnyImageConverter: public AbstractImageConverter {
     public:

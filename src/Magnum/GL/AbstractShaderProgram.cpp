@@ -350,11 +350,11 @@ std::pair<bool, std::string> AbstractShaderProgram::validate() {
     return {success, std::move(message)};
 }
 
-void AbstractShaderProgram::draw(Mesh& mesh) {
-    CORRADE_ASSERT(mesh._countSet, "GL::AbstractShaderProgram::draw(): Mesh::setCount() was never called, probably a mistake?", );
+AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh) {
+    CORRADE_ASSERT(mesh._countSet, "GL::AbstractShaderProgram::draw(): Mesh::setCount() was never called, probably a mistake?", *this);
 
     /* Nothing to draw, exit without touching any state */
-    if(!mesh._count || !mesh._instanceCount) return;
+    if(!mesh._count || !mesh._instanceCount) return *this;
 
     use();
 
@@ -363,13 +363,14 @@ void AbstractShaderProgram::draw(Mesh& mesh) {
     #else
     mesh.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
     #endif
+    return *this;
 }
 
-void AbstractShaderProgram::draw(MeshView& mesh) {
-    CORRADE_ASSERT(mesh._countSet, "GL::AbstractShaderProgram::draw(): MeshView::setCount() was never called, probably a mistake?", );
+AbstractShaderProgram& AbstractShaderProgram::draw(MeshView& mesh) {
+    CORRADE_ASSERT(mesh._countSet, "GL::AbstractShaderProgram::draw(): MeshView::setCount() was never called, probably a mistake?", *this);
 
     /* Nothing to draw, exit without touching any state */
-    if(!mesh._count || !mesh._instanceCount) return;
+    if(!mesh._count || !mesh._instanceCount) return *this;
 
     use();
 
@@ -378,17 +379,18 @@ void AbstractShaderProgram::draw(MeshView& mesh) {
     #else
     mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
     #endif
+    return *this;
 }
 
-void AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
-    if(meshes.empty()) return;
+AbstractShaderProgram& AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
+    if(meshes.empty()) return *this;
 
     use();
 
     #ifndef CORRADE_NO_ASSERT
     const Mesh* original = &*meshes.front()->_original;
     for(std::size_t i = 0; i != meshes.size(); ++i)
-        CORRADE_ASSERT(&*meshes[i]->_original == original, "GL::AbstractShaderProgram::draw(): all meshes must be views of the same original mesh, expected" << original << "but got" << &*meshes[i]->_original << "at index" << i, );
+        CORRADE_ASSERT(&*meshes[i]->_original == original, "GL::AbstractShaderProgram::draw(): all meshes must be views of the same original mesh, expected" << original << "but got" << &*meshes[i]->_original << "at index" << i, *this);
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -396,34 +398,38 @@ void AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Referen
     #else
     Context::current().state().mesh.multiDrawImplementation(meshes);
     #endif
+    return *this;
 }
 
-void AbstractShaderProgram::draw(std::initializer_list<Containers::Reference<MeshView>> meshes) {
-    draw(Containers::arrayView(meshes));
+AbstractShaderProgram& AbstractShaderProgram::draw(std::initializer_list<Containers::Reference<MeshView>> meshes) {
+    return draw(Containers::arrayView(meshes));
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractShaderProgram::drawTransformFeedback(Mesh& mesh, TransformFeedback& xfb, UnsignedInt stream) {
+AbstractShaderProgram& AbstractShaderProgram::drawTransformFeedback(Mesh& mesh, TransformFeedback& xfb, UnsignedInt stream) {
     /* Nothing to draw, exit without touching any state */
-    if(!mesh._instanceCount) return;
+    if(!mesh._instanceCount) return *this;
 
     use();
     mesh.drawInternal(xfb, stream, mesh._instanceCount);
+    return *this;
 }
 
-void AbstractShaderProgram::drawTransformFeedback(MeshView& mesh, TransformFeedback& xfb, UnsignedInt stream) {
-    /* Nothing to draw, exit without touching any state */
-    if(!mesh._instanceCount) return;
+AbstractShaderProgram& AbstractShaderProgram::drawTransformFeedback(MeshView& mesh, TransformFeedback& xfb, UnsignedInt stream) {
+    /* If nothing to draw, exit without touching any state */
+    if(mesh._instanceCount) return *this;
 
     use();
     mesh._original->drawInternal(xfb, stream, mesh._instanceCount);
+    return *this;
 }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void AbstractShaderProgram::dispatchCompute(const Vector3ui& workgroupCount) {
+AbstractShaderProgram& AbstractShaderProgram::dispatchCompute(const Vector3ui& workgroupCount) {
     use();
     glDispatchCompute(workgroupCount.x(), workgroupCount.y(), workgroupCount.z());
+    return *this;
 }
 #endif
 

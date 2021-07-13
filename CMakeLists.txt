@@ -30,10 +30,18 @@ if(HUNTER_ENABLED)
     include(${CMAKE_CURRENT_LIST_DIR}/package/hunter/HunterInit.cmake)
 endif()
 
+# Don't restrict INTERPROCEDURAL_OPTIMIZATION only for icc on Linux
+if(POLICY CMP0069)
+    cmake_policy(SET CMP0069 NEW)
+endif()
 # If CMAKE_AUTOMOC is set, all uses of corrade_add_resource() would otherwise
 # complain on 3.10 that AUTOMOC is not processing GENERATED files
 if(POLICY CMP0071)
     cmake_policy(SET CMP0071 NEW)
+endif()
+# Superprojects can use just set(WITH_BLAH ON) without FORCE CACHE on 3.13+
+if(POLICY CMP0077)
+    cmake_policy(SET CMP0077 NEW)
 endif()
 
 project(Magnum CXX)
@@ -394,7 +402,7 @@ set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBU
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/audioimporters)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR}/audioimporters)
 
-# Plugin dirs based on wheter we are in debug or release build, needed by some
+# Plugin dirs based on whether we are in debug or release build, needed by some
 # command-line tools
 if(CORRADE_TARGET_WINDOWS)
     set(MAGNUM_PLUGINS_DEBUG_DIR_INIT ${CMAKE_INSTALL_PREFIX}/${MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR})

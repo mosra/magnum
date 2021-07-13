@@ -31,9 +31,6 @@ corrade_add_resource(MagnumShaders_RESOURCES_GL resources-gl.conf)
 set_target_properties(MagnumShaders_RESOURCES_GL-dependencies PROPERTIES FOLDER "Magnum/Shaders")
 
 set(MagnumShaders_SRCS
-    AbstractVectorGL.cpp
-    VertexColorGL.cpp
-
     ${MagnumShaders_RESOURCES_GL})
 
 set(MagnumShaders_GracefulAssert_SRCS
@@ -41,16 +38,22 @@ set(MagnumShaders_GracefulAssert_SRCS
     FlatGL.cpp
     MeshVisualizerGL.cpp
     PhongGL.cpp
-    VectorGL.cpp)
+    VectorGL.cpp
+    VertexColorGL.cpp)
 
 set(MagnumShaders_HEADERS
+    DistanceFieldVector.h
     DistanceFieldVectorGL.h
-    AbstractVectorGL.h
+    Flat.h
     FlatGL.h
+    Generic.h
     GenericGL.h
+    MeshVisualizer.h
     MeshVisualizerGL.h
+    Phong.h
     PhongGL.h
     Shaders.h
+    Vector.h
     VectorGL.h
     VertexColorGL.h
 
@@ -58,13 +61,6 @@ set(MagnumShaders_HEADERS
 
 if(MAGNUM_BUILD_DEPRECATED)
     list(APPEND MagnumShaders_HEADERS
-        DistanceFieldVector.h
-        AbstractVector.h
-        Flat.h
-        Generic.h
-        MeshVisualizer.h
-        Phong.h
-        Vector.h
         VertexColor.h)
 endif()
 

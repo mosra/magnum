@@ -202,7 +202,7 @@ asynchronous buffer updates. There is no similar extension in WebGL, thus plain
 (and slow) buffer updates are used there.
 
 @see @ref Renderer2D, @ref Renderer3D, @ref AbstractFont,
-    @ref Shaders::AbstractVectorGL
+    @ref Shaders::VectorGL, @ref Shaders::DistanceFieldVectorGL
 */
 template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public AbstractRenderer {
     public:
@@ -217,8 +217,9 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * @param usage         Usage of vertex and index buffer
          * @param alignment     Text alignment
          *
-         * Returns mesh prepared for use with @ref Shaders::AbstractVectorGL
-         * subclasses and rectangle spanning the rendered text.
+         * Returns mesh prepared for use with @ref Shaders::VectorGL or
+         * @ref Shaders::DistanceFieldVectorGL and rectangle spanning the
+         * rendered text.
          */
         static std::tuple<GL::Mesh, Range2D> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment = Alignment::LineLeft);
 

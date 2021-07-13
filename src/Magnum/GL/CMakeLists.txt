@@ -176,7 +176,7 @@ add_library(MagnumGLObjects OBJECT
     ${MagnumGL_HEADERS}
     ${MagnumGL_PRIVATE_HEADERS})
 # We can use both implicit include path (GLES2/gl2.h) where our headers can
-# be overriden with system ones or explicit (MagnumExternal/OpenGL/GLES2/gl2ext.h)
+# be overridden with system ones or explicit (MagnumExternal/OpenGL/GLES2/gl2ext.h)
 # where only our headers will be used
 target_include_directories(MagnumGLObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)

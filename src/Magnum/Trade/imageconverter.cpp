@@ -245,7 +245,7 @@ key=true; configuration subgroups are delimited with /.)")
 
         /* Set options, if passed */
         if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
-        Implementation::setOptions(*importer, args.value("importer-options"));
+        Implementation::setOptions(*importer, "AnyImageImporter", args.value("importer-options"));
 
         /* Print image info, if requested */
         if(args.isSet("info")) {
@@ -329,7 +329,7 @@ key=true; configuration subgroups are delimited with /.)")
 
     /* Set options, if passed */
     if(args.isSet("verbose")) converter->addFlags(Trade::ImageConverterFlag::Verbose);
-    Implementation::setOptions(*converter, args.value("converter-options"));
+    Implementation::setOptions(*converter, "AnyImageConverter", args.value("converter-options"));
 
     /* Save output file */
     if(!converter->convertToFile(*image, output)) {

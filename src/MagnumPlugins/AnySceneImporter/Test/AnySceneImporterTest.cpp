@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
@@ -56,7 +57,9 @@ struct AnySceneImporterTest: TestSuite::Tester {
 
     void unknown();
 
-    void verbose();
+    void propagateFlags();
+    void propagateConfiguration();
+    void propagateConfigurationUnknown();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
@@ -98,7 +101,9 @@ AnySceneImporterTest::AnySceneImporterTest() {
 
     addTests({&AnySceneImporterTest::unknown,
 
-              &AnySceneImporterTest::verbose});
+              &AnySceneImporterTest::propagateFlags,
+              &AnySceneImporterTest::propagateConfiguration,
+              &AnySceneImporterTest::propagateConfigurationUnknown});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -181,25 +186,89 @@ void AnySceneImporterTest::unknown() {
     CORRADE_COMPARE(output.str(), "Trade::AnySceneImporter::openFile(): cannot determine the format of mesh.wtf\n");
 }
 
-void AnySceneImporterTest::verbose() {
-    if(!(_manager.loadState("ObjImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
+void AnySceneImporterTest::propagateFlags() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
 
-    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+    if(manager.load("AssimpImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("AssimpImporter plugin can't be loaded.");
+    /* Ensure Assimp is used for PLY files and not our StanfordImporter */
+    manager.setPreferredPlugins("StanfordImporter", {"AssimpImporter"});
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
     importer->setFlags(ImporterFlag::Verbose);
 
     std::ostringstream out;
     {
         Debug redirectOutput{&out};
-        CORRADE_VERIFY(importer->openFile(OBJ_FILE));
+        CORRADE_VERIFY(importer->openFile(PLY_FILE));
         CORRADE_VERIFY(importer->mesh(0));
     }
-    CORRADE_COMPARE(out.str(),
-        "Trade::AnySceneImporter::openFile(): using ObjImporter\n");
 
-    /* We tested AnySceneImporter's verbose output, but can't actually test
-       the flag propagation in any way yet */
-    CORRADE_SKIP("No plugin with verbose output available to test flag propagation.");
+    Containers::StringView expected =
+        "Trade::AnySceneImporter::openFile(): using StanfordImporter (provided by AssimpImporter)\n"
+        "Trade::AssimpImporter: Info,  T0: Load " PLY_FILE "\n";
+    /** @todo use Compare::StringPrefix(?) when it exists */
+    CORRADE_COMPARE(out.str().substr(0, expected.size()), expected);
+}
+
+void AnySceneImporterTest::propagateConfiguration() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("AssimpImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("AssimpImporter plugin can't be loaded.");
+    /* Ensure Assimp is used for PLY files and not our StanfordImporter */
+    manager.setPreferredPlugins("StanfordImporter", {"AssimpImporter"});
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+
+    {
+        CORRADE_VERIFY(importer->openFile(PLY_FILE));
+
+        Containers::Optional<Trade::MeshData> mesh = importer->mesh(0);
+        CORRADE_VERIFY(mesh);
+        CORRADE_VERIFY(!mesh->hasAttribute(Trade::MeshAttribute::Normal));
+    } {
+        importer->configuration().addGroup("postprocess")->setValue("GenNormals", true);
+        CORRADE_VERIFY(importer->openFile(PLY_FILE));
+
+        Containers::Optional<Trade::MeshData> mesh = importer->mesh(0);
+        CORRADE_VERIFY(mesh);
+        CORRADE_VERIFY(mesh->hasAttribute(Trade::MeshAttribute::Normal));
+    }
+}
+
+void AnySceneImporterTest::propagateConfigurationUnknown() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("AssimpImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("AssimpImporter plugin can't be loaded.");
+    /* Ensure Assimp is used for PLY files and not our StanfordImporter. This
+       thus also accidentally checks that correct plugin name (and not the
+       alias) is used in the warning messages. */
+    manager.setPreferredPlugins("StanfordImporter", {"AssimpImporter"});
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+    importer->configuration().setValue("noSuchOption", "isHere");
+    importer->configuration().addGroup("postprocess");
+    importer->configuration().group("postprocess")->setValue("notHere", false);
+    importer->configuration().group("postprocess")->addGroup("feh")->setValue("noHereNotEither", false);
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(importer->openFile(PLY_FILE));
+    CORRADE_COMPARE(out.str(),
+        "Trade::AnySceneImporter::openFile(): option noSuchOption not recognized by AssimpImporter\n"
+        "Trade::AnySceneImporter::openFile(): option postprocess/notHere not recognized by AssimpImporter\n"
+        "Trade::AnySceneImporter::openFile(): option postprocess/feh/noHereNotEither not recognized by AssimpImporter\n");
 }
 
 }}}}

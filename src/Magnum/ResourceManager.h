@@ -570,7 +570,7 @@ template<class T> struct ResourceManagerData<T>::Data {
 
     Data(const Data&) = delete;
 
-    Data(Data&& other): data(other.data), state(other.state), policy(other.policy), referenceCount(other.referenceCount) {
+    Data(Data&& other) noexcept: data{other.data}, state{other.state}, policy{other.policy}, referenceCount{other.referenceCount} {
         other.data = nullptr;
         other.referenceCount = 0;
     }

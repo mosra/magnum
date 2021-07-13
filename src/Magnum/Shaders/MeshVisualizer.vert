@@ -27,16 +27,29 @@
 #extension GL_EXT_gpu_shader4: require
 #endif
 
+#ifdef MULTI_DRAW
+#ifndef GL_ES
+#extension GL_ARB_shader_draw_parameters: require
+#else /* covers WebGL as well */
+#extension GL_ANGLE_multi_draw: require
+#endif
+#endif
+
 #ifndef NEW_GLSL
 #define in attribute
 #define out varying
 #endif
 
+#ifndef RUNTIME_CONST
+#define const
+#endif
+
 /* Uniforms */
 
+#ifndef UNIFORM_BUFFERS
 #ifdef TWO_DIMENSIONS
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0)
+layout(location = 6)
 #endif
 uniform highp mat3 transformationProjectionMatrix
     #ifndef GL_ES
@@ -45,7 +58,7 @@ uniform highp mat3 transformationProjectionMatrix
     ;
 #elif defined(THREE_DIMENSIONS)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0)
+layout(location = 6)
 #endif
 uniform highp mat4 transformationMatrix
     #ifndef GL_ES
@@ -66,7 +79,7 @@ uniform highp mat4 projectionMatrix
 
 #ifdef VERTEX_ID
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 6)
+layout(location = 5)
 #endif
 uniform lowp vec2 colorMapOffsetScale
     #ifndef GL_ES
@@ -95,6 +108,99 @@ uniform highp float lineLength
     = 1.0
     #endif
     ;
+#endif
+
+/* Uniform buffers */
+
+#else
+#if DRAW_COUNT > 1
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 1)
+#endif
+uniform highp uint drawOffset
+    #ifndef GL_ES
+    = 0u
+    #endif
+    ;
+#else
+#define drawOffset 0u
+#endif
+
+#ifdef TWO_DIMENSIONS
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 1
+    #endif
+) uniform TransformationProjection {
+    /* Can't be a mat3 because of ANGLE, see DrawUniform in Phong.vert for
+       details */
+    highp mat3x4 transformationProjectionMatrices[DRAW_COUNT];
+};
+#elif defined(THREE_DIMENSIONS)
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 0
+    #endif
+) uniform Projection {
+    highp mat4 projectionMatrix;
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 1
+    #endif
+) uniform Transformation {
+    highp mat4 transformationMatrices[DRAW_COUNT];
+};
+#else
+#error
+#endif
+
+/* Keep in sync with MeshVisualizer.geom and MeshVisualizer.frag. Can't
+   "outsource" to a common file because the #extension directives need to be
+   always before any code. */
+struct DrawUniform {
+    #ifdef THREE_DIMENSIONS
+    /* Can't be a mat3 because of ANGLE, see Phong.vert for details */
+    highp mat3x4 normalMatrix;
+    #elif !defined(TWO_DIMENSIONS)
+    #error
+    #endif
+    highp uvec4 materialIdReservedReservedReservedReserved;
+    #define draw_materialIdReserved materialIdReservedReservedReservedReserved.x
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 2
+    #endif
+) uniform Draw {
+    DrawUniform draws[DRAW_COUNT];
+};
+
+/* Keep in sync with MeshVisualizer.geom and MeshVisualizer.frag. Can't
+   "outsource" to a common file because the #extension directives need to be
+   always before any code. */
+struct MaterialUniform {
+    lowp vec4 color;
+    lowp vec4 wireframeColor;
+    lowp vec4 wireframeWidthColorMapOffsetColorMapScaleLineWidth;
+    #define material_wireframeWidth wireframeWidthColorMapOffsetColorMapScaleLineWidth.x
+    #define material_colorMapOffset wireframeWidthColorMapOffsetColorMapScaleLineWidth.y
+    #define material_colorMapScale wireframeWidthColorMapOffsetColorMapScaleLineWidth.z
+    #define material_lineWidth wireframeWidthColorMapOffsetColorMapScaleLineWidth.w
+    lowp vec4 lineLengthSmoothnessReservedReserved;
+    #define material_lineLength lineLengthSmoothnessReservedReserved.x
+    #define material_smoothness lineLengthSmoothnessReservedReserved.y
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 4
+    #endif
+) uniform Material {
+    MaterialUniform materials[MATERIAL_COUNT];
+};
 #endif
 
 /* Inputs */
@@ -188,7 +294,52 @@ out highp vec4 bitangentEndpoint;
 out highp vec4 normalEndpoint;
 #endif
 
+#ifdef MULTI_DRAW
+flat out highp uint
+    #ifdef NO_GEOMETRY_SHADER
+    drawId
+    #else
+    vsDrawId
+    #endif
+    ;
+#endif
+
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    #ifdef MULTI_DRAW
+    #ifdef NO_GEOMETRY_SHADER
+    drawId
+    #else
+    vsDrawId
+    #define drawId vsDrawId
+    #endif
+    = drawOffset + uint(
+        #ifndef GL_ES
+        gl_DrawIDARB /* Using GL_ARB_shader_draw_parameters, not GLSL 4.6 */
+        #else
+        gl_DrawID
+        #endif
+        );
+    #else
+    #define drawId drawOffset
+    #endif
+
+    #ifdef TWO_DIMENSIONS
+    highp const mat3 transformationProjectionMatrix = mat3(transformationProjectionMatrices[drawId]);
+    #elif defined(THREE_DIMENSIONS)
+    highp const mat4 transformationMatrix = transformationMatrices[drawId];
+    #else
+    #error
+    #endif
+    #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
+    mediump const mat3 normalMatrix = mat3(draws[drawId].normalMatrix);
+    #endif
+    mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
+    lowp float colorMapOffset = materials[materialId].material_colorMapOffset;
+    lowp float colorMapScale = materials[materialId].material_colorMapScale;
+    highp float lineLength = materials[materialId].material_lineLength;
+    #endif
+
     #ifdef TWO_DIMENSIONS
     gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);
     #elif defined(THREE_DIMENSIONS)

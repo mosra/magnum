@@ -52,7 +52,7 @@ WindowlessIosContext::WindowlessIosContext(const Configuration&, GLContext*) {
     }
 }
 
-WindowlessIosContext::WindowlessIosContext(WindowlessIosContext&& other): _context{other._context} {
+WindowlessIosContext::WindowlessIosContext(WindowlessIosContext&& other) noexcept: _context{other._context} {
     other._context = {};
 }
 
@@ -60,7 +60,7 @@ WindowlessIosContext::~WindowlessIosContext() {
     if(_context) [_context dealloc];
 }
 
-WindowlessIosContext& WindowlessIosContext::operator=(WindowlessIosContext&& other) {
+WindowlessIosContext& WindowlessIosContext::operator=(WindowlessIosContext&& other) noexcept {
     using std::swap;
     swap(other._context, _context);
     return *this;

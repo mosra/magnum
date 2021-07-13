@@ -35,7 +35,7 @@ namespace Magnum { namespace GL {
 
 /* Standard Android build system thinks that it's okay to define unmangled
    unprefixed macros. I think that whoever did that needs to be punished,
-   becuase I am then not able to use that identifier for extension names.
+   because I am then not able to use that identifier for extension names.
    Use CORRADE_TARGET_ANDROID here instead. */
 #ifdef ANDROID
 #undef ANDROID

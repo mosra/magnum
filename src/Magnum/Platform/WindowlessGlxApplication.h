@@ -119,13 +119,13 @@ class WindowlessGlxContext {
         WindowlessGlxContext(const WindowlessGlxContext&) = delete;
 
         /** @brief Move constructor */
-        WindowlessGlxContext(WindowlessGlxContext&& other);
+        WindowlessGlxContext(WindowlessGlxContext&& other) noexcept;
 
         /** @brief Copying is not allowed */
         WindowlessGlxContext& operator=(const WindowlessGlxContext&) = delete;
 
         /** @brief Move assignment */
-        WindowlessGlxContext& operator=(WindowlessGlxContext&& other);
+        WindowlessGlxContext& operator=(WindowlessGlxContext&& other) noexcept;
 
         /**
          * @brief Destructor

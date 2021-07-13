@@ -121,6 +121,24 @@ target_link_libraries(your-app PRIVATE Magnum::AnyShaderConverter)
 @endcode
 
 See @ref building, @ref cmake and @ref plugins for more information.
+
+@section ShaderTools-AnyConverter-proxy Interface proxying and option propagation
+
+On a call to @ref validateFile() / @ref validateData(), @ref convertFileToFile()
+/ @ref convertFileToData() / @ref convertDataToData(), an input/output file
+format is detected from either the extensions or taken from the
+@ref setInputFormat() and @ref setOutputFormat() calls and a corresponding
+plugin is loaded. After that, everything set via @ref setFlags(),
+@ref setInputFormat(), @ref setOutputFormat(), @ref setDefinitions(),
+@ref setDebugInfoLevel(), @ref setOptimizationLevel() is propagated to the
+concrete implementation, with an error emitted in case the target plugin
+doesn't support given feature. Options set through @ref configuration() are
+propagated as well, with just a warning emitted in case given option is not
+present in the default configuration of the target plugin.
+
+The output of the @ref validateFile() / @ref validateData(),
+@ref convertFileToFile() / @ref convertFileToData() / @ref convertDataToData()
+function called on the concrete implementation is then proxied back.
 */
 class MAGNUM_ANYSHADERCONVERTER_EXPORT AnyConverter: public AbstractConverter {
     public:

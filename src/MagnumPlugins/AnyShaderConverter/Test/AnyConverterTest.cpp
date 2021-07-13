@@ -29,6 +29,7 @@
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
@@ -52,6 +53,8 @@ struct AnyConverterTest: TestSuite::Tester {
     void validateFilePropagateInputVersion();
     void validateFilePropagateOutputVersion();
     void validateFilePropagatePreprocess();
+    void validateFilePropagateConfiguration();
+    void validateFilePropagateConfigurationUnknown();
 
     void validateData();
     void validateDataPluginLoadFailed();
@@ -62,6 +65,8 @@ struct AnyConverterTest: TestSuite::Tester {
     void validateDataPropagateInputVersion();
     void validateDataPropagateOutputVersion();
     void validateDataPropagatePreprocess();
+    void validateDataPropagateConfiguration();
+    void validateDataPropagateConfigurationUnknown();
 
     void convertFileToFile();
     void convertFileToFilePluginLoadFailed();
@@ -77,6 +82,8 @@ struct AnyConverterTest: TestSuite::Tester {
     void convertFileToFilePropagatePreprocess();
     void convertFileToFilePropagateDebugInfo();
     void convertFileToFilePropagateOptimization();
+    void convertFileToFilePropagateConfiguration();
+    void convertFileToFilePropagateConfigurationUnknown();
 
     void convertFileToData();
     void convertFileToDataPluginLoadFailed();
@@ -92,6 +99,8 @@ struct AnyConverterTest: TestSuite::Tester {
     void convertFileToDataPropagatePreprocess();
     void convertFileToDataPropagateDebugInfo();
     void convertFileToDataPropagateOptimization();
+    void convertFileToDataPropagateConfiguration();
+    void convertFileToDataPropagateConfigurationUnknown();
 
     void convertDataToData();
     void convertDataToDataPluginLoadFailed();
@@ -107,6 +116,8 @@ struct AnyConverterTest: TestSuite::Tester {
     void convertDataToDataPropagatePreprocess();
     void convertDataToDataPropagateDebugInfo();
     void convertDataToDataPropagateOptimization();
+    void convertDataToDataPropagateConfiguration();
+    void convertDataToDataPropagateConfigurationUnknown();
 
     void detectValidate();
     void detectValidateExplicitFormat();
@@ -151,6 +162,8 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::validateFilePropagateInputVersion,
               &AnyConverterTest::validateFilePropagateOutputVersion,
               &AnyConverterTest::validateFilePropagatePreprocess,
+              &AnyConverterTest::validateFilePropagateConfiguration,
+              &AnyConverterTest::validateFilePropagateConfigurationUnknown,
 
               &AnyConverterTest::validateData,
               &AnyConverterTest::validateDataPluginLoadFailed,
@@ -161,6 +174,8 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::validateDataPropagateInputVersion,
               &AnyConverterTest::validateDataPropagateOutputVersion,
               &AnyConverterTest::validateDataPropagatePreprocess,
+              &AnyConverterTest::validateDataPropagateConfiguration,
+              &AnyConverterTest::validateDataPropagateConfigurationUnknown,
 
               &AnyConverterTest::convertFileToFile,
               &AnyConverterTest::convertFileToFilePluginLoadFailed,
@@ -176,6 +191,8 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::convertFileToFilePropagatePreprocess,
               &AnyConverterTest::convertFileToFilePropagateDebugInfo,
               &AnyConverterTest::convertFileToFilePropagateOptimization,
+              &AnyConverterTest::convertFileToFilePropagateConfiguration,
+              &AnyConverterTest::convertFileToFilePropagateConfigurationUnknown,
 
               &AnyConverterTest::convertFileToData,
               &AnyConverterTest::convertFileToDataPluginLoadFailed,
@@ -191,6 +208,8 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::convertFileToDataPropagatePreprocess,
               &AnyConverterTest::convertFileToDataPropagateDebugInfo,
               &AnyConverterTest::convertFileToDataPropagateOptimization,
+              &AnyConverterTest::convertFileToDataPropagateConfiguration,
+              &AnyConverterTest::convertFileToDataPropagateConfigurationUnknown,
 
               &AnyConverterTest::convertDataToData,
               &AnyConverterTest::convertDataToDataPluginLoadFailed,
@@ -205,7 +224,9 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::convertDataToDataPropagateOutputVersion,
               &AnyConverterTest::convertDataToDataPropagatePreprocess,
               &AnyConverterTest::convertDataToDataPropagateDebugInfo,
-              &AnyConverterTest::convertDataToDataPropagateOptimization});
+              &AnyConverterTest::convertDataToDataPropagateOptimization,
+              &AnyConverterTest::convertDataToDataPropagateConfiguration,
+              &AnyConverterTest::convertDataToDataPropagateConfigurationUnknown});
 
     addInstancedTests({&AnyConverterTest::detectValidate},
         Containers::arraySize(DetectValidateData));
@@ -398,6 +419,53 @@ void AnyConverterTest::validateFilePropagatePreprocess() {
         std::make_pair(true, Utility::formatString("WARNING: {}:10: 'different__but_also_wrong' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
 }
 
+void AnyConverterTest::validateFilePropagateConfiguration() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+
+    const std::string filename = Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "version-not-first.glsl");
+
+    {
+        CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
+            std::make_pair(false, Utility::formatString("ERROR: {}:2: '#version' : must occur first in shader \nERROR: 1 compilation errors.  No code generated.", filename)));
+    } {
+        converter->configuration().setValue("permissive", true);
+        /* Lol stupid thing, apparently it has two differently worded messages
+           for the same thing? Dumpster fire. */
+        CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
+            std::make_pair(true, "WARNING: 0:0: '#version' : Illegal to have non-comment, non-whitespace tokens before #version"));
+    }
+}
+
+void AnyConverterTest::validateFilePropagateConfigurationUnknown() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+    /* So it doesn't warn about anything */
+    converter->setDefinitions({{"reserved__identifier", "sorry"}});
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_COMPARE(converter->validateFile(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl")),
+        std::make_pair(true, ""));
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::AnyConverter::validateFile(): option noSuchOption not recognized by GlslangShaderConverter\n");
+}
+
 void AnyConverterTest::validateData() {
     PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
     #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
@@ -575,6 +643,55 @@ void AnyConverterTest::validateDataPropagatePreprocess() {
 
     CORRADE_COMPARE(converter->validateData(Stage::Fragment, Utility::Directory::read(Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"))),
         std::make_pair(true, "WARNING: 0:10: 'different__but_also_wrong' : identifiers containing consecutive underscores (\"__\") are reserved"));
+}
+
+void AnyConverterTest::validateDataPropagateConfiguration() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+    converter->setInputFormat(Format::Glsl);
+
+    const std::string filename = Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "version-not-first.glsl");
+
+    {
+        CORRADE_COMPARE(converter->validateData(Stage::Fragment, Utility::Directory::read(filename)),
+            std::make_pair(false, "ERROR: 0:2: '#version' : must occur first in shader \nERROR: 1 compilation errors.  No code generated."));
+    } {
+        converter->configuration().setValue("permissive", true);
+        /* Lol stupid thing, apparently it has two differently worded messages
+           for the same thing? Dumpster fire. */
+        CORRADE_COMPARE(converter->validateData(Stage::Fragment, Utility::Directory::read(filename)),
+            std::make_pair(true, Utility::formatString("WARNING: 0:0: '#version' : Illegal to have non-comment, non-whitespace tokens before #version")));
+    }
+}
+
+void AnyConverterTest::validateDataPropagateConfigurationUnknown() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+    converter->setInputFormat(Format::Glsl);
+    converter->configuration().setValue("noSuchOption", "isHere");
+    /* So it doesn't warn about anything */
+    converter->setDefinitions({{"reserved__identifier", "sorry"}});
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_COMPARE(converter->validateData(Stage::Fragment, Utility::Directory::read(Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"))),
+        std::make_pair(true, ""));
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::AnyConverter::validateData(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
 
 void AnyConverterTest::convertFileToFile() {
@@ -877,7 +994,60 @@ void AnyConverterTest::convertFileToFilePropagateOptimization() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->convertFileToFile(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv"), Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv")));
     CORRADE_COMPARE(out.str(),
-        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl, vulkanToWebGpu, webGpuToVulkan or empty but got 2\n");
+        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl or empty but got 2\n");
+}
+
+void AnyConverterTest::convertFileToFilePropagateConfiguration() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+
+    const std::string input = Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "version-not-first.glsl");
+    const std::string output = Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv");
+
+    {
+        std::ostringstream out;
+        Error redirectError{&out};
+        CORRADE_VERIFY(!converter->convertFileToFile(Stage::Fragment, input, output));
+        CORRADE_COMPARE(out.str(),
+            Utility::formatString("ShaderTools::GlslangConverter::convertDataToData(): compilation failed:\nERROR: {}:2: '#version' : must occur first in shader \nERROR: 1 compilation errors.  No code generated.\n", input));
+    } {
+        converter->configuration().setValue("permissive", true);
+        /* Lol stupid thing, apparently it has two differently worded messages
+           for the same thing? Dumpster fire. */
+        std::ostringstream out;
+        Warning redirectWarning{&out};
+        CORRADE_VERIFY(converter->convertFileToFile(Stage::Fragment, input, output));
+        CORRADE_COMPARE(out.str(),
+            "ShaderTools::GlslangConverter::convertDataToData(): compilation succeeded with the following message:\nWARNING: 0:0: '#version' : Illegal to have non-comment, non-whitespace tokens before #version\n");
+    }
+}
+
+void AnyConverterTest::convertFileToFilePropagateConfigurationUnknown() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+    /* So it doesn't warn about anything */
+    converter->setDefinitions({{"reserved__identifier", "sorry"}});
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter->convertFileToFile(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"), Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.glsl")));
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::AnyConverter::convertFileToFile(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
 
 void AnyConverterTest::convertFileToData() {
@@ -1188,7 +1358,62 @@ void AnyConverterTest::convertFileToDataPropagateOptimization() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->convertFileToData(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv")));
     CORRADE_COMPARE(out.str(),
-        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl, vulkanToWebGpu, webGpuToVulkan or empty but got 2\n");
+        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl or empty but got 2\n");
+}
+
+void AnyConverterTest::convertFileToDataPropagateConfiguration() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+
+    converter->setOutputFormat(Format::Spirv);
+
+    const std::string input = Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "version-not-first.glsl");
+
+    {
+        std::ostringstream out;
+        Error redirectError{&out};
+        CORRADE_VERIFY(!converter->convertFileToData(Stage::Fragment, input));
+        CORRADE_COMPARE(out.str(),
+            Utility::formatString("ShaderTools::GlslangConverter::convertDataToData(): compilation failed:\nERROR: {}:2: '#version' : must occur first in shader \nERROR: 1 compilation errors.  No code generated.\n", input));
+    } {
+        converter->configuration().setValue("permissive", true);
+        /* Lol stupid thing, apparently it has two differently worded messages
+           for the same thing? Dumpster fire. */
+        std::ostringstream out;
+        Warning redirectWarning{&out};
+        CORRADE_VERIFY(converter->convertFileToData(Stage::Fragment, input));
+        CORRADE_COMPARE(out.str(),
+            "ShaderTools::GlslangConverter::convertDataToData(): compilation succeeded with the following message:\nWARNING: 0:0: '#version' : Illegal to have non-comment, non-whitespace tokens before #version\n");
+    }
+}
+
+void AnyConverterTest::convertFileToDataPropagateConfigurationUnknown() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+    converter->setOutputFormat(Format::Spirv);
+    converter->configuration().setValue("noSuchOption", "isHere");
+    /* So it doesn't warn about anything */
+    converter->setDefinitions({{"reserved__identifier", "sorry"}});
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter->convertFileToData(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl")));
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::AnyConverter::convertFileToData(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
 
 void AnyConverterTest::convertDataToData() {
@@ -1506,7 +1731,64 @@ void AnyConverterTest::convertDataToDataPropagateOptimization() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->convertDataToData(Stage::Fragment, Utility::Directory::read(Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv"))));
     CORRADE_COMPARE(out.str(),
-        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl, vulkanToWebGpu, webGpuToVulkan or empty but got 2\n");
+        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl or empty but got 2\n");
+}
+
+void AnyConverterTest::convertDataToDataPropagateConfiguration() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+
+    converter->setInputFormat(Format::Glsl);
+    converter->setOutputFormat(Format::Spirv);
+
+    const std::string input = Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "version-not-first.glsl");
+
+    {
+        std::ostringstream out;
+        Error redirectError{&out};
+        CORRADE_VERIFY(!converter->convertDataToData(Stage::Fragment, Utility::Directory::read(input)));
+        CORRADE_COMPARE(out.str(),
+            "ShaderTools::GlslangConverter::convertDataToData(): compilation failed:\nERROR: 0:2: '#version' : must occur first in shader \nERROR: 1 compilation errors.  No code generated.\n");
+    } {
+        converter->configuration().setValue("permissive", true);
+        /* Lol stupid thing, apparently it has two differently worded messages
+           for the same thing? Dumpster fire. */
+        std::ostringstream out;
+        Warning redirectWarning{&out};
+        CORRADE_VERIFY(converter->convertDataToData(Stage::Fragment, Utility::Directory::read(input)));
+        CORRADE_COMPARE(out.str(),
+            "ShaderTools::GlslangConverter::convertDataToData(): compilation succeeded with the following message:\nWARNING: 0:0: '#version' : Illegal to have non-comment, non-whitespace tokens before #version\n");
+    }
+}
+
+void AnyConverterTest::convertDataToDataPropagateConfigurationUnknown() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+    converter->setInputFormat(Format::Glsl);
+    converter->setOutputFormat(Format::Spirv);
+    converter->configuration().setValue("noSuchOption", "isHere");
+    /* So it doesn't warn about anything */
+    converter->setDefinitions({{"reserved__identifier", "sorry"}});
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter->convertDataToData(Stage::Fragment, Utility::Directory::read(Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"))));
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::AnyConverter::convertDataToData(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
 
 void AnyConverterTest::detectValidate() {

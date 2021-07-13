@@ -26,16 +26,19 @@
 #include "AnySceneConverter.h"
 
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/StringStl.h> /* for PluginManager */
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Trade/ImageData.h"
+#include "MagnumPlugins/Implementation/propagateConfiguration.h"
 
 namespace Magnum { namespace Trade {
+
+using namespace Containers::Literals;
 
 AnySceneConverter::AnySceneConverter(PluginManager::Manager<AbstractSceneConverter>& manager): AbstractSceneConverter{manager} {}
 
@@ -50,13 +53,14 @@ SceneConverterFeatures AnySceneConverter::doFeatures() const {
 bool AnySceneConverter::doConvertToFile(const MeshData& mesh, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo lowercase only the extension, once Directory::split() is done */
-    const std::string normalized = Utility::String::lowercase(filename);
+    /** @todo once Directory is std::string-free, use splitExtension(), but
+        only if we don't detect more than one extension yet */
+    const Containers::StringView normalized = Utility::String::lowercase(filename);
 
     /* Detect the plugin from extension */
-    std::string plugin;
-    if(Utility::String::endsWith(normalized, ".ply"))
-        plugin = "StanfordSceneConverter";
+    Containers::StringView plugin;
+    if(normalized.hasSuffix(".ply"_s))
+        plugin = "StanfordSceneConverter"_s;
     else {
         Error{} << "Trade::AnySceneConverter::convertToFile(): cannot determine the format of" << filename;
         return false;
@@ -67,11 +71,12 @@ bool AnySceneConverter::doConvertToFile(const MeshData& mesh, const Containers::
         Error{} << "Trade::AnySceneConverter::convertToFile(): cannot load the" << plugin << "plugin";
         return false;
     }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & SceneConverterFlag::Verbose) {
         Debug d;
         d << "Trade::AnySceneConverter::convertToFile(): using" << plugin;
-        PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -79,6 +84,9 @@ bool AnySceneConverter::doConvertToFile(const MeshData& mesh, const Containers::
     /* Instantiate the plugin, propagate flags */
     Containers::Pointer<AbstractSceneConverter> converter = static_cast<PluginManager::Manager<AbstractSceneConverter>*>(manager())->instantiate(plugin);
     converter->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnySceneConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */

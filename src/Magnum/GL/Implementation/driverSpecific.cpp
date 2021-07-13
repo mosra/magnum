@@ -415,7 +415,7 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
     _detectedDrivers = DetectedDrivers{};
 
-    #ifndef MAGNUM_TARGET_WEBGL
+    #if !defined(MAGNUM_TARGET_WEBGL) && !defined(CORRADE_TARGET_APPLE)
     const Containers::StringView renderer = rendererString();
     #endif
     #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)

@@ -104,14 +104,14 @@ InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char** const argv, 
         if(!_state) _state.emplace();
 
         _state->disabledLayersStorage = std::move(disabledLayers);
-        _state->disabledLayers = Containers::StringView{_state->disabledLayersStorage}.splitWithoutEmptyParts();
+        _state->disabledLayers = Containers::StringView{_state->disabledLayersStorage}.splitOnWhitespaceWithoutEmptyParts();
         std::sort(_state->disabledLayers.begin(), _state->disabledLayers.end());
     }
     if(!disabledExtensions.isEmpty()) {
         if(!_state) _state.emplace();
 
         _state->disabledExtensionsStorage = std::move(disabledExtensions);
-        _state->disabledExtensions = Containers::StringView{_state->disabledExtensionsStorage}.splitWithoutEmptyParts();
+        _state->disabledExtensions = Containers::StringView{_state->disabledExtensionsStorage}.splitOnWhitespaceWithoutEmptyParts();
         std::sort(_state->disabledExtensions.begin(), _state->disabledExtensions.end());
     }
 
@@ -123,8 +123,8 @@ InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char** const argv, 
         allocation-free, the strings will be turned into owning copies because
         none of them is null-terminated or global -- could be a better idea to
         just grow one giant string internally (once we have growable strings) */
-    addEnabledLayers(args.value<Containers::StringView>("enable-layers").splitWithoutEmptyParts());
-    addEnabledExtensions(args.value<Containers::StringView>("enable-instance-extensions").splitWithoutEmptyParts());
+    addEnabledLayers(args.value<Containers::StringView>("enable-layers").splitOnWhitespaceWithoutEmptyParts());
+    addEnabledExtensions(args.value<Containers::StringView>("enable-instance-extensions").splitOnWhitespaceWithoutEmptyParts());
 
     /** @todo use this (enabling debug layers etc.) */
     static_cast<void>(layerProperties);

@@ -263,7 +263,7 @@ used.)")
 
     /* Set options, if passed */
     if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
-    Implementation::setOptions(*importer, args.value("importer-options"));
+    Implementation::setOptions(*importer, "AnySceneImporter", args.value("importer-options"));
 
     std::chrono::high_resolution_clock::duration importTime;
 
@@ -823,7 +823,7 @@ used.)")
         /* Set options, if passed */
         if(args.isSet("verbose")) converter->addFlags(Trade::SceneConverterFlag::Verbose);
         if(i < args.arrayValueCount("converter-options"))
-            Implementation::setOptions(*converter, args.arrayValue("converter-options", i));
+            Implementation::setOptions(*converter, "AnySceneConverter", args.arrayValue("converter-options", i));
 
         /* This is the last --converter (or the implicit AnySceneConverter at
            the end), output to a file and exit the loop */

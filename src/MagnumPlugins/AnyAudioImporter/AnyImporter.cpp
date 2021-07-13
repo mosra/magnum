@@ -27,9 +27,12 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/String.h>
+
+#include "MagnumPlugins/Implementation/propagateConfiguration.h"
 
 namespace Magnum { namespace Audio {
 
@@ -74,9 +77,16 @@ void AnyImporter::doOpenFile(const std::string& filename) {
         return;
     }
 
+    /* Instantiate the plugin */
+    Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
+
+    /* Propagate configuration */
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
+    Magnum::Implementation::propagateConfiguration("Audio::AnyImporter::openFile():", {}, metadata->name(), configuration(), importer->configuration());
+
     /* Try to open the file (error output should be printed by the plugin
        itself) */
-    Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     if(!importer->openFile(filename)) return;
 
     /* Success, save the instance */

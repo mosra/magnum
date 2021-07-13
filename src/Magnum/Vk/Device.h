@@ -401,7 +401,7 @@ class MAGNUM_VK_EXPORT Device {
         /**
          * @brief Version supported by the device
          *
-         * Unless overriden using `--magnum-vulkan-version` on the
+         * Unless overridden using `--magnum-vulkan-version` on the
          * @ref Vk-Device-command-line "command line", corresponds to
          * @ref DeviceProperties::version().
          */

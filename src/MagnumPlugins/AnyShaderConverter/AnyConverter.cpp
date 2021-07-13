@@ -27,13 +27,14 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/String.h>
+
+#include "MagnumPlugins/Implementation/propagateConfiguration.h"
 
 namespace Magnum { namespace ShaderTools {
 
@@ -120,49 +121,50 @@ Containers::StringView stringForFormat(const Format format) {
 }
 
 Format formatForExtension(const char* prefix, const Containers::StringView filename) {
-    /** @todo lowercase only the extension, once Directory::split() is done */
-    const std::string normalized = Utility::String::lowercase(filename);
+    /* Can't reliably lowercase just the extension as we detect double
+       extensions as well */
+    const Containers::String normalized = Utility::String::lowercase(filename);
 
     /* https://github.com/KhronosGroup/SPIRV-Tools/blob/a715b1b4053519ad0f2bdb2d22ace35d35867cff/README.md#command-line-tools
        "It's a convention to name SPIR-V assembly and binary files with suffix
        .spvasm and .spv, respectively." IT'S GREAT THAT I HAD TO SEARCH HALF
        THE INTERNET TO FIND THIS CONVENTION. Especially when tests in the
        SPIRV-Cross repo use `.asm.bla` instead, FFS. */
-    if(Utility::String::endsWith(normalized, ".spvasm") ||
+    if(normalized.hasSuffix(".spvasm"_s) ||
        /* Not official, used by https://github.com/KhronosGroup/SPIRV-Cross */
-       Utility::String::endsWith(normalized, ".asm.vert") ||
-       Utility::String::endsWith(normalized, ".asm.frag") ||
-       Utility::String::endsWith(normalized, ".asm.geom") ||
-       Utility::String::endsWith(normalized, ".asm.comp") ||
-       Utility::String::endsWith(normalized, ".asm.tesc") ||
-       Utility::String::endsWith(normalized, ".asm.tese") ||
-       Utility::String::endsWith(normalized, ".asm.rgen") ||
-       Utility::String::endsWith(normalized, ".asm.rint") ||
-       Utility::String::endsWith(normalized, ".asm.rahit") ||
-       Utility::String::endsWith(normalized, ".asm.rchit") ||
-       Utility::String::endsWith(normalized, ".asm.rmiss") ||
-       Utility::String::endsWith(normalized, ".asm.rcall") ||
-       Utility::String::endsWith(normalized, ".asm.mesh") ||
-       Utility::String::endsWith(normalized, ".asm.task"))
+       normalized.hasSuffix(".asm.vert"_s) ||
+       normalized.hasSuffix(".asm.frag"_s) ||
+       normalized.hasSuffix(".asm.geom"_s) ||
+       normalized.hasSuffix(".asm.comp"_s) ||
+       normalized.hasSuffix(".asm.tesc"_s) ||
+       normalized.hasSuffix(".asm.tese"_s) ||
+       normalized.hasSuffix(".asm.rgen"_s) ||
+       normalized.hasSuffix(".asm.rint"_s) ||
+       normalized.hasSuffix(".asm.rahit"_s) ||
+       normalized.hasSuffix(".asm.rchit"_s) ||
+       normalized.hasSuffix(".asm.rmiss"_s) ||
+       normalized.hasSuffix(".asm.rcall"_s) ||
+       normalized.hasSuffix(".asm.mesh"_s) ||
+       normalized.hasSuffix(".asm.task"_s))
         return Format::SpirvAssembly;
     /* https://github.com/KhronosGroup/glslang/blob/3ce148638bdc3807316e358dee4a5c9583189ae7/StandAlone/StandAlone.cpp#L260-L274 */
-    else if(Utility::String::endsWith(normalized, ".glsl") ||
-            Utility::String::endsWith(normalized, ".vert") ||
-            Utility::String::endsWith(normalized, ".frag") ||
-            Utility::String::endsWith(normalized, ".geom") ||
-            Utility::String::endsWith(normalized, ".comp") ||
-            Utility::String::endsWith(normalized, ".tesc") ||
-            Utility::String::endsWith(normalized, ".tese") ||
-            Utility::String::endsWith(normalized, ".rgen") ||
-            Utility::String::endsWith(normalized, ".rint") ||
-            Utility::String::endsWith(normalized, ".rahit") ||
-            Utility::String::endsWith(normalized, ".rchit") ||
-            Utility::String::endsWith(normalized, ".rmiss") ||
-            Utility::String::endsWith(normalized, ".rcall") ||
-            Utility::String::endsWith(normalized, ".mesh") ||
-            Utility::String::endsWith(normalized, ".task"))
+    else if(normalized.hasSuffix(".glsl"_s) ||
+            normalized.hasSuffix(".vert"_s) ||
+            normalized.hasSuffix(".frag"_s) ||
+            normalized.hasSuffix(".geom"_s) ||
+            normalized.hasSuffix(".comp"_s) ||
+            normalized.hasSuffix(".tesc"_s) ||
+            normalized.hasSuffix(".tese"_s) ||
+            normalized.hasSuffix(".rgen"_s) ||
+            normalized.hasSuffix(".rint"_s) ||
+            normalized.hasSuffix(".rahit"_s) ||
+            normalized.hasSuffix(".rchit"_s) ||
+            normalized.hasSuffix(".rmiss"_s) ||
+            normalized.hasSuffix(".rcall"_s) ||
+            normalized.hasSuffix(".mesh"_s) ||
+            normalized.hasSuffix(".task"_s))
         return Format::Glsl;
-    else if(Utility::String::endsWith(normalized, ".spv"))
+    else if(normalized.hasSuffix(".spv"_s))
         return Format::Spirv;
 
     Error{} << prefix << "cannot determine the format of" << filename;
@@ -190,11 +192,11 @@ std::pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage sta
         Error{} << "ShaderTools::AnyConverter::validateFile(): cannot load the" << plugin << "plugin";
         return {};
     }
-    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ConverterFlag::Verbose) {
         Debug d;
         d << "ShaderTools::AnyConverter::validateFile(): using" << plugin;
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -223,6 +225,9 @@ std::pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage sta
     if(!_state->definitionViews.empty())
         converter->setDefinitions(_state->definitionViews);
 
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::validateFile():", {}, metadata->name(), configuration(), converter->configuration());
+
     /* Try to validate the file (error output should be printed by the plugin
        itself) */
     return converter->validateFile(stage, filename);
@@ -243,11 +248,12 @@ std::pair<bool, Containers::String> AnyConverter::doValidateData(const Stage sta
         Error{} << "ShaderTools::AnyConverter::validateData(): cannot load the" << plugin << "plugin";
         return {};
     }
-    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ConverterFlag::Verbose) {
         Debug d;
         d << "ShaderTools::AnyConverter::validateData(): using" << plugin;
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -275,6 +281,9 @@ std::pair<bool, Containers::String> AnyConverter::doValidateData(const Stage sta
     /* Propagate definitions, if any */
     if(!_state->definitionViews.empty())
         converter->setDefinitions(_state->definitionViews);
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::validateData():", {}, metadata->name(), configuration(), converter->configuration());
 
     /* Try to validate the data (error output should be printed by the plugin
        itself) */
@@ -307,11 +316,12 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
         Error{} << "ShaderTools::AnyConverter::convertFileToFile(): cannot load the" << plugin << "plugin";
         return {};
     }
-    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ConverterFlag::Verbose) {
         Debug d;
         d << "ShaderTools::AnyConverter::convertFileToFile(): using" << plugin;
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -356,6 +366,9 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
     if(!_state->optimizationLevel.isEmpty())
         converter->setOptimizationLevel(_state->optimizationLevel);
 
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::convertFileToFile():", {}, metadata->name(), configuration(), converter->configuration());
+
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
     return converter->convertFileToFile(stage, from, to);
@@ -388,11 +401,12 @@ Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, con
         Error{} << "ShaderTools::AnyConverter::convertFileToData(): cannot load the" << plugin << "plugin";
         return {};
     }
-    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ConverterFlag::Verbose) {
         Debug d;
         d << "ShaderTools::AnyConverter::convertFileToData(): using" << plugin;
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -437,6 +451,9 @@ Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, con
     if(!_state->optimizationLevel.isEmpty())
         converter->setOptimizationLevel(_state->optimizationLevel);
 
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::convertFileToData():", {}, metadata->name(), configuration(), converter->configuration());
+
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
     return converter->convertFileToData(stage, filename);
@@ -467,11 +484,12 @@ Containers::Array<char> AnyConverter::doConvertDataToData(const Stage stage, con
         Error{} << "ShaderTools::AnyConverter::convertDataToData(): cannot load the" << plugin << "plugin";
         return {};
     }
-    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
     if(flags() & ConverterFlag::Verbose) {
         Debug d;
         d << "ShaderTools::AnyConverter::convertDataToData(): using" << plugin;
-        CORRADE_INTERNAL_ASSERT(metadata);
         if(plugin != metadata->name())
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
@@ -515,6 +533,9 @@ Containers::Array<char> AnyConverter::doConvertDataToData(const Stage stage, con
         converter->setDebugInfoLevel(_state->debugInfoLevel);
     if(!_state->optimizationLevel.isEmpty())
         converter->setOptimizationLevel(_state->optimizationLevel);
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::convertDataToData():", {}, metadata->name(), configuration(), converter->configuration());
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */

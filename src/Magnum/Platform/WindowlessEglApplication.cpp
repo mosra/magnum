@@ -499,7 +499,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     #endif
 }
 
-WindowlessEglContext::WindowlessEglContext(WindowlessEglContext&& other):
+WindowlessEglContext::WindowlessEglContext(WindowlessEglContext&& other) noexcept:
     #ifndef MAGNUM_TARGET_WEBGL
     _sharedContext{other._sharedContext},
     #endif
@@ -541,7 +541,7 @@ WindowlessEglContext::~WindowlessEglContext() {
         _display) eglTerminate(_display);
 }
 
-WindowlessEglContext& WindowlessEglContext::operator=(WindowlessEglContext&& other) {
+WindowlessEglContext& WindowlessEglContext::operator=(WindowlessEglContext&& other) noexcept {
     using std::swap;
     #ifndef MAGNUM_TARGET_WEBGL
     swap(other._sharedContext, _sharedContext);

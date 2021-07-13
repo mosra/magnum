@@ -348,7 +348,7 @@ class MAGNUM_VK_EXPORT Instance {
         /**
          * @brief Version supported by the instance
          *
-         * Unless overriden using `--magnum-vulkan-version` on the
+         * Unless overridden using `--magnum-vulkan-version` on the
          * @ref Vk-Device-command-line "command line", corresponds to
          * @ref enumerateInstanceVersion().
          */

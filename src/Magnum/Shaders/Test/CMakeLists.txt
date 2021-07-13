@@ -23,6 +23,22 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+corrade_add_test(ShadersDistanceFieldVectorTest DistanceFieldVectorTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersFlatTest FlatTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersGenericTest GenericTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersMeshVisualizerTest MeshVisualizerTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersPhongTest PhongTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersVectorTest VectorTest.cpp LIBRARIES MagnumShaders)
+
+set_target_properties(
+    ShadersDistanceFieldVectorTest
+    ShadersFlatTest
+    ShadersGenericTest
+    ShadersMeshVisualizerTest
+    ShadersPhongTest
+    ShadersVectorTest
+    PROPERTIES FOLDER "Magnum/Shaders/Test")
+
 # There's an underscore between GL and Test to disambiguate from GLTest, which
 # is a common suffix used to mark tests that need a GL context. Ugly, I know.
 corrade_add_test(ShadersDistanceFieldVectorGL_Test DistanceFieldVectorGL_Test.cpp LIBRARIES MagnumShaders)
@@ -94,7 +110,9 @@ if(BUILD_GL_TESTS)
             VectorTestFiles/smooth0.2-2D.tga
             VectorTestFiles/smooth0.2-3D.tga
             VectorTestFiles/outline2D.tga
-            VectorTestFiles/outline3D.tga)
+            VectorTestFiles/outline3D.tga
+            VectorTestFiles/multidraw2D-distancefield.tga
+            VectorTestFiles/multidraw3D-distancefield.tga)
     target_include_directories(ShadersDistanceFieldVectorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
@@ -102,6 +120,14 @@ if(BUILD_GL_TESTS)
         endif()
         if(WITH_TGAIMPORTER)
             target_link_libraries(ShadersDistanceFieldVectorGLTest PRIVATE TgaImporter)
+        endif()
+    else()
+        # So the plugins get properly built when building the test
+        if(WITH_ANYIMAGEIMPORTER)
+            add_dependencies(ShadersDistanceFieldVectorGLTest AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            add_dependencies(ShadersDistanceFieldVectorGLTest TgaImporter)
         endif()
     endif()
 
@@ -126,6 +152,8 @@ if(BUILD_GL_TESTS)
             FlatTestFiles/defaults.tga
             FlatTestFiles/instanced2D.tga
             FlatTestFiles/instanced3D.tga
+            FlatTestFiles/instanced-textured2D.tga
+            FlatTestFiles/instanced-textured3D.tga
             FlatTestFiles/textured2D.tga
             FlatTestFiles/textured3D.tga
             FlatTestFiles/textured2D-alpha.tga
@@ -133,7 +161,11 @@ if(BUILD_GL_TESTS)
             FlatTestFiles/textured2D-alpha-mask0.5.tga
             FlatTestFiles/textured3D-alpha-mask0.5.tga
             FlatTestFiles/vertexColor2D.tga
-            FlatTestFiles/vertexColor3D.tga)
+            FlatTestFiles/vertexColor3D.tga
+            FlatTestFiles/multidraw2D.tga
+            FlatTestFiles/multidraw3D.tga
+            FlatTestFiles/multidraw-textured2D.tga
+            FlatTestFiles/multidraw-textured3D.tga)
     target_include_directories(ShadersFlatGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
@@ -141,6 +173,14 @@ if(BUILD_GL_TESTS)
         endif()
         if(WITH_TGAIMPORTER)
             target_link_libraries(ShadersFlatGLTest PRIVATE TgaImporter)
+        endif()
+    else()
+        # So the plugins get properly built when building the test
+        if(WITH_ANYIMAGEIMPORTER)
+            add_dependencies(ShadersFlatGLTest AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            add_dependencies(ShadersFlatGLTest TgaImporter)
         endif()
     endif()
 
@@ -189,7 +229,14 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/wireframe-wide2D.tga
             MeshVisualizerTestFiles/wireframe-wide3D.tga
             MeshVisualizerTestFiles/wireframe2D.tga
-            MeshVisualizerTestFiles/wireframe3D.tga)
+            MeshVisualizerTestFiles/wireframe3D.tga
+            MeshVisualizerTestFiles/multidraw-wireframe2D.tga
+            MeshVisualizerTestFiles/multidraw-wireframe3D.tga
+            MeshVisualizerTestFiles/multidraw-wireframe-tbn3D.tga
+            MeshVisualizerTestFiles/multidraw-wireframe-nogeo2D.tga
+            MeshVisualizerTestFiles/multidraw-wireframe-nogeo3D.tga
+            MeshVisualizerTestFiles/multidraw-vertexid2D.tga
+            MeshVisualizerTestFiles/multidraw-vertexid3D.tga)
     target_include_directories(ShadersMeshVisualizerGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
@@ -197,6 +244,14 @@ if(BUILD_GL_TESTS)
         endif()
         if(WITH_TGAIMPORTER)
             target_link_libraries(ShadersMeshVisualizerGLTest PRIVATE TgaImporter)
+        endif()
+    else()
+        # So the plugins get properly built when building the test
+        if(WITH_ANYIMAGEIMPORTER)
+            add_dependencies(ShadersMeshVisualizerGLTest AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            add_dependencies(ShadersMeshVisualizerGLTest TgaImporter)
         endif()
     endif()
 
@@ -225,7 +280,7 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/instanced.tga
             PhongTestFiles/instanced-normal.tga
             PhongTestFiles/low-light-angle.tga
-            PhongTestFiles/shininess-black-specular.tga
+            PhongTestFiles/shininess-no-specular.tga
             PhongTestFiles/shininess0-overflow.tga
             PhongTestFiles/shininess0.tga
             PhongTestFiles/shininess10.tga
@@ -251,6 +306,8 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/light-point-range1.5.tga
             PhongTestFiles/light-point-specular-color.tga
             PhongTestFiles/light-point.tga
+            PhongTestFiles/multidraw.tga
+            PhongTestFiles/multidraw-textured.tga
 
             # For zero lights test (equivalency to Flat3D)
             FlatTestFiles/textured3D-alpha-mask0.5.tga)
@@ -261,6 +318,14 @@ if(BUILD_GL_TESTS)
         endif()
         if(WITH_TGAIMPORTER)
             target_link_libraries(ShadersPhongGLTest PRIVATE TgaImporter)
+        endif()
+    else()
+        # So the plugins get properly built when building the test
+        if(WITH_ANYIMAGEIMPORTER)
+            add_dependencies(ShadersPhongGLTest AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            add_dependencies(ShadersPhongGLTest TgaImporter)
         endif()
     endif()
 
@@ -280,7 +345,9 @@ if(BUILD_GL_TESTS)
 
             VectorTestFiles/defaults.tga
             VectorTestFiles/vector2D.tga
-            VectorTestFiles/vector3D.tga)
+            VectorTestFiles/vector3D.tga
+            VectorTestFiles/multidraw2D.tga
+            VectorTestFiles/multidraw3D.tga)
     target_include_directories(ShadersVectorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
@@ -288,6 +355,14 @@ if(BUILD_GL_TESTS)
         endif()
         if(WITH_TGAIMPORTER)
             target_link_libraries(ShadersVectorGLTest PRIVATE TgaImporter)
+        endif()
+    else()
+        # So the plugins get properly built when building the test
+        if(WITH_ANYIMAGEIMPORTER)
+            add_dependencies(ShadersVectorGLTest AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            add_dependencies(ShadersVectorGLTest TgaImporter)
         endif()
     endif()
 
@@ -306,7 +381,9 @@ if(BUILD_GL_TESTS)
             FlatTestFiles/defaults.tga
 
             VertexColorTestFiles/vertexColor2D.tga
-            VertexColorTestFiles/vertexColor3D.tga)
+            VertexColorTestFiles/vertexColor3D.tga
+            VertexColorTestFiles/multidraw2D.tga
+            VertexColorTestFiles/multidraw3D.tga)
     target_include_directories(ShadersVertexColorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
@@ -314,6 +391,33 @@ if(BUILD_GL_TESTS)
         endif()
         if(WITH_TGAIMPORTER)
             target_link_libraries(ShadersVertexColorGLTest PRIVATE TgaImporter)
+        endif()
+    else()
+        # So the plugins get properly built when building the test
+        if(WITH_ANYIMAGEIMPORTER)
+            add_dependencies(ShadersVertexColorGLTest AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            add_dependencies(ShadersVertexColorGLTest TgaImporter)
+        endif()
+    endif()
+
+    corrade_add_test(ShadersGLBenchmark ShadersGLBenchmark.cpp
+        LIBRARIES
+            MagnumDebugTools
+            MagnumMeshTools
+            MagnumPrimitives
+            MagnumShaders
+            MagnumOpenGLTester
+        FILES
+            BenchmarkFiles/trivial.tga)
+    target_include_directories(ShadersGLBenchmark PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(BUILD_PLUGINS_STATIC)
+        if(WITH_ANYIMAGEIMPORTER)
+            target_link_libraries(ShadersGLBenchmark PRIVATE AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            target_link_libraries(ShadersGLBenchmark PRIVATE TgaImporter)
         endif()
     endif()
 
@@ -336,5 +440,6 @@ if(BUILD_GL_TESTS)
         ShadersPhongGLTest
         ShadersVectorGLTest
         ShadersVertexColorGLTest
+        ShadersGLBenchmark
         PROPERTIES FOLDER "Magnum/Shaders/Test")
 endif()

@@ -318,6 +318,19 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         CORRADE_DEPRECATED("use convertToFile(const MeshData&, Containers::StringView) instead") bool convertToFile(const std::string& filename, const MeshData& mesh);
         #endif
 
+    protected:
+        /**
+         * @brief Implementation for @ref convertToFile(const MeshData&, Containers::StringView)
+         *
+         * If @ref SceneConverterFeature::ConvertMeshToData is supported,
+         * default implementation calls @ref doConvertToData(const MeshData&)
+         * and saves the result to given file. It is allowed to call this
+         * function from your @ref doConvertToFile() implementation, for
+         * example when you only need to do format detection based on file
+         * extension.
+         */
+        virtual bool doConvertToFile(const MeshData& mesh, Containers::StringView filename);
+
     private:
         /**
          * @brief Implementation for @ref features()
@@ -349,15 +362,6 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
 
         /** @brief Implementation for @ref convertToData(const MeshData&) */
         virtual Containers::Array<char> doConvertToData(const MeshData& mesh);
-
-        /**
-         * @brief Implementation for @ref convertToFile(const MeshData&, Containers::StringView)
-         *
-         * If @ref SceneConverterFeature::ConvertMeshToData is supported,
-         * default implementation calls @ref doConvertToData(const MeshData&)
-         * and saves the result to given file.
-         */
-        virtual bool doConvertToFile(const MeshData& mesh, Containers::StringView filename);
 
         SceneConverterFlags _flags;
 };

@@ -26,9 +26,11 @@
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(TEST_FILE_DIR .)
     set(TGA_FILE rgb.tga)
+    set(EXR_FILE depth32f-custom-channels.exr)
 else()
     set(TEST_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     set(TGA_FILE ${CMAKE_CURRENT_SOURCE_DIR}/rgb.tga)
+    set(EXR_FILE ${CMAKE_CURRENT_SOURCE_DIR}/depth32f-custom-channels.exr)
 endif()
 
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
@@ -49,13 +51,15 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
     INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
 corrade_add_test(AnyImageImporterTest AnyImageImporterTest.cpp
-    LIBRARIES MagnumTrade
+    LIBRARIES MagnumTrade MagnumDebugTools
     FILES
+        depth32f-custom-channels.exr
         gray.jpg
         image.exr
         image.tiff
         pngs.ico
         rgb.basis
+        rgb.bmp
         rgb.hdr
         rgb.png
         rgb.tga

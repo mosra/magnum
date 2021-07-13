@@ -275,7 +275,7 @@ this:
 
 @snippet MagnumGL.cpp Mesh-dynamic
 
-@section GL-Mesh-buffer-ownership Transfering buffer ownership
+@section GL-Mesh-buffer-ownership Transferring buffer ownership
 
 If a vertex/index buffer is used only by a single mesh, it's possible to
 transfer its ownership to the mesh itself to simplify resource management on
@@ -298,7 +298,7 @@ getting only a moved-out instance. For example:
 Basic workflow is: bind specific framebuffer for drawing (if needed), set up
 respective shader (see
 @ref GL-AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
-for more infromation) and call @ref AbstractShaderProgram::draw().
+for more information) and call @ref AbstractShaderProgram::draw().
 
 @section GL-Mesh-webgl-restrictions WebGL restrictions
 

@@ -319,7 +319,7 @@ void MeshVkTest::cmdDrawIndexed() {
     {
         Buffer buffer{device(), BufferCreateInfo{
             BufferUsage::VertexBuffer|BufferUsage::IndexBuffer,
-            /* Artifical offset at the beginning to test that the offset is
+            /* Artificial offset at the beginning to test that the offset is
                used correctly in both cases */
             32 + 12*4 + sizeof(QuadIndexData)
         }, MemoryFlag::HostVisible};

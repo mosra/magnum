@@ -35,6 +35,7 @@
 #include "Magnum/GL/DefaultFramebuffer.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/MeshView.h"
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
@@ -53,6 +54,16 @@
 #include "Magnum/Shaders/VectorGL.h"
 #include "Magnum/Shaders/VertexColorGL.h"
 #include "Magnum/Trade/LightData.h"
+
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/TextureArray.h"
+#include "Magnum/Shaders/DistanceFieldVector.h"
+#include "Magnum/Shaders/Flat.h"
+#include "Magnum/Shaders/Generic.h"
+#include "Magnum/Shaders/MeshVisualizer.h"
+#include "Magnum/Shaders/Phong.h"
+#include "Magnum/Shaders/Vector.h"
+#endif
 
 #define DOXYGEN_IGNORE(...) __VA_ARGS__
 
@@ -86,29 +97,241 @@ mesh.addVertexBuffer(vertices, 0,
      //...
      ;
 /* [shaders-setup] */
+}
+#endif
 
-/* [shaders-rendering] */
+{
+GL::Mesh mesh;
+/* [shaders-classic] */
+Matrix4 transformationMatrix{DOXYGEN_IGNORE()}, projectionMatrix{DOXYGEN_IGNORE()};
+
+Shaders::PhongGL shader;
+shader
+    .setTransformationMatrix(transformationMatrix)
+    .setProjectionMatrix(projectionMatrix)
+    .setNormalMatrix(transformationMatrix.normalMatrix())
+    .setDiffuseColor(0x2f83cc_rgbf)
+    .setLightColors({0xe9ecae_rgbf})
+    .draw(mesh);
+/* [shaders-classic] */
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+{
+GL::Mesh mesh;
 Matrix4 transformationMatrix, projectionMatrix;
-GL::Texture2D diffuseTexture, specularTexture;
+/* [shaders-ubo] */
+GL::Buffer projectionUniform, lightUniform, materialUniform,
+    transformationUniform, drawUniform;
+projectionUniform.setData({
+    Shaders::ProjectionUniform3D{}
+        .setProjectionMatrix(projectionMatrix)
+});
+lightUniform.setData({
+    Shaders::PhongLightUniform{}
+        .setColor(0xe9ecae_rgbf)
+});
+materialUniform.setData({
+    Shaders::PhongMaterialUniform{}
+        .setDiffuseColor(0x2f83cc_rgbf)
+});
+transformationUniform.setData({
+    Shaders::TransformationUniform3D{}
+        .setTransformationMatrix(transformationMatrix)
+});
+drawUniform.setData({
+    Shaders::PhongDrawUniform{}
+        .setNormalMatrix(transformationMatrix.normalMatrix())
+});
+
+Shaders::PhongGL shader{Shaders::PhongGL::Flag::UniformBuffers};
+shader
+    .bindProjectionBuffer(projectionUniform)
+    .bindLightBuffer(lightUniform)
+    .bindMaterialBuffer(materialUniform)
+    .bindTransformationBuffer(transformationUniform)
+    .bindDrawBuffer(drawUniform)
+    .draw(mesh);
+/* [shaders-ubo] */
+}
+
+{
+GL::Buffer projectionUniform, transformationUniform, drawUniform, lightUniform,
+    materialUniform;
+/* [shaders-multi] */
+GL::Mesh redCone{DOXYGEN_IGNORE()}, yellowCube{DOXYGEN_IGNORE()}, redSphere{DOXYGEN_IGNORE()};
+Matrix4 redConeTransformation{DOXYGEN_IGNORE()},
+    yellowCubeTransformation{DOXYGEN_IGNORE()},
+    redSphereTransformation{DOXYGEN_IGNORE()};
+
+materialUniform.setData({
+    Shaders::PhongMaterialUniform{}
+        .setDiffuseColor(0xcd3431_rgbf),
+    Shaders::PhongMaterialUniform{}
+        .setDiffuseColor(0xc7cf2f_rgbf),
+});
+transformationUniform.setData({
+    Shaders::TransformationUniform3D{}
+        .setTransformationMatrix(redConeTransformation),
+    Shaders::TransformationUniform3D{}
+        .setTransformationMatrix(yellowCubeTransformation),
+    Shaders::TransformationUniform3D{}
+        .setTransformationMatrix(redSphereTransformation),
+});
+drawUniform.setData({
+    Shaders::PhongDrawUniform{}
+        .setNormalMatrix(redConeTransformation.normalMatrix())
+        .setMaterialId(0),
+    Shaders::PhongDrawUniform{}
+        .setNormalMatrix(yellowCubeTransformation.normalMatrix())
+        .setMaterialId(1),
+    Shaders::PhongDrawUniform{}
+        .setNormalMatrix(redSphereTransformation.normalMatrix())
+        .setMaterialId(0),
+});
+
+/* One light, two materials, three draws */
+Shaders::PhongGL shader{Shaders::PhongGL::Flag::UniformBuffers, 1, 2, 3};
+shader
+    .bindProjectionBuffer(projectionUniform)
+    .bindTransformationBuffer(transformationUniform)
+    .bindDrawBuffer(drawUniform)
+    .bindLightBuffer(lightUniform)
+    .bindMaterialBuffer(materialUniform)
+    .setDrawOffset(0)
+    .draw(redCone)
+    .setDrawOffset(1)
+    .draw(yellowCube)
+    .setDrawOffset(2)
+    .draw(redSphere);
+/* [shaders-multi] */
+}
+
+{
+GL::Mesh mesh;
+/* [shaders-multidraw] */
+GL::MeshView redConeView{DOXYGEN_IGNORE(mesh)}, yellowCubeView{DOXYGEN_IGNORE(mesh)}, redSphereView{DOXYGEN_IGNORE(mesh)};
+DOXYGEN_IGNORE()
+
+/* One light, two materials, three draws; with multidraw enabled */
+Shaders::PhongGL shader{Shaders::PhongGL::Flag::MultiDraw, 1, 2, 3};
+shader
+    DOXYGEN_IGNORE()
+    .draw({redConeView, yellowCubeView, redSphereView});
+/* [shaders-multidraw] */
+}
+#endif
+
+{
+Matrix4 projectionMatrix;
+/* [shaders-instancing] */
+Matrix4 redSphereTransformation{DOXYGEN_IGNORE()},
+    yellowSphereTransformation{DOXYGEN_IGNORE()},
+    greenSphereTransformation{DOXYGEN_IGNORE()};
+
+struct {
+    Matrix4 transformationMatrix;
+    Matrix3x3 normalMatrix;
+    Color3 color;
+} instanceData[]{
+    {redSphereTransformation,
+     redSphereTransformation.normalMatrix(),
+     0xcd3431_rgbf},
+    {yellowSphereTransformation,
+     yellowSphereTransformation.normalMatrix(),
+     0xc7cf2f_rgbf},
+    {greenSphereTransformation,
+     greenSphereTransformation.normalMatrix(),
+     0x3bd267_rgbf},
+};
+
+GL::Mesh sphereInstanced{DOXYGEN_IGNORE()};
+sphereInstanced.addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+    Shaders::PhongGL::TransformationMatrix{},
+    Shaders::PhongGL::NormalMatrix{},
+    Shaders::PhongGL::Color3{});
+sphereInstanced.setInstanceCount(3);
+
+Shaders::PhongGL shader{Shaders::PhongGL::Flag::InstancedTransformation|
+                        Shaders::PhongGL::Flag::VertexColor};
+shader
+    .setProjectionMatrix(projectionMatrix)
+    DOXYGEN_IGNORE()
+    .draw(sphereInstanced);
+/* [shaders-instancing] */
+}
+
+{
+GL::Mesh mesh;
+/* [shaders-textures] */
+GL::Texture2D diffuseTexture;
+DOXYGEN_IGNORE()
 
 Shaders::PhongGL shader{Shaders::PhongGL::Flag::DiffuseTexture};
 shader.bindDiffuseTexture(diffuseTexture)
-    .setTransformationMatrix(transformationMatrix)
-    .setNormalMatrix(transformationMatrix.normalMatrix())
-    .setProjectionMatrix(projectionMatrix)
+    DOXYGEN_IGNORE()
     .draw(mesh);
-/* [shaders-rendering] */
+/* [shaders-textures] */
+}
 
+#ifndef MAGNUM_TARGET_GLES2
+{
+GL::Mesh mesh;
+GL::MeshView redConeView{DOXYGEN_IGNORE(mesh)}, yellowCubeView{DOXYGEN_IGNORE(mesh)}, redSphereView{DOXYGEN_IGNORE(mesh)};
+/* [shaders-texture-arrays] */
+ImageView2D coneDiffuse{DOXYGEN_IGNORE({}, {})}, cubeDiffuse{DOXYGEN_IGNORE({}, {})}, sphereDiffuse{DOXYGEN_IGNORE({}, {})};
+
+GL::Texture2DArray diffuseTexture;
+diffuseTexture
+    DOXYGEN_IGNORE()
+    /* Assuming all iamges have the same format and size */
+    .setStorage(1, GL::textureFormat(coneDiffuse.format()),
+        {coneDiffuse.size(), 3})
+    .setSubImage(0, {}, coneDiffuse)
+    .setSubImage(1, {}, cubeDiffuse)
+    .setSubImage(2, {}, sphereDiffuse);
+
+GL::Buffer textureTransformationUniform;
+textureTransformationUniform.setData({
+    Shaders::TextureTransformationUniform{}
+        .setLayer(0),
+    Shaders::TextureTransformationUniform{}
+        .setLayer(1),
+    Shaders::TextureTransformationUniform{}
+        .setLayer(2),
+});
+
+Shaders::PhongGL shader{
+    Shaders::PhongGL::Flag::MultiDraw|
+    Shaders::PhongGL::Flag::DiffuseTexture|
+    Shaders::PhongGL::Flag::TextureArrays,
+    1, 2, 3};
+shader
+    DOXYGEN_IGNORE()
+    .bindDiffuseTexture(diffuseTexture)
+    .bindTextureTransformationBuffer(textureTransformationUniform)
+    .draw({redConeView, yellowCubeView, redSphereView});
+/* [shaders-texture-arrays] */
+}
+#endif
+
+{
+GL::Buffer vertices;
+GL::Mesh mesh;
 /* [shaders-generic] */
 mesh.addVertexBuffer(vertices, 0,
     Shaders::GenericGL3D::Position{},
     Shaders::GenericGL3D::Normal{},
     Shaders::GenericGL3D::TextureCoordinates{});
 /* [shaders-generic] */
+}
 
+{
+GL::Mesh mesh;
+Matrix4 transformationMatrix, projectionMatrix;
 /* [shaders-meshvisualizer] */
-Shaders::MeshVisualizerGL3D visualizerShader{Shaders::MeshVisualizerGL3D::Flag::Wireframe};
-visualizerShader
+Shaders::MeshVisualizerGL3D shader{Shaders::MeshVisualizerGL3D::Flag::Wireframe};
+shader
     .setColor(0x2f83cc_rgbf)
     .setWireframeColor(0xdcdcdc_rgbf)
     .setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
@@ -118,6 +341,9 @@ visualizerShader
 /* [shaders-meshvisualizer] */
 }
 
+/* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
+   on GCC 4.8 in the [60] array */
+#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [DistanceFieldVectorGL-usage1] */
 struct Vertex {
@@ -150,12 +376,51 @@ Shaders::DistanceFieldVectorGL2D shader;
 shader.setColor(0x2f83cc_rgbf)
     .setOutlineColor(0xdcdcdc_rgbf)
     .setOutlineRange(0.6f, 0.4f)
-    .bindVectorTexture(texture)
     .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
+    .bindVectorTexture(texture)
     .draw(mesh);
 /* [DistanceFieldVectorGL-usage2] */
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
+{
+GL::Mesh mesh;
+Matrix3 transformationMatrix, projectionMatrix;
+GL::Texture2D texture;
+/* [DistanceFieldVectorGL-ubo] */
+GL::Buffer projectionTransformationUniform, materialUniform, drawUniform;
+projectionTransformationUniform.setData({
+    Shaders::TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(transformationMatrix*projectionMatrix)
+});
+materialUniform.setData({
+    Shaders::DistanceFieldVectorMaterialUniform{}
+        .setColor(0x2f83cc_rgbf)
+        .setOutlineColor(0xdcdcdc_rgbf)
+        .setOutlineRange(0.6f, 0.4f)
+});
+drawUniform.setData({
+    Shaders::DistanceFieldVectorDrawUniform{}
+        .setMaterialId(0)
+});
+
+Shaders::DistanceFieldVectorGL2D shader{
+    Shaders::DistanceFieldVectorGL2D::Flag::UniformBuffers
+};
+shader
+    .bindTransformationProjectionBuffer(projectionTransformationUniform)
+    .bindMaterialBuffer(materialUniform)
+    .bindDrawBuffer(drawUniform)
+    .bindVectorTexture(texture)
+    .draw(mesh);
+/* [DistanceFieldVectorGL-ubo] */
+}
+#endif
+
+/* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
+   on GCC 4.8 in the [60] array */
+#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [FlatGL-usage-colored1] */
 struct Vertex {
@@ -217,6 +482,7 @@ shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
     .draw(mesh);
 /* [FlatGL-usage-textured2] */
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 {
@@ -274,6 +540,35 @@ mesh.setInstanceCount(Containers::arraySize(instanceData))
 /* [FlatGL-usage-instancing] */
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+{
+GL::Mesh mesh;
+Matrix4 transformationMatrix, projectionMatrix;
+/* [FlatGL-ubo] */
+GL::Buffer projectionTransformationUniform, materialUniform, drawUniform;
+projectionTransformationUniform.setData({
+    Shaders::TransformationProjectionUniform3D{}
+        .setTransformationProjectionMatrix(transformationMatrix*projectionMatrix)
+});
+materialUniform.setData({
+    Shaders::FlatMaterialUniform{}
+        .setColor(0x2f83cc_rgbf)
+});
+drawUniform.setData({
+    Shaders::FlatDrawUniform{}
+        .setMaterialId(0)
+});
+
+Shaders::FlatGL3D shader{Shaders::FlatGL3D::Flag::UniformBuffers};
+shader
+    .bindTransformationProjectionBuffer(projectionTransformationUniform)
+    .bindMaterialBuffer(materialUniform)
+    .bindDrawBuffer(drawUniform)
+    .draw(mesh);
+/* [FlatGL-ubo] */
+}
+#endif
+
 {
 struct: GL::AbstractShaderProgram {
 void foo() {
@@ -320,6 +615,9 @@ mesh.setInstanceCount(Containers::arraySize(instanceData))
 /* [PhongGL-usage-instancing] */
 }
 
+/* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
+   on GCC 4.8 in the [60] array */
+#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [MeshVisualizerGL3D-usage-geom1] */
 struct Vertex {
@@ -463,6 +761,47 @@ shader.setColorMapTransformation(0.0f, 1.0f/Math::max(objectIds))
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+{
+GL::Mesh mesh;
+Matrix4 transformationMatrix, projectionMatrix;
+GL::Texture2D texture;
+/* [MeshVisualizerGL3D-ubo] */
+GL::Buffer projectionUniform, materialUniform, transformationUniform,
+    drawUniform;
+projectionUniform.setData({
+    Shaders::ProjectionUniform3D{}
+        .setProjectionMatrix(projectionMatrix)
+});
+materialUniform.setData({
+    Shaders::MeshVisualizerMaterialUniform{}
+        .setColor(0x2f83cc_rgbf)
+        .setWireframeColor(0xdcdcdc_rgbf)
+});
+transformationUniform.setData({
+    Shaders::TransformationUniform3D{}
+        .setTransformationMatrix(transformationMatrix)
+});
+drawUniform.setData({
+    Shaders::MeshVisualizerDrawUniform3D{}
+        .setMaterialId(0)
+});
+
+Shaders::MeshVisualizerGL3D shader{
+    Shaders::MeshVisualizerGL3D::Flag::Wireframe|
+    Shaders::MeshVisualizerGL3D::Flag::UniformBuffers
+};
+shader
+    .setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
+    .bindProjectionBuffer(projectionUniform)
+    .bindMaterialBuffer(materialUniform)
+    .bindTransformationBuffer(transformationUniform)
+    .bindDrawBuffer(drawUniform)
+    .draw(mesh);
+/* [MeshVisualizerGL3D-ubo] */
+}
+#endif
+
 #if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [PhongGL-usage-colored1] */
@@ -580,6 +919,48 @@ shader.bindTextures(&diffuseAlphaTexture, &diffuseAlphaTexture, nullptr, nullptr
 /* [PhongGL-usage-alpha] */
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+{
+GL::Mesh mesh;
+Matrix4 transformationMatrix, projectionMatrix;
+GL::Texture2D texture;
+/* [PhongGL-ubo] */
+GL::Buffer projectionUniform, lightUniform, materialUniform,
+    transformationUniform, drawUniform;
+projectionUniform.setData({
+    Shaders::ProjectionUniform3D{}
+        .setProjectionMatrix(projectionMatrix)
+});
+lightUniform.setData({
+    Shaders::PhongLightUniform{}
+});
+materialUniform.setData({
+    Shaders::PhongMaterialUniform{}
+        .setDiffuseColor(0x2f83cc_rgbf)
+        .setShininess(200.0f)
+});
+transformationUniform.setData({
+    Shaders::TransformationUniform3D{}
+        .setTransformationMatrix(transformationMatrix)
+});
+drawUniform.setData({
+    Shaders::PhongDrawUniform{}
+        .setNormalMatrix(transformationMatrix.normalMatrix())
+        .setMaterialId(0)
+});
+
+Shaders::PhongGL shader{Shaders::PhongGL::Flag::UniformBuffers};
+shader
+    .bindProjectionBuffer(projectionUniform)
+    .bindLightBuffer(lightUniform)
+    .bindMaterialBuffer(materialUniform)
+    .bindTransformationBuffer(transformationUniform)
+    .bindDrawBuffer(drawUniform)
+    .draw(mesh);
+/* [PhongGL-ubo] */
+}
+#endif
+
 #if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [VectorGL-usage1] */
@@ -611,7 +992,40 @@ shader.setColor(0x2f83cc_rgbf)
     .draw(mesh);
 /* [VectorGL-usage2] */
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
+{
+GL::Mesh mesh;
+Matrix3 transformationMatrix, projectionMatrix;
+GL::Texture2D texture;
+/* [VectorGL-ubo] */
+GL::Buffer projectionTransformationUniform, materialUniform, drawUniform;
+projectionTransformationUniform.setData({
+    Shaders::TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(transformationMatrix*projectionMatrix)
+});
+materialUniform.setData({
+    Shaders::VectorMaterialUniform{}
+        .setColor(0x2f83cc_rgbf)
+});
+drawUniform.setData({
+    Shaders::VectorDrawUniform{}
+        .setMaterialId(0)
+});
+
+Shaders::VectorGL2D shader{Shaders::VectorGL2D::Flag::UniformBuffers};
+shader
+    .bindTransformationProjectionBuffer(projectionTransformationUniform)
+    .bindMaterialBuffer(materialUniform)
+    .bindDrawBuffer(drawUniform)
+    .bindVectorTexture(texture)
+    .draw(mesh);
+/* [VectorGL-ubo] */
+}
+#endif
+
+#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [VertexColorGL-usage1] */
 struct Vertex {
@@ -640,6 +1054,25 @@ Shaders::VertexColorGL3D shader;
 shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
     .draw(mesh);
 /* [VertexColorGL-usage2] */
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+{
+GL::Mesh mesh;
+Matrix4 transformationMatrix, projectionMatrix;
+/* [VertexColorGL-ubo] */
+GL::Buffer projectionTransformationUniform;
+projectionTransformationUniform.setData({
+    Shaders::TransformationProjectionUniform3D{}
+        .setTransformationProjectionMatrix(transformationMatrix*projectionMatrix)
+});
+
+Shaders::VertexColorGL3D shader{Shaders::VertexColorGL3D::Flag::UniformBuffers};
+shader
+    .bindTransformationProjectionBuffer(projectionTransformationUniform)
+    .draw(mesh);
+/* [VertexColorGL-ubo] */
 }
 #endif
 

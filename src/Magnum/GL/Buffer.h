@@ -477,7 +477,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
             /**
              * Only one or more discrete subranges of the mapping will be
              * modified. See @ref flushMappedRange() for more information. May
-             * only be used in conjuction with @ref MapFlag::Write.
+             * only be used in conjunction with @ref MapFlag::Write.
              */
             #ifndef MAGNUM_TARGET_GLES2
             FlushExplicit = GL_MAP_FLUSH_EXPLICIT_BIT,

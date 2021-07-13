@@ -23,13 +23,26 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MULTI_DRAW
+#ifndef GL_ES
+#extension GL_ARB_shader_draw_parameters: require
+#else /* covers WebGL as well */
+#extension GL_ANGLE_multi_draw: require
+#endif
+#endif
+
 #ifndef NEW_GLSL
 #define in attribute
 #define out varying
 #endif
 
+#ifndef RUNTIME_CONST
+#define const
+#endif
+
 /* Uniforms */
 
+#ifndef UNIFORM_BUFFERS
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -60,6 +73,57 @@ uniform mediump mat3 textureMatrix
     ;
 #endif
 
+/* Uniform buffers */
+
+#else
+#if DRAW_COUNT > 1
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform highp uint drawOffset
+    #ifndef GL_ES
+    = 0u
+    #endif
+    ;
+#else
+#define drawOffset 0u
+#endif
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 1
+    #endif
+) uniform TransformationProjection {
+    highp
+        #ifdef TWO_DIMENSIONS
+        /* Can't be a mat3 because of ANGLE, see DrawUniform in Phong.vert for
+           details */
+        mat3x4
+        #elif defined(THREE_DIMENSIONS)
+        mat4
+        #else
+        #error
+        #endif
+    transformationProjectionMatrices[DRAW_COUNT];
+};
+
+#ifdef TEXTURE_TRANSFORMATION
+struct TextureTransformationUniform {
+    highp vec4 rotationScaling;
+    highp vec4 offsetReservedReserved;
+    #define textureTransformation_offset offsetReservedReserved.xy
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 3
+    #endif
+) uniform TextureTransformation {
+    TextureTransformationUniform textureTransformations[DRAW_COUNT];
+};
+#endif
+#endif
+
 /* Inputs */
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
@@ -82,7 +146,36 @@ in mediump vec2 textureCoordinates;
 
 out mediump vec2 interpolatedTextureCoordinates;
 
+#ifdef MULTI_DRAW
+flat out highp uint drawId;
+#endif
+
 void main() {
+    #ifdef UNIFORM_BUFFERS
+    #ifdef MULTI_DRAW
+    drawId = drawOffset + uint(
+        #ifndef GL_ES
+        gl_DrawIDARB /* Using GL_ARB_shader_draw_parameters, not GLSL 4.6 */
+        #else
+        gl_DrawID
+        #endif
+        );
+    #else
+    #define drawId drawOffset
+    #endif
+
+    #ifdef TWO_DIMENSIONS
+    highp const mat3 transformationProjectionMatrix = mat3(transformationProjectionMatrices[drawId]);
+    #elif defined(THREE_DIMENSIONS)
+    highp const mat4 transformationProjectionMatrix = transformationProjectionMatrices[drawId];
+    #else
+    #error
+    #endif
+    #ifdef TEXTURE_TRANSFORMATION
+    mediump const mat3 textureMatrix = mat3(textureTransformations[drawId].rotationScaling.xy, 0.0, textureTransformations[drawId].rotationScaling.zw, 0.0, textureTransformations[drawId].textureTransformation_offset, 1.0);
+    #endif
+    #endif
+
     #ifdef TWO_DIMENSIONS
     gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);
     #elif defined(THREE_DIMENSIONS)

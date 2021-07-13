@@ -66,7 +66,7 @@ If you want to use textures, you need to provide also the
 the constructor and then at render time don't forget to also call appropriate
 subset of @ref bindAmbientTexture(), @ref bindDiffuseTexture() and
 @ref bindSpecularTexture() (or the combined @ref bindTextures()). The texture
-is multipled by the color, which is by default set to fully opaque white for
+is multiplied by the color, which is by default set to fully opaque white for
 enabled textures. Mesh setup with a diffuse and a specular texture:
 
 @snippet MagnumShaders-gl.cpp PhongGL-usage-texture1
@@ -248,6 +248,45 @@ well to ensure lighting works:
 @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays} in WebGL
     1.0.
 
+@section Shaders-PhongGL-ubo Uniform buffers
+
+See @ref shaders-usage-ubo for a high-level overview that applies to all
+shaders. In this particular case, the shader needs a separate
+@ref ProjectionUniform3D and @ref TransformationUniform3D buffer, lights are
+supplied via a @ref PhongLightUniform. To maximize use of the limited uniform
+buffer memory, materials are supplied separately in a @ref PhongMaterialUniform
+buffer and then referenced via @relativeref{PhongDrawUniform,materialId} from a
+@ref PhongDrawUniform; for optional texture transformation a per-draw
+@ref TextureTransformationUniform can be supplied as well. A uniform buffer
+setup equivalent to the @ref Shaders-PhongGL-colored "colored case at the top",
+with one default light, would look like this:
+
+@snippet MagnumShaders-gl.cpp PhongGL-ubo
+
+For a multidraw workflow enable @ref Flag::MultiDraw (and possibly
+@ref Flag::TextureArrays) and supply desired light, material and draw count in
+the @ref PhongGL(Flags, UnsignedInt, UnsignedInt, UnsignedInt) constructor. For
+every draw then specify material references and texture offsets/layers. With
+@ref Flag::LightCulling it's also possible to perform per-draw light culling by
+supplying a subrange into the @ref PhongLightUniform array using
+@ref PhongDrawUniform::lightOffset and @relativeref{PhongDrawUniform,lightCount}.
+Besides that, the usage is similar for all shaders, see
+@ref shaders-usage-multidraw for an example.
+
+@requires_gl30 Extension @gl_extension{EXT,texture_array} for texture arrays.
+@requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object} for uniform
+    buffers.
+@requires_gl46 Extension @gl_extension{ARB,shader_draw_parameters} for
+    multidraw.
+@requires_gles30 Neither texture arrays nor uniform buffers are available in
+    OpenGL ES 2.0.
+@requires_webgl20 Neither texture arrays nor uniform buffers are available in
+    WebGL 1.0.
+@requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+    (unlisted) for multidraw.
+@requires_webgl_extension Extension @webgl_extension{ANGLE,multi_draw} for
+    multidraw.
+
 @see @ref shaders
 */
 class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
@@ -396,6 +435,24 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          */
         typedef typename GenericGL3D::TextureOffset TextureOffset;
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief (Instanced) texture offset and layer
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector3, with
+         * the last component interpreted as an integer. Use either this or the
+         * @ref TextureOffset attribute. First two components used only if
+         * @ref Flag::InstancedTextureOffset is set, third component only if
+         * @ref Flag::TextureArrays is set.
+         * @requires_gl33 Extension @gl_extension{EXT,texture_array} and
+         *      @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+         */
+        typedef typename GenericGL3D::TextureOffsetLayer TextureOffsetLayer;
+        #endif
+
         enum: UnsignedInt {
             /**
              * Color shader output. @ref shaders-generic "Generic output",
@@ -427,7 +484,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * @see @ref Flags, @ref flags()
          */
-        enum class Flag: UnsignedShort {
+        enum class Flag: UnsignedInt {
             /**
              * Multiply ambient color with a texture.
              * @see @ref setAmbientColor(), @ref bindAmbientTexture()
@@ -467,8 +524,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
             AlphaMask = 1 << 3,
 
             /**
-             * Multiply diffuse color with a vertex color. Requires either
-             * the @ref Color3 or @ref Color4 attribute to be present.
+             * Multiply the diffuse and ambient color with a vertex color.
+             * Requires either the @ref Color3 or @ref Color4 attribute to be
+             * present.
              * @m_since{2019,10}
              */
             VertexColor = 1 << 5,
@@ -508,9 +566,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
             /**
              * Instanced object ID. Retrieves a per-instance / per-vertex
              * object ID from the @ref ObjectId attribute, outputting a sum of
-             * the per-vertex ID and ID coming from @ref setObjectId().
-             * Implicitly enables @ref Flag::ObjectId. See
-             * @ref Shaders-PhongGL-object-id for more information.
+             * the per-vertex ID and ID coming from @ref setObjectId() or
+             * @ref PhongDrawUniform::objectId. Implicitly enables
+             * @ref Flag::ObjectId. See @ref Shaders-PhongGL-object-id for more
+             * information.
              * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
              * @requires_gles30 Object ID output requires integer support in
              *      shaders, which is not available in OpenGL ES 2.0 or WebGL
@@ -525,9 +584,11 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              * transformation and normal matrix from the
              * @ref TransformationMatrix / @ref NormalMatrix attributes and
              * uses them together with matrices coming from
-             * @ref setTransformationMatrix() and @ref setNormalMatrix() (first
-             * the per-instance, then the uniform matrix). See
-             * @ref Shaders-PhongGL-instancing for more information.
+             * @ref setTransformationMatrix() and @ref setNormalMatrix() or
+             * @ref TransformationUniform3D::transformationMatrix and
+             * @ref PhongDrawUniform::normalMatrix (first the per-instance,
+             * then the uniform matrix). See @ref Shaders-PhongGL-instancing
+             * for more information.
              * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
              * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
              *      @gl_extension{EXT,instanced_arrays} or
@@ -541,12 +602,21 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
             /**
              * Instanced texture offset. Retrieves a per-instance offset vector
              * from the @ref TextureOffset attribute and uses it together with
-             * the matrix coming from @ref setTextureMatrix() (first the
+             * the matrix coming from @ref setTextureMatrix() or
+             * @ref TextureTransformationUniform::rotationScaling and
+             * @ref TextureTransformationUniform::offset (first the
              * per-instance vector, then the uniform matrix). Instanced texture
              * scaling and rotation is not supported at the moment, you can
              * specify that only via the uniform @ref setTextureMatrix().
              * Implicitly enables @ref Flag::TextureTransformation. See
              * @ref Shaders-PhongGL-instancing for more information.
+             *
+             * If @ref Flag::TextureArrays is set as well, a three-component
+             * @ref TextureOffsetLayer attribute can be used instead of
+             * @ref TextureOffset to specify per-instance texture layer, which
+             * gets added to the uniform layer numbers set by
+             * @ref setTextureLayer() or
+             * @ref TextureTransformationUniform::layer.
              * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
              * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
              *      @gl_extension{EXT,instanced_arrays} or
@@ -555,7 +625,97 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              *      in WebGL 1.0.
              * @m_since{2020,06}
              */
-            InstancedTextureOffset = (1 << 10)|TextureTransformation
+            InstancedTextureOffset = (1 << 10)|TextureTransformation,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Use uniform buffers. Expects that uniform data are supplied via
+             * @ref bindProjectionBuffer(), @ref bindTransformationBuffer(),
+             * @ref bindDrawBuffer(), @ref bindTextureTransformationBuffer(),
+             * @ref bindMaterialBuffer() and @ref bindLightBuffer() instead of
+             * direct uniform setters.
+             * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+             * @requires_gles30 Uniform buffers are not available in OpenGL ES
+             *      2.0.
+             * @requires_webgl20 Uniform buffers are not available in WebGL
+             *      1.0.
+             * @m_since_latest
+             */
+            UniformBuffers = 1 << 12,
+
+            /**
+             * Enable multidraw functionality. Implies @ref Flag::UniformBuffers
+             * and adds the value from @ref setDrawOffset() with the
+             * @glsl gl_DrawID @ce builtin, which makes draws submitted via
+             * @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
+             * pick up per-draw parameters directly, without having to rebind
+             * the uniform buffers or specify @ref setDrawOffset() before each
+             * draw. In a non-multidraw scenario, @glsl gl_DrawID @ce is
+             * @cpp 0 @ce, which means a shader with this flag enabled can be
+             * used for regular draws as well.
+             * @requires_gl46 Extension @gl_extension{ARB,uniform_buffer_object}
+             *      and @gl_extension{ARB,shader_draw_parameters}
+             * @requires_es_extension OpenGL ES 3.0 and extension
+             *      @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+             *      (unlisted). While the extension alone needs only OpenGL ES
+             *      2.0, the shader implementation relies on uniform buffers,
+             *      which require OpenGL ES 3.0.
+             * @requires_webgl_extension WebGL 2.0 and extension
+             *      @webgl_extension{ANGLE,multi_draw}. While the extension
+             *      alone needs only WebGL 1.0, the shader implementation
+             *      relies on uniform buffers, which require WebGL 2.0.
+             * @m_since_latest
+             */
+            MultiDraw = UniformBuffers|(1 << 13),
+
+            /**
+             * Use 2D texture arrays. Expects that the texture is supplied via
+             * @ref bindAmbientTexture(GL::Texture2DArray&) /
+             * @ref bindDiffuseTexture(GL::Texture2DArray&) /
+             * @ref bindSpecularTexture(GL::Texture2DArray&) /
+             * @ref bindNormalTexture(GL::Texture2DArray&) instead of
+             * @ref bindAmbientTexture(GL::Texture2D&) /
+             * @ref bindDiffuseTexture(GL::Texture2D&) /
+             * @ref bindSpecularTexture(GL::Texture2D&) /
+             * @ref bindNormalTexture(GL::Texture2D&) and the layer shared by
+             * all textures is set via @ref setTextureLayer() or
+             * @ref TextureTransformationUniform::layer. If
+             * @ref Flag::InstancedTextureOffset is set as well and a
+             * three-component @ref TextureOffsetLayer attribute is used
+             * instead of @ref TextureOffset, the per-instance and uniform
+             * layer numbers are added together.
+             * @requires_gl30 Extension @gl_extension{EXT,texture_array}
+             * @requires_gles30 Texture arrays are not available in OpenGL ES
+             *      2.0.
+             * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+             * @m_since_latest
+             */
+            TextureArrays = 1 << 14,
+
+            /**
+             * Enable light culling in uniform buffer workflows using the
+             * @ref PhongDrawUniform::lightOffset and
+             * @ref PhongDrawUniform::lightCount fields. If not enabled, all
+             * @ref lightCount() lights are used for every draw. Expects that
+             * @ref Flag::UniformBuffers is enabled as well.
+             * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+             * @requires_gles30 Uniform buffers are not available in OpenGL ES
+             *      2.0.
+             * @requires_webgl20 Uniform buffers are not available in WebGL
+             *      1.0.
+             * @m_since_latest
+             */
+            LightCulling = 1 << 15,
+            #endif
+
+            /**
+             * Disable specular contribution in light calculation. Can result
+             * in a significant performance improvement compared to calling
+             * @ref setSpecularColor() with @cpp 0x00000000_rgbaf @ce when
+             * specular highlights are not desired.
+             * @m_since_latest
+             */
+            NoSpecular = 1 << 16
         };
 
         /**
@@ -569,8 +729,53 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Constructor
          * @param flags         Flags
          * @param lightCount    Count of light sources
+         *
+         * While this function is meant mainly for the classic uniform
+         * scenario (without @ref Flag::UniformBuffers set), it's equivalent to
+         * @ref PhongGL(Flags, UnsignedInt, UnsignedInt, UnsignedInt) with
+         * @p materialCount and @p drawCount set to @cpp 1 @ce.
          */
         explicit PhongGL(Flags flags = {}, UnsignedInt lightCount = 1);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Construct for a multi-draw scenario
+         * @param flags         Flags
+         * @param lightCount    Size of a @ref PhongLightUniform buffer bound
+         *      with @ref bindLightBuffer()
+         * @param materialCount Size of a @ref PhongMaterialUniform buffer
+         *      bound with @ref bindMaterialBuffer()
+         * @param drawCount     Size of a @ref ProjectionUniform3D /
+         *      @ref TransformationUniform3D / @ref PhongDrawUniform /
+         *      @ref TextureTransformationUniform buffer bound with
+         *      @ref bindProjectionBuffer(), @ref bindTransformationBuffer(),
+         *      @ref bindDrawBuffer() and @ref bindTextureTransformationBuffer()
+         *
+         * If @p flags contains @ref Flag::UniformBuffers, @p lightCount,
+         * @p materialCount and @p drawCount describe the uniform buffer sizes
+         * as these are required to have a statically defined size. The draw
+         * offset is then set via @ref setDrawOffset() and the per-draw
+         * materials and lights are specified via
+         * @ref PhongDrawUniform::materialId,
+         * @ref PhongDrawUniform::lightOffset and
+         * @ref PhongDrawUniform::lightCount.
+         *
+         * If @p flags don't contain @ref Flag::UniformBuffers,
+         * @p materialCount and @p drawCount is ignored and the constructor
+         * behaves the same as @ref PhongGL(Flags, UnsignedInt).
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        /** @todo this constructor will eventually need to have also joint
+            count, per-vertex weight count, view count for multiview and clip
+            plane count ... and putting them in arbitrary order next to each
+            other is too error-prone, so it needs some other solution
+            (accepting pairs of parameter type and value like in GL context
+            creation, e.g., which will probably need a new enum as reusing Flag
+            for this might be too confusing) */
+        explicit PhongGL(Flags flags, UnsignedInt lightCount, UnsignedInt materialCount, UnsignedInt drawCount);
+        #endif
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -601,11 +806,46 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         /** @brief Flags */
         Flags flags() const { return _flags; }
 
-        /** @brief Light count */
+        /**
+         * @brief Light count
+         *
+         * If @ref Flag::UniformBuffers is set, this is the statically defined
+         * size of the @ref PhongLightUniform uniform buffer.
+         * @see @ref bindLightBuffer()
+         */
         UnsignedInt lightCount() const { return _lightCount; }
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Material count
+         * @m_since_latest
+         *
+         * Statically defined size of the @ref PhongMaterialUniform uniform
+         * buffer. Has use only if @ref Flag::UniformBuffers is set.
+         * @see @ref bindMaterialBuffer()
+         * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined on WebGL 1.0 builds.
+         */
+        UnsignedInt materialCount() const { return _materialCount; }
+
+        /**
+         * @brief Draw count
+         * @m_since_latest
+         *
+         * Statically defined size of each of the @ref ProjectionUniform3D,
+         * @ref TransformationUniform3D, @ref PhongDrawUniform and
+         * @ref TextureTransformationUniform uniform buffers. Has use only if
+         * @ref Flag::UniformBuffers is set.
+         * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined on WebGL 1.0 builds.
+         */
+        UnsignedInt drawCount() const { return _drawCount; }
+        #endif
 
         /** @{
          * @name Uniform setters
+         *
+         * Used only if @ref Flag::UniformBuffers is not set.
          */
 
         /**
@@ -615,6 +855,12 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * If @ref Flag::AmbientTexture is set, default value is
          * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with
          * ambient texture, otherwise default value is @cpp 0x00000000_rgbaf @ce.
+         * If @ref Flag::VertexColor is set, the color is multiplied with a
+         * color coming from the @ref Color3 / @ref Color4 attribute.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongMaterialUniform::ambientColor and call
+         * @ref bindMaterialBuffer() instead.
          * @see @ref bindAmbientTexture(), @ref Shaders-PhongGL-lights-ambient
          */
         PhongGL& setAmbientColor(const Magnum::Color4& color);
@@ -623,9 +869,16 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Set diffuse color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 0xffffffff_rgbaf @ce. If @ref lightCount() is
-         * zero, this function is a no-op, as diffuse color doesn't contribute
-         * to the output in that case.
+         * Initial value is @cpp 0xffffffff_rgbaf @ce. If
+         * @ref Flag::DiffuseTexture is set, the color will be multiplied with
+         * the texture. If @ref lightCount() is zero, this function is a no-op,
+         * as diffuse color doesn't contribute to the output in that case.
+         * If @ref Flag::VertexColor is set, the color is multiplied with a
+         * color coming from the @ref Color3 / @ref Color4 attribute.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongMaterialUniform::diffuseColor and call
+         * @ref bindMaterialBuffer() instead.
          * @see @ref bindDiffuseTexture()
          */
         PhongGL& setDiffuseColor(const Magnum::Color4& color);
@@ -643,6 +896,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * Expects that the shader was created with @ref Flag::NormalTexture
          * enabled. If @ref lightCount() is zero, this function is a no-op, as
          * normals don't contribute to the output in that case.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongMaterialUniform::normalTextureScale and call
+         * @ref bindDrawBuffer() instead.
          * @see @ref Shaders-PhongGL-normal-mapping, @ref bindNormalTexture(),
          *      @ref Trade::MaterialAttribute::NormalTextureScale
          */
@@ -652,12 +909,19 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Set specular color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 0xffffff00_rgbaf @ce. Color will be multiplied
-         * with specular texture if @ref Flag::SpecularTexture is set. If you
-         * want to have a fully diffuse material, set specular color to
-         * @cpp 0x00000000_rgbaf @ce. If @ref lightCount() is zero, this
-         * function is a no-op, as specular color doesn't contribute to the
-         * output in that case.
+         * Initial value is @cpp 0xffffff00_rgbaf @ce. Expects that the shader
+         * was not created with @ref Flag::NoSpecular. If
+         * @ref Flag::SpecularTexture is set, the color will be multiplied with
+         * the texture. If you want to have a fully diffuse material, it's
+         * recommended to disable the specular contribution altogether with
+         * @ref Flag::NoSpecular. If having a dedicated shader variant is not
+         * possible, set the specular color to @cpp 0x00000000_rgbaf @ce. If
+         * @ref lightCount() is zero, this function is a no-op, as specular
+         * color doesn't contribute to the output in that case.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongMaterialUniform::specularColor and call
+         * @ref bindMaterialBuffer() instead.
          * @see @ref bindSpecularTexture()
          */
         PhongGL& setSpecularColor(const Magnum::Color4& color);
@@ -670,6 +934,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * Initial value is @cpp 80.0f @ce. If @ref lightCount() is zero, this
          * function is a no-op, as specular color doesn't contribute to the
          * output in that case.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongMaterialUniform::shininess and call
+         * @ref bindMaterialBuffer() instead.
          */
         PhongGL& setShininess(Float shininess);
 
@@ -684,6 +952,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * This corresponds to @m_class{m-doc-external} [glAlphaFunc()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glAlphaFunc.xml)
          * in classic OpenGL.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongMaterialUniform::alphaMask and call
+         * @ref bindMaterialBuffer() instead.
          * @m_keywords{glAlphaFunc()}
          */
         PhongGL& setAlphaMask(Float mask);
@@ -696,7 +968,12 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * Expects that the shader was created with @ref Flag::ObjectId
          * enabled. Value set here is written to the @ref ObjectIdOutput, see
          * @ref Shaders-PhongGL-object-id for more information. Default is
-         * @cpp 0 @ce.
+         * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
+         * value is added to the ID coming from the @ref ObjectId attribute.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongDrawUniform::objectId and call @ref bindDrawBuffer()
+         * instead.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
          *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
@@ -709,7 +986,14 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * You need to set also @ref setNormalMatrix() with a corresponding
-         * value. Initial value is an identity matrix.
+         * value. Initial value is an identity matrix. If
+         * @ref Flag::InstancedTransformation is set, the per-instance
+         * transformation coming from the @ref TransformationMatrix attribute
+         * is applied first, before this one.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref TransformationUniform3D::transformationMatrix and call
+         * @ref bindTransformationBuffer() instead.
          */
         PhongGL& setTransformationMatrix(const Matrix4& matrix);
 
@@ -722,7 +1006,13 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @ref setTransformationMatrix() with a corresponding value. Initial
          * value is an identity matrix. If @ref lightCount() is zero, this
          * function is a no-op, as normals don't contribute to the output in
-         * that case.
+         * that case. If @ref Flag::InstancedTransformation is set, the
+         * per-instance normal matrix coming from the @ref NormalMatrix
+         * attribute is applied first, before this one.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongDrawUniform::normalMatrix and call
+         * @ref bindDrawBuffer() instead.
          * @see @ref Math::Matrix4::normalMatrix()
          */
         PhongGL& setNormalMatrix(const Matrix3x3& matrix);
@@ -734,6 +1024,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * Initial value is an identity matrix (i.e., an orthographic
          * projection of the default @f$ [ -\boldsymbol{1} ; \boldsymbol{1} ] @f$
          * cube).
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref ProjectionUniform3D::projectionMatrix and call
+         * @ref bindProjectionBuffer() instead.
          */
         PhongGL& setProjectionMatrix(const Matrix4& matrix);
 
@@ -744,9 +1038,39 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * Expects that the shader was created with
          * @ref Flag::TextureTransformation enabled. Initial value is an
-         * identity matrix.
+         * identity matrix. If @ref Flag::InstancedTextureOffset is set, the
+         * per-instance offset coming from the @ref TextureOffset atttribute is
+         * applied first, before this matrix.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref TextureTransformationUniform::rotationScaling and
+         * @ref TextureTransformationUniform::offset and call
+         * @ref bindTextureTransformationBuffer() instead.
          */
         PhongGL& setTextureMatrix(const Matrix3& matrix);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set texture array layer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with @ref Flag::TextureArrays
+         * enabled. Initial value is @cpp 0 @ce. If
+         * @ref Flag::InstancedTextureOffset is set and a three-component
+         * @ref TextureOffsetLayer attribute is used instead of
+         * @ref TextureOffset, this value is added to the layer coming from the
+         * third component.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref TextureTransformationUniform::layer and call
+         * @ref bindTextureTransformationBuffer() instead.
+         * @requires_gl30 Extension @gl_extension{EXT,texture_array}
+         * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+         */
+        PhongGL& setTextureLayer(UnsignedInt layer);
+        #endif
 
         /**
          * @brief Set light positions
@@ -754,12 +1078,16 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @m_since_latest
          *
          * Depending on the fourth component, the value is treated as either a
-         *camera-relative position of a point light, if the fourth component is
-         * @cpp 1.0f @ce; or a direction *to* a directional light, if the
+         * camera-relative position of a point light, if the fourth component
+         * is @cpp 1.0f @ce; or a direction *to* a directional light, if the
          * fourth component is @cpp 0.0f @ce. Expects that the size of the
          * @p positions array is the same as @ref lightCount(). Initial values
          * are @cpp {0.0f, 0.0f, 1.0f, 0.0f} @ce --- a directional "fill" light
          * coming from the camera.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongLightUniform::position and call
+         * @ref bindLightBuffer() instead
          * @see @ref Shaders-PhongGL-lights, @ref setLightPosition()
          */
         PhongGL& setLightPositions(Containers::ArrayView<const Vector4> positions);
@@ -799,6 +1127,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * position. If updating more than one light, prefer the batch function
          * instead to reduce the count of GL API calls. Expects that @p id is
          * less than @ref lightCount().
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongLightUniform::position and call @ref bindLightBuffer()
+         * instead.
          */
         PhongGL& setLightPosition(UnsignedInt id, const Vector4& position);
 
@@ -830,6 +1162,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * Initial values are @cpp 0xffffff_rgbf @ce. Expects that the size
          * of the @p colors array is the same as @ref lightCount().
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongLightUniform::color and call @ref bindLightBuffer()
+         * instead.
          * @see @ref Shaders-PhongGL-lights, @ref setLightColor()
          */
         PhongGL& setLightColors(Containers::ArrayView<const Magnum::Color3> colors);
@@ -865,6 +1201,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * updating more than one light, prefer the batch function instead to
          * reduce the count of GL API calls. Expects that @p id is less than
          * @ref lightCount().
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongLightUniform::color and call @ref bindLightBuffer()
+         * instead.
          */
         PhongGL& setLightColor(UnsignedInt id, const Magnum::Color3& color);
 
@@ -896,6 +1236,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * highlights on certain lights. Initial values are
          * @cpp 0xffffff_rgbf @ce. Expects that the size of the @p colors array
          * is the same as @ref lightCount().
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongLightUniform::specularColor and call @ref bindLightBuffer()
+         * instead.
          * @see @ref Shaders-PhongGL-lights, @ref setLightColor()
          */
         PhongGL& setLightSpecularColors(Containers::ArrayView<const Magnum::Color3> colors);
@@ -915,6 +1259,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * color. If updating more than one light, prefer the batch function
          * instead to reduce the count of GL API calls. Expects that @p id is
          * less than @ref lightCount().
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongLightUniform::specularColor and call
+         * @ref bindLightBuffer() instead.
          */
         PhongGL& setLightSpecularColor(UnsignedInt id, const Magnum::Color3& color);
 
@@ -925,6 +1273,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * Initial values are @ref Constants::inf(). Expects that the size of
          * the @p ranges array is the same as @ref lightCount().
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongLightUniform::range and call @ref bindLightBuffer()
+         * instead.
          * @see @ref Shaders-PhongGL-lights, @ref setLightRange()
          */
         PhongGL& setLightRanges(Containers::ArrayView<const Float> ranges);
@@ -944,6 +1296,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * updating more than one light, prefer the batch function instead to
          * reduce the count of GL API calls. Expects that @p id is less than
          * @ref lightCount().
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref PhongLightUniform::range and call @ref bindLightBuffer()
+         * instead.
          */
         PhongGL& setLightRange(UnsignedInt id, Float range);
 
@@ -951,31 +1307,272 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @}
          */
 
+        #ifndef MAGNUM_TARGET_GLES2
         /** @{
-         * @name Texture binding
+         * @name Uniform buffer binding and related uniform setters
+         *
+         * Used if @ref Flag::UniformBuffers is set.
          */
 
         /**
-         * @brief Bind a diffuse texture
+         * @brief Set a draw offset
          * @return Reference to self (for method chaining)
+         * @m_since_latest
          *
-         * Expects that the shader was created with @ref Flag::DiffuseTexture
-         * enabled. If @ref lightCount() is zero, this function is a no-op, as
-         * diffuse color doesn't contribute to the output in that case.
-         * @see @ref bindTextures(), @ref setDiffuseColor()
+         * Specifies which item in the @ref TransformationUniform3D,
+         * @ref PhongDrawUniform and @ref TextureTransformationUniform buffers
+         * bound with @ref bindTransformationBuffer(), @ref bindDrawBuffer()
+         * and @ref bindTextureTransformationBuffer() should be used for
+         * current draw. Expects that @ref Flag::UniformBuffers is set and
+         * @p offset is less than @ref drawCount(). Initial value is
+         * @cpp 0 @ce, if @ref drawCount() is @cpp 1 @ce, the function is a
+         * no-op as the shader assumes draw offset to be always zero.
+         *
+         * If @ref Flag::MultiDraw is set, @glsl gl_DrawID @ce is added to this
+         * value, which makes each draw submitted via
+         * @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
+         * pick up its own per-draw parameters.
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          */
-        PhongGL& bindDiffuseTexture(GL::Texture2D& texture);
+        PhongGL& setDrawOffset(UnsignedInt offset);
+
+        /**
+         * @brief Set a projection uniform buffer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that @ref Flag::UniformBuffers is set. The buffer is
+         * expected to contain at least one instance of
+         * @ref ProjectionUniform3D. At the very least you need to call also
+         * @ref bindTransformationBuffer(), @ref bindDrawBuffer() and
+         * @ref bindMaterialBuffer(), usually @ref bindLightBuffer() as well.
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        PhongGL& bindProjectionBuffer(GL::Buffer& buffer);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        PhongGL& bindProjectionBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /**
+         * @brief Set a transformation uniform buffer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that @ref Flag::UniformBuffers is set. The buffer is
+         * expected to contain @ref drawCount() instances of
+         * @ref TransformationUniform3D. At the very least you need to call
+         * also @ref bindProjectionBuffer(), @ref bindDrawBuffer() and
+         * @ref bindMaterialBuffer(), usually @ref bindLightBuffer() as well.
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        PhongGL& bindTransformationBuffer(GL::Buffer& buffer);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        PhongGL& bindTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /**
+         * @brief Set a draw uniform buffer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that @ref Flag::UniformBuffers is set. The buffer is
+         * expected to contain @ref drawCount() instances of
+         * @ref PhongDrawUniform. At the very least you need to call also
+         * @ref bindProjectionBuffer(), @ref bindTransformationBuffer() and
+         * @ref bindMaterialBuffer(), usually @ref bindLightBuffer() as well.
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        PhongGL& bindDrawBuffer(GL::Buffer& buffer);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        PhongGL& bindDrawBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /**
+         * @brief Set a texture transformation uniform buffer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that both @ref Flag::UniformBuffers and
+         * @ref Flag::TextureTransformation is set. The buffer is expected to
+         * contain @ref drawCount() instances of
+         * @ref TextureTransformationUniform.
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        PhongGL& bindTextureTransformationBuffer(GL::Buffer& buffer);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        PhongGL& bindTextureTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /**
+         * @brief Set a material uniform buffer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that @ref Flag::UniformBuffers is set. The buffer is
+         * expected to contain @ref materialCount() instances of
+         * @ref PhongMaterialUniform. At the very least you need to call also
+         * @ref bindProjectionBuffer(), @ref bindTransformationBuffer() and
+         * @ref bindDrawBuffer(), usually @ref bindLightBuffer() as well.
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        PhongGL& bindMaterialBuffer(GL::Buffer& buffer);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        PhongGL& bindMaterialBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /**
+         * @brief Set a light uniform buffer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that @ref Flag::UniformBuffers is set. The buffer is
+         * expected to contain @ref lightCount() instances of
+         * @ref PhongLightUniform.
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        PhongGL& bindLightBuffer(GL::Buffer& buffer);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        PhongGL& bindLightBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /**
+         * @}
+         */
+        #endif
+
+        /** @{
+         * @name Texture binding
+         */
 
         /**
          * @brief Bind an ambient texture
          * @return Reference to self (for method chaining)
          *
          * Expects that the shader was created with @ref Flag::AmbientTexture
-         * enabled.
+         * enabled. If @ref Flag::TextureArrays is enabled as well, use
+         * @ref bindAmbientTexture(GL::Texture2DArray&) instead.
          * @see @ref bindTextures(), @ref setAmbientColor(),
          *      @ref Shaders-PhongGL-lights-ambient
          */
         PhongGL& bindAmbientTexture(GL::Texture2D& texture);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Bind an ambient array texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with both
+         * @ref Flag::AmbientTexture and @ref Flag::TextureArrays enabled. If
+         * @ref Flag::UniformBuffers is not enabled, the layer is set via
+         * @ref setTextureLayer(); if @ref Flag::UniformBuffers is enabled,
+         * @ref Flag::TextureTransformation has to be enabled as well and the
+         * layer is set via @ref TextureTransformationUniform::layer.
+         * @see @ref setAmbientColor(), @ref Shaders-PhongGL-lights-ambient
+         * @requires_gl30 Extension @gl_extension{EXT,texture_array}
+         * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+         */
+        PhongGL& bindAmbientTexture(GL::Texture2DArray& texture);
+        #endif
+
+        /**
+         * @brief Bind a diffuse texture
+         * @return Reference to self (for method chaining)
+         *
+         * Expects that the shader was created with @ref Flag::DiffuseTexture
+         * enabled. If @ref Flag::TextureArrays is enabled as well, use
+         * @ref bindDiffuseTexture(GL::Texture2DArray&) instead. If
+         * @ref lightCount() is zero, this function is a no-op, as diffuse
+         * color doesn't contribute to the output in that case.
+         * @see @ref bindTextures(), @ref setDiffuseColor()
+         */
+        PhongGL& bindDiffuseTexture(GL::Texture2D& texture);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Bind a diffuse array texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with both
+         * @ref Flag::DiffuseTexture and @ref Flag::TextureArrays
+         * enabled. If @ref Flag::UniformBuffers is not enabled, the layer is
+         * set via @ref setTextureLayer(); if @ref Flag::UniformBuffers is
+         * enabled, @ref Flag::TextureTransformation has to be enabled as well
+         * and the layer is set via @ref TextureTransformationUniform::layer.
+         * If @ref lightCount() is zero, this function is a no-op, as diffuse
+         * color doesn't contribute to the output in that case.
+         * @see @ref setDiffuseColor()
+         * @requires_gl30 Extension @gl_extension{EXT,texture_array}
+         * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+         */
+        PhongGL& bindDiffuseTexture(GL::Texture2DArray& texture);
+        #endif
+
+        /**
+         * @brief Bind a specular texture
+         * @return Reference to self (for method chaining)
+         *
+         * Expects that the shader was created with @ref Flag::SpecularTexture
+         * enabled and that @ref Flag::NoSpecular is not set. If
+         * @ref Flag::TextureArrays is enabled as well, use
+         * @ref bindSpecularTexture(GL::Texture2DArray&) instead. If
+         * @ref lightCount() is zero, this function is a no-op, as specular
+         * color doesn't contribute to the output in that case.
+         * @see @ref bindTextures(), @ref setSpecularColor()
+         */
+        PhongGL& bindSpecularTexture(GL::Texture2D& texture);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Bind a specular array texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with both
+         * @ref Flag::SpecularTexture and @ref Flag::TextureArrays enabled and
+         * that @ref Flag::NoSpecular is not set. If @ref Flag::UniformBuffers
+         * is not enabled, the layer is set via @ref setTextureLayer(); if
+         * @ref Flag::UniformBuffers is enabled,
+         * @ref Flag::TextureTransformation has to be enabled as well and the
+         * layer is set via @ref TextureTransformationUniform::layer. If
+         * @ref lightCount() is zero, this function is a no-op, as specular
+         * color doesn't contribute to the output in that case.
+         * @see @ref setSpecularColor()
+         * @requires_gl30 Extension @gl_extension{EXT,texture_array}
+         * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+         */
+        PhongGL& bindSpecularTexture(GL::Texture2DArray& texture);
+        #endif
 
         /**
          * @brief Bind a normal texture
@@ -984,6 +1581,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * Expects that the shader was created with @ref Flag::NormalTexture
          * enabled and the @ref Tangent attribute was supplied. If
+         * @ref Flag::TextureArrays is enabled as well, use
+         * @ref bindNormalTexture(GL::Texture2DArray&) instead. If
          * @ref lightCount() is zero, this function is a no-op, as normals
          * don't contribute to the output in that case.
          * @see @ref Shaders-PhongGL-normal-mapping,
@@ -991,16 +1590,22 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          */
         PhongGL& bindNormalTexture(GL::Texture2D& texture);
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @brief Bind a specular texture
+         * @brief Bind a normal array texture
          * @return Reference to self (for method chaining)
+         * @m_since_latest
          *
-         * Expects that the shader was created with @ref Flag::SpecularTexture
-         * enabled. If @ref lightCount() is zero, this function is a no-op, as
-         * specular color doesn't contribute to the output in that case.
-         * @see @ref bindTextures(), @ref setSpecularColor()
+         * Expects that the shader was created with both
+         * @ref Flag::NormalTexture and @ref Flag::TextureArrays enabled and
+         * the @ref Tangent attribute was supplied. If @ref lightCount() is
+         * zero, this function is a no-op, as normals don't contribute to the
+         * output in that case.
+         * @see @ref Shaders-PhongGL-normal-mapping,
+         *      @ref setNormalTextureScale()
          */
-        PhongGL& bindSpecularTexture(GL::Texture2D& texture);
+        PhongGL& bindNormalTexture(GL::Texture2DArray& texture);
+        #endif
 
         /**
          * @brief Bind textures
@@ -1010,8 +1615,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @ref PhongGL::Flag "Flag" is set, you can use @cpp nullptr @ce for
          * the rest. Expects that the shader was created with at least one of
          * @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture,
-         * @ref Flag::SpecularTexture or @ref Flag::NormalTexture enabled. More
-         * efficient than setting each texture separately.
+         * @ref Flag::SpecularTexture or @ref Flag::NormalTexture enabled and
+         * @ref Flag::TextureArrays is not set. More efficient than setting
+         * each texture separately.
          * @see @ref bindAmbientTexture(), @ref bindDiffuseTexture(),
          *      @ref bindSpecularTexture(), @ref bindNormalTexture()
          */
@@ -1025,6 +1631,28 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @}
          */
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        PhongGL& draw(GL::Mesh& mesh) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        PhongGL& draw(GL::Mesh&& mesh) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        PhongGL& draw(GL::MeshView& mesh) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        PhongGL& draw(GL::MeshView&& mesh) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(mesh));
+        }
+        PhongGL& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(meshes));
+        }
+        PhongGL& draw(std::initializer_list<Containers::Reference<GL::MeshView>> meshes) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(meshes));
+        }
+        #endif
+
     private:
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
@@ -1036,23 +1664,34 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
 
         Flags _flags;
         UnsignedInt _lightCount{};
+        #ifndef MAGNUM_TARGET_GLES2
+        UnsignedInt _materialCount{}, _drawCount{};
+        #endif
         Int _transformationMatrixUniform{0},
             _projectionMatrixUniform{1},
             _normalMatrixUniform{2},
             _textureMatrixUniform{3},
-            _ambientColorUniform{4},
-            _diffuseColorUniform{5},
-            _specularColorUniform{6},
-            _shininessUniform{7},
-            _normalTextureScaleUniform{8},
-            _alphaMaskUniform{9};
             #ifndef MAGNUM_TARGET_GLES2
-            Int _objectIdUniform{10};
+            _textureLayerUniform{4},
             #endif
-        Int _lightPositionsUniform{11},
-            _lightColorsUniform, /* 11 + lightCount, set in the constructor */
-            _lightSpecularColorsUniform, /* 11 + 2*lightCount */
-            _lightRangesUniform; /* 11 + 3*lightCount */
+            _ambientColorUniform{5},
+            _diffuseColorUniform{6},
+            _specularColorUniform{7},
+            _shininessUniform{8},
+            _normalTextureScaleUniform{9},
+            _alphaMaskUniform{10};
+        #ifndef MAGNUM_TARGET_GLES2
+        Int _objectIdUniform{11};
+        #endif
+        Int _lightPositionsUniform{12},
+            _lightColorsUniform, /* 12 + lightCount, set in the constructor */
+            _lightSpecularColorsUniform, /* 12 + 2*lightCount */
+            _lightRangesUniform; /* 12 + 3*lightCount */
+        #ifndef MAGNUM_TARGET_GLES2
+        /* Used instead of all other uniforms when Flag::UniformBuffers is set,
+           so it can alias them */
+        Int _drawOffsetUniform{0};
+        #endif
 };
 
 /** @debugoperatorclassenum{PhongGL,PhongGL::Flag} */

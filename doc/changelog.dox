@@ -147,6 +147,12 @@ See also:
 
 @subsubsection changelog-latest-new-shaders Shaders library
 
+-   All builtin shaders now have opt-in support for uniform buffers on desktop,
+    OpenGL ES 3.0+ and WebGL 2.0, including multi-draw functionality for
+    massive driver overhead reduction. The @ref shaders overview page was
+    updated with an introduction the new features.
+-   @ref Shaders::FlatGL and @ref Shaders::PhongGL now support texture arrays,
+    available also in multi-draw and instanced scenarios
 -   Added @ref Shaders::PhongGL::setNormalTextureScale(), consuming the
     recently added @ref Trade::MaterialAttribute::NormalTextureScale material
     attribute
@@ -155,6 +161,9 @@ See also:
     @ref Trade::LightData
 -   Added @ref Shaders::PhongGL::setLightSpecularColors() for better control
     over specular highlights
+-   Added @ref Shaders::PhongGL::Flag::NoSpecular as a significantly faster
+    alternative to setting specular color to @cpp 0x00000000_rgbaf @ce in case
+    specular highlights are not desired
 
 @subsubsection changelog-latest-new-shadertools ShaderTools library
 
@@ -223,6 +232,15 @@ See also:
 
 @subsubsection changelog-latest-changes-gl GL library
 
+-   @ref GL::AbstractShaderProgram::draw(),
+    @relativeref{GL::AbstractShaderProgram,drawTransformFeedback()} and
+    @relativeref{GL::AbstractShaderProgram,dispatchCompute()} APIs now return
+    a reference to self and all subclasses in @ref Shaders return a subclass
+    reference from these. The functions used to @cpp void @ce as that made more
+    sense in the classic workflow where a large set of uniforms had to be set
+    prior to every draw, however with the new multidraw workflows that's no
+    longer the case and the inability to chain draw calls proved to be
+    annoying.
 -   The @ref GL::Context class got significantly optimized in terms of compile
     time, header size and runtime as well, significantly reducing the amount of
     allocations done at startup.
@@ -317,7 +335,24 @@ See also:
 
 @subsubsection changelog-latest-changes-trade Trade library
 
--   Recognizing TIFF file header magic in @ref Trade::AnyImageImporter "AnyImageImporter"
+-   @ref Trade::AbstractImageConverter::doConvertToFile() and
+    @ref Trade::AbstractSceneConverter::doConvertToFile() are now
+    @cpp protected @ce instead of @cpp private @ce to allow calling them from
+    plugin implementations and reuse the provided fallback to
+    @relativeref{Trade::AbstractImageConverter,doConvertToData()}, for example
+    when the implementation only neeeds to do a format detection based on file
+    extension
+-   Recognizing BMP and TIFF file header magic in @relativeref{Trade,AnyImageImporter}
+-   @ref Audio::AnyImporter "AnyAudioImporter",
+    @relativeref{Trade,AnyImageImporter}, @relativeref{Trade,AnyImageConverter},
+    @relativeref{Trade,AnySceneImporter}, @relativeref{Trade,AnySceneConverter}
+    and @ref ShaderTools::AnyConverter "AnyShaderConverter" are now capable of
+    propagating configuration options to the concrete plugin, which is useful
+    mainly when using @ref magnum-imageconverter and other utilities as you can
+    now specify just the `-i` / `-c` options without having to specify which
+    plugin to apply the option to with `-I` / `-C`. For better usability, the
+    plugins also warn if the user specifies and option that is not present in
+    the target implementation.
 -   Added @ref Trade::PhongMaterialData::hasCommonTextureTransformation(),
     @ref Trade::PhongMaterialData::ambientTextureMatrix(),
     @ref Trade::PhongMaterialData::diffuseTextureMatrix(),
@@ -401,6 +436,9 @@ See also:
 -   For meshes with multiple sets of vertex attributes (such as texture
     coordinates), @ref MeshTools::compile() should be using only the first set
     but it wasn't.
+-   @ref Shaders::MeshVisualizerGL3D "Shaders::MeshVisualizerGL*D" shader
+    compilation failed with missing @glsl gl_PrimitiveID @ce due to GLSL 3.20
+    not being properly used for the @glsl #version @ce directive
 -   @ref Shaders::PhongGL was normalizing light direction in vertex shader,
     causing the fragment-interpolated direction being incorrect with visible
     artifacts on long polygons under low light angle
@@ -444,7 +482,10 @@ See also:
     It was also commonly confused with @relativeref{Corrade,Containers::Array},
     which is a type with totally different semantics. To avoid breaking
     existing code, conversion from and to @ref Math::Vector is now provided and
-    this type is included in all places where it was originally used.
+    this type is included in all places where it was originally used. For
+    custom uses, the @relativeref{Corrade,Containers::Array1}, @relativeref{Corrade,Containers::Array2} or
+    @relativeref{Corrade,Containers::Array3} types provide a suitable
+    alternative as well.
 -   Markup styling for Emscripten application was switched to prefer using
     CSS classes instead of the @cb{.css} #container @ce, @cb{.css} #sizer @ce,
     @cb{.css} #expander @ce, @cb{.css} #listener @ce, @cb{.css} #canvas @ce,
@@ -459,19 +500,17 @@ See also:
     @ref DebugTools::FrameProfilerGL. The new name plays better with IDE
     autocompletion and makes the GL-specific class appear next to the
     API-independent base in alphabetically sorted lists.
--   @cpp Shaders::AbstractVector @ce, @cpp Shaders::DistanceFieldVector @ce,
-    @cpp Shaders::Flat @ce, @cpp Shaders::Generic @ce,
-    @cpp Shaders::MeshVisualizer2D @ce, @cpp Shaders::MeshVisualizer3D @ce,
-    @cpp Shaders::Phong @ce, @cpp Shaders::Vector @ce,
-    @cpp Shaders::VertexColor @ce and related 2D/3D typedefs are deprecated in
-    favor of @ref Shaders::AbstractVectorGL,
-    @ref Shaders::DistanceFieldVectorGL, @ref Shaders::FlatGL,
-    @ref Shaders::GenericGL, @ref Shaders::MeshVisualizerGL2D,
-    @ref Shaders::MeshVisualizerGL3D, @ref Shaders::PhongGL,
-    @ref Shaders::VectorGL, @ref Shaders::VertexColorGL and correspondingly
-    renamed typedefs to make room for Vulkan shaders and functionality shared
-    between OpenGL and Vulkan implementation such as uniform buffer layout
-    definitions
+-   @cpp Shaders::DistanceFieldVector @ce, @cpp Shaders::Flat @ce,
+    @cpp Shaders::Generic @ce, @cpp Shaders::MeshVisualizer2D @ce,
+    @cpp Shaders::MeshVisualizer3D @ce, @cpp Shaders::Phong @ce,
+    @cpp Shaders::Vector @ce, @cpp Shaders::VertexColor @ce and related 2D/3D
+    typedefs are deprecated in favor of @ref Shaders::DistanceFieldVectorGL,
+    @ref Shaders::FlatGL, @ref Shaders::GenericGL,
+    @ref Shaders::MeshVisualizerGL2D, @ref Shaders::MeshVisualizerGL3D,
+    @ref Shaders::PhongGL, @ref Shaders::VectorGL, @ref Shaders::VertexColorGL
+    and correspondingly renamed typedefs to make room for Vulkan shaders and
+    functionality shared between OpenGL and Vulkan implementation such as
+    uniform buffer layout definitions
 -   @ref Shaders::PhongGL::setLightPositions() and
     @ref Shaders::PhongGL::setLightPosition() taking three-component vectors
     are deprecated in favor of variants taking four-component vectors, where the
@@ -655,6 +694,10 @@ See also:
     isn't available anymore. For backwards compatibility, light positions
     supplied through three-component vectors are now represented as directional
     lights, which is close, but not exactly the same as before.
+-   The @cpp Shaders::AbstractVector @ce base class for @ref Shaders::VectorGL
+    and @ref Shaders::DistanceFieldVectorGL is removed, as its benefits were
+    rather questionable --- on the contrary, it made subclass implementation
+    more verbose and less clear
 -   Mutable access to @ref Trade::PhongMaterialData color and texture
     information, deprecated in 2020.06, is now removed, as it's impossible to
     implement through the redesigned @ref Trade::MaterialData APIs. However
@@ -684,8 +727,9 @@ See also:
 -   Added a note about MinGW GCC and Clang ABI incompatibility to
     @ref platforms-windows "Windows platform docs" (see [mosra/magnum#227](https://github.com/mosra/magnum/issues/227) and
     [mosra/magnum#439](https://github.com/mosra/magnum/issues/439))
--   Various documentation fixes (see [mosra/magnum#492](https://github.com/mosra/magnum/issues/492))
--   @ref Corrade::Utility::Debug and friends were always brought to the )
+-   Various documentation fixes (see [mosra/magnum#492](https://github.com/mosra/magnum/issues/492),
+    [mosra/magnum#521](https://github.com/mosra/magnum/pull/521))
+-   @ref Corrade::Utility::Debug and friends were always brought to the
     @ref Magnum namespace via a @cpp using @ce directive, but this was never
     reflected in the docs and thus hidden from users. Now it's shown in the
     docs as a set of @ref Debug etc typedefs instead, to make them more
@@ -770,7 +814,7 @@ Released 2020-06-27, tagged as
     @cpp "intel-windows-crazy-broken-vao-dsa" @ce workarounds for Intel
     Windows drivers, disabling @gl_extension{ARB,direct_state_access} code
     paths in everything releated to buffers and meshes. There are several
-    issues occuring only in heavier apps, impossible to track down and
+    issues occurring only in heavier apps, impossible to track down and
     reproduce in a controlled environment. These two replace the previous
     @cpp "intel-windows-buggy-dsa-bufferdata-for-index-buffers" @ce workaround
     that attempted to fix this by doing an explicit buffer binding in some
@@ -1085,7 +1129,7 @@ Released 2020-06-27, tagged as
     [mosra/magnum#401](https://github.com/mosra/magnum/pull/401))
 -   HiDPI capability checking on macOS and iOS got fixed to behave correctly
     when the capability is explicitly set to @cb{.xml} <false/> @ce in the
-    `Info.plist` file and additionally, unless overriden, it's assumed to be
+    `Info.plist` file and additionally, unless overridden, it's assumed to be
     enabled by default on macOS 10.15+ and iOS 13+. Applications running on
     these platforms no longer need to supply a custom `Info.plist` in order to
     enable HiDPI. See @ref platforms-macos-hidpi for more information.
@@ -1402,7 +1446,7 @@ Released 2020-06-27, tagged as
     was deprecated in 2019.10 is now removed. Usually a deprecated feature is
     kept for at least a year before removal, but in this case it was severely
     limiting multithreaded applications and removing it was necessary.
--   Locations of generic shader attributes was changed in order to accomodate
+-   Locations of generic shader attributes was changed in order to accommodate
     for new attributes and use cases. This may break custom shaders if these
     rely on generic attribute definitions or are used together with
     @ref MeshTools::compile(). To avoid further breakages you're advised to
@@ -1522,7 +1566,7 @@ Released 2019-10-24, tagged as
 -   @ref DebugTools::CompareImage and @ref DebugTools::CompareImageToFile now
     accept also @ref Corrade::Containers::StridedArrayView2D on the left side
     of the comparison for added flexibility. See
-    @ref DebugTools-CompareImage-pixels for more infromation.
+    @ref DebugTools-CompareImage-pixels for more information.
 
 @subsubsection changelog-2019-10-new-gl GL library
 

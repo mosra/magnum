@@ -100,7 +100,7 @@
 #  CORRADE_TARGET_MINGW         - Defined if compiling under MinGW
 #  CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT - Defined if PluginManager
 #   doesn't support dynamic plugin loading due to platform limitations
-#  CORRADE_TESTSUITE_TARGET_XCTEST - Defined if TestSuite is targetting Xcode
+#  CORRADE_TESTSUITE_TARGET_XCTEST - Defined if TestSuite is targeting Xcode
 #   XCTest
 #  CORRADE_UTILITY_USE_ANSI_COLORS - Defined if ANSI escape sequences are used
 #   for colored output with Utility::Debug on Windows

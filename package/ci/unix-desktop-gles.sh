@@ -56,6 +56,12 @@ cmake .. \
     -DBUILD_GL_TESTS=ON \
     -G Ninja
 ninja $NINJA_JOBS
+
+# Don't run any benchmarks. SwiftShader doesn't support
+# EXT_disjoint_timer_query anyway and the CPU-side things are run in the usual
+# desktop build already.
+export CORRADE_TEST_SKIP_BENCHMARKS=ON
+
 CORRADE_TEST_COLOR=ON ctest -V
 MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
 MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex GL_OES_draw_elements_base_vertex GL_ANGLE_base_vertex_base_instance" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest

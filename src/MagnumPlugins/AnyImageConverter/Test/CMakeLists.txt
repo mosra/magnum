@@ -24,9 +24,11 @@
 #
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    set(ANYIMAGECONVERTER_TEST_DIR "write")
+    set(ANYIMAGECONVERTER_TEST_OUTPUT_DIR "write")
+    set(EXR_FILE depth32f-custom-channels.exr)
 else()
-    set(ANYIMAGECONVERTER_TEST_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    set(ANYIMAGECONVERTER_TEST_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    set(EXR_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnyImageImporter/Test/depth32f-custom-channels.exr)
 endif()
 
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
@@ -47,7 +49,9 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
     INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
 corrade_add_test(AnyImageConverterTest AnyImageConverterTest.cpp
-    LIBRARIES MagnumTrade)
+    LIBRARIES MagnumTrade
+    FILES
+        ../../AnyImageImporter/Test/depth32f-custom-channels.exr)
 target_include_directories(AnyImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_ANYIMAGECONVERTER_BUILD_STATIC)
     target_link_libraries(AnyImageConverterTest PRIVATE AnyImageConverter)

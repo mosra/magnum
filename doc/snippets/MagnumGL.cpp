@@ -121,7 +121,15 @@ carBumpTexture.setStorage(5, GL::TextureFormat::RGB8, {256, 256})
 #endif
 
 {
+#if defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11
+#pragma GCC diagnostic push
+/* Stupid thing. YES I WANT THIS TO BE A FUNCTION, CAN YOU SHUT UP */
+#pragma GCC diagnostic ignored "-Wvexing-parse"
+#endif
 auto importSomeMesh() -> std::tuple<GL::Mesh, GL::Buffer, GL::Buffer>;
+#if defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11
+#pragma GCC diagnostic pop
+#endif
 /* [opengl-wrapping-nocreate] */
 GL::Mesh mesh{NoCreate};
 GL::Buffer vertices{NoCreate}, indices{NoCreate};
@@ -269,11 +277,32 @@ enum: UnsignedInt {
 /* [AbstractShaderProgram-output-attributes] */
 
 #if !defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-/* [AbstractShaderProgram-hide-irrelevant] */
+/* [AbstractShaderProgram-return-hide-irrelevant] */
+public:
+    MyShader& draw(GL::Mesh& mesh) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
+    }
+    MyShader& draw(GL::Mesh&& mesh) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
+    }
+    MyShader& draw(GL::MeshView& mesh) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
+    }
+    MyShader& draw(GL::MeshView&& mesh) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
+    }
+    /* Omit these if the shader is not ready for multidraw */
+    MyShader& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(meshes));
+    }
+    MyShader& draw(std::initializer_list<Containers::Reference<GL::MeshView>> meshes) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(meshes));
+    }
+
 private:
     using GL::AbstractShaderProgram::drawTransformFeedback;
     using GL::AbstractShaderProgram::dispatchCompute;
-/* [AbstractShaderProgram-hide-irrelevant] */
+/* [AbstractShaderProgram-return-hide-irrelevant] */
 public:
 #endif
 

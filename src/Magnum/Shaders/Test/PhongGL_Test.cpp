@@ -72,8 +72,8 @@ void PhongGL_Test::constructCopy() {
 void PhongGL_Test::debugFlag() {
     std::ostringstream out;
 
-    Debug{&out} << PhongGL::Flag::AmbientTexture << PhongGL::Flag(0xf0);
-    CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::AmbientTexture Shaders::PhongGL::Flag(0xf0)\n");
+    Debug{&out} << PhongGL::Flag::AmbientTexture << PhongGL::Flag(0xcafedead);
+    CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::AmbientTexture Shaders::PhongGL::Flag(0xcafedead)\n");
 }
 
 void PhongGL_Test::debugFlags() {
@@ -96,9 +96,20 @@ void PhongGL_Test::debugFlagsSupersets() {
 
     /* InstancedTextureOffset is a superset of TextureTransformation so only
        one should be printed */
-    std::ostringstream out;
-    Debug{&out} << (PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::TextureTransformation);
-    CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::InstancedTextureOffset\n");
+    {
+        std::ostringstream out;
+        Debug{&out} << (PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::TextureTransformation);
+        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::InstancedTextureOffset\n");
+    }
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
+    {
+        std::ostringstream out;
+        Debug{&out} << (PhongGL::Flag::MultiDraw|PhongGL::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::MultiDraw\n");
+    }
+    #endif
 }
 
 }}}}
