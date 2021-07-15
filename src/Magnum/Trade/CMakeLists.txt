@@ -30,7 +30,6 @@ set(MagnumTrade_SRCS
     Data.cpp
     MeshObjectData2D.cpp
     MeshObjectData3D.cpp
-    SceneData.cpp
     TextureData.cpp)
 
 set(MagnumTrade_GracefulAssert_SRCS
@@ -50,6 +49,7 @@ set(MagnumTrade_GracefulAssert_SRCS
     PbrMetallicRoughnessMaterialData.cpp
     PbrSpecularGlossinessMaterialData.cpp
     PhongMaterialData.cpp
+    SceneData.cpp
     SkinData.cpp)
 
 set(MagnumTrade_HEADERS

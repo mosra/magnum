@@ -769,49 +769,49 @@ struct Trs {
 
 Containers::ArrayView<Matrix4> transformations;
 
-#error TODO accept strided array views here as well?
-Containers::ArrayTuple data{
-    {objectCount, transformation},
-    {objectCount, parent},
-    {objectCount, transformationParentObjectMapping},
-    {animatedObjectCount, trs},
-    {animatedObjectCount, animationId},
-    {animatedObjectCount, animatedObjectMapping},
-    {meshCount, meshMaterialId},
-    {meshCount, meshMaterialIdObjectMapping},
-    {lightCount, lightId},
-    {lightCount, lightIdObjectMapping},
-    {1, cameraId},
-    {1, cameraIdObjectMapping},
-};
-
-Trade::SceneData scene{objectCount, SceneObjectType::UnsignedInt, {
-    Trade::SceneFieldData{Trade::SceneField::Transformation,
-        transformation, transformationParentObjectMapping},
-    Trade::SceneFieldData{Trade::SceneField::Parent,
-        transformation, transformationParentObjectMapping},
-    Trade::SceneFieldData{Trade::SceneField::Translation,
-        Containers::stridedArrayView(transformation).slice(&Trs::translation),
-        animatedObjectMapping},
-    Trade::SceneFieldData{Trade::SceneField::Rotation,
-        Containers::stridedArrayView(transformation).slice(&Trs::rotation),
-        animatedObjectMapping},
-    Trade::SceneFieldData{Trade::SceneField::Scaling,
-        Containers::stridedArrayView(transformation).slice(&Trs::scaling),
-        animatedObjectMapping},
-    Trade::SceneFieldData{Trade::SceneField::AnimationId,
-        animationId, animatedObjectMapping},
-    Trade::SceneFieldData{Trade::SceneField::MeshId,
-        Containers::stridedArrayView(meshMaterialId).slice(&MeshMaterial::mesh),
-        meshMaterialIdObjectMapping},
-    Trade::SceneFieldData{Trade::SceneField::MeshMaterialId,
-        Containers::stridedArrayView(meshMaterialId).slice(&MeshMaterial::material),
-        meshMaterialIdObjectMapping},
-    Trade::SceneFieldData{Trade::SceneField::LightId,
-        lightId, lightIdObjectMapping},
-    Trade::SceneFieldData{Trade::SceneField::CameraId,
-        cameraId, cameraIdObjectMapping},
-}};
+// #error TODO accept strided array views here as well?
+// Containers::ArrayTuple data{
+//     {objectCount, transformation},
+//     {objectCount, parent},
+//     {objectCount, transformationParentObjectMapping},
+//     {animatedObjectCount, trs},
+//     {animatedObjectCount, animationId},
+//     {animatedObjectCount, animatedObjectMapping},
+//     {meshCount, meshMaterialId},
+//     {meshCount, meshMaterialIdObjectMapping},
+//     {lightCount, lightId},
+//     {lightCount, lightIdObjectMapping},
+//     {1, cameraId},
+//     {1, cameraIdObjectMapping},
+// };
+//
+// Trade::SceneData scene{objectCount, SceneObjectType::UnsignedInt, {
+//     Trade::SceneFieldData{Trade::SceneField::Transformation,
+//         transformation, transformationParentObjectMapping},
+//     Trade::SceneFieldData{Trade::SceneField::Parent,
+//         transformation, transformationParentObjectMapping},
+//     Trade::SceneFieldData{Trade::SceneField::Translation,
+//         Containers::stridedArrayView(transformation).slice(&Trs::translation),
+//         animatedObjectMapping},
+//     Trade::SceneFieldData{Trade::SceneField::Rotation,
+//         Containers::stridedArrayView(transformation).slice(&Trs::rotation),
+//         animatedObjectMapping},
+//     Trade::SceneFieldData{Trade::SceneField::Scaling,
+//         Containers::stridedArrayView(transformation).slice(&Trs::scaling),
+//         animatedObjectMapping},
+//     Trade::SceneFieldData{Trade::SceneField::AnimationId,
+//         animationId, animatedObjectMapping},
+//     Trade::SceneFieldData{Trade::SceneField::MeshId,
+//         Containers::stridedArrayView(meshMaterialId).slice(&MeshMaterial::mesh),
+//         meshMaterialIdObjectMapping},
+//     Trade::SceneFieldData{Trade::SceneField::MeshMaterialId,
+//         Containers::stridedArrayView(meshMaterialId).slice(&MeshMaterial::material),
+//         meshMaterialIdObjectMapping},
+//     Trade::SceneFieldData{Trade::SceneField::LightId,
+//         lightId, lightIdObjectMapping},
+//     Trade::SceneFieldData{Trade::SceneField::CameraId,
+//         cameraId, cameraIdObjectMapping},
+// }};
 /* [SceneData-populating] */
 }
 

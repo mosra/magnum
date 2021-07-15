@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Trade::SceneData
+ * @brief Class @ref Magnum::Trade::SceneData, @ref Magnum::Trade::SceneFieldData, enum @ref Magnum::Trade::SceneField, @ref Magnum::Trade::SceneFieldType, @ref Magnum::Trade::SceneObjectType, function @ref Magnum::Trade::isSceneFieldCustom(), @ref Magnum::sceneFieldCustom(), @ref Magnum::sceneFieldTypeSize(), @ref Magnum::sceneObjectTypeSize()
  */
 
 #include <Corrade/Containers/Array.h>
@@ -43,8 +43,6 @@
 
 namespace Magnum { namespace Trade {
 
-#error for an archetype-like ECS there's multiple arrays of a single field, have that controlled globally on a SceneData level with a flag? new SceneIndexType? ahah
-
 /**
 @brief Scene field name
 @m_since_latest
@@ -54,7 +52,7 @@ See @ref SceneData for more information.
     @ref AbstractImporter::sceneFieldForName(),
     @ref AbstractImporter::sceneFieldName()
 */
-enum class SceneField: UnsignedShort {
+enum class SceneField: UnsignedInt {
     /* Zero used for an invalid value */
 
     /**
@@ -71,13 +69,7 @@ enum class SceneField: UnsignedShort {
      * corresponding @ref SceneData::fieldObject() array.
      * @see @ref SceneData::parentAsArray()
      */
-    Parent = 1, // TODO rename to ParentTransformation? would no longer work for "query a hand and all the fingers on it"
-    // TODO drop the self-referencability, the app should build an accel struct on top?
-
-    // TODO: InheritFrom? BaseObject? where it'd inherit fields from given
-    //      obj? not sure how that could be batch-processed, sigh (expanded at
-    //       runtime? ugh)
-    // TODO have SceneField as a type as well? what would that be useful for
+    Parent = 1,
 
     /**
      * Transformation. Type is usually @ref SceneFieldType::Matrix3x3 for 2D
@@ -180,18 +172,18 @@ enum class SceneField: UnsignedShort {
      * with the Nth material.
      * @see @ref SceneData::meshIdsAsArray()
      */
-    MeshId,
+    Mesh,
 
     /**
-     * ID of a material for a @ref SceneFieldType::MeshId, corresponding to the
+     * ID of a material for a @ref SceneFieldType::Mesh, corresponding to the
      * ID passed to @ref AbstractImporter::material(). Type is usually
      * @ref SceneFieldType::UnsignedInt, but can be also any of
      * @relativeref{SceneFieldType::UnsignedByte} or
      * @relativeref{SceneFieldType::UnsignedShort}. Expected to share the
-     * object mapping view with @ref SceneFieldType::MeshMaterialId.
+     * object mapping view with @ref SceneFieldType::Mesh.
      * @see @ref SceneData::materialIdsAsArray()
      */
-    MeshMaterialId,
+    MeshMaterial,
 
     /**
      * ID of a light associated with this object, corresponding to the ID
@@ -202,7 +194,7 @@ enum class SceneField: UnsignedShort {
      * lights associated.
      * @see @ref SceneData::lightIdsAsArray()
      */
-    LightId,
+    Light,
 
     /**
      * ID of a camera associated with this object, corresponding to the ID
@@ -213,7 +205,7 @@ enum class SceneField: UnsignedShort {
      * cameras associated.
      * @see @ref SceneData::cameraIdsAsArray()
      */
-    CameraId,
+    Camera,
 
     /**
      * ID of an animation associated with this object, corresponding to the ID
@@ -224,7 +216,7 @@ enum class SceneField: UnsignedShort {
      * animations associated.
      * @see @ref SceneData::lightIdsAsArray()
      */
-    AnimationId,
+    Animation,
 
     /**
      * ID of a skin associated with this object, corresponding to the ID
@@ -235,27 +227,19 @@ enum class SceneField: UnsignedShort {
      * skins associated.
      * @see @ref SceneData::skinIdsAsArray()
      */
-    SkinId,
-
-//     MeshVertexOffset, // TODO all should have the same object mapping, if present
-//     MeshIndexOffset,
-//     MeshCount, // TODO ehh?
-//     MeshInstanceOffset,
-//     MeshInstanceCount,
-//
-//     InstanceMeshId, // TODO instances? would be cool, eh?
-
-    // TODO texture transform + layer so we don't need 100 materials
-    // TODO visible, shadow casting, collidable ... bits
-
+    Skin,
 
     /**
      * This and all higher values are for importer-specific fields. Can be
      * of any type. See documentation of a particular importer for details.
+     *
+     * While it's unlikely to have billions of custom fields, the enum
+     * intentionally reserves a full 31-bit range to avoid the need to remap
+     * field identifiers coming from 3rd party ECS frameworks, for example.
      * @see @ref isSceneFieldCustom(), @ref sceneFieldCustom(SceneField),
      *      @ref sceneFieldCustom(UnsignedShort)
      */
-    Custom = 32768 // TODO more? for user-made entities, flags etc, this might not be enough
+    Custom = 0x80000000u
 };
 
 /**
@@ -270,10 +254,10 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneField value);
 
 Returns @cpp true @ce if @p name has a value larger or equal to
 @ref SceneField::Custom, @cpp false @ce otherwise.
-@see @ref sceneFieldCustom(UnsignedShort), @ref sceneFieldCustom(SceneField)
+@see @ref sceneFieldCustom(UnsignedInt), @ref sceneFieldCustom(SceneField)
 */
 constexpr bool isSceneFieldCustom(SceneField name) {
-    return UnsignedShort(name) >= UnsignedShort(SceneField::Custom);
+    return UnsignedInt(name) >= UnsignedInt(SceneField::Custom);
 }
 
 /**
@@ -286,24 +270,24 @@ to get the index back.
 */
 /* Constexpr so it's usable for creating compile-time SceneFieldData
    instances */
-constexpr SceneField sceneFieldCustom(UnsignedShort id) {
-    return CORRADE_CONSTEXPR_ASSERT(id < UnsignedShort(SceneField::Custom),
+constexpr SceneField sceneFieldCustom(UnsignedInt id) {
+    return CORRADE_CONSTEXPR_ASSERT(id < UnsignedInt(SceneField::Custom),
         "Trade::sceneFieldCustom(): index" << id << "too large"),
-        SceneField(UnsignedShort(SceneField::Custom) + id);
+        SceneField(UnsignedInt(SceneField::Custom) + id);
 }
 
 /**
 @brief Get index of a custom scene field
 @m_since_latest
 
-Inverse to @ref sceneFieldCustom(UnsignedShort). Expects that the field is
+Inverse to @ref sceneFieldCustom(UnsignedInt). Expects that the field is
 custom.
 @see @ref isSceneFieldCustom()
 */
-constexpr UnsignedShort sceneFieldCustom(SceneField name) {
+constexpr UnsignedInt sceneFieldCustom(SceneField name) {
     return CORRADE_CONSTEXPR_ASSERT(isSceneFieldCustom(name),
         "Trade::sceneFieldCustom():" << name << "is not custom"),
-        UnsignedShort(name) - UnsignedShort(SceneField::Custom);
+        UnsignedInt(name) - UnsignedInt(SceneField::Custom);
 }
 
 /**
@@ -317,9 +301,7 @@ information.
 enum class SceneFieldType: UnsignedShort {
     /* Zero used for an invalid value */
 
-    /* 1 reserved for Bool, which needs [Strided]BoolArray[View] first */
-//     Bool = 1, // TODO needs a BoolArray! and also special overloads, sigh
-        // also StridedBoolArrayView?!
+    /* 1 reserved for Bool (Bit?), which needs [Strided]BitArray[View] first */
 
     Float = 2,      /**< @relativeref{Magnum,Float} */
     Half,           /**< @relativeref{Magnum,Half} */
@@ -429,16 +411,7 @@ enum class SceneFieldType: UnsignedShort {
     Degd,           /**< @relativeref{Magnum,Degh} */
     Rad,            /**< @relativeref{Magnum,Rad} */
     Radh,           /**< @relativeref{Magnum,Radh} */
-    Radd,           /**< @relativeref{Magnum,Radd} */
-
-    // TODO: pointer, like with MaterialData? could be for having real MeshData
-    //  LightData / ... references
-
-    // TODO: doc that no need to store any custom types here so it can be just
-    // 16 bits
-
-    /* Can be at most 8191 types, as it's stored together with
-       SceneFieldIndexType and isOffsetOnly in 16 bits */ // TODO outdated!
+    Radd            /**< @relativeref{Magnum,Radd} */
 };
 
 /**
@@ -454,15 +427,16 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneFieldType value);
 MAGNUM_TRADE_EXPORT UnsignedInt sceneFieldTypeSize(SceneFieldType type);
 
 /**
-@brief Scene object index type
+@brief Scene object type
 @m_since_latest
 
-Type used for associating fields with corresponding objects. Unlike
+Type used for mapping fields to corresponding objects. Unlike
 @ref SceneFieldType that is different for different fields, the index type is
-the same for all fields.
-@see @ref SceneData::objectIndexType(), @ref sceneIndexTypeSize()
+the same for all fields, and is guaranteed to be large enough to fit all
+@ref SceneData::objectCount() objects.
+@see @ref SceneData::objectType(), @ref sceneObjectTypeSize()
 */
-enum class SceneIndexType: UnsignedByte { // TODO SceneObjectType?
+enum class SceneObjectType: UnsignedByte {
     /* Zero used for an invalid value */
 
     UnsignedByte = 1,   /**< @relativeref{Magnum,UnsignedByte} */
@@ -478,24 +452,19 @@ enum class SceneIndexType: UnsignedByte { // TODO SceneObjectType?
      * @ref fieldObject().
      */
     UnsignedLong
-
-    // TODO make the largest bit a sparse identifier if given field has a sparse flag
 };
 
 /**
-@debugoperatorenum{SceneIndexType}
+@debugoperatorenum{SceneObjectType}
 @m_since_latest
 */
-MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneIndexType value);
-
-// TODO where to have string to object mapping? some serializable way? yep, a
-//  designated StringMapData
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneObjectType value);
 
 /**
-@brief Size of given scene index type
+@brief Size of given scene object type
 @m_since_latest
 */
-MAGNUM_TRADE_EXPORT UnsignedInt sceneIndexTypeSize(SceneIndexType type);
+MAGNUM_TRADE_EXPORT UnsignedInt sceneObjectTypeSize(SceneObjectType type);
 
 /**
 @brief Scene field data
@@ -535,102 +504,104 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * initialization of the field array for @ref SceneData, expected to be
          * replaced with concrete values later.
          */
-        constexpr explicit SceneFieldData() noexcept: _countTypeOffsetOnly{}, _name{}, _fieldStride{}, _objectStride{}, _arraySize{}, _fieldData{}, _objectData{} {}
+        constexpr explicit SceneFieldData() noexcept: _count{}, _name{}, _fieldType{}, _fieldStride{}, _objectStride{}, _arraySize{}, _objectType{}, _isOffsetOnly{}, _fieldData{}, _objectData{} {}
 
         /**
          * @brief Type-erased constructor
-         * @param name      Field name
-         * @param type      Field type
-         * @param data      Field data
-         * @param indexType Object index type
-         * @param indexData Object index data
-         * @param arraySize Array size. Use @cpp 0 @ce for non-array fields.
+         * @param name          Field name
+         * @param fieldType     Field type
+         * @param fieldData     Field data
+         * @param objectType    Object type
+         * @param objectData    Object data
+         * @param arraySize     Array size. Use @cpp 0 @ce for non-array
+         *      fields.
          *
-         * Expects that @p data and @p indexData have the same size, @p data
-         * stride is large enough to fit all @p arraySize items of @p type,
-         * @p type corresponds to @p name and @p arraySize is zero for builtin
-         * fields.
+         * Expects that @p fieldData and @p objectData have the same size,
+         * @p fieldType corresponds to @p name and @p arraySize is zero for
+         * builtin fields.
          */
-        explicit SceneFieldData(SceneField name, SceneFieldType type, const Containers::StridedArrayView1D<const void>& data, SceneIndexType indexType, const Containers::StridedArrayView1D<const void>& indexData, UnsignedShort arraySize = 0) noexcept;
+        constexpr explicit SceneFieldData(SceneField name, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneObjectType objectType, const Containers::StridedArrayView1D<const void>& objectData, UnsignedShort arraySize = 0) noexcept;
 
         /**
          * @brief Constructor
-         * @param name      Field name
-         * @param type      Field type
-         * @param data      Field data
-         * @param indexData Object index data
-         * @param arraySize Array size. Use @cpp 0 @ce for non-array fie.
+         * @param name          Field name
+         * @param fieldType     Field type
+         * @param fieldData     Field data
+         * @param objectData    Object index data
+         * @param arraySize     Array size. Use @cpp 0 @ce for non-array
+         *      fields.
          *
-         * Expects that @p data and @p indexData have the same size in the
-         * first dimension; the second dimension of @p data is contiguous and
-         * its size matches @p type and @p arraSize, that @p type corresponds
-         * to @p name and @p arraySize is zero for builtin attributes; that
-         * the second dimension of @p indexData is contiguous and its size is
-         * either 1, 2, 4 or 8, corresponding to one of the
-         * @ref SceneFieldIndexType values.
+         * Expects that @p fieldData and @p objectData have the same size in
+         * the first dimension, that the second dimension of @p fieldData is
+         * contiguous and its size matches @p fieldType and @p arraySize, that
+         * @p fieldType corresponds to @p name and @p arraySize is zero for
+         * builtin attributes, that the second dimension of @p objectData is
+         * contiguous and its size is either 1, 2, 4 or 8, corresponding to one
+         * of the @ref SceneObjectType values.
          */
-        explicit SceneFieldData(SceneField name, SceneFieldType type, const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView2D<const char>& indexData, UnsignedShort arraySize = 0) noexcept;
+        explicit SceneFieldData(SceneField name, SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, const Containers::StridedArrayView2D<const char>& objectData, UnsignedShort arraySize = 0) noexcept;
 
         /**
          * @brief Constructor
-         * @param name      Field name
-         * @param data      Field data
-         * @param indexData Object index data
+         * @param name          Field name
+         * @param fieldData     Field data
+         * @param objectData    Object index data
          *
-         * Detects @ref SceneFieldType based on @p T and @ref SceneIndexType
-         * based on @p U and calls @ref SceneFieldData(SceneField, SceneFieldType, const Containers::StridedArrayView1D<const void>&, SceneFieldIndexType, const Containers::StridedArrayView1D<const void>&, UnsignedShort).
+         * Detects @ref SceneFieldType based on @p T and @ref SceneObjectType
+         * based on @p U and calls @ref SceneFieldData(SceneField, SceneFieldType, const Containers::StridedArrayView1D<const void>&, SceneObjectType, const Containers::StridedArrayView1D<const void>&, UnsignedShort).
          * For all types known by Magnum, the detected @ref SceneFieldType is
          * of the same name as the type (so e.g. @relativeref{Magnum,Vector3ui}
          * gets recognized as @ref SceneFieldType::Vector3ui).
          */
-        template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::StridedArrayView1D<T>& data, const Containers::StridedArrayView1D<U>& indexData) noexcept;
+        template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::StridedArrayView1D<T>& fieldData, const Containers::StridedArrayView1D<U>& objectData) noexcept;
 
         /** @overload */
-        template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::StridedArrayView1D<T>& data, const Containers::ArrayView<U>& indexData) noexcept: SceneFieldData{name, data, Containers::stridedArrayView(indexData)} {}
+        template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::StridedArrayView1D<T>& fieldData, const Containers::ArrayView<U>& objectData) noexcept: SceneFieldData{name, fieldData, Containers::stridedArrayView(objectData)} {}
 
         /** @overload */
-        template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::ArrayView<T>& data, const Containers::StridedArrayView1D<U>& indexData) noexcept: SceneFieldData{name, Containers::stridedArrayView(data), indexData} {}
+        template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::ArrayView<T>& fieldData, const Containers::StridedArrayView1D<U>& objectData) noexcept: SceneFieldData{name, Containers::stridedArrayView(fieldData), objectData} {}
 
         /** @overload */
-        template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::ArrayView<T>& data, const Containers::ArrayView<U>& indexData) noexcept: SceneFieldData{name, Containers::stridedArrayView(data), Containers::stridedArrayView(indexData)} {}
+        template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::ArrayView<T>& fieldData, const Containers::ArrayView<U>& objectData) noexcept: SceneFieldData{name, Containers::stridedArrayView(fieldData), Containers::stridedArrayView(objectData)} {}
 
         /**
          * @brief Construct an array field
-         * @param name      Field name
-         * @param data      Field data
-         * @param indexData Object index data
+         * @param name          Field name
+         * @param fieldData     Field data
+         * @param objectData    Object data
          *
-         * Detects @ref SceneFieldType based on @p T and @ref SceneIndexType
-         * based on @p U and calls @ref SceneFieldData(SceneField, SceneFieldType, const Containers::StridedArrayView1D<const void>&, SceneFieldIndexType, const Containers::StridedArrayView1D<const void>&, UnsignedShort)
-         * with the @p data second dimension size passed to @p arraySize.
-         * Expects that the second dimension of @p data is contiguous. At the
-         * moment only custom fields can be arrays, which means this function
-         * can't be used with a builtin @p name. See @ref MeshAttributeData(SceneField, const Containers::StridedArrayView1D<T>&, const Containers::StridedArrayView1D<U>&)
-         * for details about @ref SceneFieldType and @ref SceneIndexType
+         * Detects @ref SceneFieldType based on @p T and @ref SceneObjectType
+         * based on @p U and calls @ref SceneFieldData(SceneField, SceneFieldType, const Containers::StridedArrayView1D<const void>&, SceneObjectType, const Containers::StridedArrayView1D<const void>&, UnsignedShort)
+         * with the @p fieldData second dimension size passed to @p arraySize.
+         * Expects that the second dimension of @p fieldData is contiguous. At
+         * the moment only custom fields can be arrays, which means this
+         * function can't be used with a builtin @p name. See @ref SceneFieldData(SceneField, const Containers::StridedArrayView1D<T>&, const Containers::StridedArrayView1D<U>&)
+         * for details about @ref SceneFieldType and @ref SceneObjectType
          * detection.
          */
-        template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::StridedArrayView2D<T>& data, const Containers::StridedArrayView1D<U>& indexData) noexcept;
+        template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::StridedArrayView2D<T>& data, const Containers::StridedArrayView1D<U>& objectData) noexcept;
 
         /** @overload */
-        template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::StridedArrayView2D<T>& data, const Containers::ArrayView<U>& indexData) noexcept;
+        template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::StridedArrayView2D<T>& data, const Containers::ArrayView<U>& objectData) noexcept: SceneFieldData{name, data, Containers::stridedArrayView(objectData)} {}
 
         /**
          * @brief Construct an offset-only field
          * @param name          Field name
-         * @param count         Object count
-         * @param type          Field type
-         * @param offset        Field data offset
-         * @param stride        Field data stride
-         * @param indexOffset   Object index data offset
-         * @param indexStride   Object index data stride
+         * @param count         Entry count
+         * @param fieldType     Field type
+         * @param fieldOffset   Field data offset
+         * @param fieldStride   Field data stride
+         * @param objectType    Object type
+         * @param objectOffset  Object data offset
+         * @param objectStride  Object data stride
          * @param arraySize     Array size. Use @cpp 0 @ce for non-array
          *      fields.
          *
          * Instances created this way refer to offsets in unspecified
          * external scene data instead of containing the data views directly.
          * Useful when the location of the scene data array is not known at
-         * field construction time. Expects that @p arraySize is zero for
-         * builtin attributes.
+         * field construction time. Expects that @p fieldType corresponds to
+         * @p name and @p arraySize is zero for builtin attributes.
          *
          * Note that due to the @cpp constexpr @ce nature of this constructor,
          * no @p type / @p arraySize checks against @p stride can be done.
@@ -639,7 +610,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @see @ref isOffsetOnly(), @ref arraySize(),
          *      @ref data(Containers::ArrayView<const void>) const
          */
-        explicit constexpr SceneFieldData(SceneField name, UnsignedLong count, SceneFieldType type, std::size_t offset, std::ptrdiff_t stride, std::size_t indexOffset, std::ptrdiff_t indexStride, UnsignedShort arraySize = 0) noexcept;
+        explicit constexpr SceneFieldData(SceneField name, std::size_t count, SceneFieldType fieldType, std::size_t fieldOffset, std::ptrdiff_t fieldStride, SceneObjectType objectType, std::size_t objectOffset, std::ptrdiff_t objectStride, UnsignedShort arraySize = 0) noexcept;
 
         /**
          * @brief If the field is offset-only
@@ -647,16 +618,19 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * Returns @cpp true @ce if the field doesn't contain the data views
          * directly, but instead refers to unspecified external data.
          * @see @ref data(Containers::ArrayView<const void>) const,
-         *      @ref indexData(Containers::ArrayView<const void>) const,
-         *      @ref MeshAttributeData(SceneField, SceneFieldType, std::size_t, UnsignedInt, std::ptrdiff_t, UnsignedShort)
+         *      @ref objectData(Containers::ArrayView<const void>) const,
+         *      @ref SceneFieldData(SceneField, std::size_t, SceneFieldType, std::size_t, std::ptrdiff_t, SceneObjectType, std::size_t, std::ptrdiff_t, UnsignedShort)
          */
-        constexpr bool isOffsetOnly() const;
+        constexpr bool isOffsetOnly() const { return _isOffsetOnly; }
 
         /** @brief Field name */
         constexpr SceneField name() const { return _name; }
 
         /** @brief Field type */
-        constexpr SceneFieldType type() const;
+        constexpr SceneFieldType fieldType() const { return _fieldType; }
+
+        /** @brief Object type */
+        constexpr SceneObjectType objectType() const { return _objectType; }
 
         /** @brief Field array size */
         constexpr UnsignedShort arraySize() const { return _arraySize; }
@@ -665,60 +639,93 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @brief Type-erased field data
          *
          * Expects that the field is not offset-only, in that case use the
-         * @ref data(Containers::ArrayView<const void>) const overload instead.
+         * @ref fieldData(Containers::ArrayView<const void>) const overload
+         * instead.
          * @see @ref isOffsetOnly()
          */
-        constexpr Containers::StridedArrayView1D<const void> data() const;
+        constexpr Containers::StridedArrayView1D<const void> fieldData() const {
+            return Containers::StridedArrayView1D<const void>{
+                /* We're *sure* the view is correct, so faking the view size */
+                /** @todo better ideas for the StridedArrayView API? */
+                {_fieldData.pointer, ~std::size_t{}}, _count,
+                (CORRADE_CONSTEXPR_ASSERT(!_isOffsetOnly, "Trade::SceneFieldData::fieldData(): the field is offset-only, supply a data array"), _fieldStride)};
+        }
 
         /**
          * @brief Type-erased field data for an offset-only attribute
          *
-         * If the field is not offset-only, the @p sceneData parameter is
-         * ignored.
+         * If the field is not offset-only, the @p data parameter is ignored.
          * @see @ref isOffsetOnly(), @ref data() const
          */
-        Containers::StridedArrayView1D<const void> data(Containers::ArrayView<const void> sceneData) const;
+        Containers::StridedArrayView1D<const void> fieldData(Containers::ArrayView<const void> data) const {
+            return Containers::StridedArrayView1D<const void>{
+                /* We're *sure* the view is correct, so faking the view size */
+                /** @todo better ideas for the StridedArrayView API? */
+                data, _isOffsetOnly ? reinterpret_cast<const char*>(data.data()) + _fieldData.offset : _fieldData.pointer, _count, _fieldStride};
+        }
 
         /**
-         * @brief Type-erased object index data
+         * @brief Type-erased object data
          *
          * Expects that the field is not offset-only, in that case use the
-         * @ref data(Containers::ArrayView<const void>) const overload instead.
+         * @ref objectData(Containers::ArrayView<const void>) const overload
+         * instead.
          * @see @ref isOffsetOnly()
          */
-        constexpr Containers::StridedArrayView1D<const void> indexData() const;
+        constexpr Containers::StridedArrayView1D<const void> objectData() const {
+            return Containers::StridedArrayView1D<const void>{
+                /* We're *sure* the view is correct, so faking the view size */
+                /** @todo better ideas for the StridedArrayView API? */
+                {_objectData.pointer, ~std::size_t{}}, _count,
+                (CORRADE_CONSTEXPR_ASSERT(!_isOffsetOnly, "Trade::SceneFieldData::objectData(): the field is offset-only, supply a data array"), _objectStride)};
+        }
 
         /**
-         * @brief Type-erased object index data for an offset-only attribute
+         * @brief Type-erased object data for an offset-only attribute
          *
-         * If the field is not offset-only, the @p vertexData parameter is
-         * ignored.
+         * If the field is not offset-only, the @p data parameter is ignored.
          * @see @ref isOffsetOnly(), @ref data() const
          */
-        Containers::StridedArrayView1D<const void> indexData(Containers::ArrayView<const void> sceneData) const;
+        Containers::StridedArrayView1D<const void> objectData(Containers::ArrayView<const void> data) const {
+            return Containers::StridedArrayView1D<const void>{
+                /* We're *sure* the view is correct, so faking the view size */
+                /** @todo better ideas for the StridedArrayView API? */
+                data, _isOffsetOnly ? reinterpret_cast<const char*>(data.data()) + _objectData.offset : _objectData.pointer, _count, _objectStride};
+        }
 
     private:
-        /* Count (48) | SceneFieldType (15) | isOffsetOnly (1) */
-        // TODO has to store index type so SceneData can verify all are the same ffs
-        // TODO should store a bit describing if it's sorted, for perf
-        UnsignedLong _countTypeOffsetOnly;
+        UnsignedLong _count;
         SceneField _name;
-        UnsignedShort _fieldStride;
-        UnsignedShort _objectStride;
+        SceneFieldType _fieldType;
+        Short _fieldStride;
+        Short _objectStride;
         UnsignedShort _arraySize;
-        // TODO fuck, for bools we need additional 3 bits to store bit position
-        // TODO or store that in array size in that case? eugh
-
-        // TODO: use extra 8 bytes? 2 for SceneFieldType, 1 for offset/sorted flags, 1 for bit position, 1 for index type, 3 left
-        // TODO also a "sparse" flag
+        SceneObjectType _objectType;
+        bool _isOffsetOnly;
+        /* 2 bytes free */
 
         union Data {
+            /* FFS C++ why this doesn't JUST WORK goddamit?! It's already past
+               the End Of Times AND YET this piece of complex shit can't do the
+               obvious! */
+            constexpr Data(const void* pointer = nullptr): pointer{pointer} {}
+            constexpr Data(std::size_t offset): offset{offset} {}
+
             const void* pointer;
             std::size_t offset;
         };
-        Data _fieldData, _objectData; // TODO object data = 0 means ~implicit~? for implicit the data could contain a single monotonic array shared by all
-        // TODO oooh implicit could be useful for *huge* bitfields that span all objects, because there it makes no sense to multiply the data size 9x just to specify a range the bits affect
+        Data _fieldData, _objectData;
 };
+
+/** @relatesalso SceneFieldData
+@brief Create a non-owning array of @ref SceneFieldData items
+@m_since_latest
+
+Useful when you have the field definitions statically defined (for example when
+the data themselves are already defined at compile time) and don't want to
+allocate just to pass those to @ref SceneData.
+*/
+Containers::Array<SceneFieldData> MAGNUM_TRADE_EXPORT sceneFieldDataNonOwningArray(Containers::ArrayView<const SceneFieldData> view);
 
 /**
 @brief Scene data
@@ -783,18 +790,17 @@ are Objects and Fields.
 */
 class MAGNUM_TRADE_EXPORT SceneData {
     public:
-
-        explicit SceneData(UnsignedLong objectCount, SceneIndexType objectIndexType, Containers::Array<char>&& data, Containers::Array<SceneFieldData>&& fields, const void* importerState = nullptr) noexcept;
-
-        /** @overload */
-        /* Not noexcept because allocation happens inside */
-        explicit SceneData(UnsignedLong objectCount, SceneIndexType objectIndexType, Containers::Array<char>&& data, std::initializer_list<SceneFieldData> fields, const void* importerState = nullptr);
-
-        explicit SceneData(UnsignedLong objectCount, SceneIndexType objectIndexType, DataFlags dataFlags, Containers::ArrayView<const void> data, Containers::Array<SceneFieldData>&& fields, const void* importerState = nullptr) noexcept;
+        explicit SceneData(Containers::Array<char>&& data, UnsignedLong objectCount, SceneObjectType objectType, Containers::Array<SceneFieldData>&& fields, const void* importerState = nullptr) noexcept;
 
         /** @overload */
         /* Not noexcept because allocation happens inside */
-        explicit SceneData(UnsignedLong objectCount, SceneIndexType objectIndexType, DataFlags dataFlags, Containers::ArrayView<const void> data, std::initializer_list<SceneFieldData> fields, const void* importerState = nullptr);
+        explicit SceneData(Containers::Array<char>&& data, UnsignedLong objectCount, SceneObjectType objectType, std::initializer_list<SceneFieldData> fields, const void* importerState = nullptr);
+
+        explicit SceneData(DataFlags dataFlags, Containers::ArrayView<const void> data, UnsignedLong objectCount, SceneObjectType objectType, Containers::Array<SceneFieldData>&& fields, const void* importerState = nullptr) noexcept;
+
+        /** @overload */
+        /* Not noexcept because allocation happens inside */
+        explicit SceneData(DataFlags dataFlags, Containers::ArrayView<const void> data, UnsignedLong objectCount, SceneObjectType objectType, std::initializer_list<SceneFieldData> fields, const void* importerState = nullptr);
 
         /** @brief Copying is not allowed */
         SceneData(const SceneData&) = delete;
@@ -885,6 +891,28 @@ class MAGNUM_TRADE_EXPORT SceneData {
         UnsignedInt fieldCount() const { return _fields.size(); }
 
         /**
+         * @brief Number of entries for given field
+         * @m_since_latest
+         *
+         * In other words, size of the view returned by @ref field() /
+         * @ref mutableField and @ref fieldObject() / @ref mutableFieldObject().
+         * Since an object can have multiple entries of the same field (for
+         * example multiple meshes associated with an object), the entry count
+         * doesn't necessarily match the number of objects having given field.
+         * The @p id is expected to be smaller than @ref fieldCount().
+         */
+        UnsignedLong fieldEntryCount(UnsignedInt id) const;
+
+        /**
+         * @brief Number of entries for given named field
+         * @m_since_latest
+         *
+         * The @p name is expected to exist.
+         * @see @ref hasField(), @ref objectCount(UnsignedInt)
+         */
+        UnsignedLong fieldEntryCount(SceneField name) const;
+
+        /**
          * @brief Raw field data
          * @m_since_latest
          *
@@ -973,43 +1001,20 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Total object count
          * @m_since_latest
          *
-         * Total number of objects contained in the scene. Use
-         * @ref objectCount(SceneField) to get the number of objects associated
-         * with given field.
-         * @see @ref fieldCount()
+         * Total number of objects contained in the scene.
+         * @see @ref fieldCount(), @ref fieldEntryCount()
          */
         UnsignedLong objectCount() const { return _objectCount; }
-
-        /**
-         * @brief Number of objects associated with given field
-         * @m_since_latest
-         *
-         * In other words, size of the view returned by @ref field() /
-         * @ref mutableField and @ref fieldObject() / @ref mutableFieldObject().
-         * Note that an object can have a certain field associated with it
-         * multiple times with different values (for example an object having
-         * multiple meshes). The @p id is expected to be smaller than
-         * @ref fieldCount().
-         */
-        UnsignedLong objectCount(UnsignedInt id) const;
-
-        /**
-         * @brief Number of objects associated with given field
-         * @m_since_latest
-         *
-         * The @p name is expected to exist.
-         * @see @ref hasField(), @ref objectCount(UnsignedInt)
-         */
-        UnsignedLong objectCount(SceneField name) const; // TODO better name, fieldInstanceCount? fieldElementCount?
 
         /**
          * @brief Type used for object indexing
          * @m_since_latest
          *
          * Type returned from @ref fieldObject() and @ref mutableFieldObject().
-         * For simplicity it's the same for all fields.
+         * It's the same for all fields and is guaranteed to be large enough to
+         * fit all @ref objectCount() objects.
          */
-        SceneIndexType objectIndexType() const { return _indexType; }
+        SceneObjectType objectType() const { return _objectType; }
 
         /**
          * @brief Data for given field
@@ -1168,7 +1173,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<T> mutableField(SceneField name);
 
         /**
-         * @brief Object index data for given field
+         * @brief Object mapping data for given field
          * @m_since_latest
          *
          * The @p id is expected to be smaller than @ref fieldCount(). The
@@ -1179,10 +1184,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *      @ref Corrade::Containers::StridedArrayView::isContiguous(),
          *      @ref sceneIndexTypeSize()
          */
-        Containers::StridedArrayView2D<const char> fieldObject(UnsignedInt id) const; // TODO renmae to fieldObjectMapping
+        Containers::StridedArrayView2D<const char> fieldObject(UnsignedInt id) const;
 
         /**
-         * @brief Mutable object index data for given field
+         * @brief Mutable object mapping data for given field
          * @m_since_latest
          *
          * Like @ref fieldObject(UnsignedInt), but returns a mutable view.
@@ -1192,7 +1197,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         Containers::StridedArrayView2D<char> mutableFieldObject(UnsignedInt id) const;
 
         /**
-         * @brief Object indices for given field
+         * @brief Object mapping for given field
          * @m_since_latest
          *
          * The @p id is expected to be smaller than @ref fieldCount() and @p T
@@ -1202,7 +1207,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         template<class T> Containers::StridedArrayView1D<const T> fieldObject(UnsignedInt id) const;
 
         /**
-         * @brief Mutable object indices for given field
+         * @brief Mutable object mapping for given field
          * @m_since_latest
          *
          * Like @ref fieldObject(UnsignedInt), but returns a mutable view.
@@ -1212,7 +1217,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         template<class T> Containers::StridedArrayView1D<const T> mutableFieldObject(UnsignedInt id) const;
 
         /**
-         * @brief Object index data for given named field
+         * @brief Object mapping data for given named field
          * @m_since_latest
          *
          * The @p name is expected to exist. The second dimension represents
@@ -1226,7 +1231,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         Containers::StridedArrayView2D<const char> fieldObject(SceneField name) const;
 
         /**
-         * @brief Mutable object index data for given named field
+         * @brief Mutable object mapping data for given named field
          * @m_since_latest
          *
          * Like @ref fieldObject(SceneField), but returns a mutable view.
@@ -1236,7 +1241,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         Containers::StridedArrayView2D<char> mutableFieldObject(SceneField name) const;
 
         /**
-         * @brief Object indices for given named field
+         * @brief Object mapping for given named field
          * @m_since_latest
          *
          * The @p name is expected to exist and @p T is expected to correspond
@@ -1247,7 +1252,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         template<class T> Containers::StridedArrayView1D<const T> fieldObject(SceneField name) const;
 
         /**
-         * @brief Mutable object indices for given named field
+         * @brief Mutable object mapping for given named field
          * @m_since_latest
          *
          * Like @ref fieldObject(SceneField), but returns a mutable view.
@@ -1256,13 +1261,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          */
         template<class T> Containers::StridedArrayView1D<T> mutableFieldObject(SceneField name);
 
-        // TODO: iterable version? could paper over the differences in index type and the case when the ID is implicit (or... fuck that also?); offset is no more so that doesn't need to be handled
-        // TODO or iterable together with some field? hmmmm
-
-        // TODO for all these if they are sparse or if an object is "inactive" what should this do? return less? have a separate bitflag? ughhhhh
-
         /**
-         * @brief Object indices for given field as 32-bit integers
+         * @brief Object mapping for given field as 32-bit integers
          * @m_since_latest
          *
          * Convenience alternative to the templated
@@ -1279,7 +1279,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         Containers::Array<UnsignedInt> fieldObjectAsArray(UnsignedInt id) const;
 
         /**
-         * @brief Object indices for given field as 32-bit integers into a pre-allocated view
+         * @brief Object mapping for given field as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
          * Like @ref fieldObjectAsArray(UnsignedInt), but puts the result into
@@ -1290,7 +1290,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         void fieldObjectInto(UnsignedInt id, Containers::StridedArrayView1D<UnsignedInt> destination) const;
 
         /**
-         * @brief Object indices for given named field as 32-bit integers
+         * @brief Object mapping for given named field as 32-bit integers
          * @m_since_latest
          *
          * Convenience alternative to the templated
@@ -1307,7 +1307,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         Containers::Array<UnsignedInt> fieldObjectAsArray(SceneField name) const;
 
         /**
-         * @brief Object indices for given named field as 32-bit integers into a pre-allocated view
+         * @brief Object mapping for given named field as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
          * Like @ref fieldObjectAsArray(SceneField), but puts the result into
@@ -1541,7 +1541,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
     private:
         DataFlags _dataFlags;
-        SceneIndexType _indexType;
+        SceneObjectType _objectType;
         /* 2/6 bytes free */
         UnsignedLong _objectCount;
         const void* _importerState;
@@ -1550,20 +1550,6 @@ class MAGNUM_TRADE_EXPORT SceneData {
 };
 
 namespace Implementation {
-
-    template<class T> constexpr SceneIndexType sceneIndexTypeFor() {
-        static_assert(sizeof(T) == 0, "unsupported index type");
-        return {};
-    }
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    #define _c(type) \
-        template<> constexpr SceneIndexType sceneIndexTypeFor<type>() { return SceneIndexType::type; }
-    _c(UnsignedByte)
-    _c(UnsignedShort)
-    _c(UnsignedInt)
-    _c(UnsignedLong)
-    #undef _c
-    #endif
 
     template<class T> constexpr SceneFieldType sceneFieldTypeFor() {
         static_assert(sizeof(T) == 0, "unsupported field type");
@@ -1639,12 +1625,15 @@ namespace Implementation {
     _c(Matrix4x4h)
     _c(Matrix4x4d)
     _c(Range1D)
+    _c(Range1Dh)
     _c(Range1Dd)
     _c(Range1Di)
     _c(Range2D)
+    _c(Range2Dh)
     _c(Range2Dd)
     _c(Range2Di)
     _c(Range3D)
+    _c(Range3Dh)
     _c(Range3Dd)
     _c(Range3Di)
     _c(Complex)
@@ -1663,7 +1652,111 @@ namespace Implementation {
     _c(Radd)
     #undef _c
     #endif
+
+    template<class T> constexpr SceneObjectType sceneObjectTypeFor() {
+        static_assert(sizeof(T) == 0, "unsupported object type");
+        return {};
+    }
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    #define _c(type) \
+        template<> constexpr SceneObjectType sceneObjectTypeFor<type>() { return SceneObjectType::type; }
+    _c(UnsignedByte)
+    _c(UnsignedShort)
+    _c(UnsignedInt)
+    _c(UnsignedLong)
+    #undef _c
+    #endif
+
+    constexpr bool isSceneFieldTypeCompatibleWithField(SceneField name, SceneFieldType type) {
+        return
+            /* Named fields are restricted so we can decode them */
+            (name == SceneField::Parent &&
+                (type == SceneFieldType::Byte ||
+                 type == SceneFieldType::Short ||
+                 type == SceneFieldType::Int ||
+                 type == SceneFieldType::Long)) ||
+            (name == SceneField::Transformation &&
+                (type == SceneFieldType::Matrix3x3 ||
+                 type == SceneFieldType::Matrix3x3d ||
+                 type == SceneFieldType::Matrix4x4 ||
+                 type == SceneFieldType::Matrix4x4d ||
+                 type == SceneFieldType::DualComplex ||
+                 type == SceneFieldType::DualComplexd ||
+                 type == SceneFieldType::DualQuaternion ||
+                 type == SceneFieldType::DualQuaterniond)) ||
+           ((name == SceneField::Translation ||
+             name == SceneField::Scaling) &&
+                (type == SceneFieldType::Vector2 ||
+                 type == SceneFieldType::Vector2d ||
+                 type == SceneFieldType::Vector3 ||
+                 type == SceneFieldType::Vector3d)) ||
+            (name == SceneField::Rotation &&
+                (type == SceneFieldType::Complex ||
+                 type == SceneFieldType::Complexd ||
+                 type == SceneFieldType::Quaternion ||
+                 type == SceneFieldType::Quaterniond)) ||
+           ((name == SceneField::Mesh ||
+             name == SceneField::MeshMaterial ||
+             name == SceneField::Light ||
+             name == SceneField::Camera ||
+             name == SceneField::Animation ||
+             name == SceneField::Skin) &&
+                (type == SceneFieldType::UnsignedByte ||
+                 type == SceneFieldType::UnsignedShort ||
+                 type == SceneFieldType::UnsignedInt)) ||
+            /* Custom fields can be anything */
+            isSceneFieldCustom(name);
+    }
+
+    constexpr bool isSceneFieldArrayAllowed(SceneField name) {
+        return isSceneFieldCustom(name);
+    }
 }
+
+constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneObjectType objectType, const Containers::StridedArrayView1D<const void>& objectData, UnsignedShort arraySize) noexcept:
+    _count{(CORRADE_CONSTEXPR_ASSERT(fieldData.size() == objectData.size(),
+        "Trade::SceneFieldData: expected field and object view to have the same size but got" << fieldData.size() << "and" << objectData.size()), fieldData.size())},
+    _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
+        "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
+    _fieldType{fieldType},
+    _fieldStride{(CORRADE_CONSTEXPR_ASSERT(fieldData.stride() >= -32768 && fieldData.stride() <= 32767,
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits, but got" << fieldData.stride()), Short(fieldData.stride()))},
+    _objectStride{(CORRADE_CONSTEXPR_ASSERT(objectData.stride() >= -32768 && objectData.stride() <= 32767,
+        "Trade::SceneFieldData: expected object view stride to fit into 16 bits, but got" << objectData.stride()), Short(objectData.stride()))},
+    _arraySize{(CORRADE_CONSTEXPR_ASSERT(!arraySize || Implementation::isSceneFieldArrayAllowed(name),
+        "Trade::SceneFieldData:" << name << "can't be an array field"), arraySize)},
+    _objectType{objectType},
+    _isOffsetOnly{false},
+    _fieldData{fieldData.data()},
+    _objectData{objectData.data()} {}
+
+template<class T, class U> constexpr SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView1D<T>& fieldData, const Containers::StridedArrayView1D<U>& objectData) noexcept: SceneFieldData{name, Implementation::sceneFieldTypeFor<typename std::remove_const<T>::type>(), fieldData, Implementation::sceneObjectTypeFor<typename std::remove_const<U>::type>(), objectData, 0} {}
+
+template<class T, class U> constexpr SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<T>& fieldData, const Containers::StridedArrayView1D<U>& objectData) noexcept: SceneFieldData{
+    name,
+    Implementation::sceneFieldTypeFor<typename std::remove_const<T>::type>(),
+    Containers::StridedArrayView1D<const void>{{fieldData.data(), ~std::size_t{}}, fieldData.size()[0], fieldData.stride()[0]},
+    Implementation::sceneObjectTypeFor<typename std::remove_const<U>::type>(),
+    objectData,
+    /* Not using isContiguous<1>() as that's not constexpr */
+    (CORRADE_CONSTEXPR_ASSERT(fieldData.stride()[1] == sizeof(T), "Trade::SceneFieldData: second field view dimension is not contiguous"), UnsignedShort(fieldData.size()[1]))
+} {}
+
+constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_t count, const SceneFieldType fieldType, const std::size_t fieldOffset, const std::ptrdiff_t fieldStride, const SceneObjectType objectType, const std::size_t objectOffset, const std::ptrdiff_t objectStride, const UnsignedShort arraySize) noexcept:
+    _count{count},
+    _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
+        "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
+    _fieldType{fieldType},
+    _fieldStride{(CORRADE_CONSTEXPR_ASSERT(fieldStride >= -32768 && fieldStride <= 32767,
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits, but got" << fieldStride), Short(fieldStride))},
+    _objectStride{(CORRADE_CONSTEXPR_ASSERT(objectStride >= -32768 && objectStride <= 32767,
+        "Trade::SceneFieldData: expected object view stride to fit into 16 bits, but got" << objectStride), Short(objectStride))},
+    _arraySize{(CORRADE_CONSTEXPR_ASSERT(!arraySize || Implementation::isSceneFieldArrayAllowed(name),
+        "Trade::SceneFieldData:" << name << "can't be an array field"), arraySize)},
+    _objectType{objectType},
+    _isOffsetOnly{true},
+    _fieldData{fieldOffset},
+    _objectData{objectOffset} {}
 
 }}
 

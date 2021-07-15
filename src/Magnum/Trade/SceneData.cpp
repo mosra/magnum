@@ -25,13 +25,15 @@
 
 #include "SceneData.h"
 
+#include "Magnum/Trade/Implementation/arrayUtilities.h"
+
 namespace Magnum { namespace Trade {
 
 Debug& operator<<(Debug& debug, const SceneField value) {
     debug << "Trade::SceneField" << Debug::nospace;
 
-    if(UnsignedShort(value) >= UnsignedShort(SceneField::Custom))
-        return debug << "::Custom(" << Debug::nospace << (UnsignedShort(value) - UnsignedShort(SceneField::Custom)) << Debug::nospace << ")";
+    if(UnsignedInt(value) >= UnsignedInt(SceneField::Custom))
+        return debug << "::Custom(" << Debug::nospace << (UnsignedInt(value) - UnsignedInt(SceneField::Custom)) << Debug::nospace << ")";
 
     switch(value) {
         /* LCOV_EXCL_START */
@@ -41,12 +43,12 @@ Debug& operator<<(Debug& debug, const SceneField value) {
         _c(Translation)
         _c(Rotation)
         _c(Scaling)
-        _c(MeshId)
-        _c(MeshMaterialId)
-        _c(LightId)
-        _c(CameraId)
-        _c(AnimationId)
-        _c(SkinId)
+        _c(Mesh)
+        _c(MeshMaterial)
+        _c(Light)
+        _c(Camera)
+        _c(Animation)
+        _c(Skin)
         #undef _c
         /* LCOV_EXCL_STOP */
 
@@ -54,7 +56,7 @@ Debug& operator<<(Debug& debug, const SceneField value) {
         case SceneField::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const SceneFieldType value) {
@@ -276,12 +278,12 @@ UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
     CORRADE_ASSERT_UNREACHABLE("Trade::sceneFieldTypeSize(): invalid type" << type, {});
 }
 
-Debug& operator<<(Debug& debug, const SceneIndexType value) {
-    debug << "Trade::SceneIndexType" << Debug::nospace;
+Debug& operator<<(Debug& debug, const SceneObjectType value) {
+    debug << "Trade::SceneObjectType" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SceneIndexType::value: return debug << "::" #value;
+        #define _c(value) case SceneObjectType::value: return debug << "::" #value;
         _c(UnsignedByte)
         _c(UnsignedInt)
         _c(UnsignedShort)
@@ -293,15 +295,53 @@ Debug& operator<<(Debug& debug, const SceneIndexType value) {
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
-UnsignedInt sceneIndexTypeSize(const SceneIndexType type) {
+UnsignedInt sceneObjectTypeSize(const SceneObjectType type) {
     switch(type) {
-        case SceneIndexType::UnsignedByte: return 1;
-        case SceneIndexType::UnsignedShort: return 2;
-        case SceneIndexType::UnsignedInt: return 4;
-        case SceneIndexType::UnsignedLong: return 8;
+        case SceneObjectType::UnsignedByte: return 1;
+        case SceneObjectType::UnsignedShort: return 2;
+        case SceneObjectType::UnsignedInt: return 4;
+        case SceneObjectType::UnsignedLong: return 8;
     }
 
-    CORRADE_ASSERT_UNREACHABLE("Trade::sceneIndexTypeSize(): invalid type" << type, {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::sceneObjectTypeSize(): invalid type" << type, {});
 }
+
+SceneFieldData::SceneFieldData(const SceneField name, const SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, const Containers::StridedArrayView2D<const char>& objectData, const UnsignedShort arraySize) noexcept: SceneFieldData{name, fieldType, Containers::StridedArrayView1D<const void>{{fieldData.data(), ~std::size_t{}}, fieldData.size()[0], fieldData.stride()[0]}, {}, Containers::StridedArrayView1D<const void>{{objectData.data(), ~std::size_t{}}, objectData.size()[0], objectData.stride()[0]}, arraySize} {
+    /* Yes, this calls into a constexpr function defined in the header --
+       because I feel that makes more sense than duplicating the full assert
+       logic */
+    #ifndef CORRADE_NO_ASSERT
+    if(arraySize) CORRADE_ASSERT(fieldData.empty()[0] || fieldData.size()[1] == sceneFieldTypeSize(fieldType)*arraySize,
+        "Trade::SceneFieldData: second field view dimension size" << fieldData.size()[1] << "doesn't match" << fieldType << "and array size" << arraySize, );
+    else CORRADE_ASSERT(fieldData.empty()[0] || fieldData.size()[1] == sceneFieldTypeSize(fieldType),
+        "Trade::SceneFieldData: second field view dimension size" << fieldData.size()[1] << "doesn't match" << fieldType, );
+    #endif
+
+    if(objectData.size()[1] == 8) _objectType = SceneObjectType::UnsignedLong;
+    else if(objectData.size()[1] == 4) _objectType = SceneObjectType::UnsignedInt;
+    else if(objectData.size()[1] == 2) _objectType = SceneObjectType::UnsignedShort;
+    else if(objectData.size()[1] == 1) _objectType = SceneObjectType::UnsignedByte;
+    else CORRADE_ASSERT_UNREACHABLE("Trade::SceneFieldData: expected second object view dimension size 1, 2, 4 or 8 but got" << objectData.size()[1], );
+
+    CORRADE_ASSERT(fieldData.isContiguous<1>(), "Trade::SceneFieldData: second field view dimension is not contiguous", );
+    CORRADE_ASSERT(objectData.isContiguous<1>(), "Trade::SceneFieldData: second object view dimension is not contiguous", );
+}
+
+Containers::Array<SceneFieldData> sceneFieldDataNonOwningArray(const Containers::ArrayView<const SceneFieldData> view) {
+    /* Ugly, eh? */
+    return Containers::Array<SceneFieldData>{const_cast<SceneFieldData*>(view.data()), view.size(), reinterpret_cast<void(*)(SceneFieldData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)};
+}
+
+SceneData::SceneData(Containers::Array<char>&& data, const UnsignedLong objectCount, const SceneObjectType objectType, Containers::Array<SceneFieldData>&& fields, const void* const importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _objectType{objectType}, _objectCount{objectCount}, _importerState{importerState}, _fields{std::move(fields)}, _data{std::move(data)} {
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); // TODO
+}
+
+SceneData::SceneData(Containers::Array<char>&& data, const UnsignedLong objectCount, const SceneObjectType objectType, const std::initializer_list<SceneFieldData> fields, const void* const importerState): SceneData{std::move(data), objectCount, objectType, Implementation::initializerListToArrayWithDefaultDeleter(fields), importerState} {}
+
+SceneData::SceneData(SceneData&&) noexcept = default;
+
+SceneData::~SceneData() = default;
+
+SceneData& SceneData::operator=(SceneData&&) noexcept = default;
 
 }}
