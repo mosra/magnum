@@ -94,7 +94,7 @@ These silent errors are easily avoided by requiring explicit conversions:
 
 @snippet MagnumMath.cpp Deg-usage-explicit-conversion
 
-@see @ref Magnum::Deg, @ref Magnum::Degd
+@see @ref Magnum::Deg, @ref Magnum::Degh, @ref Magnum::Degd
 */
 template<class T> class Deg: public Unit<Deg, T> {
     public:
@@ -166,7 +166,7 @@ constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(Fl
 @brief Angle in radians
 
 See @ref Deg for more information.
-@see @ref Magnum::Rad, @ref Magnum::Radd
+@see @ref Magnum::Rad, @ref Magnum::Radh, @ref Magnum::Radd
 */
 template<class T> class Rad: public Unit<Rad, T> {
     public:

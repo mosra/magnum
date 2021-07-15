@@ -60,7 +60,7 @@ corrade_add_test(TradePbrClearCoatMaterialDataTest PbrClearCoatMaterialDataTest.
 corrade_add_test(TradePbrMetallicRoughnessMate___Test PbrMetallicRoughnessMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradePbrSpecularGlossinessMat___Test PbrSpecularGlossinessMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradePhongMaterialDataTest PhongMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
-corrade_add_test(TradeSceneDataTest SceneDataTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(TradeSceneDataTest SceneDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeSkinDataTest SkinDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeTextureDataTest TextureDataTest.cpp LIBRARIES MagnumTrade)
 
@@ -68,6 +68,7 @@ set_property(TARGET
     TradeAnimationDataTest
     TradeMaterialDataTest
     TradeMeshDataTest
+    TradeSceneDataTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
 
 set_target_properties(

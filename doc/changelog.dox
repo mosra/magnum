@@ -51,6 +51,8 @@ See also:
     including mapping to @ref GL::PixelFormat / @ref GL::PixelType,
     @ref GL::TextureFormat and @ref Vk::PixelFormat and (partial) support in
     @ref DebugTools::CompareImage
+-   New @ref Degh, @ref Radh, @ref Range1Dh, @ref Range2Dh and @ref Range3Dh
+    typedefs for half-float angles and ranges
 
 @subsubsection changelog-latest-new-debugtools DebugTools library
 

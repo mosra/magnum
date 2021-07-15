@@ -967,6 +967,36 @@ typedef Math::Matrix4x3<Half> Matrix4x3h;
 */
 typedef Math::Matrix4x4<Half> Matrix4x4h;
 
+/**
+@brief Angle in half-float degrees
+@m_since_latest
+*/
+typedef Math::Deg<Half> Degh;
+
+/**
+@brief Angle in half-float radians
+@m_since_latest
+*/
+typedef Math::Rad<Half> Radh;
+
+/**
+@brief One-dimensional half-float range
+@m_since_latest
+*/
+typedef Math::Range1D<Half> Range1Dh;
+
+/**
+@brief Two-dimensional half-float range
+@m_since_latest
+*/
+typedef Math::Range2D<Half> Range2Dh;
+
+/**
+@brief Three-dimensional half-float range
+@m_since_latest
+*/
+typedef Math::Range3D<Half> Range3Dh;
+
 /* Since 1.8.17, the original short-hand group closing doesn't work anymore.
    FFS. */
 /**
