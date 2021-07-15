@@ -795,11 +795,13 @@ void MeshDataTest::constructAttributeWrongDataAccess() {
     CORRADE_VERIFY(!a.isOffsetOnly());
     CORRADE_VERIFY(b.isOffsetOnly());
 
+    a.data(positionData); /* This is fine, no asserts */
+
     std::ostringstream out;
     Error redirectError{&out};
     b.data();
     CORRADE_COMPARE(out.str(),
-        "Trade::MeshAttributeData::data(): the attribute is a relative offset, supply a data array\n");
+        "Trade::MeshAttributeData::data(): the attribute is offset-only, supply a data array\n");
 }
 
 constexpr Vector2 ArrayVertexData[3*4]

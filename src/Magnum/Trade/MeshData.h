@@ -524,7 +524,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
                 /* We're *sure* the view is correct, so faking the view size */
                 /** @todo better ideas for the StridedArrayView API? */
                 {_data.pointer, ~std::size_t{}}, _vertexCount,
-                (CORRADE_CONSTEXPR_ASSERT(!_isOffsetOnly, "Trade::MeshAttributeData::data(): the attribute is a relative offset, supply a data array"), _stride)};
+                (CORRADE_CONSTEXPR_ASSERT(!_isOffsetOnly, "Trade::MeshAttributeData::data(): the attribute is offset-only, supply a data array"), _stride)};
         }
 
         /**
