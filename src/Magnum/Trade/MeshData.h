@@ -646,9 +646,14 @@ cases when it's desirable to modify the data in-place, there's the
 @ref mutableIndexData(), @ref mutableVertexData(), @ref mutableIndices() and
 @ref mutableAttribute() set of functions. To use these, you need to check that
 the data are mutable using @ref indexDataFlags() or @ref vertexDataFlags()
-first. The following snippet applies a transformation to the mesh data:
+first, and if not then you may want to make a mutable copy first using
+@ref MeshTools::owned(). The following snippet applies a transformation to the
+mesh positions:
 
 @snippet MagnumTrade.cpp MeshData-usage-mutable
+
+If the transformation includes a rotation or non-uniform scaling, you may want
+to do a similar operation with normals and tangents as well.
 
 @section Trade-MeshData-populating Populating an instance
 
