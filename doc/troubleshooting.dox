@@ -25,29 +25,87 @@
 
 namespace Magnum {
 /** @page troubleshooting Troubleshooting
-@brief Various tricks to overcome common building and rendering issues.
+@brief Various tricks and solutions to common pitfalls.
 
+@tableofcontents
 @m_footernavigation
 
 @section troubleshooting-building Building issues
 
-If your project suddenly stops building after Magnum upgrade, check these
+If your project suddenly stops building after a Magnum upgrade, check these
 things:
 
--   If the building fails on CMake step, be sure that you have up-to-date
+-   If building fails on the CMake step, be sure that you have up-to-date
     `FindCorrade.cmake`, `FindMagnum.cmake` and other CMake modules in your
-    project (`FindSDL2.cmake`). They are contained in `modules/` directory of
-    Magnum sources (and sources of other projects) also are installed into
-    `share/cmake/Magnum`.
--   In some cases when the changes done to build system are too drastic,
-    recreating the build dir or clearing CMake cache is needed, but this is
-    a very rare occasion.
--   The library is constantly evolving, thus some API might get deprecated over
-    time (and later removed). Either build the libraries with `BUILD_DEPRECATED`
-    or switch to non-deprecated features. See @ref building for more
-    information.
+    project (`FindSDL2.cmake`, ...). They are contained in `modules/` directory
+    of Magnum repositories and also get installed into `share/cmake/Magnum`.
+-   In very rare cases the CMake build directory may not survive an upgrade. If
+    you get some particularly cursed errors, try recreating it from scratch.
+-   The library is constantly evolving, meaning that APIs may get deprecated
+    and removed over time. If you upgrade to a version that deprecated a
+    particular API you use, the code will emit a deprecation warning,
+    suggesting a migration path. Except for rare cases, the deprecated APIs are
+    guaranteed to stay in the codebase for a year at least (or two subsequent
+    version releases, whichever is longer) and only then they get removed. To
+    make sure you're no longer using any deprecated functionality, it's
+    possible to disable the `BUILD_DEPRECATED` @ref building-features "CMake option"
+    when building Magnum, although for a smoother experience it's recommended
+    to flip this option back on when upgrading. A list of deprecated APIs is
+    maintained @ref changelog-latest-deprecated "in the changelog".
+-   In some rare cases, it's impossible to provide a deprecated migration path
+    and an API gets changed in a backwards-incompatible manner, directly
+    leading to a compile error. Another possibility is that transitive header
+    dependencies got cleaned up for @ref compilation-forward-declarations "speeding up compilation" and you're now missing an @cpp #include @ce. The major
+    compatiblity breakages are always listed @ref changelog-latest-compatibility "in the changelog".
+-   If you upgrade from a really old release, it's recommended to gradually
+    upgrade over tagged versions of Magnum and not jumping directly to latest
+    version. That way you're more likely to follow the deprecation path,
+    instead of directly ending up with long-deprecated APIs being gone with no
+    direct way to know what should be used instead. If in doubt, browse the
+    @ref changelog "old changelogs".
 
-@section troubleshooting-rendering Rendering issues
+@section troubleshooting-runtime Runtime issues
+
+Magnum makes heavy use of assertions to catch programmer errors (as opposed to
+runtime or data-dependent errors, which get handled in more graceful ways), and
+because past experience showed their usefulness, majority of assertions is
+@ref CORRADE_NO_ASSERT "by default kept even in release builds".
+
+If your application abruptly exits, it's important to know whether it was a
+regular *exit*, an *abort* or a *crash*, as each of these may point to a
+different problem.
+
+-   Except for crashes, in which case the application usually won't even have a
+    chance to complain about anything, you should get a message on the standard
+    error output:
+    -   On Unix systems the output can be seen when running from a console
+    -   On Windows, if you don't see the console, switch the build back to a
+        console app @ref platform-windows-hiding-console "instead of a GUI app"
+        --- in case of CMake you can temporarily remove the `WIN32` part from
+        your @cmake add_executable() @ce call
+    -   On Android @ref platforms-android-output-redirection "you can use logcat"
+    -   On Emscripten the output is printed to the browser console
+-   A regular exit may happen during startup due to an error in arguments
+    passed on the command line, or when a window / context creation fails. The
+    error output should mention what happened.
+-   An abort is an assertion failure, with the error message telling you why.
+    It's an abort in order to trigger a debugger break (or the assertion dialog
+    on Windows) or create a core dump (on Unix systems) so you can see the
+    backtrace leading to the error.
+    -   One of the more frequent assertion messages is
+        @cb{.shell-session} GL::Context::current(): no current context @ce.
+        This happens when you try to use OpenGL functionality when the OpenGL
+        context is not yet created (or no longer exists). See
+        @ref opengl-wrapping-instances-nocreate for more information.
+-   A crash is usually a memory issue. To find the root cause, by far the
+    easiest is to hook up AddressSanitizer (`-fsanitize=address` on GCC, Clang
+    and [recent MSVC](https://docs.microsoft.com/en-us/cpp/sanitizers/asan)).
+    It can detect out-of-bounds accesses, use-after-free, leaks and other
+    issues and upon discovering a problem it prints a lengthy diagnostic about
+    what happened, where does the memory come from and what code touched it and
+    how.
+
+@section troubleshooting-opengl OpenGL issues
 
 If you are experiencing the so-called "black screen of death", weird behavior
 or crashes on GL calls, you might want to try these things:
@@ -99,7 +157,7 @@ or crashes on GL calls, you might want to try these things:
     having similar ability to reset its state tracker), otherwise you may need
     to save and restore GL state manually for that library to work.
 
-@section troubleshooting-debugging Debugging rendering
+@subsection troubleshooting-opengl-debugging Debugging rendering
 
 -   Use @ref GL::TimeQuery to find hot spots in the rendering code.
 -   @ref GL::DebugMessage::insert() "Mark relevant parts of code" to find them

@@ -25,27 +25,27 @@
 
 namespace Magnum {
 /** @page compilation-speedup Speeding up compilation
-@brief Techniques for reducing compilation times.
+@brief Techniques for reducing compilation times used by Magnum itself and recommended for application code as well.
 
 @tableofcontents
 @m_footernavigation
 
 @section compilation-forward-declarations Forward declarations instead of includes
 
-Essential thing when speeding up compilation is reducing number of @cpp #include @ce
-directives in both headers and source files. Magnum is strictly applying this
-policy in all header files, so all types which are not directly used in the
-header have only forward declarations.
+An essential thing when speeding up compilation is reducing number of
+@cpp #include @ce directives in both headers and source files. Magnum is
+strictly applying this policy in all header files, so all types which are not
+directly used in the header have only forward declarations.
 
 For example, when including @ref Magnum.h, you get shortcut typedefs for
 floating-point vectors and matrices like @ref Vector3 and @ref Matrix4, but to
 actually use any of them, you have to include the respective header, e.g.
 @ref Magnum/Math/Vector3.h.
 
-You are encouraged to use forward declarations also in your code. However, for
-some types it can be too cumbersome --- e.g. too many template parameters,
-typedefs etc. In this case a header with forward declarations is usually
-available, each namespace has its own:
+You are encouraged to use forward declarations in your code as well. However,
+for some types it can be too cumbersome --- e.g. too many template parameters,
+default template arguments, typedefs etc. Instead, forward declaration headers
+are available, with each namespace having its own:
 
 -   @ref Corrade/Corrade.h
 -   @ref Corrade/Containers/Containers.h
