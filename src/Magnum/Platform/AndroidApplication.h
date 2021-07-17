@@ -815,6 +815,7 @@ class AndroidApplication::MouseEvent: public InputEvent {
         }
 
         /** @brief Pointer Index Do we need both of them? 
+         * Do we really need brief descriptions for index, id, count?
          * Index != Id 
         */
         std::size_t pointerIndex() const { return _pointerIndex; }
@@ -824,14 +825,19 @@ class AndroidApplication::MouseEvent: public InputEvent {
         */
         std::size_t pointerId() const { return _pointerId; }
 
+        /** @brief Pointer count */
+        std::size_t pointerCount() const { return _pointerCount; }
+
     private:
         // Did it almost like MouseMoveEvent with _relativePosition
-        explicit MouseEvent(AInputEvent* event, std::size_t pointerIndex = 0, std::int32_t pointerId = 0):
+        explicit MouseEvent(AInputEvent* event, std::size_t pointerIndex = 0, std::int32_t pointerId = 0, std::size_t pointerCount = 1):
          /* why not {}, but () instead? */ InputEvent(event),
-         _pointerId{pointerId},_pointerIndex{pointerIndex} {}
+         _pointerId{pointerId},_pointerIndex{pointerIndex},_pointerCount{pointerCount} {}
         
         const std::int32_t _pointerId;
         const std::size_t _pointerIndex;
+        const std::size_t _pointerCount;
+
 };
 
 /**

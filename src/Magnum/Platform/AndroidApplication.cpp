@@ -287,12 +287,17 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                 // always >= 1
                 const std::size_t pointerCount = AMotionEvent_getPointerCount(event);
 
-                // Get the persistent id from the index (for what if we have a pointerIndex?)
+                // Get the persistent id from the index 
+                // (for what if we have a pointerIndex?
+                //  They are a bit different. 
+                //  Pointer id saves the order of touch events, 
+                //  so if you would _release_ them in various orders, 
+                //  the 'pointerId' will have the value of initial 'pointerIndex', which might be useful.
+                //  Btw, somehow 'pointerId' does not tell you the last released touch initial index)
                 std::int32_t pointerId = AMotionEvent_getPointerId(event, pointerIndex);
-            
-
-                // pointerId = (pointerId < 0 ? 0 : (size_t)pointerId);
-
+                // I suppose pointerId less or eq to pointerIndex max val
+                
+                //MouseMoveEvent does not support id for now, but it probably should (see AMOTION_EVENT_ACTION_MOVE)
 
                 if(pointerId >= arraySize(app._previousMouseMovePosition))
                     Containers::arrayAppend(app._previousMouseMovePosition, 
@@ -302,7 +307,7 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                     app._previousMouseMovePosition[pointerId] = {Int(AMotionEvent_getX(event, pointerIndex)),
                                                                 Int(AMotionEvent_getY(event, pointerIndex))};
 
-                MouseEvent e(event, pointerIndex, pointerId);
+                MouseEvent e(event, pointerIndex, pointerId, pointerCount);
                 action == AMOTION_EVENT_ACTION_POINTER_DOWN ? 
                     app.mousePressEvent(e) : app.mouseReleaseEvent(e);
                 return e.isAccepted() ? 1 : 0;
