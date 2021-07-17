@@ -26,6 +26,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix4.h"
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -36,6 +37,8 @@
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Texture.h"
 #endif
+
+#define DOXYGEN_IGNORE(...) __VA_ARGS__
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -63,6 +66,42 @@ class MeshResourceLoader: public AbstractResourceLoader<GL::Mesh> {
 #endif
 
 int main() {
+
+{
+/* [features-using-namespace] */
+using namespace Corrade;
+using namespace Magnum;
+/* [features-using-namespace] */
+}
+
+{
+/* [features-using-namespace-alias] */
+namespace Cr = Corrade;
+namespace Mn = Magnum;
+/* [features-using-namespace-alias] */
+}
+
+{
+/* The same #include is already above so this shouldn't hurt */
+/* [features-forward-declaration-use] */
+#include <Magnum/Magnum.h>        /* only a Matrix4 forward declaration */
+#include <Magnum/Math/Matrix4.h>  /* the actual definition */
+
+DOXYGEN_IGNORE()
+
+Matrix4 a = Matrix4::translation({3.0f, 1.0f, 0.5f});
+/* [features-forward-declaration-use] */
+static_cast<void>(a);
+}
+
+{
+/* [features-debug-output] */
+Image2D image = DOXYGEN_IGNORE(Image2D{{}, {}, {}});
+
+Debug{} << "Image format is" << image.format() << "and size" << image.size();
+Debug{} << "Color of the first pixel is" << image.pixels<Color4ub>()[0][0];
+/* [features-debug-output] */
+}
 
 {
 std::nullptr_t data{};
