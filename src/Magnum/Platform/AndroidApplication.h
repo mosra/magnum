@@ -814,28 +814,28 @@ class AndroidApplication::MouseEvent: public InputEvent {
                     Int(AMotionEvent_getY(_event, _pointerIndex))};
         }
 
-        /** @brief Pointer Index Do we need both of them? 
-         * Do we really need brief descriptions for index, id, count?
-         * Index != Id 
+        /** @brief Pointer Index
+         * note: generally Index != Id 
         */
         std::size_t pointerIndex() const { return _pointerIndex; }
 
         /** @brief Pointer Id 
-         * Index != Id
+         * note: generally Index != Id
         */
         std::size_t pointerId() const { return _pointerId; }
 
-        /** @brief Pointer count */
+        /** @brief Number of pointers */
         std::size_t pointerCount() const { return _pointerCount; }
 
     private:
         // Did it almost like MouseMoveEvent with _relativePosition
-        explicit MouseEvent(AInputEvent* event, std::size_t pointerIndex = 0, std::int32_t pointerId = 0, std::size_t pointerCount = 1):
-         /* why not {}, but () instead? */ InputEvent(event),
-         _pointerId{pointerId},_pointerIndex{pointerIndex},_pointerCount{pointerCount} {}
+        explicit MouseEvent(AInputEvent* event, 
+        std::size_t pointerIndex = 0, std::int32_t pointerId = 0, std::size_t pointerCount = 1):
+        InputEvent(event),
+        _pointerIndex{pointerIndex}, _pointerId{pointerId}, _pointerCount{pointerCount} {}
         
-        const std::int32_t _pointerId;
         const std::size_t _pointerIndex;
+        const std::int32_t _pointerId;
         const std::size_t _pointerCount;
 
 };
@@ -899,8 +899,12 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
 
         /** @brief Position */
         Vector2i position() const {
-            return {Int(AMotionEvent_getX(_event, 0)),
-                    Int(AMotionEvent_getY(_event, 0))};
+            // aw, that was painful
+            // return {Int(AMotionEvent_getX(_event, 0)),
+                    // Int(AMotionEvent_getY(_event, 0))};
+
+            return {Int(AMotionEvent_getX(_event, _pointerIndex)),
+                Int(AMotionEvent_getY(_event, _pointerIndex))};
         }
 
         /**
@@ -923,10 +927,30 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
             #endif
         }
 
+        /** @brief Pointer Index
+         * note: generally Index != Id 
+        */
+        std::size_t pointerIndex() const { return _pointerIndex; }
+
+        /** @brief Pointer Id 
+         * note: generally Index != Id
+        */
+        std::size_t pointerId() const { return _pointerId; }
+
+        /** @brief Number of pointers */
+        std::size_t pointerCount() const { return _pointerCount; }
+
     private:
-        explicit MouseMoveEvent(AInputEvent* event, Vector2i relativePosition): InputEvent{event}, _relativePosition{relativePosition} {}
+        explicit MouseMoveEvent(AInputEvent* event, Vector2i relativePosition, 
+        std::size_t pointerIndex = 0, std::int32_t pointerId = 0, std::size_t pointerCount = 1): 
+        InputEvent{event}, _relativePosition{relativePosition},
+        _pointerIndex{pointerIndex}, _pointerId{pointerId}, _pointerCount{pointerCount} {}
 
         const Vector2i _relativePosition;
+
+        const std::size_t _pointerIndex;
+        const std::int32_t _pointerId;
+        const std::size_t _pointerCount;
 };
 
 CORRADE_ENUMSET_OPERATORS(AndroidApplication::MouseMoveEvent::Buttons)

@@ -248,57 +248,75 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
     AndroidApplication& app = *static_cast<Data*>(state->userData)->instance;
     if(AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
         const std::int32_t action = AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_MASK;
+                
+        // Extract the index of the pointer that left the touch sensor
+        // ! Don't mix up AMotionEvent_getAction(event) and 'action' !
+
+        // (i32 & 0xff00) >> 8  is less than 2^8 (or 256), so size_t is too much, 
+        // but AMotionEvent_getPointerId() uses size_t as an argument
+        const std::size_t pointerIndex = (AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) 
+            >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+
+        // always >= 1
+        const std::size_t pointerCount = AMotionEvent_getPointerCount(event);
+
+        // Get the persistent id from the index 
+        // (for what if we have a pointerIndex?
+        //  They are a bit different. 
+        //  Pointer id saves the order of touch events, 
+        //  so if you would _release_ fingers in various orders, 
+        //  the 'pointerId' will have the value of initial 'pointerIndex', which might be useful.
+        //  Btw, somehow 'pointerId' does not tell you the last released touch initial index --- 
+        //  --- no, 'pointerId' actually tells it, but in AMOTION_EVENT_ACTION_UP|DOWN case)
+        std::int32_t pointerId = AMotionEvent_getPointerId(event, pointerIndex);
+        // I almost sure pointerId less or eq to pointerIndex max val
+                
+
         switch(action) {
             case AMOTION_EVENT_ACTION_DOWN:
             case AMOTION_EVENT_ACTION_UP: {
                 /* On a touch screen move events aren't reported when the
                    finger is moving above (of course), so remember the position
                    always */
-                app._previousMouseMovePosition[0] = {Int(AMotionEvent_getX(event, 0)), Int(AMotionEvent_getY(event, 0))};
-                MouseEvent e(event);
-                action == AMOTION_EVENT_ACTION_DOWN ? app.mousePressEvent(e) : app.mouseReleaseEvent(e);
+                MouseEvent e(event, pointerIndex, pointerId, pointerCount);
+
+                if(action == AMOTION_EVENT_ACTION_DOWN){
+                app._previousMouseMovePosition[pointerId] = {Int(AMotionEvent_getX(event, pointerIndex)),
+                                                    Int(AMotionEvent_getY(event, pointerIndex))};
+                app.mousePressEvent(e);
+                }
+                else{
+                app._previousMouseMovePosition[pointerId] = Vector2i{-1};
+                app.mouseReleaseEvent(e);
+                }
                 return e.isAccepted() ? 1 : 0;
             }
 
             case AMOTION_EVENT_ACTION_MOVE: {
-                Vector2i position{Int(AMotionEvent_getX(event, 0)), Int(AMotionEvent_getY(event, 0))};
-                MouseMoveEvent e{event,
-                    app._previousMouseMovePosition[0] == Vector2i{-1} ? Vector2i{} :
-                    position - app._previousMouseMovePosition[0]};
-                app._previousMouseMovePosition[0] = position;
-                app.mouseMoveEvent(e);
-                return e.isAccepted() ? 1 : 0;
-            }
+                for(size_t k=0;k<pointerCount;++k){
+                    const std::size_t pointerIndex=k;
+                    std::int32_t pointerId = AMotionEvent_getPointerId(event, pointerIndex);
 
+                    // position is used twice: inside MouseMoveEvent.position() and here
+                    Vector2i position{Int(AMotionEvent_getX(event, pointerIndex)), 
+                                    Int(AMotionEvent_getY(event, pointerIndex))};
+                    MouseMoveEvent e{event,
+                        app._previousMouseMovePosition[pointerId].x() == -1? Vector2i{} :
+                        position - app._previousMouseMovePosition[pointerId],
+                        pointerIndex, pointerId, pointerCount};
+                    app._previousMouseMovePosition[pointerId] = position;
+                    app.mouseMoveEvent(e);
+                }
+                // return e.isAccepted() ? 1 : 0;
+                return 0;
+            }
+            
             /* Look here: 
                https://android-developers.googleblog.com/2010/06/making-sense-of-multitouch.html
                for ACTION_POINTER_UP and ACTION_POINTER_DOWN */
             
             case AMOTION_EVENT_ACTION_POINTER_DOWN:
             case AMOTION_EVENT_ACTION_POINTER_UP: {
-                // Extract the index of the pointer that left the touch sensor
-                // ! Don't mix up AMotionEvent_getAction(event) and 'action' !
-
-                // (i32 & 0xff00) >> 8  is less than 2^8 (or 256), so size_t is too much, 
-                // but AMotionEvent_getPointerId() uses size_t as an argument
-                const std::size_t pointerIndex = (AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) 
-                    >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
-
-                // always >= 1
-                const std::size_t pointerCount = AMotionEvent_getPointerCount(event);
-
-                // Get the persistent id from the index 
-                // (for what if we have a pointerIndex?
-                //  They are a bit different. 
-                //  Pointer id saves the order of touch events, 
-                //  so if you would _release_ them in various orders, 
-                //  the 'pointerId' will have the value of initial 'pointerIndex', which might be useful.
-                //  Btw, somehow 'pointerId' does not tell you the last released touch initial index)
-                std::int32_t pointerId = AMotionEvent_getPointerId(event, pointerIndex);
-                // I suppose pointerId less or eq to pointerIndex max val
-                
-                //MouseMoveEvent does not support id for now, but it probably should (see AMOTION_EVENT_ACTION_MOVE)
-
                 if(pointerId >= arraySize(app._previousMouseMovePosition))
                     Containers::arrayAppend(app._previousMouseMovePosition, 
                     {Int(AMotionEvent_getX(event, pointerIndex)),
