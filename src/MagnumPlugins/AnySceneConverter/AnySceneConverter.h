@@ -27,6 +27,7 @@
 
 /** @file
  * @brief Class @ref Magnum::Trade::AnySceneConverter
+ * @m_since{2020,06}
  */
 
 #include "Magnum/Trade/AbstractSceneConverter.h"
@@ -52,6 +53,7 @@ namespace Magnum { namespace Trade {
 
 /**
 @brief Any scene converter plugin
+@m_since{2020,06}
 
 Detects file type based on file extension, loads corresponding plugin and then
 tries to convert the file with it. Supported formats:

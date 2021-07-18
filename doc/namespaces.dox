@@ -662,12 +662,14 @@ See @ref building, @ref cmake and @ref vulkan for more information.
  */
 /** @dir MagnumPlugins/AnySceneConverter
  * @brief Plugin @ref Magnum::Trade::AnySceneConverter
+ * @m_since{2020,06}
  */
 /** @dir MagnumPlugins/AnySceneImporter
  * @brief Plugin @ref Magnum::Trade::AnySceneImporter
  */
 /** @dir MagnumPlugins/AnyShaderConverter
  * @brief Plugin @ref Magnum::ShaderTools::AnyConverter
+ * @m_since_latest
  */
 /** @dir MagnumPlugins/MagnumFont
  * @brief Plugin @ref Magnum::Text::MagnumFont
