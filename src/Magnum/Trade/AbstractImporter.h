@@ -109,7 +109,7 @@ enum class ImporterFlag: UnsignedByte {
      */
     Verbose = 1 << 0,
 
-    /** @todo Y flip for images, "I want to import just once, don't copy" ... */
+    /** @todo ~~Y flip~~ Y up for images, "I want to import just once, don't copy" ... */
 };
 
 /**

@@ -266,7 +266,7 @@ enum class ImageConverterFlag: UnsignedByte {
      */
     Verbose = 1 << 0
 
-    /** @todo Y flip */
+    /** @todo ~~Y flip~~ Y up */
 };
 
 /**
