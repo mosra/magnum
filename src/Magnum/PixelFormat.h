@@ -852,7 +852,8 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
-     * compressed RGB, normalized unsigned (DXT1).
+     * compressed RGB, normalized unsigned (DXT1). 64bit 4x4 blocks with a
+     * 1-bit alpha component that's ignored.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBS3tcDxt1,
      * @ref GL::TextureFormat::CompressedRGBS3tcDxt1 or
@@ -863,7 +864,8 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
-     * compressed sRGB, normalized unsigned (DXT1).
+     * compressed sRGB, normalized unsigned (DXT1). 64bit 4x4 blocks with a
+     * 1-bit alpha component that's ignored.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGBS3tcDxt1,
      * @ref GL::TextureFormat::CompressedSRGBS3tcDxt1 or
@@ -875,7 +877,8 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
-     * compressed RGBA, normalized unsigned (DXT1).
+     * compressed RGBA, normalized unsigned (DXT1). 64bit 4x4 blocks with a
+     * 1-bit alpha component.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt1,
      * @ref GL::TextureFormat::CompressedRGBAS3tcDxt1;
@@ -888,7 +891,8 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
-     * compressed sRGB + linear alpha, normalized unsigned (DXT1).
+     * compressed sRGB + linear alpha, normalized unsigned (DXT1). 64bit 4x4
+     * blocks with a 1-bit alpha component.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaS3tcDxt1,
      * @ref GL::TextureFormat::CompressedSRGBAlphaS3tcDxt1;
@@ -902,7 +906,9 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC2
-     * compressed RGBA, normalized unsigned (DXT3).
+     * compressed RGBA, normalized unsigned (DXT3). A 128-bit 4x4 block,
+     * consisting of a 64-bit explicit alpha block followed by a 64-bit color
+     * block encoded the same way as BC1.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt3,
      * @ref GL::TextureFormat::CompressedRGBAS3tcDxt3;
@@ -915,7 +921,9 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC2
-     * compressed sRGB + linear alpha, normalized unsigned (DXT3).
+     * compressed sRGB + linear alpha, normalized unsigned (DXT3). A 128-bit
+     * 4x4 block, consisting of a 64-bit explicit alpha block followed by a
+     * 64-bit color block encoded the same way as BC1.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaS3tcDxt3,
      * @ref GL::TextureFormat::CompressedSRGBAlphaS3tcDxt3;
@@ -929,7 +937,9 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC3
-     * compressed RGBA, normalized unsigned (DXT5).
+     * compressed RGBA, normalized unsigned (DXT5). A 128-bit 4x4 block,
+     * consisting of a 64-bit interpolated alpha block followed by a 64-bit
+     * color block encoded the same way as BC1.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt5,
      * @ref GL::TextureFormat::CompressedRGBAS3tcDxt5;
@@ -942,7 +952,9 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC3
-     * compressed sRGB + linear alpha, normalized unsigned (DXT5).
+     * compressed sRGB + linear alpha, normalized unsigned (DXT5). A 128-bit
+     * 4x4 block,  consisting of a 64-bit interpolated alpha block followed by
+     * a 64-bit color block encoded the same way as BC1.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaS3tcDxt5,
      * @ref GL::TextureFormat::CompressedSRGBAlphaS3tcDxt5;
@@ -956,7 +968,8 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [3Dc+](https://en.wikipedia.org/wiki/3Dc#3Dc+) BC4 compressed red
-     * component, unsigned normalized. Also known as RGTC1 or LATC1.
+     * component, unsigned normalized. Also known as RGTC1 or LATC1. A 64-bit
+     * 4x4 block encoded the same way as the alpha block of BC3.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RedRgtc1,
      * @ref GL::TextureFormat::CompressedRedRgtc1;
@@ -970,7 +983,8 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [3Dc+](https://en.wikipedia.org/wiki/3Dc#3Dc+) BC4 compressed red
-     * component, signed normalized. Also known as RGTC1 or LATC1.
+     * component, signed normalized. Also known as RGTC1 or LATC1. A 64-bit 4x4
+     * block encoded the same way as the alpha block of BC3.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SignedRedRgtc1,
      * @ref GL::TextureFormat::CompressedSignedRedRgtc1;
@@ -984,7 +998,9 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [3Dc](https://en.wikipedia.org/wiki/3Dc) BC5 compressed red and green
-     * component, unsigned normalized. Also known as RGTC2 or LATC2.
+     * component, unsigned normalized. Also known as RGTC2 or LATC2. A 128-bit
+     * 4x4 block consisting of two 64bit blocks for each channel encoded the
+     * same way as the alpha block of BC3.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGRgtc2,
      * @ref GL::TextureFormat::CompressedRGRgtc2;
@@ -998,7 +1014,9 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [3Dc](https://en.wikipedia.org/wiki/3Dc) BC5 compressed red and green
-     * component, signed normalized. Also known as RGTC2 or LATC2.
+     * component, signed normalized. Also known as RGTC2 or LATC2. A 128-bit
+     * 4x4 block consisting of two 64bit blocks for each channel encoded the
+     * same way as the alpha block of BC3.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SignedRGRgtc2,
      * @ref GL::TextureFormat::CompressedSignedRGRgtc2;
