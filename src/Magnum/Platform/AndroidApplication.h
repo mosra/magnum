@@ -41,6 +41,10 @@
 #include "Magnum/Platform/Platform.h"
 #include "Magnum/Platform/GLContext.h"
 
+//Is it ok?
+#include "Corrade/Containers/Array.h"
+#include "Corrade/Containers/GrowableArray.h"
+
 #if defined(CORRADE_TARGET_ANDROID) || defined(DOXYGEN_GENERATING_OUTPUT)
 #include <android/input.h>
 
@@ -434,7 +438,11 @@ class AndroidApplication {
         EGLDisplay _display;
         EGLSurface _surface;
         EGLContext _glContext;
-        Vector2i _previousMouseMovePosition{-1};
+        /* Create array from given value like here:
+           https://doc.magnum.graphics/corrade/classCorrade_1_1Containers_1_1Array.html 
+           The exact number of pointers is unknown, isn't it? 
+           */
+        Containers::Array<Vector2i> _previousMouseMovePosition{Corrade::InPlaceInit, {{-1,-1}}};
 
         /* Has to be in an Optional because it gets explicitly destroyed before
            the GL context */
@@ -802,12 +810,32 @@ class AndroidApplication::MouseEvent: public InputEvent {
 
         /** @brief Position */
         Vector2i position() {
-            return {Int(AMotionEvent_getX(_event, 0)),
-                    Int(AMotionEvent_getY(_event, 0))};
+            return {Int(AMotionEvent_getX(_event, _pointerIndex)),
+                    Int(AMotionEvent_getY(_event, _pointerIndex))};
         }
 
+        /** @brief Pointer Index
+         * note: generally Index != Id 
+        */
+        std::size_t pointerIndex() const { return _pointerIndex; }
+
+        /** @brief Pointer Id 
+         * note: generally Index != Id
+        */
+        std::size_t pointerId() const { return _pointerId; }
+
+        /** @brief Number of pointers */
+        std::size_t pointerCount() const { return _pointerCount; }
+
     private:
-        explicit MouseEvent(AInputEvent* event): InputEvent(event) {}
+        explicit MouseEvent(AInputEvent* event, 
+        std::size_t pointerIndex = 0, std::int32_t pointerId = 0, std::size_t pointerCount = 1):
+        InputEvent(event),
+        _pointerIndex{pointerIndex}, _pointerId{pointerId}, _pointerCount{pointerCount} {}
+        
+        const std::size_t _pointerIndex;
+        const std::int32_t _pointerId;
+        const std::size_t _pointerCount;
 };
 
 /**
@@ -869,8 +897,8 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
 
         /** @brief Position */
         Vector2i position() const {
-            return {Int(AMotionEvent_getX(_event, 0)),
-                    Int(AMotionEvent_getY(_event, 0))};
+            return {Int(AMotionEvent_getX(_event, _pointerIndex)),
+                Int(AMotionEvent_getY(_event, _pointerIndex))};
         }
 
         /**
@@ -893,10 +921,30 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
             #endif
         }
 
+        /** @brief Pointer Index
+         * note: generally Index != Id 
+        */
+        std::size_t pointerIndex() const { return _pointerIndex; }
+
+        /** @brief Pointer Id 
+         * note: generally Index != Id
+        */
+        std::size_t pointerId() const { return _pointerId; }
+
+        /** @brief Number of pointers */
+        std::size_t pointerCount() const { return _pointerCount; }
+
     private:
-        explicit MouseMoveEvent(AInputEvent* event, Vector2i relativePosition): InputEvent{event}, _relativePosition{relativePosition} {}
+        explicit MouseMoveEvent(AInputEvent* event, Vector2i relativePosition, 
+        std::size_t pointerIndex = 0, std::int32_t pointerId = 0, std::size_t pointerCount = 1): 
+        InputEvent{event}, _relativePosition{relativePosition},
+        _pointerIndex{pointerIndex}, _pointerId{pointerId}, _pointerCount{pointerCount} {}
 
         const Vector2i _relativePosition;
+
+        const std::size_t _pointerIndex;
+        const std::int32_t _pointerId;
+        const std::size_t _pointerCount;
 };
 
 CORRADE_ENUMSET_OPERATORS(AndroidApplication::MouseMoveEvent::Buttons)
