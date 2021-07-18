@@ -89,9 +89,9 @@ struct MyApplication: Platform::Application {
 
 /* [configuration] */
 MyApplication::MyApplication(const Arguments& arguments):
-    Platform::Application(arguments, Configuration{}
+    Platform::Application{arguments, Configuration{}
         .setTitle("My Application")
-        .setSize({800, 600}))
+        .setSize({800, 600})}
 {
     // ...
 }

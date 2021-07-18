@@ -143,21 +143,48 @@ this:
 
 @snippet MagnumPlatform.cpp configuration
 
-However, sometimes you would need to configure the application based on some
-configuration file or system introspection. In that case you can pass
-@ref NoCreate instead of @ref Platform::Sdl2Application::Configuration "Configuration"
-instance and then specify it later with @ref Platform::Sdl2Application::create() "create()":
+@subsection platform-configuration-delayed Delayed context creation
+
+Sometimes you may want to set up the application based on a configuration file
+or system introspection, which can't really be done inside the base class
+initializer. You can specify @ref NoCreate in the constructor instead and pass
+the @relativeref{Platform::Sdl2Application,Configuration} later to a
+@relativeref{Platform::Sdl2Application,create()} function:
 
 @snippet MagnumPlatform.cpp createcontext
 
-If the context creation in constructor or @ref Platform::Sdl2Application::create() "create()"
-fails, the application exits. However, it is also possible to negotiate the
-context using @ref Platform::Sdl2Application::tryCreate() "tryCreate()". The
-only difference is that this function returns `false` instead of exiting. You
-can for example try enabling MSAA and if the context creation fails, fall back
-to no-AA rendering:
+If context creation in the constructor or in
+@relativeref{Platform::Sdl2Application,create()} fails, the application prints
+an error message to standard output and exits. While that frees you from having
+to do explicit error handling, sometimes a more graceful behavior may be
+desirable --- with @relativeref{Platform::Sdl2Application,tryCreate()} the
+function returns @cpp false @ce instead of exiting and it's up to you whether
+you abort the launch or retry with different configuration. You can for example
+try enabling MSAA first, and if the context creation fails, fall back to no-AA
+rendering:
 
 @snippet MagnumPlatform.cpp trycreatecontext
+
+<b></b>
+
+@m_class{m-block m-warning}
+
+@par Implications for GL objects as class members
+    Delaying GL context creation to
+    @relativeref{Platform::Sdl2Application,create()} /
+    @relativeref{Platform::Sdl2Application,tryCreate()} means that, at the
+    point when class members get constructed, the context isn't available yet.
+    If you have GL objects such as @ref GL::Mesh or @ref Shaders::PhongGL as
+    class members, the application may hit the following assert during startup:
+@par
+    @code{.shell-session}
+    GL::Context::current(): no current context
+    @endcode
+@par
+    The solution is to construct the GL objects with @ref NoCreate constructors
+    as well and populate them with live instances only after the context has
+    been created. See @ref opengl-wrapping-instances-nocreate for more
+    information.
 
 @section platform-custom Using custom platform toolkits
 

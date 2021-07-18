@@ -204,12 +204,12 @@ instances for other OpenGL contexts, *first* you need to "unset" the current one
 with @ref makeCurrent() and *then* create another instance, which will then
 become implicitly active:
 
-@snippet MagnumGL-framebuffer.cpp Context-makeCurrent-nullptr
+@snippet MagnumGL-application.cpp Context-makeCurrent-nullptr
 
 Once all needed instances are created, switch between them right after making
 the underlying GL context current:
 
-@snippet MagnumGL-framebuffer.cpp Context-makeCurrent
+@snippet MagnumGL-application.cpp Context-makeCurrent
 
 @section GL-Context-multithreading Thread safety
 

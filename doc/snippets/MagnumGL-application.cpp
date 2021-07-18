@@ -26,10 +26,37 @@
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/DefaultFramebuffer.h"
 #include "Magnum/GL/Framebuffer.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/Platform/Sdl2Application.h"
 #include "Magnum/Platform/GLContext.h"
+#include "Magnum/Shaders/PhongGL.h"
 
 using namespace Magnum;
+
+#define DOXYGEN_IGNORE(...) __VA_ARGS__
+
+/* [opengl-wrapping-nocreate] */
+class MyApplication: public Platform::Application {
+    DOXYGEN_IGNORE(explicit MyApplication(const Arguments& arguments);)
+
+    private:
+        /* Placeholders without an underlying GL object */
+        GL::Mesh _mesh{NoCreate};
+        Shaders::PhongGL _shader{NoCreate};
+        DOXYGEN_IGNORE()
+};
+
+MyApplication::MyApplication(const Arguments& arguments):
+    Platform::Application{arguments, NoCreate}
+{
+    DOXYGEN_IGNORE()
+    create();
+
+    /* GL context is ready, now it's safe to populate the GL objects */
+    _mesh = GL::Mesh{};
+    _shader = Shaders::PhongGL{};
+}
+/* [opengl-wrapping-nocreate] */
 
 struct A: Platform::Sdl2Application {
 /* [DefaultFramebuffer-usage-viewport] */

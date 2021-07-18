@@ -345,11 +345,19 @@ See @ref platform for more information.
 @section getting-started-tutorials Follow tutorials and learn the principles
 
 Now that you have your first application up and running, the best way to
-continue is to render your first triangle. Then you can dig deeper and try
-other examples, read about @ref features "fundamental principles" in the
-documentation and start experimenting on your own!
+continue is to get familiar with the basic workflows and render your first
+triangle. Then you can dig deeper and try other examples, read about basic
+building blocks in the documentation and start experimenting on your own!
 
-@m_div{m-button m-success} <a href="examples-triangle.html">@m_div{m-big}Your First Triangle@m_enddiv @m_div{m-small} a step-by-step tutorial @m_enddiv </a> @m_enddiv
+@m_class{m-row}
+
+@parblock
+
+@m_div{m-col-m-6} @m_div{m-button m-info} <a href="features.html">@m_div{m-big}The Fundamentals@m_enddiv @m_div{m-small} make yourself comfortable first @m_enddiv </a> @m_enddiv @m_enddiv
+
+@m_div{m-col-m-6} @m_div{m-button m-success} <a href="examples-triangle.html">@m_div{m-big}Your First Triangle@m_enddiv @m_div{m-small} a step-by-step tutorial @m_enddiv </a> @m_enddiv @m_enddiv
+
+@endparblock
 
 @section getting-started-more Additional information
 

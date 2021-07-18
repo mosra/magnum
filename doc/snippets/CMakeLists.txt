@@ -203,7 +203,7 @@ if(WITH_SDL2APPLICATION AND TARGET_GL)
 
     add_library(snippets-MagnumPlatform STATIC
         MagnumPlatform.cpp
-        MagnumGL-framebuffer.cpp)
+        MagnumGL-application.cpp)
     target_link_libraries(snippets-MagnumPlatform PRIVATE MagnumSdl2Application)
 
     set_target_properties(

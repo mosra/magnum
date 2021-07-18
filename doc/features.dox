@@ -26,10 +26,146 @@
 namespace Magnum {
 
 /** @page features Feature guide
-@brief Fundamental principles and design goals.
+@brief High-level introduction to design of the Magnum library and basic building blocks.
 
-Overview and tutorials of high-level feature groups in Magnum. It's not
-necessary to read through everything, pick only what you need.
+@tableofcontents
+
+@todoc FUCK OFF doxygen, why are you not able to link to Corrade, Corrade::Utility and Magnum/Math/ you dumb shit?!
+
+Before you continue further, here are the essential bits of knowledge to help
+you around.
+
+@section features-naming Library organization and naming scheme
+
+The @ref Magnum project consists of a library with core functionality and
+optional sub-libraries. Each library is in its own namespace, which corresponds
+to a sub-folder on the include path -- so e.g. things from @ref Magnum::Math
+are included from @m_class{m-doc} [Magnum/Math/](dir_d816e7cf853e6723911731706bcab386.html).
+@ref Magnum builds upon
+@m_class{m-doc-external} [Corrade](https://doc.magnum.graphics/corrade/), which
+provides platform abstraction, basic utilities and containers.
+
+To reduce redundant verbosity, references throughout the documentation and
+code in example snippets have the the root @ref Magnum and
+@m_class{m-doc-external} [Corrade](https://doc.magnum.graphics/corrade/namespaceCorrade.html)
+namespaces omitted. In other words, as if the following was done:
+
+@snippet Magnum.cpp features-using-namespace
+
+If Magnum is the primary library you're building your project on, it's
+recommended that you do the same --- we're careful to not pollute the root
+namespace with overly generic names. However, except for `Literals` namespaces,
+@cpp using @ce the subnamespaces is *not recommended*, as naming in those is
+deliberately picked short and may introduce conflicts (such as
+@relativeref{Corrade,Containers::String} vs
+@relativeref{Corrade,Utility::String} or @ref GL::PixelFormat vs
+@ref Vk::PixelFormat).
+
+If you frown upon the thought of @cpp using namespace Magnum @ce yet don't want
+to wear your fingers off by repeatedly writing @cpp Magnum:: @ce everywhere, a
+common shorthand that projects go with is the following --- similarly in spirit
+to @cb{.py} import numpy as np @ce:
+
+@snippet Magnum.cpp features-using-namespace-alias
+
+@section features-includes Include files and forward declarations
+
+Depending on where you come from, the @cpp #include @ce policy used by Magnum
+might either make you happy or freak you out. In short, there's no "include the
+world" file, and instead you're supposed to include dedicated headers for APIs
+you want to use. The main reason is compile times, and the speed gain from
+doing it this way is too great to be ignored.
+
+The general rule is that each top-level class has a corresponding include, so
+for example @ref Math::Matrix4 is included as @ref Magnum/Math/Matrix4.h. It's
+not always like that though, and to help you out, documentation of each
+namespace and class tells you what to include, and if particular namespace
+members are defined in different headers, then detailed docs of each has a
+corresponding @cpp #include @ce directive listed as well, ready to be copied.
+
+In order to have the includes actually independent of each other, most Magnum
+types are forward-declared, and where possible, the header only relies on
+forward declarations. Which means that often the type already exists as a
+declaration, and in order to actually use it, you have to include the concrete
+definition of it. If you don't, the compiler will complain about use of an
+incomplete type. For example:
+
+@snippet Magnum.cpp features-forward-declaration-use
+
+Of course not all headers can be written with just forward declarations, so
+there still are some transitive dependencies between headers (for example, the
+@ref Magnum/Math/Matrix4.h header pulls in @ref Magnum/Math/Vector4.h as well).
+But from most part this is an implementation detail and as such shouldn't be
+relied on.
+
+For happy compile times you're encouraged to rely on forward declarations in
+your code as well. See @ref compilation-forward-declarations for more
+information.
+
+@section features-debug-output Debug output
+
+One of the essential debugging workflows is inspection of variable contents by
+printing them out. Magnum defines a lot of new math types, enums and
+containers and it would be very painful if you had to loop over their contents
+or perform manual enum-to-string conversion every time you want to see what's
+inside.
+
+Because writing to standard output and printing values for debugging purposes
+are *distinct* use cases with potentially conflicting requirements (should an
+enum value get written as a number? or as a name? a fully qualified name?),
+Magnum *doesn't* provide @cpp operator<< @ce overloads for @ref std::ostream.
+
+Instead, there's @relativeref{Corrade,Utility::Debug}, for your typing
+convenience also aliased to just @ref Debug directly in the @ref Magnum
+namespace. On its own it's able to print builtin types, all usual C++
+containers as well as their Corrade equivalents. Magnum then implements debug
+printers for its own math types, basic structures and most enums, which get
+printed as fully-qualified names. For example:
+
+@m_class{m-code-figure}
+
+@parblock
+
+@snippet Magnum.cpp features-debug-output
+
+<b></b>
+
+@m_class{m-nopad}
+
+@code{.shell-session}
+Image format is PixelFormat::RGBA8Srgb and size Vector(256, 192)
+Color of the bottom-left pixel is #33b27f
+@endcode
+
+@endparblock
+
+The main goal of this utility is convenience and readability ---  values are
+implicitly delimited by spaces and ended with a newline, container contents
+written with commas etc. Check out the class documentation for advanced
+features like colors, output redirection or printing file/line info.
+
+@section features-examples Learn by example
+
+Before you do a deep dive into the documentation, and if you haven't done
+already, it's recommended to go through the Getting Started Guide and check out
+at least the first example:
+
+@m_class{m-row}
+
+@parblock
+
+@m_div{m-col-m-6} @m_div{m-button m-primary} <a href="getting-started.html">@m_div{m-big}Getting Started@m_enddiv @m_div{m-small} bootstrap a basic project structure @m_enddiv </a> @m_enddiv @m_enddiv
+
+@m_div{m-col-m-6} @m_div{m-button m-success} <a href="examples-triangle.html">@m_div{m-big}Your First Triangle@m_enddiv @m_div{m-small} a step-by-step tutorial @m_enddiv </a> @m_enddiv @m_enddiv
+
+@endparblock
+
+@section features-building-blocks Learn through documentation
+
+Each of the following pages provides a high-level description of a certain area
+of the library. It's recommended to read through these first to understand the
+overall principles and only then go to documentation of each concrete class and
+function.
 
 -   @subpage platform --- @copybrief platform
 -   @subpage types --- @copybrief types

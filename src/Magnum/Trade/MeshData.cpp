@@ -202,9 +202,9 @@ MeshData::MeshData(const MeshPrimitive primitive, const DataFlags indexDataFlags
 
 MeshData::MeshData(const MeshPrimitive primitive, const UnsignedInt vertexCount, const void* const importerState) noexcept: MeshData{primitive, {}, MeshIndexData{}, {}, {}, vertexCount, importerState} {}
 
-MeshData::~MeshData() = default;
-
 MeshData::MeshData(MeshData&&) noexcept = default;
+
+MeshData::~MeshData() = default;
 
 MeshData& MeshData::operator=(MeshData&&) noexcept = default;
 
