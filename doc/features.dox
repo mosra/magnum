@@ -154,9 +154,9 @@ at least the first example:
 
 @parblock
 
-@m_div{m-col-m-6} @m_div{m-button m-primary} <a href="getting-started.html">@m_div{m-big}Getting Started@m_enddiv @m_div{m-small} bootstrap a basic project structure @m_enddiv </a> @m_enddiv @m_enddiv
+@m_div{m-col-t-8 m-push-t-2 m-col-s-6 m-push-s-0 m-col-m-4 m-push-m-1} @m_div{m-button m-primary m-fullwidth} <a href="getting-started.html">@m_div{m-big}Getting Started@m_enddiv @m_div{m-small} bootstrap a basic project structure @m_enddiv </a> @m_enddiv @m_enddiv
 
-@m_div{m-col-m-6} @m_div{m-button m-success} <a href="examples-triangle.html">@m_div{m-big}Your First Triangle@m_enddiv @m_div{m-small} a step-by-step tutorial @m_enddiv </a> @m_enddiv @m_enddiv
+@m_div{m-col-t-8 m-push-t-2 m-col-s-6 m-push-s-0 m-col-m-4 m-push-m-3} @m_div{m-button m-success m-fullwidth} <a href="examples-triangle.html">@m_div{m-big}Your First Triangle@m_enddiv @m_div{m-small} a step-by-step tutorial @m_enddiv </a> @m_enddiv @m_enddiv
 
 @endparblock
 
