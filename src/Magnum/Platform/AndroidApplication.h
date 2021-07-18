@@ -442,7 +442,7 @@ class AndroidApplication {
            https://doc.magnum.graphics/corrade/classCorrade_1_1Containers_1_1Array.html 
            The exact number of pointers is unknown, isn't it? 
            */
-        Containers::Array<Vector2i> _previousMouseMovePosition{Containers::InPlaceInit, {{-1,-1}}};
+        Containers::Array<Vector2i> _previousMouseMovePosition{Corrade::InPlaceInit, {{-1,-1}}};
 
         /* Has to be in an Optional because it gets explicitly destroyed before
            the GL context */

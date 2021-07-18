@@ -264,12 +264,11 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
         // (for what if we have a pointerIndex?
         //  They are a bit different. 
         //  Pointer id saves the order of touch events, 
-        //  so if you would _release_ fingers in various orders, 
+        //  so if you would release fingers in various orders, 
         //  the 'pointerId' will have the value of initial 'pointerIndex', which might be useful.
         //  Btw, somehow 'pointerId' does not tell you the last released touch initial index --- 
         //  --- no, 'pointerId' actually tells it, but in AMOTION_EVENT_ACTION_UP|DOWN case)
         std::int32_t pointerId = AMotionEvent_getPointerId(event, pointerIndex);
-        // I almost sure pointerId less or eq to pointerIndex max val
                 
 
         switch(action) {
@@ -291,13 +290,16 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                 }
                 return e.isAccepted() ? 1 : 0;
             }
-
+                
+            // does not depend on 'pointerIndex' (at least on my device its always 0 here)
             case AMOTION_EVENT_ACTION_MOVE: {
-                for(size_t k=0;k<pointerCount;++k){
-                    const std::size_t pointerIndex=k;
+                std::int32_t r = 0;
+
+                for(size_t pointerIndex = 0; pointerIndex < pointerCount; ++pointerIndex){
                     std::int32_t pointerId = AMotionEvent_getPointerId(event, pointerIndex);
 
-                    // position is used twice: inside MouseMoveEvent.position() and here
+                    // position is received twice: inside MouseMoveEvent.position() and here, 
+                    // move 'position' or '_previousMouseMovePosition' to 'MouseMoveEvent' as a data?
                     Vector2i position{Int(AMotionEvent_getX(event, pointerIndex)), 
                                     Int(AMotionEvent_getY(event, pointerIndex))};
                     MouseMoveEvent e{event,
@@ -306,18 +308,20 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                         pointerIndex, pointerId, pointerCount};
                     app._previousMouseMovePosition[pointerId] = position;
                     app.mouseMoveEvent(e);
+
+                    r = r || e.isAccepted();
                 }
-                // return e.isAccepted() ? 1 : 0;
-                return 0;
+
+                return r;
             }
             
             /* Look here: 
                https://android-developers.googleblog.com/2010/06/making-sense-of-multitouch.html
-               for ACTION_POINTER_UP and ACTION_POINTER_DOWN */
+               for ACTION_POINTER_UP|DOWN */
             
             case AMOTION_EVENT_ACTION_POINTER_DOWN:
             case AMOTION_EVENT_ACTION_POINTER_UP: {
-                if(pointerId >= arraySize(app._previousMouseMovePosition))
+                if(pointerIndex >= arraySize(app._previousMouseMovePosition))
                     Containers::arrayAppend(app._previousMouseMovePosition, 
                     {Int(AMotionEvent_getX(event, pointerIndex)),
                     Int(AMotionEvent_getY(event, pointerIndex))});
