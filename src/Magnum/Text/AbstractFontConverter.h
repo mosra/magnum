@@ -119,8 +119,9 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, FontConverterFeatures value);
 @brief Base for font converter plugins
 
 Provides functionality for converting arbitrary font to different format. See
-@ref plugins for more information and `*FontConverter` classes in @ref Text
-namespace for available font converter plugins.
+@ref plugins for more information and the list of
+@m_class{m-doc} [derived classes](#derived-classes) for available font
+converter plugins.
 
 You can use the @ref magnum-fontconverter "magnum-fontconverter" utility to do
 font conversion on command-line.

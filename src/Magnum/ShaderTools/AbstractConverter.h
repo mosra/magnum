@@ -273,21 +273,52 @@ MAGNUM_SHADERTOOLS_EXPORT Debug& operator<<(Debug& debug, Format value);
 @brief Base for shader converter plugins
 @m_since_latest
 
+@m_keywords{AbstractShaderConverter}
+
 Provides functionality for validating and converting shader code between
 different representations or performing optimizations and other operations on
-them. See @ref plugins for more information and `*ShaderConverter` classes in
-the @ref ShaderTools namespace for available scene converter plugins.
+them.
+
+The interface supports three main kinds of operation, with implementations
+advertising support for a subset of them via @ref features():
+
+-   Shader validation using @ref validateFile() / @ref validateData(). Checking
+    for compile errors, against platform limits etc. Advertised with
+    @ref ConverterFeature::ValidateFile / @ref ConverterFeature::ValidateData.
+-   Shader conversion using @ref convertFileToFile() / @ref convertFileToData()
+    / @ref convertDataToData(). Most commonly compilation of source code to an
+    immediate representation but also (dis)assembly, transpiling or
+    optimization. Advertised with @ref ConverterFeature::ConvertFile /
+    @ref ConverterFeature::ConvertData.
+-   Linking shaders together using @ref linkFilesToFile() / @ref linkFilesToData()
+    / @ref linkDataToData(). For example combining code for multiple shader
+    stages into a single binary with deduplicated definitions of common inputs
+    and outputs. Advertised with @ref ConverterFeature::LinkFile /
+    @ref ConverterFeature::LinkData.
+
+@section ShaderTools-AbstractConverter-usage Usage
+
+Shader converters are most commonly implemented as plugins, which means the
+concrete converter implementation is loaded and instantiated through a
+@relativeref{Corrade,PluginManager::Manager}. See @ref plugins for more
+information about general plugin usage, @ref file-formats to compare
+implementations for common file formats and the list of
+@m_class{m-doc} [derived classes](#derived-classes) for all available shader
+converter plugins.
+
+As each converter has different requirements on the source, its format and
+options set, you're expected to perform error handling on the application side
+--- if a conversion or linking fails, you get an empty
+@relativeref{Corrade,Containers::Optional} /
+@relativeref{Corrade,Containers::Array} or @cpp false @ce and a reason printed
+to the error output. Everything else (using a feature not implemented in the
+converter, ...) is treated as a programmer error and will produce the usual
+assertions.
 
 @m_class{m-note m-success}
 
 @par
     There's also a @ref magnum-shaderconverter "magnum-shaderconverter" tool, exposing functionality of all shader converter plugins on a command line.
-
-@section ShaderTools-AbstractConverter-usage Usage
-
-Shader converters are most commonly implemented as plugins. Depending on
-exposed @ref features(), a plugin can support shader validation, conversion or
-linking.
 
 @m_class{m-block m-warning}
 

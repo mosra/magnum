@@ -111,10 +111,10 @@ needed glyphs can be done like this, completely with all error handling:
 
 @snippet MagnumText.cpp AbstractFont-usage
 
-See @ref plugins for more information about general plugin usage and `*Font`
-classes in the @ref Text namespace for available font plugins. See
-@ref GlyphCache for more information about glyph caches and @ref Renderer for
-information about actual text rendering.
+See @ref plugins for more information about general plugin usage and the list
+of @m_class{m-doc} [derived classes](#derived-classes) for available font
+plugins. See @ref GlyphCache for more information about glyph caches and
+@ref Renderer for information about actual text rendering.
 
 @subsection Text-AbstractFont-usage-callbacks Loading data from memory, using file callbacks
 
