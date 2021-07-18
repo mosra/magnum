@@ -59,8 +59,8 @@ Plugin functionality is exposed via an interface that's common for all plugins
 of given type. Magnum provides these plugin interfaces:
 
 -   @ref Trade::AbstractImporter --- importers for general 2D and 3D scene,
-    mesh, material, texture and image data. See `*Importer` classes in the
-    @ref Trade namespace for available importer plugins.
+    mesh, material, texture, image and animation data. See `*Importer` classes
+    in the @ref Trade namespace for available importer plugins.
 -   @ref Trade::AbstractImageConverter --- conversion among various image
     formats. See `*ImageConverter` classes in the @ref Trade namespace for
     available image converter plugins.
@@ -97,13 +97,14 @@ whole lifetime of all plugin instances created using it.
 
 @section plugins-dependencies Plugin dependencies
 
-Some plugins have dependencies, for example the @ref Trade::TinyGltfImporter "TinyGltfImporter"
-plugin uses @ref Trade::AnyImageImporter "AnyImageImporter" to load texture
-data. The dependency loading is done automatically, but in some cases it's
-across plugin types (for example the @ref Text::MagnumFont "MagnumFont" plugin
-depends on the @ref Trade::TgaImporter "TgaImporter" plugin, which is of a
-different type) --- there you need to create manager instances for all required
-plugin interfaces:
+Some plugins have dependencies, for example the @relativeref{Trade,TinyGltfImporter}
+plugin uses @relativeref{Trade,AnyImageImporter} to load texture data. The
+dependency loading is done automatically, but in some cases it's across
+different plugin interfaces (for example the @relativeref{Text,MagnumFont}
+*font* plugin depends on the @relativeref{Trade,TgaImporter} *importer* plugin)
+--- there you need to create manager instances for all required plugin
+interfaces and connect them together using
+@relativeref{Corrade::PluginManager::Manager,registerExternalManager()}:
 
 @snippet plugins.cpp dependencies
 
@@ -134,21 +135,28 @@ target_link_libraries(my-app PRIVATE
 @endcode
 
 The only user-visible behavioral change in the code will be that
-@ref Corrade::PluginManager::AbstractManager::load() "PluginManager::Manager::load()"
-will return @ref Corrade::PluginManager::LoadState::Static "PluginManager::LoadState::Static"
-instead of @ref Corrade::PluginManager::LoadState::Loaded "PluginManager::LoadState::Loaded",
-but there is no need to change the above code, as it will work for both dynamic
-and static case.
+@relativeref{Corrade,PluginManager::AbstractManager::load()} will return
+@relativeref{Corrade,PluginManager::LoadState::Static} instead of
+@relativeref{Corrade::PluginManager,LoadState::Loaded}, but there is no need to
+change anything in the C++ code --- it will work for both dynamic and static
+case.
 
-The static plugin needs to be explicitly registered so the plugin manager is
-aware it's there. If you use CMake, it's done automatically. Otherwise, you can
-achieve the same if you explicitly @cpp #include @ce the static plugin import
-file (named `importStaticPlugin.cpp`, residing in plugin's include directory)
-in a source file that gets compiled into your main application. The static
-import file contains just a simple call to @ref CORRADE_PLUGIN_IMPORT(), see
-its documentation for further information.
+@m_class{m-block m-warning}
 
-@snippet plugins.cpp static-import
+@par Using static plugins with custom buildsystems
+    The static plugin needs to be explicitly registered so the plugin manager
+    is aware it's there. If you use CMake, it's done automatically through the
+    @cmake target_link_libraries() @ce call. Otherwise, besides linking the
+    plugin library itself, you have to explicitly @cpp #include @ce the static
+    plugin import file (named `importStaticPlugin.cpp`, residing in plugin's
+    include directory) in a source file that gets compiled into your main
+    executable:
+@par
+    @snippet plugins.cpp static-import
+@par
+    The static import file contains a call to @ref CORRADE_PLUGIN_IMPORT(),
+    executed in a global constructor, which will do the required registration
+    automatically during application startup.
 
 @section plugins-aliases Plugin aliases and "any" plugins
 
@@ -180,15 +188,14 @@ plugin).
 @snippet plugins.cpp aliases
 
 To make your life even simpler, there are various "any format" plugins ---
-these detect format based on file extension, map it to a plugin alias and then
-proxy the rest of the work to a corresponding plugin:
+these detect format based on file extension or its contents and then proxy the
+rest of the work to a concrete plugin suited for given format:
 
 @snippet plugins.cpp anyimporter
 
-Besides convenience for the end user, this allows for example the scene
-importer plugins to load any image formats without needing to have a knowledge
-about them or having an explicit dependency on multitude of image importer
-plugins.
+Besides convenience for the end user, this allows the scene importer plugins to
+load arbitrary image formats without having to explicitly deal with and depend
+on multitude of image importer plugins.
 
 So far, the following plugins have the "any format" ability:
 
@@ -204,27 +211,46 @@ So far, the following plugins have the "any format" ability:
     any formats
 -   @ref Audio::AnyImporter "AnyImporter" --- imports any audio format
 
-@section plugins-configuration Plugin-specific configuration
+@section plugins-configuration Editing plugin-specific configuration
 
 Because it's not possible for a general statically typed plugin API to expose
 all possible knobs and switches that a file format could support, the plugins
 have a possibility to supply additional configuration via the
 @ref Corrade::PluginManager::AbstractPlugin::configuration() "configuration()"
-function. For example, in the @ref Trade-AssimpImporter-configuration "AssimpImporter"
-plugin you can toggle various postprocessing steps that are applied to loaded
-scene files:
+function. Plugins that offer such possibility then show how the default
+configuration looks like and document the purpose of each option. For example,
+in case of the @relativeref{Trade,AssimpImporter} plugin you can toggle various
+import options and postprocessing steps --- this is how a subset of its
+@ref Trade-AssimpImporter-configuration "default configuration file" looks
+like:
+
+@code{.ini}
+[configuration]
+…
+mergeAnimationClips=false
+
+[configuration/postprocess]
+…
+PreTransformVertices=false
+@endcode
+
+@m_class{m-noindent}
+
+and this is how you can edit it using @relativeref{Corrade,Utility::Configuration}:
 
 @snippet plugins.cpp configuration
 
 Besides affecting a single plugin instance, you can also change the
-configuration globally via @ref Corrade::PluginManager::PluginMetadata::configuration() "PluginManager::PluginMetadata::configuration()".
-That will affect all plugin instances created after. Resetting the global
+configuration globally via @relativeref{Corrade,PluginManager::PluginMetadata::configuration()}.
+That will affect all subsequently created plugin instances. Resetting the global
 configuration back to the initial state can be done by recreating the plugin
 manager.
 
-@section plugins-direct Direct usage of plugins
-
-@todoc and also check that this is not already mentioned above
+A special case is the "Any" plugins @ref plugins-aliases "described above" ---
+these don't contain any implicit configuration on their own, but will propagate
+anything you set to the concrete plugin implementation. So you could do the
+above with @cpp "AnySceneImporter" @ce as well, and if @relativeref{Trade,AssimpImporter} would end up being used, it correctly
+receives the options you have set.
 
 @section plugins-develop Developing your own plugins
 

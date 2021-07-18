@@ -39,6 +39,7 @@ int main() {
 /* [dependencies] */
 PluginManager::Manager<Trade::AbstractImporter> importerManager;
 PluginManager::Manager<Text::AbstractFont> fontManager;
+fontManager.registerExternalManager(importerManager);
 
 // As a side effect TgaImporter is loaded by importerManager
 fontManager.load("MagnumFont");
@@ -57,7 +58,9 @@ PluginManager::Manager<Trade::AbstractImporter> manager;
 /* [anyimporter] */
 Containers::Pointer<Trade::AbstractImporter> importer =
     manager.instantiate("AnyImageImporter");
-importer->openFile("texture.dds"); /* Delegates to the DdsImporter plugin */
+
+/* Delegates to the DdsImporter plugin, if it's available */
+importer->openFile("texture.dds");
 /* [anyimporter] */
 }
 
@@ -66,6 +69,7 @@ PluginManager::Manager<Trade::AbstractImporter> manager;
 /* [configuration] */
 Containers::Pointer<Trade::AbstractImporter> importer =
     manager.instantiate("AssimpImporter");
+importer->configuration().setValue("mergeAnimationClips", true);
 importer->configuration().group("postprocess")->setValue("PreTransformVertices", true);
 /* [configuration] */
 }

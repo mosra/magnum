@@ -33,12 +33,16 @@ namespace Magnum {
 The @ref Audio::AnyImporter "AnyAudioImporter",
 @relativeref{Trade,AnyImageImporter}, @relativeref{Trade,AnySceneImporter},
 @relativeref{Trade,AnyImageConverter}, @relativeref{Trade,AnySceneConverter}
-and @ref ShaderTools::AnyConverter "AnyShaderConverter" plugins can be used for
-generic handling of any of the recognized formats, they'll proxy the operation
-to a concrete plugin implementation. The following tables list the most widely
-used formats with alternative plugin implementations and known caveats for
-each. When one format is supported by more than one plugin, you can use
-@ref Corrade::PluginManager::AbstractManager::setPreferredPlugins() to
+and @ref ShaderTools::AnyConverter "AnyShaderConverter" plugins
+@ref plugins-aliases "described on the previous page" can be used for generic
+handling of any of the formats they recognize and they'll proxy the operation
+to a concrete plugin implementation.
+
+To support diverse use cases, there's commonly more than one alternative
+implementation for given format. The following tables list the most widely used
+formats with corresponding plugin implementations and known caveats for each.
+When one format is supported by more than one plugin, you can use
+@relativeref{Corrade,PluginManager::AbstractManager::setPreferredPlugins()} to
 prioritize a particular plugin implementation.
 
 See the @ref file-formats-legend section at the bottom of the page for a
