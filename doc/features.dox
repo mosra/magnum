@@ -28,6 +28,8 @@ namespace Magnum {
 /** @page features Feature guide
 @brief High-level introduction to design of the Magnum library and basic building blocks.
 
+@m_keywords{Features}
+
 @tableofcontents
 
 @todoc FUCK OFF doxygen, why are you not able to link to Corrade, Corrade::Utility and Magnum/Math/ you dumb shit?!
@@ -115,12 +117,14 @@ are *distinct* use cases with potentially conflicting requirements (should an
 enum value get written as a number? or as a name? a fully qualified name?),
 Magnum *doesn't* provide @cpp operator<< @ce overloads for @ref std::ostream.
 
-Instead, there's @relativeref{Corrade,Utility::Debug}, for your typing
-convenience also aliased to just @ref Debug directly in the @ref Magnum
-namespace. On its own it's able to print builtin types, all usual C++
-containers as well as their Corrade equivalents. Magnum then implements debug
-printers for its own math types, basic structures and most enums, which get
-printed as fully-qualified names. For example:
+Instead, there's @relativeref{Corrade,Utility::Debug} (and its variants,
+@relativeref{Corrade,Utility::Warning}, @relativeref{Corrade,Utility::Error}
+and @relativeref{Corrade,Utility::Fatal}), for your typing convenience also
+aliased to just @ref Debug / @ref Warning / @ref Error directly in the
+@ref Magnum namespace. On its own it's able to print builtin types, all usual
+C++ containers as well as their Corrade equivalents. Magnum then implements
+debug printers for its own math types, basic structures and most enums, which
+get printed as fully-qualified names. For example:
 
 @m_class{m-code-figure}
 
@@ -143,6 +147,31 @@ The main goal of this utility is convenience and readability ---  values are
 implicitly delimited by spaces and ended with a newline, container contents
 written with commas etc. Check out the class documentation for advanced
 features like colors, output redirection or printing file/line info.
+
+@section features-error-handling Error handling in Magnum
+
+Magnum differentiates between two kinds of errors --- a programmer error (for
+example an out-of-bounds access) and a runtime error (for example when a file
+can't be opened). Programmer errors are assertions, directly leading to a
+program abort. Runtime errors expect *you* to do the error handling, and if you
+don't do that, then you're likely to hit an assertion --- a programmer error
+--- shortly after.
+
+The assertions are deliberately not recoverable and are by default
+@ref CORRADE_NO_ASSERT "kept in release builds as well". A lot of effort is put
+into assertion messages, which clearly show you what went wrong. They get
+always printed to the standard output or its equivalent, see
+the @ref troubleshooting-runtime "troubleshooting guide" for ways how to
+retrieve it on various platforms.
+
+To avoid polluting user code with excessive error handling, runtime errors are
+restricted only where strictly necessary, and always documented as such. For
+performance and portability reasons, exceptions aren't used, Instead, the
+errors usually manifest as an invalid return value (for example an empty
+@relativeref{Corrade,Containers::Optional}) and a diagnostic message
+accompanying the error is printed via @relativeref{Corrade,Utility::Error}.
+If needed, you can optionally
+@ref Utility-Debug-scoped-output "redirect the message to a string or a log file".
 
 @section features-examples Learn by example
 
