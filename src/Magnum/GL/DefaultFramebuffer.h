@@ -49,7 +49,7 @@ classes, pass the new size in your
 @ref Platform::Sdl2Application::viewportEvent() "viewportEvent()"
 implementation, for example:
 
-@snippet MagnumGL-framebuffer.cpp DefaultFramebuffer-usage-viewport
+@snippet MagnumGL-application.cpp DefaultFramebuffer-usage-viewport
 
 Next thing you probably want is to clear all used buffers before performing
 any drawing. Again, in case you're using one of the
@@ -57,7 +57,7 @@ any drawing. Again, in case you're using one of the
 @ref Platform::Sdl2Application::drawEvent() "drawEvent()" implementation, for
 example:
 
-@snippet MagnumGL-framebuffer.cpp DefaultFramebuffer-usage-clear
+@snippet MagnumGL-application.cpp DefaultFramebuffer-usage-clear
 
 See documentation of particular functions and @ref Framebuffer documentation
 for more involved usage, usage of non-default or multiple framebuffers.

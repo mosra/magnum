@@ -31,9 +31,9 @@ namespace Magnum {
 @m_footernavigation
 
 The purpose of the @ref GL library is to simplify interaction with the OpenGL
-API using type-safe C++11 features, abstracting away extension and platform
-differences, tracking the state for optimum performance and selecting the best
-available code path for given system.
+API using type-safe C++11 features and RAII, abstracting away extension and
+platform differences, tracking the state for optimum performance and selecting
+the best available code path for given driver.
 
 Magnum provides wrappers for most native OpenGL objects like buffers, textures,
 meshes, queries, transform feedback objects, shaders etc., but makes it
@@ -42,49 +42,65 @@ libraries if the user wants to.
 
 @section opengl-wrapping-instances OpenGL object wrapper instances
 
-By default, all underlying OpenGL objects are created in wrapper class
-constructor and deleted in wrapper class destructor. Constructing an object
-using default constructor requires active @ref GL::Context instance. All OpenGL
-objects are movable (but not copyable), although for performance reasons (and
-contrary to standard C++11 practice), the moved-from instance does *not* have
-any associated OpenGL object and is thus in *invalid state*. Using instance in
-moved-from state may result in OpenGL errors being generated, in some cases
-even application crashes.
-
-Besides the default behavior, it is possible to construct the object without
-creating the underlying OpenGL object using the @ref NoCreate tag.
-Constructing the object this way does not require any active context and its
-state is then equivalent to the moved-from state. It is useful in case you need
-to construct the object before creating context (such as class members) or if
-you know you would overwrite it later with another object:
-
-@snippet MagnumGL.cpp opengl-wrapping-nocreate
-
-<b></b>
-
-@m_class{m-note m-warning}
-
-@par
-    Note that calling anything on objects created this way is not defined (and
-    not checked or guarded in any way) and may result in crashes. If you want delayed object creation with safety checks (however with some extra
-    memory overhead), wrap the objects in an @ref Corrade::Containers::Optional.
+By default, all wrapper classes follow RAII -- underlying OpenGL objects are
+created in the class constructor and deleted in the wrapper class destructor.
+All OpenGL objects are movable (but not copyable) and moves are *destructive*
+--- the moved-from  instance does *not* have any associated OpenGL object and
+is thus in an *invalid state*. Calling anything on instances in a moved-from
+state may thus result in OpenGL errors being generated, in some cases even
+application crashes.
 
 If you need to preserve the underlying OpenGL object after destruction, you can
 call @cpp release() @ce. It returns ID of the underlying object, the instance
-is then equivalent to moved-from state and you are responsible for proper
+is then equivalent to the moved-from state and you are responsible for proper
 deletion of the returned OpenGL object (note that it is possible to just query
-ID of the underlying without releasing it using `id()`). It is also possible to
-do the opposite --- wrapping existing OpenGL object ID into Magnum object
-instance using @cpp wrap() @ce.
+ID of the underlying without releasing it using @cpp id() @ce). It is also
+possible to do the opposite --- wrapping an existing OpenGL object ID into a
+Magnum object instance using @cpp wrap() @ce:
 
 @snippet MagnumGL.cpp opengl-wrapping-transfer
 
-The @cpp NoCreate @ce constructor, @cpp wrap() @ce and @cpp release() @ce
-functions are available for all OpenGL classes except @ref GL::Shader, where
-wrapping external instances makes less sense.
+The @cpp wrap() @ce and @cpp release() @ce functions are available for all
+OpenGL classes except for @ref GL::Shader, instances of which are rather
+short-lived and thus wrapping external instances makes less sense.
 
-Note that interaction with third-party OpenGL code as shown above usually needs
-special attention:
+@attention
+    Note that interaction with third-party OpenGL code as shown above usually
+    needs special attention due to the global nature of the OpenGL state
+    tracker. See @ref opengl-state-tracking below for more information.
+
+@subsection opengl-wrapping-instances-nocreate Delayed context creation and NoCreate constructors
+
+Constructing a Magnum GL object requires an active @ref GL::Context instance.
+By default, this instance is automatically created by
+@ref Platform::Sdl2Application "Platform::*Application" constructors, however
+if you use @ref platform-configuration-delayed "delayed context creation" or
+are directly interfacing with @ref platform-custom "custom platform toolkits",
+this is not the case. If OpenGL functionality gets called before the
+@ref GL::Context instance is created (or after it has been destroyed), you may
+end up with the following assertion:
+
+@code{.shell-session}
+GL::Context::current(): no current context
+@endcode
+
+In the common case of delayed context creation, this problem can be
+circumvented by constructing the OpenGL objects using the @ref NoCreate tag
+first and populating them with live instances once the context is ready. For
+example:
+
+@snippet MagnumGL-application.cpp opengl-wrapping-nocreate
+
+Please note that objects constructed using the @ref NoCreate tag are equivalent
+to the moved-from state, and thus again calling anything on these may result in
+OpenGL errors being generated or even application crashes --- you're
+responsible for correctly initializing the objects before use. If you are fine
+with trading some overhead for extra safety checks, wrap the objects in an
+@relativeref{Corrade,Containers::Optional} instead of using the @ref NoCreate
+constructor.
+
+The @ref NoCreate constructor is available for all OpenGL classes, including
+builtin shaders.
 
 @section opengl-state-tracking State tracking and interaction with third-party code
 

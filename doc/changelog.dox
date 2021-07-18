@@ -51,6 +51,8 @@ See also:
     including mapping to @ref GL::PixelFormat / @ref GL::PixelType,
     @ref GL::TextureFormat and @ref Vk::PixelFormat and (partial) support in
     @ref DebugTools::CompareImage
+-   New @ref Degh, @ref Radh, @ref Range1Dh, @ref Range2Dh and @ref Range3Dh
+    typedefs for half-float angles and ranges
 
 @subsubsection changelog-latest-new-debugtools DebugTools library
 
@@ -734,6 +736,10 @@ See also:
     reflected in the docs and thus hidden from users. Now it's shown in the
     docs as a set of @ref Debug etc typedefs instead, to make them more
     discoverable.
+-   Improved documentation about @ref opengl-wrapping-instances-nocreate "delayed OpenGL context creation"
+    and related pitfalls (see also [mosra/magnum-bootstrap#26](https://github.com/mosra/magnum-bootstrap/issues/26))
+-   Added introductory documentation about @ref features "library layout and essential workflows"
+    (see [mosra/magnum#526](https://github.com/mosra/magnum/issues/526))
 
 @section changelog-2020-06 2020.06
 

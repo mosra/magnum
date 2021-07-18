@@ -31,15 +31,19 @@ namespace Magnum {
 @m_footernavigation
 @m_keyword{Type system,,}
 
-The root @ref Magnum namespace defines a few aliases for essential math types.
-See its documentation for more information about usage.
+Magnum defines a variety of scalar, vector and matrix types. Most of the
+functionality is implemented using template classes in the @ref Math library,
+with the most common variants brought as typedefs into the root @ref Magnum
+namespace.
 
 @section types-builtin Builtin types
 
-Magnum provides typedefs for builtin integral and floating-point arithmetic
-types to ensure portability (e.g. @ref Int is *always* 32bit), maintain
-consistency and reduce confusion (e.g. @ref std::int32_t, @cpp int @ce and
-@cpp GLint @ce all refer to the same type).
+Magnum provides its own typedefs for builtin integral and floating-point
+arithmetic types to ensure portability, maintain consistency and reduce
+confusion. E.g., the @ref Int typedef is guaranteed to *always* be 32-bit and
+Magnum's own code and documentation prefers to use it over a wild mixture of
+@ref std::int32_t, @cpp int @ce, @cpp GLint @ce and @cpp ALint @ce that all
+refer to the same type.
 
 | Magnum type        | Size           | Equivalent GLSL type    |
 | ------------------ | -------------- | ----------------------- |
@@ -56,8 +60,8 @@ consistency and reduce confusion (e.g. @ref std::int32_t, @cpp int @ce and
 | @ref Double        | 64bit          | @glsl double @ce <b></b> |
 
 Types not meant to be used in arithmetic (such as @cpp bool @ce or
-@cpp std::size_t @ce) or types which cannot be directly passed to GLSL shaders
-(such as @cpp long double @ce) have no typedefs.
+@cpp std::size_t @ce) or types which have no use in GPU computations (such as
+@cpp long double @ce) have no typedefs.
 
 Types from the above table are then used to define other types. All following
 types are aliases of corresponding types in @ref Math namespace. No suffix
@@ -121,11 +125,11 @@ about the differences.
 
 @section types-binary Binary representation
 
-Scalar types with GLSL equivalent are verified to be exactly the same as
-corresponding `GL*` types. Matrix and vector classes have the same binary
-representation as corresponding array of numeric values without any additional
-data or padding (e.g. @cpp sizeof(Vector3i) == sizeof(Int[3]) @ce), all
-matrices are stored in column-major order.
+Scalar types with a GLSL equivalent are guaranteed to have exactly the same
+binary representation. Consequently, matrix and vector classes also have the
+same binary representation as corresponding array of numeric values without any
+additional data or padding (e.g. @cpp sizeof(Vector3i) == sizeof(Int[3]) @ce),
+all matrices are stored in column-major order.
 
 This means that all scalar, matrix and vector types can be used directly for
 filling GPU buffers and textures without any need for data extraction or
