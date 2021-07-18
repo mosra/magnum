@@ -280,13 +280,13 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                 MouseEvent e(event, pointerIndex, pointerId, pointerCount);
 
                 if(action == AMOTION_EVENT_ACTION_DOWN){
-                app._previousMouseMovePosition[pointerId] = {Int(AMotionEvent_getX(event, pointerIndex)),
-                                                    Int(AMotionEvent_getY(event, pointerIndex))};
-                app.mousePressEvent(e);
+                    app._previousMouseMovePosition[pointerId] = {Int(AMotionEvent_getX(event, pointerIndex)),
+                                                                Int(AMotionEvent_getY(event, pointerIndex))};
+                    app.mousePressEvent(e);
                 }
                 else{
-                app._previousMouseMovePosition[pointerId] = Vector2i{-1};
-                app.mouseReleaseEvent(e);
+                    app._previousMouseMovePosition[pointerId] = Vector2i{-1};
+                    app.mouseReleaseEvent(e);
                 }
                 return e.isAccepted() ? 1 : 0;
             }
@@ -303,7 +303,7 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                     Vector2i position{Int(AMotionEvent_getX(event, pointerIndex)), 
                                     Int(AMotionEvent_getY(event, pointerIndex))};
                     MouseMoveEvent e{event,
-                        app._previousMouseMovePosition[pointerId].x() == -1? Vector2i{} :
+                        app._previousMouseMovePosition[pointerId].x() == -1 ? Vector2i{} :
                         position - app._previousMouseMovePosition[pointerId],
                         pointerIndex, pointerId, pointerCount};
                     app._previousMouseMovePosition[pointerId] = position;
