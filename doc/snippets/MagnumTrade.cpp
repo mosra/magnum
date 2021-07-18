@@ -29,6 +29,7 @@
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/FileCallback.h"
+#include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/PixelFormat.h"
@@ -37,7 +38,9 @@
 #include "Magnum/Math/Swizzle.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/MeshTools/Transform.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/AbstractSceneConverter.h"
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/LightData.h"
@@ -73,6 +76,33 @@ using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
 int main() {
+
+{
+Vector2i size;
+/* [AbstractImageConverter-usage-file] */
+PluginManager::Manager<Trade::AbstractImageConverter> manager;
+Containers::Pointer<Trade::AbstractImageConverter> converter =
+    manager.loadAndInstantiate("AnyImageConverter");
+
+Image2D image{PixelFormat::RGBA8Unorm, size, DOXYGEN_IGNORE({})};
+if(!converter || !converter->convertToFile(image, "image.png"))
+    Fatal{} << "Can't save image.png with AnyImageConverter";
+/* [AbstractImageConverter-usage-file] */
+}
+
+{
+Image2D image{{}, {}, {}};
+/* [AbstractImageConverter-usage-image] */
+PluginManager::Manager<Trade::AbstractImageConverter> manager;
+Containers::Pointer<Trade::AbstractImageConverter> converter =
+    manager.loadAndInstantiate("StbDxtImageConverter");
+
+Containers::Optional<Trade::ImageData2D> compressed;
+if(!converter || !(compressed = converter->convert(image)))
+    Fatal{} << "Can't convert the image with StbDxtImageConverter";
+CORRADE_INTERNAL_ASSERT(compressed->isCompressed());
+/* [AbstractImageConverter-usage-image] */
+}
 
 {
 /* [AbstractImporter-usage] */
@@ -157,6 +187,40 @@ importer->setFileCallback([](const std::string& filename,
         return Containers::optional(rs.getRaw(filename));
     }, rs);
 /* [AbstractImporter-setFileCallback-template] */
+}
+
+{
+/* [AbstractSceneConverter-usage-file] */
+PluginManager::Manager<Trade::AbstractSceneConverter> manager;
+Containers::Pointer<Trade::AbstractSceneConverter> converter =
+    manager.loadAndInstantiate("AnySceneConverter");
+
+Trade::MeshData mesh = DOXYGEN_IGNORE(Trade::MeshData{{}, {}});
+if(!converter || !converter->convertToFile(mesh, "mesh.ply"))
+    Fatal{} << "Can't save mesh.ply with AnySceneConverter";
+/* [AbstractSceneConverter-usage-file] */
+}
+
+{
+Trade::MeshData mesh{{}, {}};
+/* [AbstractSceneConverter-usage-mesh] */
+PluginManager::Manager<Trade::AbstractSceneConverter> manager;
+Containers::Pointer<Trade::AbstractSceneConverter> converter =
+    manager.loadAndInstantiate("MeshOptimizerSceneConverter");
+
+Containers::Optional<Trade::MeshData> optimized;
+if(!converter || !(optimized = converter->convert(mesh)))
+    Fatal{} << "Can't optimize the mesh with MeshOptimizerSceneConverter";
+/* [AbstractSceneConverter-usage-mesh] */
+}
+
+{
+Trade::MeshData mesh{{}, {}};
+Containers::Pointer<Trade::AbstractSceneConverter> converter;
+/* [AbstractSceneConverter-usage-mesh-in-place] */
+if(!converter || !converter->convertInPlace(mesh))
+    Fatal{} << "Can't optimize the mesh with MeshOptimizerSceneConverter";
+/* [AbstractSceneConverter-usage-mesh-in-place] */
 }
 
 {

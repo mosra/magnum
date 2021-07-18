@@ -294,9 +294,72 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImageConverterFlags value);
 /**
 @brief Base for image converter plugins
 
-Provides functionality for converting images between various internal formats
-or compressing them. See @ref plugins for more information and `*ImageConverter`
-classes in @ref Trade namespace for available image converter plugins.
+Provides functionality for converting images between various formats,
+compressing them or saving to files.
+
+The interface supports two main kinds of operation, with implementations
+commonly advertising support for either one or the other via @ref features():
+
+-   Saving a (compressed) 1D/2D/3D image to a file / data using
+    @ref convertToFile() / @ref convertToData(). This is mostly for exporting
+    the image data to a common format like JPEG or PNG in order to be used with
+    an external tool. Advertised with
+    @ref ImageConverterFeature::Convert1DToFile /
+    @relativeref{ImageConverterFeature,Convert2DToFile} /
+    @relativeref{ImageConverterFeature,Convert3DToFile} or
+    @ref ImageConverterFeature::Convert1DToData /
+    @relativeref{ImageConverterFeature,Convert2DToData} /
+    @relativeref{ImageConverterFeature,Convert3DToData} and
+    @ref ImageConverterFeature::ConvertCompressed1DToFile /
+    @relativeref{ImageConverterFeature,ConvertCompressed2DToFile} /
+    @relativeref{ImageConverterFeature,ConvertCompressed3DToFile} or
+    @ref ImageConverterFeature::ConvertCompressed1DToData
+    @relativeref{ImageConverterFeature,ConvertCompressed2DToData} /
+    @relativeref{ImageConverterFeature,ConvertCompressed3DToData} for
+    compressed input images.
+-   Performing an operation on the image data itself using @ref convert(), from
+    which you get an @ref ImageData back again. This includes operations like
+    pixel format conversion or for example resampling. Advertised with
+    @ref ImageConverterFeature::Convert1D /
+    @relativeref{ImageConverterFeature,Convert2D} /
+    @relativeref{ImageConverterFeature,Convert3D} and
+    @ref ImageConverterFeature::ConvertCompressed1D /
+    @relativeref{ImageConverterFeature,ConvertCompressed2D} /
+    @relativeref{ImageConverterFeature,ConvertCompressed3D} for compressed
+    input images.
+
+@section Trade-AbstractImageConverter-usage Usage
+
+Image converters are commonly implemented as plugins, which means the concrete
+converter implementation is loaded and instantiated through a
+@relativeref{Corrade,PluginManager::Manager}. Then, based on the intent and on
+what the particular converter supports, @ref convertToFile(),
+@ref convertToData() or @ref convert() gets called.
+
+As each converter has different requirements and supports different pixel
+formats, you're expected to perform error handling on the application side ---
+if a conversion fails, you get an empty
+@relativeref{Corrade,Containers::Optional} /
+@relativeref{Corrade,Containers::Array} or @cpp false @ce and a reason printed
+to the error output. Everything else (using a feature not implemented in the
+converter, ...) is treated as a programmer error and will produce the usual
+assertions.
+
+@subsection Trade-AbstractImageConverter-usage-file Saving an image to a file
+
+In the following example an 8-bit RGBA image is saved as a PNG using the
+@ref AnyImageConverter plugin, together with all needed error handling. In this
+case we *know* that @ref AnyImageConverter supports
+@ref ImageConverterFeature::Convert2DToFile, however in a more general case and
+especially when dealing with compressed image formats it might be good to check
+against the reported @ref features() first.
+
+@snippet MagnumTrade.cpp AbstractImageConverter-usage-file
+
+See @ref plugins for more information about general plugin usage,
+@ref file-formats to compare implementations of common file formats and the
+list of @m_class{m-doc} [derived classes](#derived-classes) for all available
+image converter plugins.
 
 @m_class{m-note m-success}
 
@@ -304,6 +367,25 @@ classes in @ref Trade namespace for available image converter plugins.
     There's also a @ref magnum-imageconverter "magnum-imageconverter" tool,
     exposing functionality of all image converter plugins on a command line as
     well as performing introspection of image files.
+
+@subsection Trade-AbstractImageConverter-usage-image Converting image data
+
+In the following snippet we use @ref StbDxtImageConverter to convert the same
+8-bit RGBA image as above to a block-compressed one with
+@ref CompressedPixelFormat::Bc3RGBAUnorm. While @ref AnyImageConverter can
+detect the desired format when writing to a file and act accordingly, here it
+would have no way to know what we want and so we request the concrete plugin
+name directly. Here we again know that @ref StbDxtImageConverter gives us back
+a compressed image and so we can put in just a sanity assert, but in the
+general case it's converter-dependent and may even rely on configuration
+options set for the plugin.
+
+@snippet MagnumTrade.cpp AbstractImageConverter-usage-image
+
+Commonly, when operating directly on the image data, each plugin exposes a set
+of configuration options to specify what actually gets done and how, and the
+default setup may not even do anything. See @ref plugins-configuration for
+details and a usage example.
 
 @section Trade-AbstractImageConverter-data-dependency Data dependency
 
@@ -349,7 +431,7 @@ checked by the implementation:
 
 @par Dangling function pointers on plugin unload
     As @ref Trade-AbstractImageConverter-data-dependency "mentioned above",
-    @ref Corrade::Containers::Array instances returned from plugin
+    @relativeref{Corrade,Containers::Array} instances returned from plugin
     implementations are not allowed to use anything else than the default
     deleter, otherwise this could cause dangling function pointer call on array
     destruction if the plugin gets unloaded before the array is destroyed. This

@@ -134,9 +134,58 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFlags value);
 @m_since{2020,06}
 
 Provides functionality for converting meshes and other scene data between
-various formats or performing optimizations and other operations on them. See
-@ref plugins for more information and `*SceneConverter` classes in the
-@ref Trade namespace for available scene converter plugins.
+various formats or performing optimizations and other operations on them.
+
+The interface supports three main kinds of operation, with implementations
+advertising support for a subset of them via @ref features():
+
+-   Saving a mesh to a file / data using
+    @ref convertToFile(const MeshData&, Containers::StringView) /
+    @ref convertToData(const MeshData&). This is mostly for exporting the mesh
+    data to a common format like OBJ or PLY in order to be used with an
+    external tool. Advertised with @ref SceneConverterFeature::ConvertMeshToFile
+    or @ref SceneConverterFeature::ConvertMeshToData
+-   Performing an operation on the mesh data itself using
+    @ref convert(const MeshData&), from which you get a @ref MeshData again.
+    This includes operations like mesh decimation or topology cleanup.
+    Advertised with @ref SceneConverterFeature::ConvertMesh.
+-   Performing an operation on the mesh data *in place* using
+    @ref convertInPlace(MeshData&). This is for operations like vertex cache
+    optimization that don't need to change the mesh topology, only modify or
+    shuffle the data around. Advertised with
+    @ref SceneConverterFeature::ConvertMeshInPlace.
+
+@section Trade-AbstractSceneConverter-usage Usage
+
+Scene converters are commonly implemented as plugins, which means the concrete
+converter implementation is loaded and instantiated through a
+@relativeref{Corrade,PluginManager::Manager}. Then, based on the intent and on
+what the particular converter supports, @ref convertToFile(),
+@ref convertToData(), @ref convert() or @ref convertInPlace() gets called.
+
+As each converter has different requirements on the input data layout and
+vertex formats, you're expected to perform error handling on the application
+side --- if a conversion fails, you get an empty
+@relativeref{Corrade,Containers::Optional} /
+@relativeref{Corrade,Containers::Array} or @cpp false @ce and a reason printed
+to the error output. Everything else (using a feature not implemented in the
+converter, ...) is treated as a programmer error and will produce the usual
+assertions.
+
+@subsection Trade-AbstractSceneConverter-usage-file Saving a mesh to a file
+
+In the following example a mesh is saved to a PLY file using the
+@ref AnySceneConverter plugin, together with all needed error handling. In this
+case we *know* that @ref AnySceneConverter supports
+@ref SceneConverterFeature::ConvertMeshToFile, however in a more general case
+it might be good to check against the reported @ref features() first.
+
+@snippet MagnumTrade.cpp AbstractSceneConverter-usage-file
+
+See @ref plugins for more information about general plugin usage,
+@ref file-formats to compare implementations of common file formats and the
+list of @m_class{m-doc} [derived classes](#derived-classes) for all available
+scene converter plugins.
 
 @m_class{m-note m-success}
 
@@ -144,6 +193,36 @@ various formats or performing optimizations and other operations on them. See
     There's also a @ref magnum-sceneconverter "magnum-sceneconverter" tool,
     exposing functionality of all scene converter plugins on a command line as
     well as performing introspection of scene files.
+
+@subsection Trade-AbstractSceneConverter-usage-mesh Converting mesh data
+
+In the following snippet we use the @ref MeshOptimizerSceneConverter to perform
+a set of optimizations on the mesh to make it render faster. While
+@ref AnySceneConverter can detect the desired format while writing to a file,
+here it would have no way to know what we want and so we request the concrete
+plugin name directly.
+
+@snippet MagnumTrade.cpp AbstractSceneConverter-usage-mesh
+
+Commonly, when operating directly on the mesh data, each plugin exposes a set
+of configuration options to specify what actually gets done and how, and the
+default setup may not even do anything. See @ref plugins-configuration for
+details and a usage example.
+
+@subsection Trade-AbstractSceneConverter-usage-mesh-in-place Converting mesh data in-place
+
+Certain operations such as buffer reordering can be performed by directly
+modifying the input data instead of having to allocate a copy of the whole
+mesh. For that, there's @ref convertInPlace(), however compared to
+@ref convert() it imposes additional requirements on the input. Depending on
+the converter, it might require that either the index or the vertex data are
+mutable, or that the mesh is interleaved and so on, so be sure to check the
+plugin docs before use.
+
+An equivalent to the above operation, but performed in-place, would be the
+following:
+
+@snippet MagnumTrade.cpp AbstractSceneConverter-usage-mesh-in-place
 
 @section Trade-AbstractSceneConverter-data-dependency Data dependency
 

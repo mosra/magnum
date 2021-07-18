@@ -149,19 +149,82 @@ template<class T> struct OptionalButAlsoPointer: Containers::Optional<T> {
 /**
 @brief Base for importer plugins
 
-Provides interface for importing 2D/3D scene, camera, light, animation, mesh,
-material, texture and image data.
+Provides interface for importing generic scene data such as images, meshes or
+animations.
+
+A scene file can generally have an arbitrary amount of data of particular kind
+and so the importer provides a set of @cpp thing(id) @ce accessors, where the
+ID is from @cpp 0 @ce to @cpp thingCount() - 1 @ce. Certain kinds of data
+can also reference each other via the ID (for example a material specifies the
+ID of a texture it uses). The following kinds of data can be imported:
+
+-   @ref AnimationData using @ref animation(UnsignedInt) up to
+    @ref animationCount(). Each animation then references the 2D/3D object
+    transformation it affects via its ID.
+-   @ref CameraData using @ref camera(UnsignedInt) up to @ref cameraCount()
+-   @ref ImageData1D / @ref ImageData2D / @ref ImageData3D using
+    @ref image1D(UnsignedInt, UnsignedInt) /
+    @ref image2D(UnsignedInt, UnsignedInt) /
+    @ref image3D(UnsignedInt, UnsignedInt) up to @ref image1DCount() /
+    @ref image2DCount() / @ref image3DCount(). Each image can also have
+    multiple (mip) levels which are requested through the second parameter up
+    to @ref image1DLevelCount() / @ref image2DLevelCount() /
+    @ref image3DLevelCount().
+-   @ref LightData using @ref light(UnsignedInt) up to @ref lightCount()
+-   @ref MaterialData using @ref material(UnsignedInt) up to
+    @ref materialCount(). A material can then reference textures via their IDs.
+-   @ref MeshData using @ref mesh(UnsignedInt, UnsignedInt) up to
+    @ref meshCount(). Similarly as with images, each mesh can also have
+    multiple levels (LODs or for example separate edge/face data), which are
+    requested through the second parameter up to @ref meshLevelCount().
+-   @ref ObjectData2D / @ref ObjectData3D using
+    @ref object2D(UnsignedInt) / @ref object3D(UnsignedInt) up to
+    @ref object2DCount() / @ref object3DCount(). An object can then reference
+    its child objects, mesh and a material, camera, light or a skin associated
+    with it via their IDs.
+-   @ref SceneData using @ref scene(UnsignedInt) up to @ref sceneCount(), with
+    the default scene index exposed through @ref defaultScene(). A scene then
+    references its child 2D/3D objects via their IDs.
+-   @ref SkinData2D / @ref SkinData3D using @ref skin2D(UnsignedInt) /
+    @ref skin3D(UnsignedInt) up to @ref skin2DCount() / @ref skin3DCount()
+-   @ref TextureData using @ref texture(UnsignedInt) up to @ref textureCount().
+    Each texture then references the 1D/2D/3D image it uses via its ID.
+
+Except for pure image formats that always have at least one image, in general
+there's no guarantee that an imported file has always a mesh, a scene or a
+camera. So unless the particular importer documentation says otherwise, you're
+expected to always check the count before attempting an import.
 
 @section Trade-AbstractImporter-usage Usage
 
-Importers are most commonly implemented as plugins. For example, loading an
-image from the filesystem using the @ref AnyImageImporter plugin can be done
-like this, completely with all error handling:
+Importers are commonly implemented as plugins, which means the concrete
+importer implementation is loaded and instantiated through a @relativeref{Corrade,PluginManager::Manager}. A file is opened using either
+@ref openFile(), @ref openData() or, in rare cases, @ref openState() amd it
+stays open until the importer is destroyed, @ref close() is called or another
+file is opened.
+
+With a file open you can then query the importer for particular data. Where
+possible, the import is performed lazily only when you actually request that
+particular data, and thus it can be assumed that opening a file is relatively
+cheap.
+
+Since the importers deal with untrusted external data, it's needed to perform
+explicit error handling on the application side. There are two cases where it
+can fail --- during opening, in which case the function returns @cpp false @ce,
+and during the actual data import, in which case you get an empty @relativeref{Corrade,Containers::Optional}. In both cases the actual failure
+reason is printed to the error output. Everything else (IDs out of bounds,
+calling functions without a file open, accessing an empty optional, ...) is
+treated as a programmer error and will produce the usual assertions.
+
+In the following example an image is loaded from the filesystem using the
+@ref AnyImageImporter plugin, completely with all needed error handling:
 
 @snippet MagnumTrade.cpp AbstractImporter-usage
 
-See @ref plugins for more information about general plugin usage and
-`*Importer` classes in the @ref Trade namespace for available importer plugins.
+See @ref plugins for more information about general plugin usage,
+@ref file-formats to compare implementations of common file formats and the
+list of @m_class{m-doc} [derived classes](#derived-classes) for all available
+importer plugins.
 
 @m_class{m-note m-success}
 
@@ -169,6 +232,46 @@ See @ref plugins for more information about general plugin usage and
     There are also @ref magnum-imageconverter "magnum-imageconverter" and
     @ref magnum-sceneconverter "magnum-sceneconverter" tools which you can use
     to perform introspection of image and scene files.
+
+@subsection Trade-AbstractImporter-usage-name-mapping Mapping between IDs and string names
+
+Certain file formats have the ability to assign string names to objects,
+materials and other parts of the scene. These are not imported as part of the
+various @ref Trade::MeshData etc. structures, instead the importer itself
+allows you to map IDs to names and vice versa. As a convenience feature, it's
+also possible to import data directly using their name instead of having to map
+the name to an IDs first. In that case the function will return an empty
+@relativeref{Corrade,Containers::Optional} both if the import failed or if the
+name doesn't exist.
+
+-   Animation names can be retrieved using @ref animationName() and mapped to
+    an ID using @ref animationForName(), imported with @ref animation(const std::string&)
+-   Camera names using @ref cameraName() & @ref cameraForName(), imported with
+    @ref camera(const std::string&)
+-   Image names using @ref image1DName() / @ref image2DName() /
+    @ref image3DName() & @ref image1DForName() / @ref image2DForName() /
+    @ref image3DForName(), imported with
+    @ref image1D(const std::string&, UnsignedInt) /
+    @ref image2D(const std::string&, UnsignedInt) /
+    @ref image3D(const std::string&, UnsignedInt)
+-   Light names using @ref lightName() & @ref lightForName(), imported with
+    @ref light(const std::string&)
+-   Material names using @ref materialName() & @ref materialForName(), imported
+    with @ref material(const std::string&)
+-   Mesh names using @ref meshName() & @ref meshForName(), imported with
+    @ref mesh(const std::string&, UnsignedInt). Meshes themselves can have
+    custom attributes, for which the name mapping can be retrieved using
+    @ref meshAttributeName() and @ref meshAttributeForName().
+-   Objects names using @ref object2DName() / @ref object3DName() &
+    @ref object2DForName() / @ref object3DForName(), imported with
+    @ref object2D(const std::string&) / @ref object3D(const std::string&)
+-   Scene names using @ref sceneName() & @ref sceneForName(), imported with
+    @ref scene(const std::string&)
+-   Skin names using @ref skin2DName() / @ref skin3DName() &
+    @ref skin2DForName() / @ref skin3DForName(), imported with
+    @ref skin2D(const std::string&) / @ref skin3D(const std::string&)
+-   Texture names using @ref textureName() & @ref textureForName(), imported
+    with @ref texture(const std::string&)
 
 @subsection Trade-AbstractImporter-usage-callbacks Loading data from memory, using file callbacks
 
@@ -239,17 +342,17 @@ details about concrete types returned and accepted by these functions.
 
 @subsection Trade-AbstractImporter-usage-casting Polymorphic imported data types
 
-Some data access functions return @ref Corrade::Containers::Pointer instead of
-@ref Corrade::Containers::Optional because the result might be a particular
-subclass of given type. Those functions are @ref material(), @ref object2D()
+Some data access functions return @relativeref{Corrade,Containers::Pointer}
+instead of @relativeref{Corrade,Containers::Optional} because the result might
+be a particular subclass of given type. Those functions are @ref object2D()
 and @ref object3D(). You can cast the abstract base to a concrete type
 depending on its reported type, for example:
 
 @snippet MagnumTrade.cpp AbstractImporter-usage-cast
 
 Another option is making use of the @ref Containers::pointerCast() utility, but
-note that in that case the original @ref Corrade::Containers::Pointer will be
-* *moved into* a new instance and that might not be desirable.
+note that in that case the original @relativeref{Corrade,Containers::Pointer}
+will have to be *moved into* a new instance, which might not be desirable.
 
 @section Trade-AbstractImporter-data-dependency Data dependency
 
@@ -257,12 +360,12 @@ The `*Data` instances returned from various functions *by design* have no
 dependency on the importer instance and neither on the dynamic plugin module.
 In other words, you don't need to keep the importer instance (or the plugin
 manager instance) around in order to have the `*Data` instances valid.
-Moreover, all @ref Corrade::Containers::Array instances returned through
-@ref ImageData, @ref AnimationData, @ref MaterialData, @ref MeshData and
-@ref SkinData are only allowed to have default deleters (or be non-owning
-instances created from @ref Corrade::Containers::ArrayView) --- this is to
-avoid potential dangling function pointer calls when destructing such instances
-after the plugin module has been unloaded.
+Moreover, all @relativeref{Corrade,Containers::Array} instances returned
+through @ref ImageData, @ref AnimationData, @ref MaterialData, @ref MeshData
+and @ref SkinData are only allowed to have default deleters (or be non-owning
+instances created from @relativeref{Corrade,Containers::ArrayView}) --- this is
+to avoid potential dangling function pointer calls when destructing such
+instances after the plugin module has been unloaded.
 
 The only exception are various `importerState()` functions
 @ref Trade-AbstractImporter-usage-state "described above", but in that case the
@@ -317,7 +420,7 @@ checked by the implementation:
 
 @par Dangling function pointers on plugin unload
     As @ref Trade-AbstractImporter-data-dependency "mentioned above",
-    @ref Corrade::Containers::Array instances returned from plugin
+    @relativeref{Corrade,Containers::Array} instances returned from plugin
     implementations are not allowed to use anything else than the default
     deleter or the deleter used by @ref Trade::ArrayAllocator, otherwise this
     could cause dangling function pointer call on array destruction if the
@@ -602,7 +705,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Scene name
          * @param id        Scene ID, from range [0, @ref sceneCount()).
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the scene has no name or the
+         * importer doesn't support scene names, returns an empty string.
          * @see @ref sceneForName()
          */
         std::string sceneName(UnsignedInt id);
@@ -649,7 +753,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Animation name
          * @param id    Animation ID, from range [0, @ref animationCount()).
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the animation has no name or the
+         * importer doesn't support animation names, returns an empty string.
          * @see @ref animationForName()
          */
         std::string animationName(UnsignedInt id);
@@ -696,7 +801,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Light name
          * @param id        Light ID, from range [0, @ref lightCount()).
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the light has no name or the
+         * importer doesn't support light names, returns an empty string.
          * @see @ref lightForName()
          */
         std::string lightName(UnsignedInt id);
@@ -743,7 +849,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Camera name
          * @param id        Camera ID, from range [0, @ref cameraCount()).
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the camera has no name or the
+         * importer doesn't support camera names, returns an empty string.
          * @see @ref cameraForName()
          */
         std::string cameraName(UnsignedInt id);
@@ -790,7 +897,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Two-dimensional object name
          * @param id        Object ID, from range [0, @ref object2DCount()).
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the object has no name or the
+         * importer doesn't support object names, returns an empty string.
          * @see @ref object2DForName()
          */
         std::string object2DName(UnsignedInt id);
@@ -837,7 +945,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Three-dimensional object name
          * @param id        Object ID, from range [0, @ref object3DCount()).
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the object has no name or the
+         * importer doesn't support object names, returns an empty string.
          * @see @ref object3DForName()
          */
         std::string object3DName(UnsignedInt id);
@@ -887,7 +996,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Skin ID, from range [0, @ref skin2DCount()).
          * @m_since_latest
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the skin has no name or the
+         * importer doesn't support skin names, returns an empty string.
          * @see @ref skin2DForName()
          */
         std::string skin2DName(UnsignedInt id);
@@ -938,7 +1048,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Skin ID, from range [0, @ref skin3DCount()).
          * @m_since_latest
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the skin has no name or the
+         * importer doesn't support skin names, returns an empty string.
          * @see @ref skin3DForName()
          */
         std::string skin3DName(UnsignedInt id);
@@ -1000,7 +1111,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Mesh ID, from range [0, @ref meshCount()).
          * @m_since{2020,06}
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the mesh has no name or the
+         * importer doesn't support mesh names, returns an empty string.
          * @see @ref meshForName()
          */
         std::string meshName(UnsignedInt id);
@@ -1164,7 +1276,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Material name
          * @param id        Material ID, from range [0, @ref materialCount()).
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the material has no name or the
+         * importer doesn't support material names, returns an empty string.
          * @see @ref materialForName(), @ref material(const std::string&)
          */
         std::string materialName(UnsignedInt id);
@@ -1221,7 +1334,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Texture name
          * @param id        Texture ID, from range [0, @ref textureCount()).
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the texture has no name or the
+         * importer doesn't support texture names, returns an empty string.
          * @see @ref textureForName()
          */
         std::string textureName(UnsignedInt id);
@@ -1279,7 +1393,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief One-dimensional image name
          * @param id        Image ID, from range [0, @ref image1DCount()).
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the image has no name or the
+         * importer doesn't support image names, returns an empty string.
          * @see @ref image1DForName()
          */
         std::string image1DName(UnsignedInt id);
@@ -1339,7 +1454,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Two-dimensional image name
          * @param id        Image ID, from range [0, @ref image2DCount()).
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the image has no name or the
+         * importer doesn't support image names, returns an empty string.
          * @see @ref image2DForName()
          */
         std::string image2DName(UnsignedInt id);
@@ -1399,7 +1515,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Three-dimensional image name
          * @param id        Image ID, from range [0, @ref image3DCount()).
          *
-         * Expects that a file is opened.
+         * Expects that a file is opened. If the image has no name or the
+         * importer doesn't support image names, returns an empty string.
          * @see @ref image3DForName()
          */
         std::string image3DName(UnsignedInt id);
