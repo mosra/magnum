@@ -309,6 +309,7 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                     app._previousMouseMovePosition[pointerId] = position;
                     app.mouseMoveEvent(e);
 
+                    // is it ok?
                     r = r || e.isAccepted();
                 }
 

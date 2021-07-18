@@ -828,7 +828,6 @@ class AndroidApplication::MouseEvent: public InputEvent {
         std::size_t pointerCount() const { return _pointerCount; }
 
     private:
-        // Did it almost like MouseMoveEvent with _relativePosition
         explicit MouseEvent(AInputEvent* event, 
         std::size_t pointerIndex = 0, std::int32_t pointerId = 0, std::size_t pointerCount = 1):
         InputEvent(event),
@@ -837,7 +836,6 @@ class AndroidApplication::MouseEvent: public InputEvent {
         const std::size_t _pointerIndex;
         const std::int32_t _pointerId;
         const std::size_t _pointerCount;
-
 };
 
 /**
@@ -899,10 +897,6 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
 
         /** @brief Position */
         Vector2i position() const {
-            // aw, that was painful
-            // return {Int(AMotionEvent_getX(_event, 0)),
-                    // Int(AMotionEvent_getY(_event, 0))};
-
             return {Int(AMotionEvent_getX(_event, _pointerIndex)),
                 Int(AMotionEvent_getY(_event, _pointerIndex))};
         }
