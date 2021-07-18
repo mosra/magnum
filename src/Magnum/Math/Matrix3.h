@@ -38,10 +38,54 @@ namespace Magnum { namespace Math {
 @brief 2D transformation matrix
 @tparam T   Underlying data type
 
-See @ref matrix-vector and @ref transformations for brief introduction.
+Expands upon a generic @ref Matrix3x3 with functionality for 2D
+transformations. A 2D transformation matrix consists of a upper-left 2x2 part
+describing a combined scaling, rotation and shear, and the two top-right
+components specifying a translation: @f[
+    \boldsymbol{T} = \begin{pmatrix}
+        \color{m-danger} a_x & \color{m-success} b_x & \color{m-warning} t_x \\
+        \color{m-danger} a_y & \color{m-success} b_y & \color{m-warning} t_y \\
+        \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+    \end{pmatrix}
+@f]
+
+The @f$ \color{m-danger} \boldsymbol{a} @f$ and
+@f$ \color{m-success} \boldsymbol{b} @f$ vectors can be also thought of as the
+two basis vectors describing the coordinate system the matrix converts to. The
+bottom row is always
+@f$ \begin{pmatrix} \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1 \end{pmatrix} @f$
+as, unlike with @ref Matrix4 in 3D, perspective shortening happening along the
+X or Y axis isn't really a thing.
+
+@section Math-Matrix3-usage Usage
+
+See @ref types, @ref matrix-vector and @ref transformations first for an
+introduction into using transformation matrices.
+
+While it's possible to create the matrix directly from the components, the
+recommended usage is by creating elementary transformation matrices with
+@ref translation(const Vector2<T>&) "translation()",
+@ref rotation(Rad<T>) "rotation()", @ref scaling(const Vector2<T>&) "scaling()",
+@ref reflection(), @ref shearingX(), @ref shearingY(), and @ref projection()
+and multiplying them together to form the final transformation --- the
+rightmost transformation is applied first, leftmost last:
+
+@snippet MagnumMath.cpp Matrix3-usage
+
+Conversely, the transformation parts can be extracted back using the member
+@ref rotation() const "rotation()", @ref scaling() const "scaling()" and their
+variants, and @ref translation(). The basis vectors can be accessed using
+@ref right() and @ref up(). Matrices that combine non-uniform scaling and/or
+shear with rotation can't be trivially decomposed back, for these you might
+want to consider using @ref Algorithms::qr() or @ref Algorithms::svd().
+
+When a lot of transformations gets composed together over time (for example
+with a camera movement), a floating-point drift accumulates, causing the
+rotation part to no longer be orthogonal. This can be accounted for using
+@ref Algorithms::gramSchmidtOrthonormalizeInPlace() and variants.
+
 @see @ref Magnum::Matrix3, @ref Magnum::Matrix3d, @ref Matrix3x3,
     @ref DualComplex, @ref SceneGraph::MatrixTransformation2D
-@configurationvalueref{Magnum::Math::Matrix3}
 */
 template<class T> class Matrix3: public Matrix3x3<T> {
     public:

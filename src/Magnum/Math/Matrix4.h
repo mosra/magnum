@@ -43,10 +43,71 @@ namespace Magnum { namespace Math {
 @brief 3D transformation matrix
 @tparam T   Underlying data type
 
-See @ref matrix-vector and @ref transformations for brief introduction.
+Expands upon a generic @ref Matrix4x4 with functionality for 3D
+transformations. A 3D transformation matrix consists of a upper-left 3x3 part
+describing a combined scaling, rotation and shear, and the three top-right
+components specifying a translation: @f[
+    \boldsymbol{T} = \begin{pmatrix}
+        \color{m-danger} a_x & \color{m-success} b_x & \color{m-info} c_x & \color{m-warning} t_x \\
+        \color{m-danger} a_y & \color{m-success} b_y & \color{m-info} c_y & \color{m-warning} t_y \\
+        \color{m-danger} a_z & \color{m-success} b_z & \color{m-info} c_z &  \color{m-warning} t_z \\
+        \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+    \end{pmatrix}
+@f]
+
+The @f$ \color{m-danger} \boldsymbol{a} @f$,
+@f$ \color{m-success} \boldsymbol{b} @f$ and @f$ \color{m-info} \boldsymbol{c} @f$
+vectors can be also thought of as the three basis vectors describing the
+coordinate system the matrix converts to. In case of an affine transformation,
+the bottom row is always
+@f$ \begin{pmatrix} \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1 \end{pmatrix} @f$. A (pure) 3D perspective projection matrix, however,
+can look for example like this: @f[
+    \boldsymbol{P} = \begin{pmatrix}
+        \color{m-danger} s_x & \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 0 \\
+        \color{m-dim} 0 & \color{m-success} s_y & \color{m-dim} 0 & \color{m-dim} 0 \\
+        \color{m-dim} 0 & \color{m-dim} 0 & \color{m-info} s_z & \color{m-warning} t_z \\
+        \color{m-primary} 0 & \color{m-primary} 0 & \color{m-primary} -1 & \color{m-primary} 0
+    \end{pmatrix}
+@f]
+
+The bottom row having the non-zero value in the third column instead of the
+fourth is, simply put, what makes perspective shortening happening along the
+Z axis. While perspective shortening along X or Y is *technically* also
+possible, it doesn't really have a common use, neither it is a thing in case of
+a 2D transformation with @ref Matrix3.
+
+@section Math-Matrix4-usage Usage
+
+See @ref types, @ref matrix-vector and @ref transformations first for an
+introduction into using transformation matrices.
+
+While it's possible to create the matrix directly from the components, the
+recommended usage is by creating elementary transformation matrices with
+@ref translation(const Vector3<T>&) "translation()",
+@ref rotation(Rad<T>, const Vector3<T>&) "rotation()" and variants,
+@ref scaling(const Vector3<T>&) "scaling()", @ref reflection(),
+@ref shearingXY() and variants, @ref lookAt() and @ref orthographicProjection()
+/ @ref perspectiveProjection() and multiplying them together to form the final
+transformation --- the rightmost transformation is applied first, leftmost
+last:
+
+@snippet MagnumMath.cpp Matrix4-usage
+
+Conversely, the transformation parts can be extracted back using the member
+@ref rotation() const "rotation()", @ref scaling() const "scaling()" and their
+variants, and @ref translation(). The basis vectors can be accessed using
+@ref right(), @ref up() and @ref backward(). Matrices that combine non-uniform
+scaling and/or shear with rotation can't be trivially decomposed back, for
+these you might want to consider using @ref Algorithms::qr() or
+@ref Algorithms::svd().
+
+When a lot of transformations gets composed together over time (for example
+with a camera movement), a floating-point drift accumulates, causing the
+rotation part to no longer be orthogonal. This can be accounted for using
+@ref Algorithms::gramSchmidtOrthonormalizeInPlace() and variants.
+
 @see @ref Magnum::Matrix4, @ref Magnum::Matrix4d, @ref Matrix4x4,
     @ref DualQuaternion, @ref SceneGraph::MatrixTransformation3D
-@configurationvalueref{Magnum::Math::Matrix4}
  */
 template<class T> class Matrix4: public Matrix4x4<T> {
     public:

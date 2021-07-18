@@ -1022,6 +1022,30 @@ Math::Matrix2x2<Byte> integral{floatingPoint}; // {{1, 2}, {-15, 7}}
 }
 
 {
+/* [Matrix3-usage] */
+using namespace Math::Literals;
+
+Matrix3 transformation =
+    Matrix3::rotation(15.0_degf)*
+    Matrix3::translation({100.0f, -30.0f})*
+    Matrix3::scaling(Vector2::yScale(2.0f));
+/* [Matrix3-usage] */
+static_cast<void>(transformation);
+}
+
+{
+/* [Matrix4-usage] */
+using namespace Math::Literals;
+
+Matrix4 transformation =
+    Matrix4::rotationZ(15.0_degf)*
+    Matrix4::translation({10.0f, 3.0f, -1.5f})*
+    Matrix4::scaling(Vector3::yScale(2.0f));
+/* [Matrix4-usage] */
+static_cast<void>(transformation);
+}
+
+{
 /* [Quaternion-fromEuler] */
 Rad x, y, z;
 Quaternion a =
