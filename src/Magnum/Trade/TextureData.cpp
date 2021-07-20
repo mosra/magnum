@@ -35,9 +35,12 @@ Debug& operator<<(Debug& debug, const TextureType value) {
         /* LCOV_EXCL_START */
         #define _c(value) case TextureType::value: return debug << "::" #value;
         _c(Texture1D)
+        _c(Texture1DArray)
         _c(Texture2D)
+        _c(Texture2DArray)
         _c(Texture3D)
         _c(CubeMap)
+        _c(CubeMapArray)
         #undef _c
         /* LCOV_EXCL_STOP */
     }

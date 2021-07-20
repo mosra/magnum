@@ -54,10 +54,24 @@ enum class TextureType: UnsignedByte {
     Texture1D,
 
     /**
+     * One-dimensional texture array. The @ref TextureData::image() ID
+     * corresponds to an image from @ref AbstractImporter::image2D().
+     * @m_since_latest
+     */
+    Texture1DArray,
+
+    /**
      * Two-dimensional texture. The @ref TextureData::image() ID corresponds to
      * an image from @ref AbstractImporter::image2D().
      */
     Texture2D,
+
+    /**
+     * Two-dimensional texture array. The @ref TextureData::image() ID
+     * corresponds to an image from @ref AbstractImporter::image3D().
+     * @m_since_latest
+     */
+    Texture2DArray,
 
     /**
      * Three-dimensional texture. The @ref TextureData::image() ID corresponds
@@ -72,6 +86,15 @@ enum class TextureType: UnsignedByte {
      * @m_since_latest
      */
     CubeMap,
+
+    /**
+     * Cube map texture array. The @ref TextureData::image() ID
+     * corresponds to an image from @ref AbstractImporter::image3D(), which is
+     * assumed to have the layer count divisible by 6, each set in order +X,
+     * -X, +Y, -Y, +Z, -Z.
+     * @m_since_latest
+     */
+    CubeMapArray,
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /**
