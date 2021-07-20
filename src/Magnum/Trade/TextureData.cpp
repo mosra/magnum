@@ -28,16 +28,16 @@
 namespace Magnum { namespace Trade {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug& operator<<(Debug& debug, const TextureData::Type value) {
-    debug << "Trade::TextureData::Type" << Debug::nospace;
+Debug& operator<<(Debug& debug, const TextureType value) {
+    debug << "Trade::TextureType" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case TextureData::Type::value: return debug << "::" #value;
+        #define _c(value) case TextureType::value: return debug << "::" #value;
         _c(Texture1D)
         _c(Texture2D)
         _c(Texture3D)
-        _c(Cube)
+        _c(CubeMap)
         #undef _c
         /* LCOV_EXCL_STOP */
     }

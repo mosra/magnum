@@ -591,6 +591,10 @@ See also:
     changed to have input first and output second, for consistency with other
     interfaces, together with a switch to @ref Containers::StringView. The
     original signature is marked as deprecated.
+-   @cpp Trade::TextureData::Type @ce was deprecated in favor of
+    @ref Trade::TextureType that is much less annoying to type, in addition
+    @cpp Trade::TextureData::Type::Cube @ce was deprecated in favor of
+    @ref Trade::TextureType::CubeMap for consistency.
 -   @cpp Vk::hasVkFormat(Magnum::VertexFormat) @ce,
     @cpp Vk::hasVkFormat(Magnum::PixelFormat) @ce,
     @cpp Vk::hasVkFormat(Magnum::CompressedPixelFormat) @ce,
@@ -723,6 +727,11 @@ See also:
     error handling.
 -   @ref Trade::TextureData constructor was not @cpp explicit @ce by mistake,
     now it is
+-   @ref Trade::TextureData::image() used to document that cube map images are
+    six consecutive 2D images with the ID being the index of the first one.
+    That's no longer the case and cube map images are 3D. Because no importer
+    implemented support for cube map images, this shouldn't cause a problem in
+    practice.
 
 @subsection changelog-latest-documentation Documentation
 

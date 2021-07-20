@@ -52,7 +52,7 @@ TextureDataTest::TextureDataTest() {
 
 void TextureDataTest::construct() {
     const int a{};
-    const TextureData data{TextureData::Type::Cube,
+    const TextureData data{TextureType::CubeMap,
         SamplerFilter::Linear,
         SamplerFilter::Nearest,
         SamplerMipmap::Nearest,
@@ -60,7 +60,7 @@ void TextureDataTest::construct() {
         42,
         &a};
 
-    CORRADE_COMPARE(data.type(), TextureData::Type::Cube);
+    CORRADE_COMPARE(data.type(), TextureType::CubeMap);
     CORRADE_COMPARE(data.minificationFilter(), SamplerFilter::Linear);
     CORRADE_COMPARE(data.magnificationFilter(), SamplerFilter::Nearest);
     CORRADE_COMPARE(data.mipmapFilter(), SamplerMipmap::Nearest);
@@ -76,7 +76,7 @@ void TextureDataTest::constructCopy() {
 
 void TextureDataTest::constructMove() {
     const int a{};
-    TextureData data{TextureData::Type::Cube,
+    TextureData data{TextureType::CubeMap,
         SamplerFilter::Linear,
         SamplerFilter::Nearest,
         SamplerMipmap::Nearest,
@@ -86,7 +86,7 @@ void TextureDataTest::constructMove() {
 
     TextureData b{std::move(data)};
 
-    CORRADE_COMPARE(b.type(), TextureData::Type::Cube);
+    CORRADE_COMPARE(b.type(), TextureType::CubeMap);
     CORRADE_COMPARE(b.minificationFilter(), SamplerFilter::Linear);
     CORRADE_COMPARE(b.magnificationFilter(), SamplerFilter::Nearest);
     CORRADE_COMPARE(b.mipmapFilter(), SamplerMipmap::Nearest);
@@ -95,7 +95,7 @@ void TextureDataTest::constructMove() {
     CORRADE_COMPARE(b.importerState(), &a);
 
     const int c{};
-    TextureData d{TextureData::Type::Texture2D,
+    TextureData d{TextureType::Texture2D,
         SamplerFilter::Nearest,
         SamplerFilter::Linear,
         SamplerMipmap::Base,
@@ -104,7 +104,7 @@ void TextureDataTest::constructMove() {
         &c};
     d = std::move(b);
 
-    CORRADE_COMPARE(d.type(), TextureData::Type::Cube);
+    CORRADE_COMPARE(d.type(), TextureType::CubeMap);
     CORRADE_COMPARE(d.minificationFilter(), SamplerFilter::Linear);
     CORRADE_COMPARE(d.magnificationFilter(), SamplerFilter::Nearest);
     CORRADE_COMPARE(d.mipmapFilter(), SamplerMipmap::Nearest);
@@ -119,8 +119,8 @@ void TextureDataTest::constructMove() {
 void TextureDataTest::debugType() {
     std::ostringstream out;
 
-    Debug(&out) << TextureData::Type::Texture3D << TextureData::Type(0xbe);
-    CORRADE_COMPARE(out.str(), "Trade::TextureData::Type::Texture3D Trade::TextureData::Type(0xbe)\n");
+    Debug(&out) << TextureType::Texture3D << TextureType(0xbe);
+    CORRADE_COMPARE(out.str(), "Trade::TextureType::Texture3D Trade::TextureType(0xbe)\n");
 }
 
 }}}}

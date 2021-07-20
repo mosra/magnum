@@ -41,23 +41,60 @@
 namespace Magnum { namespace Trade {
 
 /**
+@brief Texture type
+@m_since_latest
+
+@see @ref TextureData::type()
+*/
+enum class TextureType: UnsignedByte {
+    /**
+     * One-dimensional texture. The @ref TextureData::image() ID corresponds to
+     * an image from @ref AbstractImporter::image1D().
+     */
+    Texture1D,
+
+    /**
+     * Two-dimensional texture. The @ref TextureData::image() ID corresponds to
+     * an image from @ref AbstractImporter::image2D().
+     */
+    Texture2D,
+
+    /**
+     * Three-dimensional texture. The @ref TextureData::image() ID corresponds
+     * to an image from @ref AbstractImporter::image3D().
+     */
+    Texture3D,
+
+    /**
+     * Cube map texture. The @ref TextureData::image() ID corresponds to an
+     * image from @ref AbstractImporter::image3D(), which is assumed to have
+     * exactly 6 layers in order +X, -X, +Y, -Y, +Z, -Z.
+     * @m_since_latest
+     */
+    CubeMap,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * Cube map texture.
+     * @m_deprecated_since_latest Use @ref TextureType::CubeMap instead.
+     */
+    Cube CORRADE_DEPRECATED_ENUM("use TextureType::CubeMap instead") = CubeMap
+    #endif
+};
+
+/**
 @brief Texture data
 
 @see @ref AbstractImporter::texture()
 */
 class TextureData {
     public:
-        /**
-         * @brief Texture type
-         *
-         * @see @ref type()
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief TextureType
+         * @m_deprecated_since_latest Use @ref TextureType instead.
          */
-        enum class Type: UnsignedByte {
-            Texture1D,  /**< One-dimensional texture */
-            Texture2D,  /**< Two-dimensional texture */
-            Texture3D,  /**< Three-dimensional texture */
-            Cube        /**< Cube map texture */
-        };
+        typedef CORRADE_DEPRECATED("use TextureType instead") TextureType Type;
+        #endif
 
         /**
          * @brief Constructor
@@ -69,15 +106,15 @@ class TextureData {
          * @param image                 Texture image ID
          * @param importerState         Importer-specific state
          */
-        explicit TextureData(Type type, SamplerFilter minificationFilter, SamplerFilter magnificationFilter, SamplerMipmap mipmapFilter, const Math::Vector3<SamplerWrapping>& wrapping, UnsignedInt image, const void* importerState = nullptr) noexcept: _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
+        explicit TextureData(TextureType type, SamplerFilter minificationFilter, SamplerFilter magnificationFilter, SamplerMipmap mipmapFilter, const Math::Vector3<SamplerWrapping>& wrapping, UnsignedInt image, const void* importerState = nullptr) noexcept: _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
 
         /**
          * @brief Construct with the same wrapping for all dimensions
          *
-         * Same as calling @ref TextureData(Type, SamplerFilter, SamplerFilter, SamplerMipmap, const Math::Vector3<SamplerWrapping>&, UnsignedInt, const void*)
+         * Same as calling @ref TextureData(TextureType, SamplerFilter, SamplerFilter, SamplerMipmap, const Math::Vector3<SamplerWrapping>&, UnsignedInt, const void*)
          * with the same @p wrapping value for all dimensions.
          */
-        explicit TextureData(Type type, SamplerFilter minificationFilter, SamplerFilter magnificationFilter, SamplerMipmap mipmapFilter, SamplerWrapping wrapping, UnsignedInt image, const void* importerState = nullptr) noexcept: _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
+        explicit TextureData(TextureType type, SamplerFilter minificationFilter, SamplerFilter magnificationFilter, SamplerMipmap mipmapFilter, SamplerWrapping wrapping, UnsignedInt image, const void* importerState = nullptr) noexcept: _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
 
         /** @brief Copying is not allowed */
         TextureData(const TextureData&) = delete;
@@ -92,7 +129,7 @@ class TextureData {
         TextureData& operator=(TextureData&&) noexcept = default;
 
         /** @brief Texture type */
-        Type type() const { return _type; }
+        TextureType type() const { return _type; }
 
         /** @brief Minification filter */
         SamplerFilter minificationFilter() const { return _minificationFilter; }
@@ -109,11 +146,10 @@ class TextureData {
         /**
          * @brief Image ID
          *
-         * ID of 1D, 2D or 3D image based on texture type. If type is
-         * @ref Type::Cube the function returns first of six consecutive
-         * IDs of cube map sides, ordered +X, -X, +Y, -Y, +Z, -Z.
+         * ID of a 1D, 2D or 3D image depending on @ref type().
          * @see @ref type(), @ref AbstractImporter::image1D(),
-         *      @ref AbstractImporter::image2D(), @ref AbstractImporter::image3D()
+         *      @ref AbstractImporter::image2D(),
+         *      @ref AbstractImporter::image3D()
          */
         UnsignedInt image() const { return _image; }
 
@@ -125,7 +161,7 @@ class TextureData {
         const void* importerState() const { return _importerState; }
 
     private:
-        Type _type;
+        TextureType _type;
         SamplerFilter _minificationFilter, _magnificationFilter;
         SamplerMipmap _mipmapFilter;
         Math::Vector3<SamplerWrapping> _wrapping;
@@ -133,8 +169,8 @@ class TextureData {
         const void* _importerState;
 };
 
-/** @debugoperatorclassenum{TextureData,TextureData::Type} */
-MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, TextureData::Type value);
+/** @debugoperatorenum{TextureType} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, TextureType value);
 
 }}
 
