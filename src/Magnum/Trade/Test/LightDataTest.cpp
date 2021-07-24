@@ -102,7 +102,7 @@ LightDataTest::LightDataTest() {
 
 void LightDataTest::construct() {
     {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Spot,
             0xccff33_rgbf, 0.8f,
             {0.1f, 0.5f, 0.7f}, 15.0f,
@@ -120,7 +120,7 @@ void LightDataTest::construct() {
 
     /* Implicit spot angles */
     } {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Spot,
             0xccff33_rgbf, 0.8f,
             {0.1f, 0.5f, 0.7f}, 15.0f,
@@ -137,7 +137,7 @@ void LightDataTest::construct() {
 
     /* Implicit non-spot angles */
     } {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Point,
             0xccff33_rgbf, 0.8f,
             {0.1f, 0.5f, 0.7f}, 15.0f,
@@ -157,7 +157,7 @@ void LightDataTest::construct() {
 void LightDataTest::constructAttenuation() {
     /* Implicit range */
     {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Spot,
             0xccff33_rgbf, 0.8f,
             {0.1f, 0.5f, 0.7f},
@@ -175,7 +175,7 @@ void LightDataTest::constructAttenuation() {
 
     /* Implicit range + spot angles */
     } {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Spot,
             0xccff33_rgbf, 0.8f,
             {0.1f, 0.5f, 0.7f},
@@ -192,7 +192,7 @@ void LightDataTest::constructAttenuation() {
 
     /* Implicit range + non-spot angles */
     } {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Point,
             0xccff33_rgbf, 0.8f,
             {0.1f, 0.5f, 0.7f},
@@ -212,7 +212,7 @@ void LightDataTest::constructAttenuation() {
 void LightDataTest::constructRange() {
     /* Implicit attenuation for a spot */
     {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Spot,
             0xccff33_rgbf, 0.8f,
             15.0f,
@@ -230,7 +230,7 @@ void LightDataTest::constructRange() {
 
     /* Implicit attenuation for a spot + spot angles */
     } {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Spot,
             0xccff33_rgbf, 0.8f,
             15.0f,
@@ -247,7 +247,7 @@ void LightDataTest::constructRange() {
 
     /* Implicit attenuation for a point + non-spot angles */
     } {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Point,
             0xccff33_rgbf, 0.8f,
             15.0f,
@@ -264,7 +264,7 @@ void LightDataTest::constructRange() {
 
     /* Implicit attenuation for an ambient + non-spot angles */
     } {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Ambient,
             0xccff33_rgbf, 0.8f,
             Constants::inf(),
@@ -281,7 +281,7 @@ void LightDataTest::constructRange() {
 
     /* Implicit attenuation for a directional + non-spot angles */
     } {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Directional,
             0xccff33_rgbf, 0.8f,
             Constants::inf(),
@@ -301,7 +301,7 @@ void LightDataTest::constructRange() {
 void LightDataTest::constructNone() {
     /* Implicit attenuation + range for a spot */
     {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Spot,
             0xccff33_rgbf, 0.8f,
             15.0_degf, 35.0_degf,
@@ -318,7 +318,7 @@ void LightDataTest::constructNone() {
 
     /* Implicit attenuation + range for a spot + spot angles */
     } {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Spot,
             0xccff33_rgbf, 0.8f,
             &a};
@@ -334,7 +334,7 @@ void LightDataTest::constructNone() {
 
     /* Implicit attenuation + range for a point + non-spot angles */
     } {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Point,
             0xccff33_rgbf, 0.8f,
             &a};
@@ -350,7 +350,7 @@ void LightDataTest::constructNone() {
 
     /* Implicit attenuation for an ambient + non-spot angles */
     } {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Ambient,
             0xccff33_rgbf, 0.8f,
             &a};
@@ -366,7 +366,7 @@ void LightDataTest::constructNone() {
 
     /* Implicit attenuation for a directional + non-spot angles */
     } {
-        int a;
+        int a{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         LightData data{LightData::Type::Directional,
             0xccff33_rgbf, 0.8f,
             &a};
@@ -402,7 +402,7 @@ void LightDataTest::constructCopy() {
 }
 
 void LightDataTest::constructMove() {
-    int state;
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     LightData a{LightData::Type::Spot,
         0xccff33_rgbf, 0.8f,
         {0.1f, 0.5f, 0.7f}, 15.0f,

@@ -1188,7 +1188,7 @@ void MaterialDataTest::constructNonOwned() {
         {"highlightColor"_s, Vector4{0.2f, 0.6f, 0.4f, 1.0f}}
     };
 
-    int state;
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     MaterialData data{MaterialType::Phong, {}, attributes, &state};
 
     /* Expecting the same output as in construct() */
@@ -1230,7 +1230,7 @@ void MaterialDataTest::constructNonOwnedLayers() {
         2, 5, 5, 7
     };
 
-    int state;
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     MaterialData data{MaterialType::Phong,
         {}, attributes,
         {}, layers, &state};

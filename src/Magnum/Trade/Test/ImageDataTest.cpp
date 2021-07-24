@@ -201,7 +201,7 @@ namespace Vk {
 void ImageDataTest::constructGeneric() {
     {
         auto data = new char[4*4];
-        int state;
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{PixelFormat::RGBA8Unorm, {1, 3}, Containers::Array<char>{data, 4*4}, &state};
 
         CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -220,7 +220,7 @@ void ImageDataTest::constructGeneric() {
         CORRADE_COMPARE(a.importerState(), &state);
     } {
         auto data = new char[3*2];
-        int state;
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{PixelStorage{}.setAlignment(1),
             PixelFormat::R16UI, {1, 3}, Containers::Array<char>{data, 3*2}, &state};
 
@@ -245,7 +245,7 @@ void ImageDataTest::constructImplementationSpecific() {
     /* Single format */
     {
         auto data = new char[3*12];
-        int state;
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{PixelStorage{}.setAlignment(1),
             Vk::PixelFormat::R32G32B32F, {1, 3}, Containers::Array<char>{data, 3*12}, &state};
 
@@ -268,7 +268,7 @@ void ImageDataTest::constructImplementationSpecific() {
     /* Format + extra */
     {
         auto data = new char[3*6];
-        int state;
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{PixelStorage{}.setAlignment(1),
             GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, &state};
 
@@ -290,7 +290,7 @@ void ImageDataTest::constructImplementationSpecific() {
     /* Manual pixel size */
     {
         auto data = new char[3*6];
-        int state;
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {1, 3}, Containers::Array<char>{data, 3*6}, &state};
 
         CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -313,7 +313,7 @@ void ImageDataTest::constructImplementationSpecific() {
 void ImageDataTest::constructCompressedGeneric() {
     {
         auto data = new char[8];
-        int state;
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4},
             Containers::Array<char>{data, 8}, &state};
 
@@ -329,7 +329,7 @@ void ImageDataTest::constructCompressedGeneric() {
         CORRADE_COMPARE(a.importerState(), &state);
     } {
         auto data = new char[8];
-        int state;
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
             CompressedPixelFormat::Bc1RGBAUnorm, {4, 4},
             Containers::Array<char>{data, 8}, &state};
@@ -351,7 +351,7 @@ void ImageDataTest::constructCompressedImplementationSpecific() {
     /* Format with autodetection */
     {
         auto data = new char[8];
-        int state;
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
             GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4},
             Containers::Array<char>{data, 8}, &state};
@@ -675,7 +675,7 @@ void ImageDataTest::constructCopy() {
 
 void ImageDataTest::constructMoveGeneric() {
     auto data = new char[3*16];
-    int state;
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     ImageData2D a{PixelStorage{}.setAlignment(1),
         PixelFormat::RGBA32F, {1, 3}, Containers::Array<char>{data, 3*16}, &state};
     ImageData2D b(std::move(a));
@@ -718,7 +718,7 @@ void ImageDataTest::constructMoveGeneric() {
 
 void ImageDataTest::constructMoveImplementationSpecific() {
     auto data = new char[3*6];
-    int state;
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     ImageData2D a{PixelStorage{}.setAlignment(1),
         GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, &state};
     ImageData2D b(std::move(a));
@@ -759,7 +759,7 @@ void ImageDataTest::constructMoveImplementationSpecific() {
 
 void ImageDataTest::constructMoveCompressedGeneric() {
     auto data = new char[8];
-    int state;
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     ImageData2D a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         CompressedPixelFormat::Bc3RGBAUnorm, {4, 4}, Containers::Array<char>{data, 8}, &state};
@@ -796,7 +796,7 @@ void ImageDataTest::constructMoveCompressedGeneric() {
 
 void ImageDataTest::constructMoveCompressedImplementationSpecific() {
     auto data = new char[8];
-    int state;
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     ImageData2D a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, &state};
@@ -833,7 +833,8 @@ void ImageDataTest::constructMoveCompressedImplementationSpecific() {
 
 void ImageDataTest::constructMoveAttachState() {
     auto data = new char[3*6];
-    int stateOld, stateNew;
+    /* GCC 11 pointlessly complains that "maybe uninitialized" w/o the {} */
+    int stateOld{}, stateNew{};
     ImageData2D a{PixelStorage{}.setAlignment(1),
         GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, &stateOld};
     ImageData2D b{std::move(a), &stateNew};
@@ -855,7 +856,8 @@ void ImageDataTest::constructMoveAttachState() {
 
 void ImageDataTest::constructMoveCompressedAttachState() {
     auto data = new char[8];
-    int stateOld, stateNew;
+    /* GCC 11 pointlessly complains that "maybe uninitialized" w/o the {} */
+    int stateOld{}, stateNew{};
     ImageData2D a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, &stateOld};

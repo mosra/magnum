@@ -69,7 +69,7 @@ void SkinDataTest::construct() {
 }
 
 void SkinDataTest::constructNonOwned() {
-    int state;
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     const UnsignedInt jointData[]{0, 2, 3};
     const Matrix4 inverseBindMatrixData[]{
         Matrix4::translation(Vector3::zAxis(0.0f)),
