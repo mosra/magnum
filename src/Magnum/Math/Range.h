@@ -146,7 +146,7 @@ template<UnsignedInt dimensions, class T> class Range {
          *
          * @snippet MagnumMath.cpp Range-construct-minmax3D
          *
-         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14
+         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14... actually, replace with Pair
          */
         /*implicit*/ Range(const std::pair<VectorType, VectorType>& minmax) noexcept:
             _min{minmax.first}, _max{minmax.second} {}
