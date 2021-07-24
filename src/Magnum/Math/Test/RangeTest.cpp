@@ -101,6 +101,7 @@ struct RangeTest: Corrade::TestSuite::Tester {
     explicit RangeTest();
 
     void construct();
+    void construct1DFromVectors();
     void constructDefault();
     void constructNoInit();
     void constructFromSize();
@@ -156,6 +157,7 @@ typedef Vector3<Int> Vector3i;
 
 RangeTest::RangeTest() {
     addTests({&RangeTest::construct,
+              &RangeTest::construct1DFromVectors,
               &RangeTest::constructDefault,
               &RangeTest::constructNoInit,
               &RangeTest::constructFromSize,
@@ -209,6 +211,17 @@ void RangeTest::construct() {
     CORRADE_VERIFY(std::is_nothrow_constructible<Range1Di, Int, Int>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<Range2Di, Vector2i, Vector2i>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<Range3Di, Vector3i, Vector3i>::value);
+}
+
+void RangeTest::construct1DFromVectors() {
+    /* Used by EigenIntegration for Range3D conversion. Implementing the same
+       there would be a massive verbose pain and this could be useful elsewhere
+       as well, so implementing that directly on a Range. */
+    constexpr Range1Di a = {Vector<1, Int>{3}, Vector<1, Int>{23}};
+
+    CORRADE_COMPARE(a, (Range<1, Int>(3, 23)));
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range1Di, Vector<1, Int>, Vector<1, Int>>::value);
 }
 
 void RangeTest::constructDefault() {

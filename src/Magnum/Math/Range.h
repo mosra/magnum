@@ -37,9 +37,24 @@ namespace Magnum { namespace Math {
 namespace Implementation {
     template<UnsignedInt, class> struct RangeTraits;
 
-    template<class T> struct RangeTraits<1, T> { typedef T Type; };
-    template<class T> struct RangeTraits<2, T> { typedef Vector2<T> Type; };
-    template<class T> struct RangeTraits<3, T> { typedef Vector3<T> Type; };
+    template<class T> struct RangeTraits<1, T> {
+        typedef T Type;
+        constexpr static Type fromVector(const Vector<1, T>& value) {
+            return value[0];
+        }
+    };
+    template<class T> struct RangeTraits<2, T> {
+        typedef Vector2<T> Type;
+        constexpr static Type fromVector(const Vector<2, T>& value) {
+            return value;
+        }
+    };
+    template<class T> struct RangeTraits<3, T> {
+        typedef Vector3<T> Type;
+        constexpr static Type fromVector(const Vector<3, T>& value) {
+            return value;
+        }
+    };
 
     template<UnsignedInt, class, class> struct RangeConverter;
 }
@@ -117,6 +132,11 @@ template<UnsignedInt dimensions, class T> class Range {
 
         /** @brief Construct a range from minimal and maximal coordinates */
         constexpr /*implicit*/ Range(const VectorType& min, const VectorType& max) noexcept: _min{min}, _max{max} {}
+        /** @overload */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 1>::type>
+        #endif
+        constexpr /*implicit*/ Range(const Vector<dimensions, T>& min, const Vector<dimensions, T>& max) noexcept: _min{Implementation::RangeTraits<dimensions, T>::fromVector(min)}, _max{Implementation::RangeTraits<dimensions, T>::fromVector(max)} {}
 
         /**
          * @brief Construct a range from a pair of minimal and maximal coordinates
