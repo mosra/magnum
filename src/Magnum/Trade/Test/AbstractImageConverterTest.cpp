@@ -141,6 +141,7 @@ struct AbstractImageConverterTest: TestSuite::Tester {
 
     void debugFeature();
     void debugFeatures();
+    void debugFeaturesSupersets();
     void debugFlag();
     void debugFlags();
 };
@@ -240,6 +241,7 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
 
               &AbstractImageConverterTest::debugFeature,
               &AbstractImageConverterTest::debugFeatures,
+              &AbstractImageConverterTest::debugFeaturesSupersets,
               &AbstractImageConverterTest::debugFlag,
               &AbstractImageConverterTest::debugFlags});
 
@@ -1724,6 +1726,23 @@ void AbstractImageConverterTest::debugFeatures() {
 
     Debug{&out} << (ImageConverterFeature::Convert2DToData|ImageConverterFeature::ConvertCompressed2DToFile) << ImageConverterFeatures{};
     CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::Convert2DToData|Trade::ImageConverterFeature::ConvertCompressed2DToFile Trade::ImageConverterFeatures{}\n");
+}
+
+void AbstractImageConverterTest::debugFeaturesSupersets() {
+    /* Convert*DToData is a superset of Convert*DToFile, so only one should be
+       printed */
+    {
+        std::ostringstream out;
+        Debug{&out} << (ImageConverterFeature::Convert2DToData|ImageConverterFeature::Convert2DToFile);
+        CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::Convert2DToData\n");
+
+    /* ConvertCompressed*DToData is a superset of ConvertCompressed*DToFile, so
+       only one should be printed */
+    } {
+        std::ostringstream out;
+        Debug{&out} << (ImageConverterFeature::ConvertCompressed1DToData|ImageConverterFeature::ConvertCompressed1DToFile);
+        CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::ConvertCompressed1DToData\n");
+    }
 }
 
 void AbstractImageConverterTest::debugFlag() {

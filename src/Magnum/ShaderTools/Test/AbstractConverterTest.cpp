@@ -178,6 +178,7 @@ struct AbstractConverterTest: TestSuite::Tester {
 
     void debugFeature();
     void debugFeatures();
+    void debugFeaturesSupersets();
     void debugFlag();
     void debugFlags();
     void debugFormat();
@@ -317,6 +318,7 @@ AbstractConverterTest::AbstractConverterTest() {
 
               &AbstractConverterTest::debugFeature,
               &AbstractConverterTest::debugFeatures,
+              &AbstractConverterTest::debugFeaturesSupersets,
               &AbstractConverterTest::debugFlag,
               &AbstractConverterTest::debugFlags,
               &AbstractConverterTest::debugFormat});
@@ -3413,6 +3415,29 @@ void AbstractConverterTest::debugFeatures() {
 
     Debug{&out} << (ConverterFeature::ValidateData|ConverterFeature::ConvertFile) << ConverterFeatures{};
     CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFeature::ValidateData|ShaderTools::ConverterFeature::ConvertFile ShaderTools::ConverterFeatures{}\n");
+}
+
+void AbstractConverterTest::debugFeaturesSupersets() {
+    /* ValidateData is a superset of ValidateFile, so only one should be
+       printed */
+    {
+        std::ostringstream out;
+        Debug{&out} << (ConverterFeature::ValidateData|ConverterFeature::ValidateFile);
+        CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFeature::ValidateData\n");
+
+    /* ConvertData is a superset of ConvertFile, so only one should be
+       printed */
+    } {
+        std::ostringstream out;
+        Debug{&out} << (ConverterFeature::ConvertData|ConverterFeature::ConvertFile);
+        CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFeature::ConvertData\n");
+
+    /* LinkData is a superset of LinkFile, so only one should be printed */
+    } {
+        std::ostringstream out;
+        Debug{&out} << (ConverterFeature::LinkData|ConverterFeature::LinkFile);
+        CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFeature::LinkData\n");
+    }
 }
 
 void AbstractConverterTest::debugFlag() {

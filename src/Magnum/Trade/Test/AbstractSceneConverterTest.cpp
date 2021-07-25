@@ -75,6 +75,7 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
 
     void debugFeature();
     void debugFeatures();
+    void debugFeaturesSupersets();
     void debugFlag();
     void debugFlags();
 };
@@ -110,6 +111,7 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
 
               &AbstractSceneConverterTest::debugFeature,
               &AbstractSceneConverterTest::debugFeatures,
+              &AbstractSceneConverterTest::debugFeaturesSupersets,
               &AbstractSceneConverterTest::debugFlag,
               &AbstractSceneConverterTest::debugFlags});
 
@@ -547,6 +549,16 @@ void AbstractSceneConverterTest::debugFeatures() {
 
     Debug{&out} << (SceneConverterFeature::ConvertMesh|SceneConverterFeature::ConvertMeshToFile) << SceneConverterFeatures{};
     CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMesh|Trade::SceneConverterFeature::ConvertMeshToFile Trade::SceneConverterFeatures{}\n");
+}
+
+void AbstractSceneConverterTest::debugFeaturesSupersets() {
+    /* ConvertMeshToData is a superset of ConvertMeshToFile, so only one should
+       be printed */
+    {
+        std::ostringstream out;
+        Debug{&out} << (SceneConverterFeature::ConvertMeshToData|SceneConverterFeature::ConvertMeshToFile);
+        CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMeshToData\n");
+    }
 }
 
 void AbstractSceneConverterTest::debugFlag() {
