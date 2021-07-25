@@ -91,4 +91,4 @@ Containers::Array<char> TgaImageConverter::doConvertToData(const ImageView2D& im
 }}
 
 CORRADE_PLUGIN_REGISTER(TgaImageConverter, Magnum::Trade::TgaImageConverter,
-    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3")
+    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3.1")

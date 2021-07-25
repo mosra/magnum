@@ -47,7 +47,7 @@ namespace Magnum { namespace Trade {
 std::string AbstractImageConverter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractImageConverter/0.3"
+"cz.mosra.magnum.Trade.AbstractImageConverter/0.3.1"
 /* [interface] */
     ;
 }
@@ -226,8 +226,11 @@ Containers::Array<char> AbstractImageConverter::convertToData(const ImageView1D&
     return out;
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(const ImageView1D&) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): 1D image conversion advertised but not implemented", nullptr);
+Containers::Array<char> AbstractImageConverter::doConvertToData(const ImageView1D& image) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels1DToData,
+        "Trade::AbstractImageConverter::convertToData(): 1D image conversion advertised but not implemented", nullptr);
+
+    return doConvertToData(Containers::arrayView({image}));
 }
 
 Containers::Array<char> AbstractImageConverter::convertToData(const ImageView2D& image) {
@@ -239,8 +242,11 @@ Containers::Array<char> AbstractImageConverter::convertToData(const ImageView2D&
     return out;
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(const ImageView2D&) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): 2D image conversion advertised but not implemented", nullptr);
+Containers::Array<char> AbstractImageConverter::doConvertToData(const ImageView2D& image) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels2DToData,
+        "Trade::AbstractImageConverter::convertToData(): 2D image conversion advertised but not implemented", nullptr);
+
+    return doConvertToData(Containers::arrayView({image}));
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -258,8 +264,11 @@ Containers::Array<char> AbstractImageConverter::convertToData(const ImageView3D&
     return out;
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(const ImageView3D&) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): 3D image conversion advertised but not implemented", nullptr);
+Containers::Array<char> AbstractImageConverter::doConvertToData(const ImageView3D& image) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels3DToData,
+        "Trade::AbstractImageConverter::convertToData(): 3D image conversion advertised but not implemented", nullptr);
+
+    return doConvertToData(Containers::arrayView({image}));
 }
 
 Containers::Array<char> AbstractImageConverter::convertToData(const CompressedImageView1D& image) {
@@ -271,8 +280,11 @@ Containers::Array<char> AbstractImageConverter::convertToData(const CompressedIm
     return out;
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(const CompressedImageView1D&) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): compressed 1D image conversion advertised but not implemented", nullptr);
+Containers::Array<char> AbstractImageConverter::doConvertToData(const CompressedImageView1D& image) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels1DToData,
+        "Trade::AbstractImageConverter::convertToData(): compressed 1D image conversion advertised but not implemented", nullptr);
+
+    return doConvertToData(Containers::arrayView({image}));
 }
 
 Containers::Array<char> AbstractImageConverter::convertToData(const CompressedImageView2D& image) {
@@ -284,8 +296,11 @@ Containers::Array<char> AbstractImageConverter::convertToData(const CompressedIm
     return out;
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(const CompressedImageView2D&) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): compressed 2D image conversion advertised but not implemented", nullptr);
+Containers::Array<char> AbstractImageConverter::doConvertToData(const CompressedImageView2D& image) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels2DToData,
+        "Trade::AbstractImageConverter::convertToData(): compressed 2D image conversion advertised but not implemented", nullptr);
+
+    return doConvertToData(Containers::arrayView({image}));
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -303,8 +318,11 @@ Containers::Array<char> AbstractImageConverter::convertToData(const CompressedIm
     return out;
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(const CompressedImageView3D&) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): compressed 3D image conversion advertised but not implemented", nullptr);
+Containers::Array<char> AbstractImageConverter::doConvertToData(const CompressedImageView3D& image) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels3DToData,
+        "Trade::AbstractImageConverter::convertToData(): compressed 3D image conversion advertised but not implemented", nullptr);
+
+    return doConvertToData(Containers::arrayView({image}));
 }
 
 Containers::Array<char> AbstractImageConverter::convertToData(const ImageData1D& image) {
@@ -325,6 +343,108 @@ Containers::Array<char> AbstractImageConverter::convertToData(const ImageData3D&
     return image.isCompressed() ? convertToData(CompressedImageView3D(image)) : convertToData(ImageView3D(image));
 }
 
+Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageView1D> imageLevels) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels1DToData,
+        "Trade::AbstractImageConverter::convertToData(): multi-level 1D image conversion not supported", nullptr);
+
+    Containers::Array<char> out = doConvertToData(imageLevels);
+    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
+}
+
+Containers::Array<char> AbstractImageConverter::convertToData(const std::initializer_list<ImageView1D> imageLevels) {
+    return convertToData(Containers::arrayView(imageLevels));
+}
+
+Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::ArrayView<const ImageView1D>) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level 1D image conversion advertised but not implemented", nullptr);
+}
+
+Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageView2D> imageLevels) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels2DToData,
+        "Trade::AbstractImageConverter::convertToData(): multi-level 2D image conversion not supported", nullptr);
+
+    Containers::Array<char> out = doConvertToData(imageLevels);
+    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
+}
+
+Containers::Array<char> AbstractImageConverter::convertToData(const std::initializer_list<ImageView2D> imageLevels) {
+    return convertToData(Containers::arrayView(imageLevels));
+}
+
+Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::ArrayView<const ImageView2D>) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level 2D image conversion advertised but not implemented", nullptr);
+}
+
+Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageView3D> imageLevels) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels3DToData,
+        "Trade::AbstractImageConverter::convertToData(): multi-level 3D image conversion not supported", nullptr);
+
+    Containers::Array<char> out = doConvertToData(imageLevels);
+    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
+}
+
+Containers::Array<char> AbstractImageConverter::convertToData(const std::initializer_list<ImageView3D> imageLevels) {
+    return convertToData(Containers::arrayView(imageLevels));
+}
+
+Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::ArrayView<const ImageView3D>) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level 3D image conversion advertised but not implemented", nullptr);
+}
+
+Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const CompressedImageView1D> imageLevels) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels1DToData,
+        "Trade::AbstractImageConverter::convertToData(): multi-level compressed 1D image conversion not supported", nullptr);
+
+    Containers::Array<char> out = doConvertToData(imageLevels);
+    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
+}
+
+Containers::Array<char> AbstractImageConverter::convertToData(const std::initializer_list<CompressedImageView1D> imageLevels) {
+    return convertToData(Containers::arrayView(imageLevels));
+}
+
+Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::ArrayView<const CompressedImageView1D>) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level compressed 1D image conversion advertised but not implemented", nullptr);
+}
+
+Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const CompressedImageView2D> imageLevels) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels2DToData,
+        "Trade::AbstractImageConverter::convertToData(): multi-level compressed 2D image conversion not supported", nullptr);
+
+    Containers::Array<char> out = doConvertToData(imageLevels);
+    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
+}
+
+Containers::Array<char> AbstractImageConverter::convertToData(const std::initializer_list<CompressedImageView2D> imageLevels) {
+    return convertToData(Containers::arrayView(imageLevels));
+}
+
+Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::ArrayView<const CompressedImageView2D>) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level compressed 2D image conversion advertised but not implemented", nullptr);
+}
+
+Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const CompressedImageView3D> imageLevels) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels3DToData,
+        "Trade::AbstractImageConverter::convertToData(): multi-level compressed 3D image conversion not supported", nullptr);
+
+    Containers::Array<char> out = doConvertToData(imageLevels);
+    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
+}
+
+Containers::Array<char> AbstractImageConverter::convertToData(const std::initializer_list<CompressedImageView3D> imageLevels) {
+    return convertToData(Containers::arrayView(imageLevels));
+}
+
+Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::ArrayView<const CompressedImageView3D>) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level compressed 3D image conversion advertised but not implemented", nullptr);
+}
+
 bool AbstractImageConverter::convertToFile(const ImageView1D& image, const Containers::StringView filename) {
     CORRADE_ASSERT(features() & ImageConverterFeature::Convert1DToFile,
         "Trade::AbstractImageConverter::convertToFile(): 1D image conversion not supported", {});
@@ -333,6 +453,12 @@ bool AbstractImageConverter::convertToFile(const ImageView1D& image, const Conta
 }
 
 bool AbstractImageConverter::doConvertToFile(const ImageView1D& image, const Containers::StringView filename) {
+    /* Prefer to go through the ToFile variant instead of ToData assuming that
+       it could have a more memory-efficient implementation than having to
+       materialize the whole output in memory first */
+    if(features() >= ImageConverterFeature::ConvertLevels1DToFile)
+        return doConvertToFile(Containers::arrayView({image}), filename);
+
     CORRADE_ASSERT(features() >= ImageConverterFeature::Convert1DToData, "Trade::AbstractImageConverter::convertToFile(): 1D image conversion advertised but not implemented", false);
 
     const auto data = doConvertToData(image);
@@ -355,6 +481,12 @@ bool AbstractImageConverter::convertToFile(const ImageView2D& image, const Conta
 }
 
 bool AbstractImageConverter::doConvertToFile(const ImageView2D& image, const Containers::StringView filename) {
+    /* Prefer to go through the ToFile variant instead of ToData assuming that
+       it could have a more memory-efficient implementation than having to
+       materialize the whole output in memory first */
+    if(features() >= ImageConverterFeature::ConvertLevels2DToFile)
+        return doConvertToFile(Containers::arrayView({image}), filename);
+
     CORRADE_ASSERT(features() >= ImageConverterFeature::Convert2DToData, "Trade::AbstractImageConverter::convertToFile(): 2D image conversion advertised but not implemented", false);
 
     const auto data = doConvertToData(image);
@@ -383,6 +515,12 @@ bool AbstractImageConverter::convertToFile(const ImageView3D& image, const Conta
 }
 
 bool AbstractImageConverter::doConvertToFile(const ImageView3D& image, const Containers::StringView filename) {
+    /* Prefer to go through the ToFile variant instead of ToData assuming that
+       it could have a more memory-efficient implementation than having to
+       materialize the whole output in memory first */
+    if(features() >= ImageConverterFeature::ConvertLevels3DToFile)
+        return doConvertToFile(Containers::arrayView({image}), filename);
+
     CORRADE_ASSERT(features() >= ImageConverterFeature::Convert3DToData, "Trade::AbstractImageConverter::convertToFile(): 3D image conversion advertised but not implemented", false);
 
     const auto data = doConvertToData(image);
@@ -405,6 +543,12 @@ bool AbstractImageConverter::convertToFile(const CompressedImageView1D& image, c
 }
 
 bool AbstractImageConverter::doConvertToFile(const CompressedImageView1D& image, Containers::StringView filename) {
+    /* Prefer to go through the ToFile variant instead of ToData assuming that
+       it could have a more memory-efficient implementation than having to
+       materialize the whole output in memory first */
+    if(features() >= ImageConverterFeature::ConvertCompressedLevels1DToFile)
+        return doConvertToFile(Containers::arrayView({image}), filename);
+
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressed1DToData, "Trade::AbstractImageConverter::convertToFile(): compressed 1D image conversion advertised but not implemented", false);
 
     const auto data = doConvertToData(image);
@@ -427,6 +571,12 @@ bool AbstractImageConverter::convertToFile(const CompressedImageView2D& image, c
 }
 
 bool AbstractImageConverter::doConvertToFile(const CompressedImageView2D& image, Containers::StringView filename) {
+    /* Prefer to go through the ToFile variant instead of ToData assuming that
+       it could have a more memory-efficient implementation than having to
+       materialize the whole output in memory first */
+    if(features() >= ImageConverterFeature::ConvertCompressedLevels2DToFile)
+        return doConvertToFile(Containers::arrayView({image}), filename);
+
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressed2DToData, "Trade::AbstractImageConverter::convertToFile(): compressed 2D image conversion advertised but not implemented", false);
 
     const auto data = doConvertToData(image);
@@ -455,6 +605,12 @@ bool AbstractImageConverter::convertToFile(const CompressedImageView3D& image, c
 }
 
 bool AbstractImageConverter::doConvertToFile(const CompressedImageView3D& image, Containers::StringView filename) {
+    /* Prefer to go through the ToFile variant instead of ToData assuming that
+       it could have a more memory-efficient implementation than having to
+       materialize the whole output in memory first */
+    if(features() >= ImageConverterFeature::ConvertCompressedLevels3DToFile)
+        return doConvertToFile(Containers::arrayView({image}), filename);
+
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressed3DToData, "Trade::AbstractImageConverter::convertToFile(): compressed 3D image conversion advertised but not implemented", false);
 
     const auto data = doConvertToData(image);
@@ -487,6 +643,162 @@ bool AbstractImageConverter::convertToFile(const ImageData3D& image, const Conta
     return image.isCompressed() ? convertToFile(CompressedImageView3D(image), filename) : convertToFile(ImageView3D(image), filename);
 }
 
+bool AbstractImageConverter::convertToFile(const Containers::ArrayView<const ImageView1D> imageLevels, const Containers::StringView filename) {
+    CORRADE_ASSERT(features() & ImageConverterFeature::ConvertLevels1DToFile,
+        "Trade::AbstractImageConverter::convertToFile(): multi-level 1D image conversion not supported", {});
+
+    return doConvertToFile(imageLevels, filename);
+}
+
+bool AbstractImageConverter::convertToFile(const std::initializer_list<ImageView1D> imageLevels, const Containers::StringView filename) {
+    return convertToFile(Containers::arrayView(imageLevels), filename);
+}
+
+bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const ImageView1D> imageLevels, const Containers::StringView filename) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels1DToData, "Trade::AbstractImageConverter::convertToFile(): multi-level 1D image conversion advertised but not implemented", false);
+
+    const auto data = doConvertToData(imageLevels);
+    /* No deleter checks as it doesn't matter here */
+    if(!data) return false;
+
+    if(!Utility::Directory::write(filename, data)) {
+        Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
+        return false;
+    }
+
+    return true;
+}
+
+bool AbstractImageConverter::convertToFile(const Containers::ArrayView<const ImageView2D> imageLevels, const Containers::StringView filename) {
+    CORRADE_ASSERT(features() & ImageConverterFeature::ConvertLevels2DToFile,
+        "Trade::AbstractImageConverter::convertToFile(): multi-level 2D image conversion not supported", {});
+
+    return doConvertToFile(imageLevels, filename);
+}
+
+bool AbstractImageConverter::convertToFile(const std::initializer_list<ImageView2D> imageLevels, const Containers::StringView filename) {
+    return convertToFile(Containers::arrayView(imageLevels), filename);
+}
+
+bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const ImageView2D> imageLevels, const Containers::StringView filename) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels2DToData, "Trade::AbstractImageConverter::convertToFile(): multi-level 2D image conversion advertised but not implemented", false);
+
+    const auto data = doConvertToData(imageLevels);
+    /* No deleter checks as it doesn't matter here */
+    if(!data) return false;
+
+    if(!Utility::Directory::write(filename, data)) {
+        Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
+        return false;
+    }
+
+    return true;
+}
+
+bool AbstractImageConverter::convertToFile(const Containers::ArrayView<const ImageView3D> imageLevels, const Containers::StringView filename) {
+    CORRADE_ASSERT(features() & ImageConverterFeature::ConvertLevels3DToFile,
+        "Trade::AbstractImageConverter::convertToFile(): multi-level 3D image conversion not supported", {});
+
+    return doConvertToFile(imageLevels, filename);
+}
+
+bool AbstractImageConverter::convertToFile(const std::initializer_list<ImageView3D> imageLevels, const Containers::StringView filename) {
+    return convertToFile(Containers::arrayView(imageLevels), filename);
+}
+
+bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const ImageView3D> imageLevels, const Containers::StringView filename) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels3DToData, "Trade::AbstractImageConverter::convertToFile(): multi-level 3D image conversion advertised but not implemented", false);
+
+    const auto data = doConvertToData(imageLevels);
+    /* No deleter checks as it doesn't matter here */
+    if(!data) return false;
+
+    if(!Utility::Directory::write(filename, data)) {
+        Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
+        return false;
+    }
+
+    return true;
+}
+
+bool AbstractImageConverter::convertToFile(const Containers::ArrayView<const CompressedImageView1D> imageLevels, const Containers::StringView filename) {
+    CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressedLevels1DToFile,
+        "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 1D image conversion not supported", {});
+
+    return doConvertToFile(imageLevels, filename);
+}
+
+bool AbstractImageConverter::convertToFile(const std::initializer_list<CompressedImageView1D> imageLevels, const Containers::StringView filename) {
+    return convertToFile(Containers::arrayView(imageLevels), filename);
+}
+
+bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const CompressedImageView1D> imageLevels, Containers::StringView filename) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels1DToData, "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 1D image conversion advertised but not implemented", false);
+
+    const auto data = doConvertToData(imageLevels);
+    /* No deleter checks as it doesn't matter here */
+    if(!data) return false;
+
+    if(!Utility::Directory::write(filename, data)) {
+        Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
+        return false;
+    }
+
+    return true;
+}
+
+bool AbstractImageConverter::convertToFile(const Containers::ArrayView<const CompressedImageView2D> imageLevels, const Containers::StringView filename) {
+    CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressedLevels2DToFile,
+        "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 2D image conversion not supported", {});
+
+    return doConvertToFile(imageLevels, filename);
+}
+
+bool AbstractImageConverter::convertToFile(const std::initializer_list<CompressedImageView2D> imageLevels, const Containers::StringView filename) {
+    return convertToFile(Containers::arrayView(imageLevels), filename);
+}
+
+bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const CompressedImageView2D> imageLevels, Containers::StringView filename) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels2DToData, "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 2D image conversion advertised but not implemented", false);
+
+    const auto data = doConvertToData(imageLevels);
+    /* No deleter checks as it doesn't matter here */
+    if(!data) return false;
+
+    if(!Utility::Directory::write(filename, data)) {
+        Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
+        return false;
+    }
+
+    return true;
+}
+
+bool AbstractImageConverter::convertToFile(const Containers::ArrayView<const CompressedImageView3D> imageLevels, const Containers::StringView filename) {
+    CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressedLevels3DToFile,
+        "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 3D image conversion not supported", {});
+
+    return doConvertToFile(imageLevels, filename);
+}
+
+bool AbstractImageConverter::convertToFile(const std::initializer_list<CompressedImageView3D> imageLevels, const Containers::StringView filename) {
+    return convertToFile(Containers::arrayView(imageLevels), filename);
+}
+
+bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const CompressedImageView3D> imageLevels, Containers::StringView filename) {
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels3DToData, "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 3D image conversion advertised but not implemented", false);
+
+    const auto data = doConvertToData(imageLevels);
+    /* No deleter checks as it doesn't matter here */
+    if(!data) return false;
+
+    if(!Utility::Directory::write(filename, data)) {
+        Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
+        return false;
+    }
+
+    return true;
+}
+
 Debug& operator<<(Debug& debug, const ImageConverterFeature value) {
     debug << "Trade::ImageConverterFeature" << Debug::nospace;
 
@@ -511,6 +823,18 @@ Debug& operator<<(Debug& debug, const ImageConverterFeature value) {
         _c(ConvertCompressed1DToData)
         _c(ConvertCompressed2DToData)
         _c(ConvertCompressed3DToData)
+        _c(ConvertLevels1DToFile)
+        _c(ConvertLevels2DToFile)
+        _c(ConvertLevels3DToFile)
+        _c(ConvertCompressedLevels1DToFile)
+        _c(ConvertCompressedLevels2DToFile)
+        _c(ConvertCompressedLevels3DToFile)
+        _c(ConvertLevels1DToData)
+        _c(ConvertLevels2DToData)
+        _c(ConvertLevels3DToData)
+        _c(ConvertCompressedLevels1DToData)
+        _c(ConvertCompressedLevels2DToData)
+        _c(ConvertCompressedLevels3DToData)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -526,13 +850,30 @@ Debug& operator<<(Debug& debug, const ImageConverterFeatures value) {
         ImageConverterFeature::ConvertCompressed1D,
         ImageConverterFeature::ConvertCompressed2D,
         ImageConverterFeature::ConvertCompressed3D,
+        ImageConverterFeature::ConvertLevels1DToData,
+        ImageConverterFeature::ConvertLevels2DToData,
+        ImageConverterFeature::ConvertLevels3DToData,
+        ImageConverterFeature::ConvertCompressedLevels1DToData,
+        ImageConverterFeature::ConvertCompressedLevels2DToData,
+        ImageConverterFeature::ConvertCompressedLevels3DToData,
+        /* These 6 are implied by Convert[Compressed]LevelsToData, so have to
+           be after */
+        ImageConverterFeature::ConvertLevels1DToFile,
+        ImageConverterFeature::ConvertLevels2DToFile,
+        ImageConverterFeature::ConvertLevels3DToFile,
+        ImageConverterFeature::ConvertCompressedLevels1DToFile,
+        ImageConverterFeature::ConvertCompressedLevels2DToFile,
+        ImageConverterFeature::ConvertCompressedLevels3DToFile,
+        /* These 12 are implied by Convert[Compressed]LevelsTo{File,Data}, so
+           have to be after */
         ImageConverterFeature::Convert1DToData,
         ImageConverterFeature::Convert2DToData,
         ImageConverterFeature::Convert3DToData,
         ImageConverterFeature::ConvertCompressed1DToData,
         ImageConverterFeature::ConvertCompressed2DToData,
         ImageConverterFeature::ConvertCompressed3DToData,
-        /* These are implied by Convert[Compressed]ToData, so have to be last */
+        /* These 6 are implied by Convert[Compressed]ToData, so have to be
+           after */
         ImageConverterFeature::Convert1DToFile,
         ImageConverterFeature::Convert2DToFile,
         ImageConverterFeature::Convert3DToFile,

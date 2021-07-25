@@ -164,4 +164,4 @@ bool AnyImageConverter::doConvertToFile(const CompressedImageView3D&, const Cont
 }}
 
 CORRADE_PLUGIN_REGISTER(AnyImageConverter, Magnum::Trade::AnyImageConverter,
-    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3")
+    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3.1")

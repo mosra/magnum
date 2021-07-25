@@ -230,7 +230,115 @@ enum class ImageConverterFeature: UnsignedInt {
      * Implies @ref ImageConverterFeature::ConvertCompressed3DToFile.
      * @m_since_latest
      */
-    ConvertCompressed3DToData = ConvertCompressed3DToFile|(1 << 13)
+    ConvertCompressed3DToData = ConvertCompressed3DToFile|(1 << 13),
+
+    /**
+     * Convert a set of 1D image levels to a file with
+     * @ref AbstractImageConverter::convertToFile(Containers::ArrayView<const ImageView1D>, Containers::StringView).
+     * Implies @ref ImageConverterFeature::Convert1DToFile.
+     * @m_since_latest
+     */
+    ConvertLevels1DToFile = Convert1DToFile|(1 << 14),
+
+    /**
+     * Convert a set of 2D image levels to a file with
+     * @ref AbstractImageConverter::convertToFile(Containers::ArrayView<const ImageView2D>, Containers::StringView).
+     * Implies @ref ImageConverterFeature::Convert2DToFile.
+     * @m_since_latest
+     */
+    ConvertLevels2DToFile = Convert2DToFile|(1 << 14),
+
+    /**
+     * Convert a set of 3D image levels to a file with
+     * @ref AbstractImageConverter::convertToFile(Containers::ArrayView<const ImageView1D>, Containers::StringView).
+     * Implies @ref ImageConverterFeature::Convert3DToFile.
+     * @m_since_latest
+     */
+    ConvertLevels3DToFile = Convert3DToFile|(1 << 14),
+
+    /**
+     * Convert a set of compressed 1D image levels to a file with
+     * @ref AbstractImageConverter::convertToFile(Containers::ArrayView<const CompressedImageView1D>, Containers::StringView).
+     * Implies @ref ImageConverterFeature::ConvertCompressed1DToFile.
+     * @m_since_latest
+     */
+    ConvertCompressedLevels1DToFile = ConvertCompressed1DToFile|(1 << 14),
+
+    /**
+     * Convert a set of compressed 2D image levels to a file with
+     * @ref AbstractImageConverter::convertToFile(Containers::ArrayView<const CompressedImageView2D>, Containers::StringView).
+     * Implies @ref ImageConverterFeature::ConvertCompressed2DToFile.
+     * @m_since_latest
+     */
+    ConvertCompressedLevels2DToFile = ConvertCompressed2DToFile|(1 << 14),
+
+    /**
+     * Convert a set of compressed 3D image levels to a file with
+     * @ref AbstractImageConverter::convertToFile(Containers::ArrayView<const CompressedImageView3D>, Containers::StringView).
+     * Implies @ref ImageConverterFeature::ConvertCompressed3DToFile.
+     * @m_since_latest
+     */
+    ConvertCompressedLevels3DToFile = ConvertCompressed3DToFile|(1 << 14),
+
+    /**
+     * Convert a set of 1D image levels to raw data with
+     * @ref AbstractImageConverter::convertToData(Containers::ArrayView<const ImageView1D>).
+     * Implies @ref ImageConverterFeature::ConvertLevels1DToFile and
+     * @relativeref{ImageConverterFeature,Convert1DToData}, which implies also
+     * @relativeref{ImageConverterFeature,Convert1DToFile}.
+     * @m_since_latest
+     */
+    ConvertLevels1DToData = ConvertLevels1DToFile|Convert1DToData|(1 << 14),
+
+    /**
+     * Convert a set of 2D image levels to raw data with
+     * @ref AbstractImageConverter::convertToData(Containers::ArrayView<const ImageView2D>).
+     * Implies @ref ImageConverterFeature::ConvertLevels2DToFile and
+     * @relativeref{ImageConverterFeature,Convert2DToData}, which implies also
+     * @relativeref{ImageConverterFeature,Convert2DToFile}.
+     * @m_since_latest
+     */
+    ConvertLevels2DToData = ConvertLevels2DToFile|Convert2DToData|(1 << 14),
+
+    /**
+     * Convert a set of 3D image levels to raw data with
+     * @ref AbstractImageConverter::convertToData(Containers::ArrayView<const ImageView3D>).
+     * Implies @ref ImageConverterFeature::ConvertLevels3DToFile and
+     * @relativeref{ImageConverterFeature,Convert3DToData}, which implies also
+     * @relativeref{ImageConverterFeature,Convert3DToFile}.
+     * @m_since_latest
+     */
+    ConvertLevels3DToData = ConvertLevels3DToFile|Convert3DToData|(1 << 14),
+
+    /**
+     * Convert a set of compressed 1D image levels to raw data with
+     * @ref AbstractImageConverter::convertToData(Containers::ArrayView<const CompressedImageView1D>).
+     * Implies @ref ImageConverterFeature::ConvertCompressedLevels1DToFile and
+     * @relativeref{ImageConverterFeature,ConvertCompressed1DToData}, which
+     * implies also @relativeref{ImageConverterFeature,ConvertCompressed1DToFile}.
+     * @m_since_latest
+     */
+    ConvertCompressedLevels1DToData = ConvertCompressedLevels1DToFile|ConvertCompressed1DToData|(1 << 14),
+
+    /**
+     * Convert a set of compressed 2D image levels to raw data with
+     * @ref AbstractImageConverter::convertToData(Containers::ArrayView<const CompressedImageView2D>).
+     * Implies @ref ImageConverterFeature::ConvertCompressedLevels2DToFile and
+     * @relativeref{ImageConverterFeature,ConvertCompressed2DToData}, which
+     * implies also @relativeref{ImageConverterFeature,ConvertCompressed2DToFile}.
+     * @m_since_latest
+     */
+    ConvertCompressedLevels2DToData = ConvertCompressedLevels2DToFile|ConvertCompressed2DToData|(1 << 14),
+
+    /**
+     * Convert a set of compressed 3D image levels to raw data with
+     * @ref AbstractImageConverter::convertToData(Containers::ArrayView<const CompressedImageView3D>).
+     * Implies @ref ImageConverterFeature::ConvertCompressedLevels3DToFile and
+     * @relativeref{ImageConverterFeature,ConvertCompressed3DToData}, which
+     * implies also @relativeref{ImageConverterFeature,ConvertCompressed3DToFile}.
+     * @m_since_latest
+     */
+    ConvertCompressedLevels3DToData = ConvertCompressedLevels3DToFile|ConvertCompressed3DToData|(1 << 14)
 };
 
 /**
@@ -297,10 +405,10 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImageConverterFlags value);
 Provides functionality for converting images between various formats,
 compressing them or saving to files.
 
-The interface supports two main kinds of operation, with implementations
-commonly advertising support for either one or the other via @ref features():
+The interface supports three main kinds of operation, with implementations
+commonly advertising support for a subset of them via @ref features():
 
--   Saving a (compressed) 1D/2D/3D image to a file / data using
+-   Saving a single (compressed) 1D/2D/3D image to a file / data using
     @ref convertToFile() / @ref convertToData(). This is mostly for exporting
     the image data to a common format like JPEG or PNG in order to be used with
     an external tool. Advertised with
@@ -317,6 +425,25 @@ commonly advertising support for either one or the other via @ref features():
     @relativeref{ImageConverterFeature,ConvertCompressed2DToData} /
     @relativeref{ImageConverterFeature,ConvertCompressed3DToData} for
     compressed input images.
+-   Saving a set of (compressed) 1D/2D/3D image levels to a file / data using
+    @ref convertToFile() / @ref convertToData(). Common use case is to save
+    already pregenerated levels instead of having to create them during load.
+    Advertised with @ref ImageConverterFeature::ConvertLevels1DToFile /
+    @relativeref{ImageConverterFeature,ConvertLevels2DToFile} /
+    @relativeref{ImageConverterFeature,ConvertLevels3DToFile} or
+    @ref ImageConverterFeature::ConvertLevels1DToData /
+    @relativeref{ImageConverterFeature,ConvertLevels2DToData} /
+    @relativeref{ImageConverterFeature,ConvertLevels3DToData} and
+    @ref ImageConverterFeature::ConvertCompressedLevels1DToFile /
+    @relativeref{ImageConverterFeature,ConvertCompressedLevels2DToFile} /
+    @relativeref{ImageConverterFeature,ConvertCompressedLevels3DToFile} or
+    @ref ImageConverterFeature::ConvertCompressedLevels1DToData
+    @relativeref{ImageConverterFeature,ConvertCompressedLevels2DToData} /
+    @relativeref{ImageConverterFeature,ConvertCompressedLevels3DToData} for
+    compressed input images. Note that if a plugin advertises those, it's also
+    capable of saving single images --- in that case the single-image
+    @ref convertToFile() / @ref convertToData() delegates to the multi-level
+    variant with just a single image.
 -   Performing an operation on the image data itself using @ref convert(), from
     which you get an @ref ImageData back again. This includes operations like
     pixel format conversion or for example resampling. Advertised with
@@ -417,15 +544,27 @@ checked by the implementation:
 -   The function @ref doConvertToData(const ImageView2D&) is called only if
     @ref ImageConverterFeature::Convert2DToData is supported and equivalently
     for the 1D and 3D case.
+-   The function @ref doConvertToData(Containers::ArrayView<const ImageView2D>)
+    is called only if @ref ImageConverterFeature::ConvertLevels2DToData is
+    supported and equivalently for the 1D and 3D case.
 -   The function @ref doConvertToData(const CompressedImageView2D&) is called
     only if @ref ImageConverterFeature::ConvertCompressed2DToData is supported
     and equivalently for the 1D and 3D case.
+-   The function @ref doConvertToData(Containers::ArrayView<const CompressedImageView2D>)
+    is called only if @ref ImageConverterFeature::ConvertCompressedLevels2DToData
+    is supported and equivalently for the 1D and 3D case.
 -   The function @ref doConvertToFile(const ImageView2D&, Containers::StringView)
     is called only if @ref ImageConverterFeature::Convert2DToFile is supported
     and equivalently for the 1D and 3D case.
+-   The function @ref doConvertToFile(Containers::ArrayView<const ImageView2D>, Containers::StringView)
+    is called only if @ref ImageConverterFeature::ConvertLevels2DToFile is
+    supported and equivalently for the 1D and 3D case.
 -   The function @ref doConvertToFile(const CompressedImageView2D&, Containers::StringView)
     is called only if @ref ImageConverterFeature::ConvertCompressed2DToFile is
     supported and equivalently for the 1D and 3D case.
+-   The function @ref doConvertToFile(Containers::ArrayView<const CompressedImageView2D>, Containers::StringView)
+    is called only if @ref ImageConverterFeature::ConvertCompressedLevels2DToFile
+    is supported and equivalently for the 1D and 3D case.
 
 @m_class{m-block m-warning}
 
@@ -642,6 +781,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @ref convert(const ImageView1D&) or
          * @ref convert(const CompressedImageView1D&). See documentation of
          * these two functions for details.
+         *
+         * This overload is not provided for multi-level conversion as the
+         * view list creation can be done more optimally on the application
+         * side.
          * @see @ref ImageData::isCompressed()
          */
         Containers::Optional<ImageData1D> convert(const ImageData1D& image);
@@ -654,6 +797,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @ref convert(const ImageView2D&) or
          * @ref convert(const CompressedImageView2D&). See documentation of
          * these two functions for details.
+         *
+         * This overload is not provided for multi-level conversion as the
+         * view list creation can be done more optimally on the application
+         * side.
          * @see @ref ImageData::isCompressed()
          */
         Containers::Optional<ImageData2D> convert(const ImageData2D& image);
@@ -666,6 +813,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @ref convert(const ImageView3D&) or
          * @ref convert(const CompressedImageView3D&). See documentation of
          * these two functions for details.
+         *
+         * This overload is not provided for multi-level conversion as the
+         * view list creation can be done more optimally on the application
+         * side.
          * @see @ref ImageData::isCompressed()
          */
         Containers::Optional<ImageData3D> convert(const ImageData3D& image);
@@ -674,8 +825,9 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @brief Convert a 1D image to a raw data
          * @m_since_latest
          *
-         * Available only if @ref ImageConverterFeature::Convert1DToData is
-         * supported. Returns data on success, @cpp nullptr @ce otherwise.
+         * Available only if @ref ImageConverterFeature::Convert1DToData or
+         * @ref ImageConverterFeature::ConvertLevels1DToData is supported.
+         * Returns data on success, @cpp nullptr @ce otherwise.
          * @see @ref features(), @ref convertToData(const CompressedImageView1D&),
          *      @ref convertToData(const ImageData1D&), @ref convert(),
          *      @ref convertToFile()
@@ -686,8 +838,9 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @brief Convert a 2D image to a raw data
          * @m_since_latest
          *
-         * Available only if @ref ImageConverterFeature::Convert2DToData is
-         * supported. Returns data on success, @cpp nullptr @ce otherwise.
+         * Available only if @ref ImageConverterFeature::Convert2DToData or
+         * @ref ImageConverterFeature::ConvertLevels2DToData is supported.
+         * Returns data on success, @cpp nullptr @ce otherwise.
          * @see @ref features(), @ref convertToData(const CompressedImageView2D&),
          *      @ref convertToData(const ImageData2D&), @ref convert(),
          *      @ref convertToFile()
@@ -707,8 +860,9 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @brief Convert a 3D image to a raw data
          * @m_since_latest
          *
-         * Available only if @ref ImageConverterFeature::Convert3DToData is
-         * supported. Returns data on success, @cpp nullptr @ce otherwise.
+         * Available only if @ref ImageConverterFeature::Convert3DToData or
+         * @ref ImageConverterFeature::ConvertLevels3DToData is supported.
+         * Returns data on success, @cpp nullptr @ce otherwise.
          * @see @ref features(), @ref convertToData(const CompressedImageView3D&),
          *      @ref convertToData(const ImageData3D&), @ref convert(),
          *      @ref convertToFile()
@@ -720,7 +874,8 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @m_since_latest
          *
          * Available only if @ref ImageConverterFeature::ConvertCompressed1DToData
-         * is supported. Returns data on success, @cpp nullptr @ce otherwise.
+         * or @ref ImageConverterFeature::ConvertCompressedLevels1DToData is
+         * supported. Returns data on success, @cpp nullptr @ce otherwise.
          * @see @ref features(), @ref convertToData(const ImageView1D&),
          *      @ref convertToData(const ImageData1D&), @ref convert(),
          *      @ref convertToFile()
@@ -732,7 +887,8 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @m_since_latest
          *
          * Available only if @ref ImageConverterFeature::ConvertCompressed2DToData
-         * is supported. Returns data on success, @cpp nullptr @ce otherwise.
+         * or @ref ImageConverterFeature::ConvertCompressedLevels2DToData is
+         * supported. Returns data on success, @cpp nullptr @ce otherwise.
          * @see @ref features(), @ref convertToData(const ImageView2D&),
          *      @ref convertToData(const ImageData2D&), @ref convert(),
          *      @ref convertToFile()
@@ -753,7 +909,8 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @m_since_latest
          *
          * Available only if @ref ImageConverterFeature::ConvertCompressed3DToData
-         * is supported. Returns data on success, @cpp nullptr @ce otherwise.
+         * or @ref ImageConverterFeature::ConvertCompressedLevels3DToData is
+         * supported. Returns data on success, @cpp nullptr @ce otherwise.
          * @see @ref features(), @ref convertToData(const ImageView3D&),
          *      @ref convertToData(const ImageData3D&), @ref convert(),
          *      @ref convertToFile()
@@ -804,6 +961,102 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @see @ref ImageData::isCompressed()
          */
         Containers::Array<char> convertToData(const ImageData3D& image);
+
+        /**
+         * @brief Convert a set of 1D image levels to a raw data
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertLevels1DToData
+         * is supported. Note that certain converters may impose size and order
+         * restrictions on the images, see documentation of a particular plugin
+         * for more information. Returns data on success, @cpp nullptr @ce
+         * otherwise.
+         * @see @ref features(), @ref convertToData(Containers::ArrayView<const CompressedImageView1D>),
+         *      @ref convert(), @ref convertToFile()
+         */
+        Containers::Array<char> convertToData(Containers::ArrayView<const ImageView1D> imageLevels);
+        /** @overload */
+        Containers::Array<char> convertToData(std::initializer_list<ImageView1D> imageLevels);
+
+        /**
+         * @brief Convert a set of 2D image levels to a raw data
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertLevels2DToData
+         * is supported. Note that certain converters may impose size and order
+         * restrictions on the images, see documentation of a particular plugin
+         * for more information. Returns data on success, @cpp nullptr @ce
+         * otherwise.
+         * @see @ref features(), @ref convertToData(Containers::ArrayView<const CompressedImageView2D>),
+         *      @ref convert(), @ref convertToFile()
+         */
+        Containers::Array<char> convertToData(Containers::ArrayView<const ImageView2D> imageLevels);
+        /** @overload */
+        Containers::Array<char> convertToData(std::initializer_list<ImageView2D> imageLevels);
+
+        /**
+         * @brief Convert a set of 3D image levels to a raw data
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertLevels3DToData
+         * is supported. Note that certain converters may impose size and order
+         * restrictions on the images, see documentation of a particular plugin
+         * for more information. Returns data on success, @cpp nullptr @ce
+         * otherwise.
+         * @see @ref features(), @ref convertToData(Containers::ArrayView<const CompressedImageView3D>),
+         *      @ref convert(), @ref convertToFile()
+         */
+        Containers::Array<char> convertToData(Containers::ArrayView<const ImageView3D> imageLevels);
+        /** @overload */
+        Containers::Array<char> convertToData(std::initializer_list<ImageView3D> imageLevels);
+
+        /**
+         * @brief Convert a set of compressed 1D image levels to a raw data
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressedLevels1DToData
+         * is supported. Note that certain converters may impose size and order
+         * restrictions on the images, see documentation of a particular plugin
+         * for more information. Returns data on success, @cpp nullptr @ce
+         * otherwise.
+         * @see @ref features(), @ref convertToData(Containers::ArrayView<const ImageView1D>),
+         *      @ref convert(), @ref convertToFile()
+         */
+        Containers::Array<char> convertToData(Containers::ArrayView<const CompressedImageView1D> imageLevels);
+        /** @overload */
+        Containers::Array<char> convertToData(std::initializer_list<CompressedImageView1D> imageLevels);
+
+        /**
+         * @brief Convert a set of compressed 2D image levels to a raw data
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressedLevels2DToData
+         * is supported. Note that certain converters may impose size and order
+         * restrictions on the images, see documentation of a particular plugin
+         * for more information. Returns data on success, @cpp nullptr @ce
+         * otherwise.
+         * @see @ref features(), @ref convertToData(Containers::ArrayView<const ImageView2D>),
+         *      @ref convert(), @ref convertToFile()
+         */
+        Containers::Array<char> convertToData(Containers::ArrayView<const CompressedImageView2D> imageLevels);
+        /** @overload */
+        Containers::Array<char> convertToData(std::initializer_list<CompressedImageView2D> imageLevels);
+
+        /**
+         * @brief Convert a set of compressed 3D image levels to a raw data
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressedLevels3DToData
+         * is supported. Note that certain converters may impose size and order
+         * restrictions on the images, see documentation of a particular plugin
+         * for more information. Returns data on success, @cpp nullptr @ce
+         * otherwise.
+         * @see @ref features(), @ref convertToData(Containers::ArrayView<const ImageView3D>),
+         *      @ref convert(), @ref convertToFile()
+         */
+        Containers::Array<char> convertToData(Containers::ArrayView<const CompressedImageView3D> images);
+        /** @overload */
+        Containers::Array<char> convertToData(std::initializer_list<CompressedImageView3D> images);
 
         /**
          * @brief Convert a 1D image to a file
@@ -914,6 +1167,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @ref convertToFile(const ImageView1D&, Containers::StringView) or
          * @ref convertToFile(const CompressedImageView1D&, Containers::StringView).
          * See documentation of these two functions for details.
+         *
+         * This overload is not provided for multi-level conversion as the
+         * view list creation can be done more optimally on the application
+         * side.
          * @see @ref ImageData::isCompressed()
          */
         bool convertToFile(const ImageData1D& image, Containers::StringView filename);
@@ -926,6 +1183,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @ref convertToFile(const ImageView2D&, Containers::StringView) or
          * @ref convertToFile(const CompressedImageView2D&, Containers::StringView).
          * See documentation of these two functions for details.
+         *
+         * This overload is not provided for multi-level conversion as the
+         * view list creation can be done more optimally on the application
+         * side.
          * @see @ref ImageData::isCompressed()
          */
         bool convertToFile(const ImageData2D& image, Containers::StringView filename);
@@ -948,16 +1209,120 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @ref convertToFile(const ImageView3D&, Containers::StringView) or
          * @ref convertToFile(const CompressedImageView3D&, Containers::StringView).
          * See documentation of these two functions for details.
+         *
+         * This overload is not provided for multi-level conversion as the
+         * view list creation can be done more optimally on the application
+         * side.
          * @see @ref ImageData::isCompressed()
          */
         bool convertToFile(const ImageData3D& image, Containers::StringView filename);
+
+        /**
+         * @brief Convert a set of 1D image levels to a file
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertLevels1DToFile
+         * is supported. Note that certain converters may impose size and order
+         * restrictions on the images, see documentation of a particular plugin
+         * for more information. Returns @cpp true @ce on success,
+         * @cpp false @ce otherwise.
+         * @see @ref features(), @ref convertToFile(Containers::ArrayView<const CompressedImageView1D>, Containers::StringView),
+         *      @ref convert(), @ref convertToData()
+         */
+        bool convertToFile(Containers::ArrayView<const ImageView1D> imageLevels, Containers::StringView filename);
+        /** @overload */
+        bool convertToFile(std::initializer_list<ImageView1D> imageLevels, Containers::StringView filename);
+
+        /**
+         * @brief Convert a set of 2D image levels to a file
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertLevels2DToFile
+         * is supported. Note that certain converters may impose size and order
+         * restrictions on the images, see documentation of a particular plugin
+         * for more information. Returns @cpp true @ce on success,
+         * @cpp false @ce otherwise.
+         * @see @ref features(), @ref convertToFile(Containers::ArrayView<const CompressedImageView2D>, Containers::StringView),
+         *      @ref convert(), @ref convertToData()
+         */
+        bool convertToFile(Containers::ArrayView<const ImageView2D> imageLevels, Containers::StringView filename);
+        /** @overload */
+        bool convertToFile(std::initializer_list<ImageView2D> imageLevels, Containers::StringView filename);
+
+        /**
+         * @brief Convert a set of 3D image levels to a file
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertLevels3DToFile
+         * is supported. Note that certain converters may impose size and order
+         * restrictions on the images, see documentation of a particular plugin
+         * for more information. Returns @cpp true @ce on success,
+         * @cpp false @ce otherwise.
+         * @see @ref features(), @ref convertToFile(Containers::ArrayView<const CompressedImageView3D>, Containers::StringView),
+         *      @ref convert(), @ref convertToData()
+         */
+        bool convertToFile(Containers::ArrayView<const ImageView3D> imageLevels, Containers::StringView filename);
+        /** @overload */
+        bool convertToFile(std::initializer_list<ImageView3D> imageLevels, Containers::StringView filename);
+
+        /**
+         * @brief Convert a set of compressed 1D image levels to a file
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressedLevels1DToFile
+         * is supported. Note that certain converters may impose size and order
+         * restrictions on the images, see documentation of a particular plugin
+         * for more information. Returns @cpp true @ce on success,
+         * @cpp false @ce otherwise.
+         * @see @ref features(), @ref convertToFile(Containers::ArrayView<const ImageView1D>, Containers::StringView),
+         *      @ref convert(), @ref convertToData()
+         */
+        bool convertToFile(Containers::ArrayView<const CompressedImageView1D> imageLevels, Containers::StringView filename);
+        /** @overload */
+        bool convertToFile(std::initializer_list<CompressedImageView1D> imageLevels, Containers::StringView filename);
+
+        /**
+         * @brief Convert a set of compressed 2D image levels to a file
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressedLevels2DToFile
+         * is supported. Note that certain converters may impose size and order
+         * restrictions on the images, see documentation of a particular plugin
+         * for more information. Returns @cpp true @ce on success,
+         * @cpp false @ce otherwise.
+         * @see @ref features(), @ref convertToFile(Containers::ArrayView<const ImageView2D>, Containers::StringView),
+         *      @ref convert(), @ref convertToData()
+         */
+        bool convertToFile(Containers::ArrayView<const CompressedImageView2D> imageLevels, Containers::StringView filename);
+        /** @overload */
+        bool convertToFile(std::initializer_list<CompressedImageView2D> imageLevels, Containers::StringView filename);
+
+        /**
+         * @brief Convert a set of compressed 3D image levels to a file
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::ConvertCompressedLevels3DToFile
+         * is supported. Note that certain converters may impose size and order
+         * restrictions on the images, see documentation of a particular plugin
+         * for more information. Returns @cpp true @ce on success,
+         * @cpp false @ce otherwise.
+         * @see @ref features(), @ref convertToFile(Containers::ArrayView<const ImageView3D>, Containers::StringView),
+         *      @ref convert(), @ref convertToData()
+         */
+        bool convertToFile(Containers::ArrayView<const CompressedImageView3D> imageLevels, Containers::StringView filename);
+        /** @overload */
+        bool convertToFile(std::initializer_list<CompressedImageView3D> imageLevels, Containers::StringView filename);
 
     protected:
         /**
          * @brief Implementation for @ref convertToFile(const ImageView1D&, Containers::StringView)
          * @m_since_latest
          *
-         * If @ref ImageConverterFeature::Convert1DToData is supported, default
+         * If @ref ImageConverterFeature::ConvertLevels1DToFile is supported,
+         * default implementation calls
+         * @ref doConvertToFile(Containers::ArrayView<const ImageView1D>, Containers::StringView)
+         * with just the single @p image. Otherwise, if
+         * @ref ImageConverterFeature::Convert1DToData is supported, default
          * implementation calls @ref doConvertToData(const ImageView1D&) and
          * saves the result to given file. It is allowed to call this function
          * from your @ref doConvertToFile() implementation, for example when
@@ -969,7 +1334,11 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @brief Implementation for @ref convertToFile(const ImageView2D&, Containers::StringView)
          * @m_since_latest
          *
-         * If @ref ImageConverterFeature::Convert2DToData is supported, default
+         * If @ref ImageConverterFeature::ConvertLevels2DToFile is supported,
+         * default implementation calls
+         * @ref doConvertToFile(Containers::ArrayView<const ImageView2D>, Containers::StringView)
+         * with just the single @p image. Otherwise, if
+         * @ref ImageConverterFeature::Convert2DToData is supported, default
          * implementation calls @ref doConvertToData(const ImageView2D&) and
          * saves the result to given file. It is allowed to call this function
          * from your @ref doConvertToFile() implementation, for example when
@@ -981,7 +1350,11 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @brief Implementation for @ref convertToFile(const ImageView3D&, Containers::StringView)
          * @m_since_latest
          *
-         * If @ref ImageConverterFeature::Convert3DToData is supported, default
+         * If @ref ImageConverterFeature::ConvertLevels3DToFile is supported,
+         * default implementation calls
+         * @ref doConvertToFile(Containers::ArrayView<const ImageView3D>, Containers::StringView)
+         * with just the single @p image. Otherwise, if
+         * @ref ImageConverterFeature::Convert3DToData is supported, default
          * implementation calls @ref doConvertToData(const ImageView3D&) and
          * saves the result to given file. It is allowed to call this function
          * from your @ref doConvertToFile() implementation, for example when
@@ -993,8 +1366,12 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @brief Implementation for @ref convertToFile(const CompressedImageView1D&, Containers::StringView)
          * @m_since_latest
          *
-         * If @ref ImageConverterFeature::ConvertCompressed1DToData is
-         * supported, default implementation calls @ref doConvertToData(const CompressedImageView1D&)
+         * If @ref ImageConverterFeature::ConvertCompressedLevels1DToFile is
+         * supported, default implementation calls
+         * @ref doConvertToFile(Containers::ArrayView<const CompressedImageView1D>, Containers::StringView)
+         * with just the single @p image. Otherwise, if
+         * @ref ImageConverterFeature::ConvertCompressed1DToData is supported,
+         * default implementation calls @ref doConvertToData(const CompressedImageView1D&)
          * and saves the result to given file. It is allowed to call this
          * function from your @ref doConvertToFile() implementation, for
          * example when you only need to do format detection based on file
@@ -1006,8 +1383,12 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @brief Implementation for @ref convertToFile(const CompressedImageView2D&, Containers::StringView)
          * @m_since_latest
          *
-         * If @ref ImageConverterFeature::ConvertCompressed2DToData is
-         * supported, default implementation calls @ref doConvertToData(const CompressedImageView2D&)
+         * If @ref ImageConverterFeature::ConvertCompressedLevels2DToFile is
+         * supported, default implementation calls
+         * @ref doConvertToFile(Containers::ArrayView<const CompressedImageView2D>, Containers::StringView)
+         * with just the single @p image. Otherwise, if
+         * @ref ImageConverterFeature::ConvertCompressed2DToData is supported,
+         * default implementation calls @ref doConvertToData(const CompressedImageView2D&)
          * and saves the result to given file. It is allowed to call this
          * function from your @ref doConvertToFile() implementation, for
          * example when you only need to do format detection based on file
@@ -1019,14 +1400,97 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @brief Implementation for @ref convertToFile(const CompressedImageView3D&, Containers::StringView)
          * @m_since_latest
          *
-         * If @ref ImageConverterFeature::ConvertCompressed3DToData is
-         * supported, default implementation calls @ref doConvertToData(const CompressedImageView3D&)
+         * If @ref ImageConverterFeature::ConvertCompressedLevels3DToFile is
+         * supported, default implementation calls
+         * @ref doConvertToFile(Containers::ArrayView<const CompressedImageView3D>, Containers::StringView)
+         * with just the single @p image. Otherwise, if
+         * @ref ImageConverterFeature::ConvertCompressed3DToData is supported,
+         * default implementation calls @ref doConvertToData(const CompressedImageView3D&)
          * and saves the result to given file. It is allowed to call this
          * function from your @ref doConvertToFile() implementation, for
          * example when you only need to do format detection based on file
          * extension.
          */
         virtual bool doConvertToFile(const CompressedImageView3D& image, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(Containers::ArrayView<const ImageView1D>, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertLevels1DToData is supported,
+         * default implementation calls
+         * @ref doConvertToData(Containers::ArrayView<const ImageView1D>) and
+         * saves the result to given file. It is allowed to call this function
+         * from your @ref doConvertToFile() implementation, for example when
+         * you only need to do format detection based on file extension.
+         */
+        virtual bool doConvertToFile(Containers::ArrayView<const ImageView1D> imageLevels, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(Containers::ArrayView<const ImageView2D>, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertLevels1DToData is supported,
+         * default implementation calls
+         * @ref doConvertToData(Containers::ArrayView<const ImageView2D>) and
+         * saves the result to given file. It is allowed to call this function
+         * from your @ref doConvertToFile() implementation, for example when
+         * you only need to do format detection based on file extension.
+         */
+        virtual bool doConvertToFile(Containers::ArrayView<const ImageView2D> imageLevels, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(Containers::ArrayView<const ImageView3D>, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertLevels1DToData is supported,
+         * default implementation calls
+         * @ref doConvertToData(Containers::ArrayView<const ImageView3D>) and
+         * saves the result to given file. It is allowed to call this function
+         * from your @ref doConvertToFile() implementation, for example when
+         * you only need to do format detection based on file extension.
+         */
+        virtual bool doConvertToFile(Containers::ArrayView<const ImageView3D> imageLevels, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(Containers::ArrayView<const CompressedImageView1D>, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertCompressedLevels1DToData is
+         * supported, default implementation calls
+         * @ref doConvertToData(Containers::ArrayView<const CompressedImageView1D>)
+         * and saves the result to given file. It is allowed to call this
+         * function from your @ref doConvertToFile() implementation, for
+         * example when you only need to do format detection based on file
+         * extension.
+         */
+        virtual bool doConvertToFile(Containers::ArrayView<const CompressedImageView1D> image, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(Containers::ArrayView<const CompressedImageView2D>, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertCompressedLevels2DToData is
+         * supported, default implementation calls @ref doConvertToData(Containers::ArrayView<const CompressedImageView2D>)
+         * and saves the result to given file. It is allowed to call this
+         * function from your @ref doConvertToFile() implementation, for
+         * example when you only need to do format detection based on file
+         * extension.
+         */
+        virtual bool doConvertToFile(Containers::ArrayView<const CompressedImageView2D> image, Containers::StringView filename);
+
+        /**
+         * @brief Implementation for @ref convertToFile(Containers::ArrayView<const CompressedImageView3D>, Containers::StringView)
+         * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertCompressedLevels3DToData is
+         * supported, default implementation calls @ref doConvertToData(Containers::ArrayView<const CompressedImageView3D>)
+         * and saves the result to given file. It is allowed to call this
+         * function from your @ref doConvertToFile() implementation, for
+         * example when you only need to do format detection based on file
+         * extension.
+         */
+        virtual bool doConvertToFile(Containers::ArrayView<const CompressedImageView3D> image, Containers::StringView filename);
 
     private:
         /** @brief Implementation for @ref features() */
@@ -1087,38 +1551,101 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         /**
          * @brief Implementation for @ref convertToData(const ImageView1D&)
          * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertLevels1DToData is supported,
+         * default implementation calls @ref doConvertToData(Containers::ArrayView<const ImageView1D>)
+         * with just the single @p image and propagates the result back.
          */
         virtual Containers::Array<char> doConvertToData(const ImageView1D& image);
 
         /**
          * @brief Implementation for @ref convertToData(const ImageView2D&)
          * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertLevels2DToData is supported,
+         * default implementation calls @ref doConvertToData(Containers::ArrayView<const ImageView2D>)
+         * with just the single @p image and propagates the result back.
          */
         virtual Containers::Array<char> doConvertToData(const ImageView2D& image);
 
         /**
          * @brief Implementation for @ref convertToData(const ImageView3D&)
          * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertLevels3DToData is supported,
+         * default implementation calls @ref doConvertToData(Containers::ArrayView<const ImageView3D>)
+         * with just the single @p image and propagates the result back.
          */
         virtual Containers::Array<char> doConvertToData(const ImageView3D& image);
 
         /**
          * @brief Implementation for @ref convertToData(const CompressedImageView1D&)
          * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertCompressedLevels1DToData is
+         * supported, default implementation calls
+         * @ref doConvertToData(Containers::ArrayView<const CompressedImageView1D>)
+         * with just the single @p image and propagates the result back.
          */
         virtual Containers::Array<char> doConvertToData(const CompressedImageView1D& image);
 
         /**
          * @brief Implementation for @ref convertToData(const CompressedImageView2D&)
          * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertCompressedLevels2DToData is
+         * supported, default implementation calls
+         * @ref doConvertToData(Containers::ArrayView<const CompressedImageView2D>)
+         * with just the single @p image and propagates the result back.
          */
         virtual Containers::Array<char> doConvertToData(const CompressedImageView2D& image);
 
         /**
          * @brief Implementation for @ref convertToData(const CompressedImageView3D&)
          * @m_since_latest
+         *
+         * If @ref ImageConverterFeature::ConvertCompressedLevels3DToData is
+         * supported, default implementation calls
+         * @ref doConvertToData(Containers::ArrayView<const CompressedImageView3D>)
+         * with just the single @p image and propagates the result back.
          */
         virtual Containers::Array<char> doConvertToData(const CompressedImageView3D& image);
+
+        /**
+         * @brief Implementation for @ref convertToData(Containers::ArrayView<const ImageView1D>)
+         * @m_since_latest
+         */
+        virtual Containers::Array<char> doConvertToData(Containers::ArrayView<const ImageView1D> imageLevels);
+
+        /**
+         * @brief Implementation for @ref convertToData(Containers::ArrayView<const ImageView2D>)
+         * @m_since_latest
+         */
+        virtual Containers::Array<char> doConvertToData(Containers::ArrayView<const ImageView2D> imageLevels);
+
+        /**
+         * @brief Implementation for @ref convertToData(Containers::ArrayView<const ImageView3D>)
+         * @m_since_latest
+         */
+        virtual Containers::Array<char> doConvertToData(Containers::ArrayView<const ImageView3D> imageLevels);
+
+        /**
+         * @brief Implementation for @ref convertToData(Containers::ArrayView<const CompressedImageView1D>)
+         * @m_since_latest
+         */
+        virtual Containers::Array<char> doConvertToData(Containers::ArrayView<const CompressedImageView1D> imageLevels);
+
+        /**
+         * @brief Implementation for @ref convertToData(Containers::ArrayView<const CompressedImageView2D>)
+         * @m_since_latest
+         */
+        virtual Containers::Array<char> doConvertToData(Containers::ArrayView<const CompressedImageView2D> imageLevels);
+
+        /**
+         * @brief Implementation for @ref convertToData(Containers::ArrayView<const CompressedImageView3D>)
+         * @m_since_latest
+         */
+        virtual Containers::Array<char> doConvertToData(Containers::ArrayView<const CompressedImageView3D> imageLevels);
 
         ImageConverterFlags _flags;
 };
