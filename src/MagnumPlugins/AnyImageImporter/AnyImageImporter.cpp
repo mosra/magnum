@@ -252,11 +252,23 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
     _in = std::move(importer);
 }
 
+UnsignedInt AnyImageImporter::doImage1DCount() const { return _in->image1DCount(); }
+
+UnsignedInt AnyImageImporter::doImage1DLevelCount(UnsignedInt id) { return _in->image1DLevelCount(id); }
+
+Containers::Optional<ImageData1D> AnyImageImporter::doImage1D(const UnsignedInt id, const UnsignedInt level) { return _in->image1D(id, level); }
+
 UnsignedInt AnyImageImporter::doImage2DCount() const { return _in->image2DCount(); }
 
 UnsignedInt AnyImageImporter::doImage2DLevelCount(UnsignedInt id) { return _in->image2DLevelCount(id); }
 
 Containers::Optional<ImageData2D> AnyImageImporter::doImage2D(const UnsignedInt id, const UnsignedInt level) { return _in->image2D(id, level); }
+
+UnsignedInt AnyImageImporter::doImage3DCount() const { return _in->image3DCount(); }
+
+UnsignedInt AnyImageImporter::doImage3DLevelCount(UnsignedInt id) { return _in->image3DLevelCount(id); }
+
+Containers::Optional<ImageData3D> AnyImageImporter::doImage3D(const UnsignedInt id, const UnsignedInt level) { return _in->image3D(id, level); }
 
 }}
 

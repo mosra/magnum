@@ -138,10 +138,11 @@ that, flags set via @ref setFlags() and options set through
 warning emitted in case given option is not present in the default
 configuration of the target plugin.
 
-Calls to the @ref image2DCount(), @ref image2DLevelCount() and @ref image2D()
-functions are then proxied to the concrete implementation. The @ref close()
-function closes and discards the internally instantiated plugin;
-@ref isOpened() works as usual.
+Calls to the @ref image1DCount() / @ref image2DCount() / @ref image3DCount(),
+@ref doImage1DLevelCount() / @ref image2DLevelCount() / @ref image3DLevelCount()
+and @ref image1D() / @ref image2D() / @ref image3D() functions are then proxied
+to the concrete implementation. The @ref close() function closes and discards
+the internally instantiated plugin; @ref isOpened() works as usual.
 */
 class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
     public:
@@ -177,9 +178,17 @@ class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
         MAGNUM_ANYIMAGEIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL void doOpenData(Containers::ArrayView<const char> data) override;
 
+        MAGNUM_ANYIMAGEIMPORTER_LOCAL UnsignedInt doImage1DCount() const override;
+        MAGNUM_ANYIMAGEIMPORTER_LOCAL UnsignedInt doImage1DLevelCount(UnsignedInt id) override;
+        MAGNUM_ANYIMAGEIMPORTER_LOCAL Containers::Optional<ImageData1D> doImage1D(UnsignedInt id, UnsignedInt level) override;
+
         MAGNUM_ANYIMAGEIMPORTER_LOCAL UnsignedInt doImage2DCount() const override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL UnsignedInt doImage2DLevelCount(UnsignedInt id) override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL Containers::Optional<ImageData2D> doImage2D(UnsignedInt id, UnsignedInt level) override;
+
+        MAGNUM_ANYIMAGEIMPORTER_LOCAL UnsignedInt doImage3DCount() const override;
+        MAGNUM_ANYIMAGEIMPORTER_LOCAL UnsignedInt doImage3DLevelCount(UnsignedInt id) override;
+        MAGNUM_ANYIMAGEIMPORTER_LOCAL Containers::Optional<ImageData3D> doImage3D(UnsignedInt id, UnsignedInt level) override;
 
         Containers::Pointer<AbstractImporter> _in;
 };

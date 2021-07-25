@@ -45,7 +45,9 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct AnyImageImporterTest: TestSuite::Tester {
     explicit AnyImageImporterTest();
 
-    void load();
+    void load1D();
+    void load2D();
+    void load3D();
     void detect();
 
     void unknownExtension();
@@ -72,7 +74,7 @@ constexpr struct {
     const char* filename;
     Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
     const char* messageFunctionName;
-} LoadData[]{
+} Load2DData[]{
     {"TGA", TGA_FILE, nullptr, "openFile"},
     {"TGA data", TGA_FILE, fileCallback, "openData"}
 };
@@ -134,8 +136,12 @@ constexpr struct {
 };
 
 AnyImageImporterTest::AnyImageImporterTest() {
-    addInstancedTests({&AnyImageImporterTest::load},
-        Containers::arraySize(LoadData));
+    addTests({&AnyImageImporterTest::load1D});
+
+    addInstancedTests({&AnyImageImporterTest::load2D},
+        Containers::arraySize(Load2DData));
+
+    addTests({&AnyImageImporterTest::load3D});
 
     addInstancedTests({&AnyImageImporterTest::detect},
         Containers::arraySize(DetectData));
@@ -148,13 +154,13 @@ AnyImageImporterTest::AnyImageImporterTest() {
     addTests({&AnyImageImporterTest::emptyData});
 
     addInstancedTests({&AnyImageImporterTest::propagateFlags},
-        Containers::arraySize(LoadData));
+        Containers::arraySize(Load2DData));
 
     addInstancedTests({&AnyImageImporterTest::propagateConfiguration},
         Containers::arraySize(PropagateConfigurationData));
 
     addInstancedTests({&AnyImageImporterTest::propagateConfigurationUnknown},
-        Containers::arraySize(LoadData));
+        Containers::arraySize(Load2DData));
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -167,8 +173,12 @@ AnyImageImporterTest::AnyImageImporterTest() {
     #endif
 }
 
-void AnyImageImporterTest::load() {
-    auto&& data = LoadData[testCaseInstanceId()];
+void AnyImageImporterTest::load1D() {
+    CORRADE_SKIP("No file formats supporting 1D images yet.");
+}
+
+void AnyImageImporterTest::load2D() {
+    auto&& data = Load2DData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(!(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -188,6 +198,10 @@ void AnyImageImporterTest::load() {
 
     importer->close();
     CORRADE_VERIFY(!importer->isOpened());
+}
+
+void AnyImageImporterTest::load3D() {
+    CORRADE_SKIP("No file formats supporting 3D images yet.");
 }
 
 void AnyImageImporterTest::detect() {
@@ -246,7 +260,7 @@ void AnyImageImporterTest::emptyData() {
 }
 
 void AnyImageImporterTest::propagateFlags() {
-    auto&& data = LoadData[testCaseInstanceId()];
+    auto&& data = Load2DData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(!(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -304,7 +318,7 @@ void AnyImageImporterTest::propagateConfiguration() {
 }
 
 void AnyImageImporterTest::propagateConfigurationUnknown() {
-    auto&& data = LoadData[testCaseInstanceId()];
+    auto&& data = Load2DData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(!(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
