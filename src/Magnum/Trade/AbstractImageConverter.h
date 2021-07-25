@@ -755,7 +755,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * Available only if @ref ImageConverterFeature::ConvertCompressed3DToData
          * is supported. Returns data on success, @cpp nullptr @ce otherwise.
          * @see @ref features(), @ref convertToData(const ImageView3D&),
-         *      @ref convertToData(const ImageData3D&), @ref convert()
+         *      @ref convertToData(const ImageData3D&), @ref convert(),
          *      @ref convertToFile()
          */
         Containers::Array<char> convertToData(const CompressedImageView3D& image);
