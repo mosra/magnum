@@ -47,7 +47,22 @@ AnyImageConverter::AnyImageConverter(PluginManager::AbstractManager& manager, co
 AnyImageConverter::~AnyImageConverter() = default;
 
 ImageConverterFeatures AnyImageConverter::doFeatures() const {
-    return ImageConverterFeature::Convert2DToFile|ImageConverterFeature::ConvertCompressed2DToFile;
+    return
+        ImageConverterFeature::Convert1DToFile|
+        ImageConverterFeature::Convert2DToFile|
+        ImageConverterFeature::Convert3DToFile|
+        ImageConverterFeature::ConvertCompressed1DToFile|
+        ImageConverterFeature::ConvertCompressed2DToFile|
+        ImageConverterFeature::ConvertCompressed3DToFile;
+}
+
+bool AnyImageConverter::doConvertToFile(const ImageView1D&, const Containers::StringView filename) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* No file formats to store 1D data yet */
+
+    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a 1D image";
+    return false;
 }
 
 bool AnyImageConverter::doConvertToFile(const ImageView2D& image, const Containers::StringView filename) {
@@ -79,7 +94,7 @@ bool AnyImageConverter::doConvertToFile(const ImageView2D& image, const Containe
             normalized.hasSuffix( ".vst"_s))
         plugin = "TgaImageConverter"_s;
     else {
-        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename;
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a 2D image";
         return false;
     }
 
@@ -110,12 +125,39 @@ bool AnyImageConverter::doConvertToFile(const ImageView2D& image, const Containe
     return converter->convertToFile(image, filename);
 }
 
+bool AnyImageConverter::doConvertToFile(const ImageView3D&, const Containers::StringView filename) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* No file formats to store 3D data yet */
+
+    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a 3D image";
+    return false;
+}
+
+bool AnyImageConverter::doConvertToFile(const CompressedImageView1D&, const Containers::StringView filename) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* No file formats to store compressed 1D data yet */
+
+    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 1D image";
+    return false;
+}
+
 bool AnyImageConverter::doConvertToFile(const CompressedImageView2D&, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /* No file formats to store compressed data yet */
+    /* No file formats to store compressed 2D data yet */
 
-    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "to store compressed data";
+    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 2D image";
+    return false;
+}
+
+bool AnyImageConverter::doConvertToFile(const CompressedImageView3D&, const Containers::StringView filename) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* No file formats to store compressed 3D data yet */
+
+    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 3D image";
     return false;
 }
 

@@ -45,20 +45,46 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct AnyImageConverterTest: TestSuite::Tester {
     explicit AnyImageConverterTest();
 
+    void convert1D();
     void convert2D();
+    void convert3D();
+    void convertCompressed1D();
     void convertCompressed2D();
+    void convertCompressed3D();
+
+    void detect1D();
     void detect2D();
+    void detect3D();
+    void detectCompressed1D();
     void detectCompressed2D();
+    void detectCompressed3D();
 
+    void unknown1D();
     void unknown2D();
+    void unknown3D();
+    void unknownCompressed1D();
     void unknownCompressed2D();
+    void unknownCompressed3D();
 
+    void propagateFlags1D();
     void propagateFlags2D();
+    void propagateFlags3D();
+    void propagateFlagsCompressed1D();
     void propagateFlagsCompressed2D();
+    void propagateFlagsCompressed3D();
+
+    void propagateConfiguration1D();
     void propagateConfiguration2D();
+    void propagateConfiguration3D();
+    void propagateConfigurationUnknown1D();
     void propagateConfigurationUnknown2D();
+    void propagateConfigurationUnknown3D();
+    void propagateConfigurationCompressed1D();
     void propagateConfigurationCompressed2D();
+    void propagateConfigurationCompressed3D();
+    void propagateConfigurationCompressedUnknown1D();
     void propagateConfigurationCompressedUnknown2D();
+    void propagateConfigurationCompressedUnknown3D();
     /* configuration propagation fully tested in AnySceneImporter, as there the
        plugins have configuration subgroups as well */
 
@@ -69,7 +95,7 @@ struct AnyImageConverterTest: TestSuite::Tester {
 constexpr struct {
     const char* name;
     const char* filename;
-} ConvertData[]{
+} Convert2DData[]{
     {"TGA", "output.tga"}
 };
 
@@ -77,7 +103,7 @@ constexpr struct {
     const char* name;
     const char* filename;
     const char* plugin;
-} DetectData[]{
+} Detect2DData[]{
     {"BMP", "file.bmp", "BmpImageConverter"},
     {"EXR", "file.exr", "OpenExrImageConverter"},
     {"HDR", "file.hdr", "HdrImageConverter"},
@@ -88,25 +114,52 @@ constexpr struct {
 };
 
 AnyImageConverterTest::AnyImageConverterTest() {
-    addInstancedTests({&AnyImageConverterTest::convert2D},
-        Containers::arraySize(ConvertData));
+    addTests({&AnyImageConverterTest::convert1D});
 
-    addTests({&AnyImageConverterTest::convertCompressed2D});
+    addInstancedTests({&AnyImageConverterTest::convert2D},
+        Containers::arraySize(Convert2DData));
+
+    addTests({&AnyImageConverterTest::convert3D,
+              &AnyImageConverterTest::convertCompressed1D,
+              &AnyImageConverterTest::convertCompressed2D,
+              &AnyImageConverterTest::convertCompressed3D,
+
+              &AnyImageConverterTest::detect1D});
 
     addInstancedTests({&AnyImageConverterTest::detect2D},
-        Containers::arraySize(DetectData));
+        Containers::arraySize(Detect2DData));
 
-    addTests({&AnyImageConverterTest::detectCompressed2D,
+    addTests({&AnyImageConverterTest::detect3D,
+              &AnyImageConverterTest::detectCompressed1D,
+              &AnyImageConverterTest::detectCompressed2D,
+              &AnyImageConverterTest::detectCompressed3D,
 
+              &AnyImageConverterTest::unknown1D,
               &AnyImageConverterTest::unknown2D,
+              &AnyImageConverterTest::unknown3D,
+              &AnyImageConverterTest::unknownCompressed1D,
               &AnyImageConverterTest::unknownCompressed2D,
+              &AnyImageConverterTest::unknownCompressed3D,
 
+              &AnyImageConverterTest::propagateFlags1D,
               &AnyImageConverterTest::propagateFlags2D,
+              &AnyImageConverterTest::propagateFlags3D,
+              &AnyImageConverterTest::propagateFlagsCompressed1D,
               &AnyImageConverterTest::propagateFlagsCompressed2D,
+              &AnyImageConverterTest::propagateFlagsCompressed3D,
+
+              &AnyImageConverterTest::propagateConfiguration1D,
               &AnyImageConverterTest::propagateConfiguration2D,
+              &AnyImageConverterTest::propagateConfiguration3D,
+              &AnyImageConverterTest::propagateConfigurationUnknown1D,
               &AnyImageConverterTest::propagateConfigurationUnknown2D,
+              &AnyImageConverterTest::propagateConfigurationUnknown3D,
+              &AnyImageConverterTest::propagateConfigurationCompressed1D,
               &AnyImageConverterTest::propagateConfigurationCompressed2D,
-              &AnyImageConverterTest::propagateConfigurationCompressedUnknown2D});
+              &AnyImageConverterTest::propagateConfigurationCompressed3D,
+              &AnyImageConverterTest::propagateConfigurationCompressedUnknown1D,
+              &AnyImageConverterTest::propagateConfigurationCompressedUnknown2D,
+              &AnyImageConverterTest::propagateConfigurationCompressedUnknown3D});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -122,16 +175,29 @@ AnyImageConverterTest::AnyImageConverterTest() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Directory::mkpath(ANYIMAGECONVERTER_TEST_OUTPUT_DIR));
 }
 
+/* 2*3*2 RGB pixels with four-byte row padding, or 3 16-byte blocks */
 constexpr const char Data[] = {
     1, 2, 3, 2, 3, 4, 0, 0,
     3, 4, 5, 4, 5, 6, 0, 0,
-    5, 6, 7, 6, 7, 8, 0, 0
+    5, 6, 7, 6, 7, 8, 0, 0,
+    7, 8, 9, 8, 9, 0, 0, 0,
+    9, 0, 1, 0, 1, 2, 0, 0,
+    1, 2, 3, 2, 3, 4, 0, 0
 };
 
-const ImageView2D Image{PixelFormat::RGB8Unorm, {2, 3}, Data};
+const ImageView1D Image1D{PixelFormat::RGB8Unorm, 2, Data};
+const ImageView2D Image2D{PixelFormat::RGB8Unorm, {2, 3}, Data};
+const ImageView3D Image3D{PixelFormat::RGB8Unorm, {2, 3, 2}, Data};
+const CompressedImageView1D CompressedImage1D{CompressedPixelFormat::Bc1RGBAUnorm, 3, Data};
+const CompressedImageView2D CompressedImage2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 3}, Data};
+const CompressedImageView3D CompressedImage3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 3}, Data};
+
+void AnyImageConverterTest::convert1D() {
+    CORRADE_SKIP("No file formats to store 1D data yet.");
+}
 
 void AnyImageConverterTest::convert2D() {
-    auto&& data = ConvertData[testCaseInstanceId()];
+    auto&& data = Convert2DData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
@@ -144,23 +210,39 @@ void AnyImageConverterTest::convert2D() {
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
-    CORRADE_VERIFY(converter->convertToFile(Image, filename));
+    CORRADE_VERIFY(converter->convertToFile(Image2D, filename));
     CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
+void AnyImageConverterTest::convert3D() {
+    CORRADE_SKIP("No file formats to store 3D data yet.");
+}
+
+void AnyImageConverterTest::convertCompressed1D() {
+    CORRADE_SKIP("No file formats to store compressed 1D data yet.");
+}
+
 void AnyImageConverterTest::convertCompressed2D() {
-    CORRADE_SKIP("No file formats to store compressed data yet.");
+    CORRADE_SKIP("No file formats to store compressed 2D data yet.");
+}
+
+void AnyImageConverterTest::convertCompressed3D() {
+    CORRADE_SKIP("No file formats to store compressed 3D data yet.");
+}
+
+void AnyImageConverterTest::detect1D() {
+    CORRADE_SKIP("No file formats to store 1D data yet.");
 }
 
 void AnyImageConverterTest::detect2D() {
-    auto&& data = DetectData[testCaseInstanceId()];
+    auto&& data = Detect2DData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile(Image, data.filename));
+    CORRADE_VERIFY(!converter->convertToFile(Image2D, data.filename));
     /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
@@ -171,22 +253,78 @@ void AnyImageConverterTest::detect2D() {
     #endif
 }
 
+void AnyImageConverterTest::detect3D() {
+    CORRADE_SKIP("No file formats to store 3D data yet.");
+}
+
+void AnyImageConverterTest::detectCompressed1D() {
+    CORRADE_SKIP("No file formats to store compressed 1D data yet.");
+}
+
 void AnyImageConverterTest::detectCompressed2D() {
-    CORRADE_SKIP("No file formats to store compressed data yet.");
+    CORRADE_SKIP("No file formats to store compressed 2D data yet.");
+}
+
+void AnyImageConverterTest::detectCompressed3D() {
+    CORRADE_SKIP("No file formats to store compressed 3D data yet.");
+}
+
+void AnyImageConverterTest::unknown1D() {
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(Image1D, "image.ktx2"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a 1D image\n");
 }
 
 void AnyImageConverterTest::unknown2D() {
-    std::ostringstream output;
-    Error redirectError{&output};
-
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
-    CORRADE_VERIFY(!converter->convertToFile(Image, "image.xcf"));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.xcf\n");
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(Image2D, "image.xcf"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.xcf for a 2D image\n");
+}
+
+void AnyImageConverterTest::unknown3D() {
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(Image3D, "image.ktx2"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a 3D image\n");
+}
+
+void AnyImageConverterTest::unknownCompressed1D() {
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(CompressedImage1D, "image.ktx2"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a compressed 1D image\n");
 }
 
 void AnyImageConverterTest::unknownCompressed2D() {
-    CORRADE_SKIP("No file formats to store compressed data yet.");
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(CompressedImage2D, "image.ktx2"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a compressed 2D image\n");
+}
+
+void AnyImageConverterTest::unknownCompressed3D() {
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(CompressedImage3D, "image.ktx2"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a compressed 3D image\n");
+}
+
+void AnyImageConverterTest::propagateFlags1D() {
+    CORRADE_SKIP("No file formats to store 1D data yet.");
 }
 
 void AnyImageConverterTest::propagateFlags2D() {
@@ -204,7 +342,7 @@ void AnyImageConverterTest::propagateFlags2D() {
     std::ostringstream out;
     {
         Debug redirectOutput{&out};
-        CORRADE_VERIFY(converter->convertToFile(Image, filename));
+        CORRADE_VERIFY(converter->convertToFile(Image2D, filename));
     }
     CORRADE_VERIFY(Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(),
@@ -212,8 +350,24 @@ void AnyImageConverterTest::propagateFlags2D() {
         "Trade::TgaImageConverter::convertToData(): converting from RGB to BGR\n");
 }
 
+void AnyImageConverterTest::propagateFlags3D() {
+    CORRADE_SKIP("No file formats to store 3D data yet.");
+}
+
+void AnyImageConverterTest::propagateFlagsCompressed1D() {
+    CORRADE_SKIP("No file formats to store compressed 1D data yet.");
+}
+
 void AnyImageConverterTest::propagateFlagsCompressed2D() {
-    CORRADE_SKIP("No file formats to store compressed data yet.");
+    CORRADE_SKIP("No file formats to store compressed 2D data yet.");
+}
+
+void AnyImageConverterTest::propagateFlagsCompressed3D() {
+    CORRADE_SKIP("No file formats to store compressed 3D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfiguration1D() {
+    CORRADE_SKIP("No file formats to store 1D data yet.");
 }
 
 void AnyImageConverterTest::propagateConfiguration2D() {
@@ -246,6 +400,14 @@ void AnyImageConverterTest::propagateConfiguration2D() {
     CORRADE_COMPARE_AS(filename, EXR_FILE, TestSuite::Compare::File);
 }
 
+void AnyImageConverterTest::propagateConfiguration3D() {
+    CORRADE_SKIP("No file formats to store 3D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationUnknown1D() {
+    CORRADE_SKIP("No file formats to store 1D data yet.");
+}
+
 void AnyImageConverterTest::propagateConfigurationUnknown2D() {
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
@@ -256,16 +418,36 @@ void AnyImageConverterTest::propagateConfigurationUnknown2D() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(converter->convertToFile(Image, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.tga")));
+    CORRADE_VERIFY(converter->convertToFile(Image2D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.tga")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by TgaImageConverter\n");
 }
 
+void AnyImageConverterTest::propagateConfigurationUnknown3D() {
+    CORRADE_SKIP("No file formats to store 3D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationCompressed1D() {
+    CORRADE_SKIP("No file formats to store compressed 1D data yet.");
+}
+
 void AnyImageConverterTest::propagateConfigurationCompressed2D() {
-    CORRADE_SKIP("No file formats to store compressed data yet.");
+    CORRADE_SKIP("No file formats to store compressed 2D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationCompressed3D() {
+    CORRADE_SKIP("No file formats to store compressed 3D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationCompressedUnknown1D() {
+    CORRADE_SKIP("No file formats to store compressed 1D data yet.");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknown2D() {
-    CORRADE_SKIP("No file formats to store compressed data yet.");
+    CORRADE_SKIP("No file formats to store compressed 2D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationCompressedUnknown3D() {
+    CORRADE_SKIP("No file formats to store compressed 3D data yet.");
 }
 
 }}}}
