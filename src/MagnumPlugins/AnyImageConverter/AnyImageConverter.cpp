@@ -53,7 +53,13 @@ ImageConverterFeatures AnyImageConverter::doFeatures() const {
         ImageConverterFeature::Convert3DToFile|
         ImageConverterFeature::ConvertCompressed1DToFile|
         ImageConverterFeature::ConvertCompressed2DToFile|
-        ImageConverterFeature::ConvertCompressed3DToFile;
+        ImageConverterFeature::ConvertCompressed3DToFile|
+        ImageConverterFeature::ConvertLevels1DToFile|
+        ImageConverterFeature::ConvertLevels2DToFile|
+        ImageConverterFeature::ConvertLevels3DToFile|
+        ImageConverterFeature::ConvertCompressedLevels1DToFile|
+        ImageConverterFeature::ConvertCompressedLevels2DToFile|
+        ImageConverterFeature::ConvertCompressedLevels3DToFile;
 }
 
 bool AnyImageConverter::doConvertToFile(const ImageView1D&, const Containers::StringView filename) {
@@ -158,6 +164,60 @@ bool AnyImageConverter::doConvertToFile(const CompressedImageView3D&, const Cont
     /* No file formats to store compressed 3D data yet */
 
     Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 3D image";
+    return false;
+}
+
+bool AnyImageConverter::doConvertToFile(Containers::ArrayView<const ImageView1D>, const Containers::StringView filename) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* No file formats to store multi-level 1D data yet */
+
+    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 1D image";
+    return false;
+}
+
+bool AnyImageConverter::doConvertToFile(Containers::ArrayView<const ImageView2D>, const Containers::StringView filename) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* No file formats to store multi-level 2D data yet */
+
+    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 2D image";
+    return false;
+}
+
+bool AnyImageConverter::doConvertToFile(Containers::ArrayView<const ImageView3D>, const Containers::StringView filename) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* No file formats to store multi-level 3D data yet */
+
+    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 3D image";
+    return false;
+}
+
+bool AnyImageConverter::doConvertToFile(Containers::ArrayView<const CompressedImageView1D>, const Containers::StringView filename) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* No file formats to store multi-level compressed 1D data yet */
+
+    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 1D image";
+    return false;
+}
+
+bool AnyImageConverter::doConvertToFile(Containers::ArrayView<const CompressedImageView2D>, const Containers::StringView filename) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* No file formats to store multi-level compressed 2D data yet */
+
+    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 2D image";
+    return false;
+}
+
+bool AnyImageConverter::doConvertToFile(Containers::ArrayView<const CompressedImageView3D>, const Containers::StringView filename) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* No file formats to store multi-level compressed 3D data yet */
+
+    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 3D image";
     return false;
 }
 

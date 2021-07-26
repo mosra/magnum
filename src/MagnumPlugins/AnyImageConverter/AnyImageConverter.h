@@ -134,6 +134,12 @@ class MAGNUM_ANYIMAGECONVERTER_EXPORT AnyImageConverter: public AbstractImageCon
         MAGNUM_ANYIMAGECONVERTER_LOCAL bool doConvertToFile(const CompressedImageView1D& image, Containers::StringView filename) override;
         MAGNUM_ANYIMAGECONVERTER_LOCAL bool doConvertToFile(const CompressedImageView2D& image, Containers::StringView filename) override;
         MAGNUM_ANYIMAGECONVERTER_LOCAL bool doConvertToFile(const CompressedImageView3D& image, Containers::StringView filename) override;
+        MAGNUM_ANYIMAGECONVERTER_LOCAL bool doConvertToFile(Containers::ArrayView<const ImageView1D> imageLevels, Containers::StringView filename) override;
+        MAGNUM_ANYIMAGECONVERTER_LOCAL bool doConvertToFile(Containers::ArrayView<const ImageView2D> imageLevels, Containers::StringView filename) override;
+        MAGNUM_ANYIMAGECONVERTER_LOCAL bool doConvertToFile(Containers::ArrayView<const ImageView3D> imageLevels, Containers::StringView filename) override;
+        MAGNUM_ANYIMAGECONVERTER_LOCAL bool doConvertToFile(Containers::ArrayView<const CompressedImageView1D> imageLevels, Containers::StringView filename) override;
+        MAGNUM_ANYIMAGECONVERTER_LOCAL bool doConvertToFile(Containers::ArrayView<const CompressedImageView2D> imageLevels, Containers::StringView filename) override;
+        MAGNUM_ANYIMAGECONVERTER_LOCAL bool doConvertToFile(Containers::ArrayView<const CompressedImageView3D> imageLevels, Containers::StringView filename) override;
 };
 
 }}

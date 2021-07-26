@@ -52,12 +52,26 @@ struct AnyImageConverterTest: TestSuite::Tester {
     void convertCompressed2D();
     void convertCompressed3D();
 
+    void convertLevels1D();
+    void convertLevels2D();
+    void convertLevels3D();
+    void convertCompressedLevels1D();
+    void convertCompressedLevels2D();
+    void convertCompressedLevels3D();
+
     void detect1D();
     void detect2D();
     void detect3D();
     void detectCompressed1D();
     void detectCompressed2D();
     void detectCompressed3D();
+
+    void detectLevels1D();
+    void detectLevels2D();
+    void detectLevels3D();
+    void detectCompressedLevels1D();
+    void detectCompressedLevels2D();
+    void detectCompressedLevels3D();
 
     void unknown1D();
     void unknown2D();
@@ -66,12 +80,26 @@ struct AnyImageConverterTest: TestSuite::Tester {
     void unknownCompressed2D();
     void unknownCompressed3D();
 
+    void unknownLevels1D();
+    void unknownLevels2D();
+    void unknownLevels3D();
+    void unknownCompressedLevels1D();
+    void unknownCompressedLevels2D();
+    void unknownCompressedLevels3D();
+
     void propagateFlags1D();
     void propagateFlags2D();
     void propagateFlags3D();
     void propagateFlagsCompressed1D();
     void propagateFlagsCompressed2D();
     void propagateFlagsCompressed3D();
+
+    void propagateFlagsLevels1D();
+    void propagateFlagsLevels2D();
+    void propagateFlagsLevels3D();
+    void propagateFlagsCompressedLevels1D();
+    void propagateFlagsCompressedLevels2D();
+    void propagateFlagsCompressedLevels3D();
 
     void propagateConfiguration1D();
     void propagateConfiguration2D();
@@ -85,6 +113,20 @@ struct AnyImageConverterTest: TestSuite::Tester {
     void propagateConfigurationCompressedUnknown1D();
     void propagateConfigurationCompressedUnknown2D();
     void propagateConfigurationCompressedUnknown3D();
+
+    void propagateConfigurationLevels1D();
+    void propagateConfigurationLevels2D();
+    void propagateConfigurationLevels3D();
+    void propagateConfigurationUnknownLevels1D();
+    void propagateConfigurationUnknownLevels2D();
+    void propagateConfigurationUnknownLevels3D();
+    void propagateConfigurationCompressedLevels1D();
+    void propagateConfigurationCompressedLevels2D();
+    void propagateConfigurationCompressedLevels3D();
+    void propagateConfigurationCompressedUnknownLevels1D();
+    void propagateConfigurationCompressedUnknownLevels2D();
+    void propagateConfigurationCompressedUnknownLevels3D();
+
     /* configuration propagation fully tested in AnySceneImporter, as there the
        plugins have configuration subgroups as well */
 
@@ -125,6 +167,13 @@ AnyImageConverterTest::AnyImageConverterTest() {
               &AnyImageConverterTest::convertCompressed2D,
               &AnyImageConverterTest::convertCompressed3D,
 
+              &AnyImageConverterTest::convertLevels1D,
+              &AnyImageConverterTest::convertLevels2D,
+              &AnyImageConverterTest::convertLevels3D,
+              &AnyImageConverterTest::convertCompressedLevels1D,
+              &AnyImageConverterTest::convertCompressedLevels2D,
+              &AnyImageConverterTest::convertCompressedLevels3D,
+
               &AnyImageConverterTest::detect1D});
 
     addInstancedTests({&AnyImageConverterTest::detect2D},
@@ -135,6 +184,13 @@ AnyImageConverterTest::AnyImageConverterTest() {
               &AnyImageConverterTest::detectCompressed2D,
               &AnyImageConverterTest::detectCompressed3D,
 
+              &AnyImageConverterTest::detectLevels1D,
+              &AnyImageConverterTest::detectLevels2D,
+              &AnyImageConverterTest::detectLevels3D,
+              &AnyImageConverterTest::detectCompressedLevels1D,
+              &AnyImageConverterTest::detectCompressedLevels2D,
+              &AnyImageConverterTest::detectCompressedLevels3D,
+
               &AnyImageConverterTest::unknown1D,
               &AnyImageConverterTest::unknown2D,
               &AnyImageConverterTest::unknown3D,
@@ -142,12 +198,26 @@ AnyImageConverterTest::AnyImageConverterTest() {
               &AnyImageConverterTest::unknownCompressed2D,
               &AnyImageConverterTest::unknownCompressed3D,
 
+              &AnyImageConverterTest::unknownLevels1D,
+              &AnyImageConverterTest::unknownLevels2D,
+              &AnyImageConverterTest::unknownLevels3D,
+              &AnyImageConverterTest::unknownCompressedLevels1D,
+              &AnyImageConverterTest::unknownCompressedLevels2D,
+              &AnyImageConverterTest::unknownCompressedLevels3D,
+
               &AnyImageConverterTest::propagateFlags1D,
               &AnyImageConverterTest::propagateFlags2D,
               &AnyImageConverterTest::propagateFlags3D,
               &AnyImageConverterTest::propagateFlagsCompressed1D,
               &AnyImageConverterTest::propagateFlagsCompressed2D,
               &AnyImageConverterTest::propagateFlagsCompressed3D,
+
+              &AnyImageConverterTest::propagateFlagsLevels1D,
+              &AnyImageConverterTest::propagateFlagsLevels2D,
+              &AnyImageConverterTest::propagateFlagsLevels3D,
+              &AnyImageConverterTest::propagateFlagsCompressedLevels1D,
+              &AnyImageConverterTest::propagateFlagsCompressedLevels2D,
+              &AnyImageConverterTest::propagateFlagsCompressedLevels3D,
 
               &AnyImageConverterTest::propagateConfiguration1D,
               &AnyImageConverterTest::propagateConfiguration2D,
@@ -160,7 +230,20 @@ AnyImageConverterTest::AnyImageConverterTest() {
               &AnyImageConverterTest::propagateConfigurationCompressed3D,
               &AnyImageConverterTest::propagateConfigurationCompressedUnknown1D,
               &AnyImageConverterTest::propagateConfigurationCompressedUnknown2D,
-              &AnyImageConverterTest::propagateConfigurationCompressedUnknown3D});
+              &AnyImageConverterTest::propagateConfigurationCompressedUnknown3D,
+
+              &AnyImageConverterTest::propagateConfigurationLevels1D,
+              &AnyImageConverterTest::propagateConfigurationLevels2D,
+              &AnyImageConverterTest::propagateConfigurationLevels3D,
+              &AnyImageConverterTest::propagateConfigurationUnknownLevels1D,
+              &AnyImageConverterTest::propagateConfigurationUnknownLevels2D,
+              &AnyImageConverterTest::propagateConfigurationUnknownLevels3D,
+              &AnyImageConverterTest::propagateConfigurationCompressedLevels1D,
+              &AnyImageConverterTest::propagateConfigurationCompressedLevels2D,
+              &AnyImageConverterTest::propagateConfigurationCompressedLevels3D,
+              &AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels1D,
+              &AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels2D,
+              &AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels3D});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -231,6 +314,30 @@ void AnyImageConverterTest::convertCompressed3D() {
     CORRADE_SKIP("No file formats to store compressed 3D data yet.");
 }
 
+void AnyImageConverterTest::convertLevels1D() {
+    CORRADE_SKIP("No file formats to store multi-level 1D data yet.");
+}
+
+void AnyImageConverterTest::convertLevels2D() {
+    CORRADE_SKIP("No file formats to store multi-level 2D data yet.");
+}
+
+void AnyImageConverterTest::convertLevels3D() {
+    CORRADE_SKIP("No file formats to store multi-level 3D data yet.");
+}
+
+void AnyImageConverterTest::convertCompressedLevels1D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 1D data yet.");
+}
+
+void AnyImageConverterTest::convertCompressedLevels2D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 2D data yet.");
+}
+
+void AnyImageConverterTest::convertCompressedLevels3D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 3D data yet.");
+}
+
 void AnyImageConverterTest::detect1D() {
     CORRADE_SKIP("No file formats to store 1D data yet.");
 }
@@ -268,6 +375,30 @@ void AnyImageConverterTest::detectCompressed2D() {
 
 void AnyImageConverterTest::detectCompressed3D() {
     CORRADE_SKIP("No file formats to store compressed 3D data yet.");
+}
+
+void AnyImageConverterTest::detectLevels1D() {
+    CORRADE_SKIP("No file formats to store multi-level 1D data yet.");
+}
+
+void AnyImageConverterTest::detectLevels2D() {
+    CORRADE_SKIP("No file formats to store multi-level 2D data yet.");
+}
+
+void AnyImageConverterTest::detectLevels3D() {
+    CORRADE_SKIP("No file formats to store multi-level 3D data yet.");
+}
+
+void AnyImageConverterTest::detectCompressedLevels1D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 1D data yet.");
+}
+
+void AnyImageConverterTest::detectCompressedLevels2D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 2D data yet.");
+}
+
+void AnyImageConverterTest::detectCompressedLevels3D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 3D data yet.");
 }
 
 void AnyImageConverterTest::unknown1D() {
@@ -324,6 +455,60 @@ void AnyImageConverterTest::unknownCompressed3D() {
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a compressed 3D image\n");
 }
 
+void AnyImageConverterTest::unknownLevels1D() {
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile({Image1D}, "image.ktx2"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a multi-level 1D image\n");
+}
+
+void AnyImageConverterTest::unknownLevels2D() {
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile({Image2D}, "image.ktx2"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a multi-level 2D image\n");
+}
+
+void AnyImageConverterTest::unknownLevels3D() {
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile({Image3D}, "image.ktx2"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a multi-level 3D image\n");
+}
+
+void AnyImageConverterTest::unknownCompressedLevels1D() {
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile({CompressedImage1D}, "image.ktx2"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a multi-level compressed 1D image\n");
+}
+
+void AnyImageConverterTest::unknownCompressedLevels2D() {
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile({CompressedImage2D}, "image.ktx2"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a multi-level compressed 2D image\n");
+}
+
+void AnyImageConverterTest::unknownCompressedLevels3D() {
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile({CompressedImage3D}, "image.ktx2"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a multi-level compressed 3D image\n");
+}
+
 void AnyImageConverterTest::propagateFlags1D() {
     CORRADE_SKIP("No file formats to store 1D data yet.");
 }
@@ -365,6 +550,30 @@ void AnyImageConverterTest::propagateFlagsCompressed2D() {
 
 void AnyImageConverterTest::propagateFlagsCompressed3D() {
     CORRADE_SKIP("No file formats to store compressed 3D data yet.");
+}
+
+void AnyImageConverterTest::propagateFlagsLevels1D() {
+    CORRADE_SKIP("No file formats to store multi-level 1D data yet.");
+}
+
+void AnyImageConverterTest::propagateFlagsLevels2D() {
+    CORRADE_SKIP("No file formats to store multi-level 2D data yet.");
+}
+
+void AnyImageConverterTest::propagateFlagsLevels3D() {
+    CORRADE_SKIP("No file formats to store multi-level 3D data yet.");
+}
+
+void AnyImageConverterTest::propagateFlagsCompressedLevels1D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 1D data yet.");
+}
+
+void AnyImageConverterTest::propagateFlagsCompressedLevels2D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 2D data yet.");
+}
+
+void AnyImageConverterTest::propagateFlagsCompressedLevels3D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 3D data yet.");
 }
 
 void AnyImageConverterTest::propagateConfiguration1D() {
@@ -449,6 +658,54 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknown2D() {
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknown3D() {
     CORRADE_SKIP("No file formats to store compressed 3D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationLevels1D() {
+    CORRADE_SKIP("No file formats to store multi-level 1D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationLevels2D() {
+    CORRADE_SKIP("No file formats to store multi-level 2D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationLevels3D() {
+    CORRADE_SKIP("No file formats to store multi-level 3D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationUnknownLevels1D() {
+    CORRADE_SKIP("No file formats to store multi-level 1D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationUnknownLevels2D() {
+    CORRADE_SKIP("No file formats to store multi-level 2D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationUnknownLevels3D() {
+    CORRADE_SKIP("No file formats to store multi-level 3D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationCompressedLevels1D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 1D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationCompressedLevels2D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 2D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationCompressedLevels3D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 3D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels1D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 1D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels2D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 2D data yet.");
+}
+
+void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels3D() {
+    CORRADE_SKIP("No file formats to store multi-level compressed 3D data yet.");
 }
 
 }}}}
