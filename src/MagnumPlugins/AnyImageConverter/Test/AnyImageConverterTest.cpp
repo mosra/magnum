@@ -105,6 +105,7 @@ constexpr struct {
     const char* plugin;
 } Detect2DData[]{
     {"BMP", "file.bmp", "BmpImageConverter"},
+    {"Basis Universal", "file.basis", "BasisImageConverter"},
     {"EXR", "file.exr", "OpenExrImageConverter"},
     {"HDR", "file.hdr", "HdrImageConverter"},
     {"JPEG", "file.jpg", "JpegImageConverter"},
