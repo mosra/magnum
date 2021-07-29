@@ -365,7 +365,7 @@ static_cast<void>(color);
 {
 Trade::MaterialData data{{}, {}};
 /* [MaterialData-usage-types] */
-/* Prefer a specular/roughness workflow, if present */
+/* Prefer a specular/glossiness workflow, if present */
 if(data.types() & Trade::MaterialType::PbrSpecularGlossiness) {
     const auto& pbr = data.as<Trade::PbrSpecularGlossinessMaterialData>();
 
