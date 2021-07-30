@@ -84,6 +84,8 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
         plugin = "JpegImporter";
     else if(Utility::String::endsWith(normalized, ".jp2"))
         plugin = "Jpeg2000Importer";
+    else if(Utility::String::endsWith(normalized, ".ktx2"))
+        plugin = "KtxImporter";
     else if(Utility::String::endsWith(normalized, ".mng"))
         plugin = "MngImporter";
     else if(Utility::String::endsWith(normalized, ".pbm"))
@@ -177,6 +179,9 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* https://en.wikipedia.org/wiki/JPEG#Syntax_and_structure */
     else if(dataString.hasPrefix("\xff\xd8\xff"_s))
         plugin = "JpegImporter";
+    /* https://github.khronos.org/KTX-Specification/#_identifier */
+    else if(dataString.hasPrefix("\xabKTX 20\xbb\r\n\x1a\n"_s))
+        plugin = "KtxImporter";
     /* https://en.wikipedia.org/wiki/Portable_Network_Graphics#File_header */
     else if(dataString.hasPrefix("\x89PNG\x0d\x0a\x1a\x0a"_s))
         plugin = "PngImporter";

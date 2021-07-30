@@ -91,6 +91,7 @@ constexpr struct {
     {"JPEG data", "gray.jpg", fileCallback, "JpegImporter"},
     {"JPEG uppercase", "uppercase.JPG", nullptr, "JpegImporter"},
     {"JPEG2000", "image.jp2", nullptr, "Jpeg2000Importer"},
+    {"KTX", "image.ktx2", nullptr, "KtxImporter"},
     {"EXR", "image.exr", nullptr, "OpenExrImporter"},
     {"EXR data", "image.exr", fileCallback, "OpenExrImporter"},
     {"HDR", "rgb.hdr", nullptr, "HdrImporter"},
@@ -123,7 +124,8 @@ const struct {
     {"just one zero byte", "\x00"_s, "00"},
     {"DDS, but no space", "DDS!"_s, "44445321"},
     {"TIFF, but too short", "II\x2a"_s, "49492a"},
-    {"TIFF, but no zero byte", "MM\xff\x2a"_s, "4d4dff2a"}
+    {"TIFF, but no zero byte", "MM\xff\x2a"_s, "4d4dff2a"},
+    {"KTX, but wrong version", "\xabKTX 30\xbb\r\n\x1a\n"_s, "ab4b5458"}
 };
 
 constexpr struct {
