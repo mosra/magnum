@@ -952,6 +952,9 @@ void CommandBuffer::nextSubpassImplementationDefault(CommandBuffer& self, const 
         "Vk::CommandBuffer::nextRenderPass(): disallowing omission of SubpassEndInfo with non-empty pNext to prevent information loss", );
     CORRADE_ASSERT(!beginInfo.pNext,
         "Vk::CommandBuffer::nextRenderPass(): disallowing conversion of SubpassBeginInfo to VkSubpassContents with non-empty pNext to prevent information loss", );
+    #ifdef CORRADE_NO_ASSERT
+    static_cast<void>(endInfo);
+    #endif
     return (**self._device).CmdNextSubpass(self, beginInfo.contents);
 }
 
@@ -983,6 +986,9 @@ CommandBuffer& CommandBuffer::endRenderPass(const SubpassEndInfo& endInfo) {
 void CommandBuffer::endRenderPassImplementationDefault(CommandBuffer& self, const VkSubpassEndInfo& endInfo) {
     CORRADE_ASSERT(!endInfo.pNext,
         "Vk::CommandBuffer::endRenderPass(): disallowing omission of SubpassEndInfo with non-empty pNext to prevent information loss", );
+    #ifdef CORRADE_NO_ASSERT
+    static_cast<void>(endInfo);
+    #endif
     return (**self._device).CmdEndRenderPass(self);
 }
 
