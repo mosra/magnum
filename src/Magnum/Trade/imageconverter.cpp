@@ -255,7 +255,7 @@ key=true; configuration subgroups are delimited with /.)")
                 return 3;
             }
 
-            if(!importer->image1DCount() && !importer->image2DCount() && !importer->image2DCount()) {
+            if(!importer->image1DCount() && !importer->image2DCount() && !importer->image3DCount()) {
                 Debug{} << "No images found.";
                 return 0;
             }
