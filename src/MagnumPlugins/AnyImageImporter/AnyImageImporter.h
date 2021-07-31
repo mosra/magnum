@@ -141,7 +141,7 @@ warning emitted in case given option is not present in the default
 configuration of the target plugin.
 
 Calls to the @ref image1DCount() / @ref image2DCount() / @ref image3DCount(),
-@ref doImage1DLevelCount() / @ref image2DLevelCount() / @ref image3DLevelCount()
+@ref image1DLevelCount() / @ref image2DLevelCount() / @ref image3DLevelCount()
 and @ref image1D() / @ref image2D() / @ref image3D() functions are then proxied
 to the concrete implementation. The @ref close() function closes and discards
 the internally instantiated plugin; @ref isOpened() works as usual.
