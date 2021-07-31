@@ -92,6 +92,8 @@ bool AnyImageConverter::doConvertToFile(const ImageView2D& image, const Containe
             normalized.hasSuffix(".jpeg"_s) ||
             normalized.hasSuffix(".jpe"_s))
         plugin = "JpegImageConverter"_s;
+    else if(normalized.hasSuffix(".ktx2"_s))
+        plugin = "KtxImageConverter"_s;
     else if(normalized.hasSuffix(".png"_s))
         plugin = "PngImageConverter"_s;
     else if(normalized.hasSuffix(".tga"_s) ||

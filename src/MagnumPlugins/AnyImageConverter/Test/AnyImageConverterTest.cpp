@@ -153,6 +153,7 @@ constexpr struct {
     {"JPEG", "file.jpg", "JpegImageConverter"},
     {"JPEG weird extension", "file.jpe", "JpegImageConverter"},
     {"JPEG uppercase", "output.JPG", "JpegImageConverter"},
+    {"KTX2", "foo.ktx2", "KtxImageConverter"},
     {"PNG", "file.png", "PngImageConverter"}
 };
 
