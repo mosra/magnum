@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2021 Pablo Escobar <mail@rvrs.in>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -91,7 +92,7 @@ constexpr struct {
     {"JPEG data", "gray.jpg", fileCallback, "JpegImporter"},
     {"JPEG uppercase", "uppercase.JPG", nullptr, "JpegImporter"},
     {"JPEG2000", "image.jp2", nullptr, "Jpeg2000Importer"},
-    {"KTX", "image.ktx2", nullptr, "KtxImporter"},
+    {"KTX2", "image.ktx2", nullptr, "KtxImporter"},
     {"EXR", "image.exr", nullptr, "OpenExrImporter"},
     {"EXR data", "image.exr", fileCallback, "OpenExrImporter"},
     {"HDR", "rgb.hdr", nullptr, "HdrImporter"},

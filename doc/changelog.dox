@@ -345,6 +345,9 @@ See also:
     when the implementation only neeeds to do a format detection based on file
     extension
 -   Recognizing BMP and TIFF file header magic in @relativeref{Trade,AnyImageImporter}
+-   Recognizing KTX2 files and data in @relativeref{Trade,AnyImageImporter} and
+    @relativeref{Trade,AnyImageConverter} (see also
+    [mosra/magnum#529](https://github.com/mosra/magnum/pull/529))
 -   @ref Audio::AnyImporter "AnyAudioImporter",
     @relativeref{Trade,AnyImageImporter}, @relativeref{Trade,AnyImageConverter},
     @relativeref{Trade,AnySceneImporter}, @relativeref{Trade,AnySceneConverter}
