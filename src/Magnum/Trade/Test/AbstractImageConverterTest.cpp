@@ -82,6 +82,12 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convert1DToData();
     void convert2DToData();
     void convert3DToData();
+    /* 1D/2D/3D share the same image validity check function, so only verify
+       one dimension thoroughly and for others just that the check is used */
+    void convert1DToDataInvalidImage();
+    void convert2DToDataZeroSize();
+    void convert2DToDataNullptr();
+    void convert3DToDataInvalidImage();
     void convert1DToDataNotImplemented();
     void convert2DToDataNotImplemented();
     void convert3DToDataNotImplemented();
@@ -92,6 +98,11 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressed1DToData();
     void convertCompressed2DToData();
     void convertCompressed3DToData();
+    /* Compressed share the same image validity check function with
+       uncompressed, so only verify it's used */
+    void convertCompressed1DToDataInvalidImage();
+    void convertCompressed2DToDataInvalidImage();
+    void convertCompressed3DToDataInvalidImage();
     void convertCompressed1DToDataNotImplemented();
     void convertCompressed2DToDataNotImplemented();
     void convertCompressed3DToDataNotImplemented();
@@ -106,6 +117,16 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertLevels1DToData();
     void convertLevels2DToData();
     void convertLevels3DToData();
+    /* 1D/2D/3D share the same image list validity check function, so only
+       verify one dimension thoroughly and for others just that the check is
+       used */
+    void convertLevels1DToDataInvalidImage();
+    void convertLevels2DToDataNoLevels();
+    void convertLevels2DToDataZeroSize();
+    void convertLevels2DToDataNullptr();
+    void convertLevels2DToDataInconsistentFormat();
+    void convertLevels2DToDataInconsistentFormatExtra();
+    void convertLevels3DToDataInvalidImage();
     void convertLevels1DToDataNotImplemented();
     void convertLevels2DToDataNotImplemented();
     void convertLevels3DToDataNotImplemented();
@@ -116,6 +137,16 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressedLevels1DToData();
     void convertCompressedLevels2DToData();
     void convertCompressedLevels3DToData();
+    /* Compressed have different format checks for uncompressed so it's tested
+       again; 1D/2D/3D share the same image list validity check function, so
+       only verify one dimension thoroughly and for others just that the check
+       is used */
+    void convertCompressedLevels1DToDataInvalidImage();
+    void convertCompressedLevels2DToDataNoLevels();
+    void convertCompressedLevels2DToDataZeroSize();
+    void convertCompressedLevels2DToDataNullptr();
+    void convertCompressedLevels2DToDataInconsistentFormat();
+    void convertCompressedLevels3DToDataInvalidImage();
     void convertCompressedLevels1DToDataNotImplemented();
     void convertCompressedLevels2DToDataNotImplemented();
     void convertCompressedLevels3DToDataNotImplemented();
@@ -143,6 +174,11 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convert1DToFileThroughDataNotWritable();
     void convert2DToFileThroughDataNotWritable();
     void convert3DToFileThroughDataNotWritable();
+    /* ToFile share the same check function with ToData, so only verify it's
+       used */
+    void convert1DToFileInvalidImage();
+    void convert2DToFileInvalidImage();
+    void convert3DToFileInvalidImage();
     void convert1DToFileNotImplemented();
     void convert2DToFileNotImplemented();
     void convert3DToFileNotImplemented();
@@ -159,6 +195,11 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressed1DToFileThroughDataNotWritable();
     void convertCompressed2DToFileThroughDataNotWritable();
     void convertCompressed3DToFileThroughDataNotWritable();
+    /* ToFile share the same check function with ToData, so only verify it's
+       used */
+    void convertCompressed1DToFileInvalidImage();
+    void convertCompressed2DToFileInvalidImage();
+    void convertCompressed3DToFileInvalidImage();
     void convertCompressed1DToFileNotImplemented();
     void convertCompressed2DToFileNotImplemented();
     void convertCompressed3DToFileNotImplemented();
@@ -179,6 +220,11 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertLevels1DToFileThroughDataNotWritable();
     void convertLevels2DToFileThroughDataNotWritable();
     void convertLevels3DToFileThroughDataNotWritable();
+    /* ToFile share the same check function with ToData, so only verify it's
+       used */
+    void convertLevels1DToFileInvalidImage();
+    void convertLevels2DToFileInvalidImage();
+    void convertLevels3DToFileInvalidImage();
     void convertLevels1DToFileNotImplemented();
     void convertLevels2DToFileNotImplemented();
     void convertLevels3DToFileNotImplemented();
@@ -195,6 +241,11 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressedLevels1DToFileThroughDataNotWritable();
     void convertCompressedLevels2DToFileThroughDataNotWritable();
     void convertCompressedLevels3DToFileThroughDataNotWritable();
+    /* ToFile share the same check function with ToData, so only verify it's
+       used */
+    void convertCompressedLevels1DToFileInvalidImage();
+    void convertCompressedLevels2DToFileInvalidImage();
+    void convertCompressedLevels3DToFileInvalidImage();
     void convertCompressedLevels1DToFileNotImplemented();
     void convertCompressedLevels2DToFileNotImplemented();
     void convertCompressedLevels3DToFileNotImplemented();
@@ -250,6 +301,10 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convert1DToData,
               &AbstractImageConverterTest::convert2DToData,
               &AbstractImageConverterTest::convert3DToData,
+              &AbstractImageConverterTest::convert1DToDataInvalidImage,
+              &AbstractImageConverterTest::convert2DToDataZeroSize,
+              &AbstractImageConverterTest::convert2DToDataNullptr,
+              &AbstractImageConverterTest::convert3DToDataInvalidImage,
               &AbstractImageConverterTest::convert1DToDataNotImplemented,
               &AbstractImageConverterTest::convert2DToDataNotImplemented,
               &AbstractImageConverterTest::convert3DToDataNotImplemented,
@@ -260,6 +315,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressed1DToData,
               &AbstractImageConverterTest::convertCompressed2DToData,
               &AbstractImageConverterTest::convertCompressed3DToData,
+              &AbstractImageConverterTest::convertCompressed1DToDataInvalidImage,
+              &AbstractImageConverterTest::convertCompressed2DToDataInvalidImage,
+              &AbstractImageConverterTest::convertCompressed3DToDataInvalidImage,
               &AbstractImageConverterTest::convertCompressed1DToDataNotImplemented,
               &AbstractImageConverterTest::convertCompressed2DToDataNotImplemented,
               &AbstractImageConverterTest::convertCompressed3DToDataNotImplemented,
@@ -274,6 +332,13 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertLevels1DToData,
               &AbstractImageConverterTest::convertLevels2DToData,
               &AbstractImageConverterTest::convertLevels3DToData,
+              &AbstractImageConverterTest::convertLevels1DToDataInvalidImage,
+              &AbstractImageConverterTest::convertLevels2DToDataNoLevels,
+              &AbstractImageConverterTest::convertLevels2DToDataZeroSize,
+              &AbstractImageConverterTest::convertLevels2DToDataNullptr,
+              &AbstractImageConverterTest::convertLevels2DToDataInconsistentFormat,
+              &AbstractImageConverterTest::convertLevels2DToDataInconsistentFormatExtra,
+              &AbstractImageConverterTest::convertLevels3DToDataInvalidImage,
               &AbstractImageConverterTest::convertLevels1DToDataNotImplemented,
               &AbstractImageConverterTest::convertLevels2DToDataNotImplemented,
               &AbstractImageConverterTest::convertLevels3DToDataNotImplemented,
@@ -284,6 +349,12 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressedLevels1DToData,
               &AbstractImageConverterTest::convertCompressedLevels2DToData,
               &AbstractImageConverterTest::convertCompressedLevels3DToData,
+              &AbstractImageConverterTest::convertCompressedLevels1DToDataInvalidImage,
+              &AbstractImageConverterTest::convertCompressedLevels2DToDataNoLevels,
+              &AbstractImageConverterTest::convertCompressedLevels2DToDataZeroSize,
+              &AbstractImageConverterTest::convertCompressedLevels2DToDataNullptr,
+              &AbstractImageConverterTest::convertCompressedLevels2DToDataInconsistentFormat,
+              &AbstractImageConverterTest::convertCompressedLevels3DToDataInvalidImage,
               &AbstractImageConverterTest::convertCompressedLevels1DToDataNotImplemented,
               &AbstractImageConverterTest::convertCompressedLevels2DToDataNotImplemented,
               &AbstractImageConverterTest::convertCompressedLevels3DToDataNotImplemented,
@@ -311,6 +382,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convert1DToFileThroughDataNotWritable,
               &AbstractImageConverterTest::convert2DToFileThroughDataNotWritable,
               &AbstractImageConverterTest::convert3DToFileThroughDataNotWritable,
+              &AbstractImageConverterTest::convert1DToFileInvalidImage,
+              &AbstractImageConverterTest::convert2DToFileInvalidImage,
+              &AbstractImageConverterTest::convert3DToFileInvalidImage,
               &AbstractImageConverterTest::convert1DToFileNotImplemented,
               &AbstractImageConverterTest::convert2DToFileNotImplemented,
               &AbstractImageConverterTest::convert3DToFileNotImplemented,
@@ -327,6 +401,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressed1DToFileThroughDataNotWritable,
               &AbstractImageConverterTest::convertCompressed2DToFileThroughDataNotWritable,
               &AbstractImageConverterTest::convertCompressed3DToFileThroughDataNotWritable,
+              &AbstractImageConverterTest::convertCompressed1DToFileInvalidImage,
+              &AbstractImageConverterTest::convertCompressed2DToFileInvalidImage,
+              &AbstractImageConverterTest::convertCompressed3DToFileInvalidImage,
               &AbstractImageConverterTest::convertCompressed1DToFileNotImplemented,
               &AbstractImageConverterTest::convertCompressed2DToFileNotImplemented,
               &AbstractImageConverterTest::convertCompressed3DToFileNotImplemented,
@@ -347,6 +424,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertLevels1DToFileThroughDataNotWritable,
               &AbstractImageConverterTest::convertLevels2DToFileThroughDataNotWritable,
               &AbstractImageConverterTest::convertLevels3DToFileThroughDataNotWritable,
+              &AbstractImageConverterTest::convertLevels1DToFileInvalidImage,
+              &AbstractImageConverterTest::convertLevels2DToFileInvalidImage,
+              &AbstractImageConverterTest::convertLevels3DToFileInvalidImage,
               &AbstractImageConverterTest::convertLevels1DToFileNotImplemented,
               &AbstractImageConverterTest::convertLevels2DToFileNotImplemented,
               &AbstractImageConverterTest::convertLevels3DToFileNotImplemented,
@@ -363,6 +443,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataNotWritable,
               &AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataNotWritable,
               &AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataNotWritable,
+              &AbstractImageConverterTest::convertCompressedLevels1DToFileInvalidImage,
+              &AbstractImageConverterTest::convertCompressedLevels2DToFileInvalidImage,
+              &AbstractImageConverterTest::convertCompressedLevels3DToFileInvalidImage,
               &AbstractImageConverterTest::convertCompressedLevels1DToFileNotImplemented,
               &AbstractImageConverterTest::convertCompressedLevels2DToFileNotImplemented,
               &AbstractImageConverterTest::convertCompressedLevels3DToFileNotImplemented,
@@ -908,7 +991,8 @@ void AbstractImageConverterTest::convert1DToData() {
         }
     } converter;
 
-    Containers::Array<char> actual = converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 4, Containers::ArrayView<char>{nullptr, 96}});
+    const char data[16]{};
+    Containers::Array<char> actual = converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 4, data});
     CORRADE_COMPARE(actual.size(), 4);
 }
 
@@ -920,7 +1004,8 @@ void AbstractImageConverterTest::convert2DToData() {
         }
     } converter;
 
-    Containers::Array<char> actual = converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, Containers::ArrayView<char>{nullptr, 96}});
+    const char data[96]{};
+    Containers::Array<char> actual = converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, data});
     CORRADE_COMPARE(actual.size(), 24);
 }
 
@@ -932,11 +1017,12 @@ void AbstractImageConverterTest::convert3DToData() {
         }
     } converter;
 
-    Containers::Array<char> actual = converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {4, 6, 2}, Containers::ArrayView<char>{nullptr, 96}});
+    const char data[192]{};
+    Containers::Array<char> actual = converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {4, 6, 2}, data});
     CORRADE_COMPARE(actual.size(), 48);
 }
 
-void AbstractImageConverterTest::convert1DToDataNotImplemented() {
+void AbstractImageConverterTest::convert1DToDataInvalidImage() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -948,6 +1034,68 @@ void AbstractImageConverterTest::convert1DToDataNotImplemented() {
     std::ostringstream out;
     Error redirectError{&out};
     converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 0, nullptr});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): can't convert image with a zero size: Vector(0)\n");
+}
+
+void AbstractImageConverterTest::convert2DToDataZeroSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToData; }
+    } converter;
+
+    const char data[16]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {4, 0}, data});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): can't convert image with a zero size: Vector(4, 0)\n");
+}
+
+void AbstractImageConverterTest::convert2DToDataNullptr() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToData; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, {nullptr, 4}});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): can't convert image with a nullptr view\n");
+}
+
+void AbstractImageConverterTest::convert3DToDataInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3DToData; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): can't convert image with a zero size: Vector(0, 0, 0)\n");
+}
+
+void AbstractImageConverterTest::convert1DToDataNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert1DToData; }
+    } converter;
+
+    const char data[4]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 1, data});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): 1D image conversion advertised but not implemented\n");
 }
 
@@ -960,9 +1108,10 @@ void AbstractImageConverterTest::convert2DToDataNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToData; }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr});
+    converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): 2D image conversion advertised but not implemented\n");
 }
 
@@ -975,9 +1124,10 @@ void AbstractImageConverterTest::convert3DToDataNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3DToData; }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr});
+    converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): 3D image conversion advertised but not implemented\n");
 }
 
@@ -993,9 +1143,10 @@ void AbstractImageConverterTest::convert1DToDataCustomDeleter() {
         }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, {}, nullptr});
+    converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 1, data});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1011,9 +1162,10 @@ void AbstractImageConverterTest::convert2DToDataCustomDeleter() {
         }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr});
+    converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1029,9 +1181,10 @@ void AbstractImageConverterTest::convert3DToDataCustomDeleter() {
         }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr});
+    converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1043,7 +1196,8 @@ void AbstractImageConverterTest::convertCompressed1DToData() {
         }
     } converter;
 
-    Containers::Array<char> actual = converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 16, Containers::ArrayView<char>{nullptr, 64}});
+    const char data[32]{};
+    Containers::Array<char> actual = converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 16, data});
     CORRADE_COMPARE(actual.size(), 16);
 }
 
@@ -1055,7 +1209,8 @@ void AbstractImageConverterTest::convertCompressed2DToData() {
         }
     } converter;
 
-    Containers::Array<char> actual = converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8}, Containers::ArrayView<char>{nullptr, 64}});
+    const char data[64]{};
+    Containers::Array<char> actual = converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8}, data});
     CORRADE_COMPARE(actual.size(), 128);
 }
 
@@ -1067,11 +1222,12 @@ void AbstractImageConverterTest::convertCompressed3DToData() {
         }
     } converter;
 
-    Containers::Array<char> actual = converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, Containers::ArrayView<char>{nullptr, 64}});
+    const char data[128]{};
+    Containers::Array<char> actual = converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, data});
     CORRADE_COMPARE(actual.size(), 256);
 }
 
-void AbstractImageConverterTest::convertCompressed1DToDataNotImplemented() {
+void AbstractImageConverterTest::convertCompressed1DToDataInvalidImage() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -1083,6 +1239,52 @@ void AbstractImageConverterTest::convertCompressed1DToDataNotImplemented() {
     std::ostringstream out;
     Error redirectError{&out};
     converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0, nullptr});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): can't convert image with a zero size: Vector(0)\n");
+}
+
+void AbstractImageConverterTest::convertCompressed2DToDataInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2DToData; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): can't convert image with a zero size: Vector(0, 0)\n");
+}
+
+void AbstractImageConverterTest::convertCompressed3DToDataInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3DToData; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): can't convert image with a zero size: Vector(0, 0, 0)\n");
+}
+
+void AbstractImageConverterTest::convertCompressed1DToDataNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed1DToData; }
+    } converter;
+
+    const char data[8]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): compressed 1D image conversion advertised but not implemented\n");
 }
 
@@ -1095,9 +1297,10 @@ void AbstractImageConverterTest::convertCompressed2DToDataNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2DToData; }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr});
+    converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): compressed 2D image conversion advertised but not implemented\n");
 }
 
@@ -1110,9 +1313,10 @@ void AbstractImageConverterTest::convertCompressed3DToDataNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3DToData; }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr});
+    converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): compressed 3D image conversion advertised but not implemented\n");
 }
 
@@ -1128,9 +1332,10 @@ void AbstractImageConverterTest::convertCompressed1DToDataCustomDeleter() {
         }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr});
+    converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1146,9 +1351,10 @@ void AbstractImageConverterTest::convertCompressed2DToDataCustomDeleter() {
         }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr});
+    converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1164,9 +1370,10 @@ void AbstractImageConverterTest::convertCompressed3DToDataCustomDeleter() {
         }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr});
+    converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1212,12 +1419,12 @@ void AbstractImageConverterTest::convertImageData1DToData() {
     ImageData1DConverter converter;
 
     /* Should get "B" when converting uncompressed */
-    CORRADE_COMPARE_AS(converter.convertToData(ImageData1D{PixelFormat::RGBA8Unorm, {}, nullptr}),
+    CORRADE_COMPARE_AS(converter.convertToData(ImageData1D{PixelFormat::RGBA8Unorm, 1, Containers::Array<char>{4}}),
         Containers::arrayView({'B'}),
         TestSuite::Compare::Container);
 
     /* Should get "C" when converting compressed */
-    CORRADE_COMPARE_AS(converter.convertToData(ImageData1D{CompressedPixelFormat::Bc1RGBUnorm, {}, nullptr}),
+    CORRADE_COMPARE_AS(converter.convertToData(ImageData1D{CompressedPixelFormat::Bc1RGBUnorm, 4, Containers::Array<char>{8}}),
         Containers::arrayView({'C'}),
         TestSuite::Compare::Container);
 }
@@ -1226,12 +1433,12 @@ void AbstractImageConverterTest::convertImageData2DToData() {
     ImageData2DConverter converter;
 
     /* Should get "B" when converting uncompressed */
-    CORRADE_COMPARE_AS(converter.convertToData(ImageData2D{PixelFormat::RGBA8Unorm, {}, nullptr}),
+    CORRADE_COMPARE_AS(converter.convertToData(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, Containers::Array<char>{4}}),
         Containers::arrayView({'B'}),
         TestSuite::Compare::Container);
 
     /* Should get "C" when converting compressed */
-    CORRADE_COMPARE_AS(converter.convertToData(ImageData2D{CompressedPixelFormat::Bc1RGBUnorm, {}, nullptr}),
+    CORRADE_COMPARE_AS(converter.convertToData(ImageData2D{CompressedPixelFormat::Bc1RGBUnorm, {4, 4}, Containers::Array<char>{4}}),
         Containers::arrayView({'C'}),
         TestSuite::Compare::Container);
 }
@@ -1240,12 +1447,12 @@ void AbstractImageConverterTest::convertImageData3DToData() {
     ImageData3DConverter converter;
 
     /* Should get "B" when converting uncompressed */
-    CORRADE_COMPARE_AS(converter.convertToData(ImageData3D{PixelFormat::RGBA8Unorm, {}, nullptr}),
+    CORRADE_COMPARE_AS(converter.convertToData(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, Containers::Array<char>{4}}),
         Containers::arrayView({'B'}),
         TestSuite::Compare::Container);
 
     /* Should get "C" when converting compressed */
-    CORRADE_COMPARE_AS(converter.convertToData(ImageData3D{CompressedPixelFormat::Bc1RGBUnorm, {}, nullptr}),
+    CORRADE_COMPARE_AS(converter.convertToData(ImageData3D{CompressedPixelFormat::Bc1RGBUnorm, {4, 4, 1}, Containers::Array<char>{4}}),
         Containers::arrayView({'C'}),
         TestSuite::Compare::Container);
 }
@@ -1258,10 +1465,12 @@ void AbstractImageConverterTest::convertLevels1DToData() {
         }
     } converter;
 
+    const char data[96]{};
     Containers::Array<char> actual = converter.convertToData({
-        ImageView1D{PixelFormat::RGBA8Unorm, 4, Containers::ArrayView<char>{nullptr, 96}},
-        ImageView1D{PixelFormat::RGBA8Unorm, 0, nullptr},
-        ImageView1D{PixelFormat::RGBA8Unorm, 0, nullptr},
+        /* Arbitrary dimensions should be fine */
+        ImageView1D{PixelFormat::RGBA8Unorm, 4, data},
+        ImageView1D{PixelFormat::RGBA8Unorm, 2, data},
+        ImageView1D{PixelFormat::RGBA8Unorm, 3, data},
     });
     CORRADE_COMPARE(actual.size(), 4*3);
 }
@@ -1274,10 +1483,12 @@ void AbstractImageConverterTest::convertLevels2DToData() {
         }
     } converter;
 
+    const char data[96]{};
     Containers::Array<char> actual = converter.convertToData({
-        ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, Containers::ArrayView<char>{nullptr, 96}},
-        ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr},
-        ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}
+        /* Arbitrary dimensions should be fine */
+        ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, data},
+        ImageView2D{PixelFormat::RGBA8Unorm, {1, 3}, data},
+        ImageView2D{PixelFormat::RGBA8Unorm, {4, 2}, data}
     });
     CORRADE_COMPARE(actual.size(), 24*3);
 }
@@ -1290,12 +1501,137 @@ void AbstractImageConverterTest::convertLevels3DToData() {
         }
     } converter;
 
+    const char data[192]{};
     Containers::Array<char> actual = converter.convertToData({
-        ImageView3D{PixelFormat::RGBA8Unorm, {4, 6, 2}, Containers::ArrayView<char>{nullptr, 96}},
-        ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr},
-        ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}
+        /* Arbitrary dimensions should be fine */
+        ImageView3D{PixelFormat::RGBA8Unorm, {4, 6, 2}, data},
+        ImageView3D{PixelFormat::RGBA8Unorm, {2, 3, 5}, data},
+        ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}
     });
     CORRADE_COMPARE(actual.size(), 48*3);
+}
+
+void AbstractImageConverterTest::convertLevels1DToDataInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(std::initializer_list<ImageView1D>{});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): at least one image has to be specified\n");
+}
+
+void AbstractImageConverterTest::convertLevels2DToDataNoLevels() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(std::initializer_list<ImageView2D>{});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): at least one image has to be specified\n");
+}
+
+void AbstractImageConverterTest::convertLevels2DToDataZeroSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+    } converter;
+
+    const char data[16]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData({
+        ImageView2D{PixelFormat::RGBA8Unorm, {2, 2}, data},
+        ImageView2D{PixelFormat::RGBA8Unorm, {4, 0}, data}
+    });
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): can't convert image 1 with a zero size: Vector(4, 0)\n");
+}
+
+void AbstractImageConverterTest::convertLevels2DToDataNullptr() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+    } converter;
+
+    const char data[16]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData({
+        ImageView2D{PixelFormat::RGBA8Unorm, {2, 2}, data},
+        ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, {nullptr, 4}}
+    });
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): can't convert image 1 with a nullptr view\n");
+}
+
+void AbstractImageConverterTest::convertLevels2DToDataInconsistentFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+    } converter;
+
+    const char data[16]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData({
+        ImageView2D{PixelFormat::RGBA8Unorm, {2, 2}, data},
+        ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data},
+        ImageView2D{PixelFormat::RGBA8Srgb, {4, 1}, data}
+    });
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): levels don't have the same format, expected PixelFormat::RGBA8Unorm but got PixelFormat::RGBA8Srgb for image 2\n");
+}
+
+void AbstractImageConverterTest::convertLevels2DToDataInconsistentFormatExtra() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+    } converter;
+
+    const char data[16]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData({
+        ImageView2D{PixelStorage{}, 252, 1037, 4, {2, 2}, data},
+        ImageView2D{PixelStorage{}, 252, 1037, 4, {1, 1}, data},
+        ImageView2D{PixelStorage{}, 252, 4467, 4, {4, 1}, data}
+    });
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): levels don't have the same extra format field, expected 1037 but got 4467 for image 2\n");
+}
+
+void AbstractImageConverterTest::convertLevels3DToDataInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(std::initializer_list<ImageView3D>{});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): at least one image has to be specified\n");
 }
 
 void AbstractImageConverterTest::convertLevels1DToDataNotImplemented() {
@@ -1307,9 +1643,10 @@ void AbstractImageConverterTest::convertLevels1DToDataNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData({ImageView1D{PixelFormat::RGBA8Unorm, 0, nullptr}});
+    converter.convertToData({ImageView1D{PixelFormat::RGBA8Unorm, 1, data}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): multi-level 1D image conversion advertised but not implemented\n");
 }
 
@@ -1322,9 +1659,10 @@ void AbstractImageConverterTest::convertLevels2DToDataNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData({ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}});
+    converter.convertToData({ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): multi-level 2D image conversion advertised but not implemented\n");
 }
 
@@ -1337,9 +1675,10 @@ void AbstractImageConverterTest::convertLevels3DToDataNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData({ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}});
+    converter.convertToData({ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): multi-level 3D image conversion advertised but not implemented\n");
 }
 
@@ -1355,9 +1694,10 @@ void AbstractImageConverterTest::convertLevels1DToDataCustomDeleter() {
         }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData({ImageView1D{PixelFormat::RGBA8Unorm, {}, nullptr}});
+    converter.convertToData({ImageView1D{PixelFormat::RGBA8Unorm, 1, data}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1373,9 +1713,10 @@ void AbstractImageConverterTest::convertLevels2DToDataCustomDeleter() {
         }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData({ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}});
+    converter.convertToData({ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1391,9 +1732,10 @@ void AbstractImageConverterTest::convertLevels3DToDataCustomDeleter() {
         }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData({ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}});
+    converter.convertToData({ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1405,10 +1747,12 @@ void AbstractImageConverterTest::convertCompressedLevels1DToData() {
         }
     } converter;
 
+    const char data[32]{};
     Containers::Array<char> actual = converter.convertToData({
-        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 16, Containers::ArrayView<char>{nullptr, 64}},
-        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0, nullptr},
-        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0, nullptr}
+        /* Arbitrary dimensions should be fine */
+        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 16, data},
+        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data},
+        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 12, data}
     });
     CORRADE_COMPARE(actual.size(), 16*3);
 }
@@ -1421,10 +1765,12 @@ void AbstractImageConverterTest::convertCompressedLevels2DToData() {
         }
     } converter;
 
+    const char data[64]{};
     Containers::Array<char> actual = converter.convertToData({
-        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8}, Containers::ArrayView<char>{nullptr, 64}},
-        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr},
-        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}
+        /* Arbitrary dimensions should be fine */
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8}, data},
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 12}, data},
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}
     });
     CORRADE_COMPARE(actual.size(), 128*3);
 }
@@ -1437,12 +1783,117 @@ void AbstractImageConverterTest::convertCompressedLevels3DToData() {
         }
     } converter;
 
+    const char data[128]{};
     Containers::Array<char> actual = converter.convertToData({
-        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, Containers::ArrayView<char>{nullptr, 64}},
-        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr},
-        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}
+        /* Arbitrary dimensions should be fine */
+        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, data},
+        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 16, 1}, data},
+        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 4, 1}, data}
     });
     CORRADE_COMPARE(actual.size(), 256*3);
+}
+
+void AbstractImageConverterTest::convertCompressedLevels1DToDataInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(std::initializer_list<CompressedImageView1D>{});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): at least one image has to be specified\n");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels2DToDataNoLevels() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(std::initializer_list<CompressedImageView2D>{});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): at least one image has to be specified\n");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels2DToDataZeroSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+    } converter;
+
+    const char data[16]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData({
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 8}, data},
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 0}, data},
+    });
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): can't convert image 1 with a zero size: Vector(4, 0)\n");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels2DToDataNullptr() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+    } converter;
+
+    const char data[16]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData({
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 8}, data},
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, {nullptr, 8}},
+    });
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): can't convert image 1 with a nullptr view\n");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels2DToDataInconsistentFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+    } converter;
+
+    const char data[16]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData({
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {8, 4}, data},
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data},
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBASrgb, {4, 4}, data},
+    });
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): levels don't have the same format, expected CompressedPixelFormat::Bc1RGBAUnorm but got CompressedPixelFormat::Bc1RGBASrgb for image 2\n");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels3DToDataInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData(std::initializer_list<CompressedImageView3D>{});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): at least one image has to be specified\n");
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToDataNotImplemented() {
@@ -1454,9 +1905,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToDataNotImplemented()
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0, nullptr}});
+    converter.convertToData({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): multi-level compressed 1D image conversion advertised but not implemented\n");
 }
 
@@ -1469,9 +1921,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataNotImplemented()
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}});
+    converter.convertToData({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): multi-level compressed 2D image conversion advertised but not implemented\n");
 }
 
@@ -1484,9 +1937,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToDataNotImplemented()
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}});
+    converter.convertToData({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): multi-level compressed 3D image conversion advertised but not implemented\n");
 }
 
@@ -1502,9 +1956,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToDataCustomDeleter() 
         }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}});
+    converter.convertToData({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1520,9 +1975,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataCustomDeleter() 
         }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}});
+    converter.convertToData({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1538,9 +1994,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToDataCustomDeleter() 
         }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToData({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}});
+    converter.convertToData({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1552,7 +2009,8 @@ void AbstractImageConverterTest::convert1DToDataThroughLevels() {
         }
     } converter;
 
-    Containers::Array<char> actual = converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 4, Containers::ArrayView<char>{nullptr, 96}});
+    const char data[16]{};
+    Containers::Array<char> actual = converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 4, data});
     CORRADE_COMPARE(actual.size(), 4);
 }
 
@@ -1564,7 +2022,8 @@ void AbstractImageConverterTest::convert2DToDataThroughLevels() {
         }
     } converter;
 
-    Containers::Array<char> actual = converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, Containers::ArrayView<char>{nullptr, 96}});
+    const char data[96]{};
+    Containers::Array<char> actual = converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, data});
     CORRADE_COMPARE(actual.size(), 24);
 }
 
@@ -1576,7 +2035,8 @@ void AbstractImageConverterTest::convert3DToDataThroughLevels() {
         }
     } converter;
 
-    Containers::Array<char> actual = converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {4, 6, 2}, Containers::ArrayView<char>{nullptr, 96}});
+    const char data[192]{};
+    Containers::Array<char> actual = converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {4, 6, 2}, data});
     CORRADE_COMPARE(actual.size(), 48);
 }
 
@@ -1588,7 +2048,8 @@ void AbstractImageConverterTest::convertCompressed1DToDataThroughLevels() {
         }
     } converter;
 
-    Containers::Array<char> actual = converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 16, Containers::ArrayView<char>{nullptr, 64}});
+    const char data[32]{};
+    Containers::Array<char> actual = converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 16, data});
     CORRADE_COMPARE(actual.size(), 16);
 }
 
@@ -1600,7 +2061,8 @@ void AbstractImageConverterTest::convertCompressed2DToDataThroughLevels() {
         }
     } converter;
 
-    Containers::Array<char> actual = converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8}, Containers::ArrayView<char>{nullptr, 64}});
+    const char data[64]{};
+    Containers::Array<char> actual = converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8}, data});
     CORRADE_COMPARE(actual.size(), 128);
 }
 
@@ -1612,7 +2074,8 @@ void AbstractImageConverterTest::convertCompressed3DToDataThroughLevels() {
         }
     } converter;
 
-    Containers::Array<char> actual = converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, Containers::ArrayView<char>{nullptr, 64}});
+    const char data[128]{};
+    Containers::Array<char> actual = converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, data});
     CORRADE_COMPARE(actual.size(), 256);
 }
 
@@ -1631,9 +2094,9 @@ void AbstractImageConverterTest::convert1DToFile() {
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 0xf0, {nullptr, 0xf0*4}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 0x0f, Containers::Array<char>{0x0f*4}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xf0", TestSuite::Compare::FileToString);
+        "\x0f", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convert2DToFile() {
@@ -1651,9 +2114,9 @@ void AbstractImageConverterTest::convert2DToFile() {
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {0xf0, 0x0d}, {nullptr, 0xf0*0x0d*4}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {0x0f, 0x0d}, Containers::Array<char>{0x0f*0x0d*4}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xf0\x0d", TestSuite::Compare::FileToString);
+        "\x0f\x0d", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convert3DToFile() {
@@ -1671,9 +2134,9 @@ void AbstractImageConverterTest::convert3DToFile() {
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {0xf0, 0x0d, 0x1e}, {nullptr, 0xf0*0x0d*0x1e*4}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {0x0f, 0x0d, 0x02}, Containers::Array<char>{0x0f*0x0d*0x02*4}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xf0\x0d\x1e", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convert1DToFileThroughData() {
@@ -1692,9 +2155,9 @@ void AbstractImageConverterTest::convert1DToFileThroughData() {
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     /* doConvertToFile() should call doConvertToData() */
-    CORRADE_VERIFY(converter.convertToFile(ImageView1D(PixelFormat::RGBA8Unorm, 0xfe, {nullptr, 0xfe*4}), filename));
+    CORRADE_VERIFY(converter.convertToFile(ImageView1D(PixelFormat::RGBA8Unorm, 0x0f, Containers::Array<char>{0x0f*4}), filename));
     CORRADE_COMPARE_AS(filename,
-        "\xfe", TestSuite::Compare::FileToString);
+        "\x0f", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convert2DToFileThroughData() {
@@ -1713,9 +2176,9 @@ void AbstractImageConverterTest::convert2DToFileThroughData() {
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     /* doConvertToFile() should call doConvertToData() */
-    CORRADE_VERIFY(converter.convertToFile(ImageView2D(PixelFormat::RGBA8Unorm, {0xfe, 0xed}, {nullptr, 0xfe*0xed*4}), filename));
+    CORRADE_VERIFY(converter.convertToFile(ImageView2D(PixelFormat::RGBA8Unorm, {0x0f, 0x0d}, Containers::Array<char>{0x0f*0x0d*4}), filename));
     CORRADE_COMPARE_AS(filename,
-        "\xfe\xed", TestSuite::Compare::FileToString);
+        "\x0f\x0d", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convert3DToFileThroughData() {
@@ -1734,9 +2197,9 @@ void AbstractImageConverterTest::convert3DToFileThroughData() {
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     /* doConvertToFile() should call doConvertToData() */
-    CORRADE_VERIFY(converter.convertToFile(ImageView3D(PixelFormat::RGBA8Unorm, {0xfe, 0xed, 0xe9}, {nullptr, 0xfe*0xed*0xe9*4}), filename));
+    CORRADE_VERIFY(converter.convertToFile(ImageView3D(PixelFormat::RGBA8Unorm, {0x0f, 0x0d, 0x02}, Containers::Array<char>{0x0f*0x0d*0x02*4}), filename));
     CORRADE_COMPARE_AS(filename,
-        "\xfe\xed\xe9", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convert1DToFileThroughDataFailed() {
@@ -1749,6 +2212,7 @@ void AbstractImageConverterTest::convert1DToFileThroughDataFailed() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[4]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -1758,7 +2222,7 @@ void AbstractImageConverterTest::convert1DToFileThroughDataFailed() {
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 0, nullptr}, filename));
+    CORRADE_VERIFY(!converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 1, data}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -1773,6 +2237,7 @@ void AbstractImageConverterTest::convert2DToFileThroughDataFailed() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[4]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -1782,7 +2247,7 @@ void AbstractImageConverterTest::convert2DToFileThroughDataFailed() {
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}, filename));
+    CORRADE_VERIFY(!converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -1797,6 +2262,7 @@ void AbstractImageConverterTest::convert3DToFileThroughDataFailed() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[4]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -1806,7 +2272,7 @@ void AbstractImageConverterTest::convert3DToFileThroughDataFailed() {
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}, filename));
+    CORRADE_VERIFY(!converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -1820,9 +2286,10 @@ void AbstractImageConverterTest::convert1DToFileThroughDataNotWritable() {
         };
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 0, nullptr}, "/some/path/that/does/not/exist"));
+    CORRADE_VERIFY(!converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 1, data}, "/some/path/that/does/not/exist"));
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
@@ -1837,9 +2304,10 @@ void AbstractImageConverterTest::convert2DToFileThroughDataNotWritable() {
         };
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}, "/some/path/that/does/not/exist"));
+    CORRADE_VERIFY(!converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}, "/some/path/that/does/not/exist"));
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
@@ -1854,15 +2322,16 @@ void AbstractImageConverterTest::convert3DToFileThroughDataNotWritable() {
         };
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}, "/some/path/that/does/not/exist"));
+    CORRADE_VERIFY(!converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}, "/some/path/that/does/not/exist"));
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
 }
 
-void AbstractImageConverterTest::convert1DToFileNotImplemented() {
+void AbstractImageConverterTest::convert1DToFileInvalidImage() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -1874,6 +2343,52 @@ void AbstractImageConverterTest::convert1DToFileNotImplemented() {
     std::ostringstream out;
     Error redirectError{&out};
     converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 0, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): can't convert image with a zero size: Vector(0)\n");
+}
+
+void AbstractImageConverterTest::convert2DToFileInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToFile; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): can't convert image with a zero size: Vector(0, 0)\n");
+}
+
+void AbstractImageConverterTest::convert3DToFileInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3DToFile; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): can't convert image with a zero size: Vector(0, 0, 0)\n");
+}
+
+void AbstractImageConverterTest::convert1DToFileNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert1DToFile; }
+    } converter;
+
+    const char data[4]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 1, data}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): 1D image conversion advertised but not implemented\n");
 }
 
@@ -1886,9 +2401,10 @@ void AbstractImageConverterTest::convert2DToFileNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToFile; }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): 2D image conversion advertised but not implemented\n");
 }
 
@@ -1901,9 +2417,10 @@ void AbstractImageConverterTest::convert3DToFileNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3DToFile; }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): 3D image conversion advertised but not implemented\n");
 }
 
@@ -1922,9 +2439,9 @@ void AbstractImageConverterTest::convertCompressed1DToFile() {
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0xd0, {nullptr, 64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0x0f, Containers::Array<char>{64}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xd0", TestSuite::Compare::FileToString);
+        "\x0f", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressed2DToFile() {
@@ -1942,9 +2459,9 @@ void AbstractImageConverterTest::convertCompressed2DToFile() {
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0xd0, 0x0d}, {nullptr, 64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{64}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xd0\x0d", TestSuite::Compare::FileToString);
+        "\x0f\x0d", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressed3DToFile() {
@@ -1962,9 +2479,9 @@ void AbstractImageConverterTest::convertCompressed3DToFile() {
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0xd0, 0x0d, 0x1e}, {nullptr, 64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x02}, Containers::Array<char>{64}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xd0\x0d\x1e", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressed1DToFileThroughData() {
@@ -1983,9 +2500,9 @@ void AbstractImageConverterTest::convertCompressed1DToFileThroughData() {
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     /* doConvertToFile() should call doConvertToData() */
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0xb0, {nullptr, 64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0x0f, Containers::Array<char>{64}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xb0", TestSuite::Compare::FileToString);
+        "\x0f", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressed2DToFileThroughData() {
@@ -2004,9 +2521,9 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughData() {
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     /* doConvertToFile() should call doConvertToData() */
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0xb0, 0xd9}, {nullptr, 64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{64}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xb0\xd9", TestSuite::Compare::FileToString);
+        "\x0f\x0d", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressed3DToFileThroughData() {
@@ -2025,9 +2542,9 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughData() {
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     /* doConvertToFile() should call doConvertToData() */
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0xb0, 0xd1, 0xe5}, {nullptr, 64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x02}, Containers::Array<char>{64}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xb0\xd1\xe5", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressed1DToFileThroughDataFailed() {
@@ -2040,6 +2557,7 @@ void AbstractImageConverterTest::convertCompressed1DToFileThroughDataFailed() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[8]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2049,7 +2567,7 @@ void AbstractImageConverterTest::convertCompressed1DToFileThroughDataFailed() {
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0, nullptr}, filename));
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -2064,6 +2582,7 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughDataFailed() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[8]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2073,7 +2592,7 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughDataFailed() {
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}, filename));
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -2088,6 +2607,7 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughDataFailed() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[8]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2097,7 +2617,7 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughDataFailed() {
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}, filename));
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -2111,9 +2631,10 @@ void AbstractImageConverterTest::convertCompressed1DToFileThroughDataNotWritable
         };
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0, nullptr}, "/some/path/that/does/not/exist");
+    converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}, "/some/path/that/does/not/exist");
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
@@ -2128,9 +2649,10 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughDataNotWritable
         };
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}, "/some/path/that/does/not/exist");
+    converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}, "/some/path/that/does/not/exist");
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
@@ -2145,15 +2667,16 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughDataNotWritable
         };
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}, "/some/path/that/does/not/exist");
+    converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}, "/some/path/that/does/not/exist");
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
 }
 
-void AbstractImageConverterTest::convertCompressed1DToFileNotImplemented() {
+void AbstractImageConverterTest::convertCompressed1DToFileInvalidImage() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -2165,6 +2688,52 @@ void AbstractImageConverterTest::convertCompressed1DToFileNotImplemented() {
     std::ostringstream out;
     Error redirectError{&out};
     converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): can't convert image with a zero size: Vector(0)\n");
+}
+
+void AbstractImageConverterTest::convertCompressed2DToFileInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2DToFile; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): can't convert image with a zero size: Vector(0, 0)\n");
+}
+
+void AbstractImageConverterTest::convertCompressed3DToFileInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3DToFile; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): can't convert image with a zero size: Vector(0, 0, 0)\n");
+}
+
+void AbstractImageConverterTest::convertCompressed1DToFileNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed1DToFile; }
+    } converter;
+
+    const char data[8]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): compressed 1D image conversion advertised but not implemented\n");
 }
 
@@ -2177,9 +2746,10 @@ void AbstractImageConverterTest::convertCompressed2DToFileNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2DToFile; }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): compressed 2D image conversion advertised but not implemented\n");
 }
 
@@ -2192,9 +2762,10 @@ void AbstractImageConverterTest::convertCompressed3DToFileNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3DToFile; }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): compressed 3D image conversion advertised but not implemented\n");
 }
 
@@ -2202,12 +2773,12 @@ void AbstractImageConverterTest::convertImageData1DToFile() {
     ImageData1DConverter converter;
 
     /* Should get "B" when converting uncompressed */
-    CORRADE_VERIFY(converter.convertToFile(ImageData1D{PixelFormat::RGBA16F, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(converter.convertToFile(ImageData1D{PixelFormat::RGBA16F, 1, Containers::Array<char>{8}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "B", TestSuite::Compare::FileToString);
 
     /* Should get "C" when converting compressed */
-    CORRADE_VERIFY(converter.convertToFile(ImageData1D{CompressedPixelFormat::Bc2RGBAUnorm, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(converter.convertToFile(ImageData1D{CompressedPixelFormat::Bc2RGBAUnorm, 4, Containers::Array<char>{8}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "C", TestSuite::Compare::FileToString);
 }
@@ -2216,12 +2787,12 @@ void AbstractImageConverterTest::convertImageData2DToFile() {
     ImageData2DConverter converter;
 
     /* Should get "B" when converting uncompressed */
-    CORRADE_VERIFY(converter.convertToFile(ImageData2D{PixelFormat::RGBA16F, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(converter.convertToFile(ImageData2D{PixelFormat::RGBA16F, {1, 1}, Containers::Array<char>{8}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "B", TestSuite::Compare::FileToString);
 
     /* Should get "C" when converting compressed */
-    CORRADE_VERIFY(converter.convertToFile(ImageData2D{CompressedPixelFormat::Bc2RGBAUnorm, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(converter.convertToFile(ImageData2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{8}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "C", TestSuite::Compare::FileToString);
 }
@@ -2230,12 +2801,12 @@ void AbstractImageConverterTest::convertImageData3DToFile() {
     ImageData3DConverter converter;
 
     /* Should get "B" when converting uncompressed */
-    CORRADE_VERIFY(converter.convertToFile(ImageData3D{PixelFormat::RGBA16F, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(converter.convertToFile(ImageData3D{PixelFormat::RGBA16F, {1, 1, 1}, Containers::Array<char>{8}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "B", TestSuite::Compare::FileToString);
 
     /* Should get "C" when converting compressed */
-    CORRADE_VERIFY(converter.convertToFile(ImageData3D{CompressedPixelFormat::Bc2RGBAUnorm, {}, nullptr}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(converter.convertToFile(ImageData3D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4, 1}, Containers::Array<char>{4}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "C", TestSuite::Compare::FileToString);
 }
@@ -2250,17 +2821,19 @@ void AbstractImageConverterTest::convertLevels1DToFile() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[4]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     CORRADE_VERIFY(converter.convertToFile({
-        ImageView1D{PixelFormat::RGBA8Unorm, 0xf0, {nullptr, 0xf0*4}},
-        ImageView1D{PixelFormat::RGBA8Unorm, 0, nullptr}
+        /* Arbitrary dimensions should be fine */
+        ImageView1D{PixelFormat::RGBA8Unorm, 0x0f, Containers::Array<char>{0x0f*4}},
+        ImageView1D{PixelFormat::RGBA8Unorm, 1, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xf0\x02", TestSuite::Compare::FileToString);
+        "\x0f\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertLevels2DToFile() {
@@ -2273,17 +2846,19 @@ void AbstractImageConverterTest::convertLevels2DToFile() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[4]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     CORRADE_VERIFY(converter.convertToFile({
-        ImageView2D{PixelFormat::RGBA8Unorm, {0xf0, 0x0d}, {nullptr, 0xf0*0x0d*4}},
-        ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}
+        /* Arbitrary dimensions should be fine */
+        ImageView2D{PixelFormat::RGBA8Unorm, {0x0f, 0x0d}, Containers::Array<char>{0x0f*0x0d*4}},
+        ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xf0\x0d\x02", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertLevels3DToFile() {
@@ -2296,17 +2871,19 @@ void AbstractImageConverterTest::convertLevels3DToFile() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[4]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     CORRADE_VERIFY(converter.convertToFile({
-        ImageView3D{PixelFormat::RGBA8Unorm, {0xf0, 0x0d, 0x1e}, {nullptr, 0xf0*0x0d*0x1e*4}},
-        ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}
+        /* Arbitrary dimensions should be fine */
+        ImageView3D{PixelFormat::RGBA8Unorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{0x0f*0x0d*0x0e*4}},
+        ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xf0\x0d\x1e\x02", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x0e\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertLevels1DToFileThroughData() {
@@ -2319,6 +2896,7 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughData() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[4]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2326,11 +2904,12 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughData() {
 
     /* doConvertToFile() should call doConvertToData() */
     CORRADE_VERIFY(converter.convertToFile({
-        ImageView1D{PixelFormat::RGBA8Unorm, 0xfe, {nullptr, 0xfe*4}},
-        ImageView1D{PixelFormat::RGBA8Unorm, 0, nullptr}
+        /* Arbitrary dimensions should be fine */
+        ImageView1D{PixelFormat::RGBA8Unorm, 0x0f, Containers::Array<char>{0x0f*4}},
+        ImageView1D{PixelFormat::RGBA8Unorm, 1, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xfe\x02", TestSuite::Compare::FileToString);
+        "\x0f\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertLevels2DToFileThroughData() {
@@ -2343,6 +2922,7 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughData() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[4]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2350,11 +2930,11 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughData() {
 
     /* doConvertToFile() should call doConvertToData() */
     CORRADE_VERIFY(converter.convertToFile({
-        ImageView2D(PixelFormat::RGBA8Unorm, {0xfe, 0xed}, {nullptr, 0xfe*0xed*4}),
-        ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}
+        ImageView2D(PixelFormat::RGBA8Unorm, {0x0f, 0x0d}, Containers::Array<char>{0x0f*0x0d*4}),
+        ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xfe\xed\x02", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertLevels3DToFileThroughData() {
@@ -2367,6 +2947,7 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughData() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[4]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2374,11 +2955,11 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughData() {
 
     /* doConvertToFile() should call doConvertToData() */
     CORRADE_VERIFY(converter.convertToFile({
-        ImageView3D{PixelFormat::RGBA8Unorm, {0xfe, 0xed, 0xe9}, {nullptr, 0xfe*0xed*0xe9*4}},
-        ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}
+        ImageView3D{PixelFormat::RGBA8Unorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{0x0f*0x0d*0x0e*4}},
+        ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xfe\xed\xe9\x02", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x0e\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertLevels1DToFileThroughDataFailed() {
@@ -2391,6 +2972,7 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughDataFailed() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[4]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2400,7 +2982,7 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughDataFailed() {
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({ImageView1D{PixelFormat::RGBA8Unorm, 0, nullptr}}, filename));
+    CORRADE_VERIFY(!converter.convertToFile({ImageView1D{PixelFormat::RGBA8Unorm, 1, data}}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -2415,6 +2997,7 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughDataFailed() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[4]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2424,7 +3007,7 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughDataFailed() {
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}}, filename));
+    CORRADE_VERIFY(!converter.convertToFile({ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -2439,6 +3022,7 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughDataFailed() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[4]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2448,7 +3032,7 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughDataFailed() {
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}}, filename));
+    CORRADE_VERIFY(!converter.convertToFile({ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -2461,9 +3045,10 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughDataNotWritable() {
         };
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({ImageView1D{PixelFormat::RGBA8Unorm, 0, nullptr}}, "/some/path/that/does/not/exist"));
+    CORRADE_VERIFY(!converter.convertToFile({ImageView1D{PixelFormat::RGBA8Unorm, 1, data}}, "/some/path/that/does/not/exist"));
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
@@ -2478,9 +3063,10 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughDataNotWritable() {
         };
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}}, "/some/path/that/does/not/exist"));
+    CORRADE_VERIFY(!converter.convertToFile({ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}}, "/some/path/that/does/not/exist"));
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
@@ -2495,12 +3081,58 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughDataNotWritable() {
         };
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}}, "/some/path/that/does/not/exist"));
+    CORRADE_VERIFY(!converter.convertToFile({ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}}, "/some/path/that/does/not/exist"));
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+}
+
+void AbstractImageConverterTest::convertLevels1DToFileInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToFile; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToFile(std::initializer_list<ImageView1D>{}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): at least one image has to be specified\n");
+}
+
+void AbstractImageConverterTest::convertLevels2DToFileInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToFile; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToFile(std::initializer_list<ImageView2D>{}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): at least one image has to be specified\n");
+}
+
+void AbstractImageConverterTest::convertLevels3DToFileInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToFile; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToFile(std::initializer_list<ImageView3D>{}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): at least one image has to be specified\n");
 }
 
 void AbstractImageConverterTest::convertLevels1DToFileNotImplemented() {
@@ -2512,9 +3144,10 @@ void AbstractImageConverterTest::convertLevels1DToFileNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToFile; }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile({ImageView1D{PixelFormat::RGBA8Unorm, 0, nullptr}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    converter.convertToFile({ImageView1D{PixelFormat::RGBA8Unorm, 1, data}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): multi-level 1D image conversion advertised but not implemented\n");
 }
 
@@ -2527,9 +3160,10 @@ void AbstractImageConverterTest::convertLevels2DToFileNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToFile; }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile({ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    converter.convertToFile({ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): multi-level 2D image conversion advertised but not implemented\n");
 }
 
@@ -2542,9 +3176,10 @@ void AbstractImageConverterTest::convertLevels3DToFileNotImplemented() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToFile; }
     } converter;
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile({ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    converter.convertToFile({ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): multi-level 3D image conversion advertised but not implemented\n");
 }
 
@@ -2558,17 +3193,18 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFile() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[8]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     CORRADE_VERIFY(converter.convertToFile({
-        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0xd0, {nullptr, 64}},
-        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0, nullptr}
+        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0x0f, Containers::Array<char>{64}},
+        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xd0\x02", TestSuite::Compare::FileToString);
+        "\x0f\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToFile() {
@@ -2581,17 +3217,18 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFile() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[8]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     CORRADE_VERIFY(converter.convertToFile({
-        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0xd0, 0x0d}, {nullptr, 64}},
-        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{64}},
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xd0\x0d\x02", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressedLevels3DToFile() {
@@ -2604,17 +3241,18 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFile() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[8]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     CORRADE_VERIFY(converter.convertToFile({
-        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0xd0, 0x0d, 0x1e}, {nullptr, 64}},
-        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}
+        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{64}},
+        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xd0\x0d\x1e\x02", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x0e\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughData() {
@@ -2627,6 +3265,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughData() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[8]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2634,11 +3273,11 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughData() {
 
     /* doConvertToFile() should call doConvertToData() */
     CORRADE_VERIFY(converter.convertToFile({
-        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0xb0, {nullptr, 64}},
-        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0, nullptr}
+        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0x0f, Containers::Array<char>{64}},
+        CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xb0\x02", TestSuite::Compare::FileToString);
+        "\x0f\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughData() {
@@ -2651,6 +3290,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughData() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[8]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2658,11 +3298,11 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughData() {
 
     /* doConvertToFile() should call doConvertToData() */
     CORRADE_VERIFY(converter.convertToFile({
-        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0xb0, 0xd9}, {nullptr, 64}},
-        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{64}},
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xb0\xd9\x02", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughData() {
@@ -2675,6 +3315,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughData() {
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[8]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2682,11 +3323,11 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughData() {
 
     /* doConvertToFile() should call doConvertToData() */
     CORRADE_VERIFY(converter.convertToFile({
-        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0xb0, 0xd1, 0xe5}, {nullptr, 64}},
-        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}
+        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{64}},
+        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 4}, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xb0\xd1\xe5\x02", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x0e\x02", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataFailed() {
@@ -2699,6 +3340,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataFaile
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[8]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2708,7 +3350,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataFaile
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0, nullptr}}, filename));
+    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -2723,6 +3365,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataFaile
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[8]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2732,7 +3375,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataFaile
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}}, filename));
+    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -2747,6 +3390,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataFaile
     } converter;
 
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    const char data[8]{};
 
     /* Remove previous file, if any */
     Utility::Directory::rm(filename);
@@ -2756,7 +3400,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataFaile
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}}, filename));
+    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 4}, data}}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -2770,9 +3414,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataNotWr
         };
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0, nullptr}}, "/some/path/that/does/not/exist");
+    converter.convertToFile({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}}, "/some/path/that/does/not/exist");
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
@@ -2787,9 +3432,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataNotWr
         };
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}}, "/some/path/that/does/not/exist");
+    converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}}, "/some/path/that/does/not/exist");
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
@@ -2804,12 +3450,58 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataNotWr
         };
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}}, "/some/path/that/does/not/exist");
+    converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}}, "/some/path/that/does/not/exist");
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels1DToFileInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToFile; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToFile(std::initializer_list<CompressedImageView1D>{}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): at least one image has to be specified\n");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels2DToFileInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToFile; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToFile(std::initializer_list<CompressedImageView2D>{}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): at least one image has to be specified\n");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels3DToFileInvalidImage() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToFile; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToFile(std::initializer_list<CompressedImageView3D>{}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): at least one image has to be specified\n");
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToFileNotImplemented() {
@@ -2821,9 +3513,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileNotImplemented()
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToFile; }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0, nullptr}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    converter.convertToFile({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 1D image conversion advertised but not implemented\n");
 }
 
@@ -2836,9 +3529,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileNotImplemented()
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToFile; }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 2D image conversion advertised but not implemented\n");
 }
 
@@ -2851,9 +3545,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileNotImplemented()
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToFile; }
     } converter;
 
+    const char data[8]{};
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 4}, data}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 3D image conversion advertised but not implemented\n");
 }
 
@@ -2872,9 +3567,9 @@ void AbstractImageConverterTest::convert1DToFileThroughLevels() {
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 0xf0, {nullptr, 0xf0*4}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 0x0f, Containers::Array<char>{0x0f*4}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xf0\x01", TestSuite::Compare::FileToString);
+        "\x0f\x01", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convert2DToFileThroughLevels() {
@@ -2892,9 +3587,9 @@ void AbstractImageConverterTest::convert2DToFileThroughLevels() {
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {0xf0, 0x0d}, {nullptr, 0xf0*0x0d*4}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {0x0f, 0x0d}, Containers::Array<char>{0x0f*0x0d*4}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xf0\x0d\x01", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x01", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convert3DToFileThroughLevels() {
@@ -2912,9 +3607,9 @@ void AbstractImageConverterTest::convert3DToFileThroughLevels() {
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {0xf0, 0x0d, 0x1e}, {nullptr, 0xf0*0x0d*0x1e*4}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{0x0f*0x0d*0x0e*4}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xf0\x0d\x1e\x01", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x0e\x01", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressed1DToFileThroughLevels() {
@@ -2932,9 +3627,9 @@ void AbstractImageConverterTest::convertCompressed1DToFileThroughLevels() {
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0xd0, {nullptr, 64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 0x0f, Containers::Array<char>{64}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xd0\x01", TestSuite::Compare::FileToString);
+        "\x0f\x01", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressed2DToFileThroughLevels() {
@@ -2952,9 +3647,9 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughLevels() {
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0xd0, 0x0d}, {nullptr, 64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{64}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xd0\x0d\x01", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x01", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::convertCompressed3DToFileThroughLevels() {
@@ -2972,9 +3667,9 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughLevels() {
     Utility::Directory::rm(filename);
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0xd0, 0x0d, 0x1e}, {nullptr, 64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{64}}, filename));
     CORRADE_COMPARE_AS(filename,
-        "\xd0\x0d\x1e\x01", TestSuite::Compare::FileToString);
+        "\x0f\x0d\x0e\x01", TestSuite::Compare::FileToString);
 }
 
 void AbstractImageConverterTest::debugFeature() {

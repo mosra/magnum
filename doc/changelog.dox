@@ -733,6 +733,11 @@ See also:
     interfaces, which are also @cpp const @ce and can't fail. Documentation of
     each function was expanded to suggest a recommended place for potential
     error handling.
+-   @ref Trade::AbstractImageConverter::convertToData() and
+    @relativeref{Trade::AbstractImageConverter,convertToFile()} now expect
+    image views to not be @cpp nullptr @ce and to have a non-zero size in all
+    dimensions. This used to fail for all existing plugin implementations
+    anyway, but now it's treated as a programmer error and thus asserted on.
 -   @ref Trade::TextureData constructor was not @cpp explicit @ce by mistake,
     now it is
 -   @ref Trade::TextureData::image() used to document that cube map images are

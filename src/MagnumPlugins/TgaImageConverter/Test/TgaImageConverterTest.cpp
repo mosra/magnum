@@ -112,14 +112,12 @@ TgaImageConverterTest::TgaImageConverterTest() {
 }
 
 void TgaImageConverterTest::wrongFormat() {
-    ImageView2D image{PixelFormat::RG8Unorm, {}, nullptr};
+    Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
 
+    const char data[4]{};
     std::ostringstream out;
     Error redirectError{&out};
-
-    Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
-    const auto data = converter->convertToData(image);
-    CORRADE_VERIFY(!data);
+    CORRADE_VERIFY(!converter->convertToData(ImageView2D{PixelFormat::RG8Unorm, {1, 1}, data}));
     CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::convertToData(): unsupported pixel format PixelFormat::RG8Unorm\n");
 }
 

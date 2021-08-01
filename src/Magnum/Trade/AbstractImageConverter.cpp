@@ -36,6 +36,7 @@
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/ImageData.h"
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
@@ -99,6 +100,24 @@ Containers::Optional<ImageData1D> AbstractImageConverter::convert(const ImageVie
     CORRADE_ASSERT(features() & ImageConverterFeature::Convert1D,
         "Trade::AbstractImageConverter::convert(): 1D image conversion not supported", {});
 
+    /* Unlike with convertToData() / convertToFile(), where images are checked
+       for having a non-zero size and being non-null, here it's explicitly
+       allowed:
+
+        -   Usual format conversions / resamplings are a loop that "just works"
+            with zero-sized dimensions.
+        -   Nullptr views could be potentially useful for converters that fill
+            an image of desired format and size with data, such as generating a
+            noise image or some test pattern. While it could be implemented as
+            an importer plugin as well, the size/format would have to be passed
+            manually through plugin-specific configuration there, which is
+            rather annoying compared to having an API prepared directly for
+            that.
+
+       Plugin implementations that can't work with these have to do this check
+       themselves, and since that's then a plugin-specific behavior, it should
+       be a runtime error, not an assert. */
+
     Containers::Optional<ImageData1D> out = doConvert(image);
     CORRADE_ASSERT(!out || !out->_data.deleter(), "Trade::AbstractImageConverter::convert(): implementation is not allowed to use a custom Array deleter", {});
     return out;
@@ -111,6 +130,9 @@ Containers::Optional<ImageData1D> AbstractImageConverter::doConvert(const ImageV
 Containers::Optional<ImageData2D> AbstractImageConverter::convert(const ImageView2D& image) {
     CORRADE_ASSERT(features() & ImageConverterFeature::Convert2D,
         "Trade::AbstractImageConverter::convert(): 2D image conversion not supported", {});
+
+    /* No zero size / nullptr checks here, see convert(const ImageView1D&) for
+       reasons why */
 
     Containers::Optional<ImageData2D> out = doConvert(image);
     CORRADE_ASSERT(!out || !out->_data.deleter(), "Trade::AbstractImageConverter::convert(): implementation is not allowed to use a custom Array deleter", {});
@@ -157,6 +179,9 @@ Containers::Optional<ImageData3D> AbstractImageConverter::convert(const ImageVie
     CORRADE_ASSERT(features() & ImageConverterFeature::Convert3D,
         "Trade::AbstractImageConverter::convert(): 3D image conversion not supported", {});
 
+    /* No zero size / nullptr checks here, see convert(const ImageView1D&) for
+       reasons why */
+
     Containers::Optional<ImageData3D> out = doConvert(image);
     CORRADE_ASSERT(!out || !out->_data.deleter(), "Trade::AbstractImageConverter::convert(): implementation is not allowed to use a custom Array deleter", {});
     return out;
@@ -169,6 +194,9 @@ Containers::Optional<ImageData3D> AbstractImageConverter::doConvert(const ImageV
 Containers::Optional<ImageData1D> AbstractImageConverter::convert(const CompressedImageView1D& image) {
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressed1D,
         "Trade::AbstractImageConverter::convert(): compressed 1D image conversion not supported", {});
+
+    /* No zero size / nullptr checks here, see convert(const ImageView1D&) for
+       reasons why */
 
     Containers::Optional<ImageData1D> out = doConvert(image);
     CORRADE_ASSERT(!out || !out->_data.deleter(), "Trade::AbstractImageConverter::convert(): implementation is not allowed to use a custom Array deleter", {});
@@ -183,6 +211,9 @@ Containers::Optional<ImageData2D> AbstractImageConverter::convert(const Compress
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressed2D,
         "Trade::AbstractImageConverter::convert(): compressed 2D image conversion not supported", {});
 
+    /* No zero size / nullptr checks here, see convert(const ImageView1D&) for
+       reasons why */
+
     Containers::Optional<ImageData2D> out = doConvert(image);
     CORRADE_ASSERT(!out || !out->_data.deleter(), "Trade::AbstractImageConverter::convert(): implementation is not allowed to use a custom Array deleter", {});
     return out;
@@ -195,6 +226,9 @@ Containers::Optional<ImageData2D> AbstractImageConverter::doConvert(const Compre
 Containers::Optional<ImageData3D> AbstractImageConverter::convert(const CompressedImageView3D& image) {
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressed3D,
         "Trade::AbstractImageConverter::convert(): compressed 3D image conversion not supported", {});
+
+    /* No zero size / nullptr checks here, see convert(const ImageView1D&) for
+       reasons why */
 
     Containers::Optional<ImageData3D> out = doConvert(image);
     CORRADE_ASSERT(!out || !out->_data.deleter(), "Trade::AbstractImageConverter::convert(): implementation is not allowed to use a custom Array deleter", {});
@@ -217,9 +251,36 @@ Containers::Optional<ImageData3D> AbstractImageConverter::convert(const ImageDat
     return image.isCompressed() ? convert(CompressedImageView3D(image)) : convert(ImageView3D(image));
 }
 
+#ifndef CORRADE_NO_ASSERT
+namespace {
+
+template<UnsignedInt dimensions, template<UnsignedInt, class> class View> bool checkImageValidity(const char* const messagePrefix, const View<dimensions, const char>& image) {
+    /* At some point there might be a file format that allows zero-sized
+       images, but so far I don't know about any. When such format appears,
+       this check will get moved to plugin implementations that can't work with
+       zero-sized images.
+
+       Also note that this check isn't done for the Image->Image conversion
+       above, there zero-sized images and nullptr *could* make sense. */
+    CORRADE_ASSERT(image.size().product(),
+        messagePrefix << "can't convert image with a zero size:" << image.size(), false);
+    CORRADE_ASSERT(image.data(),
+        messagePrefix << "can't convert image with a nullptr view", false);
+    return true;
+}
+
+}
+#endif
+
 Containers::Array<char> AbstractImageConverter::convertToData(const ImageView1D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::Convert1DToData,
         "Trade::AbstractImageConverter::convertToData(): 1D image conversion not supported", nullptr);
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToData():", image))
+        return {};
+    #endif
 
     Containers::Array<char> out = doConvertToData(image);
     CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
@@ -236,6 +297,12 @@ Containers::Array<char> AbstractImageConverter::doConvertToData(const ImageView1
 Containers::Array<char> AbstractImageConverter::convertToData(const ImageView2D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::Convert2DToData,
         "Trade::AbstractImageConverter::convertToData(): 2D image conversion not supported", nullptr);
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToData():", image))
+        return {};
+    #endif
 
     Containers::Array<char> out = doConvertToData(image);
     CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
@@ -259,6 +326,12 @@ Containers::Array<char> AbstractImageConverter::convertToData(const ImageView3D&
     CORRADE_ASSERT(features() >= ImageConverterFeature::Convert3DToData,
         "Trade::AbstractImageConverter::convertToData(): 3D image conversion not supported", nullptr);
 
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToData():", image))
+        return {};
+    #endif
+
     Containers::Array<char> out = doConvertToData(image);
     CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
     return out;
@@ -275,6 +348,12 @@ Containers::Array<char> AbstractImageConverter::convertToData(const CompressedIm
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressed1DToData,
         "Trade::AbstractImageConverter::convertToData(): compressed 1D image conversion not supported", nullptr);
 
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToData():", image))
+        return {};
+    #endif
+
     Containers::Array<char> out = doConvertToData(image);
     CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
     return out;
@@ -290,6 +369,12 @@ Containers::Array<char> AbstractImageConverter::doConvertToData(const Compressed
 Containers::Array<char> AbstractImageConverter::convertToData(const CompressedImageView2D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressed2DToData,
         "Trade::AbstractImageConverter::convertToData(): compressed 2D image conversion not supported", nullptr);
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToData():", image))
+        return {};
+    #endif
 
     Containers::Array<char> out = doConvertToData(image);
     CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
@@ -312,6 +397,12 @@ Containers::Array<char> AbstractImageConverter::exportToData(const CompressedIma
 Containers::Array<char> AbstractImageConverter::convertToData(const CompressedImageView3D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressed3DToData,
         "Trade::AbstractImageConverter::convertToData(): compressed 3D image conversion not supported", nullptr);
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToData():", image))
+        return {};
+    #endif
 
     Containers::Array<char> out = doConvertToData(image);
     CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
@@ -343,9 +434,64 @@ Containers::Array<char> AbstractImageConverter::convertToData(const ImageData3D&
     return image.isCompressed() ? convertToData(CompressedImageView3D(image)) : convertToData(ImageView3D(image));
 }
 
+#ifndef CORRADE_NO_ASSERT
+namespace {
+
+template<UnsignedInt dimensions> bool checkImageValidity(const char* const messagePrefix, const Containers::ArrayView<const BasicImageView<dimensions>> imageLevels) {
+    CORRADE_ASSERT(!imageLevels.empty(),
+        messagePrefix << "at least one image has to be specified", false);
+
+    const PixelFormat format = imageLevels[0].format();
+    const UnsignedInt formatExtra = imageLevels[0].formatExtra();
+    /* Going through *all* levels although the format assertion is never fired
+       in the first iteration in order to properly check also the first one for
+       zero size / nullptr. */
+    for(std::size_t i = 0; i != imageLevels.size(); ++i) {
+        CORRADE_ASSERT(imageLevels[i].size().product(),
+            messagePrefix << "can't convert image" << i << "with a zero size:" << imageLevels[i].size(), false);
+        CORRADE_ASSERT(imageLevels[i].data(),
+            messagePrefix << "can't convert image" << i << "with a nullptr view", false);
+        CORRADE_ASSERT(imageLevels[i].format() == format,
+            messagePrefix << "levels don't have the same format, expected" << format << "but got" << imageLevels[i].format() << "for image" << i, false);
+        CORRADE_ASSERT(imageLevels[i].formatExtra() == formatExtra,
+            messagePrefix << "levels don't have the same extra format field, expected" << formatExtra << "but got" << imageLevels[i].formatExtra() << "for image" << i, false);
+    }
+
+    return true;
+}
+
+template<UnsignedInt dimensions> bool checkImageValidity(const char* const messagePrefix, const Containers::ArrayView<const BasicCompressedImageView<dimensions>> imageLevels) {
+    CORRADE_ASSERT(!imageLevels.empty(),
+        messagePrefix << "at least one image has to be specified", false);
+
+    const CompressedPixelFormat format = imageLevels[0].format();
+    /* Going through *all* levels although the format assertion is never fired
+       in the first iteration in order to properly check also the first one for
+       zero size / nullptr. */
+    for(std::size_t i = 0; i != imageLevels.size(); ++i) {
+        CORRADE_ASSERT(imageLevels[i].size().product(),
+            messagePrefix << "can't convert image" << i << "with a zero size:" << imageLevels[i].size(), false);
+        CORRADE_ASSERT(imageLevels[i].data(),
+            messagePrefix << "can't convert image" << i << "with a nullptr view", false);
+        CORRADE_ASSERT(imageLevels[i].format() == format,
+            messagePrefix << "levels don't have the same format, expected" << format << "but got" << imageLevels[i].format() << "for image" << i, false);
+    }
+
+    return true;
+}
+
+}
+#endif
+
 Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageView1D> imageLevels) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels1DToData,
         "Trade::AbstractImageConverter::convertToData(): multi-level 1D image conversion not supported", nullptr);
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToData():", imageLevels))
+        return {};
+    #endif
 
     Containers::Array<char> out = doConvertToData(imageLevels);
     CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
@@ -364,6 +510,12 @@ Containers::Array<char> AbstractImageConverter::convertToData(const Containers::
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels2DToData,
         "Trade::AbstractImageConverter::convertToData(): multi-level 2D image conversion not supported", nullptr);
 
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToData():", imageLevels))
+        return {};
+    #endif
+
     Containers::Array<char> out = doConvertToData(imageLevels);
     CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
     return out;
@@ -380,6 +532,12 @@ Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::Arra
 Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageView3D> imageLevels) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels3DToData,
         "Trade::AbstractImageConverter::convertToData(): multi-level 3D image conversion not supported", nullptr);
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToData():", imageLevels))
+        return {};
+    #endif
 
     Containers::Array<char> out = doConvertToData(imageLevels);
     CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
@@ -398,6 +556,12 @@ Containers::Array<char> AbstractImageConverter::convertToData(const Containers::
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels1DToData,
         "Trade::AbstractImageConverter::convertToData(): multi-level compressed 1D image conversion not supported", nullptr);
 
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToData():", imageLevels))
+        return {};
+    #endif
+
     Containers::Array<char> out = doConvertToData(imageLevels);
     CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
     return out;
@@ -414,6 +578,12 @@ Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::Arra
 Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const CompressedImageView2D> imageLevels) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels2DToData,
         "Trade::AbstractImageConverter::convertToData(): multi-level compressed 2D image conversion not supported", nullptr);
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToData():", imageLevels))
+        return {};
+    #endif
 
     Containers::Array<char> out = doConvertToData(imageLevels);
     CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
@@ -432,6 +602,12 @@ Containers::Array<char> AbstractImageConverter::convertToData(const Containers::
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels3DToData,
         "Trade::AbstractImageConverter::convertToData(): multi-level compressed 3D image conversion not supported", nullptr);
 
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToData():", imageLevels))
+        return {};
+    #endif
+
     Containers::Array<char> out = doConvertToData(imageLevels);
     CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
     return out;
@@ -448,6 +624,12 @@ Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::Arra
 bool AbstractImageConverter::convertToFile(const ImageView1D& image, const Containers::StringView filename) {
     CORRADE_ASSERT(features() & ImageConverterFeature::Convert1DToFile,
         "Trade::AbstractImageConverter::convertToFile(): 1D image conversion not supported", {});
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToFile():", image))
+        return {};
+    #endif
 
     return doConvertToFile(image, filename);
 }
@@ -476,6 +658,12 @@ bool AbstractImageConverter::doConvertToFile(const ImageView1D& image, const Con
 bool AbstractImageConverter::convertToFile(const ImageView2D& image, const Containers::StringView filename) {
     CORRADE_ASSERT(features() & ImageConverterFeature::Convert2DToFile,
         "Trade::AbstractImageConverter::convertToFile(): 2D image conversion not supported", {});
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToFile():", image))
+        return {};
+    #endif
 
     return doConvertToFile(image, filename);
 }
@@ -511,6 +699,12 @@ bool AbstractImageConverter::convertToFile(const ImageView3D& image, const Conta
     CORRADE_ASSERT(features() & ImageConverterFeature::Convert3DToFile,
         "Trade::AbstractImageConverter::convertToFile(): 3D image conversion not supported", {});
 
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToFile():", image))
+        return {};
+    #endif
+
     return doConvertToFile(image, filename);
 }
 
@@ -539,6 +733,12 @@ bool AbstractImageConverter::convertToFile(const CompressedImageView1D& image, c
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressed1DToFile,
         "Trade::AbstractImageConverter::convertToFile(): compressed 1D image conversion not supported", {});
 
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToFile():", image))
+        return {};
+    #endif
+
     return doConvertToFile(image, filename);
 }
 
@@ -566,6 +766,12 @@ bool AbstractImageConverter::doConvertToFile(const CompressedImageView1D& image,
 bool AbstractImageConverter::convertToFile(const CompressedImageView2D& image, const Containers::StringView filename) {
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressed2DToFile,
         "Trade::AbstractImageConverter::convertToFile(): compressed 2D image conversion not supported", {});
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToFile():", image))
+        return {};
+    #endif
 
     return doConvertToFile(image, filename);
 }
@@ -600,6 +806,12 @@ bool AbstractImageConverter::exportToFile(const CompressedImageView2D& image, co
 bool AbstractImageConverter::convertToFile(const CompressedImageView3D& image, const Containers::StringView filename) {
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressed3DToFile,
         "Trade::AbstractImageConverter::convertToFile(): compressed 3D image conversion not supported", {});
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToFile():", image))
+        return {};
+    #endif
 
     return doConvertToFile(image, filename);
 }
@@ -647,6 +859,12 @@ bool AbstractImageConverter::convertToFile(const Containers::ArrayView<const Ima
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertLevels1DToFile,
         "Trade::AbstractImageConverter::convertToFile(): multi-level 1D image conversion not supported", {});
 
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToFile():", imageLevels))
+        return {};
+    #endif
+
     return doConvertToFile(imageLevels, filename);
 }
 
@@ -672,6 +890,12 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const I
 bool AbstractImageConverter::convertToFile(const Containers::ArrayView<const ImageView2D> imageLevels, const Containers::StringView filename) {
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertLevels2DToFile,
         "Trade::AbstractImageConverter::convertToFile(): multi-level 2D image conversion not supported", {});
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToFile():", imageLevels))
+        return {};
+    #endif
 
     return doConvertToFile(imageLevels, filename);
 }
@@ -699,6 +923,12 @@ bool AbstractImageConverter::convertToFile(const Containers::ArrayView<const Ima
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertLevels3DToFile,
         "Trade::AbstractImageConverter::convertToFile(): multi-level 3D image conversion not supported", {});
 
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToFile():", imageLevels))
+        return {};
+    #endif
+
     return doConvertToFile(imageLevels, filename);
 }
 
@@ -724,6 +954,12 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const I
 bool AbstractImageConverter::convertToFile(const Containers::ArrayView<const CompressedImageView1D> imageLevels, const Containers::StringView filename) {
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressedLevels1DToFile,
         "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 1D image conversion not supported", {});
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToFile():", imageLevels))
+        return {};
+    #endif
 
     return doConvertToFile(imageLevels, filename);
 }
@@ -751,6 +987,12 @@ bool AbstractImageConverter::convertToFile(const Containers::ArrayView<const Com
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressedLevels2DToFile,
         "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 2D image conversion not supported", {});
 
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToFile():", imageLevels))
+        return {};
+    #endif
+
     return doConvertToFile(imageLevels, filename);
 }
 
@@ -776,6 +1018,12 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const C
 bool AbstractImageConverter::convertToFile(const Containers::ArrayView<const CompressedImageView3D> imageLevels, const Containers::StringView filename) {
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressedLevels3DToFile,
         "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 3D image conversion not supported", {});
+
+    #ifndef CORRADE_NO_ASSERT
+    /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
+    if(!checkImageValidity("Trade::AbstractImageConverter::convertToFile():", imageLevels))
+        return {};
+    #endif
 
     return doConvertToFile(imageLevels, filename);
 }
