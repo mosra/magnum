@@ -801,7 +801,7 @@ void MeshGLTest::addVertexBufferFloat() {
         #ifndef MAGNUM_TARGET_GLES2
         96
         #else
-        /* Using only RGBA4, supply less precision. This has to be one on the
+        /* Using only RGBA4, supply less precision. This has to be done on the
            input because SwiftShader stores RGBA4 as RGBA8 internally, thus
            preserving the full precision of the input. */
         85
@@ -948,7 +948,7 @@ void MeshGLTest::addVertexBufferVectorN() {
         #ifndef MAGNUM_TARGET_GLES2
         0x60189c_rgbf
         #else
-        /* Using only RGBA4, supply less precision. This has to be one on the
+        /* Using only RGBA4, supply less precision. This has to be done on the
            input because SwiftShader stores RGBA4 as RGBA8 internally, thus
            preserving the full precision of the input. */
         0x551199_rgbf
@@ -1033,7 +1033,7 @@ void MeshGLTest::addVertexBufferMatrixNxN() {
             #ifndef MAGNUM_TARGET_GLES2
             0x60189c_rgbf
             #else
-            /* Using only RGBA4, supply less precision. This has to be one on
+            /* Using only RGBA4, supply less precision. This has to be done on
                the input because SwiftShader stores RGBA4 as RGBA8 internally,
                thus preserving the full precision of the input. */
             0x551199_rgbf
@@ -1521,7 +1521,7 @@ void MeshGLTest::addVertexBufferLessVectorComponents() {
         #ifndef MAGNUM_TARGET_GLES2
         0x60189c_rgbf
         #else
-        /* Using only RGBA4, supply less precision. This has to be one on the
+        /* Using only RGBA4, supply less precision. This has to be done on the
            input because SwiftShader stores RGBA4 as RGBA8 internally, thus
            preserving the full precision of the input. */
         0x551199_rgbf
@@ -1567,7 +1567,7 @@ void MeshGLTest::addVertexBufferNormalized() {
         #ifndef MAGNUM_TARGET_GLES2
         0x209ce4_rgb
         #else
-        /* Using only RGBA4, supply less precision. This has to be one on the
+        /* Using only RGBA4, supply less precision. This has to be done on the
            input because SwiftShader stores RGBA4 as RGBA8 internally, thus
            preserving the full precision of the input. */
         0x1199dd_rgb
@@ -1733,7 +1733,7 @@ void MeshGLTest::addVertexBufferMultiple() {
             Math::unpack<Float, UnsignedByte>(164),
                 Math::unpack<Float, UnsignedByte>(17),
         #else
-        /* Using only RGBA4, supply less precision. This has to be one on the
+        /* Using only RGBA4, supply less precision. This has to be done on the
            input because SwiftShader stores RGBA4 as RGBA8 internally, thus
            preserving the full precision of the input. */
         Math::unpack<Float, UnsignedByte>(9),
@@ -2248,7 +2248,7 @@ void MeshGLTest::unbindVAOWhenSettingIndexBufferData() {
         #ifndef MAGNUM_TARGET_GLES2
         92
         #else
-        /* Using only RGBA4, supply less precision. This has to be one on the
+        /* Using only RGBA4, supply less precision. This has to be done on the
            input because SwiftShader stores RGBA4 as RGBA8 internally, thus
            preserving the full precision of the input. */
         85
@@ -2303,7 +2303,7 @@ void MeshGLTest::unbindIndexBufferWhenBindingVao() {
         #ifndef MAGNUM_TARGET_GLES2
         92
         #else
-        /* Using only RGBA4, supply less precision. This has to be one on the
+        /* Using only RGBA4, supply less precision. This has to be done on the
            input because SwiftShader stores RGBA4 as RGBA8 internally, thus
            preserving the full precision of the input. */
         85
@@ -2365,7 +2365,7 @@ void MeshGLTest::resetIndexBufferBindingWhenBindingVao() {
         #ifndef MAGNUM_TARGET_GLES2
         92
         #else
-        /* Using only RGBA4, supply less precision. This has to be one on the
+        /* Using only RGBA4, supply less precision. This has to be done on the
            input because SwiftShader stores RGBA4 as RGBA8 internally, thus
            preserving the full precision of the input. */
         85
@@ -2423,7 +2423,7 @@ void MeshGLTest::unbindVAOBeforeEnteringExternalSection() {
         #ifndef MAGNUM_TARGET_GLES2
         92
         #else
-        /* Using only RGBA4, supply less precision. This has to be one on the
+        /* Using only RGBA4, supply less precision. This has to be done on the
            input because SwiftShader stores RGBA4 as RGBA8 internally, thus
            preserving the full precision of the input. */
         85
@@ -2474,7 +2474,7 @@ void MeshGLTest::bindScratchVaoWhenEnteringExternalSection() {
         #ifndef MAGNUM_TARGET_GLES2
         92
         #else
-        /* Using only RGBA4, supply less precision. This has to be one on the
+        /* Using only RGBA4, supply less precision. This has to be done on the
            input because SwiftShader stores RGBA4 as RGBA8 internally, thus
            preserving the full precision of the input. */
         85
