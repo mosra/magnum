@@ -88,66 +88,37 @@ MeshView& MeshView::draw(AbstractShaderProgram&& shader, TransformFeedback& xfb,
 void MeshView::multiDrawImplementationDefault(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
     CORRADE_INTERNAL_ASSERT(meshes.size());
 
-    const Implementation::MeshState& state = Context::current().state().mesh;
-
-    Mesh& original = meshes.begin()->get()._original;
-    Containers::Array<GLsizei> count{meshes.size()};
-    Containers::Array<GLvoid*> indices{meshes.size()};
-    Containers::Array<GLint> baseVertex{meshes.size()};
+    Mesh& original = meshes[0]->_original;
 
     /* Gather the parameters */
-    bool hasBaseVertex = false;
-    std::size_t i = 0;
-    for(MeshView& mesh: meshes) {
-        CORRADE_ASSERT(mesh._instanceCount == 1, "GL::AbstractShaderProgram::draw(): cannot multi-draw instanced meshes", );
-
-        count[i] = mesh._count;
-        indices[i] = reinterpret_cast<GLvoid*>(mesh._indexOffset);
-        baseVertex[i] = mesh._baseVertex;
-
-        if(mesh._baseVertex) hasBaseVertex = true;
-
-        ++i;
-    }
-
-    (original.*state.bindImplementation)();
-
-    /* Non-indexed meshes */
-    if(!original._indexBuffer.id()) {
-        #ifndef MAGNUM_TARGET_GLES
-        glMultiDrawArrays
+    Containers::ArrayView<UnsignedInt> counts;
+    Containers::ArrayView<UnsignedInt> vertexOffsets;
+    Containers::ArrayView<
+        #ifndef CORRADE_TARGET_32BIT
+        UnsignedLong
         #else
-        state.multiDrawArraysImplementation
+        UnsignedInt
         #endif
-            (GLenum(original._primitive), baseVertex, count, meshes.size());
+    > indexOffsets;
+    Containers::ArrayTuple data{
+        {NoInit, meshes.size(), counts},
+        {NoInit, meshes.size(), vertexOffsets},
+        {NoInit, meshes.size(), indexOffsets}
+    };
 
-    /* Indexed meshes */
-    } else {
-        /* Indexed meshes with base vertex */
-        if(hasBaseVertex) {
-            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-            #ifndef MAGNUM_TARGET_GLES
-            glMultiDrawElementsBaseVertex
-            #else
-            state.multiDrawElementsBaseVertexImplementation
-            #endif
-                (GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size(), baseVertex);
-            #else
-            CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): indexed mesh multi-draw with base vertex specification possible only since WebGL 2.0", );
-            #endif
+    /* The vertexOffsets array is used for non-indexed meshes or if the base
+       vertex is specified for any of the meshes */
+    bool useVertexOffsets = !original.isIndexed();
+    for(std::size_t i = 0; i != meshes.size(); ++i) {
+        CORRADE_ASSERT(meshes[i]->_instanceCount == 1, "GL::AbstractShaderProgram::draw(): cannot multi-draw instanced meshes", );
 
-        /* Indexed meshes */
-        } else {
-            #ifndef MAGNUM_TARGET_GLES
-            glMultiDrawElements
-            #else
-            state.multiDrawElementsImplementation
-            #endif
-                (GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size());
-        }
+        counts[i] = meshes[i]->_count;
+        vertexOffsets[i] = meshes[i]->_baseVertex;
+        indexOffsets[i] = meshes[i]->_indexOffset;
+        if(meshes[i]->_baseVertex) useVertexOffsets = true;
     }
 
-    (original.*state.unbindImplementation)();
+    original.drawInternal(counts, useVertexOffsets ? vertexOffsets : nullptr, indexOffsets);
 }
 
 #ifdef MAGNUM_TARGET_GLES

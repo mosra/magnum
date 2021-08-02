@@ -611,6 +611,17 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         MeshVisualizerGL2D& draw(GL::MeshView&& mesh) {
             return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh));
         }
+        MeshVisualizerGL2D& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
+            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
+        }
+        #ifndef CORRADE_TARGET_32BIT
+        MeshVisualizerGL2D& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
+            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
+        }
+        MeshVisualizerGL2D& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t) {
+            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, nullptr));
+        }
+        #endif
         MeshVisualizerGL2D& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
             return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(meshes));
         }
@@ -1644,6 +1655,17 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         MeshVisualizerGL3D& draw(GL::MeshView&& mesh) {
             return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh));
         }
+        MeshVisualizerGL3D& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
+            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
+        }
+        #ifndef CORRADE_TARGET_32BIT
+        MeshVisualizerGL3D& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
+            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
+        }
+        MeshVisualizerGL3D& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t) {
+            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, nullptr));
+        }
+        #endif
         MeshVisualizerGL3D& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
             return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(meshes));
         }

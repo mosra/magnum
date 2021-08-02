@@ -532,6 +532,17 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
         VectorGL<dimensions>& draw(GL::MeshView&& mesh) {
             return static_cast<VectorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh));
         }
+        VectorGL<dimensions>& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
+            return static_cast<VectorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
+        }
+        #ifndef CORRADE_TARGET_32BIT
+        VectorGL<dimensions>& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
+            return static_cast<VectorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
+        }
+        VectorGL<dimensions>& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t) {
+            return static_cast<VectorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, nullptr));
+        }
+        #endif
         VectorGL<dimensions>& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
             return static_cast<VectorGL<dimensions>&>(GL::AbstractShaderProgram::draw(meshes));
         }

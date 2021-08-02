@@ -26,6 +26,7 @@
 #include "AbstractShaderProgram.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/DebugStl.h>
 
@@ -382,6 +383,38 @@ AbstractShaderProgram& AbstractShaderProgram::draw(MeshView& mesh) {
     return *this;
 }
 
+AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
+    if(!counts.size()) return *this;
+
+    use();
+
+    #ifndef MAGNUM_TARGET_GLES
+    Mesh::multiDrawImplementationDefault(mesh, counts, vertexOffsets, indexOffsets);
+    #else
+    Context::current().state().mesh.multiDrawImplementation(mesh, counts, vertexOffsets, indexOffsets);
+    #endif
+    return *this;
+}
+
+#ifndef CORRADE_TARGET_32BIT
+AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
+    if(!counts.size()) return *this;
+
+    use();
+
+    #ifndef MAGNUM_TARGET_GLES
+    Mesh::multiDrawImplementationDefault(mesh, counts, vertexOffsets, indexOffsets);
+    #else
+    Context::current().state().mesh.multiDrawLongImplementation(mesh, counts, vertexOffsets, indexOffsets);
+    #endif
+    return *this;
+}
+
+AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t) {
+    return draw(mesh, counts, vertexOffsets, Containers::StridedArrayView1D<const UnsignedLong>{});
+}
+#endif
+
 AbstractShaderProgram& AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
     if(meshes.empty()) return *this;
 
@@ -396,7 +429,7 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Containers::ArrayView<const C
     #ifndef MAGNUM_TARGET_GLES
     MeshView::multiDrawImplementationDefault(meshes);
     #else
-    Context::current().state().mesh.multiDrawImplementation(meshes);
+    Context::current().state().mesh.multiDrawViewImplementation(meshes);
     #endif
     return *this;
 }

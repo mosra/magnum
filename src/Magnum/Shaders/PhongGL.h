@@ -1645,6 +1645,17 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& draw(GL::MeshView&& mesh) {
             return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(mesh));
         }
+        PhongGL& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
+        }
+        #ifndef CORRADE_TARGET_32BIT
+        PhongGL& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
+        }
+        PhongGL& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t) {
+            return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, nullptr));
+        }
+        #endif
         PhongGL& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
             return static_cast<PhongGL&>(GL::AbstractShaderProgram::draw(meshes));
         }

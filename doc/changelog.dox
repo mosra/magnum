@@ -61,6 +61,9 @@ See also:
 
 @subsubsection changelog-latest-new-gl GL library
 
+-   New @ref GL::AbstractShaderProgram::draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
+    overload for data-oriented multi-draw workflows without @ref GL::MeshView
+    and internal temporary allocations
 -   New @ref GL::Context::Configuration class providing runtime alternatives to
     the `--magnum-log`, `--magnum-gpu-validation`, `--magnum-disable-extensions`
     and `--magnum-disable-workarounds` command line options. The class is then

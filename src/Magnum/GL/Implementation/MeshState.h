@@ -77,7 +77,11 @@ struct MeshState {
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
-    void(*multiDrawImplementation)(Containers::ArrayView<const Containers::Reference<MeshView>>);
+    void(*multiDrawImplementation)(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&);
+    #ifndef CORRADE_TARGET_32BIT
+    void(*multiDrawLongImplementation)(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedLong>&);
+    #endif
+    void(*multiDrawViewImplementation)(Containers::ArrayView<const Containers::Reference<MeshView>>);
     void(APIENTRY *multiDrawArraysImplementation)(GLenum, const GLint*, const GLsizei*, GLsizei);
     void(APIENTRY *multiDrawElementsImplementation)(GLenum, const GLsizei*, GLenum, const void* const*, GLsizei);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

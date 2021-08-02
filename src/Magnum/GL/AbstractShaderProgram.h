@@ -844,30 +844,105 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         }
 
         /**
-         * @brief Draw multiple meshes at once
+         * @brief Draw multiple mesh views at once
+         * @param mesh          The mesh from which to draw. Expected to not be
+         *      instanced.
+         * @param counts        Vertex/index counts for each draw.
+         * @param vertexOffsets Offsets into the vertex array for non-indexed
+         *      meshes, base vertex for indexed meshes. Expected to have the
+         *      same size as @p counts, for indexed meshes it can be also empty
+         *      in which case the base vertex is assumed to be @cpp 0 @ce for
+         *      all draws.
+         * @param indexOffsets  Offsets into the index buffer for indexed
+         *      meshes, *in bytes*. Expected to have the same size as @p counts
+         *      for indexed meshes, ignored for non-indexed.
          * @return Reference to self (for method chaining)
-         * @m_since{2020,06}
+         * @m_since_latest
          *
          * On OpenGL ES, if neither @gl_extension{EXT,multi_draw_arrays} nor
          * @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
          * is present, and on WebGL if @webgl_extension{WEBGL,multi_draw} is
-         * not present, the functionality is emulated using a sequence of
-         * @ref draw(MeshView&) calls. Note that @webgl_extension{WEBGL,multi_draw}
-         * is only implemented since Emscripten 2.0.0, so it's not even
-         * advertised on older versions.
+         * not present, the functionality is emulated equivalently to a
+         * sequence of @ref draw(MeshView&) calls with items of @p counts used
+         * for @ref MeshView::setCount(), @p vertexOffsets for
+         * @ref MeshView::setBaseVertex() and @p indexOffsets divided by size
+         * of the index type for @ref MeshView::setIndexRange(). Note that
+         * @webgl_extension{WEBGL,multi_draw} is only implemented since
+         * Emscripten 2.0.0, so it's not even advertised on older versions.
          *
          * If @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0),
          * OpenGL ES 3.0, WebGL 2.0, @gl_extension{OES,vertex_array_object} in
          * OpenGL ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL
          * 1.0 is available, the associated vertex array object is bound
          * instead of setting up the mesh from scratch.
-         * @attention All meshes must be views of the same original mesh and
-         *      must not be instanced.
+         *
+         * If @p counts, @p vertexOffsets and @p indexOffsets are contiguous
+         * views, they get passed directly to the underlying GL functions,
+         * otherwise a temporary contiguous copy is allocated. On 64-bit
+         * systems the @p indexOffsets additionally have to be 64-bit in order
+         * to avoid a copy because the @fn_gl{MultiDrawElements} function
+         * accepts them as pointers, see the
+         * @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedLong>&)
+         * overload below.
+         *
          * @see @ref draw(MeshView&), @fn_gl{UseProgram},
          *      @fn_gl_keyword{EnableVertexAttribArray}, @fn_gl{BindBuffer},
          *      @fn_gl_keyword{VertexAttribPointer}, @fn_gl_keyword{DisableVertexAttribArray}
          *      or @fn_gl{BindVertexArray}, @fn_gl_keyword{MultiDrawArrays} or
          *      @fn_gl_keyword{MultiDrawElements}/@fn_gl_keyword{MultiDrawElementsBaseVertex}
+         * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
+         *      if the mesh is indexed and the @p baseVertex view is not empty.
+         * @requires_es_extension OpenGL ES 3.0 and extension
+         *      @gl_extension{OES,draw_elements_base_vertex} or
+         *      @gl_extension{EXT,draw_elements_base_vertex} if the mesh is
+         *      indexed and the @p baseVertex view is not empty.
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
+         *      if the mesh is indexed and the @p baseVertex view is not empty.
+         */
+        AbstractShaderProgram& draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets);
+
+        #ifndef CORRADE_TARGET_32BIT
+        /**
+         * @brief Draw multiple mesh views at once
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Defined only on 64-bit builds. Compared to @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
+         * this overload can avoid allocating an array of 64-bit pointers for
+         * the @fn_gl{MultiDrawElements} function and can instead directly
+         * reuse the @p indexOffsets view if it's contiguous.
+         */
+        AbstractShaderProgram& draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets);
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        AbstractShaderProgram& draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t);
+        #endif
+
+        /**
+         * @brief Draw multiple mesh views at once
+         * @return Reference to self (for method chaining)
+         * @m_since{2020,06}
+         *
+         * Extracts the vertex/index counts, vertex offsets and index offsets
+         * out of the mesh list and then calls
+         * @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
+         * (or @ref draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) on 64-bit builds).
+         *
+         * On OpenGL ES, if neither @gl_extension{EXT,multi_draw_arrays} nor
+         * @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+         * is present, and on WebGL if @webgl_extension{WEBGL,multi_draw} is
+         * not present, the functionality is instead emulated using a sequence
+         * of @ref draw(MeshView&) calls. Note that
+         * @webgl_extension{WEBGL,multi_draw} is only implemented since
+         * Emscripten 2.0.0, so it's not even advertised on older versions.
+         *
+         * @attention All meshes must be views of the same original mesh and
+         *      must not be instanced.
+         *
          * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      if the mesh is indexed and @ref MeshView::baseVertex() is not
          *      `0`

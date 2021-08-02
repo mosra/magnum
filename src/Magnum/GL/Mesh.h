@@ -1089,6 +1089,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         void drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset);
         #endif
 
+        void drawInternal(const Containers::ArrayView<const UnsignedInt>& counts, const Containers::ArrayView<const UnsignedInt>& vertexOffsets,
+            #ifdef CORRADE_TARGET_32BIT
+            const Containers::ArrayView<const UnsignedInt>& indexOffsets
+            #else
+            const Containers::ArrayView<const UnsignedLong>& indexOffsets
+            #endif
+        );
+
         #ifndef MAGNUM_TARGET_GLES
         void drawInternal(TransformFeedback& xfb, UnsignedInt stream, Int instanceCount);
         #endif
@@ -1145,6 +1153,17 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
 
         void MAGNUM_GL_LOCAL unbindImplementationDefault();
         void MAGNUM_GL_LOCAL unbindImplementationVAO();
+
+        MAGNUM_GL_LOCAL static void multiDrawImplementationDefault(Mesh& self, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets);
+        #ifndef CORRADE_TARGET_32BIT
+        MAGNUM_GL_LOCAL static void multiDrawImplementationDefault(Mesh& self, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets);
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
+        MAGNUM_GL_LOCAL static void multiDrawImplementationFallback(Mesh& self, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets);
+        #ifndef CORRADE_TARGET_32BIT
+        MAGNUM_GL_LOCAL static void multiDrawImplementationFallback(Mesh& self, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets);
+        #endif
+        #endif
 
         #ifdef MAGNUM_TARGET_GLES
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
