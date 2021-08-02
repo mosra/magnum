@@ -55,8 +55,8 @@ commands:
       count:
         type: integer
         # It reports 36 cores and ninja goes with 38 currently, still randomly
-        # dies with 32. RAM fluctuates from 10 to 20 GB.
-        default: 24
+        # dies with 24. RAM fluctuates from 10 to 20 GB.
+        default: 16
     steps:
     - run:
         name: Query CPU cores, default Ninja parallelism and available RAM, cap jobs
