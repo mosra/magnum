@@ -3715,7 +3715,7 @@ void MeshGLTest::multiDrawInstanced() {
     std::ostringstream out;
     Error redirectError{&out};
     MultiDrawShader{}.draw({view, view});
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): cannot draw multiple instanced meshes\n");
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): cannot multi-draw instanced meshes\n");
 }
 
 void MeshGLTest::multiDrawDifferentMeshes() {

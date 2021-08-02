@@ -99,7 +99,7 @@ void MeshView::multiDrawImplementationDefault(Containers::ArrayView<const Contai
     bool hasBaseVertex = false;
     std::size_t i = 0;
     for(MeshView& mesh: meshes) {
-        CORRADE_ASSERT(mesh._instanceCount == 1, "GL::AbstractShaderProgram::draw(): cannot draw multiple instanced meshes", );
+        CORRADE_ASSERT(mesh._instanceCount == 1, "GL::AbstractShaderProgram::draw(): cannot multi-draw instanced meshes", );
 
         count[i] = mesh._count;
         indices[i] = reinterpret_cast<GLvoid*>(mesh._indexOffset);
@@ -156,7 +156,7 @@ void MeshView::multiDrawImplementationFallback(Containers::ArrayView<const Conta
         /* Nothing to draw in this mesh */
         if(!mesh._count) continue;
 
-        CORRADE_ASSERT(mesh._instanceCount == 1, "GL::AbstractShaderProgram::draw(): cannot draw multiple instanced meshes", );
+        CORRADE_ASSERT(mesh._instanceCount == 1, "GL::AbstractShaderProgram::draw(): cannot multi-draw instanced meshes", );
 
         #ifndef MAGNUM_TARGET_GLES2
         mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, 1, mesh._baseInstance, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
