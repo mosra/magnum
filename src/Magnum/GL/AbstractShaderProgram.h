@@ -845,9 +845,8 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /**
          * @brief Draw multiple mesh views at once
-         * @param mesh          The mesh from which to draw. Expected to not be
-         *      instanced.
-         * @param counts        Vertex/index counts for each draw.
+         * @param mesh          The mesh from which to draw
+         * @param counts        Vertex/index counts for each draw
          * @param vertexOffsets Offsets into the vertex array for non-indexed
          *      meshes, base vertex for indexed meshes. Expected to have the
          *      same size as @p counts, for indexed meshes it can be also empty
@@ -878,10 +877,10 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * If @p counts, @p vertexOffsets and @p indexOffsets are contiguous
          * views, they get passed directly to the underlying GL functions,
-         * otherwise a temporary contiguous copy is allocated. On 64-bit
-         * systems the @p indexOffsets additionally have to be 64-bit in order
-         * to avoid a copy because the @fn_gl{MultiDrawElements} function
-         * accepts them as pointers, see the
+         * otherwise a temporary contiguous copy is allocated. On
+         * @ref CORRADE_TARGET_32BIT "64-bit builds" the @p indexOffsets
+         * additionally have to be 64-bit in order to avoid a copy because the
+         * @fn_gl{MultiDrawElements} function accepts them as pointers, see the
          * @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedLong>&)
          * overload below.
          *
@@ -908,7 +907,8 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
-         * Defined only on 64-bit builds. Compared to @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
+         * Defined only on @ref CORRADE_TARGET_32BIT "64-bit builds". Compared
+         * to @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
          * this overload can avoid allocating an array of 64-bit pointers for
          * the @fn_gl{MultiDrawElements} function and can instead directly
          * reuse the @p indexOffsets view if it's contiguous.

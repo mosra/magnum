@@ -275,6 +275,9 @@ public:
         return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
     }
     /* Omit these if the shader is not ready for multidraw */
+    MyShader& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
+    }
     MyShader& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
         return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(meshes));
     }
