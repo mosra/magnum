@@ -773,7 +773,10 @@ used.)")
         for(const Trade::Implementation::ImageInfo& info: imageInfos) {
             Debug d;
             if(info.level == 0) {
-                d << "Image" << info.image << Debug::nospace << ":";
+                if(info.size.z()) d << "3D image";
+                else if(info.size.y()) d << "2D image";
+                else d << "1D image";
+                d << info.image << Debug::nospace << ":";
                 if(!info.name.empty()) d << info.name;
                 if(compactImages) d << Debug::newline;
             }
