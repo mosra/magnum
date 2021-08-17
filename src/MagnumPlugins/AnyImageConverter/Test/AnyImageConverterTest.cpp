@@ -595,17 +595,17 @@ void AnyImageConverterTest::propagateConfiguration2D() {
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
 
-    const Float Depth32fData[] = {
+    const Float depth32fData[] = {
         0.125f, 0.250f, 0.375f,
         0.500f, 0.625f, 0.750f
     };
 
-    const ImageView2D Depth32f{PixelFormat::Depth32F, {3, 2}, Depth32fData};
+    const ImageView2D depth32f{PixelFormat::Depth32F, {3, 2}, depth32fData};
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("layer", "left");
     converter->configuration().setValue("depth", "height");
-    CORRADE_VERIFY(converter->convertToFile(Depth32f, filename));
+    CORRADE_VERIFY(converter->convertToFile(depth32f, filename));
     /* Compare to an expected output to ensure the custom channels names were
        used */
     CORRADE_COMPARE_AS(filename, EXR_FILE, TestSuite::Compare::File);
