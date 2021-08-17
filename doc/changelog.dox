@@ -361,6 +361,8 @@ See also:
     plugin to apply the option to with `-I` / `-C`. For better usability, the
     plugins also warn if the user specifies and option that is not present in
     the target implementation.
+-   @relativeref{Trade,AnyImageConverter} now implements also conversion of 3D
+    and multi-level 2D/3D images for formats that support it (such as OpenEXR)
 -   Added @ref Trade::PhongMaterialData::hasCommonTextureTransformation(),
     @ref Trade::PhongMaterialData::ambientTextureMatrix(),
     @ref Trade::PhongMaterialData::diffuseTextureMatrix(),

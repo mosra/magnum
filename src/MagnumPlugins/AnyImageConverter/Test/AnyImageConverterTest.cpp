@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <thread> /* std::thread::hardware_concurrency(), sigh */
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
@@ -150,6 +151,36 @@ constexpr struct {
     {"PNG", "file.png", "PngImageConverter"}
 };
 
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} Detect3DData[]{
+    {"EXR", "file.exr", "OpenExrImageConverter"},
+    /* Have at least one test case with uppercase */
+    {"EXR uppercase", "FIL~1.EXR", "OpenExrImageConverter"}
+};
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} DetectLevels2DData[]{
+    {"EXR", "file.exr", "OpenExrImageConverter"},
+    /* Have at least one test case with uppercase */
+    {"EXR uppercase", "FIL~1.EXR", "OpenExrImageConverter"}
+};
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} DetectLevels3DData[]{
+    {"EXR", "file.exr", "OpenExrImageConverter"},
+    /* Have at least one test case with uppercase */
+    {"EXR uppercase", "FIL~1.EXR", "OpenExrImageConverter"}
+};
+
 AnyImageConverterTest::AnyImageConverterTest() {
     addTests({&AnyImageConverterTest::convert1D,
               &AnyImageConverterTest::convert2D,
@@ -170,15 +201,22 @@ AnyImageConverterTest::AnyImageConverterTest() {
     addInstancedTests({&AnyImageConverterTest::detect2D},
         Containers::arraySize(Detect2DData));
 
-    addTests({&AnyImageConverterTest::detect3D,
-              &AnyImageConverterTest::detectCompressed1D,
+    addInstancedTests({&AnyImageConverterTest::detect3D},
+        Containers::arraySize(Detect3DData));
+
+    addTests({&AnyImageConverterTest::detectCompressed1D,
               &AnyImageConverterTest::detectCompressed2D,
               &AnyImageConverterTest::detectCompressed3D,
 
-              &AnyImageConverterTest::detectLevels1D,
-              &AnyImageConverterTest::detectLevels2D,
-              &AnyImageConverterTest::detectLevels3D,
-              &AnyImageConverterTest::detectCompressedLevels1D,
+              &AnyImageConverterTest::detectLevels1D});
+
+    addInstancedTests({&AnyImageConverterTest::detectLevels2D},
+        Containers::arraySize(DetectLevels2DData));
+
+    addInstancedTests({&AnyImageConverterTest::detectLevels3D},
+        Containers::arraySize(DetectLevels3DData));
+
+    addTests({&AnyImageConverterTest::detectCompressedLevels1D,
               &AnyImageConverterTest::detectCompressedLevels2D,
               &AnyImageConverterTest::detectCompressedLevels3D,
 
@@ -260,9 +298,25 @@ constexpr const char Data[] = {
     1, 2, 3, 2, 3, 4, 0, 0
 };
 
+constexpr Float CubeData[] = {
+    0.125f,
+    0.250f,
+    0.375f,
+    0.500f,
+    0.625f,
+    0.750f
+};
+
+constexpr Float FloatData[] = {
+    0.125f, 0.250f, 0.375f,
+    0.500f, 0.625f, 0.750f
+};
+
 const ImageView1D Image1D{PixelFormat::RGB8Unorm, 2, Data};
 const ImageView2D Image2D{PixelFormat::RGB8Unorm, {2, 3}, Data};
+const ImageView2D Image2DFloat{PixelFormat::Depth32F, {3, 2}, FloatData};
 const ImageView3D Image3D{PixelFormat::RGB8Unorm, {2, 3, 2}, Data};
+const ImageView3D ImageCube{PixelFormat::Depth32F, {1, 1, 6}, CubeData};
 const CompressedImageView1D CompressedImage1D{CompressedPixelFormat::Bc1RGBAUnorm, 3, Data};
 const CompressedImageView2D CompressedImage2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 3}, Data};
 const CompressedImageView3D CompressedImage3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 3}, Data};
@@ -287,7 +341,25 @@ void AnyImageConverterTest::convert2D() {
 }
 
 void AnyImageConverterTest::convert3D() {
-    CORRADE_SKIP("No file formats to store 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    /* Well, this is in fact the same as propagateConfiguration3D() but we
+       can't really do much else. */
+    converter->configuration().setValue("envmap", "cube");
+    CORRADE_VERIFY(converter->convertToFile(ImageCube, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
 void AnyImageConverterTest::convertCompressed1D() {
@@ -307,11 +379,49 @@ void AnyImageConverterTest::convertLevels1D() {
 }
 
 void AnyImageConverterTest::convertLevels2D() {
-    CORRADE_SKIP("No file formats to store multi-level 2D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.exr");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({Image2DFloat}, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
 void AnyImageConverterTest::convertLevels3D() {
-    CORRADE_SKIP("No file formats to store multi-level 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    /* Well, this is in fact the same as propagateConfigurationLevels3D() but
+       we can't really do much else. */
+    converter->configuration().setValue("envmap", "cube");
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({ImageCube}, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
 void AnyImageConverterTest::convertCompressedLevels1D() {
@@ -352,7 +462,25 @@ void AnyImageConverterTest::detect2D() {
 }
 
 void AnyImageConverterTest::detect3D() {
-    CORRADE_SKIP("No file formats to store 3D data yet.");
+    auto&& data = Detect3DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(Image2D, data.filename));
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #endif
 }
 
 void AnyImageConverterTest::detectCompressed1D() {
@@ -372,11 +500,53 @@ void AnyImageConverterTest::detectLevels1D() {
 }
 
 void AnyImageConverterTest::detectLevels2D() {
-    CORRADE_SKIP("No file formats to store multi-level 2D data yet.");
+    auto&& data = DetectLevels2DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(!converter->convertToFile({Image2D}, data.filename));
+    /* Can't use raw string literals in macros on GCC 4.8 */
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #endif
 }
 
 void AnyImageConverterTest::detectLevels3D() {
-    CORRADE_SKIP("No file formats to store multi-level 3D data yet.");
+    auto&& data = DetectLevels3DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(!converter->convertToFile({Image3D}, data.filename));
+    /* Can't use raw string literals in macros on GCC 4.8 */
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #endif
 }
 
 void AnyImageConverterTest::detectCompressedLevels1D() {
@@ -527,7 +697,43 @@ void AnyImageConverterTest::propagateFlags2D() {
 }
 
 void AnyImageConverterTest::propagateFlags3D() {
-    CORRADE_SKIP("No file formats to store 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("envmap", "cube");
+    /* This will make the verbose output print the detected hardware thread
+       count, but also the info about updating global thread count for the
+       first time. Thus run it once w/o a verbose flag and then again with to
+       filter out the other message. */
+    /** @todo switch to testing something else when there is */
+    converter->configuration().setValue("threads", 0);
+    CORRADE_VERIFY(converter->convertToFile(ImageCube, filename));
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    converter->setFlags(ImageConverterFlag::Verbose);
+    std::ostringstream out;
+    {
+        Debug redirectOutput{&out};
+        CORRADE_VERIFY(converter->convertToFile(ImageCube, filename));
+    }
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Trade::AnyImageConverter::convertToFile(): using OpenExrImageConverter\n"
+        "Trade::OpenExrImageConverter::convertToData(): autodetected hardware concurrency to {} threads\n",
+        std::thread::hardware_concurrency()));
 }
 
 void AnyImageConverterTest::propagateFlagsCompressed1D() {
@@ -547,11 +753,86 @@ void AnyImageConverterTest::propagateFlagsLevels1D() {
 }
 
 void AnyImageConverterTest::propagateFlagsLevels2D() {
-    CORRADE_SKIP("No file formats to store multi-level 2D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.exr");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    /* This will make the verbose output print the detected hardware thread
+       count, but also the info about updating global thread count for the
+       first time. Thus run it once w/o a verbose flag and then again with to
+       filter out the other message. */
+    /** @todo switch to testing something else when there is */
+    converter->configuration().setValue("threads", 0);
+    CORRADE_VERIFY(converter->convertToFile({Image2DFloat}, filename));
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    converter->setFlags(ImageConverterFlag::Verbose);
+    std::ostringstream out;
+    {
+        Debug redirectOutput{&out};
+        /* Using the list API even though there's just one image, which should
+           still trigger the correct code path for AnyImageConverter. */
+        CORRADE_VERIFY(converter->convertToFile({Image2DFloat}, filename));
+    }
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Trade::AnyImageConverter::convertToFile(): using OpenExrImageConverter\n"
+        "Trade::OpenExrImageConverter::convertToData(): autodetected hardware concurrency to {} threads\n",
+        std::thread::hardware_concurrency()));
 }
 
 void AnyImageConverterTest::propagateFlagsLevels3D() {
-    CORRADE_SKIP("No file formats to store multi-level 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("envmap", "cube");
+    /* This will make the verbose output print the detected hardware thread
+       count, but also the info about updating global thread count for the
+       first time. Thus run it once w/o a verbose flag and then again with to
+       filter out the other message. */
+    /** @todo switch to testing something else when there is */
+    converter->configuration().setValue("threads", 0);
+    CORRADE_VERIFY(converter->convertToFile({ImageCube}, filename));
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    converter->setFlags(ImageConverterFlag::Verbose);
+    std::ostringstream out;
+    {
+        Debug redirectOutput{&out};
+        /* Using the list API even though there's just one image, which should
+           still trigger the correct code path for AnyImageConverter. */
+        CORRADE_VERIFY(converter->convertToFile({ImageCube}, filename));
+    }
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Trade::AnyImageConverter::convertToFile(): using OpenExrImageConverter\n"
+        "Trade::OpenExrImageConverter::convertToData(): autodetected hardware concurrency to {} threads\n",
+        std::thread::hardware_concurrency()));
 }
 
 void AnyImageConverterTest::propagateFlagsCompressedLevels1D() {
@@ -584,24 +865,38 @@ void AnyImageConverterTest::propagateConfiguration2D() {
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
 
-    const Float depth32fData[] = {
-        0.125f, 0.250f, 0.375f,
-        0.500f, 0.625f, 0.750f
-    };
-
-    const ImageView2D depth32f{PixelFormat::Depth32F, {3, 2}, depth32fData};
-
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("layer", "left");
     converter->configuration().setValue("depth", "height");
-    CORRADE_VERIFY(converter->convertToFile(depth32f, filename));
+    CORRADE_VERIFY(converter->convertToFile(Image2DFloat, filename));
     /* Compare to an expected output to ensure the custom channels names were
        used */
     CORRADE_COMPARE_AS(filename, EXR_FILE, TestSuite::Compare::File);
 }
 
 void AnyImageConverterTest::propagateConfiguration3D() {
-    CORRADE_SKIP("No file formats to store 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    /* This should be enough to test -- 3D images can be saved only if this
+       option is set */
+    converter->configuration().setValue("envmap", "cube");
+    CORRADE_VERIFY(converter->convertToFile(ImageCube, filename));
+    /* Compare to an expected output to ensure we actually saved the file
+       including the metadata. This also doubles as a generator for the
+       cube.exr file that AnyImageImporterTest uses. */
+    CORRADE_COMPARE_AS(filename, EXR_CUBE_FILE, TestSuite::Compare::File);
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknown1D() {
@@ -623,7 +918,23 @@ void AnyImageConverterTest::propagateConfigurationUnknown2D() {
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknown3D() {
-    CORRADE_SKIP("No file formats to store 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("envmap", "cube");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter->convertToFile(ImageCube, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.exr")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by OpenExrImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressed1D() {
@@ -655,11 +966,57 @@ void AnyImageConverterTest::propagateConfigurationLevels1D() {
 }
 
 void AnyImageConverterTest::propagateConfigurationLevels2D() {
-    CORRADE_SKIP("No file formats to store multi-level 2D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "depth32f-custom-channels.exr");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("layer", "left");
+    converter->configuration().setValue("depth", "height");
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. For
+       OpenExrImageConverter both single and list are the same code path so we
+       can reuse the same expected file. */
+    CORRADE_VERIFY(converter->convertToFile({Image2DFloat}, filename));
+    /* Compare to an expected output to ensure the custom channels names were
+       used */
+    CORRADE_COMPARE_AS(filename, EXR_FILE, TestSuite::Compare::File);
 }
 
 void AnyImageConverterTest::propagateConfigurationLevels3D() {
-    CORRADE_SKIP("No file formats to store multi-level 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    /* This should be enough to test -- 3D images can be saved only if this
+       option is set */
+    converter->configuration().setValue("envmap", "cube");
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. For
+       OpenExrImageConverter both single and list are the same code path so we
+       can reuse the same expected file. */
+    CORRADE_VERIFY(converter->convertToFile({ImageCube}, filename));
+    /* Compare to an expected output to ensure we actually saved the file */
+    CORRADE_COMPARE_AS(filename, EXR_CUBE_FILE, TestSuite::Compare::File);
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknownLevels1D() {
@@ -667,11 +1024,50 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels1D() {
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknownLevels2D() {
-    CORRADE_SKIP("No file formats to store multi-level 2D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "depth32f-custom-channels.exr");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({Image2DFloat}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.exr")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by OpenExrImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknownLevels3D() {
-    CORRADE_SKIP("No file formats to store multi-level 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("envmap", "cube");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({ImageCube}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.exr")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by OpenExrImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedLevels1D() {
