@@ -93,6 +93,7 @@ constexpr struct {
     {"JPEG uppercase", "uppercase.JPG", nullptr, "JpegImporter"},
     {"JPEG2000", "image.jp2", nullptr, "Jpeg2000Importer"},
     {"KTX2", "image.ktx2", nullptr, "KtxImporter"},
+    /** @todo KTX2 data once we have some */
     {"EXR", "image.exr", nullptr, "OpenExrImporter"},
     {"EXR data", "image.exr", fileCallback, "OpenExrImporter"},
     {"HDR", "rgb.hdr", nullptr, "HdrImporter"},
@@ -106,7 +107,8 @@ constexpr struct {
     {"PSD", "image.psd", nullptr, "PsdImporter"},
     {"TIFF", "image.tiff", nullptr, "TiffImporter"},
     {"TIFF data", "image.tiff", fileCallback, "TiffImporter"},
-    {"Basis", "rgb.basis", nullptr, "BasisImporter"}
+    {"Basis", "rgb.basis", nullptr, "BasisImporter"},
+    {"Basis data", "rgb.basis", fileCallback, "BasisImporter"}
     /* Not testing everything, just the most important ones */
 };
 
