@@ -137,13 +137,6 @@ struct AnyImageConverterTest: TestSuite::Tester {
 constexpr struct {
     const char* name;
     const char* filename;
-} Convert2DData[]{
-    {"TGA", "output.tga"}
-};
-
-constexpr struct {
-    const char* name;
-    const char* filename;
     const char* plugin;
 } Detect2DData[]{
     {"BMP", "file.bmp", "BmpImageConverter"},
@@ -158,12 +151,9 @@ constexpr struct {
 };
 
 AnyImageConverterTest::AnyImageConverterTest() {
-    addTests({&AnyImageConverterTest::convert1D});
-
-    addInstancedTests({&AnyImageConverterTest::convert2D},
-        Containers::arraySize(Convert2DData));
-
-    addTests({&AnyImageConverterTest::convert3D,
+    addTests({&AnyImageConverterTest::convert1D,
+              &AnyImageConverterTest::convert2D,
+              &AnyImageConverterTest::convert3D,
               &AnyImageConverterTest::convertCompressed1D,
               &AnyImageConverterTest::convertCompressed2D,
               &AnyImageConverterTest::convertCompressed3D,
@@ -282,13 +272,10 @@ void AnyImageConverterTest::convert1D() {
 }
 
 void AnyImageConverterTest::convert2D() {
-    auto&& data = Convert2DData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, data.filename);
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.tga");
 
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
