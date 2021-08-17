@@ -84,6 +84,16 @@ constexpr struct {
     const char* name;
     const char* filename;
     Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
+    const char* messageFunctionName;
+} Load3DData[]{
+    {"EXR", EXR_CUBE_FILE, nullptr, "OpenExrImporter"},
+    {"EXR data", EXR_CUBE_FILE, fileCallback, "OpenExrImporter"},
+};
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
     const char* plugin;
 } DetectData[]{
     {"PNG", "rgb.png", nullptr, "PngImporter"},
@@ -94,8 +104,6 @@ constexpr struct {
     {"JPEG2000", "image.jp2", nullptr, "Jpeg2000Importer"},
     {"KTX2", "image.ktx2", nullptr, "KtxImporter"},
     /** @todo KTX2 data once we have some */
-    {"EXR", "image.exr", nullptr, "OpenExrImporter"},
-    {"EXR data", "image.exr", fileCallback, "OpenExrImporter"},
     {"HDR", "rgb.hdr", nullptr, "HdrImporter"},
     {"HDR data", "rgb.hdr", fileCallback, "HdrImporter"},
     {"ICO", "pngs.ico", nullptr, "IcoImporter"},
@@ -146,7 +154,8 @@ AnyImageImporterTest::AnyImageImporterTest() {
     addInstancedTests({&AnyImageImporterTest::load2D},
         Containers::arraySize(Load2DData));
 
-    addTests({&AnyImageImporterTest::load3D});
+    addInstancedTests({&AnyImageImporterTest::load3D},
+        Containers::arraySize(Load3DData));
 
     addInstancedTests({&AnyImageImporterTest::detect},
         Containers::arraySize(DetectData));
@@ -195,6 +204,7 @@ void AnyImageImporterTest::load2D() {
     importer->setFileCallback(data.callback, storage);
 
     CORRADE_VERIFY(importer->openFile(data.filename));
+    CORRADE_COMPARE(importer->image2DCount(), 1);
 
     /* Check only size, as it is good enough proof that it is working */
     Containers::Optional<ImageData2D> image = importer->image2D(0);
@@ -206,7 +216,29 @@ void AnyImageImporterTest::load2D() {
 }
 
 void AnyImageImporterTest::load3D() {
-    CORRADE_SKIP("No file formats supporting 3D images yet.");
+    auto&& data = Load3DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("OpenExrImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("OpenExrImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
+
+    Containers::Array<char> storage;
+    importer->setFileCallback(data.callback, storage);
+
+    CORRADE_VERIFY(importer->openFile(data.filename));
+    CORRADE_COMPARE(importer->image3DCount(), 1);
+
+    /* Check only size, as it is good enough proof that it is working */
+    Containers::Optional<ImageData3D> image = importer->image3D(0);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), (Vector3i{1, 1, 6}));
 }
 
 void AnyImageImporterTest::detect() {
