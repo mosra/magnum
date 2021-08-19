@@ -495,6 +495,18 @@ image converter plugins.
     exposing functionality of all image converter plugins on a command line as
     well as performing introspection of image files.
 
+@subsection Trade-AbstractImageConverter-usage-file-levels Saving a set of mip levels
+
+Certain file formats, such as OpenEXR, DDS or ICO, are capable of storing
+multiple image mip levels in a single file. Each format has a slightly
+different set of rules for image sizes and their order, in general putting the
+largest level first and then gradually halving the size should always work. In
+the following snippet we'll save three mip levels to an EXR file, again using
+the @ref AnyImageConverter plugin, which will then most likely delegate to
+@link OpenExrImageConverter @endlink:
+
+@snippet MagnumTrade.cpp AbstractImageConverter-usage-file-levels
+
 @subsection Trade-AbstractImageConverter-usage-image Converting image data
 
 In the following snippet we use @ref StbDxtImageConverter to convert the same

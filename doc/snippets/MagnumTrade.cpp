@@ -91,6 +91,21 @@ if(!converter || !converter->convertToFile(image, "image.png"))
 }
 
 {
+/* [AbstractImageConverter-usage-file-levels] */
+PluginManager::Manager<Trade::AbstractImageConverter> manager;
+Containers::Pointer<Trade::AbstractImageConverter> converter =
+    manager.loadAndInstantiate("AnyImageConverter");
+
+Image2D level0{PixelFormat::RGBA16F, {256, 256}, DOXYGEN_IGNORE({})};
+Image2D level1{PixelFormat::RGBA16F, {128, 128}, DOXYGEN_IGNORE({})};
+Image2D level2{PixelFormat::RGBA16F, {64, 64}, DOXYGEN_IGNORE({})};
+
+if(!converter || !converter->convertToFile({level0, level1, level2}, "image.exr"))
+    Fatal{} << "Can't save image.exr with AnyImageConverter";
+/* [AbstractImageConverter-usage-file-levels] */
+}
+
+{
 Image2D image{{}, {}, {}};
 /* [AbstractImageConverter-usage-image] */
 PluginManager::Manager<Trade::AbstractImageConverter> manager;
