@@ -65,11 +65,11 @@ information.
 @section magnum-imageconverter-usage Usage
 
 @code{.sh}
-magnum-imageconverter [-h|--help] [-I|--importer IMPORTER]
-    [-C|--converter CONVERTER] [--plugin-dir DIR]
+magnum-imageconverter [-h|--help] [-I|--importer PLUGIN]
+    [-C|--converter PLUGIN] [--plugin-dir DIR]
     [-i|--importer-options key=val,key2=val2,…]
-    [-c|--converter-options key=val,key2=val2,…] [--image IMAGE]
-    [--level LEVEL] [--in-place] [--info] [-v|--verbose] [--] input output
+    [-c|--converter-options key=val,key2=val2,…] [--image N] [--level N]
+    [--in-place] [--info] [-v|--verbose] [--] input output
 @endcode
 
 Arguments:
@@ -78,17 +78,17 @@ Arguments:
 -   `output` --- output image; ignored if `--info` is present, disallowed for
     `--in-place`
 -   `-h`, `--help` --- display this help message and exit
--   `-I`, `--importer IMPORTER` --- image importer plugin (default:
+-   `-I`, `--importer PLUGIN` --- image importer plugin (default:
     @ref Trade::AnyImageImporter "AnyImageImporter")
--   `-C`, `--converter CONVERTER` --- image converter plugin (default:
+-   `-C`, `--converter PLUGIN` --- image converter plugin (default:
     @ref Trade::AnyImageConverter "AnyImageConverter")
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter
--   `--image IMAGE` --- image to import (default: `0`)
--   `--level LEVEL` --- image level to import (default: `0`)
+-   `--image N` --- image to import (default: `0`)
+-   `--level N` --- image level to import (default: `0`)
 -   `--in-place` --- overwrite the input image with the output
 -   `--info` --- print info about the input file and exit
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
@@ -147,13 +147,13 @@ int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addArgument("input").setHelp("input", "input image")
         .addArgument("output").setHelp("output", "output image; ignored if --info is present, disallowed for --in-place")
-        .addOption('I', "importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
-        .addOption('C', "converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
+        .addOption('I', "importer", "AnyImageImporter").setHelp("importer", "image importer plugin", "PLUGIN")
+        .addOption('C', "converter", "AnyImageConverter").setHelp("converter", "image converter plugin", "PLUGIN")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
-        .addOption("image", "0").setHelp("image", "image to import")
-        .addOption("level", "0").setHelp("level", "image level to import")
+        .addOption("image", "0").setHelp("image", "image to import", "N")
+        .addOption("level", "0").setHelp("level", "image level to import", "N")
         .addBooleanOption("in-place").setHelp("in-place", "overwrite the input image with the output")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
