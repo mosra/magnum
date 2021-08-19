@@ -68,8 +68,9 @@ information.
 magnum-imageconverter [-h|--help] [-I|--importer PLUGIN]
     [-C|--converter PLUGIN] [--plugin-dir DIR]
     [-i|--importer-options key=val,key2=val2,…]
-    [-c|--converter-options key=val,key2=val2,…] [--image N] [--level N]
-    [--in-place] [--info] [-v|--verbose] [--] input output
+    [-c|--converter-options key=val,key2=val2,…] [-D|--dimensions N]
+    [--image N] [--level N] [--in-place] [--info] [-v|--verbose]
+    [--] input output
 @endcode
 
 Arguments:
@@ -87,6 +88,8 @@ Arguments:
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter
+-   `-D`, `--dimensions N` --- import and convert image of given dimensions
+    (default: `2`)
 -   `--image N` --- image to import (default: `0`)
 -   `--level N` --- image level to import (default: `0`)
 -   `--in-place` --- overwrite the input image with the output
@@ -99,8 +102,8 @@ tightly-packed square of pixels in given @ref PixelFormat. Specifying `-C` /
 plugin.
 
 If `--info` is given, the utility will print information about all images
-present in the file. In this case no conversion is done and output file doesn't
-need to be specified.
+present in the file, independently of the `-D` / `--dimensions` option. In this
+case no conversion is done and output file doesn't need to be specified.
 
 The `-i` / `--importer-options` and `-c` / `--converter-options` arguments
 accept a comma-separated list of key/value pairs to set in the importer /
@@ -152,6 +155,7 @@ int main(int argc, char** argv) {
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
+        .addOption('D', "dimensions", "2").setHelp("dimensions", "import and convert image of given dimensions", "N")
         .addOption("image", "0").setHelp("image", "image to import", "N")
         .addOption("level", "0").setHelp("level", "image level to import", "N")
         .addBooleanOption("in-place").setHelp("in-place", "overwrite the input image with the output")
@@ -174,8 +178,8 @@ square of pixels in given pixel format. Specifying -C / --converter raw will
 save raw imported data instead of using a converter plugin.
 
 If --info is given, the utility will print information about all images present
-in the file. In this case no conversion is done and output file doesn't need to
-be specified.
+in the file, independently of the -D / --dimensions option. In this case no
+conversion is done and output file doesn't need to be specified.
 
 The -i / --importer-options and -c / --converter-options arguments accept a
 comma-separated list of key/value pairs to set in the importer / converter
@@ -205,8 +209,18 @@ key=true; configuration subgroups are delimited with /.)")
        given format */
     /** @todo implement image slicing and then use `--slice "0 0 w h"` to
         specify non-rectangular size (and +x +y to specify padding?) */
-    Containers::Optional<Trade::ImageData2D> image;
+    const Int dimensions = args.value<Int>("dimensions");
+    const UnsignedInt image = args.value<UnsignedInt>("image");
+    const UnsignedInt level = args.value<UnsignedInt>("level");
+    Containers::Optional<Trade::ImageData1D> image1D;
+    Containers::Optional<Trade::ImageData2D> image2D;
+    Containers::Optional<Trade::ImageData3D> image3D;
     if(Utility::String::beginsWith(args.value("importer"), "raw:")) {
+        if(dimensions != 2) {
+            Error{} << "Raw data inputs can be only used for 2D images";
+            return 1;
+        }
+
         /** @todo Any chance to do this without using internal APIs? */
         const PixelFormat format = Utility::ConfigurationValue<PixelFormat>::fromString(args.value("importer").substr(4), {});
         const UnsignedInt pixelSize = Magnum::pixelSize(format);
@@ -233,7 +247,7 @@ key=true; configuration subgroups are delimited with /.)")
             return 0;
         }
 
-        image = Trade::ImageData2D(format, Vector2i{side}, std::move(data));
+        image2D = Trade::ImageData2D(format, Vector2i{side}, std::move(data));
 
     /* Otherwise load it using an importer plugin */
     } else {
@@ -288,13 +302,74 @@ key=true; configuration subgroups are delimited with /.)")
             return error ? 1 : 0;
         }
 
-        /* Open input file and the desired image */
+        /* Open input file */
         if(!importer->openFile(args.value("input"))) {
             Error() << "Cannot open file" << args.value("input");
             return 3;
         }
 
-         if(!(image = importer->image2D(args.value<UnsignedInt>("image"), args.value<UnsignedInt>("level")))) {
+        /* Bail early if there's no image whatsoever. More detailed errors with
+           hints are provided for each dimension below. */
+        if(!importer->image1DCount() && !importer->image2DCount() && !importer->image3DCount()) {
+            Error{} << "No images found.";
+            return 1;
+        }
+
+        bool imported;
+        if(dimensions == 1) {
+            if(!importer->image1DCount()) {
+                Error{} << "The file has no 1D images. Specify -D2 or -D3 for 2D or 3D image conversion.";
+                return 1;
+            }
+            if(image >= importer->image1DCount()) {
+                Error{} << "The file doesn't have a 1D image number" << image << Debug::nospace << ", only" << importer->image1DCount() << "images";
+                return 1;
+            }
+            if(level >= importer->image1DLevelCount(image)) {
+                Error{} << "1D image" << image << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image1DLevelCount(image) << "levels";
+                return 1;
+            }
+
+            imported = !!(image1D = importer->image1D(image, level));
+
+        } else if(dimensions == 2) {
+            if(!importer->image2DCount()) {
+                Error{} << "The file has no 2D images. Specify -D1 or -D3 for 1D or 3D image conversion.";
+                return 1;
+            }
+            if(image >= importer->image2DCount()) {
+                Error{} << "The file doesn't have a 2D image number" << image << Debug::nospace << ", only" << importer->image2DCount() << "images";
+                return 1;
+            }
+            if(level >= importer->image2DLevelCount(image)) {
+                Error{} << "2D image" << image << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image2DLevelCount(image) << "levels";
+                return 1;
+            }
+
+            imported = !!(image2D = importer->image2D(image, level));
+
+        } else if(dimensions == 3) {
+            if(!importer->image3DCount()) {
+                Error{} << "The file has no 3D images. Specify -D1 or -D2 for 1D or 2D image conversion.";
+                return 1;
+            }
+            if(image >= importer->image3DCount()) {
+                Error{} << "The file doesn't have a 3D image number" << image << Debug::nospace << ", only" << importer->image3DCount() << "images";
+                return 1;
+            }
+            if(level >= importer->image3DLevelCount(image)) {
+                Error{} << "3D image" << image << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image3DLevelCount(image) << "levels";
+                return 1;
+            }
+
+            imported = !!(image3D = importer->image3D(image, level));
+
+        } else {
+            Error{} << "Invalid --dimensions option:" << args.value("dimensions");
+            return 1;
+        }
+
+        if(!imported) {
             Error() << "Cannot import the image";
             return 4;
         }
@@ -308,16 +383,38 @@ key=true; configuration subgroups are delimited with /.)")
             d << "Writing raw image data of size";
         else
             d << "Converting image of size";
-        d << image->size() << "and format";
-        if(image->isCompressed()) d << image->compressedFormat();
-        else d << image->format();
+        if(dimensions == 1)
+            d << image1D->size();
+        else if(dimensions == 2)
+            d << image2D->size();
+        else if(dimensions == 3)
+            d << image3D->size();
+        else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        d << "and format";
+        if(dimensions == 1) {
+            if(image1D->isCompressed()) d << image1D->compressedFormat();
+            else d << image1D->format();
+        } else if(dimensions == 2) {
+            if(image2D->isCompressed()) d << image2D->compressedFormat();
+            else d << image2D->format();
+        } else if(dimensions == 3) {
+            if(image3D->isCompressed()) d << image3D->compressedFormat();
+            else d << image3D->format();
+        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         d << "to" << output;
     }
 
     /* Save raw data, if requested */
     if(args.value("converter") == "raw") {
-        Utility::Directory::write(output, image->data());
-        return 0;
+        Containers::ArrayView<const char> data;
+        if(dimensions == 1)
+            data = image1D->data();
+        else if(dimensions == 2)
+            data = image2D->data();
+        else if(dimensions == 3)
+            data = image3D->data();
+        else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        return Utility::Directory::write(output, data) ? 0 : 1;
     }
 
     /* Load converter plugin */
@@ -335,7 +432,15 @@ key=true; configuration subgroups are delimited with /.)")
     Implementation::setOptions(*converter, "AnyImageConverter", args.value("converter-options"));
 
     /* Save output file */
-    if(!converter->convertToFile(*image, output)) {
+    bool converted;
+    if(dimensions == 1)
+        converted = converter->convertToFile(*image1D, output);
+    else if(dimensions == 2)
+        converted = converter->convertToFile(*image2D, output);
+    else if(dimensions == 3)
+        converted = converter->convertToFile(*image3D, output);
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+    if(!converted) {
         Error() << "Cannot save file" << output;
         return 5;
     }
