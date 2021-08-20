@@ -209,7 +209,8 @@ See also:
     avoid accidentally clearing default flags potentially added in the future.
 -   Ability to convert also 1D and 3D images with the
     @ref magnum-imageconverter "magnum-imageconverter" utility, as well as
-    combining layers into images of one dimension more
+    combining layers into images of one dimension more and creating multi-level
+    images
 
 @subsubsection changelog-latest-new-vk Vk library
 

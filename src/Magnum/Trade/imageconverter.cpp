@@ -35,6 +35,7 @@
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/String.h>
 
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Implementation/converterUtilities.h"
 #include "Magnum/Trade/AbstractImporter.h"
@@ -71,8 +72,8 @@ magnum-imageconverter [-h|--help] [-I|--importer PLUGIN]
     [-C|--converter PLUGIN] [--plugin-dir DIR]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…] [-D|--dimensions N]
-    [--image N] [--level N] [--layers] [--in-place] [--info] [-v|--verbose]
-    [--] input output
+    [--image N] [--level N] [--layers] [--levels] [--in-place] [--info]
+    [-v|--verbose] [--] input output
 @endcode
 
 Arguments:
@@ -96,6 +97,7 @@ Arguments:
 -   `--level N` --- image level to import (default: `0`)
 -   `--layers` --- combine multiple layers into an image with one dimension
     more
+-   `--levels` --- combine multiple image levels into a single file
 -   `--in-place` --- overwrite the input image with the output
 -   `--info` --- print info about the input file and exit
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
@@ -197,6 +199,28 @@ template<UnsignedInt dimensions> bool checkCommonFormatAndSize(const Utility::Ar
     return true;
 }
 
+template<template<UnsignedInt, class> class View, UnsignedInt dimensions> bool convertOneOrMoreImages(Trade::AbstractImageConverter& converter, const Containers::Array<Trade::ImageData<dimensions>>& outputImages, const std::string& output) {
+    Containers::Array<View<dimensions, const char>> views;
+    arrayReserve(views, outputImages.size());
+    for(const Trade::ImageData<dimensions>& outputImage: outputImages)
+        arrayAppend(views, View<dimensions, const char>{outputImage});
+    return converter.convertToFile(views, output);
+}
+
+template<UnsignedInt dimensions> bool convertOneOrMoreImages(Trade::AbstractImageConverter& converter, const Containers::Array<Trade::ImageData<dimensions>>& outputImages, const std::string& output) {
+    /* If there's just one image, convert it using the single-level API.
+       Otherwise the multi-level entrypoint would require the plugin to support
+       multi-level conversion, and only some file formats have that. */
+    if(outputImages.size() == 1)
+        return converter.convertToFile(outputImages.front(), output);
+
+    CORRADE_INTERNAL_ASSERT(!outputImages.empty());
+    if(outputImages.front().isCompressed())
+        return convertOneOrMoreImages<CompressedImageView, dimensions>(converter, outputImages, output);
+    else
+        return convertOneOrMoreImages<ImageView, dimensions>(converter, outputImages, output);
+}
+
 }
 
 int main(int argc, char** argv) {
@@ -212,6 +236,7 @@ int main(int argc, char** argv) {
         .addOption("image", "0").setHelp("image", "image to import", "N")
         .addOption("level", "0").setHelp("level", "image level to import", "N")
         .addBooleanOption("layers").setHelp("layers", "combine multiple layers into an image with one dimension more")
+        .addBooleanOption("levels").setHelp("layers", "combine multiple image levels into a single file")
         .addBooleanOption("in-place").setHelp("in-place", "overwrite the input image with the output")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
@@ -256,16 +281,24 @@ key=true; configuration subgroups are delimited with /.)")
     }
 
     /* Mutually incompatible options */
-    if(args.isSet("layers") && args.isSet("in-place")) {
-        Error{} << "The --layers option can't be combined with --in-place";
+    if(args.isSet("layers") && args.isSet("levels")) {
+        Error{} << "The --layers and --levels options can't be used together. First combine layers of each level and then all levels in a second step.";
         return 1;
     }
-    if(args.isSet("layers") && args.isSet("info")) {
-        Error{} << "The --layers option can't be combined with --info";
+    if((args.isSet("layers") || args.isSet("levels")) && args.isSet("in-place")) {
+        Error{} << "The --layers / --levels option can't be combined with --in-place";
         return 1;
     }
-    if(!args.isSet("layers") && args.arrayValueCount("input") > 1) {
-        Error{} << "Multiple input files require the --layers option to be set";
+    if((args.isSet("layers") || args.isSet("levels")) && args.isSet("info")) {
+        Error{} << "The --layers / --levels option can't be combined with --info";
+        return 1;
+    }
+    if(args.isSet("levels") && args.value("converter") == "raw") {
+        Error{} << "The --levels option can't be combined with raw data output";
+        return 1;
+    }
+    if(!args.isSet("layers") && !args.isSet("levels") && args.arrayValueCount("input") > 1) {
+        Error{} << "Multiple input files require the --layers / --levels option to be set";
         return 1;
     }
 
@@ -469,11 +502,9 @@ key=true; configuration subgroups are delimited with /.)")
     } else output = args.value("output");
 
     Int outputDimensions;
-    /* Not strictly needed to be an Optional, acts as a sanity check that we
-       don't use something that wasn't populated proparly. */
-    Containers::Optional<Trade::ImageData1D> outputImage1D;
-    Containers::Optional<Trade::ImageData2D> outputImage2D;
-    Containers::Optional<Trade::ImageData3D> outputImage3D;
+    Containers::Array<Trade::ImageData1D> outputImages1D;
+    Containers::Array<Trade::ImageData2D> outputImages2D;
+    Containers::Array<Trade::ImageData3D> outputImages3D;
 
     /* Combine multiple layers into an image of one dimension more */
     if(args.isSet("layers")) {
@@ -486,17 +517,17 @@ key=true; configuration subgroups are delimited with /.)")
                 /** @todo simplify once ImageData is able to allocate on its
                     own, including correct padding etc */
                 const Vector2i size{images1D.front().size()[0], Int(images1D.size())};
-                outputImage2D = Trade::ImageData2D{
+                arrayAppend(outputImages2D, InPlaceInit,
                     /* Don't want to bother with row padding, it's temporary
                        anyway */
                     PixelStorage{}.setAlignment(1),
                     images1D.front().format(),
                     size,
                     Containers::Array<char>{NoInit, size.product()*images1D.front().pixelSize()}
-                };
+                );
 
                 /* Copy the pixel data over */
-                const Containers::StridedArrayView3D<char> outputPixels = outputImage2D->mutablePixels();
+                const Containers::StridedArrayView3D<char> outputPixels = outputImages2D.front().mutablePixels();
                 for(std::size_t i = 0; i != images1D.size(); ++i)
                     Utility::copy(images1D[i].pixels(), outputPixels[i]);
 
@@ -514,17 +545,17 @@ key=true; configuration subgroups are delimited with /.)")
                 /** @todo simplify once ImageData is able to allocate on its
                     own, including correct padding etc */
                 const Vector3i size{images2D.front().size(), Int(images2D.size())};
-                outputImage3D = Trade::ImageData3D{
+                arrayAppend(outputImages3D, InPlaceInit,
                     /* Don't want to bother with row padding, it's temporary
                        anyway */
                     PixelStorage{}.setAlignment(1),
                     images2D.front().format(),
                     size,
                     Containers::Array<char>{NoInit, size.product()*images2D.front().pixelSize()}
-                };
+                );
 
                 /* Copy the pixel data over */
-                const Containers::StridedArrayView4D<char> outputPixels = outputImage3D->mutablePixels();
+                const Containers::StridedArrayView4D<char> outputPixels = outputImages3D.front().mutablePixels();
                 for(std::size_t i = 0; i != images2D.size(); ++i)
                     Utility::copy(images2D[i].pixels(), outputPixels[i]);
 
@@ -539,20 +570,37 @@ key=true; configuration subgroups are delimited with /.)")
 
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
+    /* Multi-level conversion, verify that all have the same format and pass
+       the input through */
+    } else if(args.isSet("levels")) {
+        if(dimensions == 1) {
+            if(!checkCommonFormat(args, images1D)) return 1;
+            outputDimensions = 1;
+            outputImages1D = std::move(images1D);
+        } else if(dimensions == 2) {
+            if(!checkCommonFormat(args, images2D)) return 1;
+            outputDimensions = 2;
+            outputImages2D = std::move(images2D);
+        } else if(dimensions == 3) {
+            if(!checkCommonFormat(args, images3D)) return 1;
+            outputDimensions = 3;
+            outputImages3D = std::move(images3D);
+        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
     /* Single image conversion, just pass the input through */
     } else {
         if(dimensions == 1) {
             CORRADE_INTERNAL_ASSERT(images1D.size() == 1);
             outputDimensions = 1;
-            outputImage1D = std::move(images1D.front());
+            arrayAppend(outputImages1D, std::move(images1D.front()));
         } else if(dimensions == 2) {
             CORRADE_INTERNAL_ASSERT(images2D.size() == 1);
             outputDimensions = 2;
-            outputImage2D = std::move(images2D.front());
+            arrayAppend(outputImages2D, std::move(images2D.front()));
         } else if(dimensions == 3) {
             CORRADE_INTERNAL_ASSERT(images3D.size() == 1);
             outputDimensions = 3;
-            outputImage3D = std::move(images3D.front());
+            arrayAppend(outputImages3D, std::move(images3D.front()));
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
     }
 
@@ -562,40 +610,51 @@ key=true; configuration subgroups are delimited with /.)")
             d << "Writing raw image data of size";
         else
             d << "Converting image of size";
-        if(outputDimensions == 1)
-            d << outputImage1D->size();
-        else if(outputDimensions == 2)
-            d << outputImage2D->size();
-        else if(outputDimensions == 3)
-            d << outputImage3D->size();
+        if(outputDimensions == 1) {
+            d << outputImages1D.front().size();
+            if(outputImages1D.size() > 1)
+                d << "(and" << outputImages1D.size() - 1 << "more levels)";
+        } else if(outputDimensions == 2) {
+            d << outputImages2D.front().size();
+            if(outputImages2D.size() > 1)
+                d << "(and" << outputImages2D.size() - 1 << "more levels)";
+        } else if(outputDimensions == 3) {
+            d << outputImages3D.front().size();
+            if(outputImages3D.size() > 1)
+                d << "(and" << outputImages3D.size() - 1 << "more levels)";
+        }
         else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         d << "and format";
         if(outputDimensions == 1) {
-            if(outputImage1D->isCompressed())
-                d << outputImage1D->compressedFormat();
-            else d << outputImage1D->format();
+            if(outputImages1D.front().isCompressed())
+                d << outputImages1D.front().compressedFormat();
+            else d << outputImages1D.front().format();
         } else if(outputDimensions == 2) {
-            if(outputImage2D->isCompressed())
-                d << outputImage2D->compressedFormat();
-            else d << outputImage2D->format();
+            if(outputImages2D.front().isCompressed())
+                d << outputImages2D.front().compressedFormat();
+            else d << outputImages2D.front().format();
         } else if(outputDimensions == 3) {
-            if(outputImage3D->isCompressed())
-                d << outputImage3D->compressedFormat();
-            else d << outputImage3D->format();
+            if(outputImages3D.front().isCompressed())
+                d << outputImages3D.front().compressedFormat();
+            else d << outputImages3D.front().format();
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         d << "to" << output;
     }
 
-    /* Save raw data, if requested */
+    /* Save raw data, if requested. Only for single-level images as the data
+       layout would be messed up otherwise. */
     if(args.value("converter") == "raw") {
         Containers::ArrayView<const char> data;
-        if(outputDimensions == 1)
-            data = outputImage1D->data();
-        else if(outputDimensions == 2)
-            data = outputImage3D->data();
-        else if(outputDimensions == 3)
-            data = outputImage3D->data();
-        else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        if(outputDimensions == 1) {
+            CORRADE_INTERNAL_ASSERT(outputImages1D.size() == 1);
+            data = outputImages1D.front().data();
+        } else if(outputDimensions == 2) {
+            CORRADE_INTERNAL_ASSERT(outputImages2D.size() == 1);
+            data = outputImages2D.front().data();
+        } else if(outputDimensions == 3) {
+            CORRADE_INTERNAL_ASSERT(outputImages3D.size() == 1);
+            data = outputImages3D.front().data();
+        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         return Utility::Directory::write(output, data) ? 0 : 1;
     }
 
@@ -616,11 +675,11 @@ key=true; configuration subgroups are delimited with /.)")
     /* Save output file */
     bool converted;
     if(outputDimensions == 1)
-        converted = converter->convertToFile(*outputImage1D, output);
+        converted = convertOneOrMoreImages(*converter, outputImages1D, output);
     else if(outputDimensions == 2)
-        converted = converter->convertToFile(*outputImage2D, output);
+        converted = convertOneOrMoreImages(*converter, outputImages2D, output);
     else if(outputDimensions == 3)
-        converted = converter->convertToFile(*outputImage3D, output);
+        converted = convertOneOrMoreImages(*converter, outputImages3D, output);
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
     if(!converted) {
         Error{} << "Cannot save file" << output;
