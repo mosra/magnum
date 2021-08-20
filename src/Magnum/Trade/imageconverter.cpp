@@ -209,6 +209,7 @@ key=true; configuration subgroups are delimited with /.)")
        given format */
     /** @todo implement image slicing and then use `--slice "0 0 w h"` to
         specify non-rectangular size (and +x +y to specify padding?) */
+    const std::string input = args.value("input");
     const Int dimensions = args.value<Int>("dimensions");
     const UnsignedInt image = args.value<UnsignedInt>("image");
     const UnsignedInt level = args.value<UnsignedInt>("level");
@@ -230,11 +231,11 @@ key=true; configuration subgroups are delimited with /.)")
         }
 
         /** @todo simplify once read() reliably returns an Optional */
-        if(!Utility::Directory::exists(args.value("input"))) {
-            Error{} << "Cannot open file" << args.value("input");
+        if(!Utility::Directory::exists(input)) {
+            Error{} << "Cannot open file" << input;
             return 3;
         }
-        Containers::Array<char> data = Utility::Directory::read(args.value("input"));
+        Containers::Array<char> data = Utility::Directory::read(input);
         auto side = Int(std::sqrt(data.size()/pixelSize));
         if(data.size() % pixelSize || side*side*pixelSize != data.size()) {
             Error{} << "File of size" << data.size() << "is not a tightly-packed square of" << format;
@@ -264,13 +265,13 @@ key=true; configuration subgroups are delimited with /.)")
         /* Print image info, if requested */
         if(args.isSet("info")) {
             /* Open the file, but don't fail when an image can't be opened */
-            if(!importer->openFile(args.value("input"))) {
-                Error() << "Cannot open file" << args.value("input");
+            if(!importer->openFile(input)) {
+                Error() << "Cannot open file" << input;
                 return 3;
             }
 
             if(!importer->image1DCount() && !importer->image2DCount() && !importer->image3DCount()) {
-                Debug{} << "No images found.";
+                Debug{} << "No images found in" << input;
                 return 0;
             }
 
@@ -303,30 +304,30 @@ key=true; configuration subgroups are delimited with /.)")
         }
 
         /* Open input file */
-        if(!importer->openFile(args.value("input"))) {
-            Error() << "Cannot open file" << args.value("input");
+        if(!importer->openFile(input)) {
+            Error{} << "Cannot open file" << input;
             return 3;
         }
 
         /* Bail early if there's no image whatsoever. More detailed errors with
            hints are provided for each dimension below. */
         if(!importer->image1DCount() && !importer->image2DCount() && !importer->image3DCount()) {
-            Error{} << "No images found.";
+            Error{} << "No images found in" << input;
             return 1;
         }
 
         bool imported;
         if(dimensions == 1) {
             if(!importer->image1DCount()) {
-                Error{} << "The file has no 1D images. Specify -D2 or -D3 for 2D or 3D image conversion.";
+                Error{} << "No 1D images found in" << input << Debug::nospace << ". Specify -D2 or -D3 for 2D or 3D image conversion.";
                 return 1;
             }
             if(image >= importer->image1DCount()) {
-                Error{} << "The file doesn't have a 1D image number" << image << Debug::nospace << ", only" << importer->image1DCount() << "images";
+                Error{} << "1D image number" << image << "not found in" << input << Debug::nospace << ", the file has only" << importer->image1DCount() << "1D images";
                 return 1;
             }
             if(level >= importer->image1DLevelCount(image)) {
-                Error{} << "1D image" << image << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image1DLevelCount(image) << "levels";
+                Error{} << "1D image" << image << "in" << input << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image1DLevelCount(image) << "levels";
                 return 1;
             }
 
@@ -334,15 +335,15 @@ key=true; configuration subgroups are delimited with /.)")
 
         } else if(dimensions == 2) {
             if(!importer->image2DCount()) {
-                Error{} << "The file has no 2D images. Specify -D1 or -D3 for 1D or 3D image conversion.";
+                Error{} << "No 2D images found in" << input << Debug::nospace << ". Specify -D1 or -D3 for 1D or 3D image conversion.";
                 return 1;
             }
             if(image >= importer->image2DCount()) {
-                Error{} << "The file doesn't have a 2D image number" << image << Debug::nospace << ", only" << importer->image2DCount() << "images";
+                Error{} << "2D image number" << image << "not found in" << input << Debug::nospace << ", the file has only" << importer->image2DCount() << "2D images";
                 return 1;
             }
             if(level >= importer->image2DLevelCount(image)) {
-                Error{} << "2D image" << image << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image2DLevelCount(image) << "levels";
+                Error{} << "2D image" << image << "in" << input << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image2DLevelCount(image) << "levels";
                 return 1;
             }
 
@@ -350,15 +351,15 @@ key=true; configuration subgroups are delimited with /.)")
 
         } else if(dimensions == 3) {
             if(!importer->image3DCount()) {
-                Error{} << "The file has no 3D images. Specify -D1 or -D2 for 1D or 2D image conversion.";
+                Error{} << "No 3D images found in" << input << Debug::nospace << ". Specify -D1 or -D2 for 1D or 2D image conversion.";
                 return 1;
             }
             if(image >= importer->image3DCount()) {
-                Error{} << "The file doesn't have a 3D image number" << image << Debug::nospace << ", only" << importer->image3DCount() << "images";
+                Error{} << "3D image number" << image << "not found in" << input << Debug::nospace << ", the file has only" << importer->image3DCount() << "3D images";
                 return 1;
             }
             if(level >= importer->image3DLevelCount(image)) {
-                Error{} << "3D image" << image << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image3DLevelCount(image) << "levels";
+                Error{} << "3D image" << image << "in" << input << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image3DLevelCount(image) << "levels";
                 return 1;
             }
 
@@ -370,7 +371,7 @@ key=true; configuration subgroups are delimited with /.)")
         }
 
         if(!imported) {
-            Error() << "Cannot import the image";
+            Error{} << "Cannot import image" << image << Debug::nospace << ":" << Debug::nospace << level << "from" << input;
             return 4;
         }
     }
