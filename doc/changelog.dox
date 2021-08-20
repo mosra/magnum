@@ -208,7 +208,8 @@ See also:
     are encouraged over @relativeref{Trade::AbstractImporter,setFlags()} as it
     avoid accidentally clearing default flags potentially added in the future.
 -   Ability to convert also 1D and 3D images with the
-    @ref magnum-imageconverter "magnum-imageconverter" utility.
+    @ref magnum-imageconverter "magnum-imageconverter" utility, as well as
+    combining layers into images of one dimension more
 
 @subsubsection changelog-latest-new-vk Vk library
 
