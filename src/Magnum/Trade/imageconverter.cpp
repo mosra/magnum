@@ -94,7 +94,7 @@ Arguments:
 -   `-D`, `--dimensions N` --- import and convert image of given dimensions
     (default: `2`)
 -   `--image N` --- image to import (default: `0`)
--   `--level N` --- image level to import (default: `0`)
+-   `--level N` --- import given image level instead of all
 -   `--layers` --- combine multiple layers into an image with one dimension
     more
 -   `--levels` --- combine multiple image levels into a single file
@@ -234,7 +234,7 @@ int main(int argc, char** argv) {
         .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
         .addOption('D', "dimensions", "2").setHelp("dimensions", "import and convert image of given dimensions", "N")
         .addOption("image", "0").setHelp("image", "image to import", "N")
-        .addOption("level", "0").setHelp("level", "image level to import", "N")
+        .addOption("level").setHelp("level", "import given image level instead of all", "N")
         .addBooleanOption("layers").setHelp("layers", "combine multiple layers into an image with one dimension more")
         .addBooleanOption("levels").setHelp("layers", "combine multiple image levels into a single file")
         .addBooleanOption("in-place").setHelp("in-place", "overwrite the input image with the output")
@@ -309,7 +309,8 @@ key=true; configuration subgroups are delimited with /.)")
     const Int dimensions = args.value<Int>("dimensions");
     /** @todo make them array options as well? */
     const UnsignedInt image = args.value<UnsignedInt>("image");
-    const UnsignedInt level = args.value<UnsignedInt>("level");
+    Containers::Optional<UnsignedInt> level;
+    if(!args.value("level").empty()) level = args.value<UnsignedInt>("level");
     Containers::Array<Trade::ImageData1D> images1D;
     Containers::Array<Trade::ImageData2D> images2D;
     Containers::Array<Trade::ImageData3D> images3D;
@@ -434,14 +435,29 @@ key=true; configuration subgroups are delimited with /.)")
                     Error{} << "1D image number" << image << "not found in" << input << Debug::nospace << ", the file has only" << importer->image1DCount() << "1D images";
                     return 1;
                 }
-                if(level >= importer->image1DLevelCount(image)) {
-                    Error{} << "1D image" << image << "in" << input << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image1DLevelCount(image) << "levels";
-                    return 1;
-                }
 
-                if(Containers::Optional<Trade::ImageData1D> image1D = importer->image1D(image, level)) {
-                    arrayAppend(images1D, std::move(*image1D));
-                    imported = true;
+                /* Import all levels of the input or just one if specified */
+                UnsignedInt minLevel, maxLevel;
+                if(level) {
+                    minLevel = *level;
+                    maxLevel = *level + 1;
+                    if(*level >= importer->image1DLevelCount(image)) {
+                        Error{} << "1D image" << image << "in" << input << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image1DLevelCount(image) << "levels";
+                        return 1;
+                    }
+                } else {
+                    minLevel = 0;
+                    maxLevel = importer->image1DLevelCount(image);
+                    if(maxLevel > 1 && (args.isSet("layers") || args.isSet("levels") || args.value("converter") == "raw")) {
+                        Error{} << "Cannot use --layers / --levels or raw output with multi-level input images. Specify --level N to extract just one level from each.";
+                        return 1;
+                    }
+                }
+                for(; minLevel != maxLevel; ++minLevel) {
+                    if(Containers::Optional<Trade::ImageData1D> image1D = importer->image1D(image, minLevel)) {
+                        arrayAppend(images1D, std::move(*image1D));
+                        imported = true;
+                    }
                 }
 
             } else if(dimensions == 2) {
@@ -453,14 +469,29 @@ key=true; configuration subgroups are delimited with /.)")
                     Error{} << "2D image number" << image << "not found in" << input << Debug::nospace << ", the file has only" << importer->image2DCount() << "2D images";
                     return 1;
                 }
-                if(level >= importer->image2DLevelCount(image)) {
-                    Error{} << "2D image" << image << "in" << input << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image2DLevelCount(image) << "levels";
-                    return 1;
-                }
 
-                if(Containers::Optional<Trade::ImageData2D> image2D = importer->image2D(image, level)) {
-                    arrayAppend(images2D, std::move(*image2D));
-                    imported = true;
+                /* Import all levels of the input or just one if specified */
+                UnsignedInt minLevel, maxLevel;
+                if(level) {
+                    minLevel = *level;
+                    maxLevel = *level + 1;
+                    if(*level >= importer->image2DLevelCount(image)) {
+                        Error{} << "2D image" << image << "in" << input << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image2DLevelCount(image) << "levels";
+                        return 1;
+                    }
+                } else {
+                    minLevel = 0;
+                    maxLevel = importer->image2DLevelCount(image);
+                    if(maxLevel > 1 && (args.isSet("layers") || args.isSet("levels") || args.value("converter") == "raw")) {
+                        Error{} << "Cannot use --layers / --levels or raw output with multi-level input images. Specify --level N to extract just one level from each.";
+                        return 1;
+                    }
+                }
+                for(; minLevel != maxLevel; ++minLevel) {
+                    if(Containers::Optional<Trade::ImageData2D> image2D = importer->image2D(image, minLevel)) {
+                        arrayAppend(images2D, std::move(*image2D));
+                        imported = true;
+                    }
                 }
 
             } else if(dimensions == 3) {
@@ -472,14 +503,29 @@ key=true; configuration subgroups are delimited with /.)")
                     Error{} << "3D image number" << image << "not found in" << input << Debug::nospace << ", the file has only" << importer->image3DCount() << "3D images";
                     return 1;
                 }
-                if(level >= importer->image3DLevelCount(image)) {
-                    Error{} << "3D image" << image << "in" << input << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image3DLevelCount(image) << "levels";
-                    return 1;
-                }
 
-                if(Containers::Optional<Trade::ImageData3D> image3D = importer->image3D(image, level)) {
-                    arrayAppend(images3D, std::move(*image3D));
-                    imported = true;
+                /* Import all levels of the input or just one if specified */
+                UnsignedInt minLevel, maxLevel;
+                if(level) {
+                    minLevel = *level;
+                    maxLevel = *level + 1;
+                    if(*level >= importer->image3DLevelCount(image)) {
+                        Error{} << "3D image" << image << "in" << input << "doesn't have a level number" << level << Debug::nospace << ", only" << importer->image3DLevelCount(image) << "levels";
+                        return 1;
+                    }
+                } else {
+                    minLevel = 0;
+                    maxLevel = importer->image3DLevelCount(image);
+                    if(maxLevel > 1 && (args.isSet("layers") || args.isSet("levels") || args.value("converter") == "raw")) {
+                        Error{} << "Cannot use --layers / --levels or raw output with multi-level input images. Specify --level N to extract just one level from each.";
+                        return 1;
+                    }
+                }
+                for(; minLevel != maxLevel; ++minLevel) {
+                    if(Containers::Optional<Trade::ImageData3D> image3D = importer->image3D(image, minLevel)) {
+                        arrayAppend(images3D, std::move(*image3D));
+                        imported = true;
+                    }
                 }
 
             } else {
@@ -570,9 +616,10 @@ key=true; configuration subgroups are delimited with /.)")
 
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
-    /* Multi-level conversion, verify that all have the same format and pass
-       the input through */
-    } else if(args.isSet("levels")) {
+    /* Single-image (potentially multi-level) conversion, verify that all have
+       the same format and pass the input through. This happens either if
+       --levels is set or if the (single) input image is multi-level. */
+    } else {
         if(dimensions == 1) {
             if(!checkCommonFormat(args, images1D)) return 1;
             outputDimensions = 1;
@@ -585,22 +632,6 @@ key=true; configuration subgroups are delimited with /.)")
             if(!checkCommonFormat(args, images3D)) return 1;
             outputDimensions = 3;
             outputImages3D = std::move(images3D);
-        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-
-    /* Single image conversion, just pass the input through */
-    } else {
-        if(dimensions == 1) {
-            CORRADE_INTERNAL_ASSERT(images1D.size() == 1);
-            outputDimensions = 1;
-            arrayAppend(outputImages1D, std::move(images1D.front()));
-        } else if(dimensions == 2) {
-            CORRADE_INTERNAL_ASSERT(images2D.size() == 1);
-            outputDimensions = 2;
-            arrayAppend(outputImages2D, std::move(images2D.front()));
-        } else if(dimensions == 3) {
-            CORRADE_INTERNAL_ASSERT(images3D.size() == 1);
-            outputDimensions = 3;
-            arrayAppend(outputImages3D, std::move(images3D.front()));
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
     }
 
