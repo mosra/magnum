@@ -118,7 +118,7 @@ converter plugin configuration. If the `=` character is omitted, it's
 equivalent to saying `key=true`; configuration subgroups are delimited with
 `/`.
 
-@section magnum-imageconverter-example Example usage
+@section magnum-imageconverter-example Usage examples
 
 Converting a JPEG file to a PNG:
 
@@ -126,17 +126,14 @@ Converting a JPEG file to a PNG:
 magnum-imageconverter image.jpg image.png
 @endcode
 
-Creating a JPEG file with 95% quality from a PNG, by setting a
-@ref Trade-JpegImageConverter-configuration "plugin-specific configuration option".
-Note that currently the proxy @ref Trade::AnyImageImporter "AnyImageImporter"
-and @ref Trade::AnyImageConverter "AnyImageConverter" plugins don't know how to
-correctly propagate options to the target plugin, so you need to specify
-`--importer` / `--converter` explicitly when using the `-i` / `-c` options.
-
-@m_class{m-console-wrap}
+Creating a JPEG file with 95% quality from a PNG, by setting a plugin-specific
+configuration option. The @relativeref{Trade,AnyImageConverter} plugin is
+implicitly used and it proxies the option to either
+@relativeref{Trade,JpegImageConverter} or
+@relativeref{Trade,StbImageConverter}, depending on which one is available:
 
 @code{.sh}
-magnum-imageconverter image.png image.jpg -c jpegQuality=0.95 --converter JpegImageConverter
+magnum-imageconverter image.png image.jpg -c jpegQuality=0.95
 @endcode
 
 Extracting raw (uncompressed, compressed) data from a DDS file for manual
@@ -144,6 +141,49 @@ inspection:
 
 @code{.sh}
 magnum-imageconverter image.dds --converter raw data.dat
+@endcode
+
+Extracting an arbitrary image from a glTF file. Note that only image formats
+are considered by default so you have to explicitly supply a scene importer,
+either the generic @relativeref{Trade,AnySceneImporter} or for example directly
+the @relativeref{Trade,TinyGltfImporter}:
+
+@code{.shell-session}
+$ # print a list of all images in the file
+$ magnum-imageconverter -I AnySceneImporter --info file.gltf
+2D image 0: PixelFormat::RGBA8Unorm Vector(2048, 2048)
+2D image 1: PixelFormat::RGBA8Unorm Vector(2048, 2048)
+2D image 2: PixelFormat::RGBA8Unorm Vector(2048, 2048)
+…
+$ # extract the third image to a PNG file for inspection
+$ magnum-imageconverter -I AnySceneImporter --image 2 file.gltf image.png
+@endcode
+
+@subsection magnum-imageconverter-example-levels-layers Dealing with image levels and layers
+
+Converting six 2D images to a 3D cube map file using @relativeref{Trade,OpenExrImageConverter}. Note the `-c envmap-cube` which the
+plugin needs to produce an actual cube map file, the `--` is then used to avoid
+`-x.exr` and others to be treated as options instead of files. On Unix shells
+you could also use `./-x.exr` etc. to circumvent that ambiguity.
+
+@code{.sh}
+magnum-imageconverter --layers -c envmap=cube -- \
+    +x.exr -x.exr +y.exr -y.exr +z.exr -z.exr cube.exr
+@endcode
+
+Creating a multi-level OpenEXR cube map file from a set of input files. Note
+the use of `-D3` which switches to dealing with 3D images instead of 2D:
+
+@code{.sh}
+magnum-imageconverter --levels -c envmap=cube -D3 \
+    cube-256.exr cube-128.exr cube-64.exr cube-mips.exr
+@endcode
+
+Extracting the second level of a +Y face (third layer) of the above cube map
+file again:
+
+@code{.sh}
+magnum-imageconverter cube-mips.exr --layer 2 --level 1 +x-128.exr
 @endcode
 
 @see @ref magnum-sceneconverter
