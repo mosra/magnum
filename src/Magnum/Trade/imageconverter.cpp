@@ -72,8 +72,8 @@ magnum-imageconverter [-h|--help] [-I|--importer PLUGIN]
     [-C|--converter PLUGIN] [--plugin-dir DIR]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…] [-D|--dimensions N]
-    [--image N] [--level N] [--layers] [--levels] [--in-place] [--info]
-    [-v|--verbose] [--] input output
+    [--image N] [--level N] [--layer N] [--layers] [--levels] [--in-place]
+    [--info] [-v|--verbose] [--] input output
 @endcode
 
 Arguments:
@@ -95,6 +95,7 @@ Arguments:
     (default: `2`)
 -   `--image N` --- image to import (default: `0`)
 -   `--level N` --- import given image level instead of all
+-   `--layer N` --- extract a layer into an image with one dimension less
 -   `--layers` --- combine multiple layers into an image with one dimension
     more
 -   `--levels` --- combine multiple image levels into a single file
@@ -235,6 +236,7 @@ int main(int argc, char** argv) {
         .addOption('D', "dimensions", "2").setHelp("dimensions", "import and convert image of given dimensions", "N")
         .addOption("image", "0").setHelp("image", "image to import", "N")
         .addOption("level").setHelp("level", "import given image level instead of all", "N")
+        .addOption("layer").setHelp("layer", "extract a layer into an image with one dimension less", "N")
         .addBooleanOption("layers").setHelp("layers", "combine multiple layers into an image with one dimension more")
         .addBooleanOption("levels").setHelp("layers", "combine multiple image levels into a single file")
         .addBooleanOption("in-place").setHelp("in-place", "overwrite the input image with the output")
@@ -291,6 +293,16 @@ key=true; configuration subgroups are delimited with /.)")
     }
     if((args.isSet("layers") || args.isSet("levels")) && args.isSet("info")) {
         Error{} << "The --layers / --levels option can't be combined with --info";
+        return 1;
+    }
+    /* It can be combined with --levels though. This could potentially be
+       possible to implement, but I don't see a reason, all it would do is
+       picking Nth image from the input set and recompress it. OTOH, combining
+       --levels and --level "works", the --level picks Nth level from each
+       input image, although the usefulness of that is also doubtful. Why
+       create multi-level images from images that are already multi-level? */
+    if(args.isSet("layers") && !args.value("layer").empty()) {
+        Error{} << "The --layers option can't be combined with --layer.";
         return 1;
     }
     if(args.isSet("levels") && args.value("converter") == "raw") {
@@ -455,6 +467,9 @@ key=true; configuration subgroups are delimited with /.)")
                 }
                 for(; minLevel != maxLevel; ++minLevel) {
                     if(Containers::Optional<Trade::ImageData1D> image1D = importer->image1D(image, minLevel)) {
+                        /* The --layer option is only for 2D/3D, not checking
+                           any bounds here. If the option is present, the
+                           extraction code below will fail. */
                         arrayAppend(images1D, std::move(*image1D));
                         imported = true;
                     }
@@ -489,6 +504,13 @@ key=true; configuration subgroups are delimited with /.)")
                 }
                 for(; minLevel != maxLevel; ++minLevel) {
                     if(Containers::Optional<Trade::ImageData2D> image2D = importer->image2D(image, minLevel)) {
+                        /* Check bounds for the --layer option here, as we
+                           won't have the filename etc. later */
+                        if(!args.value("layer").empty() && args.value<Int>("layer") >= image2D->size().y()) {
+                            Error{} << "2D image" << image << Debug::nospace << ":" << Debug::nospace << minLevel << "in" << input << "doesn't have a layer number" << args.value<Int>("layer") << Debug::nospace << ", only" << image2D->size().y() << "layers";
+                            return 1;
+                        }
+
                         arrayAppend(images2D, std::move(*image2D));
                         imported = true;
                     }
@@ -523,6 +545,13 @@ key=true; configuration subgroups are delimited with /.)")
                 }
                 for(; minLevel != maxLevel; ++minLevel) {
                     if(Containers::Optional<Trade::ImageData3D> image3D = importer->image3D(image, minLevel)) {
+                        /* Check bounds for the --layer option here, as we
+                           won't have the filename etc. later */
+                        if(!args.value("layer").empty() && args.value<Int>("layer") >= image3D->size().z()) {
+                            Error{} << "3D image" << image << Debug::nospace << ":" << Debug::nospace << minLevel << "in" << input << "doesn't have a layer number" << args.value<Int>("layer") << Debug::nospace << ", only" << image3D->size().z() << "layers";
+                            return 1;
+                        }
+
                         arrayAppend(images3D, std::move(*image3D));
                         imported = true;
                     }
@@ -613,6 +642,70 @@ key=true; configuration subgroups are delimited with /.)")
         } else if(dimensions == 3) {
             Error{} << "The --layers option can be only used with 1D and 2D inputs, not 3D";
             return 1;
+
+        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    /* Extracting a layer, inverse of the above */
+    } else if(!args.value("layer").empty()) {
+        const Int layer = args.value<Int>("layer");
+
+        if(dimensions == 1) {
+            Error{} << "The --layer option can be only used with 2D and 3D inputs, not 1D";
+            return 1;
+
+        } else if(dimensions == 2) {
+            outputDimensions = 1;
+
+            /* There can be multiple input levels, and a layer should get
+               extracted from each level, forming a multi-level image again */
+            if(!checkCommonFormat(args, images2D)) return 1;
+            if(!images2D.front().isCompressed()) {
+                for(std::size_t i = 0; i != images2D.size(); ++i) {
+                    /* Diagnostic printed in the import loop above, as here we
+                       don't have the filename etc. anymore */
+                    CORRADE_INTERNAL_ASSERT(layer >= images2D[i].size().y());
+
+                    /* release() will set the size to 0, extract it first */
+                    const Int size = images2D[i].size().x();
+
+                    /* Compared to --layers we can just reuse a slice of the
+                       input data without having to allocate any copy */
+                    arrayAppend(outputImages1D, InPlaceInit,
+                        images2D[i].storage().setSkip({0, Int(layer), 0}),
+                        images2D[i].format(),
+                        size,
+                        images2D[i].release());
+                }
+
+            } else {
+                Error{} << "The --layer option isn't implemented for compressed images yet.";
+                return 1;
+            }
+
+        } else if(dimensions == 3) {
+            outputDimensions = 2;
+
+            /* There can be multiple input levels, and a layer should get
+               extracted from each level, forming a multi-level image again */
+            if(!checkCommonFormat(args, images3D)) return 1;
+            if(!images3D.front().isCompressed()) {
+                for(std::size_t i = 0; i != images3D.size(); ++i) {
+                    /* release() will set the size to 0, extract it first */
+                    const Vector2i size = images3D[i].size().xy();
+
+                    /* Compared to --layers we can just reuse a slice of the
+                       input data without having to allocate any copy */
+                    arrayAppend(outputImages2D, InPlaceInit,
+                        images3D[i].storage().setSkip({0, 0, Int(layer)}),
+                        images3D[i].format(),
+                        size,
+                        images3D[i].release());
+                }
+
+            } else {
+                Error{} << "The --layer option isn't implemented for compressed images yet.";
+                return 1;
+            }
 
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
