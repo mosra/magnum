@@ -1789,7 +1789,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         Containers::StridedArrayView1D<const void> attributeDataViewInternal(const MeshAttributeData& attribute) const;
 
         #ifndef CORRADE_NO_ASSERT
-        template<class T> bool checkAttributeTypeCompatibility(const MeshAttributeData& attribute, const char* prefix) const;
+        template<class T> bool checkVertexFormatCompatibility(const MeshAttributeData& attribute, const char* prefix) const;
         #endif
 
         /* GPUs don't currently support more than 32-bit index types / vertex
@@ -2138,7 +2138,7 @@ template<class T> Containers::ArrayView<T> MeshData::mutableIndices() {
 }
 
 #ifndef CORRADE_NO_ASSERT
-template<class T> bool MeshData::checkAttributeTypeCompatibility(const MeshAttributeData& attribute, const char* const prefix) const {
+template<class T> bool MeshData::checkVertexFormatCompatibility(const MeshAttributeData& attribute, const char* const prefix) const {
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
         prefix << "can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), false);
     CORRADE_ASSERT(Implementation::isVertexFormatCompatible<typename std::remove_extent<T>::type>(attribute._format),
@@ -2155,7 +2155,7 @@ template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attri
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkAttributeTypeCompatibility<T>(_attributes[id], "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[id], "Trade::MeshData::attribute():")) return {};
     #endif
     return Containers::arrayCast<1, const T>(data);
 }
@@ -2167,7 +2167,7 @@ template<class T, class> Containers::StridedArrayView2D<const typename std::remo
     #endif
     #ifndef CORRADE_NO_ASSERT
     const MeshAttributeData& attribute = _attributes[id];
-    if(!checkAttributeTypeCompatibility<T>(attribute, "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(attribute, "Trade::MeshData::attribute():")) return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
@@ -2178,7 +2178,7 @@ template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttr
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkAttributeTypeCompatibility<T>(_attributes[id], "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[id], "Trade::MeshData::mutableAttribute():")) return {};
     #endif
     return Containers::arrayCast<1, T>(data);
 }
@@ -2190,7 +2190,7 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
     #endif
     #ifndef CORRADE_NO_ASSERT
     const MeshAttributeData& attribute = _attributes[id];
-    if(!checkAttributeTypeCompatibility<T>(attribute, "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(attribute, "Trade::MeshData::mutableAttribute():")) return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
@@ -2201,7 +2201,7 @@ template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attri
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkAttributeTypeCompatibility<T>(_attributes[attributeFor(name, id)], "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[attributeFor(name, id)], "Trade::MeshData::attribute():")) return {};
     #endif
     return Containers::arrayCast<1, const T>(data);
 }
@@ -2213,7 +2213,7 @@ template<class T, class> Containers::StridedArrayView2D<const typename std::remo
     #endif
     #ifndef CORRADE_NO_ASSERT
     const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
-    if(!checkAttributeTypeCompatibility<T>(attribute, "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(attribute, "Trade::MeshData::attribute():")) return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
@@ -2224,7 +2224,7 @@ template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttr
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkAttributeTypeCompatibility<T>(_attributes[attributeFor(name, id)], "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[attributeFor(name, id)], "Trade::MeshData::mutableAttribute():")) return {};
     #endif
     return Containers::arrayCast<1, T>(data);
 }
@@ -2236,7 +2236,7 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
     #endif
     #ifndef CORRADE_NO_ASSERT
     const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
-    if(!checkAttributeTypeCompatibility<T>(attribute, "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(attribute, "Trade::MeshData::mutableAttribute():")) return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
