@@ -264,39 +264,39 @@ Containers::StridedArrayView2D<char> MeshData::mutableIndices() {
         out.size(), out.stride()};
 }
 
-MeshAttributeData MeshData::attributeData(UnsignedInt id) const {
+MeshAttributeData MeshData::attributeData(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeData(): index" << id << "out of range for" << _attributes.size() << "attributes", MeshAttributeData{});
     const MeshAttributeData& attribute = _attributes[id];
     return MeshAttributeData{attribute._name, attribute._format, attributeDataViewInternal(attribute)};
 }
 
-MeshAttribute MeshData::attributeName(UnsignedInt id) const {
+MeshAttribute MeshData::attributeName(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeName(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
     return _attributes[id]._name;
 }
 
-VertexFormat MeshData::attributeFormat(UnsignedInt id) const {
+VertexFormat MeshData::attributeFormat(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeFormat(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
     return _attributes[id]._format;
 }
 
-std::size_t MeshData::attributeOffset(UnsignedInt id) const {
+std::size_t MeshData::attributeOffset(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeOffset(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
     return _attributes[id]._isOffsetOnly ? _attributes[id]._data.offset :
         static_cast<const char*>(_attributes[id]._data.pointer) - _vertexData.data();
 }
 
-UnsignedInt MeshData::attributeStride(UnsignedInt id) const {
+UnsignedInt MeshData::attributeStride(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeStride(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
     return _attributes[id]._stride;
 }
 
-UnsignedShort MeshData::attributeArraySize(UnsignedInt id) const {
+UnsignedShort MeshData::attributeArraySize(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeArraySize(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
     return _attributes[id]._arraySize;
@@ -322,31 +322,31 @@ UnsignedInt MeshData::attributeFor(const MeshAttribute name, UnsignedInt id) con
     #endif
 }
 
-UnsignedInt MeshData::attributeId(const MeshAttribute name, UnsignedInt id) const {
+UnsignedInt MeshData::attributeId(const MeshAttribute name, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeId(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return attributeId;
 }
 
-VertexFormat MeshData::attributeFormat(MeshAttribute name, UnsignedInt id) const {
+VertexFormat MeshData::attributeFormat(const MeshAttribute name, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeFormat(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return attributeFormat(attributeId);
 }
 
-std::size_t MeshData::attributeOffset(MeshAttribute name, UnsignedInt id) const {
+std::size_t MeshData::attributeOffset(const MeshAttribute name, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeOffset(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return attributeOffset(attributeId);
 }
 
-UnsignedInt MeshData::attributeStride(MeshAttribute name, UnsignedInt id) const {
+UnsignedInt MeshData::attributeStride(const MeshAttribute name, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeStride(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return attributeStride(attributeId);
 }
 
-UnsignedShort MeshData::attributeArraySize(MeshAttribute name, UnsignedInt id) const {
+UnsignedShort MeshData::attributeArraySize(const MeshAttribute name, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeArraySize(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return attributeArraySize(attributeId);
@@ -364,7 +364,7 @@ Containers::StridedArrayView1D<const void> MeshData::attributeDataViewInternal(c
         _vertexCount, attribute._stride};
 }
 
-Containers::StridedArrayView2D<const char> MeshData::attribute(UnsignedInt id) const {
+Containers::StridedArrayView2D<const char> MeshData::attribute(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attribute(): index" << id << "out of range for" << _attributes.size() << "attributes", nullptr);
     const MeshAttributeData& attribute = _attributes[id];
@@ -376,14 +376,14 @@ Containers::StridedArrayView2D<const char> MeshData::attribute(UnsignedInt id) c
                 (attribute._arraySize ? attribute._arraySize : 1));
 }
 
-Containers::StridedArrayView2D<char> MeshData::mutableAttribute(UnsignedInt id) {
+Containers::StridedArrayView2D<char> MeshData::mutableAttribute(const UnsignedInt id) {
     CORRADE_ASSERT(_vertexDataFlags & DataFlag::Mutable,
         "Trade::MeshData::mutableAttribute(): vertex data not mutable", {});
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << _attributes.size() << "attributes", nullptr);
     const MeshAttributeData& attribute = _attributes[id];
     /* Build a 2D view using information about attribute type size */
-    auto out = Containers::arrayCast<2, const char>(
+    const auto out = Containers::arrayCast<2, const char>(
         attributeDataViewInternal(attribute),
         isVertexFormatImplementationSpecific(attribute._format) ?
             attribute._stride : vertexFormatSize(attribute._format)*
@@ -396,13 +396,13 @@ Containers::StridedArrayView2D<char> MeshData::mutableAttribute(UnsignedInt id) 
         out.size(), out.stride()};
 }
 
-Containers::StridedArrayView2D<const char> MeshData::attribute(MeshAttribute name, UnsignedInt id) const {
+Containers::StridedArrayView2D<const char> MeshData::attribute(const MeshAttribute name, UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return attribute(attributeId);
 }
 
-Containers::StridedArrayView2D<char> MeshData::mutableAttribute(MeshAttribute name, UnsignedInt id) {
+Containers::StridedArrayView2D<char> MeshData::mutableAttribute(const MeshAttribute name, UnsignedInt id) {
     CORRADE_ASSERT(_vertexDataFlags & DataFlag::Mutable,
         "Trade::MeshData::mutableAttribute(): vertex data not mutable", {});
     const UnsignedInt attributeId = attributeFor(name, id);
@@ -414,7 +414,7 @@ void MeshData::indicesInto(const Containers::StridedArrayView1D<UnsignedInt> des
     CORRADE_ASSERT(isIndexed(),
         "Trade::MeshData::indicesInto(): the mesh is not indexed", );
     CORRADE_ASSERT(destination.size() == indexCount(), "Trade::MeshData::indicesInto(): expected a view with" << indexCount() << "elements but got" << destination.size(), );
-    auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
+    const auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
 
     if(_indexType == MeshIndexType::UnsignedInt)
         return Utility::copy(Containers::arrayView(reinterpret_cast<const UnsignedInt*>(_indices), _indexCount), destination);
