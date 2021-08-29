@@ -2166,8 +2166,7 @@ template<class T, class> Containers::StridedArrayView2D<const typename std::remo
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    const MeshAttributeData& attribute = _attributes[id];
-    if(!checkVertexFormatCompatibility<T>(attribute, "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[id], "Trade::MeshData::attribute():")) return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
@@ -2189,8 +2188,7 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    const MeshAttributeData& attribute = _attributes[id];
-    if(!checkVertexFormatCompatibility<T>(attribute, "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[id], "Trade::MeshData::mutableAttribute():")) return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
@@ -2212,8 +2210,7 @@ template<class T, class> Containers::StridedArrayView2D<const typename std::remo
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
-    if(!checkVertexFormatCompatibility<T>(attribute, "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[attributeFor(name, id)], "Trade::MeshData::attribute():")) return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
@@ -2235,8 +2232,7 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
-    if(!checkVertexFormatCompatibility<T>(attribute, "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[attributeFor(name, id)], "Trade::MeshData::mutableAttribute():")) return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
