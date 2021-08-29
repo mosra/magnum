@@ -331,25 +331,26 @@ UnsignedInt MeshData::attributeId(const MeshAttribute name, const UnsignedInt id
 VertexFormat MeshData::attributeFormat(const MeshAttribute name, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeFormat(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
-    return attributeFormat(attributeId);
+    return _attributes[attributeId]._format;
 }
 
 std::size_t MeshData::attributeOffset(const MeshAttribute name, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeOffset(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+    /* Calculation is non-trivial, delegating */
     return attributeOffset(attributeId);
 }
 
 UnsignedInt MeshData::attributeStride(const MeshAttribute name, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeStride(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
-    return attributeStride(attributeId);
+    return _attributes[attributeId]._stride;
 }
 
 UnsignedShort MeshData::attributeArraySize(const MeshAttribute name, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeArraySize(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
-    return attributeArraySize(attributeId);
+    return _attributes[attributeId]._arraySize;
 }
 
 Containers::StridedArrayView1D<const void> MeshData::attributeDataViewInternal(const MeshAttributeData& attribute) const {
