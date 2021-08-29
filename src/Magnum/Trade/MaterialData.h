@@ -2621,6 +2621,8 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 namespace Implementation {
     /* LCOV_EXCL_START */
+    /* Has to be a struct because there can't be partial specializations for a
+       function (which we need for pointers) */
     template<class T> struct MaterialAttributeTypeFor {
         /* C++ why there isn't an obvious way to do such a thing?! */
         static_assert(sizeof(T) == 0, "unsupported attribute type");
