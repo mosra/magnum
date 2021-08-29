@@ -240,7 +240,7 @@ std::size_t MeshData::indexOffset() const {
 
 Containers::StridedArrayView2D<const char> MeshData::indices() const {
     /* For a non-indexed mesh returning zero size in both dimensions, indexed
-       mesh with zero indices sill has the second dimension non-zero */
+       mesh with zero indices still has the second dimension non-zero */
     if(!isIndexed()) return {};
     const std::size_t indexTypeSize = meshIndexTypeSize(_indexType);
     /* Build a 2D view using information about attribute type size */
@@ -251,7 +251,7 @@ Containers::StridedArrayView2D<char> MeshData::mutableIndices() {
     CORRADE_ASSERT(_indexDataFlags & DataFlag::Mutable,
         "Trade::MeshData::mutableIndices(): index data not mutable", {});
     /* For a non-indexed mesh returning zero size in both dimensions, indexed
-       mesh with zero indices sill has the second dimension non-zero */
+       mesh with zero indices still has the second dimension non-zero */
     if(!isIndexed()) return {};
     const std::size_t indexTypeSize = meshIndexTypeSize(_indexType);
     /* Build a 2D view using information about index type size */
