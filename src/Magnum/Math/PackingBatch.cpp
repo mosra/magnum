@@ -240,6 +240,14 @@ void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, c
     castIntoImplementation(src, dst);
 }
 
+void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst) {
+    castIntoImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst) {
+    castIntoImplementation(src, dst);
+}
+
 void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst) {
     castIntoImplementation(src, dst);
 }
@@ -256,11 +264,51 @@ void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, c
     castIntoImplementation(src, dst);
 }
 
-void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst) {
+void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<UnsignedLong>& dst) {
     castIntoImplementation(src, dst);
 }
 
-void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst) {
+void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Long>& dst) {
+    castIntoImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<UnsignedLong>& dst) {
+    castIntoImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Long>& dst) {
+    castIntoImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedLong>& dst) {
+    castIntoImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Long>& dst) {
+    castIntoImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedLong>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst) {
+    castIntoImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Long>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst) {
+    castIntoImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedLong>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst) {
+    castIntoImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Long>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst) {
+    castIntoImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedLong>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst) {
+    castIntoImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Long>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst) {
     castIntoImplementation(src, dst);
 }
 
@@ -272,11 +320,11 @@ void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, con
     castIntoImplementation(src, dst);
 }
 
-void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst) {
+void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst) {
     castIntoImplementation(src, dst);
 }
 
-void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst) {
+void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst) {
     castIntoImplementation(src, dst);
 }
 

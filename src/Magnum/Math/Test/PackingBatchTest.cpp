@@ -84,12 +84,17 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::castSignedFloat<Short>,
               &PackingBatchTest::castSignedFloat<Int>,
 
+              &PackingBatchTest::castUnsignedInteger<UnsignedByte, UnsignedShort>,
               &PackingBatchTest::castUnsignedInteger<UnsignedByte, UnsignedInt>,
               &PackingBatchTest::castUnsignedInteger<UnsignedShort, UnsignedInt>,
-              &PackingBatchTest::castUnsignedInteger<UnsignedByte, UnsignedShort>,
+              &PackingBatchTest::castUnsignedInteger<UnsignedByte, UnsignedLong>,
+              &PackingBatchTest::castUnsignedInteger<UnsignedShort, UnsignedLong>,
+              &PackingBatchTest::castUnsignedInteger<UnsignedShort, UnsignedLong>,
+              &PackingBatchTest::castSignedInteger<Byte, Short>,
               &PackingBatchTest::castSignedInteger<Byte, Int>,
               &PackingBatchTest::castSignedInteger<Short, Int>,
-              &PackingBatchTest::castSignedInteger<Byte, Short>,
+              &PackingBatchTest::castSignedInteger<Byte, Long>,
+              &PackingBatchTest::castSignedInteger<Short, Long>,
 
               &PackingBatchTest::castFloatDouble,
 
@@ -104,12 +109,18 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::assertionsCast<Float, Short>,
               &PackingBatchTest::assertionsCast<Float, UnsignedInt>,
               &PackingBatchTest::assertionsCast<Float, Int>,
+              &PackingBatchTest::assertionsCast<UnsignedShort, UnsignedByte>,
               &PackingBatchTest::assertionsCast<UnsignedInt, UnsignedByte>,
               &PackingBatchTest::assertionsCast<UnsignedInt, UnsignedShort>,
-              &PackingBatchTest::assertionsCast<UnsignedShort, UnsignedByte>,
+              &PackingBatchTest::assertionsCast<UnsignedLong, UnsignedByte>,
+              &PackingBatchTest::assertionsCast<UnsignedLong, UnsignedShort>,
+              &PackingBatchTest::assertionsCast<UnsignedLong, UnsignedInt>,
+              &PackingBatchTest::assertionsCast<Short, Byte>,
               &PackingBatchTest::assertionsCast<Int, Byte>,
               &PackingBatchTest::assertionsCast<Int, Short>,
-              &PackingBatchTest::assertionsCast<Short, Byte>,
+              &PackingBatchTest::assertionsCast<Long, Byte>,
+              &PackingBatchTest::assertionsCast<Long, Short>,
+              &PackingBatchTest::assertionsCast<Long, Int>,
               &PackingBatchTest::assertionsCast<Double, Float>});
 }
 
