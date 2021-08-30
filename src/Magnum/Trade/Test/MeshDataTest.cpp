@@ -153,9 +153,7 @@ struct MeshDataTest: TestSuite::Tester {
     void implementationSpecificVertexFormatWrongAccess();
     void implementationSpecificVertexFormatNotContained();
 
-    void arrayAttribute();
     void arrayAttributeWrongAccess();
-
     void mutableAccessNotAllowed();
 
     void indicesNotIndexed();
@@ -374,9 +372,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::implementationSpecificVertexFormatWrongAccess,
               &MeshDataTest::implementationSpecificVertexFormatNotContained,
 
-              &MeshDataTest::arrayAttribute,
               &MeshDataTest::arrayAttributeWrongAccess,
-
               &MeshDataTest::mutableAccessNotAllowed,
 
               &MeshDataTest::indicesNotIndexed,
@@ -976,7 +972,7 @@ void MeshDataTest::construct() {
         Vector3 position;
         Vector3 normal;
         Vector2 textureCoordinate;
-        Short id;
+        Short id[2];
     };
 
     Containers::Array<char> indexData{8*sizeof(UnsignedShort)};
@@ -1001,9 +997,12 @@ void MeshDataTest::construct() {
     vertexView[0].textureCoordinate = {0.000f, 0.125f};
     vertexView[1].textureCoordinate = {0.250f, 0.375f};
     vertexView[2].textureCoordinate = {0.500f, 0.625f};
-    vertexView[0].id = 15;
-    vertexView[1].id = -374;
-    vertexView[2].id = 22;
+    vertexView[0].id[0] = 15;
+    vertexView[0].id[1] = 74;
+    vertexView[1].id[0] = -374;
+    vertexView[1].id[1] = 2;
+    vertexView[2].id[0] = 22;
+    vertexView[2].id[1] = -1;
 
     if(instanceData.vertexCount < 3)
         vertexView = vertexView.prefix(instanceData.vertexCount);
@@ -1012,14 +1011,15 @@ void MeshDataTest::construct() {
     MeshIndexData indices{indexView};
     MeshAttributeData positions{MeshAttribute::Position,
         Containers::StridedArrayView1D<Vector3>{vertexData, &vertexView[0].position, vertexView.size(), sizeof(Vertex)}};
-    /* Using a relative offset */
+    /* Offset-only */
     MeshAttributeData normals{MeshAttribute::Normal,
         VertexFormat::Vector3, offsetof(Vertex, normal),
         UnsignedInt(vertexView.size()), sizeof(Vertex)};
     MeshAttributeData textureCoordinates{MeshAttribute::TextureCoordinates,
         Containers::StridedArrayView1D<Vector2>{vertexData, &vertexView[0].textureCoordinate, vertexView.size(), sizeof(Vertex)}};
+    /* Custom & array */
     MeshAttributeData ids{meshAttributeCustom(13),
-        Containers::StridedArrayView1D<Short>{vertexData, &vertexView[0].id, vertexView.size(), sizeof(Vertex)}};
+        Containers::StridedArrayView2D<Short>{vertexData, &vertexView[0].id[0], {vertexView.size(), 2}, {sizeof(Vertex), sizeof(Short)}}};
     MeshData data{MeshPrimitive::Triangles,
         std::move(indexData), indices,
         /* Texture coordinates deliberately twice (though aliased) */
@@ -1078,7 +1078,31 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.attributeArraySize(1), 0);
     CORRADE_COMPARE(data.attributeArraySize(2), 0);
     CORRADE_COMPARE(data.attributeArraySize(3), 0);
-    CORRADE_COMPARE(data.attributeArraySize(4), 0);
+    CORRADE_COMPARE(data.attributeArraySize(4), 2);
+
+    /* Raw attribute data access by ID */
+    CORRADE_COMPARE(data.attributeData(1).name(), MeshAttribute::TextureCoordinates);
+    CORRADE_COMPARE(data.attributeData(1).format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(data.attributeData(1).data().size(), instanceData.expectedVertexCount);
+    CORRADE_COMPARE(data.attributeData(1).arraySize(), 0);
+    if(instanceData.vertexCount)
+        CORRADE_COMPARE(Containers::arrayCast<const Vector2>(data.attributeData(1).data())[1], (Vector2{0.250f, 0.375f}));
+    /* Offset-only */
+    CORRADE_COMPARE(data.attributeData(2).name(), MeshAttribute::Normal);
+    CORRADE_COMPARE(data.attributeData(2).format(), VertexFormat::Vector3);
+    CORRADE_COMPARE(data.attributeData(2).data().size(), instanceData.expectedVertexCount);
+    CORRADE_COMPARE(data.attributeData(2).arraySize(), 0);
+    if(instanceData.vertexCount)
+        CORRADE_COMPARE(Containers::arrayCast<const Vector3>(data.attributeData(2).data())[1], Vector3::yAxis());
+    /* Array */
+    CORRADE_COMPARE(data.attributeData(4).name(), meshAttributeCustom(13));
+    CORRADE_COMPARE(data.attributeData(4).format(), VertexFormat::Short);
+    CORRADE_COMPARE(data.attributeData(4).data().size(), instanceData.expectedVertexCount);
+    CORRADE_COMPARE(data.attributeData(4).arraySize(), 2);
+    if(instanceData.vertexCount) {
+        CORRADE_COMPARE((Containers::arrayCast<2, const Short>(data.attributeData(4).data(), 2))[1][0], -374);
+        CORRADE_COMPARE((Containers::arrayCast<2, const Short>(data.attributeData(4).data(), 2))[1][1], 2);
+    }
 
     /* Typeless access by ID with a cast later */
     CORRADE_COMPARE(data.attribute(0).size()[0], instanceData.expectedVertexCount);
@@ -1092,8 +1116,11 @@ void MeshDataTest::construct() {
             data.attribute(2))[2]), Vector3::zAxis());
         CORRADE_COMPARE((Containers::arrayCast<1, const Vector2>(
             data.attribute(3))[1]), (Vector2{0.250f, 0.375f}));
-        CORRADE_COMPARE((Containers::arrayCast<1, const Short>(
-            data.attribute(4))[0]), 15);
+        /* Array */
+        CORRADE_COMPARE((Containers::arrayCast<2, const Short>(
+            data.attribute(4))[0])[0], 15);
+        CORRADE_COMPARE((Containers::arrayCast<2, const Short>(
+            data.attribute(4))[0])[1], 74);
         CORRADE_COMPARE((Containers::arrayCast<1, Vector3>(
             data.mutableAttribute(0))[1]), (Vector3{0.4f, 0.5f, 0.6f}));
         CORRADE_COMPARE((Containers::arrayCast<1, Vector2>(
@@ -1102,8 +1129,11 @@ void MeshDataTest::construct() {
             data.mutableAttribute(2))[2]), Vector3::zAxis());
         CORRADE_COMPARE((Containers::arrayCast<1, Vector2>(
             data.mutableAttribute(3))[1]), (Vector2{0.250f, 0.375f}));
-        CORRADE_COMPARE((Containers::arrayCast<1, Short>(
-            data.mutableAttribute(4))[0]), 15);
+        /* Array */
+        CORRADE_COMPARE((Containers::arrayCast<2, Short>(
+            data.mutableAttribute(4))[0])[0], 15);
+        CORRADE_COMPARE((Containers::arrayCast<2, Short>(
+            data.mutableAttribute(4))[0])[1], 74);
     }
 
     /* Typed access by ID */
@@ -1114,20 +1144,17 @@ void MeshDataTest::construct() {
         CORRADE_COMPARE(data.attribute<Vector2>(1)[0], (Vector2{0.000f, 0.125f}));
         CORRADE_COMPARE(data.attribute<Vector3>(2)[2], Vector3::zAxis());
         CORRADE_COMPARE(data.attribute<Vector2>(3)[1], (Vector2{0.250f, 0.375f}));
-        CORRADE_COMPARE(data.attribute<Short>(4)[1], -374);
+        /* Array */
+        CORRADE_COMPARE(data.attribute<Short[]>(4)[1][0], -374);
+        CORRADE_COMPARE(data.attribute<Short[]>(4)[1][1], 2);
         CORRADE_COMPARE(data.mutableAttribute<Vector3>(0)[1], (Vector3{0.4f, 0.5f, 0.6f}));
         CORRADE_COMPARE(data.mutableAttribute<Vector2>(1)[0], (Vector2{0.000f, 0.125f}));
         CORRADE_COMPARE(data.mutableAttribute<Vector3>(2)[2], Vector3::zAxis());
         CORRADE_COMPARE(data.mutableAttribute<Vector2>(3)[1], (Vector2{0.250f, 0.375f}));
-        CORRADE_COMPARE(data.mutableAttribute<Short>(4)[1], -374);
+        /* Array */
+        CORRADE_COMPARE(data.mutableAttribute<Short[]>(4)[1][0], -374);
+        CORRADE_COMPARE(data.mutableAttribute<Short[]>(4)[1][1], 2);
     }
-
-    /* Raw attribute data access by ID */
-    CORRADE_COMPARE(data.attributeData(3).name(), MeshAttribute::TextureCoordinates);
-    CORRADE_COMPARE(data.attributeData(3).format(), VertexFormat::Vector2);
-    CORRADE_COMPARE(data.attributeData(3).data().size(), instanceData.expectedVertexCount);
-    if(instanceData.vertexCount)
-        CORRADE_COMPARE(Containers::arrayCast<const Vector2>(data.attributeData(3).data())[1], (Vector2{0.250f, 0.375f}));
 
     /* Attribute access by name */
     CORRADE_VERIFY(data.hasAttribute(MeshAttribute::Position));
@@ -1170,7 +1197,7 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.attributeArraySize(MeshAttribute::Normal), 0);
     CORRADE_COMPARE(data.attributeArraySize(MeshAttribute::TextureCoordinates, 0), 0);
     CORRADE_COMPARE(data.attributeArraySize(MeshAttribute::TextureCoordinates, 1), 0);
-    CORRADE_COMPARE(data.attributeArraySize(meshAttributeCustom(13)), 0);
+    CORRADE_COMPARE(data.attributeArraySize(meshAttributeCustom(13)), 2);
 
     /* Typeless access by name with a cast later */
     CORRADE_COMPARE(data.attribute(MeshAttribute::Position).size()[0], instanceData.expectedVertexCount);
@@ -1184,8 +1211,11 @@ void MeshDataTest::construct() {
             data.attribute(MeshAttribute::TextureCoordinates, 0))[0]), (Vector2{0.000f, 0.125f}));
         CORRADE_COMPARE((Containers::arrayCast<1, const Vector2>(
             data.attribute(MeshAttribute::TextureCoordinates, 1))[1]), (Vector2{0.250f, 0.375f}));
-        CORRADE_COMPARE((Containers::arrayCast<1, const Short>(
-            data.attribute(meshAttributeCustom(13)))[1]), -374);
+        /* Array */
+        CORRADE_COMPARE((Containers::arrayCast<2, const Short>(
+            data.attribute(meshAttributeCustom(13)))[1])[0], -374);
+        CORRADE_COMPARE((Containers::arrayCast<2, const Short>(
+            data.attribute(meshAttributeCustom(13)))[1])[1], 2);
         CORRADE_COMPARE((Containers::arrayCast<1, const Vector3>(
             data.mutableAttribute(MeshAttribute::Position))[1]), (Vector3{0.4f, 0.5f, 0.6f}));
         CORRADE_COMPARE((Containers::arrayCast<1, Vector3>(
@@ -1194,8 +1224,11 @@ void MeshDataTest::construct() {
             data.mutableAttribute(MeshAttribute::TextureCoordinates, 0))[0]), (Vector2{0.000f, 0.125f}));
         CORRADE_COMPARE((Containers::arrayCast<1, Vector2>(
             data.mutableAttribute(MeshAttribute::TextureCoordinates, 1))[1]), (Vector2{0.250f, 0.375f}));
-        CORRADE_COMPARE((Containers::arrayCast<1, Short>(
-            data.mutableAttribute(meshAttributeCustom(13)))[1]), -374);
+        /* Array */
+        CORRADE_COMPARE((Containers::arrayCast<2, Short>(
+            data.mutableAttribute(meshAttributeCustom(13)))[1])[0], -374);
+        CORRADE_COMPARE((Containers::arrayCast<2, Short>(
+            data.mutableAttribute(meshAttributeCustom(13)))[1])[1], 2);
     }
 
     /* Typed access by name */
@@ -1206,12 +1239,16 @@ void MeshDataTest::construct() {
         CORRADE_COMPARE(data.attribute<Vector3>(MeshAttribute::Normal)[2], Vector3::zAxis());
         CORRADE_COMPARE(data.attribute<Vector2>(MeshAttribute::TextureCoordinates, 0)[0], (Vector2{0.000f, 0.125f}));
         CORRADE_COMPARE(data.attribute<Vector2>(MeshAttribute::TextureCoordinates, 1)[1], (Vector2{0.250f, 0.375f}));
-        CORRADE_COMPARE(data.attribute<Short>(meshAttributeCustom(13))[2], 22);
+        /* Array */
+        CORRADE_COMPARE(data.attribute<Short[]>(meshAttributeCustom(13))[2][0], 22);
+        CORRADE_COMPARE(data.attribute<Short[]>(meshAttributeCustom(13))[2][1], -1);
         CORRADE_COMPARE(data.mutableAttribute<Vector3>(MeshAttribute::Position)[1], (Vector3{0.4f, 0.5f, 0.6f}));
         CORRADE_COMPARE(data.mutableAttribute<Vector3>(MeshAttribute::Normal)[2], Vector3::zAxis());
         CORRADE_COMPARE(data.mutableAttribute<Vector2>(MeshAttribute::TextureCoordinates, 0)[0], (Vector2{0.000f, 0.125f}));
         CORRADE_COMPARE(data.mutableAttribute<Vector2>(MeshAttribute::TextureCoordinates, 1)[1], (Vector2{0.250f, 0.375f}));
-        CORRADE_COMPARE(data.attribute<Short>(meshAttributeCustom(13))[2], 22);
+        /* Array */
+        CORRADE_COMPARE(data.attribute<Short[]>(meshAttributeCustom(13))[2][0], 22);
+        CORRADE_COMPARE(data.attribute<Short[]>(meshAttributeCustom(13))[2][1], -1);
     }
 }
 
@@ -2682,64 +2719,6 @@ void MeshDataTest::implementationSpecificVertexFormatNotContained() {
         /* Assumes size of the type is 0, so the diagnostic is different from
            constructAttributeNotContained() */
         "Trade::MeshData: attribute 1 [0xdead:0xdeaf] is not contained in passed vertexData array [0xbadda9:0xbaddac]\n");
-}
-
-void MeshDataTest::arrayAttribute() {
-    Vector2 vertexData[3*4]{
-        {1.0f, 2.0f}, {3.0f, 4.0f}, {5.0f, 6.0f}, {7.0f, 8.0f},
-        {1.1f, 2.2f}, {3.3f, 4.4f}, {5.5f, 6.6f}, {7.7f, 8.8f},
-        {0.1f, 0.2f}, {0.3f, 0.4f}, {0.5f, 0.6f}, {0.7f, 0.8f},
-    };
-    Containers::StridedArrayView2D<Vector2> positions2D{vertexData, {3, 4}};
-
-    MeshData data{MeshPrimitive::TriangleFan, DataFlag::Mutable, vertexData, {
-        MeshAttributeData{meshAttributeCustom(35), positions2D}
-    }};
-
-    CORRADE_COMPARE(data.vertexCount(), 3);
-    CORRADE_COMPARE(data.attributeArraySize(meshAttributeCustom(35)), 4);
-
-    /* Raw access is "as usual" */
-    auto attribute = Containers::arrayCast<2, const Vector2>(data.attribute(0));
-    auto attributeByName = Containers::arrayCast<2, const Vector2>(data.attribute(meshAttributeCustom(35)));
-    auto mutableAttribute = Containers::arrayCast<2, Vector2>(data.mutableAttribute(0));
-    auto mutableAttributeByName = Containers::arrayCast<2, Vector2>(data.mutableAttribute(meshAttributeCustom(35)));
-    CORRADE_COMPARE(attribute.size()[0], 3);
-    CORRADE_COMPARE(attributeByName.size()[0], 3);
-    CORRADE_COMPARE(mutableAttribute.size()[0], 3);
-    CORRADE_COMPARE(mutableAttributeByName.size()[0], 3);
-    for(std::size_t i = 0; i != 3; ++i) {
-        CORRADE_ITERATION(i);
-        CORRADE_COMPARE_AS(attribute[i], positions2D[i],
-            TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(attributeByName[i], positions2D[i],
-            TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(mutableAttribute[i], positions2D[i],
-            TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(mutableAttributeByName[i], positions2D[i],
-            TestSuite::Compare::Container);
-    }
-
-    /* Typed access */
-    attribute = data.attribute<Vector2[]>(0);
-    attributeByName = data.attribute<Vector2[]>(meshAttributeCustom(35));
-    mutableAttribute = data.mutableAttribute<Vector2[]>(0);
-    mutableAttributeByName = data.mutableAttribute<Vector2[]>(meshAttributeCustom(35));
-    CORRADE_COMPARE(attribute.size()[0], 3);
-    CORRADE_COMPARE(attributeByName.size()[0], 3);
-    CORRADE_COMPARE(mutableAttribute.size()[0], 3);
-    CORRADE_COMPARE(mutableAttributeByName.size()[0], 3);
-    for(std::size_t i = 0; i != 3; ++i) {
-        CORRADE_ITERATION(i);
-        CORRADE_COMPARE_AS(attribute[i], positions2D[i],
-            TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(attributeByName[i], positions2D[i],
-            TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(mutableAttribute[i], positions2D[i],
-            TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(mutableAttributeByName[i], positions2D[i],
-            TestSuite::Compare::Container);
-    }
 }
 
 void MeshDataTest::arrayAttributeWrongAccess() {
