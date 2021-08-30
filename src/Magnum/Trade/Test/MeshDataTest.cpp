@@ -1659,14 +1659,27 @@ void MeshDataTest::constructIndicesNotContained() {
     #endif
 
     Containers::Array<char> indexData{reinterpret_cast<char*>(0xbadda9), 6, [](char*, std::size_t){}};
-    Containers::ArrayView<UnsignedShort> indexData2{reinterpret_cast<UnsignedShort*>(0xdead), 3};
-    MeshIndexData indices{indexData2};
+    Containers::ArrayView<UnsignedShort> indexDataSlightlyOut{reinterpret_cast<UnsignedShort*>(0xbaddaa), 3};
+    Containers::ArrayView<UnsignedShort> indexDataOut{reinterpret_cast<UnsignedShort*>(0xdead), 3};
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshData{MeshPrimitive::Triangles, std::move(indexData), indices, 1};
-    MeshData{MeshPrimitive::Triangles, nullptr, indices, 1};
+    /* First a "slightly off" view that exceeds the original by one byte */
+    MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{indexDataSlightlyOut}, 1};
+    /* Second a view that's in a completely different location */
+    MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{indexDataOut}, 1};
+    /* Empty view which however begins outside */
+    MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{indexDataSlightlyOut.slice(3, 3)}, 1};
+    /* Verify the owning constructor does the checks as well */
+    MeshData{MeshPrimitive::Triangles, std::move(indexData), MeshIndexData{indexDataOut}, 1};
+    /* If we have no data at all, it doesn't try to dereference them but still
+       checks properly */
+    MeshData{MeshPrimitive::Triangles, nullptr, MeshIndexData{indexDataOut}, 1};
     CORRADE_COMPARE(out.str(),
+        "Trade::MeshData: indices [0xbaddaa:0xbaddb0] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
+        "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
+        /* This scenario is invalid, just have it here for the record */
+        "Trade::MeshData: indexData passed for a non-indexed mesh\n"
         "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
         "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0x0:0x0]\n");
 }
@@ -1676,32 +1689,60 @@ void MeshDataTest::constructAttributeNotContained() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    Containers::Array<char> vertexData{reinterpret_cast<char*>(0xbadda9), 24, [](char*, std::size_t){}};
-    Containers::ArrayView<Vector2> vertexData2{reinterpret_cast<Vector2*>(0xdead), 3};
-    MeshAttributeData positions{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData)};
-    MeshAttributeData positions2{MeshAttribute::Position, Containers::arrayView(vertexData2)};
-    MeshAttributeData positions3{MeshAttribute::Position, VertexFormat::Vector2, 1, 3, 8};
     /* See implementationSpecificVertexFormatNotContained() below for
        implementation-specific formats */
+
+    Containers::Array<char> vertexData{reinterpret_cast<char*>(0xbadda9), 24, [](char*, std::size_t){}};
+    Containers::ArrayView<Vector2> vertexDataIn{reinterpret_cast<Vector2*>(0xbadda9), 3};
+    Containers::ArrayView<Vector2> vertexDataOut{reinterpret_cast<Vector2*>(0xdead), 3};
+    MeshAttributeData{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData)};
 
     /* Here the original positions array is shrunk from 3 items to 2 and the
        vertex data too, which should work without asserting -- comparing just
        the original view would not pass, which is wrong */
-    MeshData{MeshPrimitive::Triangles, {}, vertexData.prefix(16), {positions}, 2};
+    MeshData{MeshPrimitive::Triangles, {}, vertexData.prefix(16), {
+        MeshAttributeData{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData)}
+    }, 2};
 
     std::ostringstream out;
     Error redirectError{&out};
     /* Here the original positions array is extended from 3 items to 4, which
        makes it not fit anymore, and thus an assert should hit -- comparing
        just the original view would pass, which is wrong */
-    MeshData{MeshPrimitive::Triangles, {}, vertexData, {positions}, 4};
-    MeshData{MeshPrimitive::Triangles, std::move(vertexData), {positions, positions2}};
-    MeshData{MeshPrimitive::Triangles, nullptr, {positions}};
-    MeshData{MeshPrimitive::Triangles, Containers::Array<char>{24}, {positions3}};
+    MeshData{MeshPrimitive::Triangles, {}, vertexData, {
+        MeshAttributeData{MeshAttribute::Position, vertexDataIn}
+    }, 4};
+    /* Spanning 20 bytes originally, 25 when vertex count is changed to 5. If
+       array size wouldn't be taken into account, it would span only 16 / 21,
+       which  fits into the vertex data size and thus wouldn't fail */
+    MeshData{MeshPrimitive::Triangles, {}, vertexData, {
+        MeshAttributeData{meshAttributeCustom(37), Containers::StridedArrayView2D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(vertexData), {4, 5}, {5, 1}}}
+    }, 5};
+    /* Verify the owning constructor does the same check */
+    MeshData{MeshPrimitive::Triangles, std::move(vertexData), {
+        MeshAttributeData{MeshAttribute::Position, vertexDataIn},
+        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(vertexDataOut)}
+    }};
+    /* And if we have no data at all, it doesn't try to dereference them but
+       still checks properly */
+    MeshData{MeshPrimitive::Triangles, nullptr, {
+        MeshAttributeData{MeshAttribute::Position, vertexDataIn}
+    }};
+    /* Finally, offset-only attributes with a different message */
+    MeshData{MeshPrimitive::Triangles, Containers::Array<char>{24}, {
+        MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 1, 3, 8}
+    }};
+    /* This again spans 21 bytes if array size isn't taken into account, and 25
+       if it is */
+    MeshData{MeshPrimitive::Triangles, Containers::Array<char>{24}, {
+        MeshAttributeData{meshAttributeCustom(37), VertexFormat::UnsignedByte, 0, 5, 5, 5}
+    }};
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc9] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
+        "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc2] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: attribute 1 [0xdead:0xdec5] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc1] is not contained in passed vertexData array [0x0:0x0]\n"
+        "Trade::MeshData: offset-only attribute 0 spans 25 bytes but passed vertexData array has only 24\n"
         "Trade::MeshData: offset-only attribute 0 spans 25 bytes but passed vertexData array has only 24\n");
 }
 
