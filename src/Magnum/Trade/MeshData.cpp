@@ -430,7 +430,7 @@ Containers::Array<UnsignedInt> MeshData::indicesAsArray() const {
     /* Repeating the assert here because otherwise it would fire in
        indexCount() which may be confusing */
     CORRADE_ASSERT(isIndexed(), "Trade::MeshData::indicesAsArray(): the mesh is not indexed", {});
-    Containers::Array<UnsignedInt> output{indexCount()};
+    Containers::Array<UnsignedInt> output{NoInit, indexCount()};
     indicesInto(output);
     return output;
 }
@@ -480,7 +480,7 @@ void MeshData::positions2DInto(const Containers::StridedArrayView1D<Vector2> des
 }
 
 Containers::Array<Vector2> MeshData::positions2DAsArray(const UnsignedInt id) const {
-    Containers::Array<Vector2> out{_vertexCount};
+    Containers::Array<Vector2> out{NoInit, _vertexCount};
     positions2DInto(out, id);
     return out;
 }
@@ -561,7 +561,7 @@ void MeshData::positions3DInto(const Containers::StridedArrayView1D<Vector3> des
 }
 
 Containers::Array<Vector3> MeshData::positions3DAsArray(const UnsignedInt id) const {
-    Containers::Array<Vector3> out{_vertexCount};
+    Containers::Array<Vector3> out{NoInit, _vertexCount};
     positions3DInto(out, id);
     return out;
 }
@@ -608,7 +608,7 @@ void MeshData::tangentsInto(const Containers::StridedArrayView1D<Vector3> destin
 }
 
 Containers::Array<Vector3> MeshData::tangentsAsArray(const UnsignedInt id) const {
-    Containers::Array<Vector3> out{_vertexCount};
+    Containers::Array<Vector3> out{NoInit, _vertexCount};
     tangentsInto(out, id);
     return out;
 }
@@ -635,7 +635,7 @@ void MeshData::bitangentSignsInto(const Containers::StridedArrayView1D<Float> de
 }
 
 Containers::Array<Float> MeshData::bitangentSignsAsArray(const UnsignedInt id) const {
-    Containers::Array<Float> out{_vertexCount};
+    Containers::Array<Float> out{NoInit, _vertexCount};
     bitangentSignsInto(out, id);
     return out;
 }
@@ -651,7 +651,7 @@ void MeshData::bitangentsInto(const Containers::StridedArrayView1D<Vector3> dest
 }
 
 Containers::Array<Vector3> MeshData::bitangentsAsArray(const UnsignedInt id) const {
-    Containers::Array<Vector3> out{_vertexCount};
+    Containers::Array<Vector3> out{NoInit, _vertexCount};
     bitangentsInto(out, id);
     return out;
 }
@@ -667,7 +667,7 @@ void MeshData::normalsInto(const Containers::StridedArrayView1D<Vector3> destina
 }
 
 Containers::Array<Vector3> MeshData::normalsAsArray(const UnsignedInt id) const {
-    Containers::Array<Vector3> out{_vertexCount};
+    Containers::Array<Vector3> out{NoInit, _vertexCount};
     normalsInto(out, id);
     return out;
 }
@@ -706,7 +706,7 @@ void MeshData::textureCoordinates2DInto(const Containers::StridedArrayView1D<Vec
 }
 
 Containers::Array<Vector2> MeshData::textureCoordinates2DAsArray(const UnsignedInt id) const {
-    Containers::Array<Vector2> out{_vertexCount};
+    Containers::Array<Vector2> out{NoInit, _vertexCount};
     textureCoordinates2DInto(out, id);
     return out;
 }
@@ -759,7 +759,7 @@ void MeshData::colorsInto(const Containers::StridedArrayView1D<Color4> destinati
 }
 
 Containers::Array<Color4> MeshData::colorsAsArray(const UnsignedInt id) const {
-    Containers::Array<Color4> out{_vertexCount};
+    Containers::Array<Color4> out{NoInit, _vertexCount};
     colorsInto(out, id);
     return out;
 }
@@ -784,7 +784,7 @@ void MeshData::objectIdsInto(const Containers::StridedArrayView1D<UnsignedInt> d
 }
 
 Containers::Array<UnsignedInt> MeshData::objectIdsAsArray(const UnsignedInt id) const {
-    Containers::Array<UnsignedInt> out{_vertexCount};
+    Containers::Array<UnsignedInt> out{NoInit, _vertexCount};
     objectIdsInto(out, id);
     return out;
 }
