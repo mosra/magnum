@@ -1157,7 +1157,9 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * accessors. In most cases you don't want to access those directly,
          * but rather use the @ref attribute(), @ref attributeName(),
          * @ref attributeFormat(), @ref attributeOffset(),
-         * @ref attributeStride() etc. accessors.
+         * @ref attributeStride() etc. accessors. This is also the reason why
+         * there's no overload taking a @ref MeshAttribute, unlike the other
+         * accessors.
          *
          * Useful mainly for passing particular attributes unchanged directly
          * to @ref MeshTools algorithms --- unlike with @ref attributeData()
