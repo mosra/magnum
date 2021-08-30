@@ -264,6 +264,18 @@ Containers::StridedArrayView2D<char> MeshData::mutableIndices() {
         out.size(), out.stride()};
 }
 
+Containers::StridedArrayView1D<const void> MeshData::attributeDataViewInternal(const MeshAttributeData& attribute) const {
+    return Containers::StridedArrayView1D<const void>{
+        /* We're *sure* the view is correct, so faking the view size */
+        /** @todo better ideas for the StridedArrayView API? */
+        {attribute._isOffsetOnly ? _vertexData.data() + attribute._data.offset :
+            attribute._data.pointer, ~std::size_t{}},
+        /* Not using attribute._vertexCount because that gets stale after
+           releaseVertexData() gets called, and then we would need to slice the
+           result inside attribute() and elsewhere anyway */
+        _vertexCount, attribute._stride};
+}
+
 MeshAttributeData MeshData::attributeData(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeData(): index" << id << "out of range for" << _attributes.size() << "attributes", MeshAttributeData{});
@@ -351,18 +363,6 @@ UnsignedShort MeshData::attributeArraySize(const MeshAttribute name, const Unsig
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeArraySize(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return _attributes[attributeId]._arraySize;
-}
-
-Containers::StridedArrayView1D<const void> MeshData::attributeDataViewInternal(const MeshAttributeData& attribute) const {
-    return Containers::StridedArrayView1D<const void>{
-        /* We're *sure* the view is correct, so faking the view size */
-        /** @todo better ideas for the StridedArrayView API? */
-        {attribute._isOffsetOnly ? _vertexData.data() + attribute._data.offset :
-            attribute._data.pointer, ~std::size_t{}},
-        /* Not using attribute._vertexCount because that gets stale after
-           releaseVertexData() gets called, and then we would need to slice the
-           result inside attribute() and elsewhere anyway */
-        _vertexCount, attribute._stride};
 }
 
 Containers::StridedArrayView2D<const char> MeshData::attribute(const UnsignedInt id) const {
