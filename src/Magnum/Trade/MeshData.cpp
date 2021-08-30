@@ -136,14 +136,23 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
            check at least partially. */
         const UnsignedInt typeSize =
             isVertexFormatImplementationSpecific(attribute._format) ? 0 :
-            vertexFormatSize(attribute._format);
+            (vertexFormatSize(attribute._format)*
+            (attribute._arraySize ? attribute._arraySize : 1));
         if(attribute._isOffsetOnly) {
             const std::size_t size = attribute._data.offset + (_vertexCount - 1)*attribute._stride + typeSize;
+            /* For meshes with zero vertices we don't check the pointer, since
+               accessing the memory is invalid anyway and enforcing this would
+               lead to unnecessary friction with interleaved attributes of
+               empty meshes. */
             CORRADE_ASSERT(!_vertexCount || size <= _vertexData.size(),
                 "Trade::MeshData: offset-only attribute" << i << "spans" << size << "bytes but passed vertexData array has only" << _vertexData.size(), );
         } else {
             const void* const begin = static_cast<const char*>(attribute._data.pointer);
             const void* const end = static_cast<const char*>(attribute._data.pointer) + (_vertexCount - 1)*attribute._stride + typeSize;
+            /* For meshes with zero vertices we don't check the pointer, since
+               accessing the memory is invalid anyway and enforcing this would
+               lead to unnecessary friction with interleaved attributes of
+               empty meshes. */
             CORRADE_ASSERT(!_vertexCount || (begin >= _vertexData.begin() && end <= _vertexData.end()),
                 "Trade::MeshData: attribute" << i << "[" << Debug::nospace << begin << Debug::nospace << ":" << Debug::nospace << end << Debug::nospace << "] is not contained in passed vertexData array [" << Debug::nospace << static_cast<const void*>(_vertexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_vertexData.end()) << Debug::nospace << "]", );
         }

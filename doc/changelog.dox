@@ -472,6 +472,9 @@ See also:
 -   @ref Trade::MeshData::attributeData(UnsignedInt) const was not correctly
     propagating attribute array size, causing array attributes to appear as
     non-array
+-   @ref Trade::MeshData constructor data view range assertions weren't
+    correctly taking sizes of array attributes into account, leading to meshes
+    with out-of-range attributes getting silently accepted
 -   Fixed @ref Platform::GlfwApplication, @ref Platform::Sdl2Application and
     @ref Platform::EmscriptenApplication to correctly print app-specified DPI
     scaling in its verbose output
