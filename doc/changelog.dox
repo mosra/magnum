@@ -469,6 +469,9 @@ See also:
     propagate errors when delegating to
     @ref Text::AbstractFontConverter::exportFontToSingleData() /
     @ref Text::AbstractFontConverter::exportGlyphCacheToSingleData()
+-   @ref Trade::MeshData::attributeData(UnsignedInt) const was not correctly
+    propagating attribute array size, causing array attributes to appear as
+    non-array
 -   Fixed @ref Platform::GlfwApplication, @ref Platform::Sdl2Application and
     @ref Platform::EmscriptenApplication to correctly print app-specified DPI
     scaling in its verbose output

@@ -268,7 +268,7 @@ MeshAttributeData MeshData::attributeData(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeData(): index" << id << "out of range for" << _attributes.size() << "attributes", MeshAttributeData{});
     const MeshAttributeData& attribute = _attributes[id];
-    return MeshAttributeData{attribute._name, attribute._format, attributeDataViewInternal(attribute)};
+    return MeshAttributeData{attribute._name, attribute._format, attributeDataViewInternal(attribute), attribute._arraySize};
 }
 
 MeshAttribute MeshData::attributeName(const UnsignedInt id) const {
