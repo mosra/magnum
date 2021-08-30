@@ -367,7 +367,7 @@ Containers::StridedArrayView1D<const void> MeshData::attributeDataViewInternal(c
 
 Containers::StridedArrayView2D<const char> MeshData::attribute(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
-        "Trade::MeshData::attribute(): index" << id << "out of range for" << _attributes.size() << "attributes", nullptr);
+        "Trade::MeshData::attribute(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
     const MeshAttributeData& attribute = _attributes[id];
     /* Build a 2D view using information about attribute type size */
     return Containers::arrayCast<2, const char>(
@@ -381,7 +381,7 @@ Containers::StridedArrayView2D<char> MeshData::mutableAttribute(const UnsignedIn
     CORRADE_ASSERT(_vertexDataFlags & DataFlag::Mutable,
         "Trade::MeshData::mutableAttribute(): vertex data not mutable", {});
     CORRADE_ASSERT(id < _attributes.size(),
-        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << _attributes.size() << "attributes", nullptr);
+        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
     const MeshAttributeData& attribute = _attributes[id];
     /* Build a 2D view using information about attribute type size */
     const auto out = Containers::arrayCast<2, const char>(

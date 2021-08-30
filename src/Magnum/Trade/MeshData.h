@@ -2121,7 +2121,7 @@ template<class T> Containers::ArrayView<const T> MeshData::indices() const {
     if(!data.stride()[1]) return {};
     #endif
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
-        "Trade::MeshData::indices(): indices are" << _indexType << "but requested" << Implementation::meshIndexTypeFor<T>(), nullptr);
+        "Trade::MeshData::indices(): indices are" << _indexType << "but requested" << Implementation::meshIndexTypeFor<T>(), {});
     return Containers::arrayCast<1, const T>(data).asContiguous();
 }
 
@@ -2133,7 +2133,7 @@ template<class T> Containers::ArrayView<T> MeshData::mutableIndices() {
     if(!data.stride()[1]) return {};
     #endif
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
-        "Trade::MeshData::mutableIndices(): indices are" << _indexType << "but requested" << Implementation::meshIndexTypeFor<T>(), nullptr);
+        "Trade::MeshData::mutableIndices(): indices are" << _indexType << "but requested" << Implementation::meshIndexTypeFor<T>(), {});
     return Containers::arrayCast<1, T>(data).asContiguous();
 }
 
