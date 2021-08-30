@@ -153,7 +153,6 @@ struct MeshDataTest: TestSuite::Tester {
     void implementationSpecificVertexFormatWrongAccess();
     void implementationSpecificVertexFormatNotContained();
 
-    void arrayAttributeWrongAccess();
     void mutableAccessNotAllowed();
 
     void indicesNotIndexed();
@@ -161,6 +160,7 @@ struct MeshDataTest: TestSuite::Tester {
 
     void attributeNotFound();
     void attributeWrongType();
+    void attributeWrongArrayAccess();
 
     void releaseIndexData();
     void releaseAttributeData();
@@ -372,7 +372,6 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::implementationSpecificVertexFormatWrongAccess,
               &MeshDataTest::implementationSpecificVertexFormatNotContained,
 
-              &MeshDataTest::arrayAttributeWrongAccess,
               &MeshDataTest::mutableAccessNotAllowed,
 
               &MeshDataTest::indicesNotIndexed,
@@ -380,6 +379,7 @@ MeshDataTest::MeshDataTest() {
 
               &MeshDataTest::attributeNotFound,
               &MeshDataTest::attributeWrongType,
+              &MeshDataTest::attributeWrongArrayAccess,
 
               &MeshDataTest::releaseIndexData,
               &MeshDataTest::releaseAttributeData,
@@ -2721,45 +2721,6 @@ void MeshDataTest::implementationSpecificVertexFormatNotContained() {
         "Trade::MeshData: attribute 1 [0xdead:0xdeaf] is not contained in passed vertexData array [0xbadda9:0xbaddac]\n");
 }
 
-void MeshDataTest::arrayAttributeWrongAccess() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    Vector2 vertexData[3*4]{
-        {1.0f, 2.0f}, {3.0f, 4.0f}, {5.0f, 6.0f}, {7.0f, 8.0f},
-        {1.1f, 2.2f}, {3.3f, 4.4f}, {5.5f, 6.6f}, {7.7f, 8.8f},
-        {0.1f, 0.2f}, {0.3f, 0.4f}, {0.5f, 0.6f}, {0.7f, 0.8f},
-    };
-    Containers::StridedArrayView1D<Vector2> positions{vertexData, 3, 4*sizeof(Vector2)};
-    Containers::StridedArrayView2D<Vector2> positions2D{vertexData, {3, 4}};
-
-    MeshData data{MeshPrimitive::TriangleFan, DataFlag::Mutable, vertexData, {
-        MeshAttributeData{MeshAttribute::Position, positions},
-        MeshAttributeData{meshAttributeCustom(35), positions2D}
-    }};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    data.attribute<Vector2[]>(0);
-    data.attribute<Vector2>(1);
-    data.mutableAttribute<Vector2[]>(0);
-    data.mutableAttribute<Vector2>(1);
-    data.attribute<Vector2[]>(MeshAttribute::Position);
-    data.attribute<Vector2>(meshAttributeCustom(35));
-    data.mutableAttribute<Vector2[]>(MeshAttribute::Position);
-    data.mutableAttribute<Vector2>(meshAttributeCustom(35));
-    CORRADE_COMPARE(out.str(),
-        "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
-        "Trade::MeshData::attribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
-        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
-        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
-        "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
-        "Trade::MeshData::attribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
-        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
-        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n");
-}
-
 void MeshDataTest::mutableAccessNotAllowed() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -2968,6 +2929,45 @@ void MeshDataTest::attributeWrongType() {
         "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
         "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
         "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n");
+}
+
+void MeshDataTest::attributeWrongArrayAccess() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Vector2 vertexData[3*4]{
+        {1.0f, 2.0f}, {3.0f, 4.0f}, {5.0f, 6.0f}, {7.0f, 8.0f},
+        {1.1f, 2.2f}, {3.3f, 4.4f}, {5.5f, 6.6f}, {7.7f, 8.8f},
+        {0.1f, 0.2f}, {0.3f, 0.4f}, {0.5f, 0.6f}, {0.7f, 0.8f},
+    };
+    Containers::StridedArrayView1D<Vector2> positions{vertexData, 3, 4*sizeof(Vector2)};
+    Containers::StridedArrayView2D<Vector2> positions2D{vertexData, {3, 4}};
+
+    MeshData data{MeshPrimitive::TriangleFan, DataFlag::Mutable, vertexData, {
+        MeshAttributeData{MeshAttribute::Position, positions},
+        MeshAttributeData{meshAttributeCustom(35), positions2D}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.attribute<Vector2[]>(0);
+    data.attribute<Vector2>(1);
+    data.mutableAttribute<Vector2[]>(0);
+    data.mutableAttribute<Vector2>(1);
+    data.attribute<Vector2[]>(MeshAttribute::Position);
+    data.attribute<Vector2>(meshAttributeCustom(35));
+    data.mutableAttribute<Vector2[]>(MeshAttribute::Position);
+    data.mutableAttribute<Vector2>(meshAttributeCustom(35));
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
+        "Trade::MeshData::attribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
+        "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
+        "Trade::MeshData::attribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n");
 }
 
 void MeshDataTest::releaseIndexData() {
