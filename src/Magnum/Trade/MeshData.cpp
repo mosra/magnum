@@ -140,7 +140,7 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
         if(attribute._isOffsetOnly) {
             const std::size_t size = attribute._data.offset + (_vertexCount - 1)*attribute._stride + typeSize;
             CORRADE_ASSERT(!_vertexCount || size <= _vertexData.size(),
-                "Trade::MeshData: offset attribute" << i << "spans" << size << "bytes but passed vertexData array has only" << _vertexData.size(), );
+                "Trade::MeshData: offset-only attribute" << i << "spans" << size << "bytes but passed vertexData array has only" << _vertexData.size(), );
         } else {
             const void* const begin = static_cast<const char*>(attribute._data.pointer);
             const void* const end = static_cast<const char*>(attribute._data.pointer) + (_vertexCount - 1)*attribute._stride + typeSize;

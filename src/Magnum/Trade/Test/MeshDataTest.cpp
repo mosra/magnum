@@ -1665,7 +1665,7 @@ void MeshDataTest::constructAttributeNotContained() {
         "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc9] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: attribute 1 [0xdead:0xdec5] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc1] is not contained in passed vertexData array [0x0:0x0]\n"
-        "Trade::MeshData: offset attribute 0 spans 25 bytes but passed vertexData array has only 24\n");
+        "Trade::MeshData: offset-only attribute 0 spans 25 bytes but passed vertexData array has only 24\n");
 }
 
 void MeshDataTest::constructInconsitentVertexCount() {
