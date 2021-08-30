@@ -2121,7 +2121,7 @@ template<class T> Containers::ArrayView<const T> MeshData::indices() const {
     if(!data.stride()[1]) return {};
     #endif
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
-        "Trade::MeshData::indices(): improper type requested for" << _indexType, nullptr);
+        "Trade::MeshData::indices(): indices are" << _indexType << "but requested" << Implementation::meshIndexTypeFor<T>(), nullptr);
     return Containers::arrayCast<1, const T>(data).asContiguous();
 }
 
@@ -2133,7 +2133,7 @@ template<class T> Containers::ArrayView<T> MeshData::mutableIndices() {
     if(!data.stride()[1]) return {};
     #endif
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
-        "Trade::MeshData::mutableIndices(): improper type requested for" << _indexType, nullptr);
+        "Trade::MeshData::mutableIndices(): indices are" << _indexType << "but requested" << Implementation::meshIndexTypeFor<T>(), nullptr);
     return Containers::arrayCast<1, T>(data).asContiguous();
 }
 
@@ -2142,9 +2142,11 @@ template<class T> bool MeshData::checkVertexFormatCompatibility(const MeshAttrib
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
         prefix << "can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), false);
     CORRADE_ASSERT(Implementation::isVertexFormatCompatible<typename std::remove_extent<T>::type>(attribute._format),
-        prefix << "improper type requested for" << attribute._name << "of format" << attribute._format, false);
-    CORRADE_ASSERT(std::is_array<T>::value == !!attribute._arraySize,
-        prefix << "use T[] to access an array attribute", false);
+        prefix << attribute._name << "is" << attribute._format << "but requested a type equivalent to" << Implementation::vertexFormatFor<typename std::remove_extent<T>::type>(), false);
+    if(attribute._arraySize) CORRADE_ASSERT(std::is_array<T>::value,
+        prefix << attribute._name << "is an array attribute, use T[] to access it", false);
+    else CORRADE_ASSERT(!std::is_array<T>::value,
+        prefix << attribute._name << "is not an array attribute, can't use T[] to access it", false);
     return true;
 }
 #endif

@@ -2750,14 +2750,14 @@ void MeshDataTest::arrayAttributeWrongAccess() {
     data.mutableAttribute<Vector2[]>(MeshAttribute::Position);
     data.mutableAttribute<Vector2>(meshAttributeCustom(35));
     CORRADE_COMPARE(out.str(),
-        "Trade::MeshData::attribute(): use T[] to access an array attribute\n"
-        "Trade::MeshData::attribute(): use T[] to access an array attribute\n"
-        "Trade::MeshData::mutableAttribute(): use T[] to access an array attribute\n"
-        "Trade::MeshData::mutableAttribute(): use T[] to access an array attribute\n"
-        "Trade::MeshData::attribute(): use T[] to access an array attribute\n"
-        "Trade::MeshData::attribute(): use T[] to access an array attribute\n"
-        "Trade::MeshData::mutableAttribute(): use T[] to access an array attribute\n"
-        "Trade::MeshData::mutableAttribute(): use T[] to access an array attribute\n");
+        "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
+        "Trade::MeshData::attribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
+        "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
+        "Trade::MeshData::attribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n");
 }
 
 void MeshDataTest::mutableAccessNotAllowed() {
@@ -2841,8 +2841,8 @@ void MeshDataTest::indicesWrongType() {
     data.indices<UnsignedByte>();
     data.mutableIndices<UnsignedByte>();
     CORRADE_COMPARE(out.str(),
-        "Trade::MeshData::indices(): improper type requested for MeshIndexType::UnsignedShort\n"
-        "Trade::MeshData::mutableIndices(): improper type requested for MeshIndexType::UnsignedShort\n");
+        "Trade::MeshData::indices(): indices are MeshIndexType::UnsignedShort but requested MeshIndexType::UnsignedByte\n"
+        "Trade::MeshData::mutableIndices(): indices are MeshIndexType::UnsignedShort but requested MeshIndexType::UnsignedByte\n");
 }
 
 void MeshDataTest::attributeNotFound() {
@@ -2964,10 +2964,10 @@ void MeshDataTest::attributeWrongType() {
     data.mutableAttribute<Vector4>(MeshAttribute::Position);
     data.mutableAttribute<Vector4[]>(MeshAttribute::Position);
     CORRADE_COMPARE(out.str(),
-        "Trade::MeshData::attribute(): improper type requested for Trade::MeshAttribute::Position of format VertexFormat::Vector3\n"
-        "Trade::MeshData::attribute(): improper type requested for Trade::MeshAttribute::Position of format VertexFormat::Vector3\n"
-        "Trade::MeshData::mutableAttribute(): improper type requested for Trade::MeshAttribute::Position of format VertexFormat::Vector3\n"
-        "Trade::MeshData::mutableAttribute(): improper type requested for Trade::MeshAttribute::Position of format VertexFormat::Vector3\n");
+        "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
+        "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n");
 }
 
 void MeshDataTest::releaseIndexData() {
