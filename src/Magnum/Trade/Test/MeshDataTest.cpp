@@ -2782,13 +2782,17 @@ void MeshDataTest::mutableAccessNotAllowed() {
     data.mutableIndices<UnsignedShort>();
     data.mutableAttribute(0);
     data.mutableAttribute<Vector2>(0);
+    data.mutableAttribute<Vector2[]>(0);
     data.mutableAttribute(MeshAttribute::Position);
     data.mutableAttribute<Vector2>(MeshAttribute::Position);
+    data.mutableAttribute<Vector2[]>(MeshAttribute::Position);
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData::mutableIndexData(): index data not mutable\n"
         "Trade::MeshData::mutableVertexData(): vertex data not mutable\n"
         "Trade::MeshData::mutableIndices(): index data not mutable\n"
         "Trade::MeshData::mutableIndices(): index data not mutable\n"
+        "Trade::MeshData::mutableAttribute(): vertex data not mutable\n"
+        "Trade::MeshData::mutableAttribute(): vertex data not mutable\n"
         "Trade::MeshData::mutableAttribute(): vertex data not mutable\n"
         "Trade::MeshData::mutableAttribute(): vertex data not mutable\n"
         "Trade::MeshData::mutableAttribute(): vertex data not mutable\n"
@@ -2835,7 +2839,10 @@ void MeshDataTest::indicesWrongType() {
     std::ostringstream out;
     Error redirectError{&out};
     data.indices<UnsignedByte>();
-    CORRADE_COMPARE(out.str(), "Trade::MeshData::indices(): improper type requested for MeshIndexType::UnsignedShort\n");
+    data.mutableIndices<UnsignedByte>();
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::indices(): improper type requested for MeshIndexType::UnsignedShort\n"
+        "Trade::MeshData::mutableIndices(): improper type requested for MeshIndexType::UnsignedShort\n");
 }
 
 void MeshDataTest::attributeNotFound() {
@@ -2849,6 +2856,7 @@ void MeshDataTest::attributeNotFound() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    data.attributeData(2);
     data.attributeName(2);
     data.attributeFormat(2);
     data.attributeOffset(2);
@@ -2856,6 +2864,11 @@ void MeshDataTest::attributeNotFound() {
     data.attributeArraySize(2);
     data.attribute(2);
     data.attribute<Vector2>(2);
+    data.attribute<Vector2[]>(2);
+    data.mutableAttribute(2);
+    data.mutableAttribute<Vector2>(2);
+    data.mutableAttribute<Vector2[]>(2);
+
     data.attributeId(MeshAttribute::Position);
     data.attributeId(MeshAttribute::Color, 2);
     data.attributeFormat(MeshAttribute::Position);
@@ -2870,6 +2883,15 @@ void MeshDataTest::attributeNotFound() {
     data.attribute(MeshAttribute::Color, 2);
     data.attribute<Vector2>(MeshAttribute::Position);
     data.attribute<Vector2>(MeshAttribute::Color, 2);
+    data.attribute<Vector2[]>(MeshAttribute::Position);
+    data.attribute<Vector2[]>(MeshAttribute::Color, 2);
+    data.mutableAttribute(MeshAttribute::Position);
+    data.mutableAttribute(MeshAttribute::Color, 2);
+    data.mutableAttribute<Vector2>(MeshAttribute::Position);
+    data.mutableAttribute<Vector2>(MeshAttribute::Color, 2);
+    data.mutableAttribute<Vector2[]>(MeshAttribute::Position);
+    data.mutableAttribute<Vector2[]>(MeshAttribute::Color, 2);
+
     data.positions2DAsArray();
     data.positions3DAsArray();
     data.tangentsAsArray();
@@ -2880,6 +2902,7 @@ void MeshDataTest::attributeNotFound() {
     data.colorsAsArray(2);
     data.objectIdsAsArray();
     CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::attributeData(): index 2 out of range for 2 attributes\n"
         "Trade::MeshData::attributeName(): index 2 out of range for 2 attributes\n"
         "Trade::MeshData::attributeFormat(): index 2 out of range for 2 attributes\n"
         "Trade::MeshData::attributeOffset(): index 2 out of range for 2 attributes\n"
@@ -2887,6 +2910,11 @@ void MeshDataTest::attributeNotFound() {
         "Trade::MeshData::attributeArraySize(): index 2 out of range for 2 attributes\n"
         "Trade::MeshData::attribute(): index 2 out of range for 2 attributes\n"
         "Trade::MeshData::attribute(): index 2 out of range for 2 attributes\n"
+        "Trade::MeshData::attribute(): index 2 out of range for 2 attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 2 out of range for 2 attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 2 out of range for 2 attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 2 out of range for 2 attributes\n"
+
         "Trade::MeshData::attributeId(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::attributeId(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
         "Trade::MeshData::attributeFormat(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
@@ -2901,6 +2929,15 @@ void MeshDataTest::attributeNotFound() {
         "Trade::MeshData::attribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
         "Trade::MeshData::attribute(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::attribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::attribute(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
+        "Trade::MeshData::attribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+
         "Trade::MeshData::positions2DInto(): index 0 out of range for 0 position attributes\n"
         "Trade::MeshData::positions3DInto(): index 0 out of range for 0 position attributes\n"
         "Trade::MeshData::tangentsInto(): index 0 out of range for 0 tangent attributes\n"
@@ -2923,7 +2960,14 @@ void MeshDataTest::attributeWrongType() {
     std::ostringstream out;
     Error redirectError{&out};
     data.attribute<Vector4>(MeshAttribute::Position);
-    CORRADE_COMPARE(out.str(), "Trade::MeshData::attribute(): improper type requested for Trade::MeshAttribute::Position of format VertexFormat::Vector3\n");
+    data.attribute<Vector4[]>(MeshAttribute::Position);
+    data.mutableAttribute<Vector4>(MeshAttribute::Position);
+    data.mutableAttribute<Vector4[]>(MeshAttribute::Position);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::attribute(): improper type requested for Trade::MeshAttribute::Position of format VertexFormat::Vector3\n"
+        "Trade::MeshData::attribute(): improper type requested for Trade::MeshAttribute::Position of format VertexFormat::Vector3\n"
+        "Trade::MeshData::mutableAttribute(): improper type requested for Trade::MeshAttribute::Position of format VertexFormat::Vector3\n"
+        "Trade::MeshData::mutableAttribute(): improper type requested for Trade::MeshAttribute::Position of format VertexFormat::Vector3\n");
 }
 
 void MeshDataTest::releaseIndexData() {
