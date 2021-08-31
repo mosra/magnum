@@ -134,6 +134,18 @@ if(!image) Fatal{} << "Importing the image failed";
 /* [AbstractImporter-usage] */
 }
 
+{
+Containers::Pointer<Trade::AbstractImporter> importer;
+/* [AbstractImporter-usage-data] */
+Utility::Resource rs{"data"};
+Containers::ArrayView<const char> data = rs.getRaw("image.png");
+if(!importer->openData(data))
+    Fatal{} << "Can't open image data with AnyImageImporter";
+
+// import & use the image like above ...
+/* [AbstractImporter-usage-data] */
+}
+
 #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
 {
 Containers::Pointer<Trade::AbstractImporter> importer;

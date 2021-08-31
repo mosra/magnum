@@ -233,6 +233,43 @@ importer plugins.
     @ref magnum-sceneconverter "magnum-sceneconverter" tools which you can use
     to perform introspection of image and scene files.
 
+@subsection Trade-AbstractImporter-usage-callbacks Loading data from memory, using file callbacks
+
+Besides loading data directly from the filesystem using @ref openFile() like
+shown above, it's possible to use @ref openData() to import data from memory
+(for example from @relativeref{Corrade,Utility::Resource}). Note that the
+particular importer implementation has to support
+@ref ImporterFeature::OpenData for this method to work:
+
+@snippet MagnumTrade.cpp AbstractImporter-usage-data
+
+Complex scene files often reference other files such as images and in that case
+you may want to intercept those references and load them in a custom way as
+well. For importers that advertise support for this with
+@ref ImporterFeature::FileCallback this is done by specifying a file loading
+callback using @ref setFileCallback(). The callback gets a filename,
+@ref InputFileCallbackPolicy and an user pointer as parameters; returns a
+non-owning view on the loaded data or a
+@ref Corrade::Containers::NullOpt "Containers::NullOpt" to indicate the file
+loading failed. For example, loading a scene from memory-mapped files could
+look like below. Note that the file loading callback affects @ref openFile() as
+well --- you don't have to load the top-level file manually and pass it to
+@ref openData(), any importer supporting the callback feature handles that
+correctly.
+
+@snippet MagnumTrade.cpp AbstractImporter-usage-callbacks
+
+For importers that don't support @ref ImporterFeature::FileCallback directly,
+the base @ref openFile() implementation will use the file callback to pass the
+loaded data through to @ref openData(), in case the importer supports at least
+@ref ImporterFeature::OpenData. If the importer supports neither
+@ref ImporterFeature::FileCallback nor @ref ImporterFeature::OpenData,
+@ref setFileCallback() doesn't allow the callbacks to be set.
+
+The input file callback signature is the same for @ref Trade::AbstractImporter,
+@ref ShaderTools::AbstractConverter and @ref Text::AbstractFont to allow code
+reuse.
+
 @subsection Trade-AbstractImporter-usage-name-mapping Mapping between IDs and string names
 
 Certain file formats have the ability to assign string names to objects,
@@ -272,40 +309,6 @@ name doesn't exist.
     @ref skin2D(const std::string&) / @ref skin3D(const std::string&)
 -   Texture names using @ref textureName() & @ref textureForName(), imported
     with @ref texture(const std::string&)
-
-@subsection Trade-AbstractImporter-usage-callbacks Loading data from memory, using file callbacks
-
-Besides loading data directly from the filesystem using @ref openFile() like
-shown above, it's possible to use @ref openData() to import data from memory.
-Note that the particular importer implementation has to support
-@ref ImporterFeature::OpenData for this method to work.
-
-Complex scene files often reference other files such as images and in that case
-you may want to intercept those references and load them in a custom way as
-well. For importers that advertise support for this with
-@ref ImporterFeature::FileCallback this is done by specifying a file loading
-callback using @ref setFileCallback(). The callback gets a filename,
-@ref InputFileCallbackPolicy and an user pointer as parameters; returns a
-non-owning view on the loaded data or a
-@ref Corrade::Containers::NullOpt "Containers::NullOpt" to indicate the file
-loading failed. For example, loading a scene from memory-mapped files could
-look like below. Note that the file loading callback affects @ref openFile() as
-well --- you don't have to load the top-level file manually and pass it to
-@ref openData(), any importer supporting the callback feature handles that
-correctly.
-
-@snippet MagnumTrade.cpp AbstractImporter-usage-callbacks
-
-For importers that don't support @ref ImporterFeature::FileCallback directly,
-the base @ref openFile() implementation will use the file callback to pass the
-loaded data through to @ref openData(), in case the importer supports at least
-@ref ImporterFeature::OpenData. If the importer supports neither
-@ref ImporterFeature::FileCallback nor @ref ImporterFeature::OpenData,
-@ref setFileCallback() doesn't allow the callbacks to be set.
-
-The input file callback signature is the same for @ref Trade::AbstractImporter,
-@ref ShaderTools::AbstractConverter and @ref Text::AbstractFont to allow code
-reuse.
 
 @subsection Trade-AbstractImporter-usage-state Internal importer state
 
