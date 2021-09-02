@@ -24,8 +24,11 @@
 */
 
 #include <unordered_map>
+#include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Algorithms.h>
+#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/Resource.h>
 
@@ -51,6 +54,11 @@
 #include "Magnum/Trade/PbrSpecularGlossinessMaterialData.h"
 #include "Magnum/Trade/PbrMetallicRoughnessMaterialData.h"
 #include "Magnum/Trade/PhongMaterialData.h"
+#include "Magnum/Trade/SceneData.h"
+#include "Magnum/SceneGraph/Drawable.h"
+#include "Magnum/SceneGraph/Scene.h"
+#include "Magnum/SceneGraph/Object.h"
+#include "Magnum/SceneGraph/MatrixTransformation3D.h"
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
@@ -73,6 +81,7 @@
 #endif
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
+#define DOXYGEN_IGNORE(...) __VA_ARGS__
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -871,5 +880,225 @@ static_cast<void>(transformation);
 CORRADE_IGNORE_DEPRECATED_POP
 }
 #endif
+
+{
+/* [SceneFieldData-usage] */
+Containers::StridedArrayView1D<UnsignedInt> transformationMapping = DOXYGEN_ELLIPSIS({});
+Containers::StridedArrayView1D<Matrix4> transformations = DOXYGEN_ELLIPSIS({});
+
+Trade::SceneFieldData field{Trade::SceneField::Transformation,
+    transformationMapping, transformations};
+/* [SceneFieldData-usage] */
+}
+
+{
+/* [SceneFieldData-usage-offset-only] */
+struct Node {
+    UnsignedInt object;
+    Int parent;
+    Matrix4 transform;
+};
+
+/* Layout defined statically, 120 objects in total */
+constexpr Trade::SceneFieldData parents{Trade::SceneField::Parent, 120,
+    Trade::SceneMappingType::UnsignedInt, offsetof(Node, object), sizeof(Node),
+    Trade::SceneFieldType::Int, offsetof(Node, parent), sizeof(Node)};
+constexpr Trade::SceneFieldData transforms{Trade::SceneField::Transformation, 120,
+    Trade::SceneMappingType::UnsignedInt, offsetof(Node, object), sizeof(Node),
+    Trade::SceneFieldType::Matrix4x4, offsetof(Node, transform), sizeof(Node)};
+
+/* Actual data populated later */
+Containers::Array<char> data{120*sizeof(Node)};
+DOXYGEN_ELLIPSIS()
+Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 120, std::move(data),
+    {parents, transforms}};
+/* [SceneFieldData-usage-offset-only] */
+}
+
+{
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
+/* [SceneData-usage1] */
+Trade::SceneData data = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, nullptr});
+if(!data.is3D() ||
+   !data.hasField(Trade::SceneField::Parent) ||
+   !data.hasField(Trade::SceneField::Mesh))
+    Fatal{} << "Oh noes!";
+
+Scene3D scene;
+Containers::Array<Object3D*> objects{std::size_t(data.mappingBound())};
+/* [SceneData-usage1] */
+
+/* [SceneData-usage2] */
+auto parents = data.parentsAsArray();
+for(Containers::Pair<UnsignedInt, Int>& parent: parents)
+    objects[parent.first()] = new Object3D{};
+/* [SceneData-usage2] */
+
+/* [SceneData-usage3] */
+for(Containers::Pair<UnsignedInt, Int>& parent: parents)
+    objects[parent.first()]->setParent(
+        parent.second() == -1 ? &scene : objects[parent.second()]
+    );
+/* [SceneData-usage3] */
+
+/* [SceneData-usage4] */
+for(Containers::Pair<UnsignedInt, Matrix4>& transformation:
+    data.transformations3DAsArray())
+{
+    if(Object3D* const object = objects[transformation.first()])
+        object->setTransformation(transformation.second());
+}
+/* [SceneData-usage4] */
+
+/* [SceneData-usage5] */
+class Drawable: public SceneGraph::Drawable3D {
+    public:
+        explicit Drawable(Object3D& object, UnsignedInt mesh, Int material, DOXYGEN_ELLIPSIS(int))DOXYGEN_IGNORE(: SceneGraph::Drawable3D{object} {
+            static_cast<void>(mesh);
+            static_cast<void>(material);
+        } int foo);
+
+    DOXYGEN_ELLIPSIS(void draw(const Matrix4&, SceneGraph::Camera3D&) override {})
+};
+
+for(const Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>&
+    meshMaterial: data.meshesMaterialsAsArray())
+{
+    if(Object3D* const object = objects[meshMaterial.first()])
+        new Drawable{*object, meshMaterial.second().first(),
+                              meshMaterial.second().second(), DOXYGEN_ELLIPSIS(0)};
+}
+/* [SceneData-usage5] */
+
+/* [SceneData-usage-advanced] */
+Containers::StridedArrayView1D<const UnsignedInt> transformationMapping =
+    data.mapping<UnsignedInt>(Trade::SceneField::Transformation);
+Containers::StridedArrayView1D<const Matrix4> transformations =
+    data.field<Matrix4>(Trade::SceneField::Transformation);
+for(std::size_t i = 0; i != transformationMapping.size(); ++i) {
+    if(Object3D* const object = objects[transformationMapping[i]])
+        object->setTransformation(transformations[i]);
+}
+/* [SceneData-usage-advanced] */
+}
+
+{
+Trade::SceneData data{{}, 0, nullptr, nullptr};
+/* [SceneData-per-object] */
+Containers::Pointer<Trade::AbstractImporter> importer = DOXYGEN_ELLIPSIS({});
+
+for(const Containers::Pair<UnsignedInt, Int>& meshMaterial:
+   data.meshesMaterialsFor(importer->objectForName("Chair")))
+{
+    Debug{} << "Mesh:" << importer->meshName(meshMaterial.first());
+    if(meshMaterial.second() != -1)
+        Debug{} << "With a material:" << importer->materialName(meshMaterial.second());
+}
+/* [SceneData-per-object] */
+}
+
+{
+Trade::SceneData data{{}, 0, nullptr, nullptr};
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
+Containers::Array<Object3D*> objects;
+/* [SceneData-usage-mutable] */
+Containers::StridedArrayView1D<const UnsignedInt> transformationMapping =
+    data.mapping<UnsignedInt>(Trade::SceneField::Transformation);
+Containers::StridedArrayView1D<Matrix4> mutableTransformations =
+    data.mutableField<Matrix4>(Trade::SceneField::Transformation);
+for(std::size_t i = 0; i != transformationMapping.size(); ++i) {
+    if(Object3D* const object = objects[transformationMapping[i]])
+        mutableTransformations[i] = object->transformation();
+}
+/* [SceneData-usage-mutable] */
+}
+
+{
+const std::size_t nodeCount{}, meshAssignmentCount{};
+/* [SceneData-populating] */
+struct Common {
+    UnsignedShort object;
+    Short parent;
+    Matrix4 transformation;
+};
+
+Containers::StridedArrayView1D<Common> common;
+Containers::ArrayView<UnsignedShort> meshMaterialMapping;
+Containers::ArrayView<UnsignedShort> meshes;
+Containers::ArrayView<UnsignedShort> meshMaterials;
+Containers::Array<char> data = Containers::ArrayTuple{
+    {nodeCount, common},
+    {meshAssignmentCount, meshMaterialMapping},
+    {meshAssignmentCount, meshes},
+    {meshAssignmentCount, meshMaterials}
+};
+
+// populate the views ...
+
+Trade::SceneData scene{
+    Trade::SceneMappingType::UnsignedShort, nodeCount,
+    std::move(data), {
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            common.slice(&Common::object), common.slice(&Common::parent)},
+        Trade::SceneFieldData{Trade::SceneField::Transformation,
+            common.slice(&Common::object), common.slice(&Common::transformation)},
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            meshMaterialMapping, meshes},
+        Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
+            meshMaterialMapping, meshMaterials}
+    }};
+/* [SceneData-populating] */
+}
+
+{
+std::size_t nodeCount{};
+/* [SceneData-populating-custom1] */
+DOXYGEN_ELLIPSIS()
+Containers::ArrayView<UnsignedShort> cellMapping;
+Containers::ArrayView<Matrix4> cellFrustums;
+Containers::StridedArrayView2D<Int> cellLights;
+Containers::Array<char> data = Containers::ArrayTuple{
+    DOXYGEN_ELLIPSIS()
+    {32*24, cellMapping},
+    {32*24, cellFrustums},
+    {{32*24, 8}, cellLights},
+};
+
+for(std::size_t i = 0; i != cellMapping.size(); ++i) {
+    cellMapping[i] = nodeCount + i;
+    cellFrustums[i] = DOXYGEN_ELLIPSIS({});
+    for(std::size_t j = 0; j != cellLights[i].size(); ++j)
+        cellLights[i][j] = DOXYGEN_ELLIPSIS({});
+}
+/* [SceneData-populating-custom1] */
+
+/* [SceneData-populating-custom2] */
+constexpr Trade::SceneField CellFrustum = Trade::sceneFieldCustom(0x00);
+constexpr Trade::SceneField CellLights = Trade::sceneFieldCustom(0x01);
+
+Trade::SceneData scene{
+    Trade::SceneMappingType::UnsignedShort, nodeCount + cellMapping.size(),
+    std::move(data), {
+        DOXYGEN_ELLIPSIS()
+        Trade::SceneFieldData{CellFrustum, cellMapping, cellFrustums},
+        Trade::SceneFieldData{CellLights, cellMapping, cellLights},
+    }};
+/* [SceneData-populating-custom2] */
+}
+
+{
+constexpr Trade::SceneField CellFrustum = Trade::sceneFieldCustom(0);
+constexpr Trade::SceneField CellLights = Trade::sceneFieldCustom(1);
+Trade::SceneData scene{{}, 0, nullptr, nullptr};
+/* [SceneData-populating-custom-retrieve] */
+Containers::StridedArrayView1D<const Matrix4> cellFrustums =
+    scene.field<Matrix4>(CellFrustum);
+Containers::StridedArrayView2D<const Int> cellLights =
+    scene.field<Int[]>(CellLights);
+/* [SceneData-populating-custom-retrieve] */
+static_cast<void>(cellFrustums);
+static_cast<void>(cellLights);
+}
 
 }

@@ -1,0 +1,148 @@
+<svg class="m-image" style="width: 530px; height: 240px;" viewBox="0 0 140.23 63.5">
+ <g transform="translate(-1.3229 -1.3229)" stroke-width=".5">
+  <g transform="matrix(2 0 0 2 -67.469 -96.573)">
+   <rect x="37.042" y="63.5" width="15.875" height="2.6458" fill="#cd3431" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="40.784985" y="65.563751" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" style="line-height:1.25" xml:space="preserve"><tspan x="40.784985" y="65.563751" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">materials</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -67.469 -78.052)">
+   <rect x="37.042" y="66.146" width="15.875" height="2.6458" fill="#2f83cc" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="44.968582" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="44.968582" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">skins</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -67.469 -109.8)">
+   <rect x="37.042" y="66.146" width="15.875" height="2.6458" fill="#3bd267" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="44.968582" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="44.968582" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">meshes</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -67.469 -107.16)">
+   <rect x="37.042" y="60.854" width="15.875" height="2.6458" fill="#a5c9ea" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="45.033138" y="62.930618" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="45.033138" y="62.930618" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">transforms</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -67.469 -125.68)">
+   <rect x="37.042" y="66.146" width="15.875" height="2.6458" fill="#2f83cc" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="44.968582" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="44.968582" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">parents</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -67.469 -93.927)">
+   <rect x="37.042" y="66.146" width="15.875" height="2.6458" fill="#c7cf2f" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="44.926247" y="68.158577" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="44.926247" y="68.158577" stroke-width=".13229"><tspan x="44.926247" y="68.158577" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">lights</tspan></tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -67.469 -85.99)">
+   <path d="m37.042 66.146h15.875v2.6458h-15.875z" fill="#747474" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="44.968582" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="44.968582" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">cameras</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -34.396 -125.68)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#2f83cc" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">7</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -23.813 -125.68)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#2f83cc" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">1</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -13.229 -125.68)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#2f83cc" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">0</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -2.6458 -125.68)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#2f83cc" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">5</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 7.9375 -125.68)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#2f83cc" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">3</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 18.521 -125.68)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#2f83cc" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">6</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 29.104 -125.68)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#2f83cc" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">2</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 39.687 -125.68)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#2f83cc" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">4</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -30.427 -107.16)">
+   <rect x="37.042" y="60.854" width="9.2604" height="2.6458" fill="#a5c9ea" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.68034" y="62.930618" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.68034" y="62.930618" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">1</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -11.906 -107.16)">
+   <rect x="37.042" y="60.854" width="9.2604" height="2.6458" fill="#a5c9ea" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.68034" y="62.930618" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.68034" y="62.930618" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">0</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 6.6146 -107.16)">
+   <rect x="37.042" y="60.854" width="9.2604" height="2.6458" fill="#a5c9ea" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.68034" y="62.930618" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.68034" y="62.930618" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">5</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 25.135 -107.16)">
+   <rect x="37.042" y="60.854" width="9.2604" height="2.6458" fill="#a5c9ea" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.68034" y="62.930618" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.68034" y="62.930618" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">6</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 43.656 -107.16)">
+   <rect x="37.042" y="60.854" width="9.2604" height="2.6458" fill="#a5c9ea" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="41.68034" y="62.930618" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.68034" y="62.930618" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">2</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -30.427 -85.99)">
+   <path d="m37.042 66.146h2.6458v2.6458h-2.6458z" fill="#747474" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="38.349766" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="38.349766" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">1</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -30.427 -93.927)">
+   <path d="m37.042 66.146h2.6458v2.6458h-2.6458z" fill="#c7cf2f" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <text x="38.349766" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="38.349766" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">1</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -30.427 -78.052)">
+   <path d="m37.042 66.146h2.6458v2.6458h-2.6458z" fill="#2f83cc" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <text x="38.349766" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="38.349766" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">5</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -25.135 -93.927)">
+   <path d="m37.042 66.146h2.6458v2.6458h-2.6458z" fill="#c7cf2f" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <text x="38.349766" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="38.349766" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">0</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -19.844 -93.927)">
+   <path d="m37.042 66.146h2.6458v2.6458h-2.6458z" fill="#c7cf2f" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <text x="38.349766" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="38.349766" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">4</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -30.427 -96.573)">
+   <rect x="37.042" y="63.5" width="3.9687" height="2.6458" fill="#cd3431" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="42.993736" y="65.563751" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="38.973122" y="65.563751" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">5</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -22.49 -96.573)">
+   <rect x="37.042" y="63.5" width="3.9687" height="2.6458" fill="#cd3431" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="42.993736" y="65.563751" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="38.973122" y="65.563751" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">6</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -14.552 -96.573)">
+   <rect x="37.042" y="63.5" width="3.9687" height="2.6458" fill="#cd3431" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="42.993736" y="65.563751" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="38.973122" y="65.563751" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">3</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -6.6146 -96.573)">
+   <rect x="37.042" y="63.5" width="3.9687" height="2.6458" fill="#cd3431" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="42.993736" y="65.563751" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="38.973122" y="65.563751" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">2</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -34.396 -109.8)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#3bd267" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">5</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -23.813 -109.8)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#3bd267" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">6</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -13.229 -109.8)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#3bd267" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">3</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -2.6458 -109.8)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#3bd267" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">2</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 -25.135 -78.052)">
+   <path d="m37.042 66.146h2.6458v2.6458h-2.6458z" fill="#2f83cc" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <text x="38.349766" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="38.349766" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">2</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 7.9375 -109.8)">
+   <rect x="39.026" y="66.146" width="5.2917" height="2.6458" fill="#3bd267" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <text x="41.618961" y="68.209587" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="41.618961" y="68.209587" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">6</tspan></text>
+  </g>
+  <g transform="matrix(2 0 0 2 1.3229 -96.573)">
+   <rect x="37.042" y="63.5" width="3.9687" height="2.6458" fill="#cd3431" fill-rule="evenodd" stop-color="#000000" stroke="#2f363f" stroke-width=".066146" style="font-variation-settings:normal"/>
+   <text x="42.993736" y="65.563751" fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".13229" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="38.973122" y="65.563751" font-family="'Source Sans Pro'" font-size="2.1167px" stroke-width=".13229" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">6</tspan></text>
+  </g>
+ </g>
+</svg>

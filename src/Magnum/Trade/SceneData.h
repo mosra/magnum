@@ -533,6 +533,28 @@ MAGNUM_TRADE_EXPORT UnsignedInt sceneFieldTypeAlignment(SceneFieldType type);
 
 Convenience type for populating @ref SceneData, see its documentation for an
 introduction.
+
+@section Trade-SceneFieldData-usage Usage
+
+The most straightforward usage is constructing an instance from a
+@ref SceneField and a strided view for the field data and object mapping. The
+@ref SceneMappingType and @ref SceneFieldType get inferred from the view types:
+
+@snippet MagnumTrade.cpp SceneFieldData-usage
+
+Alternatively, you can pass typeless @cpp const void @ce or 2D views and supply
+@ref SceneMappingType and @ref SceneFieldType explicitly.
+
+@subsection Trade-SceneFieldData-usage-offset-only Offset-only field data
+
+If the actual field / object data location is not known yet, the instance can
+be created as "offset-only", meaning the actual view gets created only later
+when passed to a @ref SceneData instance with a concrete data array. This is
+useful mainly to avoid pointer patching during data serialization, less so when
+the data layout is static (and thus can be defined at compile time), but the
+actual data is allocated / populated at runtime:
+
+@snippet MagnumTrade.cpp SceneFieldData-usage-offset-only
 */
 class MAGNUM_TRADE_EXPORT SceneFieldData {
     public:
@@ -779,8 +801,255 @@ Containers::Array<SceneFieldData> MAGNUM_TRADE_EXPORT sceneFieldDataNonOwningArr
 /**
 @brief Scene data
 
-Contains scene hierarchy, object transformations and association of mesh,
-material, camera, light and other resources with particular objects.
+Contains scene node hierarchy, transformations, resource assignment as well as
+any other data associated with the scene. Populated instances of this class are
+returned from @ref AbstractImporter::scene().
+
+@section Trade-SceneData-representation Data representation and terminology
+
+@m_div{m-container-inflate m-col-l-9 m-left-l}
+@htmlinclude scenedata-tree.svg
+@m_enddiv
+
+The usual mental image of a scene is a tree hierarchy with varying amount of
+data attached to each node, like shown in the first diagram. The @ref SceneData
+however decouples the hierarchy from the data and stores everything in linear
+arrays, like in the second diagram.
+
+This allows for a more efficient storage, as only the actually needed
+information is stored. For example, three nodes in the tree have an implicit
+transformation, which we can simply omit, or because there might be way less
+materials than meshes, their references can be in a smaller type. It's also
+more flexible --- having multiple meshes per node is just about having multiple
+entries associated with the same node.
+
+@m_div{m-clearfix-l} @m_enddiv
+
+@m_div{m-container-inflate m-col-l-8 m-right-l}
+@htmlinclude scenedata-dod.svg
+@m_enddiv
+
+From a high-level perspective, the scene data storage can thought of as a set
+of *Fields*, with field entries mapped to *Objects*. Scene *Nodes* are a
+special case of *Objects*.
+
+An *Object* is an arbitrary numeric identifier, not containing anything on its
+own. All objects referenced by a particular scene are contained in a range from
+@cpp 0 @ce up to @ref mappingBound() minus one. The range is allowed to be
+sparse.
+
+A *Field* is a list of data --- for example transformations, mesh IDs, or
+parent objects. The @ref SceneField enum lists all predefined fields together
+with possible restrictions and the expected @ref SceneFieldType they're
+expected to be in. Custom fields are supported as well. Field entries are
+mapped to objects with the same 8-, 16-, 32- or 64-bit type for all fields,
+indicated with @ref SceneMappingType. Generally there's a 1:N mapping between
+objects and fields (not all objects need to have a transformation, a single
+object can reference multiple meshes...), but certain field types expect
+various restrictions (such as an object allowed to only have one parent or
+transformation).
+
+Finally, scene *Nodes* are *Objects* that have the @ref SceneField::Parent
+field associated. An *Object* thus doesn't have to represent just a node in the
+hierarchy. For example, a scene can also contain an alternative representation
+in the form of an octree, and thus some objects would be nodes and some octree
+cells.
+
+@subsection Trade-SceneData-representation-multi-scene Object identifiers and multiple scenes
+
+For a standalone scene, a common case is that the object identifiers form a
+contigous range of numbers, and each of the objects has at least one field
+assigned.
+
+The @ref AbstractImporter supports files with multiple scenes. All imported
+scenes share a single object range, from @cpp 0 @ce to
+@ref AbstractImporter::objectCount(). A particular object can be part of any of
+the scenes, causing the @ref SceneData::mappingBound() ranges to be sparse ---
+a particular scene having certain object IDs that have no fields assigned. This
+is something to be aware of when consuming the scene data, that not all objects
+identifiers in the mapping range may actually exist.
+
+It's also possible for a single object identifier to be contained in multiple
+scenes at the same time --- for example, when two scenes are variants of the
+same model, with most data shared but certain textures or colors different.
+Another theoretical use case is that an object could identify a building in a
+3D scene and a corresponding area on a map in a 2D scene. There's no set of
+rules the objects should follow, but such identifier reusal should not be
+abused for completely unrelated objects.
+
+@todoc mention handles and how they would affect the basic use below (aaaa!)
+
+@section Trade-SceneData-usage Basic usage
+
+A simple goal could be to populate a @ref SceneGraph with a node hierarchy
+and attach drawables for meshes where appropriate. First we check if the scene
+is 3D with @ref is3D(), because if it's not, it could mean it's either 2D or
+that it has no transformation field altogether, suggesting a need for
+specialized handling. It's also of no use for this example if there's no node
+hierarchy, or if there are no meshes we could draw.
+
+Then we create the scene instance and an array of pointers that will act as a
+map from object identifiers to live objects. The @ref mappingBound() is an
+upper bound to all object identifiers referenced by the scene, but as mentioned
+above, not all of them may be actual nodes so we don't allocate actual scene
+graph object instances for them yet. Alternatively, for very sparse ranges, a hashmap could be also used here.
+
+@snippet MagnumTrade.cpp SceneData-usage1
+
+<b></b>
+
+@m_class{m-noindent}
+
+Next we go through objects that have an associated parent using
+@ref parentsAsArray(). Those are the actual nodes we want, so we allocate a
+scene graph object for each ...
+
+@snippet MagnumTrade.cpp SceneData-usage2
+
+@m_class{m-noindent}
+
+<b></b>
+
+... and then we assign a proper parent, or add it directly to the scene if the
+parent is @cpp -1 @ce. We do this in a separate pass to ensure the parent
+object is already allocated by the time we pass it to
+@ref SceneGraph::Object::setParent() --- generally there's no guarantee that a
+parent appears in the field before its children.
+
+@snippet MagnumTrade.cpp SceneData-usage3
+
+With the hierarchy done, we assign transformations. The transformation field
+can be present for only a subset of the nodes, with the rest implicitly having
+an indentity transformation, but it can also be present for objects that aren't
+nodes, so we only set it for objects present in our hierarchy. The
+@ref transformations3DAsArray() function also conveniently converts separate
+transformation / rotation / scaling fields into a matrix for us, if the scene
+contains only those.
+
+@snippet MagnumTrade.cpp SceneData-usage4
+
+Finally, assuming there's a `Drawable` class derived from
+@ref SceneGraph::Drawable that accepts a mesh and material ID (retrieving them
+subsequently from @ref AbstractImporter::mesh() /
+@relativeref{AbstractImporter,material()}, for example), the process of
+assigning actual meshes to corresponding scene nodes is just another
+@cpp for @ce loop over @ref meshesMaterialsAsArray():
+
+@snippet MagnumTrade.cpp SceneData-usage5
+
+<b></b>
+
+@m_class{m-note m-success}
+
+@par
+    The full process of importing a scene including meshes, materials and
+    textures is shown in the @ref examples-viewer example.
+
+@section Trade-SceneData-usage-advanced Advanced usage
+
+The @ref parentsAsArray(), ... functions shown above always return a
+newly-allocated @relativeref{Corrade,Containers::Array} instance in a
+well-defined canonical type. While that's convenient and fine at a smaller
+scale, it may prove problematic with huge scenes. Or maybe the internal
+representation is already optimized for best processing efficiency and the
+convenience functions would ruin that. The @ref SceneData class thus provides
+access directly to the stored object mapping and field data using the
+@ref mapping() and @ref field() accessors.
+
+However, since each @ref SceneField can be in a variety of types, you're
+expected to either check that the type is indeed what you expect using
+@ref fieldType(SceneField) const, or at least check with documentation of the
+corresponding importer. For example, because glTF files represent the scene
+in a textual form, @ref CgltfImporter will always parse the data into canonical
+32-bit types. With that assumption, the above snippet that used
+@ref transformations3DAsArray() can be rewritten to a zero-copy form like this:
+
+@snippet MagnumTrade.cpp SceneData-usage-advanced
+
+@section Trade-SceneData-usage-per-object Per-object access
+
+While the designated way to access scene data is by iterating through the field
+and object arrays, it's also possible to directly look at fields for a
+particular object without having to do a lookup on your own and with simplified
+error handling. The @ref parentFor(), @ref childrenFor(),
+@ref transformation3DFor(), @ref meshesMaterialsFor() and other functions
+return either an @relativeref{Corrade,Containers::Optional} or an
+@relativeref{Corrade,Containers::Array} depending on whether there's expected
+just one occurence of the field or more, returning an empty optional or array
+if the field is not present in the scene or if the object was not found in the
+field array.
+
+For example, together with an @ref AbstractImporter instance the scene comes
+from, the following snippet lists meshes and material names that are associated
+with a "Chair" object, assuming such object exists:
+
+@snippet MagnumTrade.cpp SceneData-per-object
+
+Since these APIs perform a linear lookup through the field and object arrays,
+these are suited mainly for introspection and debugging purposes. Retrieving
+field data for many objects is better achieved by accessing the field data
+directly.
+
+@section Trade-SceneData-usage-mutable Mutable data access
+
+The interfaces implicitly provide @cpp const @ce views on the contained object
+and field data through the @ref data(), @ref mapping() and @ref field()
+accessors. This is done because in general case the data can also refer to a
+memory-mapped file or constant memory. In cases when it's desirable to modify
+the data in-place, there's the @ref mutableData(), @ref mutableMapping() and
+@ref mutableField() set of functions. To use these, you need to check that
+the data are mutable using @ref dataFlags() first. The following snippet
+updates all transformations with the live state of a scene imported earlier,
+for example in order to bake in a certain animation state:
+
+@snippet MagnumTrade.cpp SceneData-usage-mutable
+
+@section Trade-SceneData-populating Populating an instance
+
+The actual data in a @ref SceneData instance are represented as a single block
+of contiguous memory, which all object and field views point to. This is
+easiest to achieve with an @relativeref{Corrade,Containers::ArrayTuple}. In the
+example below, all objects have a parent and a transformation field, which are
+stored together in a @cpp struct @ce, while a subset of them has a mesh and a
+material assigned, which are stored in separate arrays. And because the scene
+is small, we save space by using just 16-bit indices for everything.
+
+@snippet MagnumTrade.cpp SceneData-populating
+
+Note that the above layout is just an example, you're free to choose any
+representation that matches your use case best, with fields interleaved
+together or not. See also the @ref SceneFieldData class documentation for
+additional ways how to specify and annotate the data.
+
+@subsection Trade-SceneData-populating-custom Custom scene fields and non-node objects
+
+Let's say that, in addition to the node hierarchy from above, our scene
+contains also a precomputed [camera-space light culling grid](https://wickedengine.net/2018/01/10/optimizing-tile-based-light-culling/),
+where each cell of the grid contains a list of lights that affect given area of
+the screen. And we want to add it into the @ref SceneData for verification with
+external tools.
+
+For simplicity let's assume we have a 32x24 grid and the shader we have can
+work with up to 8 lights. So there will be a fixed-size array for each of those
+cells, and we save calculated frustums for inspection as well. For the new data
+we allocate object IDs from a range after `nodeCount`, and copy in the actual
+data.
+
+@snippet MagnumTrade.cpp SceneData-populating-custom1
+
+Then, similarly as with @ref MeshData, the scene can have custom fields as
+well, created with @ref sceneFieldCustom(). We create one for the cell light
+reference array and one for the cell frustum and then use them to annotate
+the views allocated above. Note that we also increased the total object count
+to include the light culling grid cells as well.
+
+@snippet MagnumTrade.cpp SceneData-populating-custom2
+
+Later, the fields can be retrieved back using the same custom identifiers.
+The light references are actually a 2D array (8 lights for each cell), so a
+@cpp [] @ce needs to be used:
+
+@snippet MagnumTrade.cpp SceneData-populating-custom-retrieve
 
 @see @ref AbstractImporter::scene()
 */

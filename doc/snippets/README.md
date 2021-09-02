@@ -14,12 +14,13 @@ smaller file sizes:
 The output printed by the application can be used to update the example output
 in `doc/getting-started.dox`.
 
-### triangulate.svg
+### triangulate.svg, scenedata-tree.svg, scenedata-dod.svg
 
 Created by Inkscape from `doc/artwork/triangulate.svg` by saving as Optimized
 SVG and:
 
--   cleaning up the `<svg>` header
+-   cleaning up the `<svg>` header (removing `version`, `xmlns`)
 -   converting to a `style=""`, *keeping* `viewBox`
 -   adding `class="m-image"`
--   removing metadata and the background layer
+-   removing metadata, the background layer and all layers that have
+    `display: none`
