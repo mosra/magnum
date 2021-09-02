@@ -1484,7 +1484,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * sized to contain exactly all data.
          * @see @ref indexCount()
          */
-        void indicesInto(Containers::StridedArrayView1D<UnsignedInt> destination) const;
+        void indicesInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
 
         /**
          * @brief Positions as 2D float vectors
@@ -1509,7 +1509,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @p destination is sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void positions2DInto(Containers::StridedArrayView1D<Vector2> destination, UnsignedInt id = 0) const;
+        void positions2DInto(const Containers::StridedArrayView1D<Vector2>& destination, UnsignedInt id = 0) const;
 
         /**
          * @brief Positions as 3D float vectors
@@ -1534,7 +1534,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @p destination is sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void positions3DInto(Containers::StridedArrayView1D<Vector3> destination, UnsignedInt id = 0) const;
+        void positions3DInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0) const;
 
         /**
          * @brief Tangents as 3D float vectors
@@ -1564,7 +1564,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void tangentsInto(Containers::StridedArrayView1D<Vector3> destination, UnsignedInt id = 0) const;
+        void tangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0) const;
 
         /**
          * @brief Bitangent signs as floats
@@ -1587,7 +1587,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @p destination is sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void bitangentSignsInto(Containers::StridedArrayView1D<Float> destination, UnsignedInt id = 0) const;
+        void bitangentSignsInto(const Containers::StridedArrayView1D<Float>& destination, UnsignedInt id = 0) const;
 
         /**
          * @brief Bitangents as 3D float vectors
@@ -1618,7 +1618,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @p destination is sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void bitangentsInto(Containers::StridedArrayView1D<Vector3> destination, UnsignedInt id = 0) const;
+        void bitangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0) const;
 
         /**
          * @brief Normals as 3D float vectors
@@ -1643,7 +1643,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void normalsInto(Containers::StridedArrayView1D<Vector3> destination, UnsignedInt id = 0) const;
+        void normalsInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0) const;
 
         /**
          * @brief Texture coordinates as 2D float vectors
@@ -1668,7 +1668,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @p destination is sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void textureCoordinates2DInto(Containers::StridedArrayView1D<Vector2> destination, UnsignedInt id = 0) const;
+        void textureCoordinates2DInto(const Containers::StridedArrayView1D<Vector2>& destination, UnsignedInt id = 0) const;
 
         /**
          * @brief Colors as RGBA floats
@@ -1693,7 +1693,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void colorsInto(Containers::StridedArrayView1D<Color4> destination, UnsignedInt id = 0) const;
+        void colorsInto(const Containers::StridedArrayView1D<Color4>& destination, UnsignedInt id = 0) const;
 
         /**
          * @brief Object IDs as 32-bit integers
@@ -1717,7 +1717,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @p destination is sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void objectIdsInto(Containers::StridedArrayView1D<UnsignedInt> destination, UnsignedInt id = 0) const;
+        void objectIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination, UnsignedInt id = 0) const;
 
         /**
          * @brief Release index data storage

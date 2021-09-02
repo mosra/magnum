@@ -417,7 +417,7 @@ Containers::StridedArrayView2D<char> MeshData::mutableAttribute(const MeshAttrib
     return mutableAttribute(attributeId);
 }
 
-void MeshData::indicesInto(const Containers::StridedArrayView1D<UnsignedInt> destination) const {
+void MeshData::indicesInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
     CORRADE_ASSERT(isIndexed(),
         "Trade::MeshData::indicesInto(): the mesh is not indexed", );
     CORRADE_ASSERT(destination.size() == indexCount(), "Trade::MeshData::indicesInto(): expected a view with" << indexCount() << "elements but got" << destination.size(), );
@@ -441,7 +441,7 @@ Containers::Array<UnsignedInt> MeshData::indicesAsArray() const {
     return output;
 }
 
-void MeshData::positions2DInto(const Containers::StridedArrayView1D<Vector2> destination, const UnsignedInt id) const {
+void MeshData::positions2DInto(const Containers::StridedArrayView1D<Vector2>& destination, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(MeshAttribute::Position, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::positions2DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Position) << "position attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::positions2DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
@@ -491,7 +491,7 @@ Containers::Array<Vector2> MeshData::positions2DAsArray(const UnsignedInt id) co
     return out;
 }
 
-void MeshData::positions3DInto(const Containers::StridedArrayView1D<Vector3> destination, const UnsignedInt id) const {
+void MeshData::positions3DInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(MeshAttribute::Position, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::positions3DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Position) << "position attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::positions3DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
@@ -574,7 +574,7 @@ Containers::Array<Vector3> MeshData::positions3DAsArray(const UnsignedInt id) co
 
 namespace {
 
-void tangentsOrNormalsInto(const Containers::StridedArrayView1D<const void> attributeData, const Containers::StridedArrayView1D<Vector3> destination, VertexFormat format) {
+void tangentsOrNormalsInto(const Containers::StridedArrayView1D<const void>& attributeData, const Containers::StridedArrayView1D<Vector3>& destination, VertexFormat format) {
     const auto destination3f = Containers::arrayCast<2, Float>(destination);
 
     if(format == VertexFormat::Vector3)
@@ -590,7 +590,7 @@ void tangentsOrNormalsInto(const Containers::StridedArrayView1D<const void> attr
 
 }
 
-void MeshData::tangentsInto(const Containers::StridedArrayView1D<Vector3> destination, const UnsignedInt id) const {
+void MeshData::tangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(MeshAttribute::Tangent, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::tangentsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Tangent) << "tangent attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::tangentsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
@@ -619,7 +619,7 @@ Containers::Array<Vector3> MeshData::tangentsAsArray(const UnsignedInt id) const
     return out;
 }
 
-void MeshData::bitangentSignsInto(const Containers::StridedArrayView1D<Float> destination, const UnsignedInt id) const {
+void MeshData::bitangentSignsInto(const Containers::StridedArrayView1D<Float>& destination, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(MeshAttribute::Tangent, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::bitangentSignsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Tangent) << "tangent attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::bitangentSignsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
@@ -646,7 +646,7 @@ Containers::Array<Float> MeshData::bitangentSignsAsArray(const UnsignedInt id) c
     return out;
 }
 
-void MeshData::bitangentsInto(const Containers::StridedArrayView1D<Vector3> destination, const UnsignedInt id) const {
+void MeshData::bitangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(MeshAttribute::Bitangent, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::bitangentsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Bitangent) << "bitangent attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::bitangentsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
@@ -662,7 +662,7 @@ Containers::Array<Vector3> MeshData::bitangentsAsArray(const UnsignedInt id) con
     return out;
 }
 
-void MeshData::normalsInto(const Containers::StridedArrayView1D<Vector3> destination, const UnsignedInt id) const {
+void MeshData::normalsInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(MeshAttribute::Normal, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::normalsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Normal) << "normal attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::normalsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
@@ -678,7 +678,7 @@ Containers::Array<Vector3> MeshData::normalsAsArray(const UnsignedInt id) const 
     return out;
 }
 
-void MeshData::textureCoordinates2DInto(const Containers::StridedArrayView1D<Vector2> destination, const UnsignedInt id) const {
+void MeshData::textureCoordinates2DInto(const Containers::StridedArrayView1D<Vector2>& destination, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(MeshAttribute::TextureCoordinates, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::textureCoordinates2DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::TextureCoordinates) << "texture coordinate attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::textureCoordinates2DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
@@ -717,7 +717,7 @@ Containers::Array<Vector2> MeshData::textureCoordinates2DAsArray(const UnsignedI
     return out;
 }
 
-void MeshData::colorsInto(const Containers::StridedArrayView1D<Color4> destination, const UnsignedInt id) const {
+void MeshData::colorsInto(const Containers::StridedArrayView1D<Color4>& destination, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(MeshAttribute::Color, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::colorsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Color) << "color attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::colorsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
@@ -770,7 +770,7 @@ Containers::Array<Color4> MeshData::colorsAsArray(const UnsignedInt id) const {
     return out;
 }
 
-void MeshData::objectIdsInto(const Containers::StridedArrayView1D<UnsignedInt> destination, const UnsignedInt id) const {
+void MeshData::objectIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(MeshAttribute::ObjectId, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::objectIdsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::ObjectId) << "object ID attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::objectIdsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
