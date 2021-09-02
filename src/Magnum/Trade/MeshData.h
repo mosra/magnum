@@ -1788,7 +1788,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         UnsignedInt attributeFor(MeshAttribute name, UnsignedInt id) const;
 
         /* Like attribute(), but returning just a 1D view */
-        Containers::StridedArrayView1D<const void> attributeDataViewInternal(const MeshAttributeData& attribute) const;
+        MAGNUM_TRADE_LOCAL Containers::StridedArrayView1D<const void> attributeDataViewInternal(const MeshAttributeData& attribute) const;
 
         #ifndef CORRADE_NO_ASSERT
         template<class T> bool checkVertexFormatCompatibility(const MeshAttributeData& attribute, const char* prefix) const;
