@@ -632,6 +632,15 @@ See also:
     directly but rather generated on-the-fly from attribute data, which makes
     them less efficient than calling @ref Trade::MaterialData::hasAttribute()
     etc.
+-   @ref Trade::SceneData constructor taking a @ref std::vector of 2D and 3D
+    children is deprecated in favor of the new scene representation. Use
+    @ref Trade::SceneData::SceneData(SceneObjectType, UnsignedLong, Containers::Array<char>&&, Containers::Array<SceneFieldData>&&, const void*)
+    instead.
+-   @cpp Trade::SceneData::children2D() @ce and
+    @cpp Trade::SceneData::children3D() @ce are deprecated in favor of the
+    new scene representation. Use @ref Trade::SceneData::childrenFor() with
+    @cpp -1 @ce passed as the @p object argument to get a list of top-level
+    objects.
 -   @ref Trade::AbstractImporter::material() now returns
     @ref Corrade::Containers::Optional instead of a @ref Corrade::Containers::Pointer,
     as the new @ref Trade::MaterialData class isn't polymorphic anymore. If
@@ -805,6 +814,10 @@ See also:
     @cpp Trade::AbstractMaterialData @ce aliases to, doesn't have a
     @cpp virtual @ce destructor as subclasses with extra data members aren't a
     desired use case anymore.
+-   @ref Trade::SceneData constructor taking a @ref std::vector of 2D and 3D
+    children that got deprecated in favor of
+    @ref Trade::SceneData::SceneData(SceneObjectType, UnsignedLong, Containers::Array<char>&&, Containers::Array<SceneFieldData>&&, const void*)
+    no longer accepts a scene that has both 2D and 3D children.
 -   @ref Trade::AbstractImporter::doDefaultScene() is now @cpp const @ce ---
     since the function is not expected to fail, no kind of complex lazy
     population can be done anyway. This is now consistent with `do*Count()`

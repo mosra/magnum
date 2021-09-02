@@ -36,6 +36,11 @@
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Trade/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/StlForwardVector.h>
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Trade {
 
 /**
@@ -820,6 +825,18 @@ class MAGNUM_TRADE_EXPORT SceneData {
          */
         /* Not noexcept because allocation happens inside */
         explicit SceneData(SceneObjectType objectType, UnsignedLong objectCount, DataFlags dataFlags, Containers::ArrayView<const void> data, std::initializer_list<SceneFieldData> fields, const void* importerState = nullptr);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+         /**
+         * @brief Constructor
+         * @param children2D        Two-dimensional child objects
+         * @param children3D        Three-dimensional child objects
+         * @param importerState     Importer-specific state
+         * @m_deprecated_since_latest Use @ref SceneData(SceneObjectType, UnsignedLong, Containers::Array<char>&&, Containers::Array<SceneFieldData>&&, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use SceneData(SceneObjectType, UnsignedLong, Containers::Array<char>&&, Containers::Array<SceneFieldData>&&, const void*) instead") SceneData(std::vector<UnsignedInt> children2D, std::vector<UnsignedInt> children3D, const void* importerState = nullptr);
+        #endif
 
         /** @brief Copying is not allowed */
         SceneData(const SceneData&) = delete;
@@ -2079,6 +2096,22 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * The @p object is expected to be less than @ref objectCount().
          */
         Containers::Optional<const void*> importerStateFor(UnsignedInt object) const;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Two-dimensional root scene objects
+         * @m_deprecated_since_latest Use @ref childrenFor() with `-1` passed
+         *      as the @p object argument.
+         */
+        CORRADE_DEPRECATED("use childrenFor() instead") std::vector<UnsignedInt> children2D() const;
+
+        /**
+         * @brief Three-dimensional root scene objects
+         * @m_deprecated_since_latest Use @ref childrenFor() with `-1` passed
+         *      as the @p object argument.
+         */
+        CORRADE_DEPRECATED("use childrenFor() instead") std::vector<UnsignedInt> children3D() const;
+        #endif
 
         /**
          * @brief Release field data storage

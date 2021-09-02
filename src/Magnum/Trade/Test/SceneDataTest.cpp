@@ -40,6 +40,11 @@
 #include "Magnum/Math/Range.h"
 #include "Magnum/Trade/SceneData.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+#include <Corrade/Containers/GrowableArray.h>
+#endif
+
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct SceneDataTest: TestSuite::Tester {
@@ -85,8 +90,11 @@ struct SceneDataTest: TestSuite::Tester {
     void construct();
     void constructZeroFields();
     void constructZeroObjects();
-
     void constructNotOwned();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructDeprecated();
+    void constructDeprecatedBoth2DAnd3D();
+    #endif
 
     void constructDuplicateField();
     void constructDuplicateCustomField();
@@ -171,6 +179,10 @@ struct SceneDataTest: TestSuite::Tester {
     void skinsFor();
     void importerStateFor();
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void childrenDeprecated();
+    #endif
+
     void fieldForFieldMissing();
     void fieldForInvalidObject();
 
@@ -197,6 +209,18 @@ const struct {
     {"suffix to a larger array", 2, 10, 1},
     {"offset at the end", 3, 10, 0}
 };
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+const struct {
+    const char* name;
+    bool is2D;
+    bool is3D;
+} ChildrenDeprecatedData[]{
+    {"2D", true, false},
+    {"3D", false, true},
+    {"neither", false, false}
+};
+#endif
 
 SceneDataTest::SceneDataTest() {
     addTests({&SceneDataTest::objectTypeSize,
@@ -242,6 +266,13 @@ SceneDataTest::SceneDataTest() {
 
     addInstancedTests({&SceneDataTest::constructNotOwned},
         Containers::arraySize(NotOwnedData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addInstancedTests({&SceneDataTest::constructDeprecated},
+        Containers::arraySize(ChildrenDeprecatedData));
+
+    addTests({&SceneDataTest::constructDeprecatedBoth2DAnd3D});
+    #endif
 
     addTests({&SceneDataTest::constructDuplicateField,
               &SceneDataTest::constructDuplicateCustomField,
@@ -380,9 +411,14 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::lightsFor,
               &SceneDataTest::camerasFor,
               &SceneDataTest::skinsFor,
-              &SceneDataTest::importerStateFor,
+              &SceneDataTest::importerStateFor});
 
-              &SceneDataTest::fieldForFieldMissing,
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addInstancedTests({&SceneDataTest::childrenDeprecated},
+        Containers::arraySize(ChildrenDeprecatedData));
+    #endif
+
+    addTests({&SceneDataTest::fieldForFieldMissing,
               &SceneDataTest::fieldForInvalidObject,
 
               &SceneDataTest::releaseFieldData,
@@ -1418,6 +1454,56 @@ void SceneDataTest::constructNotOwned() {
     if(instanceData.dataFlags & DataFlag::Mutable)
         CORRADE_COMPARE(scene.mutableField<UnsignedByte>(0)[2], 0);
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void SceneDataTest::constructDeprecated() {
+    auto&& data = ChildrenDeprecatedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    int a;
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    SceneData scene{
+        data.is2D ? std::vector<UnsignedInt>{5, 17, 36, 22} : std::vector<UnsignedInt>{},
+        data.is3D ? std::vector<UnsignedInt>{5, 17, 36, 22} : std::vector<UnsignedInt>{},
+        &a};
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(scene.objectType(), SceneObjectType::UnsignedInt);
+    if(data.is2D || data.is3D)
+        CORRADE_COMPARE(scene.objectCount(), 37);
+    else
+        CORRADE_COMPARE(scene.objectCount(), 0);
+    CORRADE_COMPARE(scene.dataFlags(), DataFlag::Mutable|DataFlag::Owned);
+    CORRADE_COMPARE(scene.importerState(), &a);
+    CORRADE_COMPARE(scene.fieldCount(), 1);
+    CORRADE_COMPARE(scene.fieldName(0), SceneField::Parent);
+    CORRADE_COMPARE(scene.fieldType(0), SceneFieldType::Int);
+    if(data.is2D || data.is3D) {
+        CORRADE_COMPARE_AS(scene.objects<UnsignedInt>(0),
+            Containers::arrayView<UnsignedInt>({5, 17, 36, 22}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.field<Int>(0),
+            Containers::arrayView<Int>({-1, -1, -1, -1}),
+            TestSuite::Compare::Container);
+    } else CORRADE_COMPARE(scene.fieldSize(SceneField::Parent), 0);
+    /* There's no transformation field that would disambiguate this, the state
+       is set directly */
+    CORRADE_COMPARE(scene.is2D(), data.is2D);
+    CORRADE_COMPARE(scene.is3D(), data.is3D);
+}
+
+void SceneDataTest::constructDeprecatedBoth2DAnd3D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    SceneData scene{{5, 17}, {36, 22}};
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(), "Trade::SceneData: it's no longer possible to have a scene with both 2D and 3D objects\n");
+}
+#endif
 
 void SceneDataTest::constructDuplicateField() {
     #ifdef CORRADE_NO_ASSERT
@@ -4694,6 +4780,43 @@ void SceneDataTest::importerStateFor() {
     /* Object that's not in the array at all */
     CORRADE_COMPARE(scene.importerStateFor(1), Containers::NullOpt);
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void SceneDataTest::childrenDeprecated() {
+    auto&& data = ChildrenDeprecatedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct Field {
+        UnsignedByte object;
+        Short parent;
+    } fields[]{
+        {5, -1},
+        {2, 0},
+        {3, 0},
+        {0, -1},
+        {1, 2},
+        {4, -1}
+    };
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    Containers::Array<SceneFieldData> fieldData;
+    arrayAppend(fieldData, SceneFieldData{SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)});
+    if(data.is2D)
+        arrayAppend(fieldData, SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedByte, nullptr, SceneFieldType::Vector2, nullptr});
+    if(data.is3D)
+        arrayAppend(fieldData, SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedByte, nullptr, SceneFieldType::Vector3, nullptr});
+
+    SceneData scene{SceneObjectType::UnsignedByte, 25, {}, fields, std::move(fieldData)};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE_AS(scene.children2D(),
+        (data.is2D ? std::vector<UnsignedInt>{5, 0, 4} : std::vector<UnsignedInt>{}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.children3D(),
+        (data.is3D ? std::vector<UnsignedInt>{5, 0, 4} : std::vector<UnsignedInt>{}),
+        TestSuite::Compare::Container);
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
 
 void SceneDataTest::fieldForFieldMissing() {
     SceneData scene{SceneObjectType::UnsignedInt, 7, nullptr, {}};

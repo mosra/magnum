@@ -39,6 +39,12 @@
 #include "Magnum/Math/PackingBatch.h"
 #include "Magnum/Trade/Implementation/arrayUtilities.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+#include <Corrade/Containers/ArrayTuple.h>
+#include <Corrade/Containers/ArrayViewStl.h>
+#endif
+
 namespace Magnum { namespace Trade {
 
 Debug& operator<<(Debug& debug, const SceneObjectType value) {
@@ -579,6 +585,48 @@ SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong object
 }
 
 SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong objectCount, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const std::initializer_list<SceneFieldData> fields, const void* const importerState): SceneData{objectType, objectCount, dataFlags, data, Implementation::initializerListToArrayWithDefaultDeleter(fields), importerState} {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+SceneData::SceneData(std::vector<UnsignedInt> children2D, std::vector<UnsignedInt> children3D, const void* const importerState): _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _objectType{SceneObjectType::UnsignedInt}, _importerState{importerState} {
+    /* Assume nobody ever created a scene with both 2D and 3D children.
+       (PrimitiveImporter did, but that's an exception and blame goes on me.)
+       If this blows up for you, please complain. Or rather upgrade to the new
+       API which ... forces you to have a separate scene for 2D and 3D. But you
+       can share the data among the two, at least. */
+    CORRADE_ASSERT(children2D.empty() || children3D.empty(),
+        "Trade::SceneData: it's no longer possible to have a scene with both 2D and 3D objects", );
+    Containers::ArrayView<const UnsignedInt> children;
+    if(!children2D.empty()) {
+        _dimensions = 2;
+        children = children2D;
+    } else if(!children3D.empty()) {
+        _dimensions = 3;
+        children = children3D;
+    } else _dimensions = 0;
+
+    /* Set object count to the max found child index. It's not great as it
+       doesn't take any nested object into account but SceneData created this
+       way is expected to be used only through the deprecated APIs anyway,
+       which don't care about this value. */
+    _objectCount = children.empty() ? 0 : Math::max(children) + 1;
+
+    /* Convert the vector with top-level object IDs to the parent field, where
+       all have -1 as a parent. This way the (also deprecated) children2D() /
+       children3D() will return the desired values. */
+    Containers::ArrayView<UnsignedInt> objects;
+    Containers::ArrayView<Int> parents;
+    _data = Containers::ArrayTuple{
+        {NoInit, children.size(), objects},
+        {NoInit, children.size(), parents},
+    };
+    _fields = {InPlaceInit, {
+        SceneFieldData{SceneField::Parent, objects, parents}
+    }};
+    Utility::copy(children, objects);
+    constexpr Int parent[]{-1};
+    Utility::copy(Containers::stridedArrayView(parent).broadcasted<0>(parents.size()), parents);
+}
+#endif
 
 SceneData::SceneData(SceneData&&) noexcept = default;
 
@@ -1931,6 +1979,20 @@ Containers::Optional<const void*> SceneData::importerStateFor(const UnsignedInt 
     importerStateIntoInternal(fieldId, offset, importerState);
     return *importerState;
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+std::vector<UnsignedInt> SceneData::children2D() const {
+    if(_dimensions != 2) return {};
+    const Containers::Array<UnsignedInt> children = childrenFor(-1);
+    return {children.begin(), children.end()};
+}
+
+std::vector<UnsignedInt> SceneData::children3D() const {
+    if(_dimensions != 3) return {};
+    const Containers::Array<UnsignedInt> children = childrenFor(-1);
+    return {children.begin(), children.end()};
+}
+#endif
 
 Containers::Array<SceneFieldData> SceneData::releaseFieldData() {
     Containers::Array<SceneFieldData> out = std::move(_fields);
