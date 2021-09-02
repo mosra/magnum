@@ -306,6 +306,25 @@ Containers::Optional<SceneData> AbstractImporter::scene(const std::string& name)
     return scene(id); /* not doScene(), so we get the range checks also */
 }
 
+SceneField AbstractImporter::sceneFieldForName(const std::string& name) {
+    const SceneField out = doSceneFieldForName(name);
+    CORRADE_ASSERT(out == SceneField{} || isSceneFieldCustom(out),
+        "Trade::AbstractImporter::sceneFieldForName(): implementation-returned" << out << "is neither custom nor invalid", {});
+    return out;
+}
+
+SceneField AbstractImporter::doSceneFieldForName(const std::string&) {
+    return {};
+}
+
+std::string AbstractImporter::sceneFieldName(SceneField name) {
+    CORRADE_ASSERT(isSceneFieldCustom(name),
+        "Trade::AbstractImporter::sceneFieldName():" << name << "is not custom", {});
+    return doSceneFieldName(sceneFieldCustom(name));
+}
+
+std::string AbstractImporter::doSceneFieldName(UnsignedInt) { return {}; }
+
 UnsignedInt AbstractImporter::animationCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animationCount(): no file opened", {});
     return doAnimationCount();

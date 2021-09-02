@@ -307,7 +307,9 @@ name doesn't exist.
     @ref object2DForName() / @ref object3DForName(), imported with
     @ref object2D(const std::string&) / @ref object3D(const std::string&)
 -   Scene names using @ref sceneName() & @ref sceneForName(), imported with
-    @ref scene(const std::string&)
+    @ref scene(const std::string&). Scenes themselves can have custom fields,
+    for which the name mapping can be retrieved using @ref sceneFieldName() and
+    @ref sceneFieldForName().
 -   Skin names using @ref skin2DName() / @ref skin3DName() &
     @ref skin2DForName() / @ref skin3DForName(), imported with
     @ref skin2D(const std::string&) / @ref skin3D(const std::string&)
@@ -762,6 +764,34 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * Expects that a file is opened.
          */
         Containers::Optional<SceneData> scene(const std::string& name);
+
+        /**
+         * @brief Scene field for given name
+         * @m_since_latest
+         *
+         * If the name is not recognized, returns a zero (invalid)
+         * @ref SceneField, otherwise returns a custom scene field. Note that
+         * the value returned by this function may depend on whether a file is
+         * opened or not and also be different for different files --- see
+         * documentation of a particular importer for more information.
+         * @see @ref isSceneFieldCustom()
+         */
+        SceneField sceneFieldForName(const std::string& name);
+
+        /**
+         * @brief String name for given custom scene field
+         * @m_since_latest
+         *
+         * Given a custom @p name returned by @ref scene() in a @ref SceneData,
+         * returns a string identifier. If a string representation is not
+         * available or @p name is not recognized, returns an empty string.
+         * Expects that @p name is custom. Note that the value returned by
+         * this function may depend on whether a file is opened or not and also
+         * be different for different files --- see documentation of a
+         * particular importer for more information.
+         * @see @ref isSceneFieldCustom()
+         */
+        std::string sceneFieldName(SceneField name);
 
         /**
          * @brief Animation count
@@ -1758,6 +1788,23 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /** @brief Implementation for @ref scene() */
         virtual Containers::Optional<SceneData> doScene(UnsignedInt id);
+
+        /**
+         * @brief Implementation for @ref sceneFieldForName()
+         * @m_since_latest
+         *
+         * Default implementation returns an invalid (zero) value.
+         */
+        virtual SceneField doSceneFieldForName(const std::string& name);
+
+        /**
+         * @brief Implementation for @ref sceneFieldName()
+         * @m_since_latest
+         *
+         * Receives the custom ID extracted via @ref sceneFieldCustom(SceneField).
+         * Default implementation returns an empty string.
+         */
+        virtual std::string doSceneFieldName(UnsignedInt name);
 
         /**
          * @brief Implementation for @ref animationCount()

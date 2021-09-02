@@ -83,7 +83,9 @@ MAGNUM_TRADE_EXPORT UnsignedInt sceneObjectTypeSize(SceneObjectType type);
 @m_since_latest
 
 See @ref SceneData for more information.
-@see @ref SceneFieldData, @ref SceneFieldType
+@see @ref SceneFieldData, @ref SceneFieldType,
+    @ref AbstractImporter::sceneFieldForName(),
+    @ref AbstractImporter::sceneFieldName()
 */
 enum class SceneField: UnsignedInt {
     /* Zero used for an invalid value */

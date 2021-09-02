@@ -115,6 +115,10 @@ struct AbstractImporterTest: TestSuite::Tester {
     void sceneNotImplemented();
     void sceneOutOfRange();
 
+    void sceneFieldName();
+    void sceneFieldNameNotImplemented();
+    void sceneFieldNameNotCustom();
+
     void animation();
     void animationNameNotImplemented();
     void animationForNameOutOfRange();
@@ -359,6 +363,10 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::sceneNameOutOfRange,
               &AbstractImporterTest::sceneNotImplemented,
               &AbstractImporterTest::sceneOutOfRange,
+
+              &AbstractImporterTest::sceneFieldName,
+              &AbstractImporterTest::sceneFieldNameNotImplemented,
+              &AbstractImporterTest::sceneFieldNameNotCustom,
 
               &AbstractImporterTest::animation,
               &AbstractImporterTest::animationForNameOutOfRange,
@@ -1755,6 +1763,62 @@ void AbstractImporterTest::sceneOutOfRange() {
 
     importer.scene(8);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::scene(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::sceneFieldName() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        SceneField doSceneFieldForName(const std::string& name) override {
+            if(name == "OctreeCell") return sceneFieldCustom(100037);
+            return SceneField{};
+        }
+
+        std::string doSceneFieldName(UnsignedInt id) override {
+            if(id == 100037) return "OctreeCell";
+            return "";
+        }
+    } importer;
+
+    CORRADE_COMPARE(importer.sceneFieldForName("OctreeCell"), sceneFieldCustom(100037));
+    CORRADE_COMPARE(importer.sceneFieldName(sceneFieldCustom(100037)), "OctreeCell");
+}
+
+void AbstractImporterTest::sceneFieldNameNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_COMPARE(importer.sceneFieldForName(""), SceneField{});
+    CORRADE_COMPARE(importer.sceneFieldName(sceneFieldCustom(100037)), "");
+}
+
+void AbstractImporterTest::sceneFieldNameNotCustom() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        SceneField doSceneFieldForName(const std::string&) override {
+            return SceneField::Translation;
+        }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.sceneFieldForName("OctreeCell");
+    importer.sceneFieldName(SceneField::Translation);
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::sceneFieldForName(): implementation-returned Trade::SceneField::Translation is neither custom nor invalid\n"
+        "Trade::AbstractImporter::sceneFieldName(): Trade::SceneField::Translation is not custom\n");
 }
 
 void AbstractImporterTest::animation() {
