@@ -448,6 +448,7 @@ void SceneDataTest::constructField() {
     CORRADE_COMPARE(rotations.objectData(someArray).stride(), sizeof(UnsignedShort));
     CORRADE_VERIFY(rotations.objectData(someArray).data() == rotationObjectData);
 
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Won't bother anymore */
     constexpr SceneFieldData crotations{SceneField::Rotation, Containers::arrayView(RotationObjects2D), Containers::arrayView(Rotations2D)};
     constexpr bool isOffsetOnly = crotations.isOffsetOnly();
     constexpr SceneField name = crotations.name();
@@ -467,6 +468,7 @@ void SceneDataTest::constructField() {
     CORRADE_COMPARE(fieldData.size(), 3);
     CORRADE_COMPARE(fieldData.stride(), sizeof(Complexd));
     CORRADE_COMPARE(fieldData.data(), Rotations2D);
+    #endif
 }
 
 void SceneDataTest::constructFieldDefault() {
