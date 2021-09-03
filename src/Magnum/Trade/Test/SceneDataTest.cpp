@@ -1290,7 +1290,7 @@ void SceneDataTest::constructNotOwned() {
     CORRADE_COMPARE(scene.dataFlags(), instanceData.dataFlags);
     CORRADE_COMPARE(static_cast<const void*>(scene.data()), +data);
     if(instanceData.dataFlags & DataFlag::Mutable)
-        CORRADE_COMPARE(static_cast<void*>(scene.mutableData()), +data);
+        CORRADE_COMPARE(static_cast<void*>(scene.mutableData()), static_cast<void*>(data));
     CORRADE_COMPARE(scene.objectCount(), 7);
     CORRADE_COMPARE(scene.objectType(), SceneObjectType::UnsignedShort);
     CORRADE_COMPARE(scene.fieldCount(), 1);
