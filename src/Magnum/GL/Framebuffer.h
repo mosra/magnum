@@ -94,8 +94,8 @@ get used:
 
 See also @ref GL-AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 
-If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
-available, functions @ref checkStatus(), @ref mapForDraw(), @ref mapForRead(),
+If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
+functions @ref checkStatus(), @ref mapForDraw(), @ref mapForRead(),
 @ref invalidate(), @ref attachRenderbuffer(), @ref attachTexture(),
 @ref attachCubeMapTexture(), @ref attachTextureLayer() and @ref detach() use
 DSA to avoid unnecessary calls to @fn_gl{BindFramebuffer}. See their respective
