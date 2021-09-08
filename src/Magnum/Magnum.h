@@ -845,6 +845,24 @@ typedef Math::Range2D<Float> Range2D;
 /** @brief Three-dimensional float range */
 typedef Math::Range3D<Float> Range3D;
 
+/**
+@brief One-dimensional unsigned integer range
+@m_since_latest
+*/
+typedef Math::Range1D<UnsignedInt> Range1Dui;
+
+/**
+@brief Two-dimensional unsigned integer range
+@m_since_latest
+*/
+typedef Math::Range2D<UnsignedInt> Range2Dui;
+
+/**
+@brief Three-dimensional unsigned integer range
+@m_since_latest
+*/
+typedef Math::Range3D<UnsignedInt> Range3Dui;
+
 /** @brief One-dimensional signed integer range */
 typedef Math::Range1D<Int> Range1Di;
 
