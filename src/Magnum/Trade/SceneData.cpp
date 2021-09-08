@@ -54,12 +54,19 @@ Debug& operator<<(Debug& debug, const SceneObjectType value) {
 }
 
 UnsignedInt sceneObjectTypeSize(const SceneObjectType type) {
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(type) {
         case SceneObjectType::UnsignedByte: return 1;
         case SceneObjectType::UnsignedShort: return 2;
         case SceneObjectType::UnsignedInt: return 4;
         case SceneObjectType::UnsignedLong: return 8;
     }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
 
     CORRADE_ASSERT_UNREACHABLE("Trade::sceneObjectTypeSize(): invalid type" << type, {});
 }
@@ -198,6 +205,10 @@ Debug& operator<<(Debug& debug, const SceneFieldType value) {
 }
 
 UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(type) {
         case SceneFieldType::UnsignedByte:
         case SceneFieldType::Byte:
@@ -308,6 +319,9 @@ UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
         case SceneFieldType::Matrix4x4d:
             return 128;
     }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
 
     CORRADE_ASSERT_UNREACHABLE("Trade::sceneFieldTypeSize(): invalid type" << type, {});
 }
