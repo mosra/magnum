@@ -708,8 +708,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Scene name
          * @param id        Scene ID, from range [0, @ref sceneCount()).
          *
-         * Expects that a file is opened. If the scene has no name or the
-         * importer doesn't support scene names, returns an empty string.
+         * If the scene has no name or the importer doesn't support scene
+         * names, returns an empty string. Expects that a file is opened.
          * @see @ref sceneForName()
          */
         std::string sceneName(UnsignedInt id);
@@ -999,8 +999,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Skin ID, from range [0, @ref skin2DCount()).
          * @m_since_latest
          *
-         * Expects that a file is opened. If the skin has no name or the
-         * importer doesn't support skin names, returns an empty string.
+         * If the skin has no name or the importer doesn't support skin names,
+         * returns an empty string. Expects that a file is opened.
          * @see @ref skin2DForName()
          */
         std::string skin2DName(UnsignedInt id);
@@ -1051,8 +1051,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Skin ID, from range [0, @ref skin3DCount()).
          * @m_since_latest
          *
-         * Expects that a file is opened. If the skin has no name or the
-         * importer doesn't support skin names, returns an empty string.
+         * If the skin has no name or the importer doesn't support skin names,
+         * returns an empty string. Expects that a file is opened.
          * @see @ref skin3DForName()
          */
         std::string skin3DName(UnsignedInt id);
@@ -1114,8 +1114,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Mesh ID, from range [0, @ref meshCount()).
          * @m_since{2020,06}
          *
-         * Expects that a file is opened. If the mesh has no name or the
-         * importer doesn't support mesh names, returns an empty string.
+         * If the mesh has no name or the importer doesn't support mesh names,
+         * returns an empty string. Expects that a file is opened.
          * @see @ref meshForName()
          */
         std::string meshName(UnsignedInt id);
@@ -1279,8 +1279,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Material name
          * @param id        Material ID, from range [0, @ref materialCount()).
          *
-         * Expects that a file is opened. If the material has no name or the
-         * importer doesn't support material names, returns an empty string.
+         * If the material has no name or the importer doesn't support material
+         * names, returns an empty string. Expects that a file is opened.
          * @see @ref materialForName(), @ref material(const std::string&)
          */
         std::string materialName(UnsignedInt id);
@@ -1337,8 +1337,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Texture name
          * @param id        Texture ID, from range [0, @ref textureCount()).
          *
-         * Expects that a file is opened. If the texture has no name or the
-         * importer doesn't support texture names, returns an empty string.
+         * If the texture has no name or the importer doesn't support texture
+         * names, returns an empty string. Expects that a file is opened.
          * @see @ref textureForName()
          */
         std::string textureName(UnsignedInt id);
@@ -1396,8 +1396,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief One-dimensional image name
          * @param id        Image ID, from range [0, @ref image1DCount()).
          *
-         * Expects that a file is opened. If the image has no name or the
-         * importer doesn't support image names, returns an empty string.
+         * If the image has no name or the importer doesn't support image
+         * names, returns an empty string. Expects that a file is opened.
          * @see @ref image1DForName()
          */
         std::string image1DName(UnsignedInt id);
@@ -1457,8 +1457,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Two-dimensional image name
          * @param id        Image ID, from range [0, @ref image2DCount()).
          *
-         * Expects that a file is opened. If the image has no name or the
-         * importer doesn't support image names, returns an empty string.
+         * If the image has no name or the importer doesn't support image
+         * names, returns an empty string. Expects that a file is opened.
          * @see @ref image2DForName()
          */
         std::string image2DName(UnsignedInt id);
@@ -1518,8 +1518,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Three-dimensional image name
          * @param id        Image ID, from range [0, @ref image3DCount()).
          *
-         * Expects that a file is opened. If the image has no name or the
-         * importer doesn't support image names, returns an empty string.
+         * If the image has no name or the importer doesn't support image
+         * names, returns an empty string. Expects that a file is opened.
          * @see @ref image3DForName()
          */
         std::string image3DName(UnsignedInt id);
@@ -1661,7 +1661,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref sceneName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doSceneName(UnsignedInt id);
 
@@ -1688,7 +1688,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref animationName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doAnimationName(UnsignedInt id);
 
@@ -1715,7 +1715,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref lightName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doLightName(UnsignedInt id);
 
@@ -1742,7 +1742,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref cameraName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doCameraName(UnsignedInt id);
 
@@ -1769,7 +1769,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref object2DName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doObject2DName(UnsignedInt id);
 
@@ -1796,7 +1796,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref object3DName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doObject3DName(UnsignedInt id);
 
@@ -1826,7 +1826,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Implementation for @ref skin2DName()
          * @m_since_latest
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doSkin2DName(UnsignedInt id);
 
@@ -1859,7 +1859,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Implementation for @ref skin3DName()
          * @m_since_latest
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doSkin3DName(UnsignedInt id);
 
@@ -2066,7 +2066,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref materialName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doMaterialName(UnsignedInt id);
 
@@ -2093,7 +2093,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref textureName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doTextureName(UnsignedInt id);
 
@@ -2129,7 +2129,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref image1DName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doImage1DName(UnsignedInt id);
 
@@ -2173,7 +2173,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref image2DName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doImage2DName(UnsignedInt id);
 
@@ -2209,7 +2209,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref image3DName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns an empty string.
          */
         virtual std::string doImage3DName(UnsignedInt id);
 
