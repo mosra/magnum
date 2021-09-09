@@ -171,7 +171,7 @@ implementation for a tool that does heavy image processing.
 
 To make this simpler in the code and defer the decision to the buildsystem or
 app deployment, all plugins that support a particular format provide a common
-*alias* --- in case of PNG images, you can just load a @cpp "PngImporter" @ce
+* *alias* --- in case of PNG images, you can just load a @cpp "PngImporter" @ce
 plugin and if  @ref Trade::PngImporter "PngImporter" is not available, it will
 pick up any of the other candidates.
 
@@ -209,7 +209,7 @@ So far, the following plugins have the "any format" ability:
     format
 -   @ref ShaderTools::AnyConverter "AnyShaderConverter" --- converts shaders of
     any formats
--   @ref Audio::AnyImporter "AnyImporter" --- imports any audio format
+-   @ref Audio::AnyImporter "AnyAudioImporter" --- imports any audio format
 
 @section plugins-configuration Editing plugin-specific configuration
 

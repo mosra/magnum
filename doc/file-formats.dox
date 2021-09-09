@@ -509,7 +509,7 @@ many more formats.
 
 @section file-formats-scene-converters Scene converters
 
-Derived from @ref Trade::AbstractImageConverter.
+Derived from @ref Trade::AbstractSceneConverter.
 
 @m_class{m-row m-container-inflate}
 
