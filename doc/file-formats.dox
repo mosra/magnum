@@ -458,7 +458,7 @@ Together with @ref file-formats-image-importers "image-importers" derived from
 <th rowspan="2">glTF<br/>(`*.gltf`, `*.glb`)</th>
 <td rowspan="2">`GltfImporter`</td>
 <td>@ref Trade::TinyGltfImporter "TinyGltfImporter"</td>
-<td class="m-text-center m-warning">@ref Trade-TinyGltfImporter-behavior "some"</td>
+<td class="m-text-center m-success">@ref Trade-TinyGltfImporter-behavior "minor"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-success">MIT</td>
 </tr>
