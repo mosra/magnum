@@ -1550,6 +1550,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         template<class T> bool checkFieldTypeCompatibility(const SceneFieldData& attribute, const char* prefix) const;
         #endif
 
+        MAGNUM_TRADE_LOCAL void parentsIntoInternal(UnsignedInt fieldId, const Containers::StridedArrayView1D<Int>& destination) const;
         MAGNUM_TRADE_LOCAL std::size_t findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const;
         MAGNUM_TRADE_LOCAL void transformations2DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, const Containers::StridedArrayView1D<Matrix3>& destination) const;
         MAGNUM_TRADE_LOCAL void transformations3DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, const Containers::StridedArrayView1D<Matrix4>& destination) const;
@@ -1557,7 +1558,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
             #ifndef CORRADE_NO_ASSERT
             const char* const prefix,
             #endif
-            const SceneField name, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+            const UnsignedInt fieldId, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
         MAGNUM_TRADE_LOCAL Containers::Array<UnsignedInt> indexFieldAsArrayInternal(
             #ifndef CORRADE_NO_ASSERT
             const char* const prefix,

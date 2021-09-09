@@ -715,8 +715,7 @@ Containers::Array<UnsignedInt> SceneData::objectsAsArray(const SceneField name) 
     return objectsAsArray(fieldId);
 }
 
-void SceneData::parentsInto(const Containers::StridedArrayView1D<Int>& destination) const {
-    const UnsignedInt fieldId = fieldFor(SceneField::Parent);
+void SceneData::parentsIntoInternal(const UnsignedInt fieldId, const Containers::StridedArrayView1D<Int>& destination) const {
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::parentsInto(): field not found", );
     const SceneFieldData& field = _fields[fieldId];
@@ -737,6 +736,10 @@ void SceneData::parentsInto(const Containers::StridedArrayView1D<Int>& destinati
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
+void SceneData::parentsInto(const Containers::StridedArrayView1D<Int>& destination) const {
+    parentsIntoInternal(fieldFor(SceneField::Parent), destination);
+}
+
 Containers::Array<Int> SceneData::parentsAsArray() const {
     const UnsignedInt fieldId = fieldFor(SceneField::Parent);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
@@ -744,7 +747,7 @@ Containers::Array<Int> SceneData::parentsAsArray() const {
            strings in the binary */
         "Trade::SceneData::parentsInto(): field not found", {});
     Containers::Array<Int> out{NoInit, std::size_t(_fields[fieldId]._size)};
-    parentsInto(out);
+    parentsIntoInternal(fieldId, out);
     return out;
 }
 
@@ -1022,9 +1025,8 @@ void SceneData::indexFieldIntoInternal(
     #ifndef CORRADE_NO_ASSERT
     const char* const prefix,
     #endif
-    const SceneField name, const Containers::StridedArrayView1D<UnsignedInt>& destination) const
+    const UnsignedInt fieldId, const Containers::StridedArrayView1D<UnsignedInt>& destination) const
 {
-    const UnsignedInt fieldId = fieldFor(name);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         prefix << "field not found", );
     const SceneFieldData& field = _fields[fieldId];
@@ -1055,7 +1057,7 @@ Containers::Array<UnsignedInt> SceneData::indexFieldAsArrayInternal(
         #ifndef CORRADE_NO_ASSERT
         prefix,
         #endif
-        name, out);
+        fieldId, out);
     return out;
 }
 
@@ -1064,7 +1066,7 @@ void SceneData::meshesInto(const Containers::StridedArrayView1D<UnsignedInt>& de
         #ifndef CORRADE_NO_ASSERT
         "Trade::SceneData::meshesInto():",
         #endif
-        SceneField::Mesh, destination);
+        fieldFor(SceneField::Mesh), destination);
 }
 
 Containers::Array<UnsignedInt> SceneData::meshesAsArray() const {
@@ -1082,7 +1084,7 @@ void SceneData::meshMaterialsInto(const Containers::StridedArrayView1D<UnsignedI
         #ifndef CORRADE_NO_ASSERT
         "Trade::SceneData::meshMaterialsInto():",
         #endif
-        SceneField::MeshMaterial, destination);
+        fieldFor(SceneField::MeshMaterial), destination);
 }
 
 Containers::Array<UnsignedInt> SceneData::meshMaterialsAsArray() const {
@@ -1100,7 +1102,7 @@ void SceneData::lightsInto(const Containers::StridedArrayView1D<UnsignedInt>& de
         #ifndef CORRADE_NO_ASSERT
         "Trade::SceneData::lightsInto():",
         #endif
-        SceneField::Light, destination);
+        fieldFor(SceneField::Light), destination);
 }
 
 Containers::Array<UnsignedInt> SceneData::lightsAsArray() const {
@@ -1118,7 +1120,7 @@ void SceneData::camerasInto(const Containers::StridedArrayView1D<UnsignedInt>& d
         #ifndef CORRADE_NO_ASSERT
         "Trade::SceneData::camerasInto():",
         #endif
-        SceneField::Camera, destination);
+        fieldFor(SceneField::Camera), destination);
 }
 
 Containers::Array<UnsignedInt> SceneData::camerasAsArray() const {
@@ -1136,7 +1138,7 @@ void SceneData::skinsInto(const Containers::StridedArrayView1D<UnsignedInt>& des
         #ifndef CORRADE_NO_ASSERT
         "Trade::SceneData::skinsInto():",
         #endif
-        SceneField::Skin, destination);
+        fieldFor(SceneField::Skin), destination);
 }
 
 Containers::Array<UnsignedInt> SceneData::skinsAsArray() const {

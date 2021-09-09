@@ -1786,8 +1786,18 @@ template<class T> void SceneDataTest::parentsAsArray() {
         SceneFieldData{SceneField::Mesh, SceneObjectType::UnsignedByte, nullptr, SceneFieldType::UnsignedInt, nullptr},
         SceneFieldData{SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
     }};
-    CORRADE_COMPARE_AS(scene.parentsAsArray(),
-        Containers::arrayView<Int>({15, -1, 44}),
+
+    Int expected[]{15, -1, 44};
+    CORRADE_COMPARE_AS(arrayView(scene.parentsAsArray()),
+        Containers::arrayView(expected),
+        TestSuite::Compare::Container);
+
+    /* Test Into() as well as it only shares a common helper with AsArray() but
+       has different top-level code paths */
+    Int out[3];
+    scene.parentsInto(out);
+    CORRADE_COMPARE_AS(Containers::arrayView(out),
+        Containers::arrayView(expected),
         TestSuite::Compare::Container);
 }
 
