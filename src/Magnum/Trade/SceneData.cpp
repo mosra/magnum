@@ -499,22 +499,32 @@ Containers::ArrayView<char> SceneData::mutableData() & {
     return _data;
 }
 
-Containers::StridedArrayView1D<const void> SceneData::fieldDataObjectViewInternal(const SceneFieldData& field) const {
+Containers::StridedArrayView1D<const void> SceneData::fieldDataObjectViewInternal(const SceneFieldData& field, const std::size_t offset, const std::size_t size) const {
+    CORRADE_INTERNAL_ASSERT(offset + size <= field._size);
     return Containers::StridedArrayView1D<const void>{
         /* We're *sure* the view is correct, so faking the view size */
-        /** @todo better ideas for the StridedArrayView API? */
-        {field._isOffsetOnly ? _data.data() + field._objectData.offset :
-            field._objectData.pointer, ~std::size_t{}},
-        field._size, field._objectStride};
+        {static_cast<const char*>(field._isOffsetOnly ?
+            _data.data() + field._objectData.offset : field._objectData.pointer)
+            + field._fieldStride*offset, ~std::size_t{}},
+        size, field._objectStride};
+}
+
+Containers::StridedArrayView1D<const void> SceneData::fieldDataObjectViewInternal(const SceneFieldData& field) const {
+    return fieldDataObjectViewInternal(field, 0, field._size);
+}
+
+Containers::StridedArrayView1D<const void> SceneData::fieldDataFieldViewInternal(const SceneFieldData& field, const std::size_t offset, const std::size_t size) const {
+    CORRADE_INTERNAL_ASSERT(offset + size <= field._size);
+    return Containers::StridedArrayView1D<const void>{
+        /* We're *sure* the view is correct, so faking the view size */
+        {static_cast<const char*>(field._isOffsetOnly ?
+            _data.data() + field._fieldData.offset : field._fieldData.pointer)
+            + field._fieldStride*offset, ~std::size_t{}},
+        size, field._fieldStride};
 }
 
 Containers::StridedArrayView1D<const void> SceneData::fieldDataFieldViewInternal(const SceneFieldData& field) const {
-    return Containers::StridedArrayView1D<const void>{
-        /* We're *sure* the view is correct, so faking the view size */
-        /** @todo better ideas for the StridedArrayView API? */
-        {field._isOffsetOnly ? _data.data() + field._fieldData.offset :
-            field._fieldData.pointer, ~std::size_t{}},
-        field._size, field._fieldStride};
+    return fieldDataFieldViewInternal(field, 0, field._size);
 }
 
 SceneFieldData SceneData::fieldData(const UnsignedInt id) const {
@@ -668,13 +678,12 @@ Containers::StridedArrayView2D<char> SceneData::mutableField(const SceneField na
     return mutableField(fieldId);
 }
 
-void SceneData::objectsInto(const UnsignedInt fieldId, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
-    CORRADE_ASSERT(fieldId < _fields.size(),
-        "Trade::SceneData::objectsInto(): index" << fieldId << "out of range for" << _fields.size() << "fields", );
+void SceneData::objectsIntoInternal(const UnsignedInt fieldId, const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+    /* fieldId, offset and destination.size() is assumed to be in bounds,
+       checked by the callers */
+
     const SceneFieldData& field = _fields[fieldId];
-    CORRADE_ASSERT(destination.size() == field._size,
-        "Trade::SceneData::objectsInto(): expected a view with" << field._size << "elements but got" << destination.size(), );
-    const Containers::StridedArrayView1D<const void> objectData = fieldDataObjectViewInternal(field);
+    const Containers::StridedArrayView1D<const void> objectData = fieldDataObjectViewInternal(field, offset, destination.size());
     const auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
 
     if(field._objectType == SceneObjectType::UnsignedInt)
@@ -689,13 +698,31 @@ void SceneData::objectsInto(const UnsignedInt fieldId, const Containers::Strided
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
+void SceneData::objectsInto(const UnsignedInt fieldId, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+    CORRADE_ASSERT(fieldId < _fields.size(),
+        "Trade::SceneData::objectsInto(): index" << fieldId << "out of range for" << _fields.size() << "fields", );
+    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::objectsInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
+    objectsIntoInternal(fieldId, 0, destination);
+}
+
+std::size_t SceneData::objectsInto(const UnsignedInt fieldId, const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+    CORRADE_ASSERT(fieldId < _fields.size(),
+        "Trade::SceneData::objectsInto(): index" << fieldId << "out of range for" << _fields.size() << "fields", {});
+    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
+        "Trade::SceneData::objectsInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
+    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
+    objectsIntoInternal(fieldId, offset, destination.prefix(size));
+    return size;
+}
+
 Containers::Array<UnsignedInt> SceneData::objectsAsArray(const UnsignedInt fieldId) const {
     CORRADE_ASSERT(fieldId < _fields.size(),
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
         "Trade::SceneData::objectsInto(): index" << fieldId << "out of range for" << _fields.size() << "fields", {});
     Containers::Array<UnsignedInt> out{NoInit, std::size_t(_fields[fieldId]._size)};
-    objectsInto(fieldId, out);
+    objectsIntoInternal(fieldId, 0, out);
     return out;
 }
 
@@ -704,6 +731,13 @@ void SceneData::objectsInto(const SceneField name, const Containers::StridedArra
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::objectsInto(): field" << name << "not found", );
     objectsInto(fieldId, destination);
+}
+
+std::size_t SceneData::objectsInto(const SceneField name, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+    const UnsignedInt fieldId = fieldFor(name);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::objectsInto(): field" << name << "not found", {});
+    return objectsInto(fieldId, offset, destination);
 }
 
 Containers::Array<UnsignedInt> SceneData::objectsAsArray(const SceneField name) const {
@@ -715,13 +749,12 @@ Containers::Array<UnsignedInt> SceneData::objectsAsArray(const SceneField name) 
     return objectsAsArray(fieldId);
 }
 
-void SceneData::parentsIntoInternal(const UnsignedInt fieldId, const Containers::StridedArrayView1D<Int>& destination) const {
-    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
-        "Trade::SceneData::parentsInto(): field not found", );
+void SceneData::parentsIntoInternal(const UnsignedInt fieldId, const std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const {
+    /* fieldId, offset and destination.size() is assumed to be in bounds,
+       checked by the callers */
+
     const SceneFieldData& field = _fields[fieldId];
-    CORRADE_ASSERT(destination.size() == field._size,
-        "Trade::SceneData::parentsInto(): expected a view with" << field._size << "elements but got" << destination.size(), );
-    const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field);
+    const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
     const auto destination1i = Containers::arrayCast<2, Int>(destination);
 
     if(field._fieldType == SceneFieldType::Int)
@@ -737,7 +770,23 @@ void SceneData::parentsIntoInternal(const UnsignedInt fieldId, const Containers:
 }
 
 void SceneData::parentsInto(const Containers::StridedArrayView1D<Int>& destination) const {
-    parentsIntoInternal(fieldFor(SceneField::Parent), destination);
+    const UnsignedInt fieldId = fieldFor(SceneField::Parent);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::parentsInto(): field not found", );
+    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::parentsInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
+    parentsIntoInternal(fieldId, 0, destination);
+}
+
+std::size_t SceneData::parentsInto(const std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const {
+    const UnsignedInt fieldId = fieldFor(SceneField::Parent);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::parentsInto(): field not found", {});
+    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
+        "Trade::SceneData::parentsInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
+    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
+    parentsIntoInternal(fieldId, offset, destination.prefix(size));
+    return size;
 }
 
 Containers::Array<Int> SceneData::parentsAsArray() const {
@@ -747,7 +796,7 @@ Containers::Array<Int> SceneData::parentsAsArray() const {
            strings in the binary */
         "Trade::SceneData::parentsInto(): field not found", {});
     Containers::Array<Int> out{NoInit, std::size_t(_fields[fieldId]._size)};
-    parentsIntoInternal(fieldId, out);
+    parentsIntoInternal(fieldId, 0, out);
     return out;
 }
 
@@ -813,13 +862,16 @@ std::size_t SceneData::findTransformFields(UnsignedInt& transformationFieldId, U
         ~std::size_t{} : _fields[fieldToCheckForSize]._size;
 }
 
-void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFieldId, const UnsignedInt translationFieldId, const UnsignedInt rotationFieldId, const UnsignedInt scalingFieldId, const Containers::StridedArrayView1D<Matrix3>& destination) const {
+void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFieldId, const UnsignedInt translationFieldId, const UnsignedInt rotationFieldId, const UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const {
+    /* *FieldId, offset and destination.size() is assumed to be in bounds (or
+       an invalid field ID), checked by the callers */
+
     /** @todo apply scalings as well if dual complex? */
 
     /* Prefer the transformation field, if present */
     if(transformationFieldId != ~UnsignedInt{}) {
         const SceneFieldData& field = _fields[transformationFieldId];
-        const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field);
+        const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
         const auto destination1f = Containers::arrayCast<2, Float>(destination);
 
         if(field._fieldType == SceneFieldType::Matrix3x3) {
@@ -846,7 +898,7 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
         /* Apply scaling first, if present */
         if(scalingFieldId != ~UnsignedInt{}) {
             const SceneFieldData& field = _fields[scalingFieldId];
-            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field);
+            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
 
             if(field._fieldType == SceneFieldType::Vector2) {
                 applyScaling<Vector2>(fieldData, destination);
@@ -861,7 +913,7 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
         /* Apply rotation second, if present */
         if(rotationFieldId != ~UnsignedInt{}) {
             const SceneFieldData& field = _fields[rotationFieldId];
-            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field);
+            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
 
             if(field._fieldType == SceneFieldType::Complex) {
                 applyRotation<Complex>(fieldData, destination);
@@ -876,7 +928,7 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
         /* Apply translation last, if present */
         if(translationFieldId != ~UnsignedInt{}) {
             const SceneFieldData& field = _fields[translationFieldId];
-            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field);
+            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
 
             if(field._fieldType == SceneFieldType::Vector2) {
                 applyTranslation<Vector2>(fieldData, destination);
@@ -902,7 +954,22 @@ void SceneData::transformations2DInto(const Containers::StridedArrayView1D<Matri
         "Trade::SceneData::transformations2DInto(): no transformation-related field found", );
     CORRADE_ASSERT(expectedSize == destination.size(),
         "Trade::SceneData::transformations2DInto(): expected a view with" << expectedSize << "elements but got" << destination.size(), );
-    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, destination);
+    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, destination);
+}
+
+std::size_t SceneData::transformations2DInto(const std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const {
+    UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
+    #ifndef CORRADE_NO_ASSERT
+    const std::size_t expectedSize =
+    #endif
+        findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+        "Trade::SceneData::transformations2DInto(): no transformation-related field found", {});
+    CORRADE_ASSERT(offset <= expectedSize,
+        "Trade::SceneData::transformations2DInto(): offset" << offset << "out of bounds for a field of size" << expectedSize, {});
+    const std::size_t size = Math::min(destination.size(), expectedSize - offset);
+    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, destination.prefix(size));
+    return size;
 }
 
 Containers::Array<Matrix3> SceneData::transformations2DAsArray() const {
@@ -913,17 +980,20 @@ Containers::Array<Matrix3> SceneData::transformations2DAsArray() const {
            strings in the binary */
         "Trade::SceneData::transformations2DInto(): no transformation-related field found", {});
     Containers::Array<Matrix3> out{NoInit, expectedSize};
-    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, out);
+    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, out);
     return out;
 }
 
-void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFieldId, const UnsignedInt translationFieldId, const UnsignedInt rotationFieldId, const UnsignedInt scalingFieldId, const Containers::StridedArrayView1D<Matrix4>& destination) const {
+void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFieldId, const UnsignedInt translationFieldId, const UnsignedInt rotationFieldId, const UnsignedInt scalingFieldId, const std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const {
+    /* *FieldId, offset and destination.size() is assumed to be in bounds (or
+       an invalid field ID), checked by the callers */
+
     /** @todo apply scalings as well if dual quat? */
 
     /* Prefer the transformation field, if present */
     if(transformationFieldId != ~UnsignedInt{}) {
         const SceneFieldData& field = _fields[transformationFieldId];
-        const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field);
+        const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
         const auto destination1f = Containers::arrayCast<2, Float>(destination);
 
         if(field._fieldType == SceneFieldType::Matrix4x4) {
@@ -950,7 +1020,7 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
         /* Apply scaling first, if present */
         if(scalingFieldId != ~UnsignedInt{}) {
             const SceneFieldData& field = _fields[scalingFieldId];
-            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field);
+            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
 
             if(field._fieldType == SceneFieldType::Vector3) {
                 applyScaling<Vector3>(fieldData, destination);
@@ -965,7 +1035,7 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
         /* Apply rotation second, if present */
         if(rotationFieldId != ~UnsignedInt{}) {
             const SceneFieldData& field = _fields[rotationFieldId];
-            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field);
+            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
 
             if(field._fieldType == SceneFieldType::Quaternion) {
                 applyRotation<Quaternion>(fieldData, destination);
@@ -980,7 +1050,7 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
         /* Apply translation last, if present */
         if(translationFieldId != ~UnsignedInt{}) {
             const SceneFieldData& field = _fields[translationFieldId];
-            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field);
+            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
 
             if(field._fieldType == SceneFieldType::Vector3) {
                 applyTranslation<Vector3>(fieldData, destination);
@@ -1006,7 +1076,22 @@ void SceneData::transformations3DInto(const Containers::StridedArrayView1D<Matri
         "Trade::SceneData::transformations3DInto(): no transformation-related field found", );
     CORRADE_ASSERT(expectedSize == destination.size(),
         "Trade::SceneData::transformations3DInto(): expected a view with" << expectedSize << "elements but got" << destination.size(), );
-    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, destination);
+    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, destination);
+}
+
+std::size_t SceneData::transformations3DInto(const std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const {
+    UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
+    #ifndef CORRADE_NO_ASSERT
+    const std::size_t expectedSize =
+    #endif
+        findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+        "Trade::SceneData::transformations3DInto(): no transformation-related field found", {});
+    CORRADE_ASSERT(offset <= expectedSize,
+        "Trade::SceneData::transformations3DInto(): offset" << offset << "out of bounds for a field of size" << expectedSize, {});
+    const std::size_t size = Math::min(destination.size(), expectedSize - offset);
+    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, destination.prefix(size));
+    return size;
 }
 
 Containers::Array<Matrix4> SceneData::transformations3DAsArray() const {
@@ -1017,22 +1102,16 @@ Containers::Array<Matrix4> SceneData::transformations3DAsArray() const {
            strings in the binary */
         "Trade::SceneData::transformations3DInto(): no transformation-related field found", {});
     Containers::Array<Matrix4> out{NoInit, expectedSize};
-    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, out);
+    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, out);
     return out;
 }
 
-void SceneData::indexFieldIntoInternal(
-    #ifndef CORRADE_NO_ASSERT
-    const char* const prefix,
-    #endif
-    const UnsignedInt fieldId, const Containers::StridedArrayView1D<UnsignedInt>& destination) const
-{
-    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
-        prefix << "field not found", );
+void SceneData::indexFieldIntoInternal(const UnsignedInt fieldId, const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+    /* fieldId, offset and destination.size() is assumed to be in bounds,
+       checked by the callers */
+
     const SceneFieldData& field = _fields[fieldId];
-    CORRADE_ASSERT(destination.size() == field._size,
-        prefix << "expected a view with" << field._size << "elements but got" << destination.size(), );
-    const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field);
+    const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
     const auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
 
     if(field._fieldType == SceneFieldType::UnsignedInt)
@@ -1044,111 +1123,155 @@ void SceneData::indexFieldIntoInternal(
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-Containers::Array<UnsignedInt> SceneData::indexFieldAsArrayInternal(
-    #ifndef CORRADE_NO_ASSERT
-    const char* const prefix,
-    #endif
-    const SceneField name) const
-{
-    const UnsignedInt fieldId = fieldFor(name);
-    CORRADE_ASSERT(fieldId != ~UnsignedInt{}, prefix << "field not found", {});
+Containers::Array<UnsignedInt> SceneData::indexFieldAsArrayInternal(const UnsignedInt fieldId) const {
     Containers::Array<UnsignedInt> out{NoInit, std::size_t(_fields[fieldId]._size)};
-    indexFieldIntoInternal(
-        #ifndef CORRADE_NO_ASSERT
-        prefix,
-        #endif
-        fieldId, out);
+    indexFieldIntoInternal(fieldId, 0, out);
     return out;
 }
 
 void SceneData::meshesInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
-    indexFieldIntoInternal(
-        #ifndef CORRADE_NO_ASSERT
-        "Trade::SceneData::meshesInto():",
-        #endif
-        fieldFor(SceneField::Mesh), destination);
+    const UnsignedInt fieldId = fieldFor(SceneField::Mesh);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::meshesInto(): field not found", );
+    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::meshesInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
+    indexFieldIntoInternal(fieldId, 0, destination);
+}
+
+std::size_t SceneData::meshesInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+    const UnsignedInt fieldId = fieldFor(SceneField::Mesh);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::meshesInto(): field not found", {});
+    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
+        "Trade::SceneData::meshesInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
+    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
+    indexFieldIntoInternal(fieldId, offset, destination.prefix(size));
+    return size;
 }
 
 Containers::Array<UnsignedInt> SceneData::meshesAsArray() const {
-    return indexFieldAsArrayInternal(
-        #ifndef CORRADE_NO_ASSERT
+    const UnsignedInt fieldId = fieldFor(SceneField::Mesh);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
-        "Trade::SceneData::meshesInto():",
-        #endif
-        SceneField::Mesh);
+        "Trade::SceneData::meshesInto(): field not found", {});
+    return indexFieldAsArrayInternal(fieldId);
 }
 
 void SceneData::meshMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
-    indexFieldIntoInternal(
-        #ifndef CORRADE_NO_ASSERT
-        "Trade::SceneData::meshMaterialsInto():",
-        #endif
-        fieldFor(SceneField::MeshMaterial), destination);
+    const UnsignedInt fieldId = fieldFor(SceneField::MeshMaterial);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::meshMaterialsInto(): field not found", );
+    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::meshMaterialsInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
+    indexFieldIntoInternal(fieldId, 0, destination);
+}
+
+std::size_t SceneData::meshMaterialsInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+    const UnsignedInt fieldId = fieldFor(SceneField::MeshMaterial);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::meshMaterialsInto(): field not found", {});
+    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
+        "Trade::SceneData::meshMaterialsInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
+    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
+    indexFieldIntoInternal(fieldId, offset, destination.prefix(size));
+    return size;
 }
 
 Containers::Array<UnsignedInt> SceneData::meshMaterialsAsArray() const {
-    return indexFieldAsArrayInternal(
-        #ifndef CORRADE_NO_ASSERT
+    const UnsignedInt fieldId = fieldFor(SceneField::MeshMaterial);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
-        "Trade::SceneData::meshMaterialsInto():",
-        #endif
-        SceneField::MeshMaterial);
+        "Trade::SceneData::meshMaterialsInto(): field not found", {});
+    return indexFieldAsArrayInternal(fieldId);
 }
 
 void SceneData::lightsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
-    indexFieldIntoInternal(
-        #ifndef CORRADE_NO_ASSERT
-        "Trade::SceneData::lightsInto():",
-        #endif
-        fieldFor(SceneField::Light), destination);
+    const UnsignedInt fieldId = fieldFor(SceneField::Light);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::lightsInto(): field not found", );
+    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::lightsInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
+    indexFieldIntoInternal(fieldId, 0, destination);
+}
+
+std::size_t SceneData::lightsInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+    const UnsignedInt fieldId = fieldFor(SceneField::Light);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::lightsInto(): field not found", {});
+    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
+        "Trade::SceneData::lightsInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
+    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
+    indexFieldIntoInternal(fieldId, offset, destination.prefix(size));
+    return size;
 }
 
 Containers::Array<UnsignedInt> SceneData::lightsAsArray() const {
-    return indexFieldAsArrayInternal(
-        #ifndef CORRADE_NO_ASSERT
+    const UnsignedInt fieldId = fieldFor(SceneField::Light);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
-        "Trade::SceneData::lightsInto():",
-        #endif
-        SceneField::Light);
+        "Trade::SceneData::lightsInto(): field not found", {});
+    return indexFieldAsArrayInternal(fieldId);
 }
 
 void SceneData::camerasInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
-    indexFieldIntoInternal(
-        #ifndef CORRADE_NO_ASSERT
-        "Trade::SceneData::camerasInto():",
-        #endif
-        fieldFor(SceneField::Camera), destination);
+    const UnsignedInt fieldId = fieldFor(SceneField::Camera);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::camerasInto(): field not found", );
+    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::camerasInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
+    indexFieldIntoInternal(fieldId, 0, destination);
+}
+
+std::size_t SceneData::camerasInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+    const UnsignedInt fieldId = fieldFor(SceneField::Camera);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::camerasInto(): field not found", {});
+    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
+        "Trade::SceneData::camerasInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
+    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
+    indexFieldIntoInternal(fieldId, offset, destination.prefix(size));
+    return size;
 }
 
 Containers::Array<UnsignedInt> SceneData::camerasAsArray() const {
-    return indexFieldAsArrayInternal(
-        #ifndef CORRADE_NO_ASSERT
+    const UnsignedInt fieldId = fieldFor(SceneField::Camera);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
-        "Trade::SceneData::camerasInto():",
-        #endif
-        SceneField::Camera);
+        "Trade::SceneData::camerasInto(): field not found", {});
+    return indexFieldAsArrayInternal(fieldId);
 }
 
 void SceneData::skinsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
-    indexFieldIntoInternal(
-        #ifndef CORRADE_NO_ASSERT
-        "Trade::SceneData::skinsInto():",
-        #endif
-        fieldFor(SceneField::Skin), destination);
+    const UnsignedInt fieldId = fieldFor(SceneField::Skin);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::skinsInto(): field not found", );
+    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::skinsInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
+    indexFieldIntoInternal(fieldId, 0, destination);
+}
+
+std::size_t SceneData::skinsInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+    const UnsignedInt fieldId = fieldFor(SceneField::Skin);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::skinsInto(): field not found", {});
+    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
+        "Trade::SceneData::skinsInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
+    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
+    indexFieldIntoInternal(fieldId, offset, destination.prefix(size));
+    return size;
 }
 
 Containers::Array<UnsignedInt> SceneData::skinsAsArray() const {
-    return indexFieldAsArrayInternal(
-        #ifndef CORRADE_NO_ASSERT
+    const UnsignedInt fieldId = fieldFor(SceneField::Skin);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
-        "Trade::SceneData::skinsInto():",
-        #endif
-        SceneField::Skin);
+        "Trade::SceneData::skinsInto(): field not found", {});
+    return indexFieldAsArrayInternal(fieldId);
 }
 
 Containers::Array<SceneFieldData> SceneData::releaseFieldData() {

@@ -101,32 +101,44 @@ struct SceneDataTest: TestSuite::Tester {
     template<class T> void objectsAsArrayByIndex();
     template<class T> void objectsAsArrayByName();
     void objectsAsArrayLongType();
-    void objectsIntoArrayInvalidSize();
+    void objectsIntoArrayByIndex();
+    void objectsIntoArrayByName();
+    void objectsIntoArrayInvalidSizeOrOffset();
     template<class T> void parentsAsArray();
     #ifndef CORRADE_TARGET_32BIT
     void parentsAsArrayLongType();
     #endif
-    void parentsIntoArrayInvalidSize();
+    void parentsIntoArray();
+    void parentsIntoArrayInvalidSizeOrOffset();
     template<class T> void transformations2DAsArray();
     template<class T> void transformations2DAsArrayTRS();
     template<class T> void transformations2DAsArrayBut3DType();
     template<class T> void transformations2DAsArrayBut3DTypeTRS();
-    void transformations2DIntoArrayInvalidSize();
+    void transformations2DIntoArray();
+    void transformations2DIntoArrayTRS();
+    void transformations2DIntoArrayInvalidSizeOrOffset();
     template<class T> void transformations3DAsArray();
     template<class T> void transformations3DAsArrayTRS();
     template<class T> void transformations3DAsArrayBut2DType();
     template<class T> void transformations3DAsArrayBut2DTypeTRS();
-    void transformations3DIntoArrayInvalidSize();
+    void transformations3DIntoArray();
+    void transformations3DIntoArrayTRS();
+    void transformations3DIntoArrayInvalidSizeOrOffset();
     template<class T> void meshesAsArray();
-    void meshesIntoArrayInvalidSize();
+    void meshesIntoArray();
+    void meshesIntoArrayInvalidSizeOrOffset();
     template<class T> void meshMaterialsAsArray();
-    void meshMaterialsIntoArrayInvalidSize();
+    void meshMaterialsIntoArray();
+    void meshMaterialsIntoArrayInvalidSizeOrOffset();
     template<class T> void lightsAsArray();
-    void lightsIntoArrayInvalidSize();
+    void lightsIntoArray();
+    void lightsIntoArrayInvalidSizeOrOffset();
     template<class T> void camerasAsArray();
-    void camerasIntoArrayInvalidSize();
+    void camerasIntoArray();
+    void camerasIntoArrayInvalidSizeOrOffset();
     template<class T> void skinsAsArray();
-    void skinsIntoArrayInvalidSize();
+    void skinsIntoArray();
+    void skinsIntoArrayInvalidSizeOrOffset();
 
     void mutableAccessNotAllowed();
 
@@ -147,6 +159,18 @@ const struct {
 } NotOwnedData[]{
     {"", {}},
     {"mutable", DataFlag::Mutable}
+};
+
+const struct {
+    const char* name;
+    std::size_t offset;
+    std::size_t size;
+    std::size_t expectedSize;
+} IntoArrayOffsetData[]{
+    {"whole", 0, 3, 3},
+    {"one element in the middle", 1, 1, 1},
+    {"suffix to a larger array", 2, 10, 1},
+    {"offset at the end", 3, 10, 0}
 };
 
 SceneDataTest::SceneDataTest() {
@@ -215,8 +239,13 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::objectsAsArrayByName<UnsignedShort>,
               &SceneDataTest::objectsAsArrayByName<UnsignedInt>,
               &SceneDataTest::objectsAsArrayByName<UnsignedLong>,
-              &SceneDataTest::objectsAsArrayLongType,
-              &SceneDataTest::objectsIntoArrayInvalidSize,
+              &SceneDataTest::objectsAsArrayLongType});
+
+    addInstancedTests({&SceneDataTest::objectsIntoArrayByIndex,
+                       &SceneDataTest::objectsIntoArrayByName},
+        Containers::arraySize(IntoArrayOffsetData));
+
+    addTests({&SceneDataTest::objectsIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::parentsAsArray<Byte>,
               &SceneDataTest::parentsAsArray<Short>,
               &SceneDataTest::parentsAsArray<Int>,
@@ -224,7 +253,12 @@ SceneDataTest::SceneDataTest() {
               #ifndef CORRADE_TARGET_32BIT
               &SceneDataTest::parentsAsArrayLongType,
               #endif
-              &SceneDataTest::parentsIntoArrayInvalidSize,
+              });
+
+    addInstancedTests({&SceneDataTest::parentsIntoArray},
+        Containers::arraySize(IntoArrayOffsetData));
+
+    addTests({&SceneDataTest::parentsIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::transformations2DAsArray<Matrix3>,
               &SceneDataTest::transformations2DAsArray<Matrix3d>,
               &SceneDataTest::transformations2DAsArray<DualComplex>,
@@ -236,8 +270,13 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::transformations2DAsArrayBut3DType<DualQuaternion>,
               &SceneDataTest::transformations2DAsArrayBut3DType<DualQuaterniond>,
               &SceneDataTest::transformations2DAsArrayBut3DTypeTRS<Float>,
-              &SceneDataTest::transformations2DAsArrayBut3DTypeTRS<Double>,
-              &SceneDataTest::transformations2DIntoArrayInvalidSize,
+              &SceneDataTest::transformations2DAsArrayBut3DTypeTRS<Double>});
+
+    addInstancedTests({&SceneDataTest::transformations2DIntoArray,
+                       &SceneDataTest::transformations2DIntoArrayTRS},
+        Containers::arraySize(IntoArrayOffsetData));
+
+    addTests({&SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::transformations3DAsArray<Matrix4>,
               &SceneDataTest::transformations3DAsArray<Matrix4d>,
               &SceneDataTest::transformations3DAsArray<DualQuaternion>,
@@ -249,28 +288,53 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::transformations3DAsArrayBut2DType<DualComplex>,
               &SceneDataTest::transformations3DAsArrayBut2DType<DualComplexd>,
               &SceneDataTest::transformations3DAsArrayBut2DTypeTRS<Float>,
-              &SceneDataTest::transformations3DAsArrayBut2DTypeTRS<Double>,
-              &SceneDataTest::transformations3DIntoArrayInvalidSize,
+              &SceneDataTest::transformations3DAsArrayBut2DTypeTRS<Double>});
+
+    addInstancedTests({&SceneDataTest::transformations3DIntoArray,
+                       &SceneDataTest::transformations3DIntoArrayTRS},
+        Containers::arraySize(IntoArrayOffsetData));
+
+    addTests({&SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::meshesAsArray<UnsignedByte>,
               &SceneDataTest::meshesAsArray<UnsignedShort>,
-              &SceneDataTest::meshesAsArray<UnsignedInt>,
-              &SceneDataTest::meshesIntoArrayInvalidSize,
+              &SceneDataTest::meshesAsArray<UnsignedInt>});
+
+    addInstancedTests({&SceneDataTest::meshesIntoArray},
+        Containers::arraySize(IntoArrayOffsetData));
+
+    addTests({&SceneDataTest::meshesIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::meshMaterialsAsArray<UnsignedByte>,
               &SceneDataTest::meshMaterialsAsArray<UnsignedShort>,
-              &SceneDataTest::meshMaterialsAsArray<UnsignedInt>,
-              &SceneDataTest::meshMaterialsIntoArrayInvalidSize,
+              &SceneDataTest::meshMaterialsAsArray<UnsignedInt>});
+
+    addInstancedTests({&SceneDataTest::meshMaterialsIntoArray},
+        Containers::arraySize(IntoArrayOffsetData));
+
+    addTests({&SceneDataTest::meshMaterialsIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::lightsAsArray<UnsignedByte>,
               &SceneDataTest::lightsAsArray<UnsignedShort>,
-              &SceneDataTest::lightsAsArray<UnsignedInt>,
-              &SceneDataTest::lightsIntoArrayInvalidSize,
+              &SceneDataTest::lightsAsArray<UnsignedInt>});
+
+    addInstancedTests({&SceneDataTest::lightsIntoArray},
+        Containers::arraySize(IntoArrayOffsetData));
+
+    addTests({&SceneDataTest::lightsIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::camerasAsArray<UnsignedByte>,
               &SceneDataTest::camerasAsArray<UnsignedShort>,
-              &SceneDataTest::camerasAsArray<UnsignedInt>,
-              &SceneDataTest::camerasIntoArrayInvalidSize,
+              &SceneDataTest::camerasAsArray<UnsignedInt>});
+
+    addInstancedTests({&SceneDataTest::camerasIntoArray},
+        Containers::arraySize(IntoArrayOffsetData));
+
+    addTests({&SceneDataTest::camerasIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::skinsAsArray<UnsignedByte>,
               &SceneDataTest::skinsAsArray<UnsignedShort>,
-              &SceneDataTest::skinsAsArray<UnsignedInt>,
-              &SceneDataTest::skinsIntoArrayInvalidSize,
+              &SceneDataTest::skinsAsArray<UnsignedInt>});
+
+    addInstancedTests({&SceneDataTest::skinsIntoArray},
+        Containers::arraySize(IntoArrayOffsetData));
+
+    addTests({&SceneDataTest::skinsIntoArrayInvalidSizeOrOffset,
 
               &SceneDataTest::mutableAccessNotAllowed,
 
@@ -1675,6 +1739,7 @@ template<class T> void SceneDataTest::objectsAsArrayByIndex() {
         SceneFieldData{SceneField::Parent, Implementation::sceneObjectTypeFor<T>(), nullptr, SceneFieldType::Int, nullptr},
         SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
     }};
+
     CORRADE_COMPARE_AS(scene.objectsAsArray(1),
         Containers::arrayView<UnsignedInt>({15, 37, 44}),
         TestSuite::Compare::Container);
@@ -1700,17 +1765,8 @@ template<class T> void SceneDataTest::objectsAsArrayByName() {
         SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
     }};
 
-    UnsignedInt expected[]{15, 37, 44};
-    CORRADE_COMPARE_AS(arrayView(scene.objectsAsArray(SceneField::Mesh)),
-        Containers::arrayView(expected),
-        TestSuite::Compare::Container);
-
-    /* Test Into() as well as it only shares a common helper with AsArray() but
-       has different top-level code paths */
-    UnsignedInt out[3];
-    scene.objectsInto(SceneField::Mesh, out);
-    CORRADE_COMPARE_AS(Containers::arrayView(out),
-        Containers::arrayView(expected),
+    CORRADE_COMPARE_AS(scene.objectsAsArray(SceneField::Mesh),
+        Containers::arrayView<UnsignedInt>({15, 37, 44}),
         TestSuite::Compare::Container);
 }
 
@@ -1741,7 +1797,99 @@ void SceneDataTest::objectsAsArrayLongType() {
         "Trade::SceneData::objectsInto(): indices for up to 4294967296 objects can't fit into a 32-bit type, access them directly via objects() instead\n");
 }
 
-void SceneDataTest::objectsIntoArrayInvalidSize() {
+void SceneDataTest::objectsIntoArrayByIndex() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt mesh;
+    } fields[] {
+        {15, 0},
+        {37, 1},
+        {44, 15}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 50, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Mesh,
+            view.slice(&Field::object),
+            view.slice(&Field::mesh)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        UnsignedInt out[3];
+        scene.objectsInto(1, out);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<UnsignedInt> out{data.size};
+        CORRADE_COMPARE(scene.objectsInto(1, data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::objectsIntoArrayByName() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt mesh;
+    } fields[] {
+        {15, 0},
+        {37, 1},
+        {44, 15}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 50, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Mesh,
+            view.slice(&Field::object),
+            view.slice(&Field::mesh)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        UnsignedInt out[3];
+        scene.objectsInto(SceneField::Mesh, out);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<UnsignedInt> out{data.size};
+        CORRADE_COMPARE(scene.objectsInto(SceneField::Mesh, data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::objectsIntoArrayInvalidSizeOrOffset() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -1762,9 +1910,13 @@ void SceneDataTest::objectsIntoArrayInvalidSize() {
     UnsignedInt destination[2];
     scene.objectsInto(0, destination);
     scene.objectsInto(SceneField::Mesh, destination);
+    scene.objectsInto(0, 4, destination);
+    scene.objectsInto(SceneField::Mesh, 4, destination);
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::objectsInto(): expected a view with 3 elements but got 2\n"
-        "Trade::SceneData::objectsInto(): expected a view with 3 elements but got 2\n");
+        "Trade::SceneData::objectsInto(): expected a view with 3 elements but got 2\n"
+        "Trade::SceneData::objectsInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::objectsInto(): offset 4 out of bounds for a field of size 3\n");
 }
 
 template<class T> void SceneDataTest::parentsAsArray() {
@@ -1787,17 +1939,8 @@ template<class T> void SceneDataTest::parentsAsArray() {
         SceneFieldData{SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
     }};
 
-    Int expected[]{15, -1, 44};
-    CORRADE_COMPARE_AS(arrayView(scene.parentsAsArray()),
-        Containers::arrayView(expected),
-        TestSuite::Compare::Container);
-
-    /* Test Into() as well as it only shares a common helper with AsArray() but
-       has different top-level code paths */
-    Int out[3];
-    scene.parentsInto(out);
-    CORRADE_COMPARE_AS(Containers::arrayView(out),
-        Containers::arrayView(expected),
+    CORRADE_COMPARE_AS(scene.parentsAsArray(),
+        Containers::arrayView({15, -1, 44}),
         TestSuite::Compare::Container);
 }
 
@@ -1829,7 +1972,53 @@ void SceneDataTest::parentsAsArrayLongType() {
 }
 #endif
 
-void SceneDataTest::parentsIntoArrayInvalidSize() {
+void SceneDataTest::parentsIntoArray() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        Int parent;
+    } fields[] {
+        {1, 15},
+        {0, -1},
+        {4, 44}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Mesh, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::UnsignedInt, nullptr},
+        SceneFieldData{SceneField::Parent,
+            view.slice(&Field::object),
+            view.slice(&Field::parent)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        Int out[3];
+        scene.parentsInto(out);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+            view.slice(&Field::parent),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<Int> out{data.size};
+        CORRADE_COMPARE(scene.parentsInto(data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            view.slice(&Field::parent)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::parentsIntoArrayInvalidSizeOrOffset() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -1849,8 +2038,10 @@ void SceneDataTest::parentsIntoArrayInvalidSize() {
     Error redirectError{&out};
     Int destination[2];
     scene.parentsInto(destination);
+    scene.parentsInto(4, destination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::parentsInto(): expected a view with 3 elements but got 2\n");
+        "Trade::SceneData::parentsInto(): expected a view with 3 elements but got 2\n"
+        "Trade::SceneData::parentsInto(): offset 4 out of bounds for a field of size 3\n");
 }
 
 template<class T> void SceneDataTest::transformations2DAsArray() {
@@ -1908,23 +2099,12 @@ template<class T> void SceneDataTest::transformations2DAsArray() {
             components.slice(&Component::scaling)},
     }};
 
-    Matrix3 expected[]{
+    CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView({
         Matrix3::translation({3.0f, 2.0f}),
         Matrix3::rotation(35.0_degf),
         Matrix3::translation({1.5f, 2.5f})*Matrix3::rotation(-15.0_degf),
         Matrix3::rotation(-15.0_degf)*Matrix3::translation({1.5f, 2.5f})
-    };
-    CORRADE_COMPARE_AS(arrayView(scene.transformations2DAsArray()),
-        Containers::arrayView(expected),
-        TestSuite::Compare::Container);
-
-    /* Test Into() as well as it only shares a common helper with AsArray() but
-       has different top-level code paths */
-    Matrix3 out[4];
-    scene.transformations2DInto(out);
-    CORRADE_COMPARE_AS(Containers::arrayView(out),
-        Containers::arrayView(expected),
-        TestSuite::Compare::Container);
+    }), TestSuite::Compare::Container);
 }
 
 template<class T> void SceneDataTest::transformations2DAsArrayTRS() {
@@ -2103,7 +2283,112 @@ template<class T> void SceneDataTest::transformations2DAsArrayBut3DTypeTRS() {
         "Trade::SceneData::transformations2DInto(): field has a 3D scaling type Trade::SceneFieldType::{0}\n", NameTraits<Math::Vector3<T>>::name(), NameTraits<Math::Quaternion<T>>::name()));
 }
 
-void SceneDataTest::transformations2DIntoArrayInvalidSize() {
+void SceneDataTest::transformations2DIntoArray() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        Matrix3 transformation;
+    } fields[] {
+        {1, Matrix3::translation({3.0f, 2.0f})*Matrix3::scaling({1.5f, 2.0f})},
+        {0, Matrix3::rotation(35.0_degf)},
+        {4, Matrix3::translation({3.0f, 2.0f})*Matrix3::rotation(35.0_degf)}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Transformation,
+            view.slice(&Field::object),
+            view.slice(&Field::transformation)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        Matrix3 out[3];
+        scene.transformations2DInto(out);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+            view.slice(&Field::transformation),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<Matrix3> out{data.size};
+        CORRADE_COMPARE(scene.transformations2DInto(data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            view.slice(&Field::transformation)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::transformations2DIntoArrayTRS() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        Vector2 translation;
+        Complex rotation;
+        Vector2 scaling;
+    } fields[] {
+        {1, {3.0f, 2.0f}, {}, {1.5f, 2.0f}},
+        {0, {}, Complex::rotation(35.0_degf), {1.0f, 1.0f}},
+        {4, {3.0f, 2.0f}, Complex::rotation(35.0_degf), {1.0f, 1.0f}}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Translation,
+            view.slice(&Field::object),
+            view.slice(&Field::translation)},
+        SceneFieldData{SceneField::Rotation,
+            view.slice(&Field::object),
+            view.slice(&Field::rotation)},
+        SceneFieldData{SceneField::Scaling,
+            view.slice(&Field::object),
+            view.slice(&Field::scaling)},
+    }};
+
+    Matrix3 expected[]{
+        Matrix3::translation({3.0f, 2.0f})*Matrix3::scaling({1.5f, 2.0f}),
+        Matrix3::rotation(35.0_degf),
+        Matrix3::translation({3.0f, 2.0f})*Matrix3::rotation(35.0_degf)
+    };
+
+    /* The offset-less overload should give back all data */
+    {
+        Matrix3 out[3];
+        scene.transformations2DInto(out);
+        CORRADE_COMPARE_AS(Containers::arrayView(out),
+            Containers::arrayView(expected),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<Matrix3> out{data.size};
+        CORRADE_COMPARE(scene.transformations2DInto(data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            Containers::arrayView(expected).slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffset() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -2123,8 +2408,10 @@ void SceneDataTest::transformations2DIntoArrayInvalidSize() {
     Error redirectError{&out};
     Matrix3 destination[2];
     scene.transformations2DInto(destination);
+    scene.transformations2DInto(4, destination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::transformations2DInto(): expected a view with 3 elements but got 2\n");
+        "Trade::SceneData::transformations2DInto(): expected a view with 3 elements but got 2\n"
+        "Trade::SceneData::transformations2DInto(): offset 4 out of bounds for a field of size 3\n");
 }
 
 template<class T> void SceneDataTest::transformations3DAsArray() {
@@ -2185,23 +2472,12 @@ template<class T> void SceneDataTest::transformations3DAsArray() {
             components.slice(&Component::scaling)},
     }};
 
-    Matrix4 expected[]{
+    CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView({
         Matrix4::translation({3.0f, 2.0f, -0.5f}),
         Matrix4::rotationY(35.0_degf),
         Matrix4::translation({1.5f, 2.5f, 0.75f})*Matrix4::rotationX(-15.0_degf),
         Matrix4::rotationX(-15.0_degf)*Matrix4::translation({1.5f, 2.5f, 0.75f})
-    };
-    CORRADE_COMPARE_AS(arrayView(scene.transformations3DAsArray()),
-        Containers::arrayView(expected),
-        TestSuite::Compare::Container);
-
-    /* Test Into() as well as it only shares a common helper with AsArray() but
-       has different top-level code paths */
-    Matrix4 out[4];
-    scene.transformations3DInto(out);
-    CORRADE_COMPARE_AS(Containers::arrayView(out),
-        Containers::arrayView(expected),
-        TestSuite::Compare::Container);
+    }), TestSuite::Compare::Container);
 }
 
 template<class T> void SceneDataTest::transformations3DAsArrayTRS() {
@@ -2380,7 +2656,112 @@ template<class T> void SceneDataTest::transformations3DAsArrayBut2DTypeTRS() {
         "Trade::SceneData::transformations3DInto(): field has a 2D scaling type Trade::SceneFieldType::{0}\n", NameTraits<Math::Vector2<T>>::name(), NameTraits<Math::Complex<T>>::name()));
 }
 
-void SceneDataTest::transformations3DIntoArrayInvalidSize() {
+void SceneDataTest::transformations3DIntoArray() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        Matrix4 transformation;
+    } fields[] {
+        {1, Matrix4::translation({3.0f, 2.0f, 1.0f})*Matrix4::scaling({1.5f, 2.0f, 4.5f})},
+        {0, Matrix4::rotationX(35.0_degf)},
+        {4, Matrix4::translation({3.0f, 2.0f, 1.0f})*Matrix4::rotationX(35.0_degf)}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Transformation,
+            view.slice(&Field::object),
+            view.slice(&Field::transformation)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        Matrix4 out[3];
+        scene.transformations3DInto(out);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+            view.slice(&Field::transformation),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<Matrix4> out{data.size};
+        CORRADE_COMPARE(scene.transformations3DInto(data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            view.slice(&Field::transformation)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::transformations3DIntoArrayTRS() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        Vector3 translation;
+        Quaternion rotation;
+        Vector3 scaling;
+    } fields[] {
+        {1, {3.0f, 2.0f, 1.0f}, {}, {1.5f, 2.0f, 4.5f}},
+        {0, {}, Quaternion::rotation(35.0_degf, Vector3::xAxis()), {1.0f, 1.0f, 1.0f}},
+        {4, {3.0f, 2.0f, 1.0f}, Quaternion::rotation(35.0_degf, Vector3::xAxis()), {1.0f, 1.0f, 1.0f}}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Translation,
+            view.slice(&Field::object),
+            view.slice(&Field::translation)},
+        SceneFieldData{SceneField::Rotation,
+            view.slice(&Field::object),
+            view.slice(&Field::rotation)},
+        SceneFieldData{SceneField::Scaling,
+            view.slice(&Field::object),
+            view.slice(&Field::scaling)},
+    }};
+
+    Matrix4 expected[]{
+        Matrix4::translation({3.0f, 2.0f, 1.0f})*Matrix4::scaling({1.5f, 2.0f, 4.5f}),
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::translation({3.0f, 2.0f, 1.0f})*Matrix4::rotationX(35.0_degf)
+    };
+
+    /* The offset-less overload should give back all data */
+    {
+        Matrix4 out[3];
+        scene.transformations3DInto(out);
+        CORRADE_COMPARE_AS(Containers::arrayView(out),
+            Containers::arrayView(expected),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<Matrix4> out{data.size};
+        CORRADE_COMPARE(scene.transformations3DInto(data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            Containers::arrayView(expected).slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffset() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -2400,8 +2781,10 @@ void SceneDataTest::transformations3DIntoArrayInvalidSize() {
     Error redirectError{&out};
     Matrix4 destination[2];
     scene.transformations3DInto(destination);
+    scene.transformations3DInto(4, destination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::transformations3DInto(): expected a view with 3 elements but got 2\n");
+        "Trade::SceneData::transformations3DInto(): expected a view with 3 elements but got 2\n"
+        "Trade::SceneData::transformations3DInto(): offset 4 out of bounds for a field of size 3\n");
 }
 
 template<class T> void SceneDataTest::meshesAsArray() {
@@ -2424,21 +2807,58 @@ template<class T> void SceneDataTest::meshesAsArray() {
         SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
     }};
 
-    UnsignedInt expected[]{15, 37, 44};
-    CORRADE_COMPARE_AS(arrayView(scene.meshesAsArray()),
-        Containers::arrayView(expected),
-        TestSuite::Compare::Container);
-
-    /* Test Into() as well as it only shares a common helper with AsArray() but
-       has different top-level code paths */
-    UnsignedInt out[3];
-    scene.meshesInto(out);
-    CORRADE_COMPARE_AS(Containers::arrayView(out),
-        Containers::arrayView(expected),
+    CORRADE_COMPARE_AS(scene.meshesAsArray(),
+        Containers::arrayView<UnsignedInt>({15, 37, 44}),
         TestSuite::Compare::Container);
 }
 
-void SceneDataTest::meshesIntoArrayInvalidSize() {
+void SceneDataTest::meshesIntoArray() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt mesh;
+    } fields[]{
+        {1, 15},
+        {0, 37},
+        {4, 44}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Mesh,
+            view.slice(&Field::object),
+            view.slice(&Field::mesh)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        UnsignedInt out[3];
+        scene.meshesInto(out);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+            view.slice(&Field::mesh),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<UnsignedInt> out{data.size};
+        CORRADE_COMPARE(scene.meshesInto(data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            view.slice(&Field::mesh)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::meshesIntoArrayInvalidSizeOrOffset() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -2458,8 +2878,10 @@ void SceneDataTest::meshesIntoArrayInvalidSize() {
     Error redirectError{&out};
     UnsignedInt destination[2];
     scene.meshesInto(destination);
+    scene.meshesInto(4, destination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::meshesInto(): expected a view with 3 elements but got 2\n");
+        "Trade::SceneData::meshesInto(): expected a view with 3 elements but got 2\n"
+        "Trade::SceneData::meshesInto(): offset 4 out of bounds for a field of size 3\n");
 }
 
 template<class T> void SceneDataTest::meshMaterialsAsArray() {
@@ -2482,21 +2904,58 @@ template<class T> void SceneDataTest::meshMaterialsAsArray() {
         SceneFieldData{SceneField::MeshMaterial, view.slice(&Field::object), view.slice(&Field::meshMaterial)}
     }};
 
-    UnsignedInt expected[]{15, 37, 44};
-    CORRADE_COMPARE_AS(arrayView(scene.meshMaterialsAsArray()),
-        Containers::arrayView(expected),
-        TestSuite::Compare::Container);
-
-    /* Test Into() as well as it only shares a common helper with AsArray() but
-       has different top-level code paths */
-    UnsignedInt out[3];
-    scene.meshMaterialsInto(out);
-    CORRADE_COMPARE_AS(Containers::arrayView(out),
-        Containers::arrayView(expected),
+    CORRADE_COMPARE_AS(scene.meshMaterialsAsArray(),
+        Containers::arrayView<UnsignedInt>({15, 37, 44}),
         TestSuite::Compare::Container);
 }
 
-void SceneDataTest::meshMaterialsIntoArrayInvalidSize() {
+void SceneDataTest::meshMaterialsIntoArray() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt meshMaterial;
+    } fields[]{
+        {1, 15},
+        {0, 37},
+        {4, 44}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::MeshMaterial,
+            view.slice(&Field::object),
+            view.slice(&Field::meshMaterial)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        UnsignedInt out[3];
+        scene.meshMaterialsInto(out);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+            view.slice(&Field::meshMaterial),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<UnsignedInt> out{data.size};
+        CORRADE_COMPARE(scene.meshMaterialsInto(data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            view.slice(&Field::meshMaterial)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::meshMaterialsIntoArrayInvalidSizeOrOffset() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -2516,8 +2975,10 @@ void SceneDataTest::meshMaterialsIntoArrayInvalidSize() {
     Error redirectError{&out};
     UnsignedInt destination[2];
     scene.meshMaterialsInto(destination);
+    scene.meshMaterialsInto(4, destination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::meshMaterialsInto(): expected a view with 3 elements but got 2\n");
+        "Trade::SceneData::meshMaterialsInto(): expected a view with 3 elements but got 2\n"
+        "Trade::SceneData::meshMaterialsInto(): offset 4 out of bounds for a field of size 3\n");
 }
 
 template<class T> void SceneDataTest::lightsAsArray() {
@@ -2540,21 +3001,58 @@ template<class T> void SceneDataTest::lightsAsArray() {
         SceneFieldData{SceneField::Light, view.slice(&Field::object), view.slice(&Field::light)}
     }};
 
-    UnsignedInt expected[]{15, 37, 44};
-    CORRADE_COMPARE_AS(arrayView(scene.lightsAsArray()),
-        Containers::arrayView(expected),
-        TestSuite::Compare::Container);
-
-    /* Test Into() as well as it only shares a common helper with AsArray() but
-       has different top-level code paths */
-    UnsignedInt out[3];
-    scene.lightsInto(out);
-    CORRADE_COMPARE_AS(Containers::arrayView(out),
-        Containers::arrayView(expected),
+    CORRADE_COMPARE_AS(scene.lightsAsArray(),
+        Containers::arrayView<UnsignedInt>({15, 37, 44}),
         TestSuite::Compare::Container);
 }
 
-void SceneDataTest::lightsIntoArrayInvalidSize() {
+void SceneDataTest::lightsIntoArray() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt light;
+    } fields[] {
+        {1, 15},
+        {0, 37},
+        {4, 44}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Light,
+            view.slice(&Field::object),
+            view.slice(&Field::light)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        UnsignedInt out[3];
+        scene.lightsInto(out);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+            view.slice(&Field::light),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<UnsignedInt> out{data.size};
+        CORRADE_COMPARE(scene.lightsInto(data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            view.slice(&Field::light)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::lightsIntoArrayInvalidSizeOrOffset() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -2574,8 +3072,10 @@ void SceneDataTest::lightsIntoArrayInvalidSize() {
     Error redirectError{&out};
     UnsignedInt destination[2];
     scene.lightsInto(destination);
+    scene.lightsInto(4, destination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::lightsInto(): expected a view with 3 elements but got 2\n");
+        "Trade::SceneData::lightsInto(): expected a view with 3 elements but got 2\n"
+        "Trade::SceneData::lightsInto(): offset 4 out of bounds for a field of size 3\n");
 }
 
 template<class T> void SceneDataTest::camerasAsArray() {
@@ -2598,21 +3098,58 @@ template<class T> void SceneDataTest::camerasAsArray() {
         SceneFieldData{SceneField::Camera, view.slice(&Field::object), view.slice(&Field::camera)}
     }};
 
-    UnsignedInt expected[]{15, 37, 44};
-    CORRADE_COMPARE_AS(arrayView(scene.camerasAsArray()),
-        Containers::arrayView(expected),
-        TestSuite::Compare::Container);
-
-    /* Test Into() as well as it only shares a common helper with AsArray() but
-       has different top-level code paths */
-    UnsignedInt out[3];
-    scene.camerasInto(out);
-    CORRADE_COMPARE_AS(Containers::arrayView(out),
-        Containers::arrayView(expected),
+    CORRADE_COMPARE_AS(scene.camerasAsArray(),
+        Containers::arrayView<UnsignedInt>({15, 37, 44}),
         TestSuite::Compare::Container);
 }
 
-void SceneDataTest::camerasIntoArrayInvalidSize() {
+void SceneDataTest::camerasIntoArray() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt camera;
+    } fields[]{
+        {1, 15},
+        {0, 37},
+        {4, 44}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Camera,
+            view.slice(&Field::object),
+            view.slice(&Field::camera)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        UnsignedInt out[3];
+        scene.camerasInto(out);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+            view.slice(&Field::camera),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<UnsignedInt> out{data.size};
+        CORRADE_COMPARE(scene.camerasInto(data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            view.slice(&Field::camera)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::camerasIntoArrayInvalidSizeOrOffset() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -2632,8 +3169,10 @@ void SceneDataTest::camerasIntoArrayInvalidSize() {
     Error redirectError{&out};
     UnsignedInt destination[2];
     scene.camerasInto(destination);
+    scene.camerasInto(4, destination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::camerasInto(): expected a view with 3 elements but got 2\n");
+        "Trade::SceneData::camerasInto(): expected a view with 3 elements but got 2\n"
+        "Trade::SceneData::camerasInto(): offset 4 out of bounds for a field of size 3\n");
 }
 
 template<class T> void SceneDataTest::skinsAsArray() {
@@ -2656,21 +3195,58 @@ template<class T> void SceneDataTest::skinsAsArray() {
         SceneFieldData{SceneField::Skin, view.slice(&Field::object), view.slice(&Field::skin)}
     }};
 
-    UnsignedInt expected[]{15, 37, 44};
-    CORRADE_COMPARE_AS(arrayView(scene.skinsAsArray()),
-        Containers::arrayView(expected),
-        TestSuite::Compare::Container);
-
-    /* Test Into() as well as it only shares a common helper with AsArray() but
-       has different top-level code paths */
-    UnsignedInt out[3];
-    scene.skinsInto(out);
-    CORRADE_COMPARE_AS(Containers::arrayView(out),
-        Containers::arrayView(expected),
+    CORRADE_COMPARE_AS(scene.skinsAsArray(),
+        Containers::arrayView<UnsignedInt>({15, 37, 44}),
         TestSuite::Compare::Container);
 }
 
-void SceneDataTest::skinsIntoArrayInvalidSize() {
+void SceneDataTest::skinsIntoArray() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt skin;
+    } fields[] {
+        {1, 15},
+        {0, 37},
+        {4, 44}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Skin,
+            view.slice(&Field::object),
+            view.slice(&Field::skin)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        UnsignedInt out[3];
+        scene.skinsInto(out);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+            view.slice(&Field::skin),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<UnsignedInt> out{data.size};
+        CORRADE_COMPARE(scene.skinsInto(data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            view.slice(&Field::skin)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::skinsIntoArrayInvalidSizeOrOffset() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -2690,8 +3266,10 @@ void SceneDataTest::skinsIntoArrayInvalidSize() {
     Error redirectError{&out};
     UnsignedInt destination[2];
     scene.skinsInto(destination);
+    scene.skinsInto(4, destination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::skinsInto(): expected a view with 3 elements but got 2\n");
+        "Trade::SceneData::skinsInto(): expected a view with 3 elements but got 2\n"
+        "Trade::SceneData::skinsInto(): offset 4 out of bounds for a field of size 3\n");
 }
 
 void SceneDataTest::mutableAccessNotAllowed() {
@@ -2862,18 +3440,29 @@ void SceneDataTest::fieldNotFound() {
     scene.mutableField<UnsignedInt[]>(sceneFieldCustom(666));
 
     scene.parentsAsArray();
+    scene.parentsInto(nullptr);
+    scene.parentsInto(0, nullptr);
     scene.transformations2DAsArray();
-    scene.transformations3DAsArray();
-    /* Test both AsArray() and Into() for transformations as they only share a
-       common helper but have different top-level code paths. They however have
-       the same assertion messages to save binary size a bit. */
     scene.transformations2DInto(nullptr);
+    scene.transformations2DInto(0, nullptr);
+    scene.transformations3DAsArray();
     scene.transformations3DInto(nullptr);
+    scene.transformations3DInto(0, nullptr);
     scene.meshesAsArray();
+    scene.meshesInto(nullptr);
+    scene.meshesInto(0, nullptr);
     scene.meshMaterialsAsArray();
+    scene.meshMaterialsInto(nullptr);
+    scene.meshMaterialsInto(0, nullptr);
     scene.lightsAsArray();
+    scene.lightsInto(nullptr);
+    scene.lightsInto(0, nullptr);
     scene.camerasAsArray();
+    scene.camerasInto(nullptr);
+    scene.camerasInto(0, nullptr);
     scene.skinsAsArray();
+    scene.skinsInto(nullptr);
+    scene.skinsInto(0, nullptr);
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::fieldData(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldName(): index 2 out of range for 2 fields\n"
@@ -2898,19 +3487,32 @@ void SceneDataTest::fieldNotFound() {
         "Trade::SceneData::mutableField(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::mutableField(): field Trade::SceneField::Custom(666) not found\n"
 
+        /* AsArray() and Into() each share a common helper but have different
+           top-level code paths. They however have the same assertion messages
+           to save binary size a bit. */
         "Trade::SceneData::parentsInto(): field not found\n"
-        /* Test both AsArray() and Into() for transformations as they only
-           share a common helper but have different top-level code paths. They
-           however have the same assertion messages to save binary size a
-           bit. */
+        "Trade::SceneData::parentsInto(): field not found\n"
+        "Trade::SceneData::parentsInto(): field not found\n"
+        "Trade::SceneData::transformations2DInto(): no transformation-related field found\n"
+        "Trade::SceneData::transformations2DInto(): no transformation-related field found\n"
         "Trade::SceneData::transformations2DInto(): no transformation-related field found\n"
         "Trade::SceneData::transformations3DInto(): no transformation-related field found\n"
-        "Trade::SceneData::transformations2DInto(): no transformation-related field found\n"
+        "Trade::SceneData::transformations3DInto(): no transformation-related field found\n"
         "Trade::SceneData::transformations3DInto(): no transformation-related field found\n"
         "Trade::SceneData::meshesInto(): field not found\n"
+        "Trade::SceneData::meshesInto(): field not found\n"
+        "Trade::SceneData::meshesInto(): field not found\n"
+        "Trade::SceneData::meshMaterialsInto(): field not found\n"
+        "Trade::SceneData::meshMaterialsInto(): field not found\n"
         "Trade::SceneData::meshMaterialsInto(): field not found\n"
         "Trade::SceneData::lightsInto(): field not found\n"
+        "Trade::SceneData::lightsInto(): field not found\n"
+        "Trade::SceneData::lightsInto(): field not found\n"
         "Trade::SceneData::camerasInto(): field not found\n"
+        "Trade::SceneData::camerasInto(): field not found\n"
+        "Trade::SceneData::camerasInto(): field not found\n"
+        "Trade::SceneData::skinsInto(): field not found\n"
+        "Trade::SceneData::skinsInto(): field not found\n"
         "Trade::SceneData::skinsInto(): field not found\n");
 }
 

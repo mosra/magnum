@@ -1265,6 +1265,19 @@ class MAGNUM_TRADE_EXPORT SceneData {
         void objectsInto(UnsignedInt fieldId, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
 
         /**
+         * @brief A subrange of object mapping for given field as 32-bit integers into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref objectsInto(UnsignedInt, const Containers::StridedArrayView1D<UnsignedInt>&) const
+         * extracts only a subrange of the object mapping defined by @p offset
+         * and size of the @p destination view, returning the count of items
+         * actually extracted. The @p offset is expected to not be larger than
+         * the field size.
+         * @see @ref fieldSize(UnsignedInt) const
+         */
+        std::size_t objectsInto(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+
+        /**
          * @brief Object mapping for given named field as 32-bit integers
          * @m_since_latest
          *
@@ -1294,6 +1307,19 @@ class MAGNUM_TRADE_EXPORT SceneData {
         void objectsInto(SceneField fieldName, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
 
         /**
+         * @brief A subrange of object mapping for given named field as 32-bit integers into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref objectsInto(SceneField, const Containers::StridedArrayView1D<UnsignedInt>&) const
+         * extracts only a subrange of the object mapping defined by @p offset
+         * and size of the @p destination view, returning the count of items
+         * actually extracted. The @p offset is expected to not be larger than
+         * the field size.
+         * @see @ref fieldSize(SceneField) const
+         */
+        std::size_t objectsInto(SceneField fieldName, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+
+        /**
          * @brief Parent indices as 32-bit integers
          * @m_since_latest
          *
@@ -1320,6 +1346,19 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref fieldSize(SceneField) const
          */
         void parentsInto(const Containers::StridedArrayView1D<Int>& destination) const;
+
+        /**
+         * @brief A subrange of parent indices as 32-bit integers into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref parentsInto(const Containers::StridedArrayView1D<Int>&) const
+         * extracts only a subrange of the field defined by @p offset and size
+         * of the @p destination view, returning the count of items actually
+         * extracted. The @p offset is expected to not be larger than the field
+         * size.
+         * @see @ref fieldSize(SceneField) const
+         */
+        std::size_t parentsInto(std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
 
         /**
          * @brief 2D transformations as 3x3 float matrices
@@ -1352,6 +1391,19 @@ class MAGNUM_TRADE_EXPORT SceneData {
         void transformations2DInto(const Containers::StridedArrayView1D<Matrix3>& destination) const;
 
         /**
+         * @brief A subrange of 2D transformations as 3x3 float matrices into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref transformations2DInto(const Containers::StridedArrayView1D<Matrix3>&) const
+         * extracts only a subrange of the field defined by @p offset and size
+         * of the @p destination view, returning the count of items actually
+         * extracted. The @p offset is expected to not be larger than the field
+         * size.
+         * @see @ref fieldSize(SceneField) const
+         */
+        std::size_t transformations2DInto(std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const;
+
+        /**
          * @brief 3D transformations as 4x4 float matrices
          * @m_since_latest
          *
@@ -1382,6 +1434,19 @@ class MAGNUM_TRADE_EXPORT SceneData {
         void transformations3DInto(const Containers::StridedArrayView1D<Matrix4>& destination) const;
 
         /**
+         * @brief A subrange of 3D transformations as 4x4 float matrices into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref transformations3DInto(const Containers::StridedArrayView1D<Matrix4>&) const
+         * extracts only a subrange of the field defined by @p offset and size
+         * of the @p destination view, returning the count of items actually
+         * extracted. The @p offset is expected to not be larger than the field
+         * size.
+         * @see @ref fieldSize(SceneField) const
+         */
+        std::size_t transformations3DInto(std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const;
+
+        /**
          * @brief Mesh IDs as 32-bit integers
          * @m_since_latest
          *
@@ -1403,6 +1468,19 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref fieldSize(SceneField) const
          */
         void meshesInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+
+        /**
+         * @brief A subrange of mesh IDs as 32-bit integers into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref meshesInto(const Containers::StridedArrayView1D<UnsignedInt>&) const
+         * extracts only a subrange of the field defined by @p offset and size
+         * of the @p destination view, returning the count of items actually
+         * extracted. The @p offset is expected to not be larger than the field
+         * size.
+         * @see @ref fieldSize(SceneField) const
+         */
+        std::size_t meshesInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
 
         /**
          * @brief Mesh material IDs as 32-bit integers
@@ -1428,6 +1506,19 @@ class MAGNUM_TRADE_EXPORT SceneData {
         void meshMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
 
         /**
+         * @brief A subrange of mesh material IDs as 32-bit integers into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref meshMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const
+         * extracts only a subrange of the field defined by @p offset and size
+         * of the @p destination view, returning the count of items actually
+         * extracted. The @p offset is expected to not be larger than the field
+         * size.
+         * @see @ref fieldSize(SceneField) const
+         */
+        std::size_t meshMaterialsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+
+        /**
          * @brief Light IDs as 32-bit integers
          * @m_since_latest
          *
@@ -1449,6 +1540,19 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref fieldSize(SceneField) const
          */
         void lightsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+
+        /**
+         * @brief A subrange of light IDs as 32-bit integers into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref lightsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const
+         * extracts only a subrange of the field defined by @p offset and size
+         * of the @p destination view, returning the count of items actually
+         * extracted. The @p offset is expected to not be larger than the field
+         * size.
+         * @see @ref fieldSize(SceneField) const
+         */
+        std::size_t lightsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
 
         /**
          * @brief Camera IDs as 32-bit integers
@@ -1474,6 +1578,19 @@ class MAGNUM_TRADE_EXPORT SceneData {
         void camerasInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
 
         /**
+         * @brief A subrange of camera IDs as 32-bit integers into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref camerasInto(const Containers::StridedArrayView1D<UnsignedInt>&) const
+         * extracts only a subrange of the field defined by @p offset and size
+         * of the @p destination view, returning the count of items actually
+         * extracted. The @p offset is expected to not be larger than the field
+         * size.
+         * @see @ref fieldSize(SceneField) const
+         */
+        std::size_t camerasInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+
+        /**
          * @brief Skin IDs as 32-bit integers
          * @m_since_latest
          *
@@ -1495,6 +1612,19 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref fieldSize(SceneField) const
          */
         void skinsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+
+        /**
+         * @brief A subrange of skin IDs as 32-bit integers into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref skinsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const
+         * extracts only a subrange of the field defined by @p offset and size
+         * of the @p destination view, returning the count of items actually
+         * extracted. The @p offset is expected to not be larger than the field
+         * size.
+         * @see @ref fieldSize(SceneField) const
+         */
+        std::size_t skinsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
 
         /**
          * @brief Release field data storage
@@ -1542,28 +1672,25 @@ class MAGNUM_TRADE_EXPORT SceneData {
         /* Internal helper that doesn't assert, unlike fieldId() */
         UnsignedInt fieldFor(SceneField name) const;
 
-        /* Like objects() / field(), but returning just a 1D view */
+        /* Like objects() / field(), but returning just a 1D view, sliced from
+           offset to offset + size. The parameterless overloads are equal to
+           offset = 0 and size = field.size(). */
+        MAGNUM_TRADE_LOCAL Containers::StridedArrayView1D<const void> fieldDataObjectViewInternal(const SceneFieldData& field, std::size_t offset, std::size_t size) const;
         MAGNUM_TRADE_LOCAL Containers::StridedArrayView1D<const void> fieldDataObjectViewInternal(const SceneFieldData& field) const;
+        MAGNUM_TRADE_LOCAL Containers::StridedArrayView1D<const void> fieldDataFieldViewInternal(const SceneFieldData& field, std::size_t offset, std::size_t size) const;
         MAGNUM_TRADE_LOCAL Containers::StridedArrayView1D<const void> fieldDataFieldViewInternal(const SceneFieldData& field) const;
 
         #ifndef CORRADE_NO_ASSERT
         template<class T> bool checkFieldTypeCompatibility(const SceneFieldData& attribute, const char* prefix) const;
         #endif
 
-        MAGNUM_TRADE_LOCAL void parentsIntoInternal(UnsignedInt fieldId, const Containers::StridedArrayView1D<Int>& destination) const;
+        MAGNUM_TRADE_LOCAL void objectsIntoInternal(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+        MAGNUM_TRADE_LOCAL void parentsIntoInternal(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
         MAGNUM_TRADE_LOCAL std::size_t findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const;
-        MAGNUM_TRADE_LOCAL void transformations2DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, const Containers::StridedArrayView1D<Matrix3>& destination) const;
-        MAGNUM_TRADE_LOCAL void transformations3DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, const Containers::StridedArrayView1D<Matrix4>& destination) const;
-        MAGNUM_TRADE_LOCAL void indexFieldIntoInternal(
-            #ifndef CORRADE_NO_ASSERT
-            const char* const prefix,
-            #endif
-            const UnsignedInt fieldId, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
-        MAGNUM_TRADE_LOCAL Containers::Array<UnsignedInt> indexFieldAsArrayInternal(
-            #ifndef CORRADE_NO_ASSERT
-            const char* const prefix,
-            #endif
-            const SceneField name) const;
+        MAGNUM_TRADE_LOCAL void transformations2DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const;
+        MAGNUM_TRADE_LOCAL void transformations3DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const;
+        MAGNUM_TRADE_LOCAL void indexFieldIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+        MAGNUM_TRADE_LOCAL Containers::Array<UnsignedInt> indexFieldAsArrayInternal(const UnsignedInt fieldId) const;
 
         DataFlags _dataFlags;
         SceneObjectType _objectType;
