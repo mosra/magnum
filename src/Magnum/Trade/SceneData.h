@@ -208,10 +208,10 @@ enum class SceneField: UnsignedInt {
 
     /**
      * ID of a material for a @ref SceneField::Mesh, corresponding to the ID
-     * passed to @ref AbstractImporter::material(). Type is usually
-     * @ref SceneFieldType::UnsignedInt, but can be also any of
-     * @relativeref{SceneFieldType,UnsignedByte} or
-     * @relativeref{SceneFieldType,UnsignedShort}. Expected to share the
+     * passed to @ref AbstractImporter::material() or @cpp -1 @ce if the mesh
+     * has no material associated. Type is usually @ref SceneFieldType::Int,
+     * but can be also any of @relativeref{SceneFieldType,Byte} or
+     * @relativeref{SceneFieldType,Short}. Expected to share the
      * object mapping view with @ref SceneField::Mesh.
      * @see @ref SceneData::meshMaterialsAsArray()
      */
@@ -1492,7 +1492,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * newly-allocated array. The field is expected to exist.
          * @see @ref meshMaterialsInto(), @ref hasField()
          */
-        Containers::Array<UnsignedInt> meshMaterialsAsArray() const;
+        Containers::Array<Int> meshMaterialsAsArray() const;
 
         /**
          * @brief Mesh material IDs as 32-bit integers into a pre-allocated view
@@ -1503,20 +1503,20 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @p destination is sized to contain exactly all data.
          * @see @ref fieldSize(SceneField) const
          */
-        void meshMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+        void meshMaterialsInto(const Containers::StridedArrayView1D<Int>& destination) const;
 
         /**
          * @brief A subrange of mesh material IDs as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
-         * Compared to @ref meshMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const
+         * Compared to @ref meshMaterialsInto(const Containers::StridedArrayView1D<Int>&) const
          * extracts only a subrange of the field defined by @p offset and size
          * of the @p destination view, returning the count of items actually
          * extracted. The @p offset is expected to not be larger than the field
          * size.
          * @see @ref fieldSize(SceneField) const
          */
-        std::size_t meshMaterialsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+        std::size_t meshMaterialsInto(std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
 
         /**
          * @brief Light IDs as 32-bit integers
@@ -1689,8 +1689,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
         MAGNUM_TRADE_LOCAL std::size_t findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const;
         MAGNUM_TRADE_LOCAL void transformations2DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const;
         MAGNUM_TRADE_LOCAL void transformations3DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const;
-        MAGNUM_TRADE_LOCAL void indexFieldIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
-        MAGNUM_TRADE_LOCAL Containers::Array<UnsignedInt> indexFieldAsArrayInternal(const UnsignedInt fieldId) const;
+        MAGNUM_TRADE_LOCAL void unsignedIndexFieldIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+        MAGNUM_TRADE_LOCAL void indexFieldIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
+        MAGNUM_TRADE_LOCAL Containers::Array<UnsignedInt> unsignedIndexFieldAsArrayInternal(const UnsignedInt fieldId) const;
+        MAGNUM_TRADE_LOCAL Containers::Array<Int> indexFieldAsArrayInternal(const UnsignedInt fieldId) const;
 
         DataFlags _dataFlags;
         SceneObjectType _objectType;
@@ -1857,13 +1859,16 @@ namespace Implementation {
                  type == SceneFieldType::Quaternion ||
                  type == SceneFieldType::Quaterniond)) ||
            ((name == SceneField::Mesh ||
-             name == SceneField::MeshMaterial ||
              name == SceneField::Light ||
              name == SceneField::Camera ||
              name == SceneField::Skin) &&
                 (type == SceneFieldType::UnsignedByte ||
                  type == SceneFieldType::UnsignedShort ||
                  type == SceneFieldType::UnsignedInt)) ||
+            (name == SceneField::MeshMaterial &&
+                (type == SceneFieldType::Byte ||
+                 type == SceneFieldType::Short ||
+                 type == SceneFieldType::Int)) ||
             /* Custom fields can be anything */
             isSceneFieldCustom(name);
     }

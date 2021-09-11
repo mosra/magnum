@@ -303,9 +303,9 @@ SceneDataTest::SceneDataTest() {
         Containers::arraySize(IntoArrayOffsetData));
 
     addTests({&SceneDataTest::meshesIntoArrayInvalidSizeOrOffset,
-              &SceneDataTest::meshMaterialsAsArray<UnsignedByte>,
-              &SceneDataTest::meshMaterialsAsArray<UnsignedShort>,
-              &SceneDataTest::meshMaterialsAsArray<UnsignedInt>});
+              &SceneDataTest::meshMaterialsAsArray<Byte>,
+              &SceneDataTest::meshMaterialsAsArray<Short>,
+              &SceneDataTest::meshMaterialsAsArray<Int>});
 
     addInstancedTests({&SceneDataTest::meshMaterialsIntoArray},
         Containers::arraySize(IntoArrayOffsetData));
@@ -1314,7 +1314,7 @@ void SceneDataTest::constructZeroFields() {
 void SceneDataTest::constructZeroObjects() {
     int importerState;
     SceneFieldData meshes{SceneField::Mesh, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::UnsignedShort, nullptr};
-    SceneFieldData materials{SceneField::MeshMaterial, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::UnsignedInt, nullptr};
+    SceneFieldData materials{SceneField::MeshMaterial, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr};
     SceneData scene{SceneObjectType::UnsignedInt, 0, nullptr, {meshes, materials}, &importerState};
     CORRADE_COMPARE(scene.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(!scene.fieldData().empty());
@@ -1327,7 +1327,7 @@ void SceneDataTest::constructZeroObjects() {
 
     /* Field property access by name */
     CORRADE_COMPARE(scene.fieldType(SceneField::Mesh), SceneFieldType::UnsignedShort);
-    CORRADE_COMPARE(scene.fieldType(SceneField::MeshMaterial), SceneFieldType::UnsignedInt);
+    CORRADE_COMPARE(scene.fieldType(SceneField::MeshMaterial), SceneFieldType::Int);
     CORRADE_COMPARE(scene.fieldSize(SceneField::Mesh), 0);
     CORRADE_COMPARE(scene.fieldSize(SceneField::MeshMaterial), 0);
     CORRADE_COMPARE(scene.objects(SceneField::Mesh).data(), nullptr);
@@ -1381,7 +1381,7 @@ void SceneDataTest::constructDuplicateField() {
     /* Builtin fields are checked using a bitfield, as they have monotonic
        numbering */
     SceneFieldData meshes{SceneField::Mesh, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::UnsignedShort, nullptr};
-    SceneFieldData materials{SceneField::MeshMaterial, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::UnsignedInt, nullptr};
+    SceneFieldData materials{SceneField::MeshMaterial, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr};
     SceneFieldData meshesAgain{SceneField::Mesh, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::UnsignedInt, nullptr};
 
     std::ostringstream out;
@@ -1413,7 +1413,7 @@ void SceneDataTest::constructInconsistentObjectType() {
     #endif
 
     SceneFieldData meshes{SceneField::Mesh, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::UnsignedShort, nullptr};
-    SceneFieldData materials{SceneField::MeshMaterial, SceneObjectType::UnsignedShort, nullptr, SceneFieldType::UnsignedInt, nullptr};
+    SceneFieldData materials{SceneField::MeshMaterial, SceneObjectType::UnsignedShort, nullptr, SceneFieldType::Int, nullptr};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1439,12 +1439,12 @@ void SceneDataTest::constructObjectDataNotContained() {
     }};
     /* Second a view that's in a completely different location */
     SceneData{SceneObjectType::UnsignedShort, 5, {}, data, {
-        SceneFieldData{SceneField::MeshMaterial, dataIn, dataIn},
+        SceneFieldData{SceneField::Light, dataIn, dataIn},
         SceneFieldData{SceneField::Mesh, dataOut, dataIn}
     }};
     /* Verify the owning constructor does the checks as well */
     SceneData{SceneObjectType::UnsignedShort, 5, std::move(data), {
-        SceneFieldData{SceneField::MeshMaterial, dataIn, dataIn},
+        SceneFieldData{SceneField::Light, dataIn, dataIn},
         SceneFieldData{SceneField::Mesh, dataOut, dataIn}
     }};
     /* And if we have no data at all, it doesn't try to dereference them but
@@ -1486,7 +1486,7 @@ void SceneDataTest::constructFieldDataNotContained() {
     }};
     /* Second a view that's in a completely different location */
     SceneData{SceneObjectType::UnsignedShort, 5, {}, data, {
-        SceneFieldData{SceneField::MeshMaterial, dataIn, dataIn},
+        SceneFieldData{SceneField::Light, dataIn, dataIn},
         SceneFieldData{SceneField::Mesh, dataIn, dataOut}
     }};
     /* Verify array size is taken into account as well. If not, the data would
@@ -1496,7 +1496,7 @@ void SceneDataTest::constructFieldDataNotContained() {
     }};
     /* Verify the owning constructor does the checks as well */
     SceneData{SceneObjectType::UnsignedShort, 5, std::move(data), {
-        SceneFieldData{SceneField::MeshMaterial, dataIn, dataIn},
+        SceneFieldData{SceneField::Light, dataIn, dataIn},
         SceneFieldData{SceneField::Mesh, dataIn, dataOut}
     }};
     /* Not checking for nullptr data, since that got checked for object view
@@ -1614,8 +1614,8 @@ void SceneDataTest::constructMismatchedMeshMaterialView() {
         reinterpret_cast<const UnsignedInt*>(data.data() + 0x0c), 3};
     Containers::ArrayView<const UnsignedInt> meshMaterialObjectData{
         reinterpret_cast<const UnsignedInt*>(data.data() + 0x18), 3};
-    Containers::ArrayView<const UnsignedInt> meshMaterialFieldData{
-        reinterpret_cast<const UnsignedInt*>(data.data() + 0x24), 3};
+    Containers::ArrayView<const Int> meshMaterialFieldData{
+        reinterpret_cast<const Int*>(data.data() + 0x24), 3};
 
     SceneFieldData meshes{SceneField::Mesh, meshObjectData, meshFieldData};
     SceneFieldData meshMaterialsDifferent{SceneField::MeshMaterial, meshMaterialObjectData, meshMaterialFieldData};
@@ -2892,7 +2892,7 @@ template<class T> void SceneDataTest::meshMaterialsAsArray() {
         T meshMaterial;
     } fields[]{
         {0, T(15)},
-        {1, T(37)},
+        {1, T(-1)},
         {15, T(44)}
     };
 
@@ -2905,7 +2905,7 @@ template<class T> void SceneDataTest::meshMaterialsAsArray() {
     }};
 
     CORRADE_COMPARE_AS(scene.meshMaterialsAsArray(),
-        Containers::arrayView<UnsignedInt>({15, 37, 44}),
+        Containers::arrayView<Int>({15, -1, 44}),
         TestSuite::Compare::Container);
 }
 
@@ -2919,10 +2919,10 @@ void SceneDataTest::meshMaterialsIntoArray() {
 
     struct Field {
         UnsignedInt object;
-        UnsignedInt meshMaterial;
+        Int meshMaterial;
     } fields[]{
         {1, 15},
-        {0, 37},
+        {0, -1},
         {4, 44}
     };
 
@@ -2938,7 +2938,7 @@ void SceneDataTest::meshMaterialsIntoArray() {
 
     /* The offset-less overload should give back all data */
     {
-        UnsignedInt out[3];
+        Int out[3];
         scene.meshMaterialsInto(out);
         CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
             view.slice(&Field::meshMaterial),
@@ -2946,7 +2946,7 @@ void SceneDataTest::meshMaterialsIntoArray() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> out{data.size};
+        Containers::Array<Int> out{data.size};
         CORRADE_COMPARE(scene.meshMaterialsInto(data.offset, out), data.expectedSize);
         CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
             view.slice(&Field::meshMaterial)
@@ -2962,7 +2962,7 @@ void SceneDataTest::meshMaterialsIntoArrayInvalidSizeOrOffset() {
 
     struct Field {
         UnsignedInt object;
-        UnsignedInt meshMaterial;
+        Int meshMaterial;
     } fields[3]{};
 
     Containers::StridedArrayView1D<Field> view = fields;
@@ -2973,7 +2973,7 @@ void SceneDataTest::meshMaterialsIntoArrayInvalidSizeOrOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    UnsignedInt destination[2];
+    Int destination[2];
     scene.meshMaterialsInto(destination);
     scene.meshMaterialsInto(4, destination);
     CORRADE_COMPARE(out.str(),
