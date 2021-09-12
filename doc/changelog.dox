@@ -429,6 +429,9 @@ See also:
     information.
 -   Suppressing a CMake policy-related warning if the global `CMAKE_AUTOMOC` is
     set on CMake 3.10+ (see [mosra/magnum#504](https://github.com/mosra/magnum/pull/504))
+-   Updated Debian build instructions to pass `--no-sign` to
+    `dpkg-buildpackage`, avoiding a confusing error message that might lead
+    people to think the packaging failed (see [mosra/magnum-plugins#105](https://github.com/mosra/magnum-plugins/issues/105))
 
 @subsection changelog-latest-bugfixes Bug fixes
 

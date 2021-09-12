@@ -137,6 +137,8 @@ Are the below lists missing your name or something's wrong?
     MSYS2 packages, additions to @ref Audio, @ref Platform::Sdl2Application and
     @ref Platform::GlfwApplication, [base-wxwidgets](https://github.com/mosra/magnum-bootstrap/tree/base-wxwidgets)
     bootstrap project
+-   **Hans Loeblich** ([\@thehans](https://github.com/thehans)) ---
+    improvements to Debian package building experience
 -   **Hilario Pérez Corona** ([\@hpcorona](https://github.com/hpcorona)) ---
     improvements to @cb{.cmake} android_create_apk() @ce
 -   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation
