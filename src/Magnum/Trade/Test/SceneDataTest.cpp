@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/ArrayTuple.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -124,12 +125,9 @@ struct SceneDataTest: TestSuite::Tester {
     void transformations3DIntoArray();
     void transformations3DIntoArrayTRS();
     void transformations3DIntoArrayInvalidSizeOrOffset();
-    template<class T> void meshesAsArray();
-    void meshesIntoArray();
-    void meshesIntoArrayInvalidSizeOrOffset();
-    template<class T> void meshMaterialsAsArray();
-    void meshMaterialsIntoArray();
-    void meshMaterialsIntoArrayInvalidSizeOrOffset();
+    template<class T, class U> void meshesMaterialsAsArray();
+    void meshesMaterialsIntoArray();
+    void meshesMaterialsIntoArrayInvalidSizeOrOffset();
     template<class T> void lightsAsArray();
     void lightsIntoArray();
     void lightsIntoArrayInvalidSizeOrOffset();
@@ -295,22 +293,14 @@ SceneDataTest::SceneDataTest() {
         Containers::arraySize(IntoArrayOffsetData));
 
     addTests({&SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffset,
-              &SceneDataTest::meshesAsArray<UnsignedByte>,
-              &SceneDataTest::meshesAsArray<UnsignedShort>,
-              &SceneDataTest::meshesAsArray<UnsignedInt>});
+              &SceneDataTest::meshesMaterialsAsArray<UnsignedByte, Int>,
+              &SceneDataTest::meshesMaterialsAsArray<UnsignedShort, Byte>,
+              &SceneDataTest::meshesMaterialsAsArray<UnsignedInt, Short>});
 
-    addInstancedTests({&SceneDataTest::meshesIntoArray},
+    addInstancedTests({&SceneDataTest::meshesMaterialsIntoArray},
         Containers::arraySize(IntoArrayOffsetData));
 
-    addTests({&SceneDataTest::meshesIntoArrayInvalidSizeOrOffset,
-              &SceneDataTest::meshMaterialsAsArray<Byte>,
-              &SceneDataTest::meshMaterialsAsArray<Short>,
-              &SceneDataTest::meshMaterialsAsArray<Int>});
-
-    addInstancedTests({&SceneDataTest::meshMaterialsIntoArray},
-        Containers::arraySize(IntoArrayOffsetData));
-
-    addTests({&SceneDataTest::meshMaterialsIntoArrayInvalidSizeOrOffset,
+    addTests({&SceneDataTest::meshesMaterialsIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::lightsAsArray<UnsignedByte>,
               &SceneDataTest::lightsAsArray<UnsignedShort>,
               &SceneDataTest::lightsAsArray<UnsignedInt>});
@@ -2787,32 +2777,60 @@ void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffset() {
         "Trade::SceneData::transformations3DInto(): offset 4 out of bounds for a field of size 3\n");
 }
 
-template<class T> void SceneDataTest::meshesAsArray() {
-    setTestCaseTemplateName(NameTraits<T>::name());
+template<class T, class U> void SceneDataTest::meshesMaterialsAsArray() {
+    setTestCaseTemplateName({NameTraits<T>::name(), NameTraits<U>::name()});
 
     struct Field {
         UnsignedByte object;
         T mesh;
-    } fields[3]{
-        {0, T(15)},
-        {1, T(37)},
-        {15, T(44)}
+        U meshMaterial;
+    } fields[]{
+        {0, T(15), U(3)},
+        {1, T(37), U(-1)},
+        {15, T(44), U(25)}
     };
 
     Containers::StridedArrayView1D<Field> view = fields;
 
-    SceneData scene{SceneObjectType::UnsignedByte, 50, {}, fields, {
-        /* To verify it isn't just picking the first ever field */
-        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedByte, nullptr, SceneFieldType::Int, nullptr},
-        SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
-    }};
+    SceneFieldData meshes{SceneField::Mesh,
+        view.slice(&Field::object),
+        view.slice(&Field::mesh)};
+    SceneFieldData meshMaterials{SceneField::MeshMaterial,
+        view.slice(&Field::object),
+        view.slice(&Field::meshMaterial)};
 
-    CORRADE_COMPARE_AS(scene.meshesAsArray(),
-        Containers::arrayView<UnsignedInt>({15, 37, 44}),
-        TestSuite::Compare::Container);
+    /* Both meshes and materials */
+    {
+        SceneData scene{SceneObjectType::UnsignedByte, 50, {}, fields, {
+            /* To verify it isn't just picking the first ever field */
+            SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedByte, nullptr, SceneFieldType::Int, nullptr},
+            meshes,
+            meshMaterials
+        }};
+
+        CORRADE_COMPARE_AS(scene.meshesMaterialsAsArray(),
+            (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+                {15, 3},
+                {37, -1},
+                {44, 25}
+            })), TestSuite::Compare::Container);
+
+    /* Only meshes */
+    } {
+        SceneData scene{SceneObjectType::UnsignedByte, 50, {}, fields, {
+            meshes
+        }};
+
+        CORRADE_COMPARE_AS(scene.meshesMaterialsAsArray(),
+            (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+                {15, -1},
+                {37, -1},
+                {44, -1}
+            })), TestSuite::Compare::Container);
+    }
 }
 
-void SceneDataTest::meshesIntoArray() {
+void SceneDataTest::meshesMaterialsIntoArray() {
     auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -2823,10 +2841,11 @@ void SceneDataTest::meshesIntoArray() {
     struct Field {
         UnsignedInt object;
         UnsignedInt mesh;
+        Int meshMaterial;
     } fields[]{
-        {1, 15},
-        {0, 37},
-        {4, 44}
+        {1, 15, 3},
+        {0, 37, -1},
+        {4, 44, 22}
     };
 
     Containers::StridedArrayView1D<Field> view = fields;
@@ -2837,28 +2856,82 @@ void SceneDataTest::meshesIntoArray() {
         SceneFieldData{SceneField::Mesh,
             view.slice(&Field::object),
             view.slice(&Field::mesh)},
+        SceneFieldData{SceneField::MeshMaterial,
+            view.slice(&Field::object),
+            view.slice(&Field::meshMaterial)},
     }};
 
     /* The offset-less overload should give back all data */
     {
-        UnsignedInt out[3];
-        scene.meshesInto(out);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+        UnsignedInt meshesOut[3];
+        Int meshMaterialsOut[3];
+        scene.meshesMaterialsInto(meshesOut, meshMaterialsOut);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(meshesOut),
+            view.slice(&Field::mesh),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(meshMaterialsOut),
+            view.slice(&Field::meshMaterial),
+            TestSuite::Compare::Container);
+
+    /* Variant with just meshes */
+    } {
+        UnsignedInt meshesOut[3];
+        scene.meshesMaterialsInto(meshesOut, nullptr);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(meshesOut),
             view.slice(&Field::mesh),
             TestSuite::Compare::Container);
 
-    /* The offset variant only a subset */
+    /* Variant with just materials */
     } {
-        Containers::Array<UnsignedInt> out{data.size};
-        CORRADE_COMPARE(scene.meshesInto(data.offset, out), data.expectedSize);
-        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+        Int meshMaterialsOut[3];
+        scene.meshesMaterialsInto(nullptr, meshMaterialsOut);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(meshMaterialsOut),
+            view.slice(&Field::meshMaterial),
+            TestSuite::Compare::Container);
+
+    /* Variant with neither is stupid, but should work too */
+    } {
+        scene.meshesMaterialsInto(nullptr, nullptr);
+
+    /* The offset variant should give back only a subset */
+    } {
+        Containers::Array<UnsignedInt> meshesOut{data.size};
+        Containers::Array<Int> meshMaterialsOut{data.size};
+        CORRADE_COMPARE(scene.meshesMaterialsInto(data.offset, meshesOut, meshMaterialsOut), data.expectedSize);
+        CORRADE_COMPARE_AS(meshesOut.prefix(data.expectedSize),
             view.slice(&Field::mesh)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(meshMaterialsOut.prefix(data.expectedSize),
+            view.slice(&Field::meshMaterial)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+
+    /* Variant with just meshes */
+    } {
+        Containers::Array<UnsignedInt> meshesOut{data.size};
+        CORRADE_COMPARE(scene.meshesMaterialsInto(data.offset, meshesOut, nullptr), data.expectedSize);
+        CORRADE_COMPARE_AS(meshesOut.prefix(data.expectedSize),
+            view.slice(&Field::mesh)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+
+    /* Variant with just materials */
+    } {
+        Containers::Array<Int> meshMaterialsOut{data.size};
+        CORRADE_COMPARE(scene.meshesMaterialsInto(data.offset, nullptr, meshMaterialsOut), data.expectedSize);
+        CORRADE_COMPARE_AS(meshMaterialsOut.prefix(data.expectedSize),
+            view.slice(&Field::meshMaterial)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+
+    /* Variant with neither is stupid, but should work too */
+    } {
+        CORRADE_COMPARE(scene.meshesMaterialsInto(data.offset, nullptr, nullptr), 0);
     }
 }
 
-void SceneDataTest::meshesIntoArrayInvalidSizeOrOffset() {
+void SceneDataTest::meshesMaterialsIntoArrayInvalidSizeOrOffset() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -2876,109 +2949,19 @@ void SceneDataTest::meshesIntoArrayInvalidSizeOrOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    UnsignedInt destination[2];
-    scene.meshesInto(destination);
-    scene.meshesInto(4, destination);
+    UnsignedInt meshDestinationCorrect[3];
+    UnsignedInt meshDestination[2];
+    Int meshMaterialDestinationCorrect[3];
+    Int meshMaterialDestination[2];
+    scene.meshesMaterialsInto(meshDestination, meshMaterialDestinationCorrect);
+    scene.meshesMaterialsInto(meshDestinationCorrect, meshMaterialDestination);
+    scene.meshesMaterialsInto(4, meshDestination, meshMaterialDestination);
+    scene.meshesMaterialsInto(0, meshDestinationCorrect, meshMaterialDestination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::meshesInto(): expected a view with 3 elements but got 2\n"
-        "Trade::SceneData::meshesInto(): offset 4 out of bounds for a field of size 3\n");
-}
-
-template<class T> void SceneDataTest::meshMaterialsAsArray() {
-    setTestCaseTemplateName(NameTraits<T>::name());
-
-    struct Field {
-        UnsignedByte object;
-        T meshMaterial;
-    } fields[]{
-        {0, T(15)},
-        {1, T(-1)},
-        {15, T(44)}
-    };
-
-    Containers::StridedArrayView1D<Field> view = fields;
-
-    SceneData scene{SceneObjectType::UnsignedByte, 50, {}, fields, {
-        /* To verify it isn't just picking the first ever field */
-        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedByte, nullptr, SceneFieldType::Int, nullptr},
-        SceneFieldData{SceneField::MeshMaterial, view.slice(&Field::object), view.slice(&Field::meshMaterial)}
-    }};
-
-    CORRADE_COMPARE_AS(scene.meshMaterialsAsArray(),
-        Containers::arrayView<Int>({15, -1, 44}),
-        TestSuite::Compare::Container);
-}
-
-void SceneDataTest::meshMaterialsIntoArray() {
-    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
-    /* Both AsArray() and Into() share a common helper. The AsArray() test
-       above verified handling of various data types and this checks the
-       offset/size parameters of the Into() variant. */
-
-    struct Field {
-        UnsignedInt object;
-        Int meshMaterial;
-    } fields[]{
-        {1, 15},
-        {0, -1},
-        {4, 44}
-    };
-
-    Containers::StridedArrayView1D<Field> view = fields;
-
-    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
-        /* To verify it isn't just picking the first ever field */
-        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
-        SceneFieldData{SceneField::MeshMaterial,
-            view.slice(&Field::object),
-            view.slice(&Field::meshMaterial)},
-    }};
-
-    /* The offset-less overload should give back all data */
-    {
-        Int out[3];
-        scene.meshMaterialsInto(out);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
-            view.slice(&Field::meshMaterial),
-            TestSuite::Compare::Container);
-
-    /* The offset variant only a subset */
-    } {
-        Containers::Array<Int> out{data.size};
-        CORRADE_COMPARE(scene.meshMaterialsInto(data.offset, out), data.expectedSize);
-        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
-            view.slice(&Field::meshMaterial)
-                .slice(data.offset, data.offset + data.expectedSize),
-            TestSuite::Compare::Container);
-    }
-}
-
-void SceneDataTest::meshMaterialsIntoArrayInvalidSizeOrOffset() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    struct Field {
-        UnsignedInt object;
-        Int meshMaterial;
-    } fields[3]{};
-
-    Containers::StridedArrayView1D<Field> view = fields;
-
-    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
-        SceneFieldData{SceneField::MeshMaterial, view.slice(&Field::object), view.slice(&Field::meshMaterial)}
-    }};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    Int destination[2];
-    scene.meshMaterialsInto(destination);
-    scene.meshMaterialsInto(4, destination);
-    CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::meshMaterialsInto(): expected a view with 3 elements but got 2\n"
-        "Trade::SceneData::meshMaterialsInto(): offset 4 out of bounds for a field of size 3\n");
+        "Trade::SceneData::meshesMaterialsInto(): expected mesh destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::meshesMaterialsInto(): expected mesh material destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::meshesMaterialsInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::meshesMaterialsInto(): mesh and mesh material destination views have different size, 3 vs 2\n");
 }
 
 template<class T> void SceneDataTest::lightsAsArray() {
@@ -3448,12 +3431,9 @@ void SceneDataTest::fieldNotFound() {
     scene.transformations3DAsArray();
     scene.transformations3DInto(nullptr);
     scene.transformations3DInto(0, nullptr);
-    scene.meshesAsArray();
-    scene.meshesInto(nullptr);
-    scene.meshesInto(0, nullptr);
-    scene.meshMaterialsAsArray();
-    scene.meshMaterialsInto(nullptr);
-    scene.meshMaterialsInto(0, nullptr);
+    scene.meshesMaterialsAsArray();
+    scene.meshesMaterialsInto(nullptr, nullptr);
+    scene.meshesMaterialsInto(0, nullptr, nullptr);
     scene.lightsAsArray();
     scene.lightsInto(nullptr);
     scene.lightsInto(0, nullptr);
@@ -3499,12 +3479,9 @@ void SceneDataTest::fieldNotFound() {
         "Trade::SceneData::transformations3DInto(): no transformation-related field found\n"
         "Trade::SceneData::transformations3DInto(): no transformation-related field found\n"
         "Trade::SceneData::transformations3DInto(): no transformation-related field found\n"
-        "Trade::SceneData::meshesInto(): field not found\n"
-        "Trade::SceneData::meshesInto(): field not found\n"
-        "Trade::SceneData::meshesInto(): field not found\n"
-        "Trade::SceneData::meshMaterialsInto(): field not found\n"
-        "Trade::SceneData::meshMaterialsInto(): field not found\n"
-        "Trade::SceneData::meshMaterialsInto(): field not found\n"
+        "Trade::SceneData::meshesMaterialsInto(): field Trade::SceneField::Mesh not found\n"
+        "Trade::SceneData::meshesMaterialsInto(): field Trade::SceneField::Mesh not found\n"
+        "Trade::SceneData::meshesMaterialsInto(): field Trade::SceneField::Mesh not found\n"
         "Trade::SceneData::lightsInto(): field not found\n"
         "Trade::SceneData::lightsInto(): field not found\n"
         "Trade::SceneData::lightsInto(): field not found\n"

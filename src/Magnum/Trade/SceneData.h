@@ -202,7 +202,7 @@ enum class SceneField: UnsignedInt {
      * required. If present, both should share the same object mapping view.
      * Objects with multiple meshes then have the Nth mesh associated with the
      * Nth material.
-     * @see @ref SceneData::meshesAsArray()
+     * @see @ref SceneData::meshesMaterialsAsArray()
      */
     Mesh,
 
@@ -213,7 +213,7 @@ enum class SceneField: UnsignedInt {
      * but can be also any of @relativeref{SceneFieldType,Byte} or
      * @relativeref{SceneFieldType,Short}. Expected to share the
      * object mapping view with @ref SceneField::Mesh.
-     * @see @ref SceneData::meshMaterialsAsArray()
+     * @see @ref SceneData::meshesMaterialsAsArray()
      */
     MeshMaterial,
 
@@ -1116,10 +1116,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * use the overload below by using @cpp T[] @ce instead of @cpp T @ce.
          * You can also use the non-templated @ref parentsAsArray(),
          * @ref transformations2DAsArray(), @ref transformations3DAsArray(),
-         * @ref meshesAsArray(), @ref meshMaterialsAsArray(),
-         * @ref lightsAsArray(), @ref camerasAsArray(), @ref skinsAsArray()
-         * accessors to get common fields converted to usual types, but note
-         * that these operations involve extra allocation and data conversion.
+         * @ref meshesMaterialsAsArray(), @ref lightsAsArray(),
+         * @ref camerasAsArray(), @ref skinsAsArray() accessors to get common
+         * fields converted to usual types, but note that these operations
+         * involve extra allocation and data conversion.
          * @see @ref field(SceneField) const, @ref mutableField(UnsignedInt),
          *      @ref fieldArraySize()
          */
@@ -1193,11 +1193,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * not be an array, in that case you need to use the overload below by
          * using @cpp T[] @ce instead of @cpp T @ce. You can also use the
          * non-templated @ref parentsAsArray(), @ref transformations2DAsArray(),
-         * @ref transformations3DAsArray(), @ref meshesAsArray(),
-         * @ref meshMaterialsAsArray(), @ref lightsAsArray(),
-         * @ref camerasAsArray(), @ref skinsAsArray() accessors to get common
-         * fields converted to usual types, but note that these operations
-         * involve extra allocation and data conversion.
+         * @ref transformations3DAsArray(), @ref meshesMaterialsAsArray(),
+         * @ref lightsAsArray(), @ref camerasAsArray(), @ref skinsAsArray()
+         * accessors to get common fields converted to usual types, but note
+         * that these operations involve extra allocation and data conversion.
          * @see @ref field(UnsignedInt) const, @ref mutableField(SceneField)
          */
         template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<const T> field(SceneField name) const;
@@ -1447,76 +1446,44 @@ class MAGNUM_TRADE_EXPORT SceneData {
         std::size_t transformations3DInto(std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const;
 
         /**
-         * @brief Mesh IDs as 32-bit integers
+         * @brief Mesh and material IDs as 32-bit integers
          * @m_since_latest
          *
          * Convenience alternative to @ref field(SceneField) const with
-         * @ref SceneField::Mesh as the argument that converts the field from
-         * an arbitrary underlying type and returns it in a newly-allocated
-         * array. The field is expected to exist.
-         * @see @ref meshesInto(), @ref hasField()
+         * @ref SceneField::Mesh and @ref SceneField::MeshMaterial as the
+         * argument, as the two are required to share the same object mapping.
+         * Converts the fields from an arbitrary underlying type and returns it
+         * in a newly-allocated array. The @ref SceneField::Mesh field is
+         * expected to exist, if @ref SceneField::MeshMaterial isn't present,
+         * the second returned values are all @cpp -1 @ce.
+         * @see @ref meshesMaterialsInto(), @ref hasField()
          */
-        Containers::Array<UnsignedInt> meshesAsArray() const;
+        Containers::Array<Containers::Pair<UnsignedInt, Int>> meshesMaterialsAsArray() const;
 
         /**
-         * @brief Mesh IDs as 32-bit integers into a pre-allocated view
+         * @brief Mesh and material IDs as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
-         * Like @ref meshesAsArray(), but puts the result into @p destination
-         * instead of allocating a new array. Expects that @p destination is
-         * sized to contain exactly all data.
+         * Like @ref meshesMaterialsAsArray(), but puts the results into
+         * @p meshDestination and @p meshMaterialDestination instead of
+         * allocating a new array. Expects that each view is either
+         * @cpp nullptr @ce or sized to contain exactly all data.
          * @see @ref fieldSize(SceneField) const
          */
-        void meshesInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+        void meshesMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const;
 
         /**
-         * @brief A subrange of mesh IDs as 32-bit integers into a pre-allocated view
+         * @brief A subrange of mesh and material IDs as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
-         * Compared to @ref meshesInto(const Containers::StridedArrayView1D<UnsignedInt>&) const
+         * Compared to @ref meshesMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Int>&) const
          * extracts only a subrange of the field defined by @p offset and size
-         * of the @p destination view, returning the count of items actually
-         * extracted. The @p offset is expected to not be larger than the field
-         * size.
+         * of the views, returning the count of items actually extracted. The
+         * @p offset is expected to not be larger than the field size, views
+         * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const
          */
-        std::size_t meshesInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
-
-        /**
-         * @brief Mesh material IDs as 32-bit integers
-         * @m_since_latest
-         *
-         * Convenience alternative to @ref field(SceneField) const with
-         * @ref SceneField::MeshMaterial as the argument that converts the
-         * field from an arbitrary underlying type and returns it in a
-         * newly-allocated array. The field is expected to exist.
-         * @see @ref meshMaterialsInto(), @ref hasField()
-         */
-        Containers::Array<Int> meshMaterialsAsArray() const;
-
-        /**
-         * @brief Mesh material IDs as 32-bit integers into a pre-allocated view
-         * @m_since_latest
-         *
-         * Like @ref meshMaterialsAsArray(), but puts the result into
-         * @p destination instead of allocating a new array. Expects that
-         * @p destination is sized to contain exactly all data.
-         * @see @ref fieldSize(SceneField) const
-         */
-        void meshMaterialsInto(const Containers::StridedArrayView1D<Int>& destination) const;
-
-        /**
-         * @brief A subrange of mesh material IDs as 32-bit integers into a pre-allocated view
-         * @m_since_latest
-         *
-         * Compared to @ref meshMaterialsInto(const Containers::StridedArrayView1D<Int>&) const
-         * extracts only a subrange of the field defined by @p offset and size
-         * of the @p destination view, returning the count of items actually
-         * extracted. The @p offset is expected to not be larger than the field
-         * size.
-         * @see @ref fieldSize(SceneField) const
-         */
-        std::size_t meshMaterialsInto(std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
+        std::size_t meshesMaterialsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialsDestination) const;
 
         /**
          * @brief Light IDs as 32-bit integers
@@ -1692,7 +1659,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         MAGNUM_TRADE_LOCAL void unsignedIndexFieldIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
         MAGNUM_TRADE_LOCAL void indexFieldIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
         MAGNUM_TRADE_LOCAL Containers::Array<UnsignedInt> unsignedIndexFieldAsArrayInternal(const UnsignedInt fieldId) const;
-        MAGNUM_TRADE_LOCAL Containers::Array<Int> indexFieldAsArrayInternal(const UnsignedInt fieldId) const;
+        MAGNUM_TRADE_LOCAL void meshesMaterialsIntoInternal(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const;
 
         DataFlags _dataFlags;
         SceneObjectType _objectType;

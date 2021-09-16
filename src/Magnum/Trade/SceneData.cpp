@@ -25,6 +25,7 @@
 
 #include "SceneData.h"
 
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/Matrix3.h"
@@ -1146,68 +1147,63 @@ Containers::Array<UnsignedInt> SceneData::unsignedIndexFieldAsArrayInternal(cons
     return out;
 }
 
-Containers::Array<Int> SceneData::indexFieldAsArrayInternal(const UnsignedInt fieldId) const {
-    Containers::Array<Int> out{NoInit, std::size_t(_fields[fieldId]._size)};
-    indexFieldIntoInternal(fieldId, 0, out);
+void SceneData::meshesMaterialsIntoInternal(const UnsignedInt fieldId, const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const {
+    /* fieldId, offset, meshDestination.size() and
+       meshMaterialDestination.size() is assumed to be in bounds, checked by
+       the callers */
+
+    if(meshDestination)
+        unsignedIndexFieldIntoInternal(fieldId, offset, meshDestination);
+
+    /* Copy also the material, if desired. If no such field is present, output
+       -1 for all meshes. */
+    if(meshMaterialDestination) {
+        const UnsignedInt materialFieldId = fieldFor(SceneField::MeshMaterial);
+        if(materialFieldId == ~UnsignedInt{}) {
+            constexpr Int invalid[]{-1};
+            Utility::copy(Containers::stridedArrayView(invalid).broadcasted<0>(meshMaterialDestination.size()), meshMaterialDestination);
+        } else indexFieldIntoInternal(materialFieldId, offset, meshMaterialDestination);
+    }
+}
+
+void SceneData::meshesMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const {
+    const UnsignedInt fieldId = fieldFor(SceneField::Mesh);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::meshesMaterialsInto(): field" << SceneField::Mesh << "not found", );
+    CORRADE_ASSERT(!meshDestination || meshDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::meshesMaterialsInto(): expected mesh destination view either empty or with" << _fields[fieldId]._size << "elements but got" << meshDestination.size(), );
+    CORRADE_ASSERT(!meshMaterialDestination || meshMaterialDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::meshesMaterialsInto(): expected mesh material destination view either empty or with" << _fields[fieldId]._size << "elements but got" << meshMaterialDestination.size(), );
+    meshesMaterialsIntoInternal(fieldId, 0, meshDestination, meshMaterialDestination);
+}
+
+std::size_t SceneData::meshesMaterialsInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const {
+    const UnsignedInt fieldId = fieldFor(SceneField::Mesh);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::meshesMaterialsInto(): field" << SceneField::Mesh << "not found", {});
+    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
+        "Trade::SceneData::meshesMaterialsInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
+    CORRADE_ASSERT(!meshDestination != !meshMaterialDestination || meshMaterialDestination.size() == meshDestination.size(),
+        "Trade::SceneData::meshesMaterialsInto(): mesh and mesh material destination views have different size," << meshDestination.size() << "vs" << meshMaterialDestination.size(), {});
+    const std::size_t size = Math::min(Math::max(meshDestination.size(), meshMaterialDestination.size()), std::size_t(_fields[fieldId]._size) - offset);
+    meshesMaterialsIntoInternal(fieldId, offset,
+        meshDestination ? meshDestination.prefix(size) : nullptr,
+        meshMaterialDestination ? meshMaterialDestination.prefix(size) : nullptr);
+    return size;
+}
+
+Containers::Array<Containers::Pair<UnsignedInt, Int>> SceneData::meshesMaterialsAsArray() const {
+    const UnsignedInt fieldId = fieldFor(SceneField::Mesh);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        /* Using the same message as in Into() to avoid too many redundant
+           strings in the binary */
+        "Trade::SceneData::meshesMaterialsInto(): field" << SceneField::Mesh << "not found", {});
+    Containers::Array<Containers::Pair<UnsignedInt, Int>> out{NoInit, std::size_t(_fields[fieldId]._size)};
+    /** @todo use slicing once Pair exposes members somehow */
+    const Containers::StridedArrayView1D<UnsignedInt> meshesOut{out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)};
+    const Containers::StridedArrayView1D<Int> meshMaterialsOut{out, reinterpret_cast<Int*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)};
+    meshesMaterialsIntoInternal(fieldId, 0, meshesOut, meshMaterialsOut);
     return out;
-}
-
-void SceneData::meshesInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
-    const UnsignedInt fieldId = fieldFor(SceneField::Mesh);
-    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
-        "Trade::SceneData::meshesInto(): field not found", );
-    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
-        "Trade::SceneData::meshesInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
-    unsignedIndexFieldIntoInternal(fieldId, 0, destination);
-}
-
-std::size_t SceneData::meshesInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
-    const UnsignedInt fieldId = fieldFor(SceneField::Mesh);
-    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
-        "Trade::SceneData::meshesInto(): field not found", {});
-    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
-        "Trade::SceneData::meshesInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
-    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
-    unsignedIndexFieldIntoInternal(fieldId, offset, destination.prefix(size));
-    return size;
-}
-
-Containers::Array<UnsignedInt> SceneData::meshesAsArray() const {
-    const UnsignedInt fieldId = fieldFor(SceneField::Mesh);
-    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
-        /* Using the same message as in Into() to avoid too many redundant
-           strings in the binary */
-        "Trade::SceneData::meshesInto(): field not found", {});
-    return unsignedIndexFieldAsArrayInternal(fieldId);
-}
-
-void SceneData::meshMaterialsInto(const Containers::StridedArrayView1D<Int>& destination) const {
-    const UnsignedInt fieldId = fieldFor(SceneField::MeshMaterial);
-    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
-        "Trade::SceneData::meshMaterialsInto(): field not found", );
-    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
-        "Trade::SceneData::meshMaterialsInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
-    indexFieldIntoInternal(fieldId, 0, destination);
-}
-
-std::size_t SceneData::meshMaterialsInto(const std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const {
-    const UnsignedInt fieldId = fieldFor(SceneField::MeshMaterial);
-    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
-        "Trade::SceneData::meshMaterialsInto(): field not found", {});
-    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
-        "Trade::SceneData::meshMaterialsInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
-    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
-    indexFieldIntoInternal(fieldId, offset, destination.prefix(size));
-    return size;
-}
-
-Containers::Array<Int> SceneData::meshMaterialsAsArray() const {
-    const UnsignedInt fieldId = fieldFor(SceneField::MeshMaterial);
-    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
-        /* Using the same message as in Into() to avoid too many redundant
-           strings in the binary */
-        "Trade::SceneData::meshMaterialsInto(): field not found", {});
-    return indexFieldAsArrayInternal(fieldId);
 }
 
 void SceneData::lightsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
