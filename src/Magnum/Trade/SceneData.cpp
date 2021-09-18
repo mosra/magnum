@@ -26,8 +26,10 @@
 #include "SceneData.h"
 
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Algorithms.h>
 
+#include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/DualComplex.h"
@@ -863,6 +865,26 @@ std::size_t SceneData::findTransformFields(UnsignedInt& transformationFieldId, U
         ~std::size_t{} : _fields[fieldToCheckForSize]._size;
 }
 
+std::size_t SceneData::findTranslationRotationScalingFields(UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const {
+    UnsignedInt fieldToCheckForSize = ~UnsignedInt{};
+    translationFieldId = ~UnsignedInt{};
+    rotationFieldId = ~UnsignedInt{};
+    scalingFieldId = ~UnsignedInt{};
+    for(std::size_t i = 0; i != _fields.size(); ++i) {
+        if(_fields[i]._name == SceneField::Translation) {
+            fieldToCheckForSize = translationFieldId = i;
+        } else if(_fields[i]._name == SceneField::Rotation) {
+            fieldToCheckForSize = rotationFieldId = i;
+        } else if(_fields[i]._name == SceneField::Scaling) {
+            fieldToCheckForSize = scalingFieldId = i;
+        }
+    }
+
+    /* Assuming the caller fires an appropriate assertion */
+    return fieldToCheckForSize == ~UnsignedInt{} ?
+        ~std::size_t{} : _fields[fieldToCheckForSize]._size;
+}
+
 void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFieldId, const UnsignedInt translationFieldId, const UnsignedInt rotationFieldId, const UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const {
     /* *FieldId, offset and destination.size() is assumed to be in bounds (or
        an invalid field ID), checked by the callers */
@@ -960,10 +982,7 @@ void SceneData::transformations2DInto(const Containers::StridedArrayView1D<Matri
 
 std::size_t SceneData::transformations2DInto(const std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    #ifndef CORRADE_NO_ASSERT
-    const std::size_t expectedSize =
-    #endif
-        findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    const std::size_t expectedSize = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
     CORRADE_ASSERT(expectedSize != ~std::size_t{},
         "Trade::SceneData::transformations2DInto(): no transformation-related field found", {});
     CORRADE_ASSERT(offset <= expectedSize,
@@ -982,6 +1001,128 @@ Containers::Array<Matrix3> SceneData::transformations2DAsArray() const {
         "Trade::SceneData::transformations2DInto(): no transformation-related field found", {});
     Containers::Array<Matrix3> out{NoInit, expectedSize};
     transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, out);
+    return out;
+}
+
+void SceneData::translationsRotationsScalings2DIntoInternal(const UnsignedInt translationFieldId, const UnsignedInt rotationFieldId, const UnsignedInt scalingFieldId, const std::size_t offset, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const {
+    /* *FieldId, offset and *Destination.size() is assumed to be in bounds (or
+       an invalid field ID), checked by the callers */
+
+    /* Retrieve translation, if desired. If no field is present, output a zero
+       vector for all objects. */
+    if(translationDestination) {
+        if(translationFieldId == ~UnsignedInt{}) {
+            constexpr Vector2 identity[]{Vector2{0.0f}};
+            Utility::copy(Containers::stridedArrayView(identity).broadcasted<0>(translationDestination.size()), translationDestination);
+        } else {
+            const SceneFieldData& field = _fields[translationFieldId];
+            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, translationDestination.size());
+
+            if(field._fieldType == SceneFieldType::Vector2) {
+                Utility::copy(Containers::arrayCast<const Vector2>(fieldData), translationDestination);
+            } else if(field._fieldType == SceneFieldType::Vector2d) {
+                Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 2), Containers::arrayCast<2, Float>(translationDestination));
+            } else if(field._fieldType == SceneFieldType::Vector3 ||
+                      field._fieldType == SceneFieldType::Vector3d) {
+                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::translationsRotationsScalings2DInto(): field has a 3D translation type" << field._fieldType, );
+            } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        }
+    }
+
+    /* Retrieve rotation, if desired. If no field is present, output an
+       identity rotation for all objects. */
+    if(rotationDestination) {
+        if(rotationFieldId == ~UnsignedInt{}) {
+            constexpr Complex identity[]{Complex{Math::IdentityInit}};
+            Utility::copy(Containers::stridedArrayView(identity).broadcasted<0>(rotationDestination.size()), rotationDestination);
+        } else {
+            const SceneFieldData& field = _fields[rotationFieldId];
+            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, rotationDestination.size());
+
+            if(field._fieldType == SceneFieldType::Complex) {
+                Utility::copy(Containers::arrayCast<const Complex>(fieldData), rotationDestination);
+            } else if(field._fieldType == SceneFieldType::Complexd) {
+                Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 2), Containers::arrayCast<2, Float>(rotationDestination));
+            } else if(field._fieldType == SceneFieldType::Quaternion ||
+                      field._fieldType == SceneFieldType::Quaterniond) {
+                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::translationsRotationsScalings2DInto(): field has a 3D rotation type" << field._fieldType, );
+            } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        }
+    }
+
+    /* Retrieve scaling, if desired. If no field is present, output an identity
+       scaling for all objects. */
+    if(scalingDestination) {
+        if(scalingFieldId == ~UnsignedInt{}) {
+            constexpr Vector2 identity[]{Vector2{1.0f}};
+            Utility::copy(Containers::stridedArrayView(identity).broadcasted<0>(scalingDestination.size()), scalingDestination);
+        } else {
+            const SceneFieldData& field = _fields[scalingFieldId];
+            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, scalingDestination.size());
+
+            if(field._fieldType == SceneFieldType::Vector2) {
+                Utility::copy(Containers::arrayCast<const Vector2>(fieldData), scalingDestination);
+            } else if(field._fieldType == SceneFieldType::Vector2d) {
+                Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 2), Containers::arrayCast<2, Float>(scalingDestination));
+            } else if(field._fieldType == SceneFieldType::Vector3 ||
+                      field._fieldType == SceneFieldType::Vector3d) {
+                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::translationsRotationsScalings2DInto(): field has a 3D scaling type" << field._fieldType, );
+            } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        }
+    }
+}
+
+void SceneData::translationsRotationsScalings2DInto(const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const {
+    UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
+    #ifndef CORRADE_NO_ASSERT
+    const std::size_t expectedSize =
+    #endif
+        findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+        "Trade::SceneData::translationsRotationsScalings2DInto(): no transformation-related field found", );
+    CORRADE_ASSERT(!translationDestination || translationDestination.size() == expectedSize,
+        "Trade::SceneData::translationsRotationsScalings2DInto(): expected translation destination view either empty or with" << expectedSize << "elements but got" << translationDestination.size(), );
+    CORRADE_ASSERT(!rotationDestination || rotationDestination.size() == expectedSize,
+        "Trade::SceneData::translationsRotationsScalings2DInto(): expected rotation destination view either empty or with" << expectedSize << "elements but got" << rotationDestination.size(), );
+    CORRADE_ASSERT(!scalingDestination || scalingDestination.size() == expectedSize,
+        "Trade::SceneData::translationsRotationsScalings2DInto(): expected scaling destination view either empty or with" << expectedSize << "elements but got" << scalingDestination.size(), );
+    translationsRotationsScalings2DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, 0, translationDestination, rotationDestination, scalingDestination);
+}
+
+std::size_t SceneData::translationsRotationsScalings2DInto(const std::size_t offset, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const {
+    UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
+    const std::size_t expectedSize = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+        "Trade::SceneData::translationsRotationsScalings2DInto(): no transformation-related field found", {});
+    CORRADE_ASSERT(offset <= expectedSize,
+        "Trade::SceneData::translationsRotationsScalings2DInto(): offset" << offset << "out of bounds for a field of size" << expectedSize, {});
+    CORRADE_ASSERT(!translationDestination != !rotationDestination || translationDestination.size() == rotationDestination.size(),
+        "Trade::SceneData::translationsRotationsScalings2DInto(): translation and rotation destination views have different size," << translationDestination.size() << "vs" << rotationDestination.size(), {});
+    CORRADE_ASSERT(!translationDestination != !scalingDestination || translationDestination.size() == scalingDestination.size(),
+        "Trade::SceneData::translationsRotationsScalings2DInto(): translation and scaling destination views have different size," << translationDestination.size() << "vs" << scalingDestination.size(), {});
+    CORRADE_ASSERT(!rotationDestination != !scalingDestination || rotationDestination.size() == scalingDestination.size(),
+        "Trade::SceneData::translationsRotationsScalings2DInto(): rotation and scaling destination views have different size," << rotationDestination.size() << "vs" << scalingDestination.size(), {});
+    const std::size_t size = Math::min(Math::max({translationDestination.size(), rotationDestination.size(), scalingDestination.size()}), expectedSize - offset);
+    translationsRotationsScalings2DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, offset,
+        translationDestination ? translationDestination.prefix(size) : nullptr,
+        rotationDestination ? rotationDestination.prefix(size) : nullptr,
+        scalingDestination ? scalingDestination.prefix(size) : nullptr);
+    return size;
+}
+
+Containers::Array<Containers::Triple<Vector2, Complex, Vector2>> SceneData::translationsRotationsScalings2DAsArray() const {
+    UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
+    const std::size_t expectedSize = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+        /* Using the same message as in Into() to avoid too many redundant
+           strings in the binary */
+        "Trade::SceneData::translationsRotationsScalings2DInto(): no transformation-related field found", {});
+    Containers::Array<Containers::Triple<Vector2, Complex, Vector2>> out{NoInit, expectedSize};
+    /** @todo use slicing once Triple exposes members somehow */
+    const Containers::StridedArrayView1D<Vector2> translationsOut{out, reinterpret_cast<Vector2*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)};
+    const Containers::StridedArrayView1D<Complex> rotationsOut{out, reinterpret_cast<Complex*>(reinterpret_cast<char*>(out.data()) + sizeof(Vector2)), out.size(), sizeof(decltype(out)::Type)};
+    const Containers::StridedArrayView1D<Vector2> scalingsOut{out, reinterpret_cast<Vector2*>(reinterpret_cast<char*>(out.data()) + sizeof(Vector2) + sizeof(Complex)), out.size(), sizeof(decltype(out)::Type)};
+    translationsRotationsScalings2DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, 0, translationsOut, rotationsOut, scalingsOut);
     return out;
 }
 
@@ -1082,10 +1223,7 @@ void SceneData::transformations3DInto(const Containers::StridedArrayView1D<Matri
 
 std::size_t SceneData::transformations3DInto(const std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    #ifndef CORRADE_NO_ASSERT
-    const std::size_t expectedSize =
-    #endif
-        findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    const std::size_t expectedSize = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
     CORRADE_ASSERT(expectedSize != ~std::size_t{},
         "Trade::SceneData::transformations3DInto(): no transformation-related field found", {});
     CORRADE_ASSERT(offset <= expectedSize,
@@ -1104,6 +1242,128 @@ Containers::Array<Matrix4> SceneData::transformations3DAsArray() const {
         "Trade::SceneData::transformations3DInto(): no transformation-related field found", {});
     Containers::Array<Matrix4> out{NoInit, expectedSize};
     transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, out);
+    return out;
+}
+
+void SceneData::translationsRotationsScalings3DIntoInternal(const UnsignedInt translationFieldId, const UnsignedInt rotationFieldId, const UnsignedInt scalingFieldId, const std::size_t offset, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const {
+    /* *FieldId, offset and *Destination.size() is assumed to be in bounds (or
+       an invalid field ID), checked by the callers */
+
+    /* Retrieve translation, if desired. If no field is present, output a zero
+       vector for all objects. */
+    if(translationDestination) {
+        if(translationFieldId == ~UnsignedInt{}) {
+            constexpr Vector3 identity[]{Vector3{0.0f}};
+            Utility::copy(Containers::stridedArrayView(identity).broadcasted<0>(translationDestination.size()), translationDestination);
+        } else {
+            const SceneFieldData& field = _fields[translationFieldId];
+            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, translationDestination.size());
+
+            if(field._fieldType == SceneFieldType::Vector3) {
+                Utility::copy(Containers::arrayCast<const Vector3>(fieldData), translationDestination);
+            } else if(field._fieldType == SceneFieldType::Vector3d) {
+                Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 3), Containers::arrayCast<2, Float>(translationDestination));
+            } else if(field._fieldType == SceneFieldType::Vector2 ||
+                      field._fieldType == SceneFieldType::Vector2d) {
+                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::translationsRotationsScalings3DInto(): field has a 2D translation type" << field._fieldType, );
+            } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        }
+    }
+
+    /* Retrieve rotation, if desired. If no field is present, output an
+       identity rotation for all objects. */
+    if(rotationDestination) {
+        if(rotationFieldId == ~UnsignedInt{}) {
+            constexpr Quaternion identity[]{Quaternion{Math::IdentityInit}};
+            Utility::copy(Containers::stridedArrayView(identity).broadcasted<0>(rotationDestination.size()), rotationDestination);
+        } else {
+            const SceneFieldData& field = _fields[rotationFieldId];
+            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, rotationDestination.size());
+
+            if(field._fieldType == SceneFieldType::Quaternion) {
+                Utility::copy(Containers::arrayCast<const Quaternion>(fieldData), rotationDestination);
+            } else if(field._fieldType == SceneFieldType::Quaterniond) {
+                Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 4), Containers::arrayCast<2, Float>(rotationDestination));
+            } else if(field._fieldType == SceneFieldType::Complex ||
+                      field._fieldType == SceneFieldType::Complexd) {
+                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::translationsRotationsScalings3DInto(): field has a 2D rotation type" << field._fieldType, );
+            } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        }
+    }
+
+    /* Retrieve scaling, if desired. If no field is present, output an identity
+       scaling for all objects. */
+    if(scalingDestination) {
+        if(scalingFieldId == ~UnsignedInt{}) {
+            constexpr Vector3 identity[]{Vector3{1.0f}};
+            Utility::copy(Containers::stridedArrayView(identity).broadcasted<0>(scalingDestination.size()), scalingDestination);
+        } else {
+            const SceneFieldData& field = _fields[scalingFieldId];
+            const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, scalingDestination.size());
+
+            if(field._fieldType == SceneFieldType::Vector3) {
+                Utility::copy(Containers::arrayCast<const Vector3>(fieldData), scalingDestination);
+            } else if(field._fieldType == SceneFieldType::Vector3d) {
+                Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 3), Containers::arrayCast<2, Float>(scalingDestination));
+            } else if(field._fieldType == SceneFieldType::Vector2 ||
+                      field._fieldType == SceneFieldType::Vector2d) {
+                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::translationsRotationsScalings3DInto(): field has a 2D scaling type" << field._fieldType, );
+            } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        }
+    }
+}
+
+void SceneData::translationsRotationsScalings3DInto(const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const {
+    UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
+    #ifndef CORRADE_NO_ASSERT
+    const std::size_t expectedSize =
+    #endif
+        findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+        "Trade::SceneData::translationsRotationsScalings3DInto(): no transformation-related field found", );
+    CORRADE_ASSERT(!translationDestination || translationDestination.size() == expectedSize,
+        "Trade::SceneData::translationsRotationsScalings3DInto(): expected translation destination view either empty or with" << expectedSize << "elements but got" << translationDestination.size(), );
+    CORRADE_ASSERT(!rotationDestination || rotationDestination.size() == expectedSize,
+        "Trade::SceneData::translationsRotationsScalings3DInto(): expected rotation destination view either empty or with" << expectedSize << "elements but got" << rotationDestination.size(), );
+    CORRADE_ASSERT(!scalingDestination || scalingDestination.size() == expectedSize,
+        "Trade::SceneData::translationsRotationsScalings3DInto(): expected scaling destination view either empty or with" << expectedSize << "elements but got" << scalingDestination.size(), );
+    translationsRotationsScalings3DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, 0, translationDestination, rotationDestination, scalingDestination);
+}
+
+std::size_t SceneData::translationsRotationsScalings3DInto(const std::size_t offset, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const {
+    UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
+    const std::size_t expectedSize = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+        "Trade::SceneData::translationsRotationsScalings3DInto(): no transformation-related field found", {});
+    CORRADE_ASSERT(offset <= expectedSize,
+        "Trade::SceneData::translationsRotationsScalings3DInto(): offset" << offset << "out of bounds for a field of size" << expectedSize, {});
+    CORRADE_ASSERT(!translationDestination != !rotationDestination || translationDestination.size() == rotationDestination.size(),
+        "Trade::SceneData::translationsRotationsScalings3DInto(): translation and rotation destination views have different size," << translationDestination.size() << "vs" << rotationDestination.size(), {});
+    CORRADE_ASSERT(!translationDestination != !scalingDestination || translationDestination.size() == scalingDestination.size(),
+        "Trade::SceneData::translationsRotationsScalings3DInto(): translation and scaling destination views have different size," << translationDestination.size() << "vs" << scalingDestination.size(), {});
+    CORRADE_ASSERT(!rotationDestination != !scalingDestination || rotationDestination.size() == scalingDestination.size(),
+        "Trade::SceneData::translationsRotationsScalings3DInto(): rotation and scaling destination views have different size," << rotationDestination.size() << "vs" << scalingDestination.size(), {});
+    const std::size_t size = Math::min(Math::max({translationDestination.size(), rotationDestination.size(), scalingDestination.size()}), expectedSize - offset);
+    translationsRotationsScalings3DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, offset,
+        translationDestination ? translationDestination.prefix(size) : nullptr,
+        rotationDestination ? rotationDestination.prefix(size) : nullptr,
+        scalingDestination ? scalingDestination.prefix(size) : nullptr);
+    return size;
+}
+
+Containers::Array<Containers::Triple<Vector3, Quaternion, Vector3>> SceneData::translationsRotationsScalings3DAsArray() const {
+    UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
+    const std::size_t expectedSize = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+        /* Using the same message as in Into() to avoid too many redundant
+           strings in the binary */
+        "Trade::SceneData::translationsRotationsScalings3DInto(): no transformation-related field found", {});
+    Containers::Array<Containers::Triple<Vector3, Quaternion, Vector3>> out{NoInit, expectedSize};
+    /** @todo use slicing once Triple exposes members somehow */
+    const Containers::StridedArrayView1D<Vector3> translationsOut{out, reinterpret_cast<Vector3*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)};
+    const Containers::StridedArrayView1D<Quaternion> rotationsOut{out, reinterpret_cast<Quaternion*>(reinterpret_cast<char*>(out.data()) + sizeof(Vector3)), out.size(), sizeof(decltype(out)::Type)};
+    const Containers::StridedArrayView1D<Vector3> scalingsOut{out, reinterpret_cast<Vector3*>(reinterpret_cast<char*>(out.data()) + sizeof(Vector3) + sizeof(Quaternion)), out.size(), sizeof(decltype(out)::Type)};
+    translationsRotationsScalings3DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, 0, translationsOut, rotationsOut, scalingsOut);
     return out;
 }
 

@@ -148,7 +148,9 @@ enum class SceneField: UnsignedInt {
      * or be provided just for a subset of it --- see its documentation for
      * details.
      * @see @ref SceneData::transformations2DAsArray(),
-     *      @ref SceneData::transformations3DAsArray()
+     *      @ref SceneData::transformations3DAsArray(),
+     *      @ref SceneData::translationsRotationsScalings2DAsArray(),
+     *      @ref SceneData::translationsRotationsScalings3DAsArray()
      */
     Translation,
 
@@ -167,7 +169,9 @@ enum class SceneField: UnsignedInt {
      * or be provided just for a subset of it --- see its documentation for
      * details.
      * @see @ref SceneData::transformations2DAsArray(),
-     *      @ref SceneData::transformations3DAsArray()
+     *      @ref SceneData::transformations3DAsArray(),
+     *      @ref SceneData::translationsRotationsScalings2DAsArray(),
+     *      @ref SceneData::translationsRotationsScalings3DAsArray()
      */
     Rotation,
 
@@ -186,7 +190,9 @@ enum class SceneField: UnsignedInt {
      * or be provided just for a subset of it --- see its documentation for
      * details.
      * @see @ref SceneData::transformations2DAsArray(),
-     *      @ref SceneData::transformations3DAsArray()
+     *      @ref SceneData::transformations3DAsArray(),
+     *      @ref SceneData::translationsRotationsScalings2DAsArray(),
+     *      @ref SceneData::translationsRotationsScalings3DAsArray()
      */
     Scaling,
 
@@ -1116,6 +1122,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * use the overload below by using @cpp T[] @ce instead of @cpp T @ce.
          * You can also use the non-templated @ref parentsAsArray(),
          * @ref transformations2DAsArray(), @ref transformations3DAsArray(),
+         * @ref translationsRotationsScalings2DAsArray(),
+         * @ref translationsRotationsScalings3DAsArray(),
          * @ref meshesMaterialsAsArray(), @ref lightsAsArray(),
          * @ref camerasAsArray(), @ref skinsAsArray() accessors to get common
          * fields converted to usual types, but note that these operations
@@ -1192,11 +1200,14 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * to @ref fieldType(SceneField) const. The field is also expected to
          * not be an array, in that case you need to use the overload below by
          * using @cpp T[] @ce instead of @cpp T @ce. You can also use the
-         * non-templated @ref parentsAsArray(), @ref transformations2DAsArray(),
-         * @ref transformations3DAsArray(), @ref meshesMaterialsAsArray(),
-         * @ref lightsAsArray(), @ref camerasAsArray(), @ref skinsAsArray()
-         * accessors to get common fields converted to usual types, but note
-         * that these operations involve extra allocation and data conversion.
+         * non-templated @ref parentsAsArray(),
+         * @ref transformations2DAsArray(), @ref transformations3DAsArray(),
+         * @ref translationsRotationsScalings2DAsArray(),
+         * @ref translationsRotationsScalings3DAsArray(),
+         * @ref meshesMaterialsAsArray(), @ref lightsAsArray(),
+         * @ref camerasAsArray(), @ref skinsAsArray() accessors to get common
+         * fields converted to usual types, but note that these operations
+         * involve extra allocation and data conversion.
          * @see @ref field(UnsignedInt) const, @ref mutableField(SceneField)
          */
         template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<const T> field(SceneField name) const;
@@ -1403,6 +1414,54 @@ class MAGNUM_TRADE_EXPORT SceneData {
         std::size_t transformations2DInto(std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const;
 
         /**
+         * @brief 2D transformations as float translation, rotation and scaling components
+         * @m_since_latest
+         *
+         * Convenience alternative to @ref field(SceneField) const with
+         * @ref SceneField::Translation, @ref SceneField::Rotation and
+         * @ref SceneField::Scaling as the arguments, as these are required to
+         * share the same object mapping. Converts the fields from an arbitrary
+         * underlying type and returns them in a newly-allocated array. At
+         * least one of the fields is expected to exist and they are expected
+         * to have a type corresponding to 2D, otherwise you're supposed to use
+         * @ref translationsRotationsScalings3DAsArray(). If the
+         * @ref SceneField::Translation field isn't present, the first returned
+         * value is a zero vector. If the @relativeref{SceneField,Rotation}
+         * field isn't present, the second value is an identity rotation. If
+         * the @relativeref{SceneField,Scaling} field isn't present, the third
+         * value is an identity scaling (@cpp 1.0f @ce in both dimensions).
+         * @see @ref translationsRotationsScalings2DInto(), @ref hasField(),
+         *      @ref fieldType(SceneField) const
+         */
+        Containers::Array<Containers::Triple<Vector2, Complex, Vector2>> translationsRotationsScalings2DAsArray() const;
+
+        /**
+         * @brief 2D transformations as float translation, rotation and scaling components into a pre-allocated view
+         * @m_since_latest
+         *
+         * Like @ref translationsRotationsScalings2DAsArray(), but puts the
+         * result into @p translationDestination, @p rotationDestination and
+         * @p scalingDestination instead of allocating a new array. Expects
+         * that each view is either @cpp nullptr @ce or sized to contain
+         * exactly all data.
+         * @see @ref fieldSize(SceneField) const
+         */
+        void translationsRotationsScalings2DInto(const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const;
+
+        /**
+         * @brief A subrange of 2D transformations as float translation, rotation and scaling components into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref translationsRotationsScalings2DInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Complex>&, const Containers::StridedArrayView1D<Vector2>&) const
+         * extracts only a subrange of the field defined by @p offset and size
+         * of the views, returning the count of items actually extracted. The
+         * @p offset is expected to not be larger than the field size, views
+         * that are not @cpp nullptr @ce are expected to have the same size.
+         * @see @ref fieldSize(SceneField) const
+         */
+        std::size_t translationsRotationsScalings2DInto(std::size_t offset, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const;
+
+        /**
          * @brief 3D transformations as 4x4 float matrices
          * @m_since_latest
          *
@@ -1444,6 +1503,54 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref fieldSize(SceneField) const
          */
         std::size_t transformations3DInto(std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const;
+
+        /**
+         * @brief 3D transformations as float translation, rotation and scaling components
+         * @m_since_latest
+         *
+         * Convenience alternative to @ref field(SceneField) const with
+         * @ref SceneField::Translation, @ref SceneField::Rotation and
+         * @ref SceneField::Scaling as the arguments, as these are required to
+         * share the same object mapping. Converts the fields from an arbitrary
+         * underlying type and returns them in a newly-allocated array. At
+         * least one of the fields is expected to exist and they are expected
+         * to have a type corresponding to 3D, otherwise you're supposed to use
+         * @ref translationsRotationsScalings2DAsArray(). If the
+         * @ref SceneField::Translation field isn't present, the first returned
+         * value is a zero vector. If the @relativeref{SceneField,Rotation}
+         * field isn't present, the second value is an identity rotation. If
+         * the @relativeref{SceneField,Scaling} field isn't present, the third
+         * value is an identity scaling (@cpp 1.0f @ce in all dimensions).
+         * @see @ref translationsRotationsScalings3DInto(), @ref hasField(),
+         *      @ref fieldType(SceneField) const
+         */
+        Containers::Array<Containers::Triple<Vector3, Quaternion, Vector3>> translationsRotationsScalings3DAsArray() const;
+
+        /**
+         * @brief 3D transformations as float translation, rotation and scaling components into a pre-allocated view
+         * @m_since_latest
+         *
+         * Like @ref translationsRotationsScalings3DAsArray(), but puts the
+         * result into @p translationDestination, @p rotationDestination and
+         * @p scalingDestination instead of allocating a new array. Expects
+         * that each view is either @cpp nullptr @ce or sized to contain
+         * exactly all data.
+         * @see @ref fieldSize(SceneField) const
+         */
+        void translationsRotationsScalings3DInto(const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const;
+
+        /**
+         * @brief A subrange of 3D transformations as float translation, rotation and scaling components into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref translationsRotationsScalings3DInto(const Containers::StridedArrayView1D<Vector3>&, const Containers::StridedArrayView1D<Quaternion>&, const Containers::StridedArrayView1D<Vector3>&) const
+         * extracts only a subrange of the field defined by @p offset and size
+         * of the views, returning the count of items actually extracted. The
+         * @p offset is expected to not be larger than the field size, views
+         * that are not @cpp nullptr @ce are expected to have the same size.
+         * @see @ref fieldSize(SceneField) const
+         */
+        std::size_t translationsRotationsScalings3DInto(std::size_t offset, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const;
 
         /**
          * @brief Mesh and material IDs as 32-bit integers
@@ -1654,8 +1761,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
         MAGNUM_TRADE_LOCAL void objectsIntoInternal(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
         MAGNUM_TRADE_LOCAL void parentsIntoInternal(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
         MAGNUM_TRADE_LOCAL std::size_t findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const;
+        MAGNUM_TRADE_LOCAL std::size_t findTranslationRotationScalingFields(UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const;
         MAGNUM_TRADE_LOCAL void transformations2DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const;
+        MAGNUM_TRADE_LOCAL void translationsRotationsScalings2DIntoInternal(UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const;
         MAGNUM_TRADE_LOCAL void transformations3DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const;
+        MAGNUM_TRADE_LOCAL void translationsRotationsScalings3DIntoInternal(UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const;
         MAGNUM_TRADE_LOCAL void unsignedIndexFieldIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
         MAGNUM_TRADE_LOCAL void indexFieldIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
         MAGNUM_TRADE_LOCAL Containers::Array<UnsignedInt> unsignedIndexFieldAsArrayInternal(const UnsignedInt fieldId) const;
