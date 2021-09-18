@@ -112,14 +112,14 @@ struct SceneDataTest: TestSuite::Tester {
     void parentsIntoArray();
     void parentsIntoArrayInvalidSizeOrOffset();
     template<class T> void transformations2DAsArray();
-    template<class T> void transformations2DAsArrayTRS();
+    template<class T, class U, class V> void transformations2DAsArrayTRS();
     template<class T> void transformations2DAsArrayBut3DType();
     template<class T> void transformations2DAsArrayBut3DTypeTRS();
     void transformations2DIntoArray();
     void transformations2DIntoArrayTRS();
     void transformations2DIntoArrayInvalidSizeOrOffset();
     template<class T> void transformations3DAsArray();
-    template<class T> void transformations3DAsArrayTRS();
+    template<class T, class U, class V> void transformations3DAsArrayTRS();
     template<class T> void transformations3DAsArrayBut2DType();
     template<class T> void transformations3DAsArrayBut2DTypeTRS();
     void transformations3DIntoArray();
@@ -261,8 +261,8 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::transformations2DAsArray<Matrix3d>,
               &SceneDataTest::transformations2DAsArray<DualComplex>,
               &SceneDataTest::transformations2DAsArray<DualComplexd>,
-              &SceneDataTest::transformations2DAsArrayTRS<Float>,
-              &SceneDataTest::transformations2DAsArrayTRS<Double>,
+              &SceneDataTest::transformations2DAsArrayTRS<Float, Float, Double>,
+              &SceneDataTest::transformations2DAsArrayTRS<Double, Double, Float>,
               &SceneDataTest::transformations2DAsArrayBut3DType<Matrix4x4>,
               &SceneDataTest::transformations2DAsArrayBut3DType<Matrix4x4d>,
               &SceneDataTest::transformations2DAsArrayBut3DType<DualQuaternion>,
@@ -279,8 +279,8 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::transformations3DAsArray<Matrix4d>,
               &SceneDataTest::transformations3DAsArray<DualQuaternion>,
               &SceneDataTest::transformations3DAsArray<DualQuaterniond>,
-              &SceneDataTest::transformations3DAsArrayTRS<Float>,
-              &SceneDataTest::transformations3DAsArrayTRS<Double>,
+              &SceneDataTest::transformations3DAsArrayTRS<Float, Double, Double>,
+              &SceneDataTest::transformations3DAsArrayTRS<Double, Float, Float>,
               &SceneDataTest::transformations3DAsArrayBut2DType<Matrix3x3>,
               &SceneDataTest::transformations3DAsArrayBut2DType<Matrix3x3d>,
               &SceneDataTest::transformations3DAsArrayBut2DType<DualComplex>,
@@ -2097,30 +2097,30 @@ template<class T> void SceneDataTest::transformations2DAsArray() {
     }), TestSuite::Compare::Container);
 }
 
-template<class T> void SceneDataTest::transformations2DAsArrayTRS() {
-    setTestCaseTemplateName(NameTraits<T>::name());
+template<class T, class U, class V> void SceneDataTest::transformations2DAsArrayTRS() {
+    setTestCaseTemplateName({NameTraits<T>::name(), NameTraits<U>::name(), NameTraits<V>::name()});
 
     struct Field {
         UnsignedInt object;
         Math::Vector2<T> translation;
-        Math::Complex<T> rotation;
-        Math::Vector2<T> scaling;
+        Math::Complex<U> rotation;
+        Math::Vector2<V> scaling;
     } fields[]{
         {1, {T(3.0), T(2.0)},
             {},
-            {T(1.0), T(1.0)}},
+            {V(1.0), V(1.0)}},
         {0, {},
-            Math::Complex<T>::rotation(Math::Deg<T>{T(35.0)}),
-            {T(1.0), T(1.0)}},
+            Math::Complex<U>::rotation(Math::Deg<U>{U(35.0)}),
+            {V(1.0), V(1.0)}},
         {2, {}, /* Identity transformation here */
             {},
-            {T(1.0), T(1.0)}},
+            {V(1.0), V(1.0)}},
         {4, {},
             {},
-            {T(2.0), T(1.0)}},
+            {V(2.0), V(1.0)}},
         {7, {T(1.5), T(2.5)},
-            Math::Complex<T>::rotation(Math::Deg<T>{T(-15.0)}),
-            {T(-0.5), T(4.0)}},
+            Math::Complex<U>::rotation(Math::Deg<U>{U(-15.0)}),
+            {V(-0.5), V(4.0)}},
     };
 
     Containers::StridedArrayView1D<Field> view = fields;
@@ -2470,30 +2470,30 @@ template<class T> void SceneDataTest::transformations3DAsArray() {
     }), TestSuite::Compare::Container);
 }
 
-template<class T> void SceneDataTest::transformations3DAsArrayTRS() {
-    setTestCaseTemplateName(NameTraits<T>::name());
+template<class T, class U, class V> void SceneDataTest::transformations3DAsArrayTRS() {
+    setTestCaseTemplateName({NameTraits<T>::name(), NameTraits<U>::name(), NameTraits<V>::name()});
 
     struct Field {
         UnsignedInt object;
         Math::Vector3<T> translation;
-        Math::Quaternion<T> rotation;
-        Math::Vector3<T> scaling;
+        Math::Quaternion<U> rotation;
+        Math::Vector3<V> scaling;
     } fields[]{
         {1, {T(3.0), T(2.0), T(1.0)},
             {},
-            {T(1.0), T(1.0), T(1.0)}},
+            {V(1.0), V(1.0), V(1.0)}},
         {0, {},
-            Math::Quaternion<T>::rotation(Math::Deg<T>{T(35.0)}, Math::Vector3<T>::yAxis()),
-            {T(1.0), T(1.0), T(1.0)}},
+            Math::Quaternion<U>::rotation(Math::Deg<U>{U(35.0)}, Math::Vector3<U>::yAxis()),
+            {V(1.0), V(1.0), V(1.0)}},
         {2, {}, /* Identity transformation here */
             {},
-            {T(1.0), T(1.0), T(1.0)}},
+            {V(1.0), V(1.0), V(1.0)}},
         {4, {},
             {},
-            {T(2.0), T(1.0), T(0.0)}},
+            {V(2.0), V(1.0), V(0.0)}},
         {7, {T(1.5), T(2.5), T(3.5)},
-            Math::Quaternion<T>::rotation(Math::Deg<T>{T(-15.0)}, Math::Vector3<T>::xAxis()),
-            {T(-0.5), T(4.0), T(-16.0)}},
+            Math::Quaternion<U>::rotation(Math::Deg<U>{U(-15.0)}, Math::Vector3<U>::xAxis()),
+            {V(-0.5), V(4.0), V(-16.0)}},
     };
 
     Containers::StridedArrayView1D<Field> view = fields;
