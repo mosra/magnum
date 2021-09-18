@@ -102,7 +102,7 @@ enum class SceneField: UnsignedInt {
      * Note that the index points to the parent array itself and isn't the
      * actual object index --- the object mapping is stored in the
      * corresponding @ref SceneData::objects() array.
-     * @see @ref SceneData::parentsAsArray()
+     * @see @ref SceneData::parentsAsArray(), @ref SceneData::childrenFor()
      */
     Parent = 1,
 
@@ -129,7 +129,9 @@ enum class SceneField: UnsignedInt {
      * only for a subset of transformed objects, useful for example when only
      * certain objects have these properties animated.
      * @see @ref SceneData::transformations2DAsArray(),
-     *      @ref SceneData::transformations3DAsArray()
+     *      @ref SceneData::transformations3DAsArray(),
+     *      @ref SceneData::transformation2DFor(),
+     *      @ref SceneData::transformation3DFor()
      */
     Transformation,
 
@@ -149,8 +151,12 @@ enum class SceneField: UnsignedInt {
      * details.
      * @see @ref SceneData::transformations2DAsArray(),
      *      @ref SceneData::transformations3DAsArray(),
+     *      @ref SceneData::transformation2DFor(),
+     *      @ref SceneData::transformation3DFor(),
      *      @ref SceneData::translationsRotationsScalings2DAsArray(),
-     *      @ref SceneData::translationsRotationsScalings3DAsArray()
+     *      @ref SceneData::translationsRotationsScalings3DAsArray(),
+     *      @ref SceneData::translationRotationScaling2DFor(),
+     *      @ref SceneData::translationRotationScaling3DFor()
      */
     Translation,
 
@@ -170,8 +176,12 @@ enum class SceneField: UnsignedInt {
      * details.
      * @see @ref SceneData::transformations2DAsArray(),
      *      @ref SceneData::transformations3DAsArray(),
+     *      @ref SceneData::transformation2DFor(),
+     *      @ref SceneData::transformation3DFor(),
      *      @ref SceneData::translationsRotationsScalings2DAsArray(),
-     *      @ref SceneData::translationsRotationsScalings3DAsArray()
+     *      @ref SceneData::translationsRotationsScalings3DAsArray(),
+     *      @ref SceneData::translationRotationScaling2DFor(),
+     *      @ref SceneData::translationRotationScaling3DFor()
      */
     Rotation,
 
@@ -191,8 +201,12 @@ enum class SceneField: UnsignedInt {
      * details.
      * @see @ref SceneData::transformations2DAsArray(),
      *      @ref SceneData::transformations3DAsArray(),
+     *      @ref SceneData::transformation2DFor(),
+     *      @ref SceneData::transformation3DFor(),
      *      @ref SceneData::translationsRotationsScalings2DAsArray(),
-     *      @ref SceneData::translationsRotationsScalings3DAsArray()
+     *      @ref SceneData::translationsRotationsScalings3DAsArray(),
+     *      @ref SceneData::translationRotationScaling2DFor(),
+     *      @ref SceneData::translationRotationScaling3DFor()
      */
     Scaling,
 
@@ -208,7 +222,8 @@ enum class SceneField: UnsignedInt {
      * required. If present, both should share the same object mapping view.
      * Objects with multiple meshes then have the Nth mesh associated with the
      * Nth material.
-     * @see @ref SceneData::meshesMaterialsAsArray()
+     * @see @ref SceneData::meshesMaterialsAsArray(),
+     *      @ref SceneData::meshesMaterialsFor()
      */
     Mesh,
 
@@ -219,7 +234,8 @@ enum class SceneField: UnsignedInt {
      * but can be also any of @relativeref{SceneFieldType,Byte} or
      * @relativeref{SceneFieldType,Short}. Expected to share the
      * object mapping view with @ref SceneField::Mesh.
-     * @see @ref SceneData::meshesMaterialsAsArray()
+     * @see @ref SceneData::meshesMaterialsAsArray(),
+     *      @ref SceneData::meshesMaterialsFor()
      */
     MeshMaterial,
 
@@ -230,7 +246,7 @@ enum class SceneField: UnsignedInt {
      * @relativeref{SceneFieldType,UnsignedByte} or
      * @relativeref{SceneFieldType,UnsignedShort}. An object can have multiple
      * lights associated.
-     * @see @ref SceneData::lightsAsArray()
+     * @see @ref SceneData::lightsAsArray(), @ref SceneData::lightsFor()
      */
     Light,
 
@@ -241,7 +257,7 @@ enum class SceneField: UnsignedInt {
      * @relativeref{SceneFieldType,UnsignedByte} or
      * @relativeref{SceneFieldType,UnsignedShort}. An object can have multiple
      * cameras associated.
-     * @see @ref SceneData::camerasAsArray()
+     * @see @ref SceneData::camerasAsArray(), @ref SceneData::camerasFor()
      */
     Camera,
 
@@ -252,7 +268,7 @@ enum class SceneField: UnsignedInt {
      * @relativeref{SceneFieldType,UnsignedByte} or
      * @relativeref{SceneFieldType,UnsignedShort}. An object can have multiple
      * skins associated.
-     * @see @ref SceneData::skinsAsArray()
+     * @see @ref SceneData::skinsAsArray(), @ref SceneData::skinsFor()
      */
     Skin,
 
@@ -1342,7 +1358,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *      is larger than the max representable 32-bit value, this
          *      function can't be used, only an appropriately typed
          *      @ref field(SceneField) const.
-         * @see @ref parentsInto(), @ref hasField()
+         * @see @ref parentsInto(), @ref hasField(), @ref childrenFor()
          */
         Containers::Array<Int> parentsAsArray() const;
 
@@ -1385,7 +1401,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * to 2D, otherwise you're supposed to use
          * @ref transformations3DAsArray().
          * @see @ref transformations2DInto(), @ref hasField(),
-         *      @ref fieldType(SceneField) const
+         *      @ref fieldType(SceneField) const, @ref transformation2DFor()
          */
         Containers::Array<Matrix3> transformations2DAsArray() const;
 
@@ -1431,7 +1447,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * the @relativeref{SceneField,Scaling} field isn't present, the third
          * value is an identity scaling (@cpp 1.0f @ce in both dimensions).
          * @see @ref translationsRotationsScalings2DInto(), @ref hasField(),
-         *      @ref fieldType(SceneField) const
+         *      @ref fieldType(SceneField) const,
+         *      @ref translationRotationScaling2DFor()
          */
         Containers::Array<Containers::Triple<Vector2, Complex, Vector2>> translationsRotationsScalings2DAsArray() const;
 
@@ -1476,7 +1493,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * to 3D, otherwise you're supposed to use
          * @ref transformations2DAsArray().
          * @see @ref transformations3DInto(), @ref hasField(),
-         *      @ref fieldType(SceneField) const
+         *      @ref fieldType(SceneField) const, @ref transformation3DFor()
          */
         Containers::Array<Matrix4> transformations3DAsArray() const;
 
@@ -1522,7 +1539,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * the @relativeref{SceneField,Scaling} field isn't present, the third
          * value is an identity scaling (@cpp 1.0f @ce in all dimensions).
          * @see @ref translationsRotationsScalings3DInto(), @ref hasField(),
-         *      @ref fieldType(SceneField) const
+         *      @ref fieldType(SceneField) const,
+         *      @ref translationRotationScaling3DFor()
          */
         Containers::Array<Containers::Triple<Vector3, Quaternion, Vector3>> translationsRotationsScalings3DAsArray() const;
 
@@ -1563,7 +1581,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * in a newly-allocated array. The @ref SceneField::Mesh field is
          * expected to exist, if @ref SceneField::MeshMaterial isn't present,
          * the second returned values are all @cpp -1 @ce.
-         * @see @ref meshesMaterialsInto(), @ref hasField()
+         * @see @ref meshesMaterialsInto(), @ref hasField(),
+         *      @ref meshesMaterialsFor()
          */
         Containers::Array<Containers::Pair<UnsignedInt, Int>> meshesMaterialsAsArray() const;
 
@@ -1600,7 +1619,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref SceneField::Light as the argument that converts the field from
          * an arbitrary underlying type and returns it in a newly-allocated
          * array. The field is expected to exist.
-         * @see @ref lightsInto(), @ref hasField()
+         * @see @ref lightsInto(), @ref hasField(), @ref lightsFor()
          */
         Containers::Array<UnsignedInt> lightsAsArray() const;
 
@@ -1636,7 +1655,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref SceneField::Camera as the argument that converts the field from
          * an arbitrary underlying type and returns it in a newly-allocated
          * array. The field is expected to exist.
-         * @see @ref camerasInto(), @ref hasField()
+         * @see @ref camerasInto(), @ref hasField(), @ref camerasFor()
          */
         Containers::Array<UnsignedInt> camerasAsArray() const;
 
@@ -1672,7 +1691,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref SceneField::Skin as the argument that converts the field from
          * an arbitrary underlying type and returns it in a newly-allocated
          * array. The field is expected to exist.
-         * @see @ref skinsInto(), @ref hasField()
+         * @see @ref skinsInto(), @ref hasField(), @ref skinsFor()
          */
         Containers::Array<UnsignedInt> skinsAsArray() const;
 
@@ -1699,6 +1718,209 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref fieldSize(SceneField) const
          */
         std::size_t skinsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+
+        /**
+         * @brief Children for given object
+         * @m_since_latest
+         *
+         * Looks up @p object in the object mapping array for
+         * @ref SceneField::Parent and returns a list of all object IDs that
+         * have it listed as the parent. The lookup is done in an
+         * @f$ \mathcal{O}(m + n) @f$ complexity with @f$ m @f$ being the field
+         * count and @f$ n @f$ the size of the parent field, thus for
+         * retrieving parent/child info for many objects it's recommended to
+         * access the field data directly with @ref parentsAsArray() and
+         * related APIs.
+         *
+         * If the @ref SceneField::Parent field doesn't exist or there are no
+         * objects which would have @p object listed as their parent, returns
+         * an empty array. Pass @cpp -1 @ce to get a list of top-level objects.
+         *
+         * The @p object is expected to be less than @ref objectCount().
+         */
+        Containers::Array<UnsignedInt> childrenFor(Int object) const;
+
+        /**
+         * @brief 2D transformation for given object
+         * @m_since_latest
+         *
+         * Looks up the @ref SceneField::Transformation field for @p object or
+         * combines it from a @ref SceneField::Translation,
+         * @relativeref{SceneField,Rotation} and
+         * @relativeref{SceneField,Scaling} in the same way as
+         * @ref transformations2DAsArray(). The lookup is done in an
+         * @f$ \mathcal{O}(m + n) @f$ complexity with @f$ m @f$ being the field
+         * count and @f$ n @f$ the size of the transformation field, thus for
+         * retrieving transformation info for many objects it's recommended to
+         * access the field data directly with @ref transformations2DAsArray()
+         * and related APIs.
+         *
+         * If neither @ref SceneField::Transformation nor any of
+         * @ref SceneField::Translation, @relativeref{SceneField,Rotation} or
+         * @relativeref{SceneField,Scaling} is present, the fields represent a
+         * 3D transformation or there's no transformation for @p object,
+         * returns @ref Containers::NullOpt.
+         *
+         * The @p object is expected to be less than @ref objectCount().
+         * @see @ref translationRotationScaling2DFor()
+         */
+        Containers::Optional<Matrix3> transformation2DFor(UnsignedInt object) const;
+
+        /**
+         * @brief 2D translation, rotation and scaling for given object
+         * @m_since_latest
+         *
+         * Looks up the @ref SceneField::Translation,
+         * @relativeref{SceneField,Rotation} and
+         * @relativeref{SceneField,Scaling} fields for @p object. The lookup
+         * is done in an @f$ \mathcal{O}(m + n) @f$ complexity with @f$ m @f$
+         * being the field count and @f$ n @f$ the size of the transformation
+         * field, thus for retrieving transformation info for many objects it's
+         * recommended to access the field data directly with
+         * @ref translationsRotationsScalings2DAsArray() and related APIs.
+         *
+         * If the @ref SceneField::Translation field isn't present, the first
+         * returned value is a zero vector. If the
+         * @relativeref{SceneField,Rotation} field isn't present, the second
+         * value is an identity rotation. If the @relativeref{SceneField,Scaling}
+         * field isn't present, the third value is an identity scaling
+         * (@cpp 1.0f @ce in both dimensions). If neither of those fields is
+         * present, if any of the fields represents a 3D transformation or if
+         * there's no transformation for @p object, returns
+         * @ref Containers::NullOpt.
+         *
+         * The @p object is expected to be less than @ref objectCount().
+         * @see @ref transformation2DFor()
+         */
+        Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> translationRotationScaling2DFor(UnsignedInt object) const;
+
+        /**
+         * @brief 3D transformation for given object
+         * @m_since_latest
+         *
+         * Looks up the @ref SceneField::Transformation field for @p object or
+         * combines it from a @ref SceneField::Translation,
+         * @relativeref{SceneField,Rotation} and
+         * @relativeref{SceneField,Scaling} in the same way as
+         * @ref transformations3DAsArray(). The lookup is done in an
+         * @f$ \mathcal{O}(m + n) @f$ complexity with @f$ m @f$ being the field
+         * count and @f$ n @f$ the size of the transformation field, thus for
+         * retrieving transformation info for many objects it's recommended to
+         * access the field data directly with @ref transformations3DAsArray()
+         * and related APIs.
+         *
+         * If neither @ref SceneField::Transformation nor any of
+         * @ref SceneField::Translation, @relativeref{SceneField,Rotation} or
+         * @relativeref{SceneField,Scaling} is present, the fields represent a
+         * 2D transformation or there's no transformation for @p object,
+         * returns @ref Containers::NullOpt.
+         *
+         * The @p object is expected to be less than @ref objectCount().
+         * @see @ref translationRotationScaling3DFor()
+         */
+        Containers::Optional<Matrix4> transformation3DFor(UnsignedInt object) const;
+
+        /**
+         * @brief 3D translation, rotation and scaling for given object
+         * @m_since_latest
+         *
+         * Looks up the @ref SceneField::Translation,
+         * @relativeref{SceneField,Rotation} and
+         * @relativeref{SceneField,Scaling} fields for @p object. The lookup
+         * is done in an @f$ \mathcal{O}(m + n) @f$ complexity with @f$ m @f$
+         * being the field count and @f$ n @f$ the size of the transformation
+         * field, thus for retrieving transformation info for many objects it's
+         * recommended to access the field data directly with
+         * @ref translationsRotationsScalings3DAsArray() and related APIs.
+         *
+         * If the @ref SceneField::Translation field isn't present, the first
+         * returned value is a zero vector. If the
+         * @relativeref{SceneField,Rotation} field isn't present, the second
+         * value is an identity rotation. If the @relativeref{SceneField,Scaling}
+         * field isn't present, the third value is an identity scaling
+         * (@cpp 1.0f @ce in all dimensions). If neither of those fields is
+         * present, if any of the fields represents a 2D transformation or if
+         * there's no transformation for @p object, returns
+         * @ref Containers::NullOpt.
+         *
+         * The @p object is expected to be less than @ref objectCount().
+         * @see @ref transformation3DFor()
+         */
+        Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> translationRotationScaling3DFor(UnsignedInt object) const;
+
+        /**
+         * @brief Meshes and materials for given object
+         * @m_since_latest
+         *
+         * Looks up all @ref SceneField::Mesh and @ref SceneField::MeshMaterial
+         * @relativeref{SceneField,Scaling} fields for @p object. The lookup
+         * is done in an @f$ \mathcal{O}(m + n) @f$ complexity with @f$ m @f$
+         * being the field count and @f$ n @f$ the size of the mesh field, thus
+         * for retrieving mesh info for many objects it's recommended to access
+         * the field data directly with @ref meshesMaterialsAsArray() and
+         * related APIs.
+         *
+         * If the @ref SceneField::MeshMaterial field is not present, the
+         * second returned value is always @cpp -1 @ce. If
+         * @ref SceneField::Mesh is not present or if there's no mesh for
+         * @p object, returns an empty array.
+         *
+         * The @p object is expected to be less than @ref objectCount().
+         */
+        Containers::Array<Containers::Pair<UnsignedInt, Int>> meshesMaterialsFor(UnsignedInt object) const;
+
+        /**
+         * @brief Lights for given object
+         * @m_since_latest
+         *
+         * Looks up all @ref SceneField::Light fields for @p object. The lookup
+         * is done in an @f$ \mathcal{O}(m + n) @f$ complexity with @f$ m @f$
+         * being the field count and @f$ n @f$ the size of the light field,
+         * thus for retrieving light info for many objects it's recommended to
+         * access the field data directly with @ref lightsAsArray() and related
+         * APIs.
+         *
+         * If the @ref SceneField::Light field is not present or if there's no
+         * light for @p object, returns an empty array.
+         *
+         * The @p object is expected to be less than @ref objectCount().
+         */
+        Containers::Array<UnsignedInt> lightsFor(UnsignedInt object) const;
+
+        /**
+         * @brief Cameras for given object
+         * @m_since_latest
+         *
+         * Looks up all @ref SceneField::Camera fields for @p object. The
+         * lookup is done in an @f$ \mathcal{O}(m + n) @f$ complexity with
+         * @f$ m @f$ being the field count and @f$ n @f$ the size of the camera
+         * field, thus for retrieving camera info for many objects it's
+         * recommended to access the field data directly with
+         * @ref camerasAsArray() and related APIs.
+         *
+         * If the @ref SceneField::Camera field is not present or if there's no
+         * camera for @p object, returns an empty array.
+         *
+         * The @p object is expected to be less than @ref objectCount().
+         */
+        Containers::Array<UnsignedInt> camerasFor(UnsignedInt object) const;
+
+        /**
+         * @brief Skins for given object
+         * @m_since_latest
+         *
+         * Looks up all @ref SceneField::Skin fields for @p object. The lookup
+         * is done in an @f$ \mathcal{O}(m + n) @f$ complexity with @f$ m @f$
+         * being the field count and @f$ n @f$ the size of the skin field, thus
+         * for retrieving skin info for many objects it's recommended to access
+         * the field data directly with @ref skinsAsArray() and related APIs.
+         *
+         * If the @ref SceneField::Skin field is not present or if there's no
+         * skin for @p object, returns an empty array.
+         *
+         * The @p object is expected to be less than @ref objectCount().
+         */
+        Containers::Array<UnsignedInt> skinsFor(UnsignedInt object) const;
 
         /**
          * @brief Release field data storage
@@ -1746,6 +1968,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
         /* Internal helper that doesn't assert, unlike fieldId() */
         UnsignedInt fieldFor(SceneField name) const;
 
+        /* Returns the offset at which `object` is for field at index `id`, or
+           the end offset if the object is not found. The returned offset can
+           be then passed to fieldData{Object,Field}ViewInternal(). */
+        std::size_t fieldFor(const SceneFieldData& field, std::size_t offset, UnsignedInt object) const;
+
         /* Like objects() / field(), but returning just a 1D view, sliced from
            offset to offset + size. The parameterless overloads are equal to
            offset = 0 and size = field.size(). */
@@ -1760,8 +1987,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         MAGNUM_TRADE_LOCAL void objectsIntoInternal(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
         MAGNUM_TRADE_LOCAL void parentsIntoInternal(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
-        MAGNUM_TRADE_LOCAL std::size_t findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const;
-        MAGNUM_TRADE_LOCAL std::size_t findTranslationRotationScalingFields(UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const;
+        MAGNUM_TRADE_LOCAL std::size_t findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId, UnsignedInt* fieldWithObjectMappingDestination = nullptr) const;
+        MAGNUM_TRADE_LOCAL std::size_t findTranslationRotationScalingFields(UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId, UnsignedInt* fieldWithObjectMappingDestination = nullptr) const;
         MAGNUM_TRADE_LOCAL void transformations2DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const;
         MAGNUM_TRADE_LOCAL void translationsRotationsScalings2DIntoInternal(UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const;
         MAGNUM_TRADE_LOCAL void transformations3DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const;

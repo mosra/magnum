@@ -25,6 +25,8 @@
 
 #include "SceneData.h"
 
+#include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Algorithms.h>
@@ -839,8 +841,8 @@ template<class Source, class Destination> void applyScaling(const Containers::St
 
 }
 
-std::size_t SceneData::findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const {
-    UnsignedInt fieldToCheckForSize = ~UnsignedInt{};
+std::size_t SceneData::findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId, UnsignedInt* const fieldWithObjectMappingDestination) const {
+    UnsignedInt fieldWithObjectMapping = ~UnsignedInt{};
     transformationFieldId = ~UnsignedInt{};
     translationFieldId = ~UnsignedInt{};
     rotationFieldId = ~UnsignedInt{};
@@ -849,40 +851,46 @@ std::size_t SceneData::findTransformFields(UnsignedInt& transformationFieldId, U
         /* If we find a transformation field, we don't need to look any
            further */
         if(_fields[i]._name == SceneField::Transformation) {
-            fieldToCheckForSize = transformationFieldId = i;
+            fieldWithObjectMapping = transformationFieldId = i;
             break;
         } else if(_fields[i]._name == SceneField::Translation) {
-            fieldToCheckForSize = translationFieldId = i;
+            fieldWithObjectMapping = translationFieldId = i;
         } else if(_fields[i]._name == SceneField::Rotation) {
-            fieldToCheckForSize = rotationFieldId = i;
+            fieldWithObjectMapping = rotationFieldId = i;
         } else if(_fields[i]._name == SceneField::Scaling) {
-            fieldToCheckForSize = scalingFieldId = i;
+            fieldWithObjectMapping = scalingFieldId = i;
         }
     }
 
+    if(fieldWithObjectMappingDestination)
+        *fieldWithObjectMappingDestination = fieldWithObjectMapping;
+
     /* Assuming the caller fires an appropriate assertion */
-    return fieldToCheckForSize == ~UnsignedInt{} ?
-        ~std::size_t{} : _fields[fieldToCheckForSize]._size;
+    return fieldWithObjectMapping == ~UnsignedInt{} ?
+        ~std::size_t{} : _fields[fieldWithObjectMapping]._size;
 }
 
-std::size_t SceneData::findTranslationRotationScalingFields(UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const {
-    UnsignedInt fieldToCheckForSize = ~UnsignedInt{};
+std::size_t SceneData::findTranslationRotationScalingFields(UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId, UnsignedInt* const fieldWithObjectMappingDestination) const {
+    UnsignedInt fieldWithObjectMapping = ~UnsignedInt{};
     translationFieldId = ~UnsignedInt{};
     rotationFieldId = ~UnsignedInt{};
     scalingFieldId = ~UnsignedInt{};
     for(std::size_t i = 0; i != _fields.size(); ++i) {
         if(_fields[i]._name == SceneField::Translation) {
-            fieldToCheckForSize = translationFieldId = i;
+            fieldWithObjectMapping = translationFieldId = i;
         } else if(_fields[i]._name == SceneField::Rotation) {
-            fieldToCheckForSize = rotationFieldId = i;
+            fieldWithObjectMapping = rotationFieldId = i;
         } else if(_fields[i]._name == SceneField::Scaling) {
-            fieldToCheckForSize = scalingFieldId = i;
+            fieldWithObjectMapping = scalingFieldId = i;
         }
     }
 
+    if(fieldWithObjectMappingDestination)
+        *fieldWithObjectMappingDestination = fieldWithObjectMapping;
+
     /* Assuming the caller fires an appropriate assertion */
-    return fieldToCheckForSize == ~UnsignedInt{} ?
-        ~std::size_t{} : _fields[fieldToCheckForSize]._size;
+    return fieldWithObjectMapping == ~UnsignedInt{} ?
+        ~std::size_t{} : _fields[fieldWithObjectMapping]._size;
 }
 
 void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFieldId, const UnsignedInt translationFieldId, const UnsignedInt rotationFieldId, const UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const {
@@ -1551,6 +1559,342 @@ Containers::Array<UnsignedInt> SceneData::skinsAsArray() const {
            strings in the binary */
         "Trade::SceneData::skinsInto(): field not found", {});
     return unsignedIndexFieldAsArrayInternal(fieldId);
+}
+
+namespace {
+
+template<class T> std::size_t findObject(const Containers::StridedArrayView1D<const void>& objects, const UnsignedInt object) {
+    const Containers::StridedArrayView1D<const T> objectsT = Containers::arrayCast<const T>(objects);
+    const std::size_t max = objectsT.size();
+    /** @todo implement something faster than O(n) when field-specific flags
+        can annotate how the object mapping is done */
+    for(std::size_t i = 0; i != max; ++i)
+        if(objectsT[i] == object) return i;
+    return max;
+}
+
+}
+
+std::size_t SceneData::fieldFor(const SceneFieldData& field, const std::size_t offset, const UnsignedInt object) const {
+    const Containers::StridedArrayView1D<const void> objects = fieldDataObjectViewInternal(field, offset, field._size - offset);
+    if(field._objectType == SceneObjectType::UnsignedInt)
+        return offset + findObject<UnsignedInt>(objects, object);
+    else if(field._objectType == SceneObjectType::UnsignedShort)
+        return offset + findObject<UnsignedShort>(objects, object);
+    else if(field._objectType == SceneObjectType::UnsignedByte)
+        return offset + findObject<UnsignedByte>(objects, object);
+    else if(field._objectType == SceneObjectType::UnsignedLong)
+        return offset + findObject<UnsignedLong>(objects, object);
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+}
+
+Containers::Array<UnsignedInt> SceneData::childrenFor(Int object) const {
+    CORRADE_ASSERT(object >= -1 && object < Long(_objectCount),
+        "Trade::SceneData::childrenFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
+
+    const UnsignedInt parentFieldId = fieldFor(SceneField::Parent);
+    if(parentFieldId == ~UnsignedInt{}) return {};
+
+    const SceneFieldData& parentField = _fields[parentFieldId];
+
+    /* Figure out the parent object index to look for or -1 if we want
+       top-level objects */
+    Int parentIndexToLookFor;
+    if(object == -1) parentIndexToLookFor = -1;
+    else {
+        const std::size_t parentObjectIndex = fieldFor(parentField, 0, object);
+        if(parentObjectIndex == parentField._size) return {};
+        parentIndexToLookFor = parentObjectIndex;
+    }
+
+    /* Collect IDs of all objects that reference this index */
+    Containers::Array<UnsignedInt> out;
+    for(std::size_t offset = 0; offset != parentField.size(); ++offset) {
+        Int parentIndex[1];
+        parentsIntoInternal(parentFieldId, offset, parentIndex);
+        if(*parentIndex == parentIndexToLookFor) {
+            UnsignedInt child[1];
+            /** @todo bleh slow, use the children <-> parent field proxying
+                when implemented */
+            objectsIntoInternal(parentFieldId, offset, child);
+            arrayAppend(out, *child);
+        }
+    }
+
+    return out;
+}
+
+Containers::Optional<Matrix3> SceneData::transformation2DFor(const UnsignedInt object) const {
+    CORRADE_ASSERT(object < _objectCount,
+        "Trade::SceneData::transformation2DFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
+
+    UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, fieldWithObjectMapping;
+    if(findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, &fieldWithObjectMapping) == ~std::size_t{}) return {};
+
+    #ifndef CORRADE_NO_ASSERT
+    if(transformationFieldId != ~UnsignedInt{}) {
+        const SceneFieldType type = _fields[transformationFieldId]._fieldType;
+        CORRADE_ASSERT(
+            type == SceneFieldType::Matrix3x3 ||
+            type == SceneFieldType::Matrix3x3d ||
+            type == SceneFieldType::DualComplex ||
+            type == SceneFieldType::DualComplexd,
+            "Trade::SceneData::transformation2DFor(): field has a 3D transformation type" << type, {});
+    } else {
+        if(translationFieldId != ~UnsignedInt{}) {
+            const SceneFieldType type = _fields[translationFieldId]._fieldType;
+            CORRADE_ASSERT(
+                type == SceneFieldType::Vector2 ||
+                type == SceneFieldType::Vector2d,
+            "Trade::SceneData::transformation2DFor(): field has a 3D translation type" << type, {});
+        }
+        if(rotationFieldId != ~UnsignedInt{}) {
+            const SceneFieldType type = _fields[rotationFieldId]._fieldType;
+            CORRADE_ASSERT(
+                type == SceneFieldType::Complex ||
+                type == SceneFieldType::Complexd,
+            "Trade::SceneData::transformation2DFor(): field has a 3D rotation type" << type, {});
+        }
+        if(scalingFieldId != ~UnsignedInt{}) {
+            const SceneFieldType type = _fields[scalingFieldId]._fieldType;
+            CORRADE_ASSERT(
+                type == SceneFieldType::Vector2 ||
+                type == SceneFieldType::Vector2d,
+            "Trade::SceneData::transformation2DFor(): field has a 3D scaling type" << type, {});
+        }
+    }
+    #endif
+
+    const std::size_t offset = fieldFor(_fields[fieldWithObjectMapping], 0, object);
+    if(offset == _fields[fieldWithObjectMapping]._size) return {};
+
+    Matrix3 transformation[1];
+    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, transformation);
+    return *transformation;
+}
+
+Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> SceneData::translationRotationScaling2DFor(const UnsignedInt object) const {
+    CORRADE_ASSERT(object < _objectCount,
+        "Trade::SceneData::translationRotationScaling2DFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
+
+    UnsignedInt translationFieldId, rotationFieldId, scalingFieldId, fieldWithObjectMapping;
+    if(findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId, &fieldWithObjectMapping) == ~std::size_t{}) return {};
+
+    #ifndef CORRADE_NO_ASSERT
+    if(translationFieldId != ~UnsignedInt{}) {
+        const SceneFieldType type = _fields[translationFieldId]._fieldType;
+        CORRADE_ASSERT(
+            type == SceneFieldType::Vector2 ||
+            type == SceneFieldType::Vector2d,
+        "Trade::SceneData::translationRotationScaling2DFor(): field has a 3D translation type" << type, {});
+    }
+    if(rotationFieldId != ~UnsignedInt{}) {
+        const SceneFieldType type = _fields[rotationFieldId]._fieldType;
+        CORRADE_ASSERT(
+            type == SceneFieldType::Complex ||
+            type == SceneFieldType::Complexd,
+        "Trade::SceneData::translationRotationScaling2DFor(): field has a 3D rotation type" << type, {});
+    }
+    if(scalingFieldId != ~UnsignedInt{}) {
+        const SceneFieldType type = _fields[scalingFieldId]._fieldType;
+        CORRADE_ASSERT(
+            type == SceneFieldType::Vector2 ||
+            type == SceneFieldType::Vector2d,
+        "Trade::SceneData::translationRotationScaling2DFor(): field has a 3D scaling type" << type, {});
+    }
+    #endif
+
+    const std::size_t offset = fieldFor(_fields[fieldWithObjectMapping], 0, object);
+    if(offset == _fields[fieldWithObjectMapping]._size) return {};
+
+    Vector2 translation[1];
+    Complex rotation[1];
+    Vector2 scaling[1];
+    translationsRotationsScalings2DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, offset, translation, rotation, scaling);
+    return {InPlaceInit, *translation, *rotation, *scaling};
+}
+
+Containers::Optional<Matrix4> SceneData::transformation3DFor(const UnsignedInt object) const {
+    CORRADE_ASSERT(object < _objectCount,
+        "Trade::SceneData::transformation3DFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
+
+    UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, fieldWithObjectMapping;
+    if(findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, &fieldWithObjectMapping) == ~std::size_t{}) return {};
+
+    #ifndef CORRADE_NO_ASSERT
+    if(transformationFieldId != ~UnsignedInt{}) {
+        const SceneFieldType type = _fields[transformationFieldId]._fieldType;
+        CORRADE_ASSERT(
+            type == SceneFieldType::Matrix4x4 ||
+            type == SceneFieldType::Matrix4x4d ||
+            type == SceneFieldType::DualQuaternion ||
+            type == SceneFieldType::DualQuaterniond,
+            "Trade::SceneData::transformation3DFor(): field has a 2D transformation type" << type, {});
+    } else {
+        if(translationFieldId != ~UnsignedInt{}) {
+            const SceneFieldType type = _fields[translationFieldId]._fieldType;
+            CORRADE_ASSERT(
+                type == SceneFieldType::Vector3 ||
+                type == SceneFieldType::Vector3d,
+            "Trade::SceneData::transformation3DFor(): field has a 2D translation type" << type, {});
+        }
+        if(rotationFieldId != ~UnsignedInt{}) {
+            const SceneFieldType type = _fields[rotationFieldId]._fieldType;
+            CORRADE_ASSERT(
+                type == SceneFieldType::Quaternion ||
+                type == SceneFieldType::Quaterniond,
+            "Trade::SceneData::transformation3DFor(): field has a 2D rotation type" << type, {});
+        }
+        if(scalingFieldId != ~UnsignedInt{}) {
+            const SceneFieldType type = _fields[scalingFieldId]._fieldType;
+            CORRADE_ASSERT(
+                type == SceneFieldType::Vector3 ||
+                type == SceneFieldType::Vector3d,
+            "Trade::SceneData::transformation3DFor(): field has a 2D scaling type" << type, {});
+        }
+    }
+    #endif
+
+    const std::size_t offset = fieldFor(_fields[fieldWithObjectMapping], 0, object);
+    if(offset == _fields[fieldWithObjectMapping]._size) return {};
+
+    Matrix4 transformation[1];
+    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, transformation);
+    return *transformation;
+}
+
+Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> SceneData::translationRotationScaling3DFor(const UnsignedInt object) const {
+    CORRADE_ASSERT(object < _objectCount,
+        "Trade::SceneData::translationRotationScaling3DFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
+
+    UnsignedInt translationFieldId, rotationFieldId, scalingFieldId, fieldWithObjectMapping;
+    if(findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId, &fieldWithObjectMapping) == ~std::size_t{}) return {};
+
+    #ifndef CORRADE_NO_ASSERT
+    if(translationFieldId != ~UnsignedInt{}) {
+        const SceneFieldType type = _fields[translationFieldId]._fieldType;
+        CORRADE_ASSERT(
+            type == SceneFieldType::Vector3 ||
+            type == SceneFieldType::Vector3d,
+        "Trade::SceneData::translationRotationScaling3DFor(): field has a 2D translation type" << type, {});
+    }
+    if(rotationFieldId != ~UnsignedInt{}) {
+        const SceneFieldType type = _fields[rotationFieldId]._fieldType;
+        CORRADE_ASSERT(
+            type == SceneFieldType::Quaternion ||
+            type == SceneFieldType::Quaterniond,
+        "Trade::SceneData::translationRotationScaling3DFor(): field has a 2D rotation type" << type, {});
+    }
+    if(scalingFieldId != ~UnsignedInt{}) {
+        const SceneFieldType type = _fields[scalingFieldId]._fieldType;
+        CORRADE_ASSERT(
+            type == SceneFieldType::Vector3 ||
+            type == SceneFieldType::Vector3d,
+        "Trade::SceneData::translationRotationScaling3DFor(): field has a 2D scaling type" << type, {});
+    }
+    #endif
+
+    const std::size_t offset = fieldFor(_fields[fieldWithObjectMapping], 0, object);
+    if(offset == _fields[fieldWithObjectMapping]._size) return {};
+
+    Vector3 translation[1];
+    Quaternion rotation[1];
+    Vector3 scaling[1];
+    translationsRotationsScalings3DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, offset, translation, rotation, scaling);
+    return {InPlaceInit, *translation, *rotation, *scaling};
+}
+
+Containers::Array<Containers::Pair<UnsignedInt, Int>> SceneData::meshesMaterialsFor(const UnsignedInt object) const {
+    CORRADE_ASSERT(object < _objectCount,
+        "Trade::SceneData::meshesMaterialsFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
+
+    const UnsignedInt meshFieldId = fieldFor(SceneField::Mesh);
+    if(meshFieldId == ~UnsignedInt{}) return {};
+
+    const SceneFieldData& field = _fields[meshFieldId];
+    Containers::Array<Containers::Pair<UnsignedInt, Int>> out;
+    std::size_t offset = 0;
+    for(;;) {
+        offset = fieldFor(field, offset, object);
+        if(offset == field._size) break;
+
+        UnsignedInt mesh[1];
+        Int material[1];
+        meshesMaterialsIntoInternal(meshFieldId, offset, mesh, material);
+        arrayAppend(out, InPlaceInit, *mesh, *material);
+        ++offset;
+    }
+
+    return out;
+}
+
+Containers::Array<UnsignedInt> SceneData::lightsFor(const UnsignedInt object) const {
+    CORRADE_ASSERT(object < _objectCount,
+        "Trade::SceneData::lightsFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
+
+    const UnsignedInt fieldId = fieldFor(SceneField::Light);
+    if(fieldId == ~UnsignedInt{}) return {};
+
+    const SceneFieldData& field = _fields[fieldId];
+    Containers::Array<UnsignedInt> out;
+    std::size_t offset = 0;
+    for(;;) {
+        offset = fieldFor(field, offset, object);
+        if(offset == field._size) break;
+
+        UnsignedInt index[1];
+        unsignedIndexFieldIntoInternal(fieldId, offset, index);
+        arrayAppend(out, InPlaceInit, *index);
+        ++offset;
+    }
+
+    return out;
+}
+
+Containers::Array<UnsignedInt> SceneData::camerasFor(const UnsignedInt object) const {
+    CORRADE_ASSERT(object < _objectCount,
+        "Trade::SceneData::camerasFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
+
+    const UnsignedInt fieldId = fieldFor(SceneField::Camera);
+    if(fieldId == ~UnsignedInt{}) return {};
+
+    const SceneFieldData& field = _fields[fieldId];
+    Containers::Array<UnsignedInt> out;
+    std::size_t offset = 0;
+    for(;;) {
+        offset = fieldFor(field, offset, object);
+        if(offset == field._size) break;
+
+        UnsignedInt index[1];
+        unsignedIndexFieldIntoInternal(fieldId, offset, index);
+        arrayAppend(out, InPlaceInit, *index);
+        ++offset;
+    }
+
+    return out;
+}
+
+Containers::Array<UnsignedInt> SceneData::skinsFor(const UnsignedInt object) const {
+    CORRADE_ASSERT(object < _objectCount,
+        "Trade::SceneData::skinsFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
+
+    const UnsignedInt fieldId = fieldFor(SceneField::Skin);
+    if(fieldId == ~UnsignedInt{}) return {};
+
+    const SceneFieldData& field = _fields[fieldId];
+    Containers::Array<UnsignedInt> out;
+    std::size_t offset = 0;
+    for(;;) {
+        offset = fieldFor(field, offset, object);
+        if(offset == field._size) break;
+
+        UnsignedInt index[1];
+        unsignedIndexFieldIntoInternal(fieldId, offset, index);
+        arrayAppend(out, InPlaceInit, *index);
+        ++offset;
+    }
+
+    return out;
 }
 
 Containers::Array<SceneFieldData> SceneData::releaseFieldData() {

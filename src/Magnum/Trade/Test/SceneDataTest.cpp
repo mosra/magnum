@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/ArrayTuple.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
@@ -149,6 +150,25 @@ struct SceneDataTest: TestSuite::Tester {
     void fieldNotFound();
     void fieldWrongType();
     void fieldWrongArrayAccess();
+
+    /* Different object types checked just for the childrenFor(), other APIs
+       use the same helper */
+    template<class T> void childrenFor();
+    void transformation2DFor();
+    void transformation2DForTRS();
+    template<class T> void transformation2DForBut3DType();
+    template<class T> void transformation2DForBut3DTypeTRS();
+    void transformation3DFor();
+    void transformation3DForTRS();
+    template<class T> void transformation3DForBut2DType();
+    template<class T> void transformation3DForBut2DTypeTRS();
+    void meshesMaterialsFor();
+    void lightsFor();
+    void camerasFor();
+    void skinsFor();
+
+    void fieldForFieldMissing();
+    void fieldForInvalidObject();
 
     void releaseFieldData();
     void releaseData();
@@ -339,6 +359,34 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::fieldNotFound,
               &SceneDataTest::fieldWrongType,
               &SceneDataTest::fieldWrongArrayAccess,
+
+              &SceneDataTest::childrenFor<UnsignedByte>,
+              &SceneDataTest::childrenFor<UnsignedShort>,
+              &SceneDataTest::childrenFor<UnsignedInt>,
+              &SceneDataTest::childrenFor<UnsignedLong>,
+              &SceneDataTest::transformation2DFor,
+              &SceneDataTest::transformation2DForTRS,
+              &SceneDataTest::transformation2DForBut3DType<Matrix4x4>,
+              &SceneDataTest::transformation2DForBut3DType<Matrix4x4d>,
+              &SceneDataTest::transformation2DForBut3DType<DualQuaternion>,
+              &SceneDataTest::transformation2DForBut3DType<DualQuaterniond>,
+              &SceneDataTest::transformation2DForBut3DTypeTRS<Float>,
+              &SceneDataTest::transformation2DForBut3DTypeTRS<Double>,
+              &SceneDataTest::transformation3DFor,
+              &SceneDataTest::transformation3DForTRS,
+              &SceneDataTest::transformation3DForBut2DType<Matrix3x3>,
+              &SceneDataTest::transformation3DForBut2DType<Matrix3x3d>,
+              &SceneDataTest::transformation3DForBut2DType<DualComplex>,
+              &SceneDataTest::transformation3DForBut2DType<DualComplex>,
+              &SceneDataTest::transformation3DForBut2DTypeTRS<Float>,
+              &SceneDataTest::transformation3DForBut2DTypeTRS<Double>,
+              &SceneDataTest::meshesMaterialsFor,
+              &SceneDataTest::lightsFor,
+              &SceneDataTest::camerasFor,
+              &SceneDataTest::skinsFor,
+
+              &SceneDataTest::fieldForFieldMissing,
+              &SceneDataTest::fieldForInvalidObject,
 
               &SceneDataTest::releaseFieldData,
               &SceneDataTest::releaseData});
@@ -3990,6 +4038,505 @@ void SceneDataTest::fieldWrongArrayAccess() {
         "Trade::SceneData::field(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is not an array field, can't use T[] to access it\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n");
+}
+
+template<class T> void SceneDataTest::childrenFor() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    struct Field {
+        T object;
+        Int parent;
+    } fields[]{
+        {4, -1},
+        {3, 0},
+        {2, 1},
+        {1, 0},
+        {5, 0},
+        {0, -1},
+    };
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{Implementation::sceneObjectTypeFor<T>(), 7, {}, fields, {
+        SceneFieldData{SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
+    }};
+
+    /* Just one child */
+    CORRADE_COMPARE_AS(scene.childrenFor(3),
+        Containers::arrayView<UnsignedInt>({2}),
+        TestSuite::Compare::Container);
+
+    /* More */
+    CORRADE_COMPARE_AS(scene.childrenFor(-1),
+        Containers::arrayView<UnsignedInt>({4, 0}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.childrenFor(4),
+        Containers::arrayView<UnsignedInt>({3, 1, 5}),
+        TestSuite::Compare::Container);
+
+    /* Object that is present in the parent array but has no children */
+    CORRADE_COMPARE_AS(scene.childrenFor(5),
+        Containers::arrayView<UnsignedInt>({}),
+        TestSuite::Compare::Container);
+
+    /* Object that is not in the parent array at all */
+    CORRADE_COMPARE_AS(scene.childrenFor(6),
+        Containers::arrayView<UnsignedInt>({}),
+        TestSuite::Compare::Container);
+}
+
+void SceneDataTest::transformation2DFor() {
+    const struct Field {
+        UnsignedInt object;
+        Matrix3 transformation;
+    } fields[] {
+        {1, Matrix3::translation({3.0f, 2.0f})*Matrix3::scaling({1.5f, 2.0f})},
+        {0, Matrix3::rotation(35.0_degf)},
+        {4, Matrix3::translation({3.0f, 2.0f})*Matrix3::rotation(35.0_degf)},
+        {1, Matrix3::translation({1.0f, 2.0f})} /* duplicate, ignored */
+    };
+    Containers::StridedArrayView1D<const Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        SceneFieldData{SceneField::Transformation, view.slice(&Field::object), view.slice(&Field::transformation)}
+    }};
+
+    CORRADE_COMPARE(scene.transformation2DFor(4),
+        Matrix3::translation({3.0f, 2.0f})*Matrix3::rotation(35.0_degf));
+    CORRADE_COMPARE(scene.transformation2DFor(0),
+        Matrix3::Matrix3::Matrix3::Matrix3::rotation(35.0_degf));
+
+    /* Duplicate entries -- only the first one gets used, it doesn't traverse
+       further */
+    CORRADE_COMPARE(scene.transformation2DFor(1),
+        Matrix3::translation({3.0f, 2.0f})*Matrix3::scaling({1.5f, 2.0f}));
+
+    /* Object that's not in the array at all */
+    CORRADE_COMPARE(scene.transformation2DFor(2),
+        Containers::NullOpt);
+}
+
+void SceneDataTest::transformation2DForTRS() {
+    const struct Field {
+        UnsignedInt object;
+        Vector2 translation;
+        Complex rotation;
+        Vector2 scaling;
+    } fields[] {
+        {1, {3.0f, 2.0f}, {}, {1.5f, 2.0f}},
+        {0, {}, Complex::rotation(35.0_degf), {1.0f, 1.0f}},
+        {4, {3.0f, 2.0f}, Complex::rotation(35.0_degf), {1.0f, 1.0f}},
+        {1, {1.0f, 2.0f}, {}, {1.0f, 1.0f}} /* duplicate, ignored */
+    };
+    Containers::StridedArrayView1D<const Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        SceneFieldData{SceneField::Translation, view.slice(&Field::object), view.slice(&Field::translation)},
+        SceneFieldData{SceneField::Rotation, view.slice(&Field::object), view.slice(&Field::rotation)},
+        SceneFieldData{SceneField::Scaling, view.slice(&Field::object), view.slice(&Field::scaling)}
+    }};
+
+    CORRADE_COMPARE(scene.transformation2DFor(4),
+        Matrix3::translation({3.0f, 2.0f})*Matrix3::rotation(35.0_degf));
+    CORRADE_COMPARE(scene.translationRotationScaling2DFor(4),
+        Containers::triple(Vector2{3.0f, 2.0f}, Complex::rotation(35.0_degf), Vector2{1.0f}));
+    CORRADE_COMPARE(scene.transformation2DFor(0),
+        Matrix3::rotation(35.0_degf));
+    CORRADE_COMPARE(scene.translationRotationScaling2DFor(0),
+        Containers::triple(Vector2{}, Complex::rotation(35.0_degf), Vector2{1.0f}));
+
+    /* Duplicate entries -- only the first one gets used, it doesn't traverse
+       further */
+    CORRADE_COMPARE(scene.transformation2DFor(1),
+        Matrix3::translation({3.0f, 2.0f})*Matrix3::scaling({1.5f, 2.0f}));
+    CORRADE_COMPARE(scene.translationRotationScaling2DFor(1),
+        Containers::triple(Vector2{3.0f, 2.0f}, Complex{}, Vector2{1.5f, 2.0f}));
+
+    /* Object that's not in the array at all */
+    CORRADE_COMPARE(scene.transformation2DFor(2),
+        Containers::NullOpt);
+    CORRADE_COMPARE(scene.translationRotationScaling2DFor(2),
+        Containers::NullOpt);
+}
+
+template<class T> void SceneDataTest::transformation2DForBut3DType() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    SceneData scene{SceneObjectType::UnsignedInt, 1, nullptr, {
+        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<T>::type(), nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    scene.transformation2DFor(0);
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Trade::SceneData::transformation2DFor(): field has a 3D transformation type Trade::SceneFieldType::{}\n", NameTraits<T>::name()));
+}
+
+template<class T> void SceneDataTest::transformation2DForBut3DTypeTRS() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    SceneData translation{SceneObjectType::UnsignedInt, 1, nullptr, {
+        SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector3<T>>::type(), nullptr}
+    }};
+    SceneData rotation{SceneObjectType::UnsignedInt, 1, nullptr, {
+        SceneFieldData{SceneField::Rotation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Quaternion<T>>::type(), nullptr}
+    }};
+    SceneData scaling{SceneObjectType::UnsignedInt, 1, nullptr, {
+        SceneFieldData{SceneField::Scaling, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector3<T>>::type(), nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    translation.transformation2DFor(0);
+    translation.translationRotationScaling2DFor(0);
+    rotation.transformation2DFor(0);
+    rotation.translationRotationScaling2DFor(0);
+    scaling.transformation2DFor(0);
+    scaling.translationRotationScaling2DFor(0);
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Trade::SceneData::transformation2DFor(): field has a 3D translation type Trade::SceneFieldType::{0}\n"
+        "Trade::SceneData::translationRotationScaling2DFor(): field has a 3D translation type Trade::SceneFieldType::{0}\n"
+        "Trade::SceneData::transformation2DFor(): field has a 3D rotation type Trade::SceneFieldType::{1}\n"
+        "Trade::SceneData::translationRotationScaling2DFor(): field has a 3D rotation type Trade::SceneFieldType::{1}\n"
+        "Trade::SceneData::transformation2DFor(): field has a 3D scaling type Trade::SceneFieldType::{0}\n"
+        "Trade::SceneData::translationRotationScaling2DFor(): field has a 3D scaling type Trade::SceneFieldType::{0}\n", NameTraits<Math::Vector3<T>>::name(), NameTraits<Math::Quaternion<T>>::name()));
+}
+
+void SceneDataTest::transformation3DFor() {
+    const struct Field {
+        UnsignedInt object;
+        Matrix4 transformation;
+    } fields[] {
+        {1, Matrix4::translation({3.0f, 2.0f, 1.0f})*Matrix4::scaling({1.5f, 2.0f, 4.5f})},
+        {0, Matrix4::rotationX(35.0_degf)},
+        {4, Matrix4::translation({3.0f, 2.0f, 1.0f})*Matrix4::rotationX(35.0_degf)},
+        {1, Matrix4::translation({1.0f, 2.0f, 3.0f})} /* duplicate, ignored */
+    };
+    Containers::StridedArrayView1D<const Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        SceneFieldData{SceneField::Transformation, view.slice(&Field::object), view.slice(&Field::transformation)}
+    }};
+
+    CORRADE_COMPARE(scene.transformation3DFor(4),
+        Matrix4::translation({3.0f, 2.0f, 1.0f})*Matrix4::rotationX(35.0_degf));
+    CORRADE_COMPARE(scene.transformation3DFor(0),
+        Matrix4::rotationX(35.0_degf));
+
+    /* Duplicate entries -- only the first one gets used, it doesn't traverse
+       further */
+    CORRADE_COMPARE(scene.transformation3DFor(1),
+        Matrix4::translation({3.0f, 2.0f, 1.0f})*Matrix4::scaling({1.5f, 2.0f, 4.5f}));
+
+    /* Object that's not in the array at all */
+    CORRADE_COMPARE(scene.transformation3DFor(2),
+        Containers::NullOpt);
+}
+
+void SceneDataTest::transformation3DForTRS() {
+    const struct Field {
+        UnsignedInt object;
+        Vector3 translation;
+        Quaternion rotation;
+        Vector3 scaling;
+    } fields[] {
+        {1, {3.0f, 2.0f, 1.0f}, {}, {1.5f, 2.0f, 4.5f}},
+        {0, {}, Quaternion::rotation(35.0_degf, Vector3::xAxis()), {1.0f, 1.0f, 1.0f}},
+        {4, {3.0f, 2.0f, 1.0f}, Quaternion::rotation(35.0_degf, Vector3::xAxis()), {1.0f, 1.0f, 1.0f}},
+        {1, {1.0f, 2.0f, 3.0f}, Quaternion{}, Vector3{1.0f}} /* duplicate, ignored */
+    };
+    Containers::StridedArrayView1D<const Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        SceneFieldData{SceneField::Translation, view.slice(&Field::object), view.slice(&Field::translation)},
+        SceneFieldData{SceneField::Rotation, view.slice(&Field::object), view.slice(&Field::rotation)},
+        SceneFieldData{SceneField::Scaling, view.slice(&Field::object), view.slice(&Field::scaling)}
+    }};
+
+    CORRADE_COMPARE(scene.transformation3DFor(4),
+        Matrix4::translation({3.0f, 2.0f, 1.0f})*Matrix4::rotationX(35.0_degf));
+    CORRADE_COMPARE(scene.translationRotationScaling3DFor(4),
+        Containers::triple(Vector3{3.0f, 2.0f, 1.0f}, Quaternion::rotation(35.0_degf, Vector3::xAxis()), Vector3{1.0f}));
+    CORRADE_COMPARE(scene.transformation3DFor(0),
+        Matrix4::rotationX(35.0_degf));
+    CORRADE_COMPARE(scene.translationRotationScaling3DFor(0),
+        Containers::triple(Vector3{}, Quaternion::rotation(35.0_degf, Vector3::xAxis()), Vector3{1.0f}));
+
+    /* Duplicate entries -- only the first one gets used, it doesn't traverse
+       further */
+    CORRADE_COMPARE(scene.transformation3DFor(1),
+        Matrix4::translation({3.0f, 2.0f, 1.0f})*Matrix4::scaling({1.5f, 2.0f, 4.5f}));
+    CORRADE_COMPARE(scene.translationRotationScaling3DFor(1),
+        Containers::triple(Vector3{3.0f, 2.0f, 1.0f}, Quaternion{}, Vector3{1.5f, 2.0f, 4.5f}));
+
+    /* Object that's not in the array at all */
+    CORRADE_COMPARE(scene.transformation3DFor(2),
+        Containers::NullOpt);
+    CORRADE_COMPARE(scene.translationRotationScaling3DFor(2),
+        Containers::NullOpt);
+}
+
+template<class T> void SceneDataTest::transformation3DForBut2DType() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    SceneData scene{SceneObjectType::UnsignedInt, 1, nullptr, {
+        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<T>::type(), nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    scene.transformation3DFor(0);
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Trade::SceneData::transformation3DFor(): field has a 2D transformation type Trade::SceneFieldType::{}\n", NameTraits<T>::name()));
+}
+
+template<class T> void SceneDataTest::transformation3DForBut2DTypeTRS() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    SceneData translation{SceneObjectType::UnsignedInt, 1, nullptr, {
+        SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector2<T>>::type(), nullptr}
+    }};
+    SceneData rotation{SceneObjectType::UnsignedInt, 1, nullptr, {
+        SceneFieldData{SceneField::Rotation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Complex<T>>::type(), nullptr}
+    }};
+    SceneData scaling{SceneObjectType::UnsignedInt, 1, nullptr, {
+        SceneFieldData{SceneField::Scaling, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector2<T>>::type(), nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    translation.transformation3DFor(0);
+    translation.translationRotationScaling3DFor(0);
+    rotation.transformation3DFor(0);
+    rotation.translationRotationScaling3DFor(0);
+    scaling.transformation3DFor(0);
+    scaling.translationRotationScaling3DFor(0);
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Trade::SceneData::transformation3DFor(): field has a 2D translation type Trade::SceneFieldType::{0}\n"
+        "Trade::SceneData::translationRotationScaling3DFor(): field has a 2D translation type Trade::SceneFieldType::{0}\n"
+        "Trade::SceneData::transformation3DFor(): field has a 2D rotation type Trade::SceneFieldType::{1}\n"
+        "Trade::SceneData::translationRotationScaling3DFor(): field has a 2D rotation type Trade::SceneFieldType::{1}\n"
+        "Trade::SceneData::transformation3DFor(): field has a 2D scaling type Trade::SceneFieldType::{0}\n"
+        "Trade::SceneData::translationRotationScaling3DFor(): field has a 2D scaling type Trade::SceneFieldType::{0}\n", NameTraits<Math::Vector2<T>>::name(), NameTraits<Math::Complex<T>>::name()));
+}
+
+void SceneDataTest::meshesMaterialsFor() {
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt mesh;
+        Int meshMaterial;
+    } fields[]{
+        {4, 1, -1},
+        {1, 3, 0},
+        {2, 4, 1},
+        {2, 5, -1},
+        {2, 1, 0},
+    };
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)},
+        SceneFieldData{SceneField::MeshMaterial, view.slice(&Field::object), view.slice(&Field::meshMaterial)}
+    }};
+
+    /* Just one */
+    CORRADE_COMPARE_AS(scene.meshesMaterialsFor(1),
+        (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({{3, 0}})),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.meshesMaterialsFor(4),
+        (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({{1, -1}})),
+        TestSuite::Compare::Container);
+
+    /* More */
+    CORRADE_COMPARE_AS(scene.meshesMaterialsFor(2),
+        (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+            {4, 1}, {5, -1}, {1, 0}
+        })), TestSuite::Compare::Container);
+
+    /* Object that is not in the array at all */
+    CORRADE_COMPARE_AS(scene.meshesMaterialsFor(6),
+        (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({})),
+        TestSuite::Compare::Container);
+}
+
+void SceneDataTest::lightsFor() {
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt light;
+    } fields[]{
+        {4, 1},
+        {1, 3},
+        {2, 4},
+        {2, 5}
+    };
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        SceneFieldData{SceneField::Light, view.slice(&Field::object), view.slice(&Field::light)}
+    }};
+
+    /* Just one */
+    CORRADE_COMPARE_AS(scene.lightsFor(1),
+        (Containers::arrayView<UnsignedInt>({3})),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.lightsFor(4),
+        (Containers::arrayView<UnsignedInt>({1})),
+        TestSuite::Compare::Container);
+
+    /* More */
+    CORRADE_COMPARE_AS(scene.lightsFor(2),
+        (Containers::arrayView<UnsignedInt>({
+            4, 5
+        })), TestSuite::Compare::Container);
+
+    /* Object that is not in the array at all */
+    CORRADE_COMPARE_AS(scene.lightsFor(6),
+        (Containers::arrayView<UnsignedInt>({})),
+        TestSuite::Compare::Container);
+}
+
+void SceneDataTest::camerasFor() {
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt camera;
+    } fields[]{
+        {4, 1},
+        {1, 3},
+        {2, 4},
+        {2, 5}
+    };
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        SceneFieldData{SceneField::Camera, view.slice(&Field::object), view.slice(&Field::camera)}
+    }};
+
+    /* Just one */
+    CORRADE_COMPARE_AS(scene.camerasFor(1),
+        (Containers::arrayView<UnsignedInt>({3})),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.camerasFor(4),
+        (Containers::arrayView<UnsignedInt>({1})),
+        TestSuite::Compare::Container);
+
+    /* More */
+    CORRADE_COMPARE_AS(scene.camerasFor(2),
+        (Containers::arrayView<UnsignedInt>({
+            4, 5
+        })), TestSuite::Compare::Container);
+
+    /* Object that is not in the array at all */
+    CORRADE_COMPARE_AS(scene.camerasFor(6),
+        (Containers::arrayView<UnsignedInt>({})),
+        TestSuite::Compare::Container);
+}
+
+void SceneDataTest::skinsFor() {
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt skin;
+    } fields[]{
+        {4, 1},
+        {1, 3},
+        {2, 4},
+        {2, 5}
+    };
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        SceneFieldData{SceneField::Skin, view.slice(&Field::object), view.slice(&Field::skin)}
+    }};
+
+    /* Just one */
+    CORRADE_COMPARE_AS(scene.skinsFor(1),
+        (Containers::arrayView<UnsignedInt>({3})),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.skinsFor(4),
+        (Containers::arrayView<UnsignedInt>({1})),
+        TestSuite::Compare::Container);
+
+    /* More */
+    CORRADE_COMPARE_AS(scene.skinsFor(2),
+        (Containers::arrayView<UnsignedInt>({
+            4, 5
+        })), TestSuite::Compare::Container);
+
+    /* Object that is not in the array at all */
+    CORRADE_COMPARE_AS(scene.skinsFor(6),
+        (Containers::arrayView<UnsignedInt>({})),
+        TestSuite::Compare::Container);
+}
+
+void SceneDataTest::fieldForFieldMissing() {
+    SceneData scene{SceneObjectType::UnsignedInt, 7, nullptr, {}};
+
+    CORRADE_COMPARE_AS(scene.childrenFor(6),
+        Containers::arrayView<UnsignedInt>({}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(scene.transformation2DFor(6), Containers::NullOpt);
+    CORRADE_COMPARE(scene.translationRotationScaling2DFor(6), Containers::NullOpt);
+    CORRADE_COMPARE(scene.transformation3DFor(6), Containers::NullOpt);
+    CORRADE_COMPARE(scene.translationRotationScaling3DFor(6), Containers::NullOpt);
+    CORRADE_COMPARE_AS(scene.meshesMaterialsFor(6),
+        (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({})),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.lightsFor(6),
+        Containers::arrayView<UnsignedInt>({}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.camerasFor(6),
+        Containers::arrayView<UnsignedInt>({}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.skinsFor(6),
+        Containers::arrayView<UnsignedInt>({}),
+        TestSuite::Compare::Container);
+}
+
+void SceneDataTest::fieldForInvalidObject() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, nullptr, {}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    scene.childrenFor(-2);
+    scene.childrenFor(7);
+    scene.transformation2DFor(7);
+    scene.translationRotationScaling2DFor(7);
+    scene.transformation3DFor(7);
+    scene.translationRotationScaling3DFor(7);
+    scene.meshesMaterialsFor(7);
+    scene.lightsFor(7);
+    scene.camerasFor(7);
+    scene.skinsFor(7);
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::childrenFor(): object -2 out of bounds for 7 objects\n"
+        "Trade::SceneData::childrenFor(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::transformation2DFor(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::translationRotationScaling2DFor(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::transformation3DFor(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::translationRotationScaling3DFor(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::meshesMaterialsFor(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::lightsFor(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::camerasFor(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::skinsFor(): object 7 out of bounds for 7 objects\n");
 }
 
 void SceneDataTest::releaseFieldData() {
