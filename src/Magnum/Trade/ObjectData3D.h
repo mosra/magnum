@@ -25,10 +25,17 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::Trade::ObjectData3D, enum @ref Magnum::Trade::ObjectInstanceType3D
+ * @m_deprecated_since_latest Use @ref Magnum/Trade/SceneData.h and the
+ *      @relativeref{Magnum::Trade,SceneData} class instead.
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <vector>
 
 #include "Magnum/Magnum.h"
@@ -36,14 +43,19 @@
 #include "Magnum/Math/Quaternion.h"
 #include "Magnum/Trade/visibility.h"
 
+#ifndef _MAGNUM_NO_DEPRECATED_OBJECTDATA
+CORRADE_DEPRECATED_FILE("use Magnum/Trade/SceneData.h and the SceneData class instead")
+#endif
+
 namespace Magnum { namespace Trade {
 
 /**
 @brief Type of instance held by given 3D object
+@m_deprecated_since_latest Use @ref SceneData instead.
 
 @see @ref ObjectData3D::instanceType()
 */
-enum class ObjectInstanceType3D: UnsignedByte {
+enum class CORRADE_DEPRECATED_ENUM("use SceneData instead") ObjectInstanceType3D: UnsignedByte {
     Camera,     /**< Camera instance (see @ref CameraData) */
     Light,      /**< Light instance (see @ref LightData) */
 
@@ -58,10 +70,11 @@ enum class ObjectInstanceType3D: UnsignedByte {
 
 /**
 @brief 3D object flag
+@m_deprecated_since_latest Use @ref SceneData instead.
 
 @see @ref ObjectFlags3D, @ref ObjectData3D::flags()
 */
-enum class ObjectFlag3D: UnsignedByte {
+enum class CORRADE_DEPRECATED_ENUM("use SceneData instead") ObjectFlag3D: UnsignedByte {
     /**
      * The object provides separate translation / rotation / scaling
      * properties. The @ref ObjectData3D::transformation() matrix returns them
@@ -74,21 +87,27 @@ enum class ObjectFlag3D: UnsignedByte {
 
 /**
 @brief 3D object flags
+@m_deprecated_since_latest Use @ref SceneData instead.
 
 @see @ref ObjectData3D::flags()
 */
-typedef Containers::EnumSet<ObjectFlag3D> ObjectFlags3D;
+CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
+typedef CORRADE_DEPRECATED("use SceneData instead") Containers::EnumSet<ObjectFlag3D> ObjectFlags3D;
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_ENUMSET_OPERATORS(ObjectFlags3D)
+CORRADE_IGNORE_DEPRECATED_POP
 
 /**
 @brief Three-dimensional object data
+@m_deprecated_since_latest Use @ref SceneData instead.
 
 Provides access to object transformation and hierarchy.
 @see @ref AbstractImporter::object3D(), @ref MeshObjectData3D,
     @ref ObjectData2D
 */
-class MAGNUM_TRADE_EXPORT ObjectData3D {
+class CORRADE_DEPRECATED("use SceneData instead") MAGNUM_TRADE_EXPORT ObjectData3D {
     public:
         /**
          * @brief Construct with combined transformation
@@ -98,7 +117,9 @@ class MAGNUM_TRADE_EXPORT ObjectData3D {
          * @param instance          Instance ID
          * @param importerState     Importer-specific state
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, ObjectInstanceType3D instanceType, UnsignedInt instance, const void* importerState = nullptr);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Construct with separate transformations
@@ -110,7 +131,9 @@ class MAGNUM_TRADE_EXPORT ObjectData3D {
          * @param instance          Instance ID
          * @param importerState     Importer-specific state
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         explicit ObjectData3D(std::vector<UnsignedInt> children, const Vector3& translation, const Quaternion& rotation, const Vector3& scaling, ObjectInstanceType3D instanceType, UnsignedInt instance, const void* importerState = nullptr);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Construct empty instance with combined transformation
@@ -164,7 +187,9 @@ class MAGNUM_TRADE_EXPORT ObjectData3D {
         const std::vector<UnsignedInt>& children() const { return _children; } /**< @overload */
 
         /** @brief Flags */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         ObjectFlags3D flags() const { return _flags; }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Translation (relative to parent)
@@ -225,7 +250,9 @@ class MAGNUM_TRADE_EXPORT ObjectData3D {
          *
          * @see @ref instance()
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         ObjectInstanceType3D instanceType() const { return _instanceType; }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Instance ID
@@ -255,21 +282,37 @@ class MAGNUM_TRADE_EXPORT ObjectData3D {
                 Vector3 scaling;
             } trs;
         } _transformation;
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         ObjectInstanceType3D _instanceType;
         ObjectFlags3D _flags;
+        CORRADE_IGNORE_DEPRECATED_POP
         Int _instance;
         const void* _importerState;
 };
 
-/** @debugoperatorenum{ObjectInstanceType3D} */
+CORRADE_IGNORE_DEPRECATED_PUSH
+/**
+@debugoperatorenum{ObjectInstanceType3D}
+@m_deprecated_since_latest Use @ref SceneData instead.
+*/
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ObjectInstanceType3D value);
 
-/** @debugoperatorenum{ObjectFlag3D} */
+/**
+@debugoperatorenum{ObjectFlag3D}
+@m_deprecated_since_latest Use @ref SceneData instead.
+*/
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ObjectFlag3D value);
 
-/** @debugoperatorenum{ObjectFlags3D} */
+/**
+@debugoperatorenum{ObjectFlags3D}
+@m_deprecated_since_latest Use @ref SceneData instead.
+*/
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ObjectFlags3D value);
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
+#else
+#error use Magnum/Trade/SceneData.h and the SceneData class instead
+#endif
 
 #endif

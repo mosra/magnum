@@ -28,8 +28,6 @@ find_package(Corrade REQUIRED PluginManager)
 set(MagnumTrade_SRCS
     ArrayAllocator.cpp
     Data.cpp
-    MeshObjectData2D.cpp
-    MeshObjectData3D.cpp
     TextureData.cpp)
 
 set(MagnumTrade_GracefulAssert_SRCS
@@ -43,8 +41,6 @@ set(MagnumTrade_GracefulAssert_SRCS
     LightData.cpp
     MaterialData.cpp
     MeshData.cpp
-    ObjectData2D.cpp
-    ObjectData3D.cpp
     PbrClearCoatMaterialData.cpp
     PbrMetallicRoughnessMaterialData.cpp
     PbrSpecularGlossinessMaterialData.cpp
@@ -66,10 +62,6 @@ set(MagnumTrade_HEADERS
     MaterialData.h
     MaterialLayerData.h
     MeshData.h
-    MeshObjectData2D.h
-    MeshObjectData3D.h
-    ObjectData2D.h
-    ObjectData3D.h
     PbrClearCoatMaterialData.h
     PbrMetallicRoughnessMaterialData.h
     PbrSpecularGlossinessMaterialData.h
@@ -87,6 +79,9 @@ set(MagnumTrade_PRIVATE_HEADERS
     Implementation/materialAttributeProperties.hpp)
 
 if(MAGNUM_BUILD_DEPRECATED)
+    list(APPEND MagnumTrade_SRCS
+        MeshObjectData2D.cpp
+        MeshObjectData3D.cpp)
     list(APPEND MagnumTrade_GracefulAssert_SRCS
         # These have to be here instead of in MagnumTrade_SRCS because they
         # include MeshData.h and call (and thus instantiate) various functions
@@ -96,12 +91,19 @@ if(MAGNUM_BUILD_DEPRECATED)
         # causing the tests to blow up. Happens only on the MSVC linker, but
         # let's be safe and do this everywhere.
         MeshData2D.cpp
-        MeshData3D.cpp)
+        MeshData3D.cpp
+
+        ObjectData2D.cpp
+        ObjectData3D.cpp)
     list(APPEND MagnumTrade_HEADERS
         AbstractMaterialData.h
 
         MeshData2D.h
-        MeshData3D.h)
+        MeshData3D.h
+        MeshObjectData2D.h
+        MeshObjectData3D.h
+        ObjectData2D.h
+        ObjectData3D.h)
 endif()
 
 if(NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)

@@ -40,17 +40,21 @@
 #include "Magnum/Trade/LightData.h"
 #include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
-#include "Magnum/Trade/ObjectData2D.h"
-#include "Magnum/Trade/ObjectData3D.h"
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/SkinData.h"
 #include "Magnum/Trade/TextureData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/Triple.h>
+
 #define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
+#define _MAGNUM_NO_DEPRECATED_OBJECTDATA /* So it doesn't yell here */
 
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshObjectData2D.h"
+#include "Magnum/Trade/MeshObjectData3D.h"
 #endif
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
@@ -94,6 +98,12 @@ AbstractImporter::AbstractImporter() = default;
 AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& manager): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager} {}
 
 AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager, plugin} {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* These twp needed because of the Array<CachedScenes> member */
+AbstractImporter::AbstractImporter(AbstractImporter&&) noexcept = default;
+AbstractImporter::~AbstractImporter() = default;
+#endif
 
 void AbstractImporter::setFlags(ImporterFlags flags) {
     CORRADE_ASSERT(!isOpened(),
@@ -268,6 +278,13 @@ UnsignedInt AbstractImporter::sceneCount() const {
 
 UnsignedInt AbstractImporter::doSceneCount() const { return 0; }
 
+UnsignedLong AbstractImporter::objectCount() const {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::objectCount(): no file opened", {});
+    return doObjectCount();
+}
+
+UnsignedLong AbstractImporter::doObjectCount() const { return 0; }
+
 Int AbstractImporter::sceneForName(const std::string& name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::sceneForName(): no file opened", -1);
     const Int id = doSceneForName(name);
@@ -278,6 +295,16 @@ Int AbstractImporter::sceneForName(const std::string& name) {
 
 Int AbstractImporter::doSceneForName(const std::string&) { return -1; }
 
+Long AbstractImporter::objectForName(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::objectForName(): no file opened", {});
+    const Long id = doObjectForName(name);
+    CORRADE_ASSERT(id == -1 || UnsignedLong(id) < doObjectCount(),
+        "Trade::AbstractImporter::objectForName(): implementation-returned index" << id << "out of range for" << doObjectCount() << "entries", {});
+    return id;
+}
+
+Long AbstractImporter::doObjectForName(const std::string&) { return -1; }
+
 std::string AbstractImporter::sceneName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::sceneName(): no file opened", {});
     CORRADE_ASSERT(id < doSceneCount(), "Trade::AbstractImporter::sceneName(): index" << id << "out of range for" << doSceneCount() << "entries", {});
@@ -286,10 +313,23 @@ std::string AbstractImporter::sceneName(const UnsignedInt id) {
 
 std::string AbstractImporter::doSceneName(UnsignedInt) { return {}; }
 
+std::string AbstractImporter::objectName(const UnsignedLong id) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::objectName(): no file opened", {});
+    CORRADE_ASSERT(id < doObjectCount(), "Trade::AbstractImporter::objectName(): index" << id << "out of range for" << doObjectCount() << "entries", {});
+    return doObjectName(id);
+}
+
+std::string AbstractImporter::doObjectName(UnsignedLong) { return {}; }
+
 Containers::Optional<SceneData> AbstractImporter::scene(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::scene(): no file opened", {});
     CORRADE_ASSERT(id < doSceneCount(), "Trade::AbstractImporter::scene(): index" << id << "out of range for" << doSceneCount() << "entries", {});
-    return doScene(id);
+    Containers::Optional<SceneData> scene = doScene(id);
+    CORRADE_ASSERT(!scene || (
+        (!scene->_data.deleter() || scene->_data.deleter() == Implementation::nonOwnedArrayDeleter) &&
+        (!scene->_fields.deleter() || scene->_fields.deleter() == reinterpret_cast<void(*)(SceneFieldData*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
+        "Trade::AbstractImporter::scene(): implementation is not allowed to use a custom Array deleter", {});
+    return scene;
 }
 
 Containers::Optional<SceneData> AbstractImporter::doScene(UnsignedInt) {
@@ -465,39 +505,176 @@ Containers::Optional<CameraData> AbstractImporter::camera(const std::string& nam
     return camera(id); /* not doCamera(), so we get the range checks also */
 }
 
-UnsignedInt AbstractImporter::object2DCount() const {
-    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2DCount(): no file opened", {});
-    return doObject2DCount();
+#ifdef MAGNUM_BUILD_DEPRECATED
+struct AbstractImporter::CachedScenes {
+    UnsignedInt object2DCount{};
+    UnsignedInt object3DCount{};
+    Containers::Array<Containers::Optional<SceneData>> scenes;
+};
+
+void AbstractImporter::populateCachedScenes() {
+    if(_cachedScenes) return;
+
+    _cachedScenes.emplace();
+    _cachedScenes->scenes = Containers::Array<Containers::Optional<SceneData>>{sceneCount()};
+    for(UnsignedInt i = 0; i != _cachedScenes->scenes.size(); ++i) {
+        _cachedScenes->scenes[i] = scene(i);
+
+        /* Return the 2D/3D object count based on which scenes are 2D and which
+           not. The objectCount() provided by the importer is ignored except
+           for the above, also because it doesn't take into account the
+           restriction for unique-functioning objects. */
+        if(_cachedScenes->scenes[i]) {
+            if(_cachedScenes->scenes[i]->is2D())
+                _cachedScenes->object2DCount = Math::max(_cachedScenes->object2DCount, UnsignedInt(_cachedScenes->scenes[i]->objectCount()));
+            if(_cachedScenes->scenes[i]->is3D())
+                _cachedScenes->object3DCount = Math::max(_cachedScenes->object3DCount, UnsignedInt(_cachedScenes->scenes[i]->objectCount()));
+        }
+    }
 }
 
-UnsignedInt AbstractImporter::doObject2DCount() const { return 0; }
+UnsignedInt AbstractImporter::object2DCount() const {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2DCount(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    return doObject2DCount();
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+UnsignedInt AbstractImporter::doObject2DCount() const {
+    /* I know, I know. A cleaner option would be to populate this during
+       openFile() / openData() but that would mean the backwards compatibility
+       overhead is there even if not using the deprecated APIs, which is way
+       worse than using this nasty hack in two places. */
+    const_cast<AbstractImporter&>(*this).populateCachedScenes();
+    return _cachedScenes->object2DCount;
+}
 
 Int AbstractImporter::object2DForName(const std::string& name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2DForName(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     const Int id = doObject2DForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doObject2DCount(),
         "Trade::AbstractImporter::object2DForName(): implementation-returned index" << id << "out of range for" << doObject2DCount() << "entries", {});
     return id;
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
-Int AbstractImporter::doObject2DForName(const std::string&) { return -1; }
+Int AbstractImporter::doObject2DForName(const std::string& name) {
+    /* Alias to the new interface. If it returns an ID that's larger than
+       reported 2D object count, then it's probably for a 3D object instead
+       -- ignore it in that case. */
+    const Long id = doObjectForName(name);
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    return id < doObject2DCount() ? id : -1;
+    CORRADE_IGNORE_DEPRECATED_POP
+}
 
 std::string AbstractImporter::object2DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2DName(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_ASSERT(id < doObject2DCount(), "Trade::AbstractImporter::object2DName(): index" << id << "out of range for" << doObject2DCount() << "entries", {});
     return doObject2DName(id);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
-std::string AbstractImporter::doObject2DName(UnsignedInt) { return {}; }
+std::string AbstractImporter::doObject2DName(const UnsignedInt id) {
+    /* Alias to the new interface */
+    return doObjectName(id);
+}
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 Containers::Pointer<ObjectData2D> AbstractImporter::object2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2D(): no file opened", {});
     CORRADE_ASSERT(id < doObject2DCount(), "Trade::AbstractImporter::object2D(): index" << id << "out of range for" << doObject2DCount() << "entries", {});
     return doObject2D(id);
 }
 
-Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(UnsignedInt) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::object2D(): not implemented", {});
+Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(const UnsignedInt id) {
+    /* The code is mostly the same between doObject2D() and doObject3D(),
+       except that the 2D variant has no lights. Attempting to unify the common
+       code would be more complex than just having a slightly modified copy. */
+
+    populateCachedScenes();
+
+    /* Find the first 2D scene with this object, which we'll detect from the
+       object count reported for the scene, whether it's 2D or 3D, and a
+       presence of a parent attribute. If a parent attribute is not present, it
+       means the object isn't a part of this scene, in which case we skip it.
+       It could also mean isn't a part of the hierarchy and is standalone
+       (skyboxes, scene-wide properties), which the legacy API had no way to
+       deal with anyway so ignoring those is fine. */
+    std::size_t sceneCandidate = ~std::size_t{};
+    for(std::size_t i = 0; i != _cachedScenes->scenes.size(); ++i) {
+        const Containers::Optional<SceneData>& scene = _cachedScenes->scenes[i];
+        if(scene && scene->is2D() && id < scene->objectCount() && scene->parentFor(id)) {
+            sceneCandidate = i;
+            break;
+        }
+    }
+
+    if(sceneCandidate == ~std::size_t{}) {
+        Error{} << "Trade::AbstractImporter::object2D(): object" << id << "not found in any 2D scene hierarchy";
+        return {};
+    }
+
+    const SceneData& scene = *_cachedScenes->scenes[sceneCandidate];
+
+    ObjectFlags2D flags;
+    Containers::Optional<Matrix3> transformation = scene.transformation2DFor(id);
+    Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> trs = scene.translationRotationScaling2DFor(id);
+    if(trs)
+        flags |= ObjectFlag2D::HasTranslationRotationScaling;
+    /* If the object has neither a TRS nor a transformation field, assign an
+       identity transform to it */
+    else if(!transformation) transformation = Matrix3{};
+
+    std::vector<UnsignedInt> children; /* not const so we can move it */
+    {
+        Containers::Array<UnsignedInt> childrenArray = scene.childrenFor(id);
+        children = {childrenArray.begin(), childrenArray.end()};
+    }
+    const Containers::Array<Containers::Pair<UnsignedInt, Int>> mesh = scene.meshesMaterialsFor(id);
+    const Containers::Array<UnsignedInt> camera = scene.camerasFor(id);
+    const Containers::Array<UnsignedInt> skin = scene.skinsFor(id);
+    const Containers::Optional<const void*> importerState = scene.importerStateFor(id);
+
+    /* All these should have at most 1 item as the old API doesn't have
+       any way to represent multi-function objects. */
+    CORRADE_INTERNAL_ASSERT(camera.size() + mesh.size() <= 1);
+
+    if(!mesh.empty()) {
+        return Containers::pointer(flags & ObjectFlag2D::HasTranslationRotationScaling ?
+            new MeshObjectData2D{std::move(children),
+                trs->first(), trs->second(), trs->third(),
+                mesh.front().first(), mesh.front().second(),
+                skin.empty() ? -1  : Int(skin.front()),
+                importerState ? *importerState : nullptr} :
+            new MeshObjectData2D{std::move(children),
+                *transformation,
+                mesh.front().first(), mesh.front().second(),
+                skin ? Int(*skin) : -1,
+                importerState ? *importerState : nullptr});
+    }
+
+    ObjectInstanceType2D instanceType;
+    UnsignedInt instance;
+    if(camera) {
+        instanceType = ObjectInstanceType2D::Camera;
+        instance = *camera;
+    } else {
+        instanceType = ObjectInstanceType2D::Empty;
+        instance = UnsignedInt(-1); /* Old APIs, you suck! */
+    }
+
+    return Containers::pointer(flags & ObjectFlag2D::HasTranslationRotationScaling ?
+        new ObjectData2D{std::move(children),
+            trs->first(), trs->second(), trs->third(),
+            instanceType, instance,
+            importerState ? *importerState : nullptr} :
+        new ObjectData2D{std::move(children),
+            *transformation,
+            instanceType, instance,
+            importerState ? *importerState : nullptr});
 }
 
 Containers::Pointer<ObjectData2D> AbstractImporter::object2D(const std::string& name) {
@@ -509,40 +686,154 @@ Containers::Pointer<ObjectData2D> AbstractImporter::object2D(const std::string& 
     }
     return object2D(id); /* not doObject2D(), so we get the range checks also */
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 UnsignedInt AbstractImporter::object3DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3DCount(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     return doObject3DCount();
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
-UnsignedInt AbstractImporter::doObject3DCount() const { return 0; }
+UnsignedInt AbstractImporter::doObject3DCount() const {
+    /* I know, I know. A cleaner option would be to populate this during
+       openFile() / openData() but that would mean the backwards compatibility
+       overhead is there even if not using the deprecated APIs, which is way
+       worse than using this nasty hack in two places. */
+    const_cast<AbstractImporter&>(*this).populateCachedScenes();
+    return _cachedScenes->object3DCount;
+}
 
 Int AbstractImporter::object3DForName(const std::string& name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3DForName(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     const Int id = doObject3DForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doObject3DCount(),
         "Trade::AbstractImporter::object3DForName(): implementation-returned index" << id << "out of range for" << doObject3DCount() << "entries", {});
+    CORRADE_IGNORE_DEPRECATED_POP
     return id;
 }
 
-Int AbstractImporter::doObject3DForName(const std::string&) { return -1; }
+Int AbstractImporter::doObject3DForName(const std::string& name) {
+    /* Alias to the new interface. If it returns an ID that's larger than
+       reported 3D object count, then it's probably for a 2D object instead
+       -- ignore it in that case. */
+    const Long id = doObjectForName(name);
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    return id < doObject3DCount() ? id : -1;
+    CORRADE_IGNORE_DEPRECATED_POP
+}
 
 std::string AbstractImporter::object3DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3DName(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_ASSERT(id < doObject3DCount(), "Trade::AbstractImporter::object3DName(): index" << id << "out of range for" << doObject3DCount() << "entries", {});
     return doObject3DName(id);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
-std::string AbstractImporter::doObject3DName(UnsignedInt) { return {}; }
+std::string AbstractImporter::doObject3DName(const UnsignedInt id) {
+    /* Alias to the new interface */
+    return doObjectName(id);
+}
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
 Containers::Pointer<ObjectData3D> AbstractImporter::object3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3D(): no file opened", {});
     CORRADE_ASSERT(id < doObject3DCount(), "Trade::AbstractImporter::object3D(): index" << id << "out of range for" << doObject3DCount() << "entries", {});
     return doObject3D(id);
 }
 
-Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(UnsignedInt) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::object3D(): not implemented", {});
+Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(const UnsignedInt id) {
+    /* The code is mostly the same between doObject2D() and doObject3D(),
+       except that the 2D variant has no lights. Attempting to unify the common
+       code would be more complex than just having a slightly modified copy. */
+
+    populateCachedScenes();
+
+    /* Find the first 3D scene with this object, which we'll detect from the
+       object count reported for the scene, whether it's 2D or 3D, and a
+       presence of a parent attribute. If a parent attribute is not present, it
+       means the object isn't a part of this scene, in which case we skip it.
+       It could also mean isn't a part of the hierarchy and is standalone
+       (skyboxes, scene-wide properties), which the legacy API had no way to
+       deal with anyway so ignoring those is fine. */
+    std::size_t sceneCandidate = ~std::size_t{};
+    for(std::size_t i = 0; i != _cachedScenes->scenes.size(); ++i) {
+        const Containers::Optional<SceneData>& scene = _cachedScenes->scenes[i];
+        if(scene && scene->is3D() && id < scene->objectCount() && scene->parentFor(id)) {
+            sceneCandidate = i;
+            break;
+        }
+    }
+
+    if(sceneCandidate == ~std::size_t{}) {
+        Error{} << "Trade::AbstractImporter::object3D(): object" << id << "not found in any 3D scene hierarchy";
+        return {};
+    }
+
+    const SceneData& scene = *_cachedScenes->scenes[sceneCandidate];
+
+    ObjectFlags3D flags;
+    Containers::Optional<Matrix4> transformation = scene.transformation3DFor(id);
+    Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> trs = scene.translationRotationScaling3DFor(id);
+    if(trs)
+        flags |= ObjectFlag3D::HasTranslationRotationScaling;
+    /* If the object has neither a TRS nor a transformation field, assign an
+       identity transform to it */
+    else if(!transformation) transformation = Matrix4{};
+
+    std::vector<UnsignedInt> children; /* not const so we can move it */
+    {
+        Containers::Array<UnsignedInt> childrenArray = scene.childrenFor(id);
+        children = {childrenArray.begin(), childrenArray.end()};
+    }
+    const Containers::Array<Containers::Pair<UnsignedInt, Int>> mesh = scene.meshesMaterialsFor(id);
+    const Containers::Array<UnsignedInt> camera = scene.camerasFor(id);
+    const Containers::Array<UnsignedInt> skin = scene.skinsFor(id);
+    const Containers::Array<UnsignedInt> light = scene.lightsFor(id);
+    const Containers::Optional<const void*> importerState = scene.importerStateFor(id);
+
+    /* All these should have at most 1 item as the old API doesn't have
+       any way to represent multi-function objects. */
+    CORRADE_INTERNAL_ASSERT(camera.size() + light.size() + mesh.size() <= 1);
+
+    if(!mesh.empty()) {
+        return Containers::pointer(flags & ObjectFlag3D::HasTranslationRotationScaling ?
+            new MeshObjectData3D{std::move(children),
+                trs->first(), trs->second(), trs->third(),
+                mesh.front().first(), mesh.front().second(),
+                skin.empty() ? -1  : Int(skin.front()),
+                importerState ? *importerState : nullptr} :
+            new MeshObjectData3D{std::move(children),
+                *transformation,
+                mesh.front().first(), mesh.front().second(),
+                skin ? Int(*skin) : -1,
+                importerState ? *importerState : nullptr});
+    }
+
+    ObjectInstanceType3D instanceType;
+    UnsignedInt instance;
+    if(camera) {
+        instanceType = ObjectInstanceType3D::Camera;
+        instance = *camera;
+    } else if(light) {
+        instanceType = ObjectInstanceType3D::Light;
+        instance = *light;
+    } else {
+        instanceType = ObjectInstanceType3D::Empty;
+        instance = UnsignedInt(-1); /* Old APIs, you suck! */
+    }
+
+    return Containers::pointer(flags & ObjectFlag3D::HasTranslationRotationScaling ?
+        new ObjectData3D{std::move(children),
+            trs->first(), trs->second(), trs->third(),
+            instanceType, instance,
+            importerState ? *importerState : nullptr} :
+        new ObjectData3D{std::move(children),
+            *transformation,
+            instanceType, instance,
+            importerState ? *importerState : nullptr});
 }
 
 Containers::Pointer<ObjectData3D> AbstractImporter::object3D(const std::string& name) {
@@ -554,6 +845,8 @@ Containers::Pointer<ObjectData3D> AbstractImporter::object3D(const std::string& 
     }
     return object3D(id); /* not doObject3D(), so we get the range checks also */
 }
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 UnsignedInt AbstractImporter::skin2DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin2DCount(): no file opened", {});

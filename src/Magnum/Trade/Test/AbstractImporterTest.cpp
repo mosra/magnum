@@ -34,6 +34,8 @@
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/FileCallback.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/ArrayAllocator.h"
@@ -41,18 +43,22 @@
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/LightData.h"
 #include "Magnum/Trade/MeshData.h"
-#include "Magnum/Trade/MeshObjectData2D.h"
-#include "Magnum/Trade/MeshObjectData3D.h"
 #include "Magnum/Trade/PhongMaterialData.h"
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/SkinData.h"
 #include "Magnum/Trade/TextureData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Containers/ArrayTuple.h>
+#include <Corrade/TestSuite/Compare/Container.h>
+
 #define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
+#define _MAGNUM_NO_DEPRECATED_OBJECTDATA /* So it doesn't yell here */
 
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshObjectData2D.h"
+#include "Magnum/Trade/MeshObjectData3D.h"
 #endif
 
 #include "configure.h"
@@ -109,11 +115,26 @@ struct AbstractImporterTest: TestSuite::Tester {
     void defaultSceneOutOfRange();
 
     void scene();
+    void object();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void sceneDeprecatedFallback2D();
+    void sceneDeprecatedFallback3D();
+    void sceneDeprecatedFallbackParentless2D();
+    void sceneDeprecatedFallbackParentless3D();
+    void sceneDeprecatedFallbackTransformless2D();
+    void sceneDeprecatedFallbackTransformless3D();
+    #endif
     void sceneNameNotImplemented();
+    void objectNameNotImplemented();
     void sceneForNameOutOfRange();
+    void objectForNameOutOfRange();
     void sceneNameOutOfRange();
+    void objectNameOutOfRange();
     void sceneNotImplemented();
     void sceneOutOfRange();
+    void sceneNonOwningDeleters();
+    void sceneCustomDataDeleter();
+    void sceneCustomFieldDataDeleter();
 
     void sceneFieldName();
     void sceneFieldNameNotImplemented();
@@ -144,19 +165,35 @@ struct AbstractImporterTest: TestSuite::Tester {
     void cameraNotImplemented();
     void cameraOutOfRange();
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
     void object2D();
-    void object2DNameNotImplemented();
+    void object2DCountNotImplemented();
+    void object2DCountNoFile();
+    void object2DForNameNotImplemented();
+    void object2DForNameNoFile();
     void object2DForNameOutOfRange();
+    void object2DByNameNotFound();
+    void object2DNameNotImplemented();
+    void object2DNameNoFile();
     void object2DNameOutOfRange();
     void object2DNotImplemented();
+    void object2DNoFile();
     void object2DOutOfRange();
 
     void object3D();
-    void object3DNameNotImplemented();
+    void object3DCountNotImplemented();
+    void object3DCountNoFile();
+    void object3DForNameNotImplemented();
+    void object3DForNameNoFile();
     void object3DForNameOutOfRange();
+    void object3DByNameNotFound();
+    void object3DNameNotImplemented();
+    void object3DNameNoFile();
     void object3DNameOutOfRange();
     void object3DNotImplemented();
+    void object3DNoFile();
     void object3DOutOfRange();
+    #endif
 
     void skin2D();
     void skin2DNameNotImplemented();
@@ -307,6 +344,8 @@ constexpr struct {
     {"verify the message", true}
 };
 
+using namespace Math::Literals;
+
 AbstractImporterTest::AbstractImporterTest() {
     addTests({&AbstractImporterTest::construct,
               &AbstractImporterTest::constructWithPluginManagerReference,
@@ -358,11 +397,26 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::defaultSceneNotImplemented,
 
               &AbstractImporterTest::scene,
+              &AbstractImporterTest::object,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImporterTest::sceneDeprecatedFallback2D,
+              &AbstractImporterTest::sceneDeprecatedFallback3D,
+              &AbstractImporterTest::sceneDeprecatedFallbackParentless2D,
+              &AbstractImporterTest::sceneDeprecatedFallbackParentless3D,
+              &AbstractImporterTest::sceneDeprecatedFallbackTransformless2D,
+              &AbstractImporterTest::sceneDeprecatedFallbackTransformless3D,
+              #endif
               &AbstractImporterTest::sceneForNameOutOfRange,
+              &AbstractImporterTest::objectForNameOutOfRange,
               &AbstractImporterTest::sceneNameNotImplemented,
+              &AbstractImporterTest::objectNameNotImplemented,
               &AbstractImporterTest::sceneNameOutOfRange,
+              &AbstractImporterTest::objectNameOutOfRange,
               &AbstractImporterTest::sceneNotImplemented,
               &AbstractImporterTest::sceneOutOfRange,
+              &AbstractImporterTest::sceneNonOwningDeleters,
+              &AbstractImporterTest::sceneCustomDataDeleter,
+              &AbstractImporterTest::sceneCustomFieldDataDeleter,
 
               &AbstractImporterTest::sceneFieldName,
               &AbstractImporterTest::sceneFieldNameNotImplemented,
@@ -391,23 +445,45 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::cameraNameNotImplemented,
               &AbstractImporterTest::cameraNameOutOfRange,
               &AbstractImporterTest::cameraNotImplemented,
-              &AbstractImporterTest::cameraOutOfRange,
+              &AbstractImporterTest::cameraOutOfRange});
 
-              &AbstractImporterTest::object2D,
-              &AbstractImporterTest::object2DForNameOutOfRange,
-              &AbstractImporterTest::object2DNameNotImplemented,
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractImporterTest::object2D,
+              &AbstractImporterTest::object2DCountNotImplemented,
+              &AbstractImporterTest::object2DCountNoFile,
+              &AbstractImporterTest::object2DForNameNotImplemented,
+              &AbstractImporterTest::object2DForNameNoFile,
+              &AbstractImporterTest::object2DForNameOutOfRange});
+
+    addInstancedTests({&AbstractImporterTest::object2DByNameNotFound},
+        Containers::arraySize(ThingByNameData));
+
+    addTests({&AbstractImporterTest::object2DNameNotImplemented,
+              &AbstractImporterTest::object2DNameNoFile,
               &AbstractImporterTest::object2DNameOutOfRange,
               &AbstractImporterTest::object2DNotImplemented,
+              &AbstractImporterTest::object2DNoFile,
               &AbstractImporterTest::object2DOutOfRange,
 
               &AbstractImporterTest::object3D,
-              &AbstractImporterTest::object3DForNameOutOfRange,
-              &AbstractImporterTest::object3DNameNotImplemented,
+              &AbstractImporterTest::object3DCountNotImplemented,
+              &AbstractImporterTest::object3DCountNoFile,
+              &AbstractImporterTest::object3DForNameNotImplemented,
+              &AbstractImporterTest::object3DForNameNoFile,
+              &AbstractImporterTest::object3DForNameOutOfRange});
+
+    addInstancedTests({&AbstractImporterTest::object3DByNameNotFound},
+        Containers::arraySize(ThingByNameData));
+
+    addTests({&AbstractImporterTest::object3DNameNotImplemented,
+              &AbstractImporterTest::object3DNameNoFile,
               &AbstractImporterTest::object3DNameOutOfRange,
               &AbstractImporterTest::object3DNotImplemented,
-              &AbstractImporterTest::object3DOutOfRange,
+              &AbstractImporterTest::object3DNoFile,
+              &AbstractImporterTest::object3DOutOfRange});
+    #endif
 
-              &AbstractImporterTest::skin2D,
+    addTests({&AbstractImporterTest::skin2D,
               &AbstractImporterTest::skin2DForNameOutOfRange,
               &AbstractImporterTest::skin2DNameNotImplemented,
               &AbstractImporterTest::skin2DNameOutOfRange,
@@ -1210,12 +1286,10 @@ void AbstractImporterTest::thingCountNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.sceneCount(), 0);
+    CORRADE_COMPARE(importer.objectCount(), 0);
     CORRADE_COMPARE(importer.animationCount(), 0);
     CORRADE_COMPARE(importer.lightCount(), 0);
     CORRADE_COMPARE(importer.cameraCount(), 0);
-
-    CORRADE_COMPARE(importer.object2DCount(), 0);
-    CORRADE_COMPARE(importer.object3DCount(), 0);
 
     CORRADE_COMPARE(importer.skin2DCount(), 0);
     CORRADE_COMPARE(importer.skin3DCount(), 0);
@@ -1244,12 +1318,10 @@ void AbstractImporterTest::thingCountNoFile() {
     Error redirectError{&out};
 
     importer.sceneCount();
+    importer.objectCount();
     importer.animationCount();
     importer.lightCount();
     importer.cameraCount();
-
-    importer.object2DCount();
-    importer.object3DCount();
 
     importer.skin2DCount();
     importer.skin3DCount();
@@ -1268,12 +1340,10 @@ void AbstractImporterTest::thingCountNoFile() {
 
     CORRADE_COMPARE(out.str(),
         "Trade::AbstractImporter::sceneCount(): no file opened\n"
+        "Trade::AbstractImporter::objectCount(): no file opened\n"
         "Trade::AbstractImporter::animationCount(): no file opened\n"
         "Trade::AbstractImporter::lightCount(): no file opened\n"
         "Trade::AbstractImporter::cameraCount(): no file opened\n"
-
-        "Trade::AbstractImporter::object2DCount(): no file opened\n"
-        "Trade::AbstractImporter::object3DCount(): no file opened\n"
 
         "Trade::AbstractImporter::skin2DCount(): no file opened\n"
         "Trade::AbstractImporter::skin3DCount(): no file opened\n"
@@ -1299,12 +1369,10 @@ void AbstractImporterTest::thingForNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.sceneForName(""), -1);
+    CORRADE_COMPARE(importer.objectForName(""), -1);
     CORRADE_COMPARE(importer.animationForName(""), -1);
     CORRADE_COMPARE(importer.lightForName(""), -1);
     CORRADE_COMPARE(importer.cameraForName(""), -1);
-
-    CORRADE_COMPARE(importer.object2DForName(""), -1);
-    CORRADE_COMPARE(importer.object3DForName(""), -1);
 
     CORRADE_COMPARE(importer.skin2DForName(""), -1);
     CORRADE_COMPARE(importer.skin3DForName(""), -1);
@@ -1333,12 +1401,10 @@ void AbstractImporterTest::thingForNameNoFile() {
     Error redirectError{&out};
 
     importer.sceneForName("");
+    importer.objectForName("");
     importer.animationForName("");
     importer.lightForName("");
     importer.cameraForName("");
-
-    importer.object2DForName("");
-    importer.object3DForName("");
 
     importer.skin2DForName("");
     importer.skin3DForName("");
@@ -1353,12 +1419,10 @@ void AbstractImporterTest::thingForNameNoFile() {
 
     CORRADE_COMPARE(out.str(),
         "Trade::AbstractImporter::sceneForName(): no file opened\n"
+        "Trade::AbstractImporter::objectForName(): no file opened\n"
         "Trade::AbstractImporter::animationForName(): no file opened\n"
         "Trade::AbstractImporter::lightForName(): no file opened\n"
         "Trade::AbstractImporter::cameraForName(): no file opened\n"
-
-        "Trade::AbstractImporter::object2DForName(): no file opened\n"
-        "Trade::AbstractImporter::object3DForName(): no file opened\n"
 
         "Trade::AbstractImporter::skin2DForName(): no file opened\n"
         "Trade::AbstractImporter::skin3DForName(): no file opened\n"
@@ -1386,19 +1450,16 @@ void AbstractImporterTest::thingByNameNotFound() {
         UnsignedInt doLightCount() const override { return 3; }
         UnsignedInt doCameraCount() const override { return 4; }
 
-        UnsignedInt doObject2DCount() const override { return 5; }
-        UnsignedInt doObject3DCount() const override { return 6; }
+        UnsignedInt doSkin2DCount() const override { return 5; }
+        UnsignedInt doSkin3DCount() const override { return 6; }
 
-        UnsignedInt doSkin2DCount() const override { return 7; }
-        UnsignedInt doSkin3DCount() const override { return 8; }
+        UnsignedInt doMeshCount() const override { return 7; }
+        UnsignedInt doMaterialCount() const override { return 8; }
+        UnsignedInt doTextureCount() const override { return 9; }
 
-        UnsignedInt doMeshCount() const override { return 9; }
-        UnsignedInt doMaterialCount() const override { return 10; }
-        UnsignedInt doTextureCount() const override { return 11; }
-
-        UnsignedInt doImage1DCount() const override { return 12; }
-        UnsignedInt doImage2DCount() const override { return 13; }
-        UnsignedInt doImage3DCount() const override { return 14; }
+        UnsignedInt doImage1DCount() const override { return 10; }
+        UnsignedInt doImage2DCount() const override { return 11; }
+        UnsignedInt doImage3DCount() const override { return 12; }
     } importer;
 
     std::ostringstream out;
@@ -1410,9 +1471,6 @@ void AbstractImporterTest::thingByNameNotFound() {
         CORRADE_VERIFY(!importer.animation("foobar"));
         CORRADE_VERIFY(!importer.light("foobar"));
         CORRADE_VERIFY(!importer.camera("foobar"));
-
-        CORRADE_VERIFY(!importer.object2D("foobar"));
-        CORRADE_VERIFY(!importer.object3D("foobar"));
 
         CORRADE_VERIFY(!importer.skin2D("foobar"));
         CORRADE_VERIFY(!importer.skin3D("foobar"));
@@ -1433,19 +1491,16 @@ void AbstractImporterTest::thingByNameNotFound() {
             "Trade::AbstractImporter::light(): light foobar not found among 3 entries\n"
             "Trade::AbstractImporter::camera(): camera foobar not found among 4 entries\n"
 
-            "Trade::AbstractImporter::object2D(): object foobar not found among 5 entries\n"
-            "Trade::AbstractImporter::object3D(): object foobar not found among 6 entries\n"
+            "Trade::AbstractImporter::skin2D(): skin foobar not found among 5 entries\n"
+            "Trade::AbstractImporter::skin3D(): skin foobar not found among 6 entries\n"
 
-            "Trade::AbstractImporter::skin2D(): skin foobar not found among 7 entries\n"
-            "Trade::AbstractImporter::skin3D(): skin foobar not found among 8 entries\n"
+            "Trade::AbstractImporter::mesh(): mesh foobar not found among 7 entries\n"
+            "Trade::AbstractImporter::material(): material foobar not found among 8 entries\n"
+            "Trade::AbstractImporter::texture(): texture foobar not found among 9 entries\n"
 
-            "Trade::AbstractImporter::mesh(): mesh foobar not found among 9 entries\n"
-            "Trade::AbstractImporter::material(): material foobar not found among 10 entries\n"
-            "Trade::AbstractImporter::texture(): texture foobar not found among 11 entries\n"
-
-            "Trade::AbstractImporter::image1D(): image foobar not found among 12 entries\n"
-            "Trade::AbstractImporter::image2D(): image foobar not found among 13 entries\n"
-            "Trade::AbstractImporter::image3D(): image foobar not found among 14 entries\n");
+            "Trade::AbstractImporter::image1D(): image foobar not found among 10 entries\n"
+            "Trade::AbstractImporter::image2D(): image foobar not found among 11 entries\n"
+            "Trade::AbstractImporter::image3D(): image foobar not found among 12 entries\n");
     }
 }
 
@@ -1468,9 +1523,6 @@ void AbstractImporterTest::thingNameNoFile() {
     importer.lightName(42);
     importer.cameraName(42);
 
-    importer.object2DName(42);
-    importer.object3DName(42);
-
     importer.skin2DName(42);
     importer.skin3DName(42);
 
@@ -1487,9 +1539,6 @@ void AbstractImporterTest::thingNameNoFile() {
         "Trade::AbstractImporter::animationName(): no file opened\n"
         "Trade::AbstractImporter::lightName(): no file opened\n"
         "Trade::AbstractImporter::cameraName(): no file opened\n"
-
-        "Trade::AbstractImporter::object2DName(): no file opened\n"
-        "Trade::AbstractImporter::object3DName(): no file opened\n"
 
         "Trade::AbstractImporter::skin2DName(): no file opened\n"
         "Trade::AbstractImporter::skin3DName(): no file opened\n"
@@ -1527,11 +1576,6 @@ void AbstractImporterTest::thingNoFile() {
     importer.camera(42);
     importer.camera("foo");
 
-    importer.object2D(42);
-    importer.object2D("foo");
-    importer.object3D(42);
-    importer.object3D("foo");
-
     importer.skin2D(42);
     importer.skin2D("foo");
     importer.skin3D(42);
@@ -1563,11 +1607,6 @@ void AbstractImporterTest::thingNoFile() {
         "Trade::AbstractImporter::light(): no file opened\n"
         "Trade::AbstractImporter::camera(): no file opened\n"
         "Trade::AbstractImporter::camera(): no file opened\n"
-
-        "Trade::AbstractImporter::object2D(): no file opened\n"
-        "Trade::AbstractImporter::object2D(): no file opened\n"
-        "Trade::AbstractImporter::object3D(): no file opened\n"
-        "Trade::AbstractImporter::object3D(): no file opened\n"
 
         "Trade::AbstractImporter::skin2D(): no file opened\n"
         "Trade::AbstractImporter::skin2D(): no file opened\n"
@@ -1673,6 +1712,28 @@ void AbstractImporterTest::scene() {
     }
 }
 
+void AbstractImporterTest::object() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedLong doObjectCount() const override { return 8; }
+        Long doObjectForName(const std::string& name) override {
+            if(name == "eighth") return 7;
+            return -1;
+        }
+        std::string doObjectName(UnsignedLong id) override {
+            if(id == 7) return "eighth";
+            return {};
+        }
+    } importer;
+
+    CORRADE_COMPARE(importer.objectCount(), 8);
+    CORRADE_COMPARE(importer.objectForName("eighth"), 7);
+    CORRADE_COMPARE(importer.objectName(7), "eighth");
+}
+
 void AbstractImporterTest::sceneForNameOutOfRange() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1693,6 +1754,930 @@ void AbstractImporterTest::sceneForNameOutOfRange() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::sceneForName(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
+void AbstractImporterTest::objectForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedLong doObjectCount() const override { return 8; }
+        Long doObjectForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.objectForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::objectForName(): implementation-returned index 8 out of range for 8 entries\n");
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImporterTest::sceneDeprecatedFallback2D() {
+    /* Need to test the following combinations:
+
+        - few objects in the root
+        - an object with one child, with more than one, with none
+        - an object with a mesh and a material
+        - an object with a mesh and without a material
+        - an object with a mesh and a skin
+        - an object with a skin but no mesh
+        - an object with a camera
+        - an object with TRS transformation
+        - an object with TRS transformation and a mesh
+        - an object with nothing except parent / transformation
+    */
+
+    struct Transform {
+        UnsignedInt object;
+        Int parent;
+        Matrix3 transformation;
+    };
+    struct Trs {
+        UnsignedInt object;
+        Vector2 translation;
+        Complex rotation;
+        Vector2 scaling;
+    };
+    struct Mesh {
+        UnsignedInt object;
+        UnsignedShort mesh;
+        Short meshMaterial;
+    };
+    struct Index {
+        UnsignedInt object;
+        UnsignedInt id;
+    };
+    struct ImporterState {
+        UnsignedInt object;
+        const void* importerState;
+    };
+    Containers::StridedArrayView1D<Transform> transformations;
+    Containers::StridedArrayView1D<Trs> trs;
+    Containers::StridedArrayView1D<Mesh> meshes;
+    Containers::StridedArrayView1D<Index> cameras;
+    Containers::StridedArrayView1D<Index> skins;
+    Containers::StridedArrayView1D<ImporterState> importerState;
+    Containers::Array<char> data = Containers::ArrayTuple{
+        {NoInit, 6, transformations},
+        {NoInit, 2, trs},
+        {NoInit, 2, meshes},
+        {NoInit, 1, cameras},
+        {NoInit, 2, skins},
+        {NoInit, 3, importerState}
+    };
+
+    int a, b, c;
+
+    /* Object 3 is in the root, has a camera attached, TRS and children 5 + 4.
+       Because of the TRS, the actual transformation gets ignored. Has importer
+       state. */
+    transformations[0] = {3, -1, Matrix3::rotation(75.0_degf)};
+    trs[0] = {3, {0.0f, 3.0f}, Complex::rotation(15.0_degf), Vector2{1.0f}};
+    cameras[0] = {3, 15};
+    importerState[0] = {3, &a};
+
+    /* Object 5 is a child of object 3 (which is at index 0), has a skin (which
+       gets ignored by the legacy interface) */
+    transformations[1] = {5, 0, Matrix3::rotation(-15.0_degf)};
+    skins[0] = {5, 226};
+
+    /* Object 1 is a child of object 2 (which will be at index 3) */
+    transformations[2] = {1, 3, Matrix3::translation({1.0f, 0.5f})*Matrix3::rotation(15.0_degf)};
+
+    /* Object 2 is in the root, has object 1 as a child but nothing else */
+    transformations[3] = {2, -1, {}};
+
+    /* Object 0 is in the root, has a mesh without a material and no children */
+    transformations[4] = {0, -1, Matrix3::rotation(30.0_degf)};
+    meshes[0] = {0, 33, -1};
+
+    /* Object 4 has TRS also, a mesh with a material and a skin and is a child
+       of object 3 (which is at index 0). The transformation gets ignored
+       again. Has importer state. */
+    transformations[5] = {4, 0, Matrix3::translation(Vector2::xAxis(5.0f))};
+    trs[1] = {4, {}, {}, {1.5f, -0.5f}};
+    meshes[1] = {4, 27, 46};
+    skins[1] = {4, 72};
+    importerState[1] = {4, &b};
+
+    /* Object 6 has neither a transformation nor a parent, only an importer
+       state. It should get ignored. */
+    importerState[2] = {6, &c};
+
+    struct Importer: AbstractImporter {
+        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 3; }
+        UnsignedLong doObjectCount() const override { return 7; }
+        Long doObjectForName(const std::string& name) override {
+            if(name == "sixth") return 5;
+            return -1;
+        }
+        std::string doObjectName(UnsignedLong id) override {
+            if(id == 5) return "sixth";
+            return {};
+        }
+        Containers::Optional<SceneData> doScene(UnsignedInt id) override {
+            /* This one has seven objects, but no fields for them so it should
+               get skipped */
+            if(id == 0)
+                return SceneData{SceneObjectType::UnsignedByte, 7, nullptr, {}};
+            /* This one has no objects, so it should get skipped as well
+               without even querying any fieldFor() API (as those would
+               assert) */
+            if(id == 1)
+                return SceneData{SceneObjectType::UnsignedShort, 0, nullptr, {}};
+            /* This one is the one */
+            if(id == 2)
+                return SceneData{SceneObjectType::UnsignedInt, 7, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        }
+
+        private:
+            SceneData _data;
+    } importer{SceneData{SceneObjectType::UnsignedInt, 7, std::move(data), {
+        SceneFieldData{SceneField::Parent,
+            transformations.slice(&Transform::object),
+            transformations.slice(&Transform::parent)},
+        SceneFieldData{SceneField::Transformation,
+            transformations.slice(&Transform::object),
+            transformations.slice(&Transform::transformation)},
+        SceneFieldData{SceneField::Translation,
+            trs.slice(&Trs::object),
+            trs.slice(&Trs::translation)},
+        SceneFieldData{SceneField::Rotation,
+            trs.slice(&Trs::object),
+            trs.slice(&Trs::rotation)},
+        SceneFieldData{SceneField::Scaling,
+            trs.slice(&Trs::object),
+            trs.slice(&Trs::scaling)},
+        SceneFieldData{SceneField::Mesh,
+            meshes.slice(&Mesh::object),
+            meshes.slice(&Mesh::mesh)},
+        SceneFieldData{SceneField::MeshMaterial,
+            meshes.slice(&Mesh::object),
+            meshes.slice(&Mesh::meshMaterial)},
+        SceneFieldData{SceneField::Camera,
+            cameras.slice(&Index::object),
+            cameras.slice(&Index::id)},
+        SceneFieldData{SceneField::Skin,
+            skins.slice(&Index::object),
+            skins.slice(&Index::id)},
+        SceneFieldData{SceneField::ImporterState,
+            importerState.slice(&ImporterState::object), importerState.slice(&ImporterState::importerState)}
+    }}};
+
+    CORRADE_COMPARE(importer.sceneCount(), 3);
+
+    Containers::Optional<SceneData> scene = importer.scene(2);
+    CORRADE_VERIFY(scene);
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE_AS(scene->children2D(),
+        (std::vector<UnsignedInt>{3, 2, 0}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene->children3D(),
+        (std::vector<UnsignedInt>{}),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(importer.object2DCount(), 7);
+    CORRADE_COMPARE(importer.object2DForName("sixth"), 5);
+    CORRADE_COMPARE(importer.object2DName(5), "sixth");
+
+    CORRADE_COMPARE(importer.object3DCount(), 0);
+    CORRADE_COMPARE(importer.object3DForName("sixth"), -1);
+
+    {
+        Containers::Pointer<ObjectData2D> o = importer.object2D(0);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Mesh);
+        CORRADE_COMPARE(o->instance(), 33);
+        CORRADE_COMPARE(o->flags(), ObjectFlags2D{});
+        CORRADE_COMPARE(o->transformation(), Matrix3::rotation(30.0_degf));
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+        MeshObjectData2D& mo = static_cast<MeshObjectData2D&>(*o);
+        CORRADE_COMPARE(mo.material(), -1);
+        CORRADE_COMPARE(mo.skin(), -1);
+    } {
+        Containers::Pointer<ObjectData2D> o = importer.object2D(1);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags2D{});
+        CORRADE_COMPARE(o->transformation(), Matrix3::translation({1.0f, 0.5f})*Matrix3::rotation(15.0_degf));
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+    } {
+        Containers::Pointer<ObjectData2D> o = importer.object2D(2);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags2D{});
+        CORRADE_COMPARE(o->transformation(), Matrix3{});
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{1},
+            TestSuite::Compare::Container);
+    } {
+        Containers::Pointer<ObjectData2D> o = importer.object2D(3);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), &a);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Camera);
+        CORRADE_COMPARE(o->instance(), 15);
+        CORRADE_COMPARE(o->flags(), ObjectFlag2D::HasTranslationRotationScaling);
+        CORRADE_COMPARE(o->transformation(), Matrix3::translation({0.0f, 3.0f})*Matrix3::rotation(15.0_degf));
+        CORRADE_COMPARE(o->translation(), (Vector2{0.0f, 3.0f}));
+        CORRADE_COMPARE(o->rotation(), Complex::rotation(15.0_degf));
+        CORRADE_COMPARE(o->scaling(), (Vector2{1.0f}));
+        CORRADE_COMPARE_AS(o->children(),
+            (std::vector<UnsignedInt>{5, 4}),
+            TestSuite::Compare::Container);
+    } {
+        Containers::Pointer<ObjectData2D> o = importer.object2D(4);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), &b);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Mesh);
+        CORRADE_COMPARE(o->instance(), 27);
+        CORRADE_COMPARE(o->flags(), ObjectFlag2D::HasTranslationRotationScaling);
+        CORRADE_COMPARE(o->transformation(), Matrix3::scaling({1.5f, -0.5f}));
+        CORRADE_COMPARE(o->translation(), Vector2{});
+        CORRADE_COMPARE(o->rotation(), Complex{});
+        CORRADE_COMPARE(o->scaling(), (Vector2{1.5, -0.5f}));
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+        MeshObjectData2D& mo = static_cast<MeshObjectData2D&>(*o);
+        CORRADE_COMPARE(mo.material(), 46);
+        CORRADE_COMPARE(mo.skin(), 72);
+    } {
+        Containers::Pointer<ObjectData2D> o = importer.object2D("sixth");
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags2D{});
+        CORRADE_COMPARE(o->transformation(), Matrix3::rotation(-15.0_degf));
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+    } {
+        /* This one is not contained in any parent hierarchy, so it fails to
+           import */
+        std::ostringstream out;
+        Error redirectError{&out};
+        CORRADE_VERIFY(!importer.object2D(6));
+        CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2D(): object 6 not found in any 2D scene hierarchy\n");
+    }
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::sceneDeprecatedFallback3D() {
+    /* Need to test the following combinations:
+
+        - few objects in the root
+        - an object with one child, with more than one, with none
+        - an object with a mesh and a material
+        - an object with a mesh and without a material
+        - an object with a mesh and a skin
+        - an object with a skin but no mesh
+        - an object with a camera
+        - an object with a light
+        - an object with TRS transformation
+        - an object with TRS transformation and a mesh
+        - an object with nothing except parent / transformation
+    */
+
+    struct Transform {
+        UnsignedInt object;
+        Int parent;
+        Matrix4 transformation;
+    };
+    struct Trs {
+        UnsignedInt object;
+        Vector3 translation;
+        Quaternion rotation;
+        Vector3 scaling;
+    };
+    struct Mesh {
+        UnsignedInt object;
+        UnsignedShort mesh;
+        Short meshMaterial;
+    };
+    struct Index {
+        UnsignedInt object;
+        UnsignedInt id;
+    };
+    struct ImporterState {
+        UnsignedInt object;
+        const void* importerState;
+    };
+    Containers::StridedArrayView1D<Transform> transformations;
+    Containers::StridedArrayView1D<Trs> trs;
+    Containers::StridedArrayView1D<Mesh> meshes;
+    Containers::StridedArrayView1D<Index> cameras;
+    Containers::StridedArrayView1D<Index> lights;
+    Containers::StridedArrayView1D<Index> skins;
+    Containers::StridedArrayView1D<ImporterState> importerState;
+    Containers::Array<char> data = Containers::ArrayTuple{
+        {NoInit, 6, transformations},
+        {NoInit, 2, trs},
+        {NoInit, 2, meshes},
+        {NoInit, 1, cameras},
+        {NoInit, 1, lights},
+        {NoInit, 2, skins},
+        {NoInit, 3, importerState}
+    };
+
+    int a, b, c;
+
+    /* Object 3 is in the root, has a camera attached, TRS and children 5 + 4.
+       Because of the TRS, the actual transformation gets ignored. Has importer
+       state. */
+    transformations[0] = {3, -1, Matrix4::rotationX(75.0_degf)};
+    trs[0] = {3, {0.0f, 0.0f, 3.0f}, Quaternion::rotation(15.0_degf, Vector3::xAxis()), Vector3{1.0f}};
+    cameras[0] = {3, 15};
+    importerState[0] = {3, &a};
+
+    /* Object 5 is a child of object 3 (which is at index 0), has a skin (which
+       gets ignored by the legacy interface) */
+    transformations[1] = {5, 0, Matrix4::rotationY(-15.0_degf)};
+    skins[0] = {5, 226};
+
+    /* Object 1 is a child of object 2 (which will be at index 3), has a light. */
+    transformations[2] = {1, 3, Matrix4::translation({1.0f, 0.0f, 1.0f})*Matrix4::rotationZ(15.0_degf)};
+    lights[0] = {1, 113};
+
+    /* Object 2 is in the root, has object 1 as a child but nothing else */
+    transformations[3] = {2, -1, {}};
+
+    /* Object 0 is in the root, has a mesh without a material and no children */
+    transformations[4] = {0, -1, Matrix4::rotationX(30.0_degf)};
+    meshes[0] = {0, 33, -1};
+
+    /* Object 4 has TRS also, a mesh with a material and a skin and is a child
+       of object 3 (which is at index 0). The transformation gets ignored
+       again. Has importer state. */
+    transformations[5] = {4, 0, Matrix4::translation(Vector3::xAxis(5.0f))};
+    trs[1] = {4, {}, {}, {1.5f, 3.0f, -0.5f}};
+    meshes[1] = {4, 27, 46};
+    skins[1] = {4, 72};
+    importerState[1] = {4, &b};
+
+    /* Object 6 has neither a transformation nor a parent, only an importer
+       state. It should get ignored. */
+    importerState[2] = {6, &c};
+
+    struct Importer: AbstractImporter {
+        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 3; }
+        UnsignedLong doObjectCount() const override { return 7; }
+        Long doObjectForName(const std::string& name) override {
+            if(name == "sixth") return 5;
+            return -1;
+        }
+        std::string doObjectName(UnsignedLong id) override {
+            if(id == 5) return "sixth";
+            return {};
+        }
+        Containers::Optional<SceneData> doScene(UnsignedInt id) override {
+            /* This one has seven objects, but no fields for them so it should
+               get skipped */
+            if(id == 0)
+                return SceneData{SceneObjectType::UnsignedByte, 7, nullptr, {}};
+            /* This one has no objects, so it should get skipped as well
+               without even querying any fieldFor() API (as those would
+               assert) */
+            if(id == 1)
+                return SceneData{SceneObjectType::UnsignedShort, 0, nullptr, {}};
+            /* This one is the one */
+            if(id == 2)
+                return SceneData{SceneObjectType::UnsignedInt, 7, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        }
+
+        private:
+            SceneData _data;
+    } importer{SceneData{SceneObjectType::UnsignedInt, 7, std::move(data), {
+        SceneFieldData{SceneField::Parent,
+            transformations.slice(&Transform::object),
+            transformations.slice(&Transform::parent)},
+        SceneFieldData{SceneField::Transformation,
+            transformations.slice(&Transform::object),
+            transformations.slice(&Transform::transformation)},
+        SceneFieldData{SceneField::Translation,
+            trs.slice(&Trs::object),
+            trs.slice(&Trs::translation)},
+        SceneFieldData{SceneField::Rotation,
+            trs.slice(&Trs::object),
+            trs.slice(&Trs::rotation)},
+        SceneFieldData{SceneField::Scaling,
+            trs.slice(&Trs::object),
+            trs.slice(&Trs::scaling)},
+        SceneFieldData{SceneField::Mesh,
+            meshes.slice(&Mesh::object),
+            meshes.slice(&Mesh::mesh)},
+        SceneFieldData{SceneField::MeshMaterial,
+            meshes.slice(&Mesh::object),
+            meshes.slice(&Mesh::meshMaterial)},
+        SceneFieldData{SceneField::Camera,
+            cameras.slice(&Index::object),
+            cameras.slice(&Index::id)},
+        SceneFieldData{SceneField::Light,
+            lights.slice(&Index::object),
+            lights.slice(&Index::id)},
+        SceneFieldData{SceneField::Skin,
+            skins.slice(&Index::object),
+            skins.slice(&Index::id)},
+        SceneFieldData{SceneField::ImporterState,
+            importerState.slice(&ImporterState::object), importerState.slice(&ImporterState::importerState)}
+    }}};
+
+    CORRADE_COMPARE(importer.sceneCount(), 3);
+
+    Containers::Optional<SceneData> scene = importer.scene(2);
+    CORRADE_VERIFY(scene);
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE_AS(scene->children2D(),
+        std::vector<UnsignedInt>{},
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene->children3D(),
+        (std::vector<UnsignedInt>{3, 2, 0}),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(importer.object2DCount(), 0);
+    CORRADE_COMPARE(importer.object2DForName("sixth"), -1);
+
+    CORRADE_COMPARE(importer.object3DCount(), 7);
+    CORRADE_COMPARE(importer.object3DForName("sixth"), 5);
+    CORRADE_COMPARE(importer.object3DName(5), "sixth");
+
+    {
+        Containers::Pointer<ObjectData3D> o = importer.object3D(0);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Mesh);
+        CORRADE_COMPARE(o->instance(), 33);
+        CORRADE_COMPARE(o->flags(), ObjectFlags3D{});
+        CORRADE_COMPARE(o->transformation(), Matrix4::rotationX(30.0_degf));
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+        MeshObjectData3D& mo = static_cast<MeshObjectData3D&>(*o);
+        CORRADE_COMPARE(mo.material(), -1);
+        CORRADE_COMPARE(mo.skin(), -1);
+    } {
+        Containers::Pointer<ObjectData3D> o = importer.object3D(1);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Light);
+        CORRADE_COMPARE(o->instance(), 113);
+        CORRADE_COMPARE(o->flags(), ObjectFlags3D{});
+        CORRADE_COMPARE(o->transformation(), Matrix4::translation({1.0f, 0.0f, 1.0f})*Matrix4::rotationZ(15.0_degf));
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+    } {
+        Containers::Pointer<ObjectData3D> o = importer.object3D(2);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags3D{});
+        CORRADE_COMPARE(o->transformation(), Matrix4{});
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{1},
+            TestSuite::Compare::Container);
+    } {
+        Containers::Pointer<ObjectData3D> o = importer.object3D(3);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), &a);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Camera);
+        CORRADE_COMPARE(o->instance(), 15);
+        CORRADE_COMPARE(o->flags(), ObjectFlag3D::HasTranslationRotationScaling);
+        CORRADE_COMPARE(o->transformation(), Matrix4::translation({0.0f, 0.0f, 3.0f})*Matrix4::rotationX(15.0_degf));
+        CORRADE_COMPARE(o->translation(), (Vector3{0.0f, 0.0f, 3.0f}));
+        CORRADE_COMPARE(o->rotation(), Quaternion::rotation(15.0_degf, Vector3::xAxis()));
+        CORRADE_COMPARE(o->scaling(), (Vector3{1.0f}));
+        CORRADE_COMPARE_AS(o->children(),
+            (std::vector<UnsignedInt>{5, 4}),
+            TestSuite::Compare::Container);
+    } {
+        Containers::Pointer<ObjectData3D> o = importer.object3D(4);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), &b);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Mesh);
+        CORRADE_COMPARE(o->instance(), 27);
+        CORRADE_COMPARE(o->flags(), ObjectFlag3D::HasTranslationRotationScaling);
+        CORRADE_COMPARE(o->transformation(), Matrix4::scaling({1.5f, 3.0f, -0.5f}));
+        CORRADE_COMPARE(o->translation(), Vector3{});
+        CORRADE_COMPARE(o->rotation(), Quaternion{});
+        CORRADE_COMPARE(o->scaling(), (Vector3{1.5, 3.0f, -0.5f}));
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+        MeshObjectData3D& mo = static_cast<MeshObjectData3D&>(*o);
+        CORRADE_COMPARE(mo.material(), 46);
+        CORRADE_COMPARE(mo.skin(), 72);
+    } {
+        Containers::Pointer<ObjectData3D> o = importer.object3D("sixth");
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags3D{});
+        CORRADE_COMPARE(o->transformation(), Matrix4::rotationY(-15.0_degf));
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+    } {
+        /* This one is not contained in any parent hierarchy, so it fails to
+           import */
+        std::ostringstream out;
+        Error redirectError{&out};
+        CORRADE_VERIFY(!importer.object3D(6));
+        CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3D(): object 6 not found in any 3D scene hierarchy\n");
+    }
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::sceneDeprecatedFallbackParentless2D() {
+    /* As the Parent field is currently used to distinguish which objects
+       belong to which scene, its absence means the objects are advertised, but
+       aren't listed as children of any scene, and retrieving them will fail */
+    /** @todo adapt when there's a dedicated way to distinguish which objects
+        belong to which scene */
+
+    struct Field {
+        UnsignedInt object;
+        Matrix3 transformation;
+    } fields[]{
+        {5, Matrix3{}},
+        {2, Matrix3{}},
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    struct Importer: AbstractImporter {
+        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 1; }
+        UnsignedLong doObjectCount() const override { return 6; }
+        Containers::Optional<SceneData> doScene(UnsignedInt) override {
+            return SceneData{SceneObjectType::UnsignedInt, 6, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+        }
+
+        private:
+            SceneData _data;
+    } importer{SceneData{SceneObjectType::UnsignedInt, 6, {}, fields, {
+        SceneFieldData{SceneField::Transformation,
+            view.slice(&Field::object),
+            view.slice(&Field::transformation)}
+    }}};
+
+    CORRADE_COMPARE(importer.sceneCount(), 1);
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer.object2DCount(), 6);
+    CORRADE_COMPARE(importer.object3DCount(), 0);
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    Containers::Optional<SceneData> scene = importer.scene(0);
+    CORRADE_VERIFY(scene);
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE_AS(scene->children2D(),
+        std::vector<UnsignedInt>{},
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene->children3D(),
+        (std::vector<UnsignedInt>{}),
+        TestSuite::Compare::Container);
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!importer.object2D(0));
+    CORRADE_VERIFY(!importer.object2D(1));
+    CORRADE_VERIFY(!importer.object2D(2));
+    CORRADE_VERIFY(!importer.object2D(3));
+    CORRADE_VERIFY(!importer.object2D(4));
+    CORRADE_VERIFY(!importer.object2D(5));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::object2D(): object 0 not found in any 2D scene hierarchy\n"
+        "Trade::AbstractImporter::object2D(): object 1 not found in any 2D scene hierarchy\n"
+        "Trade::AbstractImporter::object2D(): object 2 not found in any 2D scene hierarchy\n"
+        "Trade::AbstractImporter::object2D(): object 3 not found in any 2D scene hierarchy\n"
+        "Trade::AbstractImporter::object2D(): object 4 not found in any 2D scene hierarchy\n"
+        "Trade::AbstractImporter::object2D(): object 5 not found in any 2D scene hierarchy\n");
+}
+
+void AbstractImporterTest::sceneDeprecatedFallbackParentless3D() {
+    /* As the Parent field is currently used to distinguish which objects
+       belong to which scene, its absence means the objects are advertised, but
+       aren't listed as children of any scene, and retrieving them will fail */
+    /** @todo adapt when there's a dedicated way to distinguish which objects
+        belong to which scene */
+
+    struct Field {
+        UnsignedInt object;
+        Matrix4 transformation;
+    } fields[]{
+        {5, Matrix4{}},
+        {2, Matrix4{}},
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    struct Importer: AbstractImporter {
+        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 1; }
+        UnsignedLong doObjectCount() const override { return 6; }
+        Containers::Optional<SceneData> doScene(UnsignedInt) override {
+            return SceneData{SceneObjectType::UnsignedInt, 6, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+        }
+
+        private:
+            SceneData _data;
+    } importer{SceneData{SceneObjectType::UnsignedInt, 6, {}, fields, {
+        SceneFieldData{SceneField::Transformation,
+            view.slice(&Field::object),
+            view.slice(&Field::transformation)}
+    }}};
+
+    CORRADE_COMPARE(importer.sceneCount(), 1);
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer.object2DCount(), 0);
+    CORRADE_COMPARE(importer.object3DCount(), 6);
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    Containers::Optional<SceneData> scene = importer.scene(0);
+    CORRADE_VERIFY(scene);
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE_AS(scene->children2D(),
+        std::vector<UnsignedInt>{},
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene->children3D(),
+        (std::vector<UnsignedInt>{}),
+        TestSuite::Compare::Container);
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!importer.object3D(0));
+    CORRADE_VERIFY(!importer.object3D(1));
+    CORRADE_VERIFY(!importer.object3D(2));
+    CORRADE_VERIFY(!importer.object3D(3));
+    CORRADE_VERIFY(!importer.object3D(4));
+    CORRADE_VERIFY(!importer.object3D(5));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::object3D(): object 0 not found in any 3D scene hierarchy\n"
+        "Trade::AbstractImporter::object3D(): object 1 not found in any 3D scene hierarchy\n"
+        "Trade::AbstractImporter::object3D(): object 2 not found in any 3D scene hierarchy\n"
+        "Trade::AbstractImporter::object3D(): object 3 not found in any 3D scene hierarchy\n"
+        "Trade::AbstractImporter::object3D(): object 4 not found in any 3D scene hierarchy\n"
+        "Trade::AbstractImporter::object3D(): object 5 not found in any 3D scene hierarchy\n");
+}
+
+void AbstractImporterTest::sceneDeprecatedFallbackTransformless2D() {
+    /* If no transformation field is present, for backwards compatibility we
+       assume the objects are 3D -- the only plugin that has a 2D scene is
+       PrimitiveImporter and it has the transformation field. */
+
+    struct Field {
+        UnsignedInt object;
+        Int parent;
+    } fields[]{
+        {5, -1},
+        {2, 0},
+        {3, 0},
+        {1, -1}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    struct Importer: AbstractImporter {
+        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 1; }
+        UnsignedLong doObjectCount() const override { return 6; }
+        Containers::Optional<SceneData> doScene(UnsignedInt) override {
+            return SceneData{SceneObjectType::UnsignedInt, 6, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+        }
+
+        private:
+            SceneData _data;
+    } importer{SceneData{SceneObjectType::UnsignedInt, 6, {}, fields, {
+        SceneFieldData{SceneField::Parent,
+            view.slice(&Field::object),
+            view.slice(&Field::parent)},
+        /* Required in order to have the scene recognized as 2D */
+        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Matrix3x3, nullptr}
+    }}};
+
+    CORRADE_COMPARE(importer.sceneCount(), 1);
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer.object2DCount(), 6);
+    CORRADE_COMPARE(importer.object3DCount(), 0);
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    Containers::Optional<SceneData> scene = importer.scene(0);
+    CORRADE_VERIFY(scene);
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE_AS(scene->children2D(),
+        (std::vector<UnsignedInt>{5, 1}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene->children3D(),
+        std::vector<UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    {
+        Containers::Pointer<ObjectData2D> o = importer.object2D(5);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags2D{});
+        CORRADE_COMPARE(o->transformation(), Matrix3{});
+        CORRADE_COMPARE_AS(o->children(),
+            (std::vector<UnsignedInt>{2, 3}),
+            TestSuite::Compare::Container);
+    } {
+        Containers::Pointer<ObjectData2D> o = importer.object2D(2);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags2D{});
+        CORRADE_COMPARE(o->transformation(), Matrix3{});
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+    } {
+        Containers::Pointer<ObjectData2D> o = importer.object2D(3);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags2D{});
+        CORRADE_COMPARE(o->transformation(), Matrix3{});
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+    } {
+        Containers::Pointer<ObjectData2D> o = importer.object2D(1);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags2D{});
+        CORRADE_COMPARE(o->transformation(), Matrix3{});
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+    }
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+void AbstractImporterTest::sceneDeprecatedFallbackTransformless3D() {
+    /* If no transformation field is present, for backwards compatibility we
+       assume the objects are 3D -- the only plugin that has a 2D scene is
+       PrimitiveImporter and it has the transformation field. */
+
+    struct Field {
+        UnsignedInt object;
+        Int parent;
+    } fields[]{
+        {5, -1},
+        {2, 0},
+        {3, 0},
+        {1, -1}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    struct Importer: AbstractImporter {
+        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 1; }
+        UnsignedLong doObjectCount() const override { return 6; }
+        Containers::Optional<SceneData> doScene(UnsignedInt) override {
+            return SceneData{SceneObjectType::UnsignedInt, 6, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+        }
+
+        private:
+            SceneData _data;
+    } importer{SceneData{SceneObjectType::UnsignedInt, 6, {}, fields, {
+        SceneFieldData{SceneField::Parent,
+            view.slice(&Field::object),
+            view.slice(&Field::parent)},
+        /* Required in order to have the scene recognized as 3D */
+        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Matrix4x4, nullptr}
+    }}};
+
+    CORRADE_COMPARE(importer.sceneCount(), 1);
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer.object2DCount(), 0);
+    CORRADE_COMPARE(importer.object3DCount(), 6);
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    Containers::Optional<SceneData> scene = importer.scene(0);
+    CORRADE_VERIFY(scene);
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE_AS(scene->children2D(),
+        std::vector<UnsignedInt>{},
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene->children3D(),
+        (std::vector<UnsignedInt>{5, 1}),
+        TestSuite::Compare::Container);
+
+    {
+        Containers::Pointer<ObjectData3D> o = importer.object3D(5);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags3D{});
+        CORRADE_COMPARE(o->transformation(), Matrix4{});
+        CORRADE_COMPARE_AS(o->children(),
+            (std::vector<UnsignedInt>{2, 3}),
+            TestSuite::Compare::Container);
+    } {
+        Containers::Pointer<ObjectData3D> o = importer.object3D(2);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags3D{});
+        CORRADE_COMPARE(o->transformation(), Matrix4{});
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+    } {
+        Containers::Pointer<ObjectData3D> o = importer.object3D(3);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags3D{});
+        CORRADE_COMPARE(o->transformation(), Matrix4{});
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+    } {
+        Containers::Pointer<ObjectData3D> o = importer.object3D(1);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->importerState(), nullptr);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Empty);
+        CORRADE_COMPARE(o->instance(), -1);
+        CORRADE_COMPARE(o->flags(), ObjectFlags3D{});
+        CORRADE_COMPARE(o->transformation(), Matrix4{});
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+    }
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
+
 void AbstractImporterTest::sceneNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1703,6 +2688,18 @@ void AbstractImporterTest::sceneNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.sceneName(7), "");
+}
+
+void AbstractImporterTest::objectNameNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedLong doObjectCount() const override { return 8; }
+    } importer;
+
+    CORRADE_COMPARE(importer.objectName(7), "");
 }
 
 void AbstractImporterTest::sceneNameOutOfRange() {
@@ -1723,6 +2720,26 @@ void AbstractImporterTest::sceneNameOutOfRange() {
 
     importer.sceneName(8);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::sceneName(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::objectNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedLong doObjectCount() const override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.objectName(8);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::objectName(): index 8 out of range for 8 entries\n");
 }
 
 void AbstractImporterTest::sceneNotImplemented() {
@@ -1763,6 +2780,92 @@ void AbstractImporterTest::sceneOutOfRange() {
 
     importer.scene(8);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::scene(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::sceneNonOwningDeleters() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 1; }
+        Containers::Optional<SceneData> doScene(UnsignedInt) override {
+            return SceneData{SceneObjectType::UnsignedInt, 0,
+                Containers::Array<char>{data, 1, Implementation::nonOwnedArrayDeleter},
+                sceneFieldDataNonOwningArray(fields)};
+        }
+
+        char data[1];
+        SceneFieldData fields[1]{
+            SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr}
+        };
+    } importer;
+
+    auto data = importer.scene(0);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(static_cast<const void*>(data->data()), importer.data);
+    CORRADE_COMPARE(static_cast<const void*>(data->fieldData()), importer.fields);
+}
+
+void AbstractImporterTest::sceneCustomDataDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 1; }
+        Int doSceneForName(const std::string&) override { return 0; }
+        Containers::Optional<SceneData> doScene(UnsignedInt) override {
+            return SceneData{SceneObjectType::UnsignedInt, 0,
+                Containers::Array<char>{data, 1, [](char*, std::size_t) {}},
+                {}};
+        }
+
+        char data[1];
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.scene(0);
+    importer.scene("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::scene(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::scene(): implementation is not allowed to use a custom Array deleter\n");
+}
+
+void AbstractImporterTest::sceneCustomFieldDataDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 1; }
+        Int doSceneForName(const std::string&) override { return 0; }
+        Containers::Optional<SceneData> doScene(UnsignedInt) override {
+            return SceneData{SceneObjectType::UnsignedInt, 0, nullptr, Containers::Array<SceneFieldData>{&parents, 1, [](SceneFieldData*, std::size_t) {}}};
+        }
+
+        SceneFieldData parents{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr};
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.scene(0);
+    importer.scene("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::scene(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::scene(): implementation is not allowed to use a custom Array deleter\n"
+    );
 }
 
 void AbstractImporterTest::sceneFieldName() {
@@ -2305,6 +3408,7 @@ void AbstractImporterTest::cameraOutOfRange() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::camera(): index 8 out of range for 8 entries\n");
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 void AbstractImporterTest::object2D() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -2320,12 +3424,15 @@ void AbstractImporterTest::object2D() {
             if(id == 7) return "eighth";
             return {};
         }
+        CORRADE_IGNORE_DEPRECATED_PUSH
         Containers::Pointer<ObjectData2D> doObject2D(UnsignedInt id) override {
             if(id == 7) return Containers::pointer(new ObjectData2D{{}, {}, &state});
             return {};
         }
+        CORRADE_IGNORE_DEPRECATED_POP
     } importer;
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(importer.object2DCount(), 8);
     CORRADE_COMPARE(importer.object2DForName("eighth"), 7);
     CORRADE_COMPARE(importer.object2DName(7), "eighth");
@@ -2339,6 +3446,97 @@ void AbstractImporterTest::object2D() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::object2DCountNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer.object2DCount(), 0);
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::object2DCountNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    importer.object2DCount();
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2DCount(): no file opened\n");
+}
+
+void AbstractImporterTest::object2DForNameNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer.object2DForName(""), -1);
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::object2DForNameNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    importer.object2DForName("");
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2DForName(): no file opened\n");
+}
+
+void AbstractImporterTest::object2DByNameNotFound() {
+    auto&& data = ThingByNameData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doObject2DCount() const override { return 5; }
+    } importer;
+
+    std::ostringstream out;
+    {
+        Containers::Optional<Error> redirectError;
+        if(data.checkMessage) redirectError.emplace(&out);
+
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        CORRADE_VERIFY(!importer.object2D("foobar"));
+        CORRADE_IGNORE_DEPRECATED_POP
+    }
+
+    if(data.checkMessage) CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::object2D(): object foobar not found among 5 entries\n");
 }
 
 void AbstractImporterTest::object2DForNameOutOfRange() {
@@ -2357,7 +3555,9 @@ void AbstractImporterTest::object2DForNameOutOfRange() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.object2DForName("");
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2DForName(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
@@ -2370,7 +3570,29 @@ void AbstractImporterTest::object2DNameNotImplemented() {
         UnsignedInt doObject2DCount() const override { return 8; }
     } importer;
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(importer.object2DName(7), "");
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::object2DNameNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    importer.object2DName(42);
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2DName(): no file opened\n");
 }
 
 void AbstractImporterTest::object2DNameOutOfRange() {
@@ -2389,7 +3611,9 @@ void AbstractImporterTest::object2DNameOutOfRange() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.object2DName(8);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2DName(): index 8 out of range for 8 entries\n");
 }
 
@@ -2403,14 +3627,44 @@ void AbstractImporterTest::object2DNotImplemented() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        UnsignedInt doSceneCount() const override { return 1; }
         UnsignedInt doObject2DCount() const override { return 8; }
     } importer;
 
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.object2D(7);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2D(): not implemented\n");
+    CORRADE_IGNORE_DEPRECATED_POP
+    /* It delegates to scene(), but since the assert is graceful and returns a
+       null optional, it errors out immediately after */
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::scene(): not implemented\n"
+        "Trade::AbstractImporter::object2D(): object 7 not found in any 2D scene hierarchy\n");
+}
+
+void AbstractImporterTest::object2DNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    importer.object2D(42);
+    importer.object2D("foo");
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::object2D(): no file opened\n"
+        "Trade::AbstractImporter::object2D(): no file opened\n");
 }
 
 void AbstractImporterTest::object2DOutOfRange() {
@@ -2429,7 +3683,9 @@ void AbstractImporterTest::object2DOutOfRange() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.object2D(8);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2D(): index 8 out of range for 8 entries\n");
 }
 
@@ -2448,12 +3704,15 @@ void AbstractImporterTest::object3D() {
             if(id == 7) return "eighth";
             return {};
         }
+        CORRADE_IGNORE_DEPRECATED_PUSH
         Containers::Pointer<ObjectData3D> doObject3D(UnsignedInt id) override {
             if(id == 7) return Containers::pointer(new ObjectData3D{{}, {}, &state});
             return {};
         }
+        CORRADE_IGNORE_DEPRECATED_POP
     } importer;
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(importer.object3DCount(), 8);
     CORRADE_COMPARE(importer.object3DForName("eighth"), 7);
     CORRADE_COMPARE(importer.object3DName(7), "eighth");
@@ -2467,6 +3726,97 @@ void AbstractImporterTest::object3D() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::object3DCountNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer.object3DCount(), 0);
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::object3DCountNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    importer.object3DCount();
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3DCount(): no file opened\n");
+}
+
+void AbstractImporterTest::object3DForNameNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer.object3DForName(""), -1);
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::object3DForNameNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    importer.object2DForName("");
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2DForName(): no file opened\n");
+}
+
+void AbstractImporterTest::object3DByNameNotFound() {
+    auto&& data = ThingByNameData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doObject3DCount() const override { return 6; }
+    } importer;
+
+    std::ostringstream out;
+    {
+        Containers::Optional<Error> redirectError;
+        if(data.checkMessage) redirectError.emplace(&out);
+
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        CORRADE_VERIFY(!importer.object3D("foobar"));
+        CORRADE_IGNORE_DEPRECATED_POP
+    }
+
+    if(data.checkMessage) CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::object3D(): object foobar not found among 6 entries\n");
 }
 
 void AbstractImporterTest::object3DForNameOutOfRange() {
@@ -2485,7 +3835,9 @@ void AbstractImporterTest::object3DForNameOutOfRange() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.object3DForName("");
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3DForName(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
@@ -2498,7 +3850,29 @@ void AbstractImporterTest::object3DNameNotImplemented() {
         UnsignedInt doObject3DCount() const override { return 8; }
     } importer;
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(importer.object3DName(7), "");
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::object3DNameNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    importer.object3DName(42);
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3DName(): no file opened\n");
 }
 
 void AbstractImporterTest::object3DNameOutOfRange() {
@@ -2517,7 +3891,9 @@ void AbstractImporterTest::object3DNameOutOfRange() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.object3DName(8);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3DName(): index 8 out of range for 8 entries\n");
 }
 
@@ -2531,14 +3907,44 @@ void AbstractImporterTest::object3DNotImplemented() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        UnsignedInt doSceneCount() const override { return 1; }
         UnsignedInt doObject3DCount() const override { return 8; }
     } importer;
 
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.object3D(7);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3D(): not implemented\n");
+    CORRADE_IGNORE_DEPRECATED_POP
+    /* It delegates to scene(), but since the assert is graceful and returns a
+       null optional, it errors out immediately after */
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::scene(): not implemented\n"
+        "Trade::AbstractImporter::object3D(): object 7 not found in any 3D scene hierarchy\n");
+}
+
+void AbstractImporterTest::object3DNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    importer.object3D(42);
+    importer.object3D("foo");
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::object3D(): no file opened\n"
+        "Trade::AbstractImporter::object3D(): no file opened\n");
 }
 
 void AbstractImporterTest::object3DOutOfRange() {
@@ -2557,9 +3963,12 @@ void AbstractImporterTest::object3DOutOfRange() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.object3D(8);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3D(): index 8 out of range for 8 entries\n");
 }
+#endif
 
 void AbstractImporterTest::skin2D() {
     struct: AbstractImporter {

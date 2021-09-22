@@ -181,14 +181,11 @@ ID of a texture it uses). The following kinds of data can be imported:
     @ref meshCount(). Similarly as with images, each mesh can also have
     multiple levels (LODs or for example separate edge/face data), which are
     requested through the second parameter up to @ref meshLevelCount().
--   @ref ObjectData2D / @ref ObjectData3D using
-    @ref object2D(UnsignedInt) / @ref object3D(UnsignedInt) up to
-    @ref object2DCount() / @ref object3DCount(). An object can then reference
-    its child objects, mesh and a material, camera, light or a skin associated
-    with it via their IDs.
 -   @ref SceneData using @ref scene(UnsignedInt) up to @ref sceneCount(), with
     the default scene index exposed through @ref defaultScene(). A scene then
-    references its child 2D/3D objects via their IDs.
+    contains all data for its objects such as transformations and parent/child
+    hierarchy, particular objects are associated with meshes, materials,
+    cameras, lights or skins via their IDs.
 -   @ref SkinData2D / @ref SkinData3D using @ref skin2D(UnsignedInt) /
     @ref skin3D(UnsignedInt) up to @ref skin2DCount() / @ref skin3DCount()
 -   @ref TextureData using @ref texture(UnsignedInt) up to @ref textureCount().
@@ -303,10 +300,8 @@ name doesn't exist.
     @ref mesh(const std::string&, UnsignedInt). Meshes themselves can have
     custom attributes, for which the name mapping can be retrieved using
     @ref meshAttributeName() and @ref meshAttributeForName().
--   Objects names using @ref object2DName() / @ref object3DName() &
-    @ref object2DForName() / @ref object3DForName(), imported with
-    @ref object2D(const std::string&) / @ref object3D(const std::string&)
--   Scene names using @ref sceneName() & @ref sceneForName(), imported with
+-   Scene and object names using @ref sceneName() / @ref objectName() &
+    @ref sceneForName() / @ref objectForName(), imported with
     @ref scene(const std::string&). Scenes themselves can have custom fields,
     for which the name mapping can be retrieved using @ref sceneFieldName() and
     @ref sceneFieldForName().
@@ -335,10 +330,9 @@ expose internal state through various accessors:
     imported by @ref light()
 -   @ref MeshData::importerState() can expose importer state for a mesh
     imported by @ref mesh()
--   @ref ObjectData3D::importerState() can expose importer state for an object
-    imported by @ref object2D() or @ref object3D()
 -   @ref SceneData::importerState() can expose importer state for a scene
-    imported by @ref scene()
+    imported by @ref scene(), per-object importer state can then be stored in
+    the @ref SceneField::ImporterState field
 -   @ref SkinData::importerState() can expose importer state for a scene
     imported by @ref skin2D() or @ref skin3D()
 -   @ref TextureData::importerState() can expose importer state for a texture
@@ -348,20 +342,6 @@ Besides exposing internal state, importers that support the
 @ref ImporterFeature::OpenState feature can also attach to existing importer
 state using @ref openState(). See documentation of a particular importer for
 details about concrete types returned and accepted by these functions.
-
-@subsection Trade-AbstractImporter-usage-casting Polymorphic imported data types
-
-Some data access functions return @relativeref{Corrade,Containers::Pointer}
-instead of @relativeref{Corrade,Containers::Optional} because the result might
-be a particular subclass of given type. Those functions are @ref object2D()
-and @ref object3D(). You can cast the abstract base to a concrete type
-depending on its reported type, for example:
-
-@snippet MagnumTrade.cpp AbstractImporter-usage-cast
-
-Another option is making use of the @ref Containers::pointerCast() utility, but
-note that in that case the original @relativeref{Corrade,Containers::Pointer}
-will have to be *moved into* a new instance, which might not be desirable.
 
 @section Trade-AbstractImporter-data-dependency Data dependency
 
@@ -492,6 +472,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /** @brief Plugin manager constructor */
         explicit AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin);
+
+        #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(DOXYGEN_GENERATING_OUTPUT)
+        /* These twp needed because of the Array<CachedScenes> member
+           (AnyImageImporter relies on the move), move assignment disabled by
+           AbstractPlugin already */
+        AbstractImporter(AbstractImporter&&) noexcept;
+        ~AbstractImporter();
+        #endif
 
         /** @brief Features supported by this importer */
         ImporterFeatures features() const { return doFeatures(); }
@@ -724,6 +712,17 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt sceneCount() const;
 
         /**
+         * @brief Object count
+         *
+         * Total count of all (2D or 3D) objects in all scenes. An object can
+         * be present in multiple scenes at the same time. Fields corresponding
+         * to particular objects can be then accessed via the @ref SceneData
+         * class returned from @ref scene(UnsignedInt). Expects that a file is
+         * opened.
+         */
+        UnsignedLong objectCount() const;
+
+        /**
          * @brief Scene for given name
          * @return Scene ID from range [0, @ref sceneCount()) or @cpp -1 @ce if
          *      no scene for given name exists
@@ -734,6 +733,16 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         Int sceneForName(const std::string& name);
 
         /**
+         * @brief Object ID for given name
+         *
+         * If no object for given name exists, returns @cpp -1 @ce. Expects
+         * that a file is opened. Object IDs are shared among all scenes, an
+         * object can be present in multiple scenes at the same time.
+         * @see @ref objectName()
+         */
+        Long objectForName(const std::string& name);
+
+        /**
          * @brief Scene name
          * @param id        Scene ID, from range [0, @ref sceneCount()).
          *
@@ -742,6 +751,18 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @see @ref sceneForName()
          */
         std::string sceneName(UnsignedInt id);
+
+        /**
+         * @brief Object name
+         * @param id        Object ID, from range [0, @ref objectCount()).
+         *
+         * Object IDs are shared among all scenes, an object can be present in
+         * multiple scenes at the same time. If the object has no name or the
+         * importer doesn't support object names, returns an empty string.
+         * Expects that a file is opened.
+         * @see @ref objectForName()
+         */
+        std::string objectName(UnsignedLong id);
 
         /**
          * @brief Scene
@@ -940,12 +961,15 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          */
         Containers::Optional<CameraData> camera(const std::string& name);
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Two-dimensional object count
          *
          * Expects that a file is opened.
+         * @m_deprecated_since_latest Use @ref objectCount() instead, which is
+         *      shared for both 2D and 3D objects.
          */
-        UnsignedInt object2DCount() const;
+        CORRADE_DEPRECATED("use objectCount() instead") UnsignedInt object2DCount() const;
 
         /**
          * @brief Two-dimensional object for given name
@@ -953,9 +977,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *      @cpp -1 @ce if no object for given name exists
          *
          * Expects that a file is opened.
+         * @m_deprecated_since_latest Use @ref objectForName() instead, which
+         *      is shared for both 2D and 3D objects.
          * @see @ref object2DName(), @ref object2D(const std::string&)
          */
-        Int object2DForName(const std::string& name);
+        CORRADE_DEPRECATED("use objectForName() instead") Int object2DForName(const std::string& name);
 
         /**
          * @brief Two-dimensional object name
@@ -963,9 +989,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Expects that a file is opened. If the object has no name or the
          * importer doesn't support object names, returns an empty string.
+         * @m_deprecated_since_latest Use @ref objectName() instead, which is
+         *      shared for both 2D and 3D objects.
          * @see @ref object2DForName()
          */
-        std::string object2DName(UnsignedInt id);
+        CORRADE_DEPRECATED("use objectName() instead") std::string object2DName(UnsignedInt id);
 
         /**
          * @brief Two-dimensional object
@@ -973,9 +1001,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given object or @cpp nullptr @ce if importing failed.
          * Expects that a file is opened.
+         * @m_deprecated_since_latest Query object fields on the @ref SceneData
+         *      object returned from @ref scene() instead, which is shared for
+         *      both 2D and 3D objects.
          * @see @ref object2D(const std::string&)
          */
-        Containers::Pointer<ObjectData2D> object2D(UnsignedInt id);
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
+        CORRADE_DEPRECATED("query object fields from scene() instead") Containers::Pointer<ObjectData2D> object2D(UnsignedInt id);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Two-dimensional object for given name
@@ -986,15 +1019,22 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @cpp -1 @ce, prints an error message and returns
          * @cpp nullptr @ce, otherwise propagates the result from
          * @ref object2D(UnsignedInt). Expects that a file is opened.
+         * @m_deprecated_since_latest Query object fields on the @ref SceneData
+         *      object returned from @ref scene() instead, which is shared for
+         *      both 2D and 3D objects.
          */
-        Containers::Pointer<ObjectData2D> object2D(const std::string& name);
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
+        CORRADE_DEPRECATED("query object fields from scene() instead") Containers::Pointer<ObjectData2D> object2D(const std::string& name);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Three-dimensional object count
          *
          * Expects that a file is opened.
+         * @m_deprecated_since_latest Use @ref objectCount() instead, which is
+         *      shared for both 2D and 3D objects.
          */
-        UnsignedInt object3DCount() const;
+        CORRADE_DEPRECATED("use objectCount() instead") UnsignedInt object3DCount() const;
 
         /**
          * @brief Three-dimensional object for given name
@@ -1002,9 +1042,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *      @cpp -1 @ce if no object for given name exists
          *
          * Expects that a file is opened.
+         * @m_deprecated_since_latest Use @ref objectForName() instead, which
+         *      is shared for both 2D and 3D objects.
          * @see @ref object3DName(), @ref object3D(const std::string&)
          */
-        Int object3DForName(const std::string& name);
+        CORRADE_DEPRECATED("use objectForName() instead") Int object3DForName(const std::string& name);
 
         /**
          * @brief Three-dimensional object name
@@ -1012,9 +1054,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Expects that a file is opened. If the object has no name or the
          * importer doesn't support object names, returns an empty string.
+         * @m_deprecated_since_latest Use @ref objectName() instead, which is
+         *      shared for both 2D and 3D objects.
          * @see @ref object3DForName()
          */
-        std::string object3DName(UnsignedInt id);
+        CORRADE_DEPRECATED("use objectName() instead") std::string object3DName(UnsignedInt id);
 
         /**
          * @brief Three-dimensional object
@@ -1022,9 +1066,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given object or @cpp nullptr @ce if importing failed.
          * Expects that a file is opened.
+         * @m_deprecated_since_latest Query object fields on the @ref SceneData
+         *      object returned from @ref scene() instead, which is shared for
+         *      both 2D and 3D objects.
          * @see @ref object3D(const std::string&)
          */
-        Containers::Pointer<ObjectData3D> object3D(UnsignedInt id);
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
+        CORRADE_DEPRECATED("query object fields from scene() instead") Containers::Pointer<ObjectData3D> object3D(UnsignedInt id);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Three-dimensional object for given name
@@ -1035,8 +1084,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @cpp -1 @ce, prints an error message and returns
          * @cpp nullptr @ce, otherwise propagates the result from
          * @ref object3D(UnsignedInt). Expects that a file is opened.
+         * @m_deprecated_since_latest Query object fields on the @ref SceneData
+         *      object returned from @ref scene() instead, which is shared for
+         *      both 2D and 3D objects.
          */
-        Containers::Pointer<ObjectData3D> object3D(const std::string& name);
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
+        CORRADE_DEPRECATED("query object fields from scene() instead") Containers::Pointer<ObjectData3D> object3D(const std::string& name);
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         /**
          * @brief Two-dimensional skin count
@@ -1773,6 +1828,16 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         virtual UnsignedInt doSceneCount() const;
 
         /**
+         * @brief Implementation for @ref objectCount()
+         *
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferably during @ref doScene() (with correct object count
+         * reported), and if not possible, already during file opening.
+         */
+        virtual UnsignedLong doObjectCount() const;
+
+        /**
          * @brief Implementation for @ref sceneForName()
          *
          * Default implementation returns @cpp -1 @ce.
@@ -1780,11 +1845,25 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         virtual Int doSceneForName(const std::string& name);
 
         /**
+         * @brief Implementation for @ref objectForName()
+         *
+         * Default implementation returns @cpp -1 @ce.
+         */
+        virtual Long doObjectForName(const std::string& name);
+
+        /**
          * @brief Implementation for @ref sceneName()
          *
          * Default implementation returns an empty string.
          */
         virtual std::string doSceneName(UnsignedInt id);
+
+        /**
+         * @brief Implementation for @ref objectName()
+         *
+         * Default implementation returns an empty string.
+         */
+        virtual std::string doObjectName(UnsignedLong id);
 
         /** @brief Implementation for @ref scene() */
         virtual Containers::Optional<SceneData> doScene(UnsignedInt id);
@@ -1887,59 +1966,121 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /** @brief Implementation for @ref camera() */
         virtual Containers::Optional<CameraData> doCamera(UnsignedInt id);
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Implementation for @ref object2DCount()
          *
-         * Default implementation returns @cpp 0 @ce. This function isn't
-         * expected to fail --- if an import error occus, it should be handled
-         * preferably during @ref doObject2D() (with correct object count
-         * reported), and if not possible, already during file opening.
+         * Default implementation returns @cpp 0 @ce. There weren't any
+         * importers in existence known to implement 2D scene import, so unlike
+         * @ref doObject3DCount() this function doesn't delegate to
+         * @ref doObjectCount().
+         * @m_deprecated_since_latest Implement @ref doObjectCount() instead.
          */
+        /* MSVC warns when overriding such methods and there's no way to
+           suppress that warning, making the RT build (which treats deprecation
+           warnings as errors) fail and other builds extremely noisy. So
+           disabling those on MSVC. */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doObjectCount() instead")
+        #endif
         virtual UnsignedInt doObject2DCount() const;
 
         /**
          * @brief Implementation for @ref object2DForName()
          *
-         * Default implementation returns @cpp -1 @ce.
+         * Default implementation returns @cpp -1 @ce. There weren't any
+         * importers in existence known to implement 2D scene import, so unlike
+         * @ref doObject3DForName() this function doesn't delegate to
+         * @ref doObjectForName().
+         * @m_deprecated_since_latest Implement @ref doObjectForName() instead.
          */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doObjectForName() instead")
+        #endif /* See above */
         virtual Int doObject2DForName(const std::string& name);
 
         /**
          * @brief Implementation for @ref object2DName()
          *
-         * Default implementation returns an empty string.
+         * Default implementation returns an empty string. There weren't any
+         * importers in existence known to implement 2D scene import, so unlike
+         * @ref doObject3DName() this function doesn't delegate to
+         * @ref doObjectName().
+         * @m_deprecated_since_latest Implement @ref doObjectName() instead.
          */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doObjectName() instead")
+        #endif /* See above */
         virtual std::string doObject2DName(UnsignedInt id);
 
-        /** @brief Implementation for @ref object2D() */
+        /**
+         * @brief Implementation for @ref object2D()
+         *
+         * There weren't any importers in existence known to implement 2D scene
+         * import, so unlike @ref doObject3D() this function doesn't proxy
+         * per-object data returned from @ref doScene().
+         * @m_deprecated_since_latest Implement @ref doScene() instead.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doScene() instead")
+        #endif /* See above */
         virtual Containers::Pointer<ObjectData2D> doObject2D(UnsignedInt id);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Implementation for @ref object3DCount()
          *
-         * Default implementation returns @cpp 0 @ce. This function isn't
-         * expected to fail --- if an import error occus, it should be handled
-         * preferably during @ref doObject3D() (with correct object count
-         * reported), and if not possible, already during file opening.
+         * Default implementation returns @ref doObjectCount() for backwards
+         * compatibility.
+         * @m_deprecated_since_latest Implement @ref doObjectCount() instead.
          */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doObjectCount() instead")
+        #endif /* See above */
         virtual UnsignedInt doObject3DCount() const;
 
         /**
          * @brief Implementation for @ref object3DForName()
          *
-         * Default implementation returns @cpp -1 @ce.
+         * Default implementation returns @ref doObjectForName() for backwards
+         * compatibility.
+         * @m_deprecated_since_latest Implement @ref doObjectForName() instead.
          */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doObjectForName() instead")
+        #endif /* See above */
         virtual Int doObject3DForName(const std::string& name);
 
         /**
          * @brief Implementation for @ref object3DName()
          *
-         * Default implementation returns an empty string.
+         * Default implementation returns @ref doObjectName() for backwards
+         * compatibility.
+         * @m_deprecated_since_latest Implement @ref doObjectName() instead.
          */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doObjectName() instead")
+        #endif /* See above */
         virtual std::string doObject3DName(UnsignedInt id);
 
-        /** @brief Implementation for @ref object3D() */
+        /**
+         * @brief Implementation for @ref object3D()
+         *
+         * Default implementation retrieves and caches scenes returned from
+         * @ref doScene(), finds the first scene that contains any fields for
+         * object @p id and then returns a subset of the data that's
+         * representable with a @ref ObjectData3D / @ref MeshObjectData3D
+         * instance.
+         * @m_deprecated_since_latest Implement @ref doScene() instead.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doScene() instead")
+        #endif /* See above */
         virtual Containers::Pointer<ObjectData3D> doObject3D(UnsignedInt id);
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         /**
          * @brief Implementation for @ref skin2DCount()
@@ -2368,6 +2509,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
             const void* userData;
         /* GCC 4.8 complains loudly about missing initializers otherwise */
         } _fileCallbackTemplate{nullptr, nullptr};
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        struct CachedScenes;
+        Containers::Pointer<CachedScenes> _cachedScenes;
+        void populateCachedScenes();
+        #endif
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

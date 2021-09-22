@@ -23,12 +23,18 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_OBJECTDATA /* So it doesn't yell here */
+
 #include "MeshObjectData3D.h"
 
 namespace Magnum { namespace Trade {
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
 MeshObjectData3D::MeshObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, const UnsignedInt instance, const Int material, const Int skin, const void* const importerState): ObjectData3D{std::move(children), transformation, ObjectInstanceType3D::Mesh, instance, importerState}, _material{material}, _skin{skin} {}
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
 MeshObjectData3D::MeshObjectData3D(std::vector<UnsignedInt> children, const Vector3& translation, const Quaternion& rotation, const Vector3& scaling, const UnsignedInt instance, const Int material, const Int skin, const void* const importerState): ObjectData3D{std::move(children), translation, rotation, scaling, ObjectInstanceType3D::Mesh, instance, importerState}, _material{material}, _skin{skin} {}
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

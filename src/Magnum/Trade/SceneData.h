@@ -2182,6 +2182,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
         const void* importerState() const { return _importerState; }
 
     private:
+        /* For custom deleter checks. Not done in the constructors here because
+           the restriction is pointless when used outside of plugin
+           implementations. */
+        friend AbstractImporter;
+
         /* Internal helper that doesn't assert, unlike fieldId() */
         UnsignedInt fieldFor(SceneField name) const;
 

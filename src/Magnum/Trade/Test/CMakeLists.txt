@@ -54,8 +54,6 @@ corrade_add_test(TradeImageDataTest ImageDataTest.cpp LIBRARIES MagnumTradeTestL
 corrade_add_test(TradeLightDataTest LightDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeMaterialDataTest MaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeMeshDataTest MeshDataTest.cpp LIBRARIES MagnumTradeTestLib)
-corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES MagnumTradeTestLib)
-corrade_add_test(TradeObjectData3DTest ObjectData3DTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradePbrClearCoatMaterialDataTest PbrClearCoatMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradePbrMetallicRoughnessMate___Test PbrMetallicRoughnessMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradePbrSpecularGlossinessMat___Test PbrSpecularGlossinessMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
@@ -81,8 +79,6 @@ set_target_properties(
     TradeImageDataTest
     TradeLightDataTest
     TradeMaterialDataTest
-    TradeObjectData2DTest
-    TradeObjectData3DTest
     TradePbrClearCoatMaterialDataTest
     TradePbrMetallicRoughnessMate___Test
     TradePbrSpecularGlossinessMat___Test
@@ -94,9 +90,13 @@ set_target_properties(
 if(MAGNUM_BUILD_DEPRECATED)
     corrade_add_test(TradeMeshData2DTest MeshData2DTest.cpp LIBRARIES MagnumTrade)
     corrade_add_test(TradeMeshData3DTest MeshData3DTest.cpp LIBRARIES MagnumTrade)
+    corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES MagnumTradeTestLib)
+    corrade_add_test(TradeObjectData3DTest ObjectData3DTest.cpp LIBRARIES MagnumTradeTestLib)
 
     set_target_properties(
         TradeMeshData2DTest
         TradeMeshData3DTest
+        TradeObjectData2DTest
+        TradeObjectData3DTest
         PROPERTIES FOLDER "Magnum/Trade/Test")
 endif()

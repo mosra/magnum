@@ -89,11 +89,11 @@ class MeshData;
 #ifdef MAGNUM_BUILD_DEPRECATED
 class CORRADE_DEPRECATED("use MeshData instead") MeshData2D;
 class CORRADE_DEPRECATED("use MeshData instead") MeshData3D;
+class CORRADE_DEPRECATED("use SceneData instead") MeshObjectData2D;
+class CORRADE_DEPRECATED("use SceneData instead") MeshObjectData3D;
+class CORRADE_DEPRECATED("use SceneData instead") ObjectData2D;
+class CORRADE_DEPRECATED("use SceneData instead") ObjectData3D;
 #endif
-class MeshObjectData2D;
-class MeshObjectData3D;
-class ObjectData2D;
-class ObjectData3D;
 class PbrClearCoatMaterialData;
 class PbrMetallicRoughnessMaterialData;
 class PbrSpecularGlossinessMaterialData;

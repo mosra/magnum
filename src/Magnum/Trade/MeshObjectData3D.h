@@ -25,21 +25,33 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::Trade::MeshObjectData3D
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include "Magnum/Trade/ObjectData3D.h"
+
+#ifndef _MAGNUM_NO_DEPRECATED_OBJECTDATA
+CORRADE_DEPRECATED_FILE("use Magnum/Trade/SceneData.h and the SceneData class instead")
+#endif
 
 namespace Magnum { namespace Trade {
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns on the inheritance */
+
 /**
 @brief Three-dimensional mesh object data
+@m_deprecated_since_latest Use @ref SceneData instead.
 
 Provides access to material information for given mesh instance.
 @see @ref AbstractImporter::object3D(), @ref MeshObjectData2D
 */
-class MAGNUM_TRADE_EXPORT MeshObjectData3D: public ObjectData3D {
+class CORRADE_DEPRECATED("use SceneData instead") MAGNUM_TRADE_EXPORT MeshObjectData3D: public ObjectData3D {
     public:
         /**
          * @brief Construct with combined transformation
@@ -132,6 +144,11 @@ class MAGNUM_TRADE_EXPORT MeshObjectData3D: public ObjectData3D {
         Int _material, _skin;
 };
 
+CORRADE_IGNORE_DEPRECATED_POP /* MSVC warns on the inheritance */
+
 }}
+#else
+#error use Magnum/Trade/SceneData.h and the SceneData class instead
+#endif
 
 #endif

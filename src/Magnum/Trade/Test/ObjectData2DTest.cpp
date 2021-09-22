@@ -23,6 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* There's no better way to disable file deprecation warnings */
+#define _MAGNUM_NO_DEPRECATED_OBJECTDATA
+
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -50,6 +53,8 @@ class ObjectData2DTest: public TestSuite::Tester {
         void debugFlag();
         void debugFlags();
 };
+
+CORRADE_IGNORE_DEPRECATED_PUSH
 
 ObjectData2DTest::ObjectData2DTest() {
     addTests({&ObjectData2DTest::constructEmpty,
@@ -263,6 +268,8 @@ void ObjectData2DTest::debugFlags() {
     Debug(&o) << (ObjectFlag2D::HasTranslationRotationScaling|ObjectFlags2D{}) << ObjectFlags2D{};
     CORRADE_COMPARE(o.str(), "Trade::ObjectFlag2D::HasTranslationRotationScaling Trade::ObjectFlags2D{}\n");
 }
+
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}}
 

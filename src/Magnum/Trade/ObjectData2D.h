@@ -25,10 +25,17 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::Trade::ObjectData2D, enum @ref Magnum::Trade::ObjectInstanceType2D
+ * @m_deprecated_since_latest Use @ref Magnum/Trade/SceneData.h and the
+ *      @relativeref{Magnum::Trade,SceneData} class instead.
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <vector>
 
 #include "Magnum/Magnum.h"
@@ -36,14 +43,19 @@
 #include "Magnum/Math/Complex.h"
 #include "Magnum/Trade/visibility.h"
 
+#ifndef _MAGNUM_NO_DEPRECATED_OBJECTDATA
+CORRADE_DEPRECATED_FILE("use Magnum/Trade/SceneData.h and the SceneData class instead")
+#endif
+
 namespace Magnum { namespace Trade {
 
 /**
 @brief Type of instance held by given 2D object
+@m_deprecated_since_latest Use @ref SceneData instead.
 
 @see @ref ObjectData2D::instanceType()
 */
-enum class ObjectInstanceType2D: UnsignedByte {
+enum class CORRADE_DEPRECATED_ENUM("use SceneData instead") ObjectInstanceType2D: UnsignedByte {
     Camera,     /**< Camera instance (see @ref CameraData) */
 
     /**
@@ -57,10 +69,11 @@ enum class ObjectInstanceType2D: UnsignedByte {
 
 /**
 @brief 2D object flag
+@m_deprecated_since_latest Use @ref SceneData instead.
 
 @see @ref ObjectFlags2D, @ref ObjectData2D::flags()
 */
-enum class ObjectFlag2D: UnsignedByte {
+enum class CORRADE_DEPRECATED_ENUM("use SceneData instead") ObjectFlag2D: UnsignedByte {
     /**
      * The object provides separate translation / rotation / scaling
      * properties. The @ref ObjectData2D::transformation() matrix returns them
@@ -73,21 +86,27 @@ enum class ObjectFlag2D: UnsignedByte {
 
 /**
 @brief 2D object flags
+@m_deprecated_since_latest Use @ref SceneData instead.
 
 @see @ref ObjectData2D::flags()
 */
-typedef Containers::EnumSet<ObjectFlag2D> ObjectFlags2D;
+CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
+typedef CORRADE_DEPRECATED("use SceneData instead") Containers::EnumSet<ObjectFlag2D> ObjectFlags2D;
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_ENUMSET_OPERATORS(ObjectFlags2D)
+CORRADE_IGNORE_DEPRECATED_POP
 
 /**
 @brief Two-dimensional object data
+@m_deprecated_since_latest Use @ref SceneData instead.
 
 Provides access to object transformation and hierarchy.
 @see @ref AbstractImporter::object2D(), @ref MeshObjectData2D,
     @ref ObjectData3D
 */
-class MAGNUM_TRADE_EXPORT ObjectData2D {
+class CORRADE_DEPRECATED("use SceneData instead") MAGNUM_TRADE_EXPORT ObjectData2D {
     public:
         /**
          * @brief Construct with combined transformation
@@ -97,7 +116,9 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
          * @param instance          Instance ID
          * @param importerState     Importer-specific state
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         explicit ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, ObjectInstanceType2D instanceType, UnsignedInt instance, const void* importerState = nullptr);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Construct with separate transformations
@@ -109,7 +130,9 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
          * @param instance          Instance ID
          * @param importerState     Importer-specific state
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         explicit ObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, ObjectInstanceType2D instanceType, UnsignedInt instance, const void* importerState = nullptr);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Construct empty instance with combined transformation
@@ -163,7 +186,9 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
         const std::vector<UnsignedInt>& children() const { return _children; } /**< @overload */
 
         /** @brief Flags */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         ObjectFlags2D flags() const { return _flags; }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Translation (relative to parent)
@@ -224,7 +249,9 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
          *
          * @see @ref instance()
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         ObjectInstanceType2D instanceType() const { return _instanceType; }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Instance ID
@@ -256,21 +283,37 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
                 Vector2 scaling;
             } trs;
         } _transformation;
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         ObjectInstanceType2D _instanceType;
         ObjectFlags2D _flags;
+        CORRADE_IGNORE_DEPRECATED_POP
         Int _instance;
         const void* _importerState;
 };
 
-/** @debugoperatorenum{ObjectInstanceType2D} */
+CORRADE_IGNORE_DEPRECATED_PUSH
+/**
+@debugoperatorenum{ObjectInstanceType2D}
+@m_deprecated_since_latest Use @ref SceneData instead.
+*/
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ObjectInstanceType2D value);
 
-/** @debugoperatorenum{ObjectFlag2D} */
+/**
+@debugoperatorenum{ObjectFlag2D}
+@m_deprecated_since_latest Use @ref SceneData instead.
+*/
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ObjectFlag2D value);
 
-/** @debugoperatorenum{ObjectFlags2D} */
+/**
+@debugoperatorenum{ObjectFlags2D}
+@m_deprecated_since_latest Use @ref SceneData instead.
+*/
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ObjectFlags2D value);
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
+#else
+#error use Magnum/Trade/SceneData.h and the SceneData class instead
+#endif
 
 #endif

@@ -641,6 +641,18 @@ See also:
     new scene representation. Use @ref Trade::SceneData::childrenFor() with
     @cpp -1 @ce passed as the @p object argument to get a list of top-level
     objects.
+-   @cpp Trade::ObjectData*D @ce, @cpp Trade::MeshObjectData*D @ce classes,
+    @cpp Trade::ObjectInstanceType*D @ce, @cpp Trade::ObjectFlag*D @ce,
+    @cpp Trade::ObjectFlags*D @ce enums and the corresponding
+    @cpp Trade::AbstractImporter::object*DCount() @ce,
+    @cpp Trade::AbstractImporter::object*DForName() @ce,
+    @cpp Trade::AbstractImporter::object*DName() @ce and
+    @cpp Trade::AbstractImporter::object*D() @ce accessor APIs are deprecated
+    in favor of the unified representation in @ref Trade::SceneData and the
+    @ref Trade::AbstractImporter::objectCount(),
+    @relativeref{Trade::AbstractImporter,objectForName()} and
+    @relativeref{Trade::AbstractImporter,objectName()} accessors that are
+    shared for 2D and 3D.
 -   @ref Trade::AbstractImporter::material() now returns
     @ref Corrade::Containers::Optional instead of a @ref Corrade::Containers::Pointer,
     as the new @ref Trade::MaterialData class isn't polymorphic anymore. If
