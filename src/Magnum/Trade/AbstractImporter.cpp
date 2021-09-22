@@ -68,7 +68,7 @@ namespace Magnum { namespace Trade {
 std::string AbstractImporter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractImporter/0.3.4"
+"cz.mosra.magnum.Trade.AbstractImporter/0.4"
 /* [interface] */
     ;
 }

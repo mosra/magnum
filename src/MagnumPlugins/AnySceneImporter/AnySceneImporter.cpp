@@ -269,4 +269,4 @@ Containers::Optional<ImageData3D> AnySceneImporter::doImage3D(const UnsignedInt 
 }}
 
 CORRADE_PLUGIN_REGISTER(AnySceneImporter, Magnum::Trade::AnySceneImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.3.4")
+    "cz.mosra.magnum.Trade.AbstractImporter/0.4")
