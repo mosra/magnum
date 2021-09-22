@@ -43,6 +43,8 @@ template<UnsignedInt dimensions> SkinData<dimensions>::SkinData(DataFlags, const
 
 template<UnsignedInt dimensions> SkinData<dimensions>::SkinData(SkinData<dimensions>&&) noexcept = default;
 
+template<UnsignedInt dimensions> SkinData<dimensions>::~SkinData() = default;
+
 template<UnsignedInt dimensions> SkinData<dimensions>& SkinData<dimensions>::operator=(SkinData<dimensions>&&) noexcept = default;
 
 template<UnsignedInt dimensions> Containers::Array<UnsignedInt> SkinData<dimensions>::releaseJointData() {

@@ -82,6 +82,8 @@ template<UnsignedInt dimensions> class SkinData {
         /** @brief Move constructor */
         SkinData(SkinData<dimensions>&& other) noexcept;
 
+        ~SkinData();
+
         /** @brief Copying is not allowed */
         SkinData<dimensions>& operator=(const SkinData<dimensions>&) = delete;
 
