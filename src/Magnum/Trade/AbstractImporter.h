@@ -1969,7 +1969,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref mesh2DName()
          *
-         * Default implementation returns empty string. There weren't any
+         * Default implementation returns an empty string. There weren't any
          * importers in existence known to implement 2D mesh import, so unlike
          * @ref doMesh3DName() this function doesn't delegate to
          * @ref doMeshName().
@@ -2035,7 +2035,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Implementation for @ref mesh3D()
          *
          * Default implementation returns @ref doMesh() converted to
-         * @cpp MeshData3D @ce for backwards compatibility.
+         * @ref MeshData3D for backwards compatibility.
          * @m_deprecated_since{2020,06} Implement @ref doMesh() instead.
          */
         CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */

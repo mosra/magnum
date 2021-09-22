@@ -1026,14 +1026,14 @@ enum class MaterialAttributeType: UnsignedByte {
 
     /**
      * @cpp const void* @ce, type is not preserved. For convenience it's
-     * possible to retrieve the value by calling @cpp attribute<const T>() @ce
+     * possible to retrieve the value by calling @cpp attribute<const T*>() @ce
      * with an arbitrary `T` but the user has to ensure the type is correct.
      */
     Pointer,
 
     /**
      * @cpp void* @ce, type is not preserved. For convenience it's possible to
-     * retrieve the value by calling @cpp attribute<T>() @ce with an arbitrary
+     * retrieve the value by calling @cpp attribute<T*>() @ce with an arbitrary
      * `T` but the user has to ensure the type is correct.
      */
     MutablePointer,
