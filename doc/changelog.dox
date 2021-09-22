@@ -496,6 +496,10 @@ See also:
     image converter plugin manager for cross-manager dependencies, broken since
     the removal of global shared manager state in 2020.06 (see
     [mosra/magnum#489](https://github.com/mosra/magnum/issues/489))
+-   Implementation of the @cpp "nv-egl-incorrect-gl11-function-pointers" @ce
+    @ref opengl-workarounds "OpenGL workaround" could lead to a crash if
+    @cpp eglQueryString() @ce would return a @cpp nullptr @ce (see
+    [mosra/magnum#535](https://github.com/mosra/magnum/issues/535))
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

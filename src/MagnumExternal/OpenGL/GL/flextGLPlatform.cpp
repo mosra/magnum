@@ -31,9 +31,9 @@
 #include "Magnum/Platform/Implementation/OpenGLFunctionLoader.h"
 
 #ifdef MAGNUM_PLATFORM_USE_EGL
-#include <cstring>
 #include <EGL/egl.h>
 #include <Corrade/Containers/StringView.h>
+
 #include "Magnum/GL/Context.h"
 #endif
 
@@ -48,8 +48,8 @@ void flextGLInit(Magnum::GL::Context& context) {
            linked GL 1.0 and 1.1 functions (such as glGetString()) and one has
            to retrieve them explicitly using eglGetProcAddress(). */
         EGLDisplay display = eglGetCurrentDisplay();
-        const char* vendor = eglQueryString(display, EGL_VENDOR);
-        if(std::strcmp(vendor, "NVIDIA") == 0 && !context.isDriverWorkaroundDisabled("nv-egl-incorrect-gl11-function-pointers"_s)) {
+        const Corrade::Containers::StringView vendor = eglQueryString(display, EGL_VENDOR);
+        if(vendor == "NVIDIA"_s && !context.isDriverWorkaroundDisabled("nv-egl-incorrect-gl11-function-pointers"_s)) {
 
             /* GL_VERSION_1_0 */
             flextGL.BlendFunc = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glBlendFunc"));
