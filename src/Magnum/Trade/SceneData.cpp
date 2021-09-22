@@ -749,9 +749,11 @@ SceneData::SceneData(std::vector<UnsignedInt> children2D, std::vector<UnsignedIn
         {NoInit, children.size(), objects},
         {NoInit, children.size(), parents},
     };
-    _fields = {InPlaceInit, {
-        SceneFieldData{SceneField::Parent, objects, parents}
-    }};
+    /* Can't use InPlaceInit as that creates an Array with a non-default
+       deleter, which then trips up on an assertion when such an instance gets
+       returned from AbstractImporter */
+    _fields = Containers::Array<SceneFieldData>{1};
+    _fields[0] = SceneFieldData{SceneField::Parent, objects, parents};
     Utility::copy(children, objects);
     constexpr Int parent[]{-1};
     Utility::copy(Containers::stridedArrayView(parent).broadcasted<0>(parents.size()), parents);
