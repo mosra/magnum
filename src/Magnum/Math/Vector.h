@@ -500,7 +500,8 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol a \cdot \boldsymbol a = \sum_{i=0}^{n-1} \boldsymbol a_i^2
          * @f]
          * @see @ref dot(const Vector<size, T>&, const Vector<size, T>&),
-         *      @ref isNormalized()
+         *      @ref isNormalized(), @ref Distance::pointPointSquared(),
+         *      @ref Intersection::pointSphere()
          */
         T dot() const { return Math::dot(*this, *this); }
 
@@ -525,7 +526,8 @@ template<std::size_t size, class T> class Vector {
          * @snippet MagnumMath.cpp Vector-length-manhattan
          *
          * @see @ref lengthInverted(), @ref Math::sqrt(), @ref normalized(),
-         *      @ref resized()
+         *      @ref resized(), @ref Distance::pointPoint(),
+         *      @ref Intersection::pointSphere()
          * @todo something like std::hypot() for possibly better precision?
          */
         T length() const { return T(std::sqrt(dot())); }

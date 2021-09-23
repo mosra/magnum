@@ -36,6 +36,9 @@ namespace Magnum { namespace Math { namespace Test { namespace {
 struct DistanceTest: Corrade::TestSuite::Tester {
     explicit DistanceTest();
 
+    void pointPoint2D();
+    void pointPoint3D();
+
     void linePoint2D();
     void linePoint3D();
     void lineSegmentPoint2D();
@@ -53,7 +56,10 @@ typedef Math::Vector4<Float> Vector4;
 typedef Math::Constants<Float> Constants;
 
 DistanceTest::DistanceTest() {
-    addTests({&DistanceTest::linePoint2D,
+    addTests({&DistanceTest::pointPoint2D,
+              &DistanceTest::pointPoint3D,
+
+              &DistanceTest::linePoint2D,
               &DistanceTest::linePoint3D,
               &DistanceTest::lineSegmentPoint2D,
               &DistanceTest::lineSegmentPoint3D,
@@ -62,6 +68,42 @@ DistanceTest::DistanceTest() {
               &DistanceTest::pointPlaneScaled,
               &DistanceTest::pointPlaneNormalized,
               &DistanceTest::pointPlaneNormalizedNotNormalized});
+}
+
+void DistanceTest::pointPoint2D() {
+    CORRADE_COMPARE(Distance::pointPoint(Vector2{5.0f, 1.0f},
+                                         Vector2{6.0f, 1.0f}), 1.0f);
+    CORRADE_COMPARE(Distance::pointPointSquared(Vector2{5.0f, 1.0f},
+                                                Vector2{6.0f, 1.0f}), 1.0f);
+    CORRADE_COMPARE(Distance::pointPoint(Vector2{5.0f, 1.0f},
+                                         Vector2{5.0f, 2.0f}), 1.0f);
+    CORRADE_COMPARE(Distance::pointPointSquared(Vector2{5.0f, 1.0f},
+                                                Vector2{5.0f, 2.0f}), 1.0f);
+    CORRADE_COMPARE(Distance::pointPoint(Vector2{5.0f, 1.0f},
+                                         Vector2{6.0f, 2.0f}),
+        Constants::sqrt2());
+    CORRADE_COMPARE(Distance::pointPointSquared(Vector2{5.0f, 1.0f},
+                                                Vector2{6.0f, 2.0f}), 2.0f);
+}
+
+void DistanceTest::pointPoint3D() {
+    CORRADE_COMPARE(Distance::pointPoint(Vector3{5.0f, 1.0f, -2.0f},
+                                         Vector3{6.0f, 1.0f, -2.0f}), 1.0f);
+    CORRADE_COMPARE(Distance::pointPointSquared(Vector3{5.0f, 1.0f, -2.0f},
+                                                Vector3{6.0f, 1.0f, -2.0f}), 1.0f);
+    CORRADE_COMPARE(Distance::pointPoint(Vector3{5.0f, 1.0f, -2.0f},
+                                         Vector3{5.0f, 2.0f, -2.0f}), 1.0f);
+    CORRADE_COMPARE(Distance::pointPointSquared(Vector3{5.0f, 1.0f, -2.0f},
+                                                Vector3{5.0f, 2.0f, -2.0f}), 1.0f);
+    CORRADE_COMPARE(Distance::pointPoint(Vector3{5.0f, 1.0f, -2.0f},
+                                         Vector3{5.0f, 1.0f, -3.0f}), 1.0f);
+    CORRADE_COMPARE(Distance::pointPointSquared(Vector3{5.0f, 1.0f, -2.0f},
+                                                Vector3{5.0f, 1.0f, -3.0f}), 1.0f);
+    CORRADE_COMPARE(Distance::pointPoint(Vector3{5.0f, 1.0f, -2.0f},
+                                         Vector3{6.0f, 2.0f, -3.0f}),
+        Constants::sqrt3());
+    CORRADE_COMPARE(Distance::pointPointSquared(Vector3{5.0f, 1.0f, -2.0f},
+                                                Vector3{6.0f, 2.0f, -3.0f}), 3.0f);
 }
 
 void DistanceTest::linePoint2D() {

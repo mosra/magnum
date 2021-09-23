@@ -41,6 +41,54 @@
 namespace Magnum { namespace Math { namespace Intersection {
 
 /**
+@brief Intersection of a point and a circle in 2D
+@param point        Point
+@param circleCenter Circle center
+@param circleRadius Circle radius
+@return @cpp true @ce if the the point intersects the sphere, @cpp false @ce
+    otherwise
+@m_since_latest
+
+Same as @cpp (circleCenter - point).dot() <= Math::pow<2>(circleRadius) @ce. A
+point @f$ \boldsymbol{p} @f$ intersects with a circle of a center
+@f$ \boldsymbol{c} @f$ and radius @f$ r @f$ if the following holds: @f[
+    \begin{array}{rcl}
+        |\boldsymbol{c} - \boldsymbol{p}| & < & r \\
+        (\boldsymbol{c} - \boldsymbol{p}) \cdot (\boldsymbol{c} - \boldsymbol{p}) & < & r^2
+    \end{array}
+@f]
+
+@see @ref Distance::pointPointSquared(), @ref Vector::dot(), @ref pow(T)
+*/
+template<class T> inline bool pointCircle(const Vector2<T>& point, const Vector2<T>& circleCenter, T circleRadius) {
+    return (circleCenter - point).dot() <= circleRadius*circleRadius;
+}
+
+/**
+@brief Intersection of a point and a sphere in 3D
+@param point        Point
+@param sphereCenter Sphere center
+@param sphereRadius Sphere radius
+@return @cpp true @ce if the the point intersects the sphere, @cpp false @ce
+    otherwise
+@m_since_latest
+
+Same as @cpp (sphereCenter - point).dot() <= Math::pow<2>(sphereRadius) @ce. A
+point @f$ \boldsymbol{p} @f$ intersects with a sphere of a center
+@f$ \boldsymbol{c} @f$ and radius @f$ r @f$ if the following holds: @f[
+    \begin{array}{rcl}
+        |\boldsymbol{c} - \boldsymbol{p}| & < & r \\
+        (\boldsymbol{c} - \boldsymbol{p}) \cdot (\boldsymbol{c} - \boldsymbol{p}) & < & r^2
+    \end{array}
+@f]
+
+@see @ref Distance::pointPointSquared(), @ref Vector::dot(), @ref pow(T)
+*/
+template<class T> inline bool pointSphere(const Vector3<T>& point, const Vector3<T>& sphereCenter, T sphereRadius) {
+    return (sphereCenter - point).dot() <= sphereRadius*sphereRadius;
+}
+
+/**
 @brief Intersection of two line segments in 2D
 @param p        Starting point of first line segment
 @param r        Direction of first line segment

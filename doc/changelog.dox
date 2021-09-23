@@ -127,6 +127,10 @@ See also:
 -   Added @ref Math::RectangularMatrix::RectangularMatrix(IdentityInitT, T)
     constructor as it might be useful to create non-square identity matrices as
     well
+-   Added @ref Math::Distance::pointPoint() and
+    @ref Math::Intersection::pointCircle() /
+    @relativeref{Math::Intersection,pointSphere()}, which are just wrappers
+    over trivial code but easier to discover
 
 @subsubsection changelog-latest-new-meshtools MeshTools library
 

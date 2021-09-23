@@ -37,6 +37,68 @@
 namespace Magnum { namespace Math { namespace Distance {
 
 /**
+@brief Distance of two points in 2D, squared
+@param a        First point
+@param b        Second point
+@m_since_latest
+
+Same as @cpp (b - a).dot() @ce. More efficient than @ref pointPoint(const Vector2<T>&, const Vector2<T>&)
+for comparing distance with other values, because it doesn't calculate the
+square root.
+@see @ref Vector::dot()
+*/
+template<class T> T pointPointSquared(const Vector2<T>& a, const Vector2<T>& b) {
+    return (b - a).dot();
+}
+
+/**
+@brief Distance of two points in 2D
+@param a        First point
+@param b        Second point
+@m_since_latest
+
+Same as @cpp (b - a).length() @ce: @f[
+    d = |\boldsymbol{b} - \boldsymbol{a}|
+@f]
+
+@see @ref pointPointSquared(const Vector2<T>&, const Vector2<T>&),
+    @ref Vector::length()
+*/
+template<class T> T pointPoint(const Vector2<T>& a, const Vector2<T>& b) {
+    return (b - a).length();
+}
+
+/**
+@brief Distance of two points in 3D, squared
+@param a        First point
+@param b        Second point
+@m_since_latest
+
+Same as @cpp (b - a).dot() @ce. More efficient than @ref pointPoint(const Vector3<T>&, const Vector3<T>&)
+for comparing distance with other values, because it doesn't calculate the
+square root.
+*/
+template<class T> T pointPointSquared(const Vector3<T>& a, const Vector3<T>& b) {
+    return (b - a).dot();
+}
+
+/**
+@brief Distance of two points in 3D
+@param a        First point
+@param b        Second point
+@m_since_latest
+
+Same as @cpp (b - a).length() @ce: @f[
+    d = |\boldsymbol{b} - \boldsymbol{a}|
+@f]
+
+@see @ref pointPointSquared(const Vector3<T>&, const Vector3<T>&)
+*/
+template<class T> T pointPoint(const Vector3<T>& a, const Vector3<T>& b) {
+    return (b - a).length();
+}
+
+/**
 @brief Distance of line and point in 2D, squared
 @param a        First point of the line
 @param b        Second point of the line

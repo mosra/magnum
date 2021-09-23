@@ -38,6 +38,9 @@ using namespace Literals;
 struct IntersectionTest: Corrade::TestSuite::Tester {
     explicit IntersectionTest();
 
+    void pointCircle();
+    void pointSphere();
+
     void planeLine();
     void lineLine();
 
@@ -69,7 +72,10 @@ typedef Math::Rad<Float> Rad;
 typedef Math::Rad<Double> Radd;
 
 IntersectionTest::IntersectionTest() {
-    addTests({&IntersectionTest::planeLine,
+    addTests({&IntersectionTest::pointCircle,
+              &IntersectionTest::pointSphere,
+
+              &IntersectionTest::planeLine,
               &IntersectionTest::lineLine,
 
               &IntersectionTest::pointFrustum,
@@ -85,6 +91,28 @@ IntersectionTest::IntersectionTest() {
               &IntersectionTest::sphereConeViewNotRigid,
               &IntersectionTest::rangeCone,
               &IntersectionTest::aabbCone});
+}
+
+void IntersectionTest::pointCircle() {
+    CORRADE_VERIFY(Intersection::pointCircle(
+        Vector2{5.0f, 1.0f},
+        Vector2{6.0f, 2.0f},
+        Constants::sqrt2() + TypeTraits<Float>::epsilon()));
+    CORRADE_VERIFY(!Intersection::pointCircle(
+        Vector2{5.0f, 1.0f},
+        Vector2{6.0f, 2.0f},
+        Constants::sqrt2() - TypeTraits<Float>::epsilon()));
+}
+
+void IntersectionTest::pointSphere() {
+    CORRADE_VERIFY(Intersection::pointSphere(
+        Vector3{5.0f, 1.0f, -2.0f},
+        Vector3{6.0f, 2.0f, -3.0f},
+        Constants::sqrt3() + TypeTraits<Float>::epsilon()));
+    CORRADE_VERIFY(!Intersection::pointSphere(
+        Vector3{5.0f, 1.0f, -2.0f},
+        Vector3{6.0f, 2.0f, -3.0f},
+        Constants::sqrt3() - TypeTraits<Float>::epsilon()));
 }
 
 void IntersectionTest::planeLine() {
