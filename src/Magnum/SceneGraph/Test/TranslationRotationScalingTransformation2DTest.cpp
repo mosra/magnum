@@ -42,6 +42,7 @@ struct TranslationRotationScalingTransformation2DTest: TestSuite::Tester {
     template<class T> void defaults();
     template<class T> void setTransformation();
     template<class T> void setTransformationRotateALot();
+    template<class T> void setTransformationReflection();
     template<class T> void resetTransformation();
 
     template<class T> void translate();
@@ -66,6 +67,8 @@ TranslationRotationScalingTransformation2DTest::TranslationRotationScalingTransf
         &TranslationRotationScalingTransformation2DTest::setTransformation<Double>,
         &TranslationRotationScalingTransformation2DTest::setTransformationRotateALot<Float>,
         &TranslationRotationScalingTransformation2DTest::setTransformationRotateALot<Double>,
+        &TranslationRotationScalingTransformation2DTest::setTransformationReflection<Float>,
+        &TranslationRotationScalingTransformation2DTest::setTransformationReflection<Double>,
         &TranslationRotationScalingTransformation2DTest::resetTransformation<Float>,
         &TranslationRotationScalingTransformation2DTest::resetTransformation<Double>,
 
@@ -167,6 +170,25 @@ template<class T> void TranslationRotationScalingTransformation2DTest::setTransf
         Math::Matrix3<T>::translation({T(7.0), T(-1.0)})*
         Math::Matrix3<T>::rotation(Math::Deg<T>{T(225.0)})*
         Math::Matrix3<T>::scaling({T(1.5), T(0.5)}));
+}
+
+template<class T> void TranslationRotationScalingTransformation2DTest::setTransformationReflection() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
+    o.setTransformation(
+        Math::Matrix3<T>::translation({T(7.0), T(-1.0)})*
+        Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*
+        Math::Matrix3<T>::scaling({T(-1.5), T(0.5)}));
+    CORRADE_COMPARE(o.translation(), (Math::Vector2<T>{T(7.0), T(-1.0)}));
+    /* The negative scaling should get properly extracted from the rotation
+       without getting lost */
+    CORRADE_COMPARE(o.rotation(), Math::Complex<T>::rotation(Math::Deg<T>{T(17.0)}));
+    CORRADE_COMPARE(o.scaling(), (Math::Vector2<T>{T(-1.5), T(0.5)}));
+    CORRADE_COMPARE(o.transformationMatrix(),
+        Math::Matrix3<T>::translation({T(7.0), T(-1.0)})*
+        Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*
+        Math::Matrix3<T>::scaling({T(-1.5), T(0.5)}));
 }
 
 template<class T> void TranslationRotationScalingTransformation2DTest::resetTransformation() {

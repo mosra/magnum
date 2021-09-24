@@ -42,6 +42,7 @@ struct TranslationRotationScalingTransformation3DTest: TestSuite::Tester {
     template<class T> void defaults();
     template<class T> void setTransformation();
     template<class T> void setTransformationRotateALot();
+    template<class T> void setTransformationReflection();
     template<class T> void resetTransformation();
 
     template<class T> void translate();
@@ -66,6 +67,8 @@ TranslationRotationScalingTransformation3DTest::TranslationRotationScalingTransf
         &TranslationRotationScalingTransformation3DTest::setTransformation<Double>,
         &TranslationRotationScalingTransformation3DTest::setTransformationRotateALot<Float>,
         &TranslationRotationScalingTransformation3DTest::setTransformationRotateALot<Double>,
+        &TranslationRotationScalingTransformation3DTest::setTransformationReflection<Float>,
+        &TranslationRotationScalingTransformation3DTest::setTransformationReflection<Double>,
         &TranslationRotationScalingTransformation3DTest::resetTransformation<Float>,
         &TranslationRotationScalingTransformation3DTest::resetTransformation<Double>,
 
@@ -167,6 +170,27 @@ template<class T> void TranslationRotationScalingTransformation3DTest::setTransf
         Math::Matrix4<T>::translation({T(7.0), T(-1.0), T(2.2)})*
         Math::Matrix4<T>::rotationX(Math::Deg<T>{T(225.0)})*
         Math::Matrix4<T>::scaling({T(1.5), T(0.5), T(3.0)}));
+}
+
+template<class T> void TranslationRotationScalingTransformation3DTest::setTransformationReflection() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object3D<T> o;
+    o.setTransformation(
+        Math::Matrix4<T>::translation({T(7.0), T(-1.0), T(2.2)})*
+        Math::Matrix4<T>::rotationX(Math::Deg<T>{T(17.0)})*
+        Math::Matrix4<T>::scaling({T(1.5), T(-0.5), T(3.0)}));
+    CORRADE_COMPARE(o.translation(), (Math::Vector3<T>{T(7.0), T(-1.0), T(2.2)}));
+    /* The negative scaling should get properly extracted from the rotation
+       without causing the rotation to go crazy. Well, some equivalent representation of it. */
+    CORRADE_COMPARE(o.rotation(), Math::Quaternion<T>::rotation(Math::Deg<T>{T(180.0)}, {T(0.0), T(-0.147809411129611), T(0.989015863361917)}));
+    CORRADE_COMPARE(o.scaling(), (Math::Vector3<T>{T(-1.5), T(0.5), T(3.0)}));
+    /* The combineúd matrix is however the same as if we'd have the Y axis
+       reflected */
+    CORRADE_COMPARE(o.transformationMatrix(),
+        Math::Matrix4<T>::translation({T(7.0), T(-1.0), T(2.2)})*
+        Math::Matrix4<T>::rotationX(Math::Deg<T>{T(17.0)})*
+        Math::Matrix4<T>::scaling({T(1.5), T(-0.5), T(3.0)}));
 }
 
 template<class T> void TranslationRotationScalingTransformation3DTest::resetTransformation() {
