@@ -606,7 +606,7 @@ the same, returns the first argument. @f[
 @f]
 @see @ref Complex::isNormalized(), @ref lerp(const Complex<T>&, const Complex<T>&, T),
     @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T)
- */
+*/
 template<class T> inline Complex<T> slerp(const Complex<T>& normalizedA, const Complex<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::slerp(): complex numbers" << normalizedA << "and" << normalizedB << "are not normalized", {});
