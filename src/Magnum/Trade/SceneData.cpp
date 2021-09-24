@@ -1588,7 +1588,27 @@ std::size_t SceneData::fieldFor(const SceneFieldData& field, const std::size_t o
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-Containers::Array<UnsignedInt> SceneData::childrenFor(Int object) const {
+Containers::Optional<Int> SceneData::parentFor(const UnsignedInt object) const {
+    CORRADE_ASSERT(object < _objectCount,
+        "Trade::SceneData::parentFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
+
+    const UnsignedInt fieldId = fieldFor(SceneField::Parent);
+    if(fieldId == ~UnsignedInt{}) return {};
+
+    const SceneFieldData& field = _fields[fieldId];
+    const std::size_t offset = fieldFor(field, 0, object);
+    if(offset == field._size) return {};
+
+    Int index[1];
+    parentsIntoInternal(fieldId, offset, index);
+    if(*index == -1) return -1;
+
+    UnsignedInt parent[1];
+    objectsIntoInternal(fieldId, *index, parent);
+    return Int(*parent);
+}
+
+Containers::Array<UnsignedInt> SceneData::childrenFor(const Int object) const {
     CORRADE_ASSERT(object >= -1 && object < Long(_objectCount),
         "Trade::SceneData::childrenFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
 

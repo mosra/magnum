@@ -102,7 +102,8 @@ enum class SceneField: UnsignedInt {
      * Note that the index points to the parent array itself and isn't the
      * actual object index --- the object mapping is stored in the
      * corresponding @ref SceneData::objects() array.
-     * @see @ref SceneData::parentsAsArray(), @ref SceneData::childrenFor()
+     * @see @ref SceneData::parentsAsArray(), @ref SceneData::parentFor(),
+     *      @ref SceneData::childrenFor()
      */
     Parent = 1,
 
@@ -1358,7 +1359,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *      is larger than the max representable 32-bit value, this
          *      function can't be used, only an appropriately typed
          *      @ref field(SceneField) const.
-         * @see @ref parentsInto(), @ref hasField(), @ref childrenFor()
+         * @see @ref parentsInto(), @ref hasField(), @ref parentFor(),
+         *      @ref childrenFor()
          */
         Containers::Array<Int> parentsAsArray() const;
 
@@ -1720,6 +1722,26 @@ class MAGNUM_TRADE_EXPORT SceneData {
         std::size_t skinsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
 
         /**
+         * @brief Parent for given object
+         * @m_since_latest
+         *
+         * Looks up the @ref SceneField::Parent field for @p object. The lookup
+         * is done in an @f$ \mathcal{O}(m + n) @f$ complexity with @f$ m @f$
+         * being the field count and @f$ n @f$ the size of the parent field,
+         * thus for retrieving parent info for many objects it's recommended to
+         * access the field data directly with @ref parentsAsArray() and
+         * related APIs.
+         *
+         * If the @ref SceneField::Parent field is not present or if there's no
+         * parent for @p object, returns @ref Containers::NullOpt. If @p object
+         * is top-level, returns @cpp -1 @ce.
+         *
+         * The @p object is expected to be less than @ref objectCount().
+         * @see @ref childrenFor()
+         */
+        Containers::Optional<Int> parentFor(UnsignedInt object) const;
+
+        /**
          * @brief Children for given object
          * @m_since_latest
          *
@@ -1737,6 +1759,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * an empty array. Pass @cpp -1 @ce to get a list of top-level objects.
          *
          * The @p object is expected to be less than @ref objectCount().
+         * @see @ref parentFor()
          */
         Containers::Array<UnsignedInt> childrenFor(Int object) const;
 

@@ -151,9 +151,10 @@ struct SceneDataTest: TestSuite::Tester {
     void fieldWrongType();
     void fieldWrongArrayAccess();
 
-    /* Different object types checked just for the childrenFor(), other APIs
+    /* Different object types checked just for the parentFor(), other APIs
        use the same helper */
-    template<class T> void childrenFor();
+    template<class T> void parentFor();
+    void childrenFor();
     void transformation2DFor();
     void transformation2DForTRS();
     template<class T> void transformation2DForBut3DType();
@@ -360,10 +361,11 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::fieldWrongType,
               &SceneDataTest::fieldWrongArrayAccess,
 
-              &SceneDataTest::childrenFor<UnsignedByte>,
-              &SceneDataTest::childrenFor<UnsignedShort>,
-              &SceneDataTest::childrenFor<UnsignedInt>,
-              &SceneDataTest::childrenFor<UnsignedLong>,
+              &SceneDataTest::parentFor<UnsignedByte>,
+              &SceneDataTest::parentFor<UnsignedShort>,
+              &SceneDataTest::parentFor<UnsignedInt>,
+              &SceneDataTest::parentFor<UnsignedLong>,
+              &SceneDataTest::childrenFor,
               &SceneDataTest::transformation2DFor,
               &SceneDataTest::transformation2DForTRS,
               &SceneDataTest::transformation2DForBut3DType<Matrix4x4>,
@@ -4040,11 +4042,38 @@ void SceneDataTest::fieldWrongArrayAccess() {
         "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n");
 }
 
-template<class T> void SceneDataTest::childrenFor() {
+template<class T> void SceneDataTest::parentFor() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
     struct Field {
         T object;
+        Int parent;
+    } fields[]{
+        {3, -1},
+        {4, 0},
+        {2, 1},
+        {4, 2} /* duplicate, ignored */
+    };
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{Implementation::sceneObjectTypeFor<T>(), 7, {}, fields, {
+        SceneFieldData{SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
+    }};
+
+    CORRADE_COMPARE(scene.parentFor(2), 4);
+    CORRADE_COMPARE(scene.parentFor(3), -1);
+
+    /* Duplicate entries -- only the first one gets used, it doesn't traverse
+       further */
+    CORRADE_COMPARE(scene.parentFor(4), 3);
+
+    /* Object that's not in the array at all */
+    CORRADE_COMPARE(scene.parentFor(1), Containers::NullOpt);
+}
+
+void SceneDataTest::childrenFor() {
+    struct Field {
+        UnsignedInt object;
         Int parent;
     } fields[]{
         {4, -1},
@@ -4056,7 +4085,7 @@ template<class T> void SceneDataTest::childrenFor() {
     };
     Containers::StridedArrayView1D<Field> view = fields;
 
-    SceneData scene{Implementation::sceneObjectTypeFor<T>(), 7, {}, fields, {
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
         SceneFieldData{SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
     }};
 
@@ -4486,6 +4515,7 @@ void SceneDataTest::skinsFor() {
 void SceneDataTest::fieldForFieldMissing() {
     SceneData scene{SceneObjectType::UnsignedInt, 7, nullptr, {}};
 
+    CORRADE_COMPARE(scene.parentFor(6), Containers::NullOpt);
     CORRADE_COMPARE_AS(scene.childrenFor(6),
         Containers::arrayView<UnsignedInt>({}),
         TestSuite::Compare::Container);
@@ -4516,6 +4546,7 @@ void SceneDataTest::fieldForInvalidObject() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    scene.parentFor(7);
     scene.childrenFor(-2);
     scene.childrenFor(7);
     scene.transformation2DFor(7);
@@ -4527,6 +4558,7 @@ void SceneDataTest::fieldForInvalidObject() {
     scene.camerasFor(7);
     scene.skinsFor(7);
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::parentFor(): object 7 out of bounds for 7 objects\n"
         "Trade::SceneData::childrenFor(): object -2 out of bounds for 7 objects\n"
         "Trade::SceneData::childrenFor(): object 7 out of bounds for 7 objects\n"
         "Trade::SceneData::transformation2DFor(): object 7 out of bounds for 7 objects\n"
