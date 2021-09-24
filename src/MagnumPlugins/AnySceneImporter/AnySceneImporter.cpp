@@ -38,8 +38,6 @@
 #include "Magnum/Trade/LightData.h"
 #include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
-#include "Magnum/Trade/ObjectData2D.h"
-#include "Magnum/Trade/ObjectData3D.h"
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/SkinData.h"
 #include "Magnum/Trade/TextureData.h"
@@ -47,9 +45,12 @@
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
+#define _MAGNUM_NO_DEPRECATED_OBJECTDATA /* So it doesn't yell here */
 
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/ObjectData2D.h"
+#include "Magnum/Trade/ObjectData3D.h"
 #endif
 
 namespace Magnum { namespace Trade {
@@ -174,8 +175,11 @@ Containers::Optional<AnimationData> AnySceneImporter::doAnimation(const Unsigned
 Int AnySceneImporter::doDefaultScene() const { return _in->defaultScene(); }
 
 UnsignedInt AnySceneImporter::doSceneCount() const { return _in->sceneCount(); }
+UnsignedLong AnySceneImporter::doObjectCount() const { return _in->objectCount(); }
 Int AnySceneImporter::doSceneForName(const std::string& name) { return _in->sceneForName(name); }
+Long AnySceneImporter::doObjectForName(const std::string& name) { return _in->objectForName(name); }
 std::string AnySceneImporter::doSceneName(const UnsignedInt id) { return _in->sceneName(id); }
+std::string AnySceneImporter::doObjectName(const UnsignedLong id) { return _in->objectName(id); }
 Containers::Optional<SceneData> AnySceneImporter::doScene(const UnsignedInt id) { return _in->scene(id); }
 
 UnsignedInt AnySceneImporter::doLightCount() const { return _in->lightCount(); }
@@ -188,6 +192,8 @@ Int AnySceneImporter::doCameraForName(const std::string& name) { return _in->cam
 std::string AnySceneImporter::doCameraName(const UnsignedInt id) { return _in->cameraName(id); }
 Containers::Optional<CameraData> AnySceneImporter::doCamera(const UnsignedInt id) { return _in->camera(id); }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 UnsignedInt AnySceneImporter::doObject2DCount() const { return _in->object2DCount(); }
 Int AnySceneImporter::doObject2DForName(const std::string& name) { return _in->object2DForName(name); }
 std::string AnySceneImporter::doObject2DName(const UnsignedInt id) { return _in->object2DName(id); }
@@ -197,6 +203,8 @@ UnsignedInt AnySceneImporter::doObject3DCount() const { return _in->object3DCoun
 Int AnySceneImporter::doObject3DForName(const std::string& name) { return _in->object3DForName(name); }
 std::string AnySceneImporter::doObject3DName(const UnsignedInt id) { return _in->object3DName(id); }
 Containers::Pointer<ObjectData3D> AnySceneImporter::doObject3D(const UnsignedInt id) { return _in->object3D(id); }
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 UnsignedInt AnySceneImporter::doSkin2DCount() const { return _in->skin2DCount(); }
 Int AnySceneImporter::doSkin2DForName(const std::string& name) { return _in->skin2DForName(name); }

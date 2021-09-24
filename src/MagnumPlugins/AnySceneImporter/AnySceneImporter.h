@@ -167,8 +167,11 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doDefaultScene() const override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doSceneCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedLong doObjectCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doSceneForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Long doObjectForName(const std::string& name) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doSceneName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doObjectName(UnsignedLong id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<SceneData> doScene(UnsignedInt id) override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doLightCount() const override;
@@ -181,15 +184,21 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doCameraName(UnsignedInt id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<CameraData> doCamera(UnsignedInt id) override;
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doObject2DCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doObject2DForName(const std::string& name) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doObject2DName(UnsignedInt id) override;
+        CORRADE_IGNORE_DEPRECATED_PUSH
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Pointer<ObjectData2D> doObject2D(UnsignedInt id) override;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doObject3DCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doObject3DForName(const std::string& name) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doObject3DName(UnsignedInt id) override;
+        CORRADE_IGNORE_DEPRECATED_PUSH
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Pointer<ObjectData3D> doObject3D(UnsignedInt id) override;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doSkin2DCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doSkin2DForName(const std::string& name) override;
