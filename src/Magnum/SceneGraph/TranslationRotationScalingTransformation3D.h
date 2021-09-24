@@ -344,8 +344,18 @@ template<class T> Object<BasicTranslationRotationScalingTransformation3D<T>>& Ba
     /** @todo Do this in some common code so we don't need to include Object? */
     if(!static_cast<Object<BasicTranslationRotationScalingTransformation3D<T>>*>(this)->isScene()) {
         _translation = transformation.translation();
-        _rotation = Math::Quaternion<T>::fromMatrix(transformation.rotationShear());
         _scaling = transformation.scaling();
+        /* Using rotationShear() instead of rotation() here, as that'll lead to
+           an assert being fired in Quaternion::fromMatrix() instead of in
+           Matrix4::rotation(), which I suppose is a better place to hint at
+           the problem. */
+        /** @todo assert directly here? */
+        Math::Matrix3x3<T> rs = transformation.rotationShear();
+        if(rs.determinant() < T(0.0)) {
+            rs[0] *= T(-1.0);
+            _scaling[0] *= T(-1.0);
+        }
+        _rotation = Math::Quaternion<T>::fromMatrix(rs);
         static_cast<Object<BasicTranslationRotationScalingTransformation3D<T>>*>(this)->setDirty();
     }
 
