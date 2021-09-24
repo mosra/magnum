@@ -35,6 +35,7 @@ struct QrTest: Corrade::TestSuite::Tester {
     explicit QrTest();
 
     void test();
+    void decomposeRotationScaling();
     void decomposeRotationShear();
 };
 
@@ -46,6 +47,7 @@ typedef Matrix4<Float> Matrix4;
 
 QrTest::QrTest() {
     addTests({&QrTest::test,
+              &QrTest::decomposeRotationScaling,
               &QrTest::decomposeRotationShear});
 }
 
@@ -67,7 +69,21 @@ void QrTest::test() {
     CORRADE_COMPARE(qr.second, rExpected);
 }
 
+void QrTest::decomposeRotationScaling() {
+    Matrix4 a = Matrix4::rotationZ(35.0_degf)*Matrix4::scaling({1.5f, 2.0f, 1.0f});
+
+    std::pair<Matrix3x3, Matrix3x3> qr = Algorithms::qr(a.rotationScaling());
+    CORRADE_COMPARE(qr.first*qr.second, a.rotationScaling());
+
+    auto q4 = Matrix4::from(qr.first, {});
+    auto r4 = Matrix4::from(qr.second, {});
+
+    CORRADE_COMPARE(q4, Matrix4::rotationZ(35.0_degf));
+    CORRADE_COMPARE(r4, Matrix4::scaling({1.5f, 2.0f, 1.0f}));
+}
+
 void QrTest::decomposeRotationShear() {
+    /* Like above, but with order flipped, which results in a shear */
     Matrix4 a = Matrix4::scaling({1.5f, 2.0f, 1.0f})*Matrix4::rotationZ(35.0_degf);
 
     std::pair<Matrix3x3, Matrix3x3> qr = Algorithms::qr(a.rotationScaling());

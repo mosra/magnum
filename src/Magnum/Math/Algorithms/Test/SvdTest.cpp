@@ -34,6 +34,7 @@ struct SvdTest: Corrade::TestSuite::Tester {
     explicit SvdTest();
 
     template<class T> void test();
+    void decomposeRotationScaling();
     void decomposeRotationShear();
 };
 
@@ -46,6 +47,7 @@ template<class T> using Vector5 = Vector<5, T>;
 SvdTest::SvdTest() {
     addTests({&SvdTest::test<Float>,
               &SvdTest::test<Double>,
+              &SvdTest::decomposeRotationScaling,
               &SvdTest::decomposeRotationShear});
 }
 
@@ -94,6 +96,28 @@ template<class T> void SvdTest::test() {
     }
 }
 
+void SvdTest::decomposeRotationScaling() {
+    typedef Math::Matrix4<Float> Matrix4;
+    typedef Math::Matrix3x3<Float> Matrix3x3;
+    typedef Math::Vector3<Float> Vector3;
+
+    using namespace Math::Literals;
+
+    Matrix4 a = Matrix4::rotationZ(35.0_degf)*Matrix4::scaling({1.5f, 2.0f, 1.0f});
+
+    Matrix3x3 u{Magnum::NoInit};
+    Vector3 w{Magnum::NoInit};
+    Matrix3x3 v{Magnum::NoInit};
+    std::tie(u, w, v) = Algorithms::svd(a.rotationScaling());
+
+    CORRADE_COMPARE(u*Matrix3x3::fromDiagonal(w)*v.transposed(), a.rotationScaling());
+
+    /* V contains flipped signs for the whole matrix, use it to fix the
+       signs for U */
+    CORRADE_COMPARE(w, (Vector3{1.5f, 2.0f, 1.0f}));
+    CORRADE_COMPARE(Matrix4::from(u*v.transposed(), {}), Matrix4::rotationZ(35.0_degf));
+}
+
 void SvdTest::decomposeRotationShear() {
     typedef Math::Matrix4<Float> Matrix4;
     typedef Math::Matrix3x3<Float> Matrix3x3;
@@ -101,6 +125,7 @@ void SvdTest::decomposeRotationShear() {
 
     using namespace Math::Literals;
 
+    /* Like above, but with order flipped, which results in a shear */
     Matrix4 a = Matrix4::scaling({1.5f, 2.0f, 1.0f})*Matrix4::rotationZ(35.0_degf);
 
     Matrix3x3 u{Magnum::NoInit};
