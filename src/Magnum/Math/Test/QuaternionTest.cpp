@@ -98,7 +98,7 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void angleNormalizedButOver1();
     void angleNotNormalized();
     void matrix();
-    void matrixNotOrthogonal();
+    void matrixNotRotation();
     void euler();
     void eulerNotNormalized();
 
@@ -181,7 +181,7 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::angleNormalizedButOver1,
               &QuaternionTest::angleNotNormalized,
               &QuaternionTest::matrix,
-              &QuaternionTest::matrixNotOrthogonal,
+              &QuaternionTest::matrixNotRotation,
               &QuaternionTest::euler,
               &QuaternionTest::eulerNotNormalized,
 
@@ -601,24 +601,37 @@ void QuaternionTest::matrix() {
         Math::max(m4.diagonal()[1], m4.diagonal()[2]),
         Corrade::TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m4), q4);
+
+    /* One reflection is bad (asserts in the test below), but two are fine */
+    CORRADE_COMPARE(Quaternion::fromMatrix((
+        Matrix4::scaling({-1.0f, -1.0f, 1.0f})*Matrix4::rotationZ(37.0_degf)
+    ).rotation()), Quaternion::rotation(180.0_degf + 37.0_degf, Vector3::zAxis()));
 }
 
-void QuaternionTest::matrixNotOrthogonal() {
+void QuaternionTest::matrixNotRotation() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
     std::ostringstream out;
     Error redirectError{&out};
-
-    Vector3 axis = Vector3(-3.0f, 1.0f, 5.0f).normalized();
-    Matrix3x3 m = Matrix4::rotation(37.0_degf, axis).rotationScaling();
-    Quaternion::fromMatrix(m*2);
+    /* Shear, using rotation() instead of rotationScaling() as that isn't
+       supposed to "fix" the shear */
+    Quaternion::fromMatrix((Matrix4::scaling({2.0f, 1.0f, 1.0f})*
+                            Matrix4::rotationZ(37.0_degf)).rotation());
+    /* Reflection, using rotation() instead of rotationScaling() as that isn't
+       supposed to "fix" the reflection either */
+    Quaternion::fromMatrix((Matrix4::scaling({-1.0f, 1.0f, 1.0f})*
+                            Matrix4::rotationZ(37.0_degf)).rotation());
     CORRADE_COMPARE(out.str(),
-        "Math::Quaternion::fromMatrix(): the matrix is not orthogonal:\n"
-        "Matrix(1.70083, -1.05177, 0.0308525,\n"
-        "       0.982733, 1.60878, 0.667885,\n"
-        "       -0.376049, -0.552819, 1.88493)\n");
+        "Math::Quaternion::fromMatrix(): the matrix is not a rotation:\n"
+        "Matrix(0.935781, -0.833258, 0,\n"
+        "       0.352581, 0.552885, 0,\n"
+        "       0, 0, 1)\n"
+        "Math::Quaternion::fromMatrix(): the matrix is not a rotation:\n"
+        "Matrix(-0.798635, 0.601815, 0,\n"
+        "       0.601815, 0.798635, 0,\n"
+        "       0, 0, 1)\n");
 }
 
 void QuaternionTest::euler() {

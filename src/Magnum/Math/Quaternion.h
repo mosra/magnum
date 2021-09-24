@@ -293,9 +293,12 @@ template<class T> class Quaternion {
         /**
          * @brief Create a quaternion from a rotation matrix
          *
-         * Expects that the matrix is orthogonal (i.e. pure rotation).
+         * Expects that the matrix is a pure rotation, i.e. orthogonal and
+         * without any reflection. See @ref Matrix4::rotation() const for an
+         * example of how to extract rotation, reflection and scaling
+         * components from a 3D transformation matrix.
          * @see @ref toMatrix(), @ref DualComplex::fromMatrix(),
-         *      @ref Matrix::isOrthogonal()
+         *      @ref Matrix::isOrthogonal(), @ref Matrix::determinant()
          */
         static Quaternion<T> fromMatrix(const Matrix3x3<T>& matrix);
 
@@ -750,8 +753,17 @@ template<class T> inline Quaternion<T> Quaternion<T>::rotation(const Rad<T> angl
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::fromMatrix(const Matrix3x3<T>& matrix) {
-    CORRADE_ASSERT(matrix.isOrthogonal(),
-        "Math::Quaternion::fromMatrix(): the matrix is not orthogonal:" << Corrade::Utility::Debug::newline << matrix, {});
+    /* Checking for determinant equal to 1 ensures we have a pure rotation
+       without shear or reflections.
+
+       Assuming a column of an identity matrix is allowed to have a length of
+       1 ± ε, the determinant would then be (1 ± ε)^3. Which is
+       1 ± 3ε + 3e^2 + ε^3, and given that higher powers of ε are
+       unrepresentable, the fuzzy comparison should be 1 ± 3ε. This is similar
+       to Vector::isNormalized(), which compares the dot product (length
+       squared) to 1 ± 2ε. */
+    CORRADE_ASSERT(std::abs(matrix.determinant() - T(1)) < T(3)*TypeTraits<T>::epsilon(),
+        "Math::Quaternion::fromMatrix(): the matrix is not a rotation:" << Corrade::Utility::Debug::newline << matrix, {});
     return Implementation::quaternionFromMatrix(matrix);
 }
 

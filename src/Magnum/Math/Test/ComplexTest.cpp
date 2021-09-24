@@ -94,7 +94,7 @@ struct ComplexTest: Corrade::TestSuite::Tester {
     void angleNotNormalized();
     void rotation();
     void matrix();
-    void matrixNotOrthogonal();
+    void matrixNotRotation();
     void lerp();
     void lerpNotNormalized();
     void slerp();
@@ -148,7 +148,7 @@ ComplexTest::ComplexTest() {
               &ComplexTest::angleNotNormalized,
               &ComplexTest::rotation,
               &ComplexTest::matrix,
-              &ComplexTest::matrixNotOrthogonal,
+              &ComplexTest::matrixNotRotation,
               &ComplexTest::lerp,
               &ComplexTest::lerpNotNormalized,
               &ComplexTest::slerp,
@@ -499,21 +499,35 @@ void ComplexTest::matrix() {
 
     CORRADE_COMPARE(a.toMatrix(), m);
     CORRADE_COMPARE(Complex::fromMatrix(m), a);
+
+    /* One reflection is bad (asserts in the test below), but two are fine */
+    CORRADE_COMPARE(Complex::fromMatrix((
+        Matrix3::scaling({-1.0f, -1.0f})*Matrix3::rotation(37.0_degf)
+    ).rotationScaling()), Complex::rotation(180.0_degf + 37.0_degf));
 }
 
-void ComplexTest::matrixNotOrthogonal() {
+void ComplexTest::matrixNotRotation() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
     std::ostringstream out;
     Error redirectError{&out};
-
-    Complex::fromMatrix(Matrix3::rotation(37.0_degf).rotationScaling()*2);
+    /* Shear, using rotation() instead of rotationScaling() as that isn't
+       supposed to "fix" the shear */
+    Complex::fromMatrix((Matrix3::scaling({2.0f, 1.0f})*
+                         Matrix3::rotation(37.0_degf)).rotation());
+    /* Reflection, using rotation() instead of rotationScaling() as that isn't
+       supposed to "fix" the reflection either */
+    Complex::fromMatrix((Matrix3::scaling({-1.0f, 1.0f})*
+                         Matrix3::rotation(37.0_degf)).rotation());
     CORRADE_COMPARE(out.str(),
-        "Math::Complex::fromMatrix(): the matrix is not orthogonal:\n"
-        "Matrix(1.59727, -1.20363,\n"
-        "       1.20363, 1.59727)\n");
+        "Math::Complex::fromMatrix(): the matrix is not a rotation:\n"
+        "Matrix(0.935781, -0.833258,\n"
+        "       0.352581, 0.552885)\n"
+        "Math::Complex::fromMatrix(): the matrix is not a rotation:\n"
+        "Matrix(-0.798635, 0.601815,\n"
+        "       0.601815, 0.798635)\n");
 }
 
 void ComplexTest::lerp() {

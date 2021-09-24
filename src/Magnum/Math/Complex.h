@@ -115,15 +115,14 @@ template<class T> class Complex {
         /**
          * @brief Create complex number from rotation matrix
          *
-         * Expects that the matrix is orthogonal (i.e. pure rotation).
+         * Expects that the matrix is a pure rotation, i.e. orthogonal and
+         * without any reflection. See @ref Matrix3::rotation() const for an
+         * example of how to extract rotation, reflection and scaling
+         * components from a 2D transformation matrix.
          * @see @ref toMatrix(), @ref DualComplex::fromMatrix(),
-         *      @ref Matrix::isOrthogonal()
+         *      @ref Matrix::isOrthogonal(), @ref Matrix::determinant()
          */
-        static Complex<T> fromMatrix(const Matrix2x2<T>& matrix) {
-            CORRADE_ASSERT(matrix.isOrthogonal(),
-                "Math::Complex::fromMatrix(): the matrix is not orthogonal:" << Corrade::Utility::Debug::newline << matrix, {});
-            return Implementation::complexFromMatrix(matrix);
-        }
+        static Complex<T> fromMatrix(const Matrix2x2<T>& matrix);
 
         /**
          * @brief Default constructor
@@ -618,6 +617,21 @@ template<class T> inline Complex<T> slerp(const Complex<T>& normalizedA, const C
     /** @todo couldn't this be done somewhat simpler? */
     const T a = std::acos(cosAngle);
     return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
+}
+
+template<class T> inline Complex<T> Complex<T>::fromMatrix(const Matrix2x2<T>& matrix) {
+    /* Checking for determinant equal to 1 ensures we have a pure rotation
+       without shear or reflections.
+
+       Assuming a column of an identity matrix is allowed to have a length of
+       1 ± ε, the determinant would then be (1 ± ε)^2. Which is
+       1 ± 2ε + e^2, and given that higher powers of ε are unrepresentable, the
+       fuzzy comparison should be 1 ± 2ε. This is similar to
+       Vector::isNormalized(), which compares the dot product (length squared)
+       to 1 ± 2ε. */
+    CORRADE_ASSERT(std::abs(matrix.determinant() - T(1)) < T(2)*TypeTraits<T>::epsilon(),
+        "Math::Complex::fromMatrix(): the matrix is not a rotation:" << Corrade::Utility::Debug::newline << matrix, {});
+    return Implementation::complexFromMatrix(matrix);
 }
 
 #ifndef CORRADE_NO_DEBUG

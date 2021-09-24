@@ -232,8 +232,9 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /**
          * @brief Determinant
          *
-         * Returns 0 if the matrix is noninvertible and 1 if the matrix is
-         * orthogonal. Computed recursively using
+         * Returns 0 if the matrix is noninvertible, ±1 if the matrix is
+         * orthogonal, 1 if it's a pure rotation and -1 if it contains a
+         * reflection. Computed recursively using
          * <a href="https://en.wikipedia.org/wiki/Determinant#Laplace's_formula_and_the_adjugate_matrix">Laplace's formula</a>: @f[
          *      \det \boldsymbol{A} = \sum_{j=1}^n (-1)^{i+j} a_{i,j} \det \boldsymbol{A}_{i,j}
          * @f] @f$ \boldsymbol{A}_{i,j} @f$ is @f$ \boldsymbol{A} @f$ without

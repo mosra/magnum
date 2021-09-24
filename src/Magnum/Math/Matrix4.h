@@ -575,9 +575,10 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * represent shear and reflection. Especially when non-uniform scaling
          * is involved, decomposition of the result into primary linear
          * transformations may have multiple equivalent solutions. See
-         * @ref Algorithms::svd() and @ref Algorithms::qr() for further info.
-         * See also @ref rotationShear(), @ref rotation() const and
-         * @ref scaling() const for extracting further properties.
+         * @ref rotation() const, @ref Algorithms::svd() and
+         * @ref Algorithms::qr() for further info. See also
+         * @ref rotationShear() and @ref scaling() const for extracting further
+         * properties.
          *
          * @see @ref from(const Matrix3x3<T>&, const Vector3<T>&),
          *      @ref rotation(Rad, const Vector3<T>&),
@@ -590,7 +591,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         }
 
         /**
-         * @brief 3D rotation and shear part of the matrix
+         * @brief 3D rotation, reflection and shear part of the matrix
          *
          * Normalized upper-left 3x3 part of the matrix. Assuming the following
          * matrix, with the upper-left 3x3 part represented by column vectors
@@ -618,7 +619,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * not require orthogonal input. See also @ref rotationScaling() and
          * @ref scaling() const for extracting other properties. The
          * @ref Algorithms::svd() and @ref Algorithms::qr() can be used to
-         * separate the rotation / shear properties.
+         * separate the rotation / shear components; see @ref rotation() const
+         * for an example of decomposing a rotation + reflection matrix into a
+         * pure rotation and signed scaling.
          *
          * @see @ref from(const Matrix3x3<T>&, const Vector3<T>&),
          *      @ref rotation(Rad, const Vector3<T>&),
@@ -631,7 +634,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         }
 
         /**
-         * @brief 3D rotation part of the matrix
+         * @brief 3D rotation and reflection part of the matrix
          *
          * Normalized upper-left 3x3 part of the matrix. Expects that the
          * normalized part is orthogonal. Assuming the following matrix, with
@@ -660,12 +663,23 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * added orthogonality requirement. See also @ref rotationScaling() and
          * @ref scaling() const for extracting other properties.
          *
-         * @note Extracting rotation part of a matrix this way may cause
-         *      assertions in case you have unsanitized input (for example a
-         *      model transformation loaded from an external source) or when
-         *      you accumulate many transformations together (for example when
-         *      controlling a FPS camera). To mitigate this, either first
-         *      reorthogonalize the matrix using
+         * There's usually several solutions for decomposing the matrix into a
+         * rotation @f$ \boldsymbol{R} @f$ and a scaling @f$ \boldsymbol{S} @f$
+         * that satisfy @f$ \boldsymbol{R} \boldsymbol{S} = \boldsymbol{M} @f$.
+         * One possibility that gives you always a pure rotation matrix without
+         * reflections (which can then be fed to @ref Quaternion::fromMatrix(),
+         * for example) is to flip an arbitrary column of the 3x3 part if its
+         * @ref determinant() is negative, and apply the sign flip to the
+         * corresponding scaling component instead:
+         *
+         * @snippet MagnumMath.cpp Matrix4-rotation-extract-reflection
+         *
+         * @note Extracting rotation part of a matrix with this function may
+         *      cause assertions in case you have unsanitized input (for
+         *      example a model transformation loaded from an external source)
+         *      or when you accumulate many transformations together (for
+         *      example when controlling a FPS camera). To mitigate this,
+         *      either first reorthogonalize the matrix using
          *      @ref Algorithms::gramSchmidtOrthogonalize(), decompose it to
          *      basic linear transformations using @ref Algorithms::svd() or
          *      @ref Algorithms::qr() or use a different transformation
@@ -682,10 +696,10 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         Matrix3x3<T> rotation() const;
 
         /**
-         * @brief 3D rotation part of the matrix assuming there is no scaling
+         * @brief 3D rotation and reflection part of the matrix assuming there is no scaling
          *
-         * Similar to @ref rotation(), but expects that the rotation part is
-         * orthogonal, saving the extra renormalization. Assuming the
+         * Similar to @ref rotation() const, but expects that the rotation part
+         * is orthogonal, saving the extra renormalization. Assuming the
          * following matrix, with the upper-left 3x3 part represented by column
          * vectors @f$ \boldsymbol{a} @f$, @f$ \boldsymbol{b} @f$ and
          * @f$ \boldsymbol{c} @f$: @f[
@@ -783,13 +797,10 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @f]
          *
          * Note that the returned vector is sign-less and the signs are instead
-         * contained in @ref rotation() const / @ref rotationShear() const in
-         * order to ensure @f$ \boldsymbol{R} \boldsymbol{S} = \boldsymbol{M} @f$
-         * for @f$ \boldsymbol{R} @f$ and @f$ \boldsymbol{S} @f$ extracted out
-         * of @f$ \boldsymbol{M} @f$. The signs can be extracted for example by
-         * applying @ref Math::sign() on a @ref diagonal(), but keep in mind
-         * that the signs can be negative even for pure rotation matrices.
-         *
+         * contained in @ref rotation() const / @ref rotationShear() const,
+         * meaning these contain rotation together with a potential reflection.
+         * See @ref rotation() const for an example of decomposing a rotation +
+         * reflection matrix into a pure rotation and signed scaling.
          * @see @ref scalingSquared(), @ref uniformScaling(),
          *      @ref rotation() const, @ref Matrix3::scaling() const
          */

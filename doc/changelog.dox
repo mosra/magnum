@@ -718,6 +718,14 @@ See also:
     on ES2 builds by mistake --- the @gl_extension{EXT,texture_sRGB_R8} and
     @gl_extension{EXT,texture_sRGB_RG8} extensions require OpenGL ES 3.0 at
     least
+-   @ref Math::Complex::fromMatrix() and @ref Math::Quaternion::fromMatrix()
+    now additionaly assert that the input matrix is a pure rotation without any
+    reflections. Before it only asserted for orthogonality, but that led to
+    arbitrary or even invalid quaternions when a reflection matrix was passed,
+    in case of complex numbers the reflection information was just lost in the
+    process. Existing code that calls these with unsanitized inputs now
+    additionally needs to account for reflection as suggested in the
+    documentation.
 -   @ref SceneGraph::Object::addChild() no longer requires the type constructor
     to have the last parameter a parent object object pointer, as that was
     quite limiting. Instead it's calling @ref SceneGraph::Object::setParent()
