@@ -274,6 +274,18 @@ enum class SceneField: UnsignedInt {
     Skin,
 
     /**
+     * Importer state for given object, per-object counterpart to
+     * scene-specific @ref SceneData::importerState(). Type is usually
+     * @ref SceneFieldType::Pointer but can be also
+     * @ref SceneFieldType::MutablePointer. An object should have only one
+     * importer state, altough this isn't enforced in any way, and which of the
+     * duplicate fields gets used is not defined.
+     * @see @ref SceneData::importerStateAsArray(),
+     *      @ref SceneData::importerStateFor()
+     */
+    ImporterState,
+
+    /**
      * This and all higher values are for importer-specific fields. Can be
      * of any type. See documentation of a particular importer for details.
      *
@@ -455,7 +467,21 @@ enum class SceneFieldType: UnsignedShort {
     Degd,           /**< @relativeref{Magnum,Degh} */
     Rad,            /**< @relativeref{Magnum,Rad} */
     Radh,           /**< @relativeref{Magnum,Radh} */
-    Radd            /**< @relativeref{Magnum,Radd} */
+    Radd,           /**< @relativeref{Magnum,Radd} */
+
+    /**
+     * @cpp const void* @ce, type is not preserved. For convenience it's
+     * possible to retrieve the value by calling @cpp field<const T*>() @ce
+     * with an arbitrary `T` but the user has to ensure the type is correct.
+     */
+    Pointer,
+
+    /**
+     * @cpp void* @ce, type is not preserved. For convenience it's possible to
+     * retrieve the value by calling @cpp field<T*>() @ce with an arbitrary `T`
+     * but the user has to ensure the type is correct.
+     */
+    MutablePointer,
 };
 
 /**
@@ -1142,9 +1168,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref translationsRotationsScalings2DAsArray(),
          * @ref translationsRotationsScalings3DAsArray(),
          * @ref meshesMaterialsAsArray(), @ref lightsAsArray(),
-         * @ref camerasAsArray(), @ref skinsAsArray() accessors to get common
-         * fields converted to usual types, but note that these operations
-         * involve extra allocation and data conversion.
+         * @ref camerasAsArray(), @ref skinsAsArray(),
+         * @ref importerStateAsArray() accessors to get common fields converted
+         * to usual types, but note that these operations involve extra
+         * allocation and data conversion.
          * @see @ref field(SceneField) const, @ref mutableField(UnsignedInt),
          *      @ref fieldArraySize()
          */
@@ -1222,9 +1249,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref translationsRotationsScalings2DAsArray(),
          * @ref translationsRotationsScalings3DAsArray(),
          * @ref meshesMaterialsAsArray(), @ref lightsAsArray(),
-         * @ref camerasAsArray(), @ref skinsAsArray() accessors to get common
-         * fields converted to usual types, but note that these operations
-         * involve extra allocation and data conversion.
+         * @ref camerasAsArray(), @ref skinsAsArray(),
+         * @ref importerStateAsArray() accessors to get common fields converted
+         * to usual types, but note that these operations involve extra
+         * allocation and data conversion.
          * @see @ref field(UnsignedInt) const, @ref mutableField(SceneField)
          */
         template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<const T> field(SceneField name) const;
@@ -1722,6 +1750,45 @@ class MAGNUM_TRADE_EXPORT SceneData {
         std::size_t skinsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
 
         /**
+         * @brief Per-object importer state as `void` pointers
+         * @m_since_latest
+         *
+         * Convenience alternative to @ref field(SceneField) const with
+         * @ref SceneField::ImporterState as the argument that converts the
+         * field from an arbitrary underlying type and returns it in a
+         * newly-allocated array. The field is expected to exist.
+         *
+         * This is different from @ref importerState(), which returns importer
+         * state for the scene itself, not particular objects.
+         * @see @ref importerStateInto(), @ref hasField(), @ref importerStateFor()
+         */
+        Containers::Array<const void*> importerStateAsArray() const;
+
+        /**
+         * @brief Per-object importer state as `void` pointers into a pre-allocated view
+         * @m_since_latest
+         *
+         * Like @ref importerStateAsArray(), but puts the result into
+         * @p destination instead of allocating a new array. Expects that
+         * @p destination is sized to contain exactly all data.
+         * @see @ref fieldSize(SceneField) const
+         */
+        void importerStateInto(const Containers::StridedArrayView1D<const void*>& destination) const;
+
+        /**
+         * @brief A subrange of per-object importer state as `void` pointers into a pre-allocated view
+         * @m_since_latest
+         *
+         * Compared to @ref importerStateInto(const Containers::StridedArrayView1D<const void*>&) const
+         * extracts only a subrange of the field defined by @p offset and size
+         * of the @p destination view, returning the count of items actually
+         * extracted. The @p offset is expected to not be larger than the field
+         * size.
+         * @see @ref fieldSize(SceneField) const
+         */
+        std::size_t importerStateInto(std::size_t offset, const Containers::StridedArrayView1D<const void*>& destination) const;
+
+        /**
          * @brief Parent for given object
          * @m_since_latest
          *
@@ -1946,6 +2013,25 @@ class MAGNUM_TRADE_EXPORT SceneData {
         Containers::Array<UnsignedInt> skinsFor(UnsignedInt object) const;
 
         /**
+         * @brief Importer state for given object
+         * @m_since_latest
+         *
+         * Looks up the @ref SceneField::ImporterState field for @p object. The
+         * lookup is done in a @f$ \mathcal{O}(m + n) @f$ complexity with
+         * @f$ m @f$ being the field count and @f$ n @f$ the size of the
+         * importer state field, thus for retrieving importer state info for
+         * many objects it's recommended to access the field data directly with
+         * @ref importerStateAsArray() and related APIs.
+         *
+         * If the @ref SceneField::ImporterState field is not present or if
+         * there's no importer state for @p object, returns
+         * @ref Containers::NullOpt.
+         *
+         * The @p object is expected to be less than @ref objectCount().
+         */
+        Containers::Optional<const void*> importerStateFor(UnsignedInt object) const;
+
+        /**
          * @brief Release field data storage
          * @m_since_latest
          *
@@ -1983,7 +2069,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
         /**
          * @brief Importer-specific state
          *
-         * See @ref AbstractImporter::importerState() for more information.
+         * Scene-specific importer state. For object-specific importer state
+         * look for the @ref SceneField::ImporterState field or access it via
+         * @ref importerStateAsArray(), @ref importerStateFor() and related
+         * convenience functions. See @ref AbstractImporter::importerState()
+         * for general information about importer state pointers.
          */
         const void* importerState() const { return _importerState; }
 
@@ -2020,6 +2110,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         MAGNUM_TRADE_LOCAL void indexFieldIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
         MAGNUM_TRADE_LOCAL Containers::Array<UnsignedInt> unsignedIndexFieldAsArrayInternal(const UnsignedInt fieldId) const;
         MAGNUM_TRADE_LOCAL void meshesMaterialsIntoInternal(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const;
+        MAGNUM_TRADE_LOCAL void importerStateIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<const void*>& destination) const;
 
         DataFlags _dataFlags;
         SceneObjectType _objectType;
@@ -2142,6 +2233,16 @@ namespace Implementation {
     template<class T> struct SceneFieldTypeFor<Math::Color4<T>>: SceneFieldTypeFor<Math::Vector4<T>> {};
     template<class T> struct SceneFieldTypeFor<Math::Matrix3<T>>: SceneFieldTypeFor<Math::Matrix3x3<T>> {};
     template<class T> struct SceneFieldTypeFor<Math::Matrix4<T>>: SceneFieldTypeFor<Math::Matrix4x4<T>> {};
+    template<class T> struct SceneFieldTypeFor<const T*> {
+        constexpr static SceneFieldType type() {
+            return SceneFieldType::Pointer;
+        }
+    };
+    template<class T> struct SceneFieldTypeFor<T*> {
+        constexpr static SceneFieldType type() {
+            return SceneFieldType::MutablePointer;
+        }
+    };
 
     template<class T> constexpr SceneObjectType sceneObjectTypeFor() {
         static_assert(sizeof(T) == 0, "unsupported object type");
@@ -2196,6 +2297,9 @@ namespace Implementation {
                 (type == SceneFieldType::Byte ||
                  type == SceneFieldType::Short ||
                  type == SceneFieldType::Int)) ||
+            (name == SceneField::ImporterState &&
+                (type == SceneFieldType::Pointer ||
+                 type == SceneFieldType::MutablePointer)) ||
             /* Custom fields can be anything */
             isSceneFieldCustom(name);
     }

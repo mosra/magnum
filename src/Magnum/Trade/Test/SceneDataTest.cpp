@@ -141,6 +141,9 @@ struct SceneDataTest: TestSuite::Tester {
     template<class T> void skinsAsArray();
     void skinsIntoArray();
     void skinsIntoArrayInvalidSizeOrOffset();
+    template<class T> void importerStateAsArray();
+    void importerStateIntoArray();
+    void importerStateIntoArrayInvalidSizeOrOffset();
 
     void mutableAccessNotAllowed();
 
@@ -149,6 +152,7 @@ struct SceneDataTest: TestSuite::Tester {
 
     void fieldNotFound();
     void fieldWrongType();
+    void fieldWrongPointerType();
     void fieldWrongArrayAccess();
 
     /* Different object types checked just for the parentFor(), other APIs
@@ -167,6 +171,7 @@ struct SceneDataTest: TestSuite::Tester {
     void lightsFor();
     void camerasFor();
     void skinsFor();
+    void importerStateFor();
 
     void fieldForFieldMissing();
     void fieldForInvalidObject();
@@ -351,6 +356,13 @@ SceneDataTest::SceneDataTest() {
         Containers::arraySize(IntoArrayOffsetData));
 
     addTests({&SceneDataTest::skinsIntoArrayInvalidSizeOrOffset,
+              &SceneDataTest::importerStateAsArray<const void*>,
+              &SceneDataTest::importerStateAsArray<void*>});
+
+    addInstancedTests({&SceneDataTest::importerStateIntoArray},
+        Containers::arraySize(IntoArrayOffsetData));
+
+    addTests({&SceneDataTest::importerStateIntoArrayInvalidSizeOrOffset,
 
               &SceneDataTest::mutableAccessNotAllowed,
 
@@ -359,6 +371,7 @@ SceneDataTest::SceneDataTest() {
 
               &SceneDataTest::fieldNotFound,
               &SceneDataTest::fieldWrongType,
+              &SceneDataTest::fieldWrongPointerType,
               &SceneDataTest::fieldWrongArrayAccess,
 
               &SceneDataTest::parentFor<UnsignedByte>,
@@ -386,6 +399,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::lightsFor,
               &SceneDataTest::camerasFor,
               &SceneDataTest::skinsFor,
+              &SceneDataTest::importerStateFor,
 
               &SceneDataTest::fieldForFieldMissing,
               &SceneDataTest::fieldForInvalidObject,
@@ -494,6 +508,7 @@ void SceneDataTest::fieldTypeSize() {
     CORRADE_COMPARE(sceneFieldTypeSize(SceneFieldType::Matrix3x3d), sizeof(Matrix3x3d));
     CORRADE_COMPARE(sceneFieldTypeSize(SceneFieldType::Matrix3x4d), sizeof(Matrix3x4d));
     CORRADE_COMPARE(sceneFieldTypeSize(SceneFieldType::Matrix4x4d), sizeof(Matrix4x4d));
+    CORRADE_COMPARE(sceneFieldTypeSize(SceneFieldType::Pointer), sizeof(const void*));
 }
 
 void SceneDataTest::fieldTypeSizeInvalid() {
@@ -1763,6 +1778,12 @@ _c(DualComplex)
 _c(DualComplexd)
 _c(DualQuaternion)
 _c(DualQuaterniond)
+template<class T> struct NameTraits<const T*> {
+    static const char* name() { return "Pointer"; }
+};
+template<class T> struct NameTraits<T*> {
+    static const char* name() { return "MutablePointer"; }
+};
 #undef _c
 
 template<class T> void SceneDataTest::objectsAsArrayByIndex() {
@@ -3714,6 +3735,107 @@ void SceneDataTest::skinsIntoArrayInvalidSizeOrOffset() {
         "Trade::SceneData::skinsInto(): offset 4 out of bounds for a field of size 3\n");
 }
 
+template<class T> void SceneDataTest::importerStateAsArray() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    int a, b;
+
+    struct Field {
+        UnsignedByte object;
+        T importerState;
+    } fields[]{
+        {0, &a},
+        {1, nullptr},
+        {15, &b}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedByte, 50, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedByte, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::ImporterState, view.slice(&Field::object), view.slice(&Field::importerState)}
+    }};
+
+    CORRADE_COMPARE_AS(scene.importerStateAsArray(),
+        Containers::arrayView<const void*>({&a, nullptr, &b}),
+        TestSuite::Compare::Container);
+}
+
+void SceneDataTest::importerStateIntoArray() {
+    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    int a, b;
+
+    struct Field {
+        UnsignedInt object;
+        const void* importerState;
+    } fields[]{
+        {1, &a},
+        {0, nullptr},
+        {4, &b}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::ImporterState,
+            view.slice(&Field::object),
+            view.slice(&Field::importerState)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        const void* out[3];
+        scene.importerStateInto(out);
+        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+            view.slice(&Field::importerState),
+            TestSuite::Compare::Container);
+
+    /* The offset variant only a subset */
+    } {
+        Containers::Array<const void*> out{data.size};
+        CORRADE_COMPARE(scene.importerStateInto(data.offset, out), data.expectedSize);
+        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+            view.slice(&Field::importerState)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::importerStateIntoArrayInvalidSizeOrOffset() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct Field {
+        UnsignedInt object;
+        const void* importerState;
+    } fields[3]{};
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        SceneFieldData{SceneField::ImporterState, view.slice(&Field::object), view.slice(&Field::importerState)}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    const void* destination[2];
+    scene.importerStateInto(destination);
+    scene.importerStateInto(4, destination);
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::importerStateInto(): expected a view with 3 elements but got 2\n"
+        "Trade::SceneData::importerStateInto(): offset 4 out of bounds for a field of size 3\n");
+}
+
 void SceneDataTest::mutableAccessNotAllowed() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -3908,6 +4030,9 @@ void SceneDataTest::fieldNotFound() {
     scene.skinsAsArray();
     scene.skinsInto(nullptr);
     scene.skinsInto(0, nullptr);
+    scene.importerStateAsArray();
+    scene.importerStateInto(nullptr);
+    scene.importerStateInto(0, nullptr);
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::fieldData(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldName(): index 2 out of range for 2 fields\n"
@@ -3961,7 +4086,10 @@ void SceneDataTest::fieldNotFound() {
         "Trade::SceneData::camerasInto(): field not found\n"
         "Trade::SceneData::skinsInto(): field not found\n"
         "Trade::SceneData::skinsInto(): field not found\n"
-        "Trade::SceneData::skinsInto(): field not found\n");
+        "Trade::SceneData::skinsInto(): field not found\n"
+        "Trade::SceneData::importerStateInto(): field not found\n"
+        "Trade::SceneData::importerStateInto(): field not found\n"
+        "Trade::SceneData::importerStateInto(): field not found\n");
 }
 
 void SceneDataTest::fieldWrongType() {
@@ -4001,6 +4129,78 @@ void SceneDataTest::fieldWrongType() {
         "Trade::SceneData::field(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n");
+}
+
+void SceneDataTest::fieldWrongPointerType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct Thing {
+        UnsignedInt object;
+        Int* foobar;
+        const Int* importerState;
+    } things[2];
+    Containers::StridedArrayView1D<Thing> view = things;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, DataFlag::Mutable, things, {
+        SceneFieldData{sceneFieldCustom(35), view.slice(&Thing::object), Containers::arrayCast<2, Int*>(view.slice(&Thing::foobar))},
+        SceneFieldData{SceneField::ImporterState, view.slice(&Thing::object), view.slice(&Thing::importerState)},
+    }};
+
+    /* These are fine (type is not checked) */
+    scene.field<Float*[]>(0);
+    scene.field<const Float*>(1);
+    scene.mutableField<Float*[]>(0);
+    scene.mutableField<const Float*>(1);
+    scene.field<Float*[]>(sceneFieldCustom(35));
+    scene.field<const Float*>(SceneField::ImporterState);
+    scene.mutableField<Float*[]>(sceneFieldCustom(35));
+    scene.mutableField<const Float*>(SceneField::ImporterState);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    scene.field<Int>(0);
+    scene.field<const Int*>(0);
+    scene.field<const Int*[]>(0);
+    scene.field<Int*>(1);
+    scene.field<Int*[]>(1);
+    scene.mutableField<Int>(0);
+    scene.mutableField<const Int*>(0);
+    scene.mutableField<const Int*[]>(0);
+    scene.mutableField<Int*>(1);
+    scene.mutableField<Int*[]>(1);
+    scene.field<Int>(sceneFieldCustom(35));
+    scene.field<const Int*>(sceneFieldCustom(35));
+    scene.field<const Int*[]>(sceneFieldCustom(35));
+    scene.field<Int*>(SceneField::ImporterState);
+    scene.field<Int*>(SceneField::ImporterState);
+    scene.mutableField<Int>(sceneFieldCustom(35));
+    scene.mutableField<const Int*>(sceneFieldCustom(35));
+    scene.mutableField<const Int*[]>(sceneFieldCustom(35));
+    scene.mutableField<Int*>(SceneField::ImporterState);
+    scene.mutableField<Int*[]>(SceneField::ImporterState);
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::field(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Int\n"
+        "Trade::SceneData::field(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Pointer\n"
+        "Trade::SceneData::field(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Pointer\n"
+        "Trade::SceneData::field(): Trade::SceneField::ImporterState is Trade::SceneFieldType::Pointer but requested a type equivalent to Trade::SceneFieldType::MutablePointer\n"
+        "Trade::SceneData::field(): Trade::SceneField::ImporterState is Trade::SceneFieldType::Pointer but requested a type equivalent to Trade::SceneFieldType::MutablePointer\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Int\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Pointer\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Pointer\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::ImporterState is Trade::SceneFieldType::Pointer but requested a type equivalent to Trade::SceneFieldType::MutablePointer\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::ImporterState is Trade::SceneFieldType::Pointer but requested a type equivalent to Trade::SceneFieldType::MutablePointer\n"
+        "Trade::SceneData::field(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Int\n"
+        "Trade::SceneData::field(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Pointer\n"
+        "Trade::SceneData::field(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Pointer\n"
+        "Trade::SceneData::field(): Trade::SceneField::ImporterState is Trade::SceneFieldType::Pointer but requested a type equivalent to Trade::SceneFieldType::MutablePointer\n"
+        "Trade::SceneData::field(): Trade::SceneField::ImporterState is Trade::SceneFieldType::Pointer but requested a type equivalent to Trade::SceneFieldType::MutablePointer\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Int\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Pointer\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Pointer\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::ImporterState is Trade::SceneFieldType::Pointer but requested a type equivalent to Trade::SceneFieldType::MutablePointer\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::ImporterState is Trade::SceneFieldType::Pointer but requested a type equivalent to Trade::SceneFieldType::MutablePointer\n");
 }
 
 void SceneDataTest::fieldWrongArrayAccess() {
@@ -4510,6 +4710,36 @@ void SceneDataTest::skinsFor() {
     CORRADE_COMPARE_AS(scene.skinsFor(6),
         (Containers::arrayView<UnsignedInt>({})),
         TestSuite::Compare::Container);
+}
+
+void SceneDataTest::importerStateFor() {
+    int a, b, c;
+
+    struct Field {
+        UnsignedInt object;
+        const void* importerState;
+    } fields[]{
+        {3, &a},
+        {4, &b},
+        {2, nullptr},
+        {4, &c}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        SceneFieldData{SceneField::ImporterState, view.slice(&Field::object), view.slice(&Field::importerState)}
+    }};
+
+    CORRADE_COMPARE(scene.importerStateFor(2), nullptr);
+    CORRADE_COMPARE(scene.importerStateFor(3), &a);
+
+    /* Duplicate entries -- only the first one gets used, it doesn't traverse
+       further */
+    CORRADE_COMPARE(scene.importerStateFor(4), &b);
+
+    /* Object that's not in the array at all */
+    CORRADE_COMPARE(scene.importerStateFor(1), Containers::NullOpt);
 }
 
 void SceneDataTest::fieldForFieldMissing() {

@@ -95,6 +95,7 @@ Debug& operator<<(Debug& debug, const SceneField value) {
         _c(Light)
         _c(Camera)
         _c(Skin)
+        _c(ImporterState)
         #undef _c
         /* LCOV_EXCL_STOP */
 
@@ -202,6 +203,8 @@ Debug& operator<<(Debug& debug, const SceneFieldType value) {
         _c(Rad)
         _c(Radh)
         _c(Radd)
+        _c(Pointer)
+        _c(MutablePointer)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -323,6 +326,9 @@ UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
             return 96;
         case SceneFieldType::Matrix4x4d:
             return 128;
+        case SceneFieldType::Pointer:
+        case SceneFieldType::MutablePointer:
+            return sizeof(void*);
     }
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
@@ -368,7 +374,7 @@ SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong object
 
     #ifndef CORRADE_NO_ASSERT
     /* Check various assumptions about field data */
-    Math::BoolVector<11> fieldsPresent; /** @todo some constant for this */
+    Math::BoolVector<12> fieldsPresent; /** @todo some constant for this */
     const UnsignedInt objectTypeSize = sceneObjectTypeSize(_objectType);
     UnsignedInt translationField = ~UnsignedInt{};
     UnsignedInt rotationField = ~UnsignedInt{};
@@ -1561,6 +1567,47 @@ Containers::Array<UnsignedInt> SceneData::skinsAsArray() const {
     return unsignedIndexFieldAsArrayInternal(fieldId);
 }
 
+void SceneData::importerStateIntoInternal(const UnsignedInt fieldId, const std::size_t offset, const Containers::StridedArrayView1D<const void*>& destination) const {
+    /* fieldId, offset and destination.size() is assumed to be in bounds,
+       checked by the callers */
+
+    const SceneFieldData& field = _fields[fieldId];
+    CORRADE_INTERNAL_ASSERT(field._fieldType == SceneFieldType::Pointer ||
+                            field._fieldType == SceneFieldType::MutablePointer);
+    Utility::copy(Containers::arrayCast<const void* const>(fieldDataFieldViewInternal(field, offset, destination.size())), destination);
+}
+
+void SceneData::importerStateInto(const Containers::StridedArrayView1D<const void*>& destination) const {
+    const UnsignedInt fieldId = fieldFor(SceneField::ImporterState);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::importerStateInto(): field not found", );
+    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::importerStateInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
+    importerStateIntoInternal(fieldId, 0, destination);
+}
+
+std::size_t SceneData::importerStateInto(const std::size_t offset, const Containers::StridedArrayView1D<const void*>& destination) const {
+    const UnsignedInt fieldId = fieldFor(SceneField::ImporterState);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::importerStateInto(): field not found", {});
+    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
+        "Trade::SceneData::importerStateInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
+    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
+    importerStateIntoInternal(fieldId, offset, destination.prefix(size));
+    return size;
+}
+
+Containers::Array<const void*> SceneData::importerStateAsArray() const {
+    const UnsignedInt fieldId = fieldFor(SceneField::ImporterState);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        /* Using the same message as in Into() to avoid too many redundant
+           strings in the binary */
+        "Trade::SceneData::importerStateInto(): field not found", {});
+    Containers::Array<const void*> out{NoInit, std::size_t(_fields[fieldId]._size)};
+    importerStateIntoInternal(fieldId, 0, out);
+    return out;
+}
+
 namespace {
 
 template<class T> std::size_t findObject(const Containers::StridedArrayView1D<const void>& objects, const UnsignedInt object) {
@@ -1915,6 +1962,22 @@ Containers::Array<UnsignedInt> SceneData::skinsFor(const UnsignedInt object) con
     }
 
     return out;
+}
+
+Containers::Optional<const void*> SceneData::importerStateFor(const UnsignedInt object) const {
+    CORRADE_ASSERT(object < _objectCount,
+        "Trade::SceneData::importerStateFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
+
+    const UnsignedInt fieldId = fieldFor(SceneField::ImporterState);
+    if(fieldId == ~UnsignedInt{}) return {};
+
+    const SceneFieldData& field = _fields[fieldId];
+    const std::size_t offset = fieldFor(field, 0, object);
+    if(offset == field._size) return {};
+
+    const void* importerState[1];
+    importerStateIntoInternal(fieldId, offset, importerState);
+    return *importerState;
 }
 
 Containers::Array<SceneFieldData> SceneData::releaseFieldData() {
