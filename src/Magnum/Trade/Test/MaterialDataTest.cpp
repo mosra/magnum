@@ -750,7 +750,7 @@ void MaterialDataTest::constructAttributeWrongAccessType() {
     std::ostringstream out;
     Error redirectError{&out};
     MaterialAttributeData{"thing3", Matrix4x3{}}.value<Int>();
-    CORRADE_COMPARE(out.str(), "Trade::MaterialAttributeData::value(): improper type requested for thing3 of Trade::MaterialAttributeType::Matrix4x3\n");
+    CORRADE_COMPARE(out.str(), "Trade::MaterialAttributeData::value(): thing3 is Trade::MaterialAttributeType::Matrix4x3 but requested a type equivalent to Trade::MaterialAttributeType::Int\n");
 }
 
 void MaterialDataTest::constructAttributeWrongAccessPointerType() {
@@ -761,13 +761,22 @@ void MaterialDataTest::constructAttributeWrongAccessPointerType() {
     Int a = 3;
     const Float b = 57.0f;
 
+    MaterialAttributeData thing3{"thing3", &a};
+    MaterialAttributeData boom{"boom", &b};
+
+    /* These are fine (type is not checked) */
+    thing3.value<Float*>();
+    boom.value<const Int*>();
+
     std::ostringstream out;
     Error redirectError{&out};
-    MaterialAttributeData{"thing3", &a}.value<Int>();
-    MaterialAttributeData{"boom", &b}.value<Float>();
+    thing3.value<Int>();
+    thing3.value<const Int*>();
+    boom.value<Float*>();
     CORRADE_COMPARE(out.str(),
-        "Trade::MaterialAttributeData::value(): improper type requested for thing3 of Trade::MaterialAttributeType::MutablePointer\n"
-        "Trade::MaterialAttributeData::value(): improper type requested for boom of Trade::MaterialAttributeType::Pointer\n");
+        "Trade::MaterialAttributeData::value(): thing3 is Trade::MaterialAttributeType::MutablePointer but requested a type equivalent to Trade::MaterialAttributeType::Int\n"
+        "Trade::MaterialAttributeData::value(): thing3 is Trade::MaterialAttributeType::MutablePointer but requested a type equivalent to Trade::MaterialAttributeType::Pointer\n"
+        "Trade::MaterialAttributeData::value(): boom is Trade::MaterialAttributeType::Pointer but requested a type equivalent to Trade::MaterialAttributeType::MutablePointer\n");
 }
 
 void MaterialDataTest::constructAttributeWrongAccessTypeString() {
@@ -1625,15 +1634,15 @@ void MaterialDataTest::accessWrongType() {
     data.attributeOr(MaterialAttribute::DiffuseColor, Color3{1.0f});
     data.attributeOr("DiffuseColor", Color3{1.0f});
     CORRADE_COMPARE(out.str(),
-        "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
-        "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
-        "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
+        "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
+        "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
+        "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
         /* tryAttribute() and attributeOr() delegate to attribute() so the
            assert is the same */
-        "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
-        "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
-        "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
-        "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n");
+        "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
+        "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
+        "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
+        "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n");
 }
 
 void MaterialDataTest::accessWrongPointerType() {
@@ -1655,11 +1664,13 @@ void MaterialDataTest::accessWrongPointerType() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    data.attribute<Int>("mutablePointer");
     data.attribute<const Int*>("mutablePointer");
     data.attribute<Double*>("pointer");
     CORRADE_COMPARE(out.str(),
-        "Trade::MaterialData::attribute(): improper type requested for mutablePointer of Trade::MaterialAttributeType::MutablePointer\n"
-        "Trade::MaterialData::attribute(): improper type requested for pointer of Trade::MaterialAttributeType::Pointer\n");
+        "Trade::MaterialData::attribute(): mutablePointer is Trade::MaterialAttributeType::MutablePointer but requested a type equivalent to Trade::MaterialAttributeType::Int\n"
+        "Trade::MaterialData::attribute(): mutablePointer is Trade::MaterialAttributeType::MutablePointer but requested a type equivalent to Trade::MaterialAttributeType::Pointer\n"
+        "Trade::MaterialData::attribute(): pointer is Trade::MaterialAttributeType::Pointer but requested a type equivalent to Trade::MaterialAttributeType::MutablePointer\n");
 }
 
 void MaterialDataTest::accessWrongTypeString() {

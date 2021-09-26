@@ -2711,7 +2711,7 @@ constexpr MaterialAttributeData::MaterialAttributeData(const Containers::StringV
 
 template<class T> T MaterialAttributeData::value() const {
     CORRADE_ASSERT(Implementation::MaterialAttributeTypeFor<T>::type() == _data.type,
-        "Trade::MaterialAttributeData::value(): improper type requested for" << (_data.data + 1) << "of" << _data.type, {});
+        "Trade::MaterialAttributeData::value():" << (_data.data + 1) << "is" << _data.type << "but requested a type equivalent to" << Implementation::MaterialAttributeTypeFor<T>::type(), {});
     return *reinterpret_cast<const T*>(value());
 }
 
@@ -2728,7 +2728,7 @@ template<class T> T MaterialData::attribute(const UnsignedInt layer, const Unsig
     const Trade::MaterialAttributeData& data = _data[layerOffset(layer) + id];
     #endif
     CORRADE_ASSERT(Implementation::MaterialAttributeTypeFor<T>::type() == data._data.type,
-        "Trade::MaterialData::attribute(): improper type requested for" << (data._data.data + 1) << "of" << data._data.type, {});
+        "Trade::MaterialData::attribute():" << (data._data.data + 1) << "is" << data._data.type << "but requested a type equivalent to" << Implementation::MaterialAttributeTypeFor<T>::type(), {});
     return *reinterpret_cast<const T*>(value);
 }
 
