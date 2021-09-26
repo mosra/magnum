@@ -1022,7 +1022,8 @@ enum class MaterialAttributeType: UnsignedByte {
     Matrix4x2,      /**< @ref Magnum::Matrix4x2 "Matrix4x2" */
     Matrix4x3,      /**< @ref Magnum::Matrix4x3 "Matrix4x3" */
 
-    /* Matrix4x4 not present */
+    /* Matrix4x4 not present as it won't fit (a deliberate decision), see
+       MaterialData docs for more information */
 
     /**
      * @cpp const void* @ce, type is not preserved. For convenience it's
