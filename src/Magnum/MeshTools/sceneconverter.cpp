@@ -746,7 +746,10 @@ used.)")
                     d << "(" << Debug::nospace << attribute.customName
                         << Debug::nospace << ")";
                 }
-                d << "@" << attribute.format << Debug::nospace << ", stride"
+                d << "@" << attribute.format;
+                if(attribute.arraySize)
+                    d << Debug::nospace << Utility::formatString("[{}]", attribute.arraySize);
+                d << Debug::nospace << ", stride"
                     << attribute.stride;
                 if(!attribute.bounds.empty())
                     d << Debug::newline << "      bounds:" << attribute.bounds;
