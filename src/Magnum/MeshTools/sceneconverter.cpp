@@ -28,6 +28,7 @@
 #include <set>
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
@@ -37,6 +38,7 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Implementation/converterUtilities.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/Trade/AbstractImporter.h"
@@ -44,7 +46,7 @@
 #include "Magnum/Trade/LightData.h"
 #include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
-#include "Magnum/Trade/MeshObjectData3D.h"
+#include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/SkinData.h"
 #include "Magnum/Trade/TextureData.h"
 #include "Magnum/Trade/AbstractSceneConverter.h"
@@ -213,6 +215,7 @@ bool isInfoRequested(const Utility::Arguments& args) {
            args.isSet("info-lights") ||
            args.isSet("info-materials") ||
            args.isSet("info-meshes") ||
+           args.isSet("info-scenes") ||
            args.isSet("info-skins") ||
            args.isSet("info-textures") ||
            args.isSet("info");
@@ -242,6 +245,7 @@ int main(int argc, char** argv) {
         .addBooleanOption("info-lights").setHelp("info-lights", "print info about images in the input file and exit")
         .addBooleanOption("info-materials").setHelp("info-materials", "print info about materials in the input file and exit")
         .addBooleanOption("info-meshes").setHelp("info-meshes", "print info about meshes in the input file and exit")
+        .addBooleanOption("info-scenes").setHelp("info-scenes", "print info about textures in the input file and exit")
         .addBooleanOption("info-skins").setHelp("info-skins", "print info about skins in the input file and exit")
         .addBooleanOption("info-textures").setHelp("info-textures", "print info about textures in the input file and exit")
         .addBooleanOption("info").setHelp("info", "print info about everything in the input file and exit, same as specifying all other --info-* options together")
@@ -372,30 +376,79 @@ used.)")
             std::string name;
         };
 
+        struct SceneFieldInfo {
+            Trade::SceneField name;
+            std::string customName;
+            Trade::SceneFieldType type;
+            UnsignedInt arraySize;
+            std::size_t size;
+        };
+
+        struct SceneInfo {
+            UnsignedInt scene;
+            Trade::SceneObjectType objectType;
+            UnsignedLong objectCount;
+            Containers::Array<SceneFieldInfo> fields;
+            std::size_t dataSize;
+            std::string name;
+            /** @todo object names? */
+        };
+
         /* Parse everything first to avoid errors interleaved with output */
 
-        /* Scene properties. Currently just counting how much is each mesh /
-           light / material shared. Texture reference count is calculated when
-           parsing materials. */
+        /* Scene properties, together with counting how much is each mesh /
+           light / material / skin shared. Texture reference count is
+           calculated when parsing materials. */
+        Containers::Array<SceneInfo> sceneInfos;
         Containers::Array<UnsignedInt> materialReferenceCount{importer->materialCount()};
         Containers::Array<UnsignedInt> lightReferenceCount{importer->lightCount()};
         Containers::Array<UnsignedInt> meshReferenceCount{importer->meshCount()};
         Containers::Array<UnsignedInt> skinReferenceCount{importer->skin3DCount()};
-        for(UnsignedInt i = 0; i != importer->object3DCount(); ++i) {
-            Containers::Pointer<Trade::ObjectData3D> object = importer->object3D(i);
-            if(!object) continue;
-            if(object->instanceType() == Trade::ObjectInstanceType3D::Mesh) {
-                auto& meshObject = static_cast<Trade::MeshObjectData3D&>(*object);
-                if(std::size_t(meshObject.instance()) < meshReferenceCount.size())
-                    ++meshReferenceCount[meshObject.instance()];
-                if(std::size_t(meshObject.material()) < materialReferenceCount.size())
-                    ++materialReferenceCount[meshObject.material()];
-                if(std::size_t(meshObject.skin()) < skinReferenceCount.size())
-                    ++skinReferenceCount[meshObject.skin()];
-            } else if(object->instanceType() == Trade::ObjectInstanceType3D::Light) {
-                if(std::size_t(object->instance()) < lightReferenceCount.size())
-                    ++lightReferenceCount[object->instance()];
+        if(args.isSet("info") || args.isSet("info-scenes") || args.isSet("info-materials") || args.isSet("info-lights") || args.isSet("info-meshes") || args.isSet("info-skins")) for(UnsignedInt i = 0; i != importer->sceneCount(); ++i) {
+            Containers::Optional<Trade::SceneData> scene = importer->scene(i);
+            if(!scene) continue;
+
+            SceneInfo info{};
+            info.scene = i;
+            info.objectType = scene->objectType();
+            info.objectCount = scene->objectCount();
+            info.dataSize = scene->data().size();
+            info.name = importer->sceneName(i);
+            for(UnsignedInt j = 0; j != scene->fieldCount(); ++j) {
+                const Trade::SceneField name = scene->fieldName(j);
+
+                if(name == Trade::SceneField::Mesh) for(const Containers::Pair<UnsignedInt, Int>& meshMaterial: scene->meshesMaterialsAsArray()) {
+                    if(meshMaterial.first() < meshReferenceCount.size())
+                        ++meshReferenceCount[meshMaterial.first()];
+                    if(UnsignedInt(meshMaterial.second()) < materialReferenceCount.size())
+                        ++materialReferenceCount[meshMaterial.second()];
+                }
+
+                if(name == Trade::SceneField::Skin) for(const UnsignedInt skin: scene->skinsAsArray()) {
+                    if(skin < skinReferenceCount.size())
+                        ++skinReferenceCount[skin];
+                    /** @todo 2D/3D distinction */
+                }
+
+                if(name == Trade::SceneField::Light) for(const UnsignedInt light: scene->lightsAsArray()) {
+                    if(light < lightReferenceCount.size())
+                        ++lightReferenceCount[light];
+                }
+
+                arrayAppend(info.fields, InPlaceInit,
+                    name,
+                    Trade::isSceneFieldCustom(name) ?
+                        importer->sceneFieldName(name) : "",
+                    scene->fieldType(j),
+                    scene->fieldArraySize(j),
+                    scene->fieldSize(j));
             }
+
+            /* Add it to the array only if scene info was requested. We're
+               going through this loop also if just light / material / mesh /
+               skin info is requested, to gather reference count */
+            if(args.isSet("info") || args.isSet("info-scenes"))
+                arrayAppend(sceneInfos, std::move(info));
         }
 
         /* Animation properties */
@@ -608,6 +661,27 @@ used.)")
         if(args.isSet("info") || args.isSet("info-images")) imageInfos =
             Trade::Implementation::imageInfo(*importer, error, compactImages);
 
+        for(const SceneInfo& info: sceneInfos) {
+            Debug d;
+            d << "Scene" << info.scene << Debug::nospace << ":";
+            if(!info.name.empty()) d << info.name;
+            d << Debug::newline;
+            d << "   " << info.objectCount << "objects," << info.objectType
+                << "(" << Debug::nospace << Utility::formatString("{:.1f}", info.dataSize/1024.0f) << "kB)";
+
+            for(const SceneFieldInfo& field: info.fields) {
+                d << Debug::newline << " " << field.name;
+                if(Trade::isSceneFieldCustom(field.name)) {
+                    d << "(" << Debug::nospace << field.customName
+                        << Debug::nospace << ")";
+                }
+                d << "@" << field.type;
+                if(field.arraySize)
+                    d << Debug::nospace << Utility::formatString("[{}]", field.arraySize);
+                d << Debug::nospace << "," << field.size << "entries";
+            }
+        }
+
         for(const AnimationInfo& info: animationInfos) {
             Debug d;
             d << "Animation" << info.animation << Debug::nospace << ":";
@@ -641,7 +715,7 @@ used.)")
             d << "Skin" << info.skin;
             /* Print reference count only if there actually is a scene,
                otherwise this information is useless */
-            if(importer->object3DCount())
+            if(importer->objectCount())
                 d << Utility::formatString("(referenced by {} objects)", info.references);
             d << Debug::nospace << ":";
             if(!info.name.empty()) d << info.name;
@@ -654,7 +728,7 @@ used.)")
             d << "Light" << info.light;
             /* Print reference count only if there actually is a scene,
                otherwise this information is useless */
-            if(importer->object3DCount())
+            if(importer->objectCount())
                 d << Utility::formatString("(referenced by {} objects)", info.references);
             d << Debug::nospace << ":";
             if(!info.name.empty()) d << info.name;
@@ -673,7 +747,7 @@ used.)")
             d << "Material" << info.material;
             /* Print reference count only if there actually is a scene,
                otherwise this information is useless */
-            if(importer->object3DCount())
+            if(importer->objectCount())
                 d << Utility::formatString("(referenced by {} objects)", info.references);
             d << Debug::nospace << ":";
             if(!info.name.empty()) d << info.name;
@@ -756,7 +830,7 @@ used.)")
                 d << "Mesh" << info.mesh;
                 /* Print reference count only if there actually is a scene,
                    otherwise this information is useless */
-                if(importer->object3DCount())
+                if(importer->objectCount())
                     d << Utility::formatString("(referenced by {} objects)", info.references);
                 d << Debug::nospace << ":";
                 if(!info.name.empty()) d << info.name;
