@@ -123,6 +123,11 @@ See also:
     and @ref Math::Matrix4::from(const Matrix3x3<T>&, const Vector3<T>&) to
     create a transformation from a rotation and translation part (see
     [mosra/magnum#471](https://github.com/mosra/magnum/pull/471))
+-   Added @ref Math::Matrix4::orthographicProjection(const Vector2<T>&, const Vector2<T>&, T, T)
+    and @ref Math::Matrix3::projection(const Vector2<T>&, const Vector2<T>&) to
+    match the classic `glOrtho()` and `gluOrtho2D()` APIs, complementing
+    @ref Math::Matrix4::perspectiveProjection(const Vector2<T>&, const Vector2<T>&, T, T)
+    that got added in 2019.10
 -   Added @ref Math::Intersection::rayRange() (see [mosra/magnum#484](https://github.com/mosra/magnum/pull/484))
 -   Added @ref Math::RectangularMatrix::RectangularMatrix(IdentityInitT, T)
     constructor as it might be useful to create non-square identity matrices as

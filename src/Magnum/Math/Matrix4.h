@@ -333,12 +333,42 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      \end{pmatrix}
          * @f]
          *
-         * Similar to the classic @m_class{m-doc-external} [glOrtho()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glOrtho.xml)
-         * function, except that the projection is always centered.
+         * If you need an off-center projection (as with the classic
+         * @m_class{m-doc-external} [glOrtho()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glOrtho.xml)
+         * function), use @ref orthographicProjection(const Vector2<T>&, const Vector2<T>&, T, T).
          * @see @ref perspectiveProjection(), @ref Matrix3::projection()
-         * @m_keywords{glOrtho()}
          */
         static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far);
+
+        /**
+         * @brief 3D off-center orthographic projection matrix
+         * @param bottomLeft    Bottom left corner of the clipping plane
+         * @param topRight      Top right corner of the clipping plane
+         * @param near          Distance to near clipping plane, positive is
+         *      ahead
+         * @param far           Distance to far clipping plane, positive is
+         *      ahead
+         * @m_since_latest
+         *
+         * @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          \frac{2}{r - l} & 0 & 0 & - \frac{r + l}{r - l} \\
+         *          0 & \frac{2}{t - b} & 0 & - \frac{t + b}{t - b} \\
+         *          0 & 0 & \frac{2}{n - f} & \frac{n + f}{n - f} \\
+         *          0 & 0 & 0 & 1
+         *      \end{pmatrix}
+         * @f]
+         *
+         * Equivalent to the classic @m_class{m-doc-external} [glOrtho()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glOrtho.xml)
+         * function. If @p bottomLeft and @p topRight are a negation of each
+         * other, this function is equivalent to
+         * @ref orthographicProjection(const Vector2<T>&, T, T).
+         *
+         * @see @ref perspectiveProjection(),
+         *      @ref Matrix3::projection(const Vector2<T>&, const Vector2<T>&)
+         * @m_keywords{glOrtho()}
+         */
+        static Matrix4<T> orthographicProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, T near, T far);
 
         /**
          * @brief 3D perspective projection matrix
@@ -455,8 +485,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @ref perspectiveProjection(const Vector2<T>&, T, T).
          *
          * @see @ref perspectiveProjection(Rad<T> fov, T, T, T),
-         *      @ref orthographicProjection(), @ref Matrix3::projection(),
-         *      @ref Constants::inf()
+         *      @ref orthographicProjection(const Vector2<T>&, const Vector2<T>&, T, T),
+         *      @ref Matrix3::projection(), @ref Constants::inf()
          * @m_keywords{glFrustum()}
          */
         static Matrix4<T> perspectiveProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, T near, T far);
@@ -1118,6 +1148,17 @@ template<class T> Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>
             {       T(0), xyScale.y(),             T(0), T(0)},
             {       T(0),        T(0),           zScale, T(0)},
             {       T(0),        T(0), near*zScale-T(1), T(1)}};
+}
+
+template<class T> Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, const T near, const T far) {
+    const Vector3<T> difference{topRight - bottomLeft, near - far};
+    const Vector3<T> scale = T(2.0)/difference;
+    const Vector3<T> offset = Vector3<T>{topRight + bottomLeft, near + far}/difference;
+
+    return {{  scale.x(),        T(0),       T(0), T(0)},
+            {       T(0),   scale.y(),       T(0), T(0)},
+            {       T(0),        T(0),  scale.z(), T(0)},
+            {-offset.x(), -offset.y(), offset.z(), T(1)}};
 }
 
 template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>& size, const T near, const T far) {

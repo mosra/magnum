@@ -90,6 +90,7 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void shearingXZ();
     void shearingYZ();
     void orthographicProjection();
+    void orthographicProjectionOffCenter();
     void perspectiveProjection();
     void perspectiveProjectionInfiniteFar();
     void perspectiveProjectionFov();
@@ -160,6 +161,7 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::shearingXZ,
               &Matrix4Test::shearingYZ,
               &Matrix4Test::orthographicProjection,
+              &Matrix4Test::orthographicProjectionOffCenter,
               &Matrix4Test::perspectiveProjection,
               &Matrix4Test::perspectiveProjectionInfiniteFar,
               &Matrix4Test::perspectiveProjectionFov,
@@ -521,6 +523,22 @@ void Matrix4Test::orthographicProjection() {
     /* NDC is left-handed, so point on near plane should be -1, far +1 */
     CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -1.0f}), Vector3(0.0f, 0.0f, -1.0f));
     CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -9.0f}), Vector3(0.0f, 0.0f, +1.0f));
+}
+
+void Matrix4Test::orthographicProjectionOffCenter() {
+    Matrix4 expected({0.4f,  0.0f,   0.0f, 0.0f},
+                     {0.0f,  0.5f,   0.0f, 0.0f},
+                     {0.0f,  0.0f, -0.25f, 0.0f},
+                     {0.4f, 0.25f, -1.25f, 1.0f});
+    /* Shifted by (-1, -0.5) compared to the orthographicProjection() test */
+    Matrix4 actual = Matrix4::orthographicProjection({-3.5f, -2.5f}, {1.5f, 1.5f}, 1.0f, 9.0f);
+    CORRADE_COMPARE(actual, expected);
+
+    /* NDC is left-handed, so point on the near plane top right corner should
+       be (1, 1, -1), and a point on the far plane bottom left corner should be
+       (-1, -1, 1) */
+    CORRADE_COMPARE(actual.transformPoint({1.5f, 1.5f, -1.0f}), (Vector3{1.0f, 1.0f, -1.0f}));
+    CORRADE_COMPARE(actual.transformPoint({-3.5f, -2.5f, -9.0f}), (Vector3{-1.0f, -1.0f, +1.0f}));
 }
 
 void Matrix4Test::perspectiveProjection() {

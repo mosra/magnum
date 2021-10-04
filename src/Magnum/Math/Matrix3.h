@@ -218,15 +218,40 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *      \end{pmatrix}
          * @f]
          *
-         * Similar to the classic @m_class{m-doc-external} [gluOrtho2D()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluOrtho2D.xml)
-         * function, except that the projection is always centered.
+         * If you need an off-center projection (as with the classic
+         * @m_class{m-doc-external} [gluOrtho2D()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluOrtho2D.xml)
+         * function, use @ref projection(const Vector2<T>&, const Vector2<T>&).
          * @see @ref Matrix4::orthographicProjection(),
          *      @ref Matrix4::perspectiveProjection()
-         * @m_keywords{gluOrtho2D()}
          */
         static Matrix3<T> projection(const Vector2<T>& size) {
             return scaling(T(2.0)/size);
         }
+
+        /**
+         * @brief 2D off-center orthographic projection matrix
+         * @param bottomLeft    Bottom left corner of the clipping plane
+         * @param topRight      Top right corner of the clipping plane
+         * @m_since_latest
+         *
+         * @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          \frac{2}{r - l} & 0 & - \frac{r + l}{r - l} \\
+         *          0 & \frac{2}{t - b} & - \frac{t + b}{t - b} \\
+         *          0 & 0 & 1
+         *      \end{pmatrix}
+         * @f]
+         *
+         * Equivalent to the classic @m_class{m-doc-external} [gluOrtho2D()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluOrtho2D.xml)
+         * function. If @p bottomLeft and @p topRight are a negation of each
+         * other, this function is equivalent to
+         * @ref projection(const Vector2<T>&).
+         *
+         * @see @ref Matrix4::orthographicProjection(const Vector2<T>&, const Vector2<T>&, T, T),
+         *      @ref Matrix4::perspectiveProjection(const Vector2<T>&, const Vector2<T>&, T, T)
+         * @m_keywords{gluOrtho2D()}
+         */
+        static Matrix3<T> projection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight);
 
         /**
          * @brief Create matrix from rotation/scaling part and translation part
@@ -724,6 +749,16 @@ template<class T> Matrix3<T> Matrix3<T>::rotation(const Rad<T> angle) {
     return {{ cosine,   sine, T(0)},
             {  -sine, cosine, T(0)},
             {   T(0),   T(0), T(1)}};
+}
+
+template<class T> Matrix3<T> Matrix3<T>::projection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight) {
+    const Vector2<T> difference = topRight - bottomLeft;
+    const Vector2<T> scale = T(2.0)/difference;
+    const Vector2<T> offset = (topRight + bottomLeft)/difference;
+
+    return {{  scale.x(),        T(0), T(0)},
+            {       T(0),   scale.y(), T(0)},
+            {-offset.x(), -offset.y(), T(1)}};
 }
 
 template<class T> Matrix2x2<T> Matrix3<T>::rotation() const {

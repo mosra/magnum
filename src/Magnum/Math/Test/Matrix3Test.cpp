@@ -82,6 +82,7 @@ struct Matrix3Test: Corrade::TestSuite::Tester {
     void shearingX();
     void shearingY();
     void projection();
+    void projectionOffCenter();
 
     void fromParts();
     void rotationScalingPart();
@@ -135,6 +136,7 @@ Matrix3Test::Matrix3Test() {
               &Matrix3Test::shearingX,
               &Matrix3Test::shearingY,
               &Matrix3Test::projection,
+              &Matrix3Test::projectionOffCenter,
 
               &Matrix3Test::fromParts,
               &Matrix3Test::rotationScalingPart,
@@ -399,11 +401,26 @@ void Matrix3Test::shearingY() {
 }
 
 void Matrix3Test::projection() {
-    Matrix3 expected({2.0f/4.0f,      0.0f, 0.0f},
-                     {     0.0f, 2.0f/3.0f, 0.0f},
+    Matrix3 expected({2.0f/5.0f,      0.0f, 0.0f},
+                     {     0.0f, 2.0f/4.0f, 0.0f},
                      {     0.0f,      0.0f, 1.0f});
 
-    CORRADE_COMPARE(Matrix3::projection({4.0f, 3.0f}), expected);
+    CORRADE_COMPARE(Matrix3::projection({5.0f, 4.0f}), expected);
+}
+
+void Matrix3Test::projectionOffCenter() {
+    Matrix3 expected({0.4f,  0.0f, 0.0f},
+                     {0.0f,  0.5f, 0.0f},
+                     {0.4f, 0.25f, 1.0f});
+    /* Shifted by (-1, -0.5) compared to the projection() test */
+    Matrix3 actual = Matrix3::projection({-3.5f, -2.5f}, {1.5f, 1.5f});
+    CORRADE_COMPARE(actual, expected);
+
+    /* NDC is left-handed, so point on the near plane top right corner should
+       be (1, 1), and a point on the far plane bottom left corner should be
+       (-1, -1) */
+    CORRADE_COMPARE(actual.transformPoint({1.5f, 1.5f}), (Vector2{1.0f, 1.0f}));
+    CORRADE_COMPARE(actual.transformPoint({-3.5f, -2.5f}), (Vector2{-1.0f, -1.0f}));
 }
 
 void Matrix3Test::fromParts() {
