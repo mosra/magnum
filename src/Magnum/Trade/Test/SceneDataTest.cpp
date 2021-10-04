@@ -96,6 +96,7 @@ struct SceneDataTest: TestSuite::Tester {
     void constructObjectTypeTooSmall();
     void constructNotOwnedFlagOwned();
     void constructMismatchedTRSViews();
+    template<class T> void constructMismatchedTRSDimensionality();
     void constructMismatchedMeshMaterialView();
 
     void constructCopy();
@@ -115,16 +116,14 @@ struct SceneDataTest: TestSuite::Tester {
     void parentsIntoArrayInvalidSizeOrOffset();
     template<class T> void transformations2DAsArray();
     template<class T, class U, class V> void transformations2DAsArrayTRS();
-    template<class T> void transformations2DAsArrayBut3DType();
-    template<class T> void transformations2DAsArrayBut3DTypeTRS();
+    void transformations2DAsArrayBut3DType();
     void transformations2DIntoArray();
     void transformations2DIntoArrayTRS();
     void transformations2DIntoArrayInvalidSizeOrOffset();
     void transformations2DIntoArrayInvalidSizeOrOffsetTRS();
     template<class T> void transformations3DAsArray();
     template<class T, class U, class V> void transformations3DAsArrayTRS();
-    template<class T> void transformations3DAsArrayBut2DType();
-    template<class T> void transformations3DAsArrayBut2DTypeTRS();
+    void transformations3DAsArrayBut2DType();
     void transformations3DIntoArray();
     void transformations3DIntoArrayTRS();
     void transformations3DIntoArrayInvalidSizeOrOffset();
@@ -161,12 +160,10 @@ struct SceneDataTest: TestSuite::Tester {
     void childrenFor();
     void transformation2DFor();
     void transformation2DForTRS();
-    template<class T> void transformation2DForBut3DType();
-    template<class T> void transformation2DForBut3DTypeTRS();
+    void transformation2DForBut3DType();
     void transformation3DFor();
     void transformation3DForTRS();
-    template<class T> void transformation3DForBut2DType();
-    template<class T> void transformation3DForBut2DTypeTRS();
+    void transformation3DForBut2DType();
     void meshesMaterialsFor();
     void lightsFor();
     void camerasFor();
@@ -253,6 +250,8 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructObjectTypeTooSmall,
               &SceneDataTest::constructNotOwnedFlagOwned,
               &SceneDataTest::constructMismatchedTRSViews,
+              &SceneDataTest::constructMismatchedTRSDimensionality<Float>,
+              &SceneDataTest::constructMismatchedTRSDimensionality<Double>,
               &SceneDataTest::constructMismatchedMeshMaterialView,
 
               &SceneDataTest::constructCopy,
@@ -292,12 +291,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::transformations2DAsArray<DualComplexd>,
               &SceneDataTest::transformations2DAsArrayTRS<Float, Float, Double>,
               &SceneDataTest::transformations2DAsArrayTRS<Double, Double, Float>,
-              &SceneDataTest::transformations2DAsArrayBut3DType<Matrix4x4>,
-              &SceneDataTest::transformations2DAsArrayBut3DType<Matrix4x4d>,
-              &SceneDataTest::transformations2DAsArrayBut3DType<DualQuaternion>,
-              &SceneDataTest::transformations2DAsArrayBut3DType<DualQuaterniond>,
-              &SceneDataTest::transformations2DAsArrayBut3DTypeTRS<Float>,
-              &SceneDataTest::transformations2DAsArrayBut3DTypeTRS<Double>});
+              &SceneDataTest::transformations2DAsArrayBut3DType});
 
     addInstancedTests({&SceneDataTest::transformations2DIntoArray,
                        &SceneDataTest::transformations2DIntoArrayTRS},
@@ -311,12 +305,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::transformations3DAsArray<DualQuaterniond>,
               &SceneDataTest::transformations3DAsArrayTRS<Float, Double, Double>,
               &SceneDataTest::transformations3DAsArrayTRS<Double, Float, Float>,
-              &SceneDataTest::transformations3DAsArrayBut2DType<Matrix3x3>,
-              &SceneDataTest::transformations3DAsArrayBut2DType<Matrix3x3d>,
-              &SceneDataTest::transformations3DAsArrayBut2DType<DualComplex>,
-              &SceneDataTest::transformations3DAsArrayBut2DType<DualComplexd>,
-              &SceneDataTest::transformations3DAsArrayBut2DTypeTRS<Float>,
-              &SceneDataTest::transformations3DAsArrayBut2DTypeTRS<Double>});
+              &SceneDataTest::transformations3DAsArrayBut2DType});
 
     addInstancedTests({&SceneDataTest::transformations3DIntoArray,
                        &SceneDataTest::transformations3DIntoArrayTRS},
@@ -381,20 +370,10 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::childrenFor,
               &SceneDataTest::transformation2DFor,
               &SceneDataTest::transformation2DForTRS,
-              &SceneDataTest::transformation2DForBut3DType<Matrix4x4>,
-              &SceneDataTest::transformation2DForBut3DType<Matrix4x4d>,
-              &SceneDataTest::transformation2DForBut3DType<DualQuaternion>,
-              &SceneDataTest::transformation2DForBut3DType<DualQuaterniond>,
-              &SceneDataTest::transformation2DForBut3DTypeTRS<Float>,
-              &SceneDataTest::transformation2DForBut3DTypeTRS<Double>,
+              &SceneDataTest::transformation2DForBut3DType,
               &SceneDataTest::transformation3DFor,
               &SceneDataTest::transformation3DForTRS,
-              &SceneDataTest::transformation3DForBut2DType<Matrix3x3>,
-              &SceneDataTest::transformation3DForBut2DType<Matrix3x3d>,
-              &SceneDataTest::transformation3DForBut2DType<DualComplex>,
-              &SceneDataTest::transformation3DForBut2DType<DualComplex>,
-              &SceneDataTest::transformation3DForBut2DTypeTRS<Float>,
-              &SceneDataTest::transformation3DForBut2DTypeTRS<Double>,
+              &SceneDataTest::transformation3DForBut2DType,
               &SceneDataTest::meshesMaterialsFor,
               &SceneDataTest::lightsFor,
               &SceneDataTest::camerasFor,
@@ -1136,6 +1115,9 @@ void SceneDataTest::construct() {
     CORRADE_COMPARE(scene.fieldCount(), 4);
     CORRADE_COMPARE(scene.importerState(), &importerState);
 
+    /* is2D() / is3D() exhaustively tested in transformations*DAsArray[TRS]()
+       and constructZeroFields() */
+
     /* Field property access by ID */
     CORRADE_COMPARE(scene.fieldName(0), SceneField::Transformation);
     CORRADE_COMPARE(scene.fieldName(1), SceneField::Parent);
@@ -1369,6 +1351,8 @@ void SceneDataTest::constructZeroFields() {
     CORRADE_COMPARE(scene.objectCount(), 37563);
     CORRADE_COMPARE(scene.objectType(), SceneObjectType::UnsignedShort);
     CORRADE_COMPARE(scene.fieldCount(), 0);
+    CORRADE_VERIFY(!scene.is2D());
+    CORRADE_VERIFY(!scene.is3D());
 }
 
 void SceneDataTest::constructZeroObjects() {
@@ -1660,6 +1644,110 @@ void SceneDataTest::constructMismatchedTRSViews() {
         "Trade::SceneData: Trade::SceneField::Scaling object data [0xcafe0000:0xcafe0004] is different from Trade::SceneField::Rotation object data [0xcafe0000:0xcafe0008]\n");
 }
 
+template<class> struct NameTraits;
+#define _c(format) template<> struct NameTraits<format> {                   \
+        static const char* name() { return #format; }                       \
+    };
+_c(UnsignedByte)
+_c(Byte)
+_c(UnsignedShort)
+_c(Short)
+_c(UnsignedInt)
+_c(Int)
+_c(UnsignedLong)
+_c(Long)
+_c(Float)
+_c(Double)
+_c(Vector2)
+_c(Vector2d)
+_c(Vector3)
+_c(Vector3d)
+_c(Matrix3)
+_c(Matrix3d)
+_c(Matrix4)
+_c(Matrix4d)
+_c(Complex)
+_c(Complexd)
+_c(Quaternion)
+_c(Quaterniond)
+_c(DualComplex)
+_c(DualComplexd)
+_c(DualQuaternion)
+_c(DualQuaterniond)
+template<class T> struct NameTraits<const T*> {
+    static const char* name() { return "Pointer"; }
+};
+template<class T> struct NameTraits<T*> {
+    static const char* name() { return "MutablePointer"; }
+};
+#undef _c
+
+template<class T> void SceneDataTest::constructMismatchedTRSDimensionality() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    SceneFieldData transformationMatrices2D{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Matrix3<T>>::type(), nullptr};
+    SceneFieldData transformations2D{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::DualComplex<T>>::type(), nullptr};
+    SceneFieldData transformationMatrices3D{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Matrix4<T>>::type(), nullptr};
+    SceneFieldData transformations3D{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::DualQuaternion<T>>::type(), nullptr};
+    SceneFieldData translations2D{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector2<T>>::type(), nullptr};
+    SceneFieldData translations3D{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector3<T>>::type(), nullptr};
+    SceneFieldData rotations2D{SceneField::Rotation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Complex<T>>::type(), nullptr};
+    SceneFieldData rotations3D{SceneField::Rotation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Quaternion<T>>::type(), nullptr};
+    SceneFieldData scalings2D{SceneField::Scaling, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector2<T>>::type(), nullptr};
+    SceneFieldData scalings3D{SceneField::Scaling, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector3<T>>::type(), nullptr};
+
+    /* Test that all pairs get checked */
+    std::ostringstream out;
+    Error redirectError{&out};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationMatrices2D, translations3D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationMatrices2D, rotations3D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationMatrices2D, scalings3D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformations2D, translations3D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformations2D, rotations3D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformations2D, scalings3D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {translations2D, rotations3D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {translations2D, scalings3D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {rotations2D, scalings3D}};
+
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationMatrices3D, translations2D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationMatrices3D, rotations2D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationMatrices3D, scalings2D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformations3D, translations2D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformations3D, rotations2D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformations3D, scalings2D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {translations3D, rotations2D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {translations3D, scalings2D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {rotations3D, scalings2D}};
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Trade::SceneData: expected a 2D translation field but got Trade::SceneFieldType::{0}\n"
+        "Trade::SceneData: expected a 2D rotation field but got Trade::SceneFieldType::{1}\n"
+        "Trade::SceneData: expected a 2D scaling field but got Trade::SceneFieldType::{0}\n"
+        "Trade::SceneData: expected a 2D translation field but got Trade::SceneFieldType::{0}\n"
+        "Trade::SceneData: expected a 2D rotation field but got Trade::SceneFieldType::{1}\n"
+        "Trade::SceneData: expected a 2D scaling field but got Trade::SceneFieldType::{0}\n"
+        "Trade::SceneData: expected a 2D rotation field but got Trade::SceneFieldType::{1}\n"
+        "Trade::SceneData: expected a 2D scaling field but got Trade::SceneFieldType::{0}\n"
+        "Trade::SceneData: expected a 2D scaling field but got Trade::SceneFieldType::{0}\n"
+
+        "Trade::SceneData: expected a 3D translation field but got Trade::SceneFieldType::{2}\n"
+        "Trade::SceneData: expected a 3D rotation field but got Trade::SceneFieldType::{3}\n"
+        "Trade::SceneData: expected a 3D scaling field but got Trade::SceneFieldType::{2}\n"
+        "Trade::SceneData: expected a 3D translation field but got Trade::SceneFieldType::{2}\n"
+        "Trade::SceneData: expected a 3D rotation field but got Trade::SceneFieldType::{3}\n"
+        "Trade::SceneData: expected a 3D scaling field but got Trade::SceneFieldType::{2}\n"
+        "Trade::SceneData: expected a 3D rotation field but got Trade::SceneFieldType::{3}\n"
+        "Trade::SceneData: expected a 3D scaling field but got Trade::SceneFieldType::{2}\n"
+        "Trade::SceneData: expected a 3D scaling field but got Trade::SceneFieldType::{2}\n",
+        NameTraits<Math::Vector3<T>>::name(),
+        NameTraits<Math::Quaternion<T>>::name(),
+        NameTraits<Math::Vector2<T>>::name(),
+        NameTraits<Math::Complex<T>>::name()));
+}
+
 void SceneDataTest::constructMismatchedMeshMaterialView() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1743,48 +1831,6 @@ void SceneDataTest::constructMove() {
     CORRADE_VERIFY(std::is_nothrow_move_constructible<SceneData>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<SceneData>::value);
 }
-
-template<class> struct NameTraits;
-#define _c(format) template<> struct NameTraits<format> {                   \
-        static const char* name() { return #format; }                       \
-    };
-_c(UnsignedByte)
-_c(Byte)
-_c(UnsignedShort)
-_c(Short)
-_c(UnsignedInt)
-_c(Int)
-_c(UnsignedLong)
-_c(Long)
-_c(Float)
-_c(Double)
-_c(Vector2)
-_c(Vector2d)
-_c(Vector3)
-_c(Vector3d)
-_c(Matrix3)
-_c(Matrix3x3)
-_c(Matrix3d)
-_c(Matrix3x3d)
-_c(Matrix4)
-_c(Matrix4x4)
-_c(Matrix4d)
-_c(Matrix4x4d)
-_c(Complex)
-_c(Complexd)
-_c(Quaternion)
-_c(Quaterniond)
-_c(DualComplex)
-_c(DualComplexd)
-_c(DualQuaternion)
-_c(DualQuaterniond)
-template<class T> struct NameTraits<const T*> {
-    static const char* name() { return "Pointer"; }
-};
-template<class T> struct NameTraits<T*> {
-    static const char* name() { return "MutablePointer"; }
-};
-#undef _c
 
 template<class T> void SceneDataTest::objectsAsArrayByIndex() {
     setTestCaseTemplateName(NameTraits<T>::name());
@@ -2165,6 +2211,8 @@ template<class T> void SceneDataTest::transformations2DAsArray() {
             components.slice(&Component::scaling)},
     }};
 
+    CORRADE_VERIFY(scene.is2D());
+    CORRADE_VERIFY(!scene.is3D());
     CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView({
         Matrix3::translation({3.0f, 2.0f}),
         Matrix3::rotation(35.0_degf),
@@ -2216,6 +2264,8 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
             translation
         }};
+        CORRADE_VERIFY(scene.is2D());
+        CORRADE_VERIFY(!scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
             Matrix3::translation({3.0f, 2.0f}),
             Matrix3{Math::IdentityInit},
@@ -2234,6 +2284,8 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
             rotation
         }};
+        CORRADE_VERIFY(scene.is2D());
+        CORRADE_VERIFY(!scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
             Matrix3{Math::IdentityInit},
             Matrix3::rotation(35.0_degf),
@@ -2252,6 +2304,8 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
             scaling
         }};
+        CORRADE_VERIFY(scene.is2D());
+        CORRADE_VERIFY(!scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
             Matrix3{Math::IdentityInit},
             Matrix3{Math::IdentityInit},
@@ -2274,6 +2328,8 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
             translation,
             rotation
         }};
+        CORRADE_VERIFY(scene.is2D());
+        CORRADE_VERIFY(!scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
             Matrix3::translation({3.0f, 2.0f}),
             Matrix3::rotation(35.0_degf),
@@ -2293,6 +2349,8 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
             translation,
             scaling
         }};
+        CORRADE_VERIFY(scene.is2D());
+        CORRADE_VERIFY(!scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
             Matrix3::translation({3.0f, 2.0f}),
             Matrix3{Math::IdentityInit},
@@ -2312,6 +2370,8 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
             rotation,
             scaling
         }};
+        CORRADE_VERIFY(scene.is2D());
+        CORRADE_VERIFY(!scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
             Matrix3{Math::IdentityInit},
             Matrix3::rotation(35.0_degf),
@@ -2335,6 +2395,8 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
             rotation,
             scaling
         }};
+        CORRADE_VERIFY(scene.is2D());
+        CORRADE_VERIFY(!scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
             Matrix3::translation({3.0f, 2.0f}),
             Matrix3::rotation(35.0_degf),
@@ -2352,27 +2414,7 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
     }
 }
 
-template<class T> void SceneDataTest::transformations2DAsArrayBut3DType() {
-    setTestCaseTemplateName(NameTraits<T>::name());
-
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    SceneData scene{SceneObjectType::UnsignedInt, 0, nullptr, {
-        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<T>::type(), nullptr}
-    }};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    scene.transformations2DAsArray();
-    CORRADE_COMPARE(out.str(), Utility::formatString(
-        "Trade::SceneData::transformations2DInto(): field has a 3D transformation type Trade::SceneFieldType::{}\n", NameTraits<T>::name()));
-}
-
-template<class T> void SceneDataTest::transformations2DAsArrayBut3DTypeTRS() {
-    setTestCaseTemplateName(NameTraits<T>::name());
-
+void SceneDataTest::transformations2DAsArrayBut3DType() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -2380,40 +2422,19 @@ template<class T> void SceneDataTest::transformations2DAsArrayBut3DTypeTRS() {
     /* Because TRSAsArray() allocates an Array<Triple> and then calls
        TRSInto(), which skips views that are nullptr, we wouldn't get the
        assertion for translations, as those are at offset 0, which would be
-       interpreted as an empty view if there were no elements. So we have to
-       supply at least one element to make all assertions trigger. */
-    struct Field {
-        UnsignedInt object;
-        Math::Vector3<T> translation;
-        Math::Quaternion<T> rotation;
-        Math::Vector3<T> scaling;
-    } data[1];
-    Containers::StridedArrayView1D<Field> view = data;
-    SceneData translation{SceneObjectType::UnsignedInt, 1, {}, data, {
-        SceneFieldData{SceneField::Translation, view.slice(&Field::object), view.slice(&Field::translation)}
-    }};
-    SceneData rotation{SceneObjectType::UnsignedInt, 1, {}, data, {
-        SceneFieldData{SceneField::Rotation, view.slice(&Field::object), view.slice(&Field::rotation)}
-    }};
-    SceneData scaling{SceneObjectType::UnsignedInt, 1, {}, data, {
-        SceneFieldData{SceneField::Scaling, view.slice(&Field::object), view.slice(&Field::scaling)}
+       interpreted as an empty view if there were no elements. Thus using
+       rotations instead. */
+    SceneData scene{SceneObjectType::UnsignedInt, 0, nullptr, {
+        SceneFieldData{SceneField::Rotation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Quaternion, nullptr}
     }};
 
     std::ostringstream out;
     Error redirectError{&out};
-    translation.transformations2DAsArray();
-    translation.translationsRotationsScalings2DAsArray();
-    rotation.transformations2DAsArray();
-    rotation.translationsRotationsScalings2DAsArray();
-    scaling.transformations2DAsArray();
-    scaling.translationsRotationsScalings2DAsArray();
-    CORRADE_COMPARE(out.str(), Utility::formatString(
-        "Trade::SceneData::transformations2DInto(): field has a 3D translation type Trade::SceneFieldType::{0}\n"
-        "Trade::SceneData::translationsRotationsScalings2DInto(): field has a 3D translation type Trade::SceneFieldType::{0}\n"
-        "Trade::SceneData::transformations2DInto(): field has a 3D rotation type Trade::SceneFieldType::{1}\n"
-        "Trade::SceneData::translationsRotationsScalings2DInto(): field has a 3D rotation type Trade::SceneFieldType::{1}\n"
-        "Trade::SceneData::transformations2DInto(): field has a 3D scaling type Trade::SceneFieldType::{0}\n"
-        "Trade::SceneData::translationsRotationsScalings2DInto(): field has a 3D scaling type Trade::SceneFieldType::{0}\n", NameTraits<Math::Vector3<T>>::name(), NameTraits<Math::Quaternion<T>>::name()));
+    scene.transformations2DAsArray();
+    scene.translationsRotationsScalings2DAsArray();
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::transformations2DInto(): scene has a 3D transformation type\n"
+        "Trade::SceneData::translationsRotationsScalings2DInto(): scene has a 3D transformation type\n");
 }
 
 void SceneDataTest::transformations2DIntoArray() {
@@ -2740,6 +2761,8 @@ template<class T> void SceneDataTest::transformations3DAsArray() {
             components.slice(&Component::scaling)},
     }};
 
+    CORRADE_VERIFY(!scene.is2D());
+    CORRADE_VERIFY(scene.is3D());
     CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView({
         Matrix4::translation({3.0f, 2.0f, -0.5f}),
         Matrix4::rotationY(35.0_degf),
@@ -2791,6 +2814,8 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
             translation
         }};
+        CORRADE_VERIFY(!scene.is2D());
+        CORRADE_VERIFY(scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
             Matrix4::translation({3.0f, 2.0, 1.0f}),
             Matrix4{Math::IdentityInit},
@@ -2809,6 +2834,8 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
             rotation
         }};
+        CORRADE_VERIFY(!scene.is2D());
+        CORRADE_VERIFY(scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
             Matrix4{Math::IdentityInit},
             Matrix4::rotationY(35.0_degf),
@@ -2827,6 +2854,8 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
             scaling
         }};
+        CORRADE_VERIFY(!scene.is2D());
+        CORRADE_VERIFY(scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
             Matrix4{Math::IdentityInit},
             Matrix4{Math::IdentityInit},
@@ -2849,6 +2878,8 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
             translation,
             rotation
         }};
+        CORRADE_VERIFY(!scene.is2D());
+        CORRADE_VERIFY(scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
             Matrix4::translation({3.0f, 2.0, 1.0f}),
             Matrix4::rotationY(35.0_degf),
@@ -2868,6 +2899,8 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
             translation,
             scaling
         }};
+        CORRADE_VERIFY(!scene.is2D());
+        CORRADE_VERIFY(scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
             Matrix4::translation({3.0f, 2.0, 1.0f}),
             Matrix4{Math::IdentityInit},
@@ -2887,6 +2920,8 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
             rotation,
             scaling
         }};
+        CORRADE_VERIFY(!scene.is2D());
+        CORRADE_VERIFY(scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
             Matrix4{Math::IdentityInit},
             Matrix4::rotationY(35.0_degf),
@@ -2910,6 +2945,8 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
             rotation,
             scaling
         }};
+        CORRADE_VERIFY(!scene.is2D());
+        CORRADE_VERIFY(scene.is3D());
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
             Matrix4::translation({3.0f, 2.0, 1.0f}),
             Matrix4::rotationY(35.0_degf),
@@ -2927,27 +2964,7 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
     }
 }
 
-template<class T> void SceneDataTest::transformations3DAsArrayBut2DType() {
-    setTestCaseTemplateName(NameTraits<T>::name());
-
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    SceneData scene{SceneObjectType::UnsignedInt, 0, nullptr, {
-        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<T>::type(), nullptr}
-    }};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    scene.transformations3DAsArray();
-    CORRADE_COMPARE(out.str(), Utility::formatString(
-        "Trade::SceneData::transformations3DInto(): field has a 2D transformation type Trade::SceneFieldType::{}\n", NameTraits<T>::name()));
-}
-
-template<class T> void SceneDataTest::transformations3DAsArrayBut2DTypeTRS() {
-    setTestCaseTemplateName(NameTraits<T>::name());
-
+void SceneDataTest::transformations3DAsArrayBut2DType() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -2955,40 +2972,19 @@ template<class T> void SceneDataTest::transformations3DAsArrayBut2DTypeTRS() {
     /* Because TRSAsArray() allocates an Array<Triple> and then calls
        TRSInto(), which skips views that are nullptr, we wouldn't get the
        assertion for translations, as those are at offset 0, which would be
-       interpreted as an empty view if there were no elements. So we have to
-       supply at least one element to make all assertions trigger. */
-    struct Field {
-        UnsignedInt object;
-        Math::Vector2<T> translation;
-        Math::Complex<T> rotation;
-        Math::Vector2<T> scaling;
-    } data[1];
-    Containers::StridedArrayView1D<Field> view = data;
-    SceneData translation{SceneObjectType::UnsignedInt, 1, {}, data, {
-        SceneFieldData{SceneField::Translation, view.slice(&Field::object), view.slice(&Field::translation)}
-    }};
-    SceneData rotation{SceneObjectType::UnsignedInt, 1, {}, data, {
-        SceneFieldData{SceneField::Rotation, view.slice(&Field::object), view.slice(&Field::rotation)}
-    }};
-    SceneData scaling{SceneObjectType::UnsignedInt, 1, {}, data, {
-        SceneFieldData{SceneField::Scaling, view.slice(&Field::object), view.slice(&Field::scaling)}
+       interpreted as an empty view if there were no elements. Thus using
+       rotations instead. */
+    SceneData scene{SceneObjectType::UnsignedInt, 0, nullptr, {
+        SceneFieldData{SceneField::Rotation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Complex, nullptr}
     }};
 
     std::ostringstream out;
     Error redirectError{&out};
-    translation.transformations3DAsArray();
-    translation.translationsRotationsScalings3DAsArray();
-    rotation.transformations3DAsArray();
-    rotation.translationsRotationsScalings3DAsArray();
-    scaling.transformations3DAsArray();
-    scaling.translationsRotationsScalings3DAsArray();
-    CORRADE_COMPARE(out.str(), Utility::formatString(
-        "Trade::SceneData::transformations3DInto(): field has a 2D translation type Trade::SceneFieldType::{0}\n"
-        "Trade::SceneData::translationsRotationsScalings3DInto(): field has a 2D translation type Trade::SceneFieldType::{0}\n"
-        "Trade::SceneData::transformations3DInto(): field has a 2D rotation type Trade::SceneFieldType::{1}\n"
-        "Trade::SceneData::translationsRotationsScalings3DInto(): field has a 2D rotation type Trade::SceneFieldType::{1}\n"
-        "Trade::SceneData::transformations3DInto(): field has a 2D scaling type Trade::SceneFieldType::{0}\n"
-        "Trade::SceneData::translationsRotationsScalings3DInto(): field has a 2D scaling type Trade::SceneFieldType::{0}\n", NameTraits<Math::Vector2<T>>::name(), NameTraits<Math::Complex<T>>::name()));
+    scene.transformations3DAsArray();
+    scene.translationsRotationsScalings3DAsArray();
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::transformations3DInto(): scene has a 2D transformation type\n"
+        "Trade::SceneData::translationsRotationsScalings3DInto(): scene has a 2D transformation type\n");
 }
 
 void SceneDataTest::transformations3DIntoArray() {
@@ -4387,56 +4383,22 @@ void SceneDataTest::transformation2DForTRS() {
         Containers::NullOpt);
 }
 
-template<class T> void SceneDataTest::transformation2DForBut3DType() {
-    setTestCaseTemplateName(NameTraits<T>::name());
-
+void SceneDataTest::transformation2DForBut3DType() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
     SceneData scene{SceneObjectType::UnsignedInt, 1, nullptr, {
-        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<T>::type(), nullptr}
+        SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Vector3, nullptr}
     }};
 
     std::ostringstream out;
     Error redirectError{&out};
     scene.transformation2DFor(0);
-    CORRADE_COMPARE(out.str(), Utility::formatString(
-        "Trade::SceneData::transformation2DFor(): field has a 3D transformation type Trade::SceneFieldType::{}\n", NameTraits<T>::name()));
-}
-
-template<class T> void SceneDataTest::transformation2DForBut3DTypeTRS() {
-    setTestCaseTemplateName(NameTraits<T>::name());
-
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    SceneData translation{SceneObjectType::UnsignedInt, 1, nullptr, {
-        SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector3<T>>::type(), nullptr}
-    }};
-    SceneData rotation{SceneObjectType::UnsignedInt, 1, nullptr, {
-        SceneFieldData{SceneField::Rotation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Quaternion<T>>::type(), nullptr}
-    }};
-    SceneData scaling{SceneObjectType::UnsignedInt, 1, nullptr, {
-        SceneFieldData{SceneField::Scaling, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector3<T>>::type(), nullptr}
-    }};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    translation.transformation2DFor(0);
-    translation.translationRotationScaling2DFor(0);
-    rotation.transformation2DFor(0);
-    rotation.translationRotationScaling2DFor(0);
-    scaling.transformation2DFor(0);
-    scaling.translationRotationScaling2DFor(0);
-    CORRADE_COMPARE(out.str(), Utility::formatString(
-        "Trade::SceneData::transformation2DFor(): field has a 3D translation type Trade::SceneFieldType::{0}\n"
-        "Trade::SceneData::translationRotationScaling2DFor(): field has a 3D translation type Trade::SceneFieldType::{0}\n"
-        "Trade::SceneData::transformation2DFor(): field has a 3D rotation type Trade::SceneFieldType::{1}\n"
-        "Trade::SceneData::translationRotationScaling2DFor(): field has a 3D rotation type Trade::SceneFieldType::{1}\n"
-        "Trade::SceneData::transformation2DFor(): field has a 3D scaling type Trade::SceneFieldType::{0}\n"
-        "Trade::SceneData::translationRotationScaling2DFor(): field has a 3D scaling type Trade::SceneFieldType::{0}\n", NameTraits<Math::Vector3<T>>::name(), NameTraits<Math::Quaternion<T>>::name()));
+    scene.translationRotationScaling2DFor(0);
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::transformation2DFor(): scene has a 3D transformation type\n"
+        "Trade::SceneData::translationRotationScaling2DFor(): scene has a 3D transformation type\n");
 }
 
 void SceneDataTest::transformation3DFor() {
@@ -4513,56 +4475,22 @@ void SceneDataTest::transformation3DForTRS() {
         Containers::NullOpt);
 }
 
-template<class T> void SceneDataTest::transformation3DForBut2DType() {
-    setTestCaseTemplateName(NameTraits<T>::name());
-
+void SceneDataTest::transformation3DForBut2DType() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
     SceneData scene{SceneObjectType::UnsignedInt, 1, nullptr, {
-        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<T>::type(), nullptr}
+        SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Vector2, nullptr}
     }};
 
     std::ostringstream out;
     Error redirectError{&out};
     scene.transformation3DFor(0);
-    CORRADE_COMPARE(out.str(), Utility::formatString(
-        "Trade::SceneData::transformation3DFor(): field has a 2D transformation type Trade::SceneFieldType::{}\n", NameTraits<T>::name()));
-}
-
-template<class T> void SceneDataTest::transformation3DForBut2DTypeTRS() {
-    setTestCaseTemplateName(NameTraits<T>::name());
-
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    SceneData translation{SceneObjectType::UnsignedInt, 1, nullptr, {
-        SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector2<T>>::type(), nullptr}
-    }};
-    SceneData rotation{SceneObjectType::UnsignedInt, 1, nullptr, {
-        SceneFieldData{SceneField::Rotation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Complex<T>>::type(), nullptr}
-    }};
-    SceneData scaling{SceneObjectType::UnsignedInt, 1, nullptr, {
-        SceneFieldData{SceneField::Scaling, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector2<T>>::type(), nullptr}
-    }};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    translation.transformation3DFor(0);
-    translation.translationRotationScaling3DFor(0);
-    rotation.transformation3DFor(0);
-    rotation.translationRotationScaling3DFor(0);
-    scaling.transformation3DFor(0);
-    scaling.translationRotationScaling3DFor(0);
-    CORRADE_COMPARE(out.str(), Utility::formatString(
-        "Trade::SceneData::transformation3DFor(): field has a 2D translation type Trade::SceneFieldType::{0}\n"
-        "Trade::SceneData::translationRotationScaling3DFor(): field has a 2D translation type Trade::SceneFieldType::{0}\n"
-        "Trade::SceneData::transformation3DFor(): field has a 2D rotation type Trade::SceneFieldType::{1}\n"
-        "Trade::SceneData::translationRotationScaling3DFor(): field has a 2D rotation type Trade::SceneFieldType::{1}\n"
-        "Trade::SceneData::transformation3DFor(): field has a 2D scaling type Trade::SceneFieldType::{0}\n"
-        "Trade::SceneData::translationRotationScaling3DFor(): field has a 2D scaling type Trade::SceneFieldType::{0}\n", NameTraits<Math::Vector2<T>>::name(), NameTraits<Math::Complex<T>>::name()));
+    scene.translationRotationScaling3DFor(0);
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::transformation3DFor(): scene has a 2D transformation type\n"
+        "Trade::SceneData::translationRotationScaling3DFor(): scene has a 2D transformation type\n");
 }
 
 void SceneDataTest::meshesMaterialsFor() {

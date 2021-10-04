@@ -363,7 +363,7 @@ Containers::Array<SceneFieldData> sceneFieldDataNonOwningArray(const Containers:
     return Containers::Array<SceneFieldData>{const_cast<SceneFieldData*>(view.data()), view.size(), reinterpret_cast<void(*)(SceneFieldData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)};
 }
 
-SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong objectCount, Containers::Array<char>&& data, Containers::Array<SceneFieldData>&& fields, const void* const importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _objectType{objectType}, _objectCount{objectCount}, _importerState{importerState}, _fields{std::move(fields)}, _data{std::move(data)} {
+SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong objectCount, Containers::Array<char>&& data, Containers::Array<SceneFieldData>&& fields, const void* const importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _objectType{objectType}, _dimensions{}, _objectCount{objectCount}, _importerState{importerState}, _fields{std::move(fields)}, _data{std::move(data)} {
     /* Check that object type is large enough */
     CORRADE_ASSERT(
         (objectType == SceneObjectType::UnsignedByte && objectCount <= 0xffull) ||
@@ -376,14 +376,19 @@ SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong object
     /* Check various assumptions about field data */
     Math::BoolVector<12> fieldsPresent; /** @todo some constant for this */
     const UnsignedInt objectTypeSize = sceneObjectTypeSize(_objectType);
+    #endif
+    UnsignedInt transformationField = ~UnsignedInt{};
     UnsignedInt translationField = ~UnsignedInt{};
     UnsignedInt rotationField = ~UnsignedInt{};
     UnsignedInt scalingField = ~UnsignedInt{};
+    #ifndef CORRADE_NO_ASSERT
     UnsignedInt meshField = ~UnsignedInt{};
     UnsignedInt meshMaterialField = ~UnsignedInt{};
+    #endif
     for(std::size_t i = 0; i != _fields.size(); ++i) {
         const SceneFieldData& field = _fields[i];
 
+        #ifndef CORRADE_NO_ASSERT
         /* The object type has to be the same among all fields. Technically it
            wouldn't need to be, but if there's 60k objects then using a 8bit
            type for certain fields would mean only the first 256 objects can be
@@ -441,22 +446,30 @@ SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong object
                     "Trade::SceneData: field data [" << Debug::nospace << fieldBegin << Debug::nospace << ":" << Debug::nospace << fieldEnd << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
             }
         }
+        #endif
 
-        /* Remember TRS and mesh/material fields to check their object mapping
-           consistency outside of the loop below */
-        if(_fields[i]._name == SceneField::Translation) {
+        /* Remember TRS and mesh/material fields to figure out whether the
+           scene is 2D or 3D and check their object mapping consistency outside
+           of the loop below */
+        if(_fields[i]._name == SceneField::Transformation) {
+            transformationField = i;
+        } else if(_fields[i]._name == SceneField::Translation) {
             translationField = i;
         } else if(_fields[i]._name == SceneField::Rotation) {
             rotationField = i;
         } else if(_fields[i]._name == SceneField::Scaling) {
             scalingField = i;
-        } else if(_fields[i]._name == SceneField::Mesh) {
+        }
+        #ifndef CORRADE_NO_ASSERT
+        else if(_fields[i]._name == SceneField::Mesh) {
             meshField = i;
         } else if(_fields[i]._name == SceneField::MeshMaterial) {
             meshMaterialField = i;
         }
+        #endif
     }
 
+    #ifndef CORRADE_NO_ASSERT
     /* Check that certain fields share the same object mapping. Printing as if
        all would be pointers (and not offset-only), it's not worth the extra
        effort just for an assert message. Also, compared to above, where
@@ -486,6 +499,67 @@ SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong object
     if(meshField != ~UnsignedInt{} && meshMaterialField != ~UnsignedInt{})
         checkFieldObjectDataMatch(_fields[meshField], _fields[meshMaterialField]);
     #endif
+
+    /* Decide about dimensionality based on transformation type, if present */
+    if(transformationField != ~UnsignedInt{}) {
+        const SceneFieldType fieldType = _fields[transformationField]._fieldType;
+        if(fieldType == SceneFieldType::Matrix3x3 ||
+           fieldType == SceneFieldType::Matrix3x3d ||
+           fieldType == SceneFieldType::DualComplex ||
+           fieldType == SceneFieldType::DualComplexd)
+            _dimensions = 2;
+        else if(fieldType == SceneFieldType::Matrix4x4 ||
+                fieldType == SceneFieldType::Matrix4x4d ||
+                fieldType == SceneFieldType::DualQuaternion ||
+                fieldType == SceneFieldType::DualQuaterniond)
+            _dimensions = 3;
+        else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    }
+
+    /* Use TRS fields to decide about dimensionality, if the transformation
+       field is not present. If it is, verify that they match it. */
+    if(translationField != ~UnsignedInt{}) {
+        const SceneFieldType fieldType = _fields[translationField]._fieldType;
+        if(fieldType == SceneFieldType::Vector2 ||
+           fieldType == SceneFieldType::Vector2d) {
+            CORRADE_ASSERT(!_dimensions || _dimensions == 2,
+                "Trade::SceneData: expected a 3D translation field but got" << fieldType, );
+            _dimensions = 2;
+        } else if(fieldType == SceneFieldType::Vector3 ||
+                  fieldType == SceneFieldType::Vector3d) {
+            CORRADE_ASSERT(!_dimensions || _dimensions == 3,
+                "Trade::SceneData: expected a 2D translation field but got" << fieldType, );
+            _dimensions = 3;
+        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    }
+    if(rotationField != ~UnsignedInt{}) {
+        const SceneFieldType fieldType = _fields[rotationField]._fieldType;
+        if(fieldType == SceneFieldType::Complex ||
+           fieldType == SceneFieldType::Complexd) {
+            CORRADE_ASSERT(!_dimensions || _dimensions == 2,
+                "Trade::SceneData: expected a 3D rotation field but got" << fieldType, );
+            _dimensions = 2;
+        } else if(fieldType == SceneFieldType::Quaternion ||
+                  fieldType == SceneFieldType::Quaterniond) {
+            CORRADE_ASSERT(!_dimensions || _dimensions == 3,
+                "Trade::SceneData: expected a 2D rotation field but got" << fieldType, );
+            _dimensions = 3;
+        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    }
+    if(scalingField != ~UnsignedInt{}) {
+        const SceneFieldType fieldType = _fields[scalingField]._fieldType;
+        if(fieldType == SceneFieldType::Vector2 ||
+           fieldType == SceneFieldType::Vector2d) {
+            CORRADE_ASSERT(!_dimensions || _dimensions == 2,
+                "Trade::SceneData: expected a 3D scaling field but got" << fieldType, );
+            _dimensions = 2;
+        } else if(fieldType == SceneFieldType::Vector3 ||
+                  fieldType == SceneFieldType::Vector3d) {
+            CORRADE_ASSERT(!_dimensions || _dimensions == 3,
+                "Trade::SceneData: expected a 2D scaling field but got" << fieldType, );
+            _dimensions = 3;
+        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    }
 }
 
 SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong objectCount, Containers::Array<char>&& data, const std::initializer_list<SceneFieldData> fields, const void* const importerState): SceneData{objectType, objectCount, std::move(data), Implementation::initializerListToArrayWithDefaultDeleter(fields), importerState} {}
@@ -903,6 +977,10 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
     /* *FieldId, offset and destination.size() is assumed to be in bounds (or
        an invalid field ID), checked by the callers */
 
+    /* If is2D() returned false as well, all *FieldId would be invalid, which
+       the caller is assumed to check. */
+    CORRADE_ASSERT(!is3D(), "Trade::SceneData::transformations2DInto(): scene has a 3D transformation type", );
+
     /** @todo apply scalings as well if dual complex? */
 
     /* Prefer the transformation field, if present */
@@ -919,11 +997,6 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
             convertTransformation<DualComplex>(fieldData, destination);
         } else if(field._fieldType == SceneFieldType::DualComplexd) {
             convertTransformation<DualComplexd>(fieldData, destination);
-        } else if(field._fieldType == SceneFieldType::Matrix4x4 ||
-                  field._fieldType == SceneFieldType::Matrix4x4d ||
-                  field._fieldType == SceneFieldType::DualQuaternion ||
-                  field._fieldType == SceneFieldType::DualQuaterniond) {
-            CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::transformations2DInto(): field has a 3D transformation type" << field._fieldType, );
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     /* If not, combine from TRS components */
@@ -941,9 +1014,6 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
                 applyScaling<Vector2>(fieldData, destination);
             } else if(field._fieldType == SceneFieldType::Vector2d) {
                 applyScaling<Vector2d>(fieldData, destination);
-            } else if(field._fieldType == SceneFieldType::Vector3 ||
-                      field._fieldType == SceneFieldType::Vector3d) {
-                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::transformations2DInto(): field has a 3D scaling type" << field._fieldType, );
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
 
@@ -956,9 +1026,6 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
                 applyRotation<Complex>(fieldData, destination);
             } else if(field._fieldType == SceneFieldType::Complexd) {
                 applyRotation<Complexd>(fieldData, destination);
-            } else if(field._fieldType == SceneFieldType::Quaternion ||
-                      field._fieldType == SceneFieldType::Quaterniond) {
-                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::transformations2DInto(): field has a 3D rotation type" << field._fieldType, );
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
 
@@ -971,9 +1038,6 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
                 applyTranslation<Vector2>(fieldData, destination);
             } else if(field._fieldType == SceneFieldType::Vector2d) {
                 applyTranslation<Vector2d>(fieldData, destination);
-            } else if(field._fieldType == SceneFieldType::Vector3 ||
-                      field._fieldType == SceneFieldType::Vector3d) {
-                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::transformations2DInto(): field has a 3D translation type" << field._fieldType, );
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
 
@@ -1022,6 +1086,10 @@ void SceneData::translationsRotationsScalings2DIntoInternal(const UnsignedInt tr
     /* *FieldId, offset and *Destination.size() is assumed to be in bounds (or
        an invalid field ID), checked by the callers */
 
+    /* If is2D() returned false as well, all *FieldId would be invalid, which
+       the caller is assumed to check. */
+    CORRADE_ASSERT(!is3D(), "Trade::SceneData::translationsRotationsScalings2DInto(): scene has a 3D transformation type", );
+
     /* Retrieve translation, if desired. If no field is present, output a zero
        vector for all objects. */
     if(translationDestination) {
@@ -1036,9 +1104,6 @@ void SceneData::translationsRotationsScalings2DIntoInternal(const UnsignedInt tr
                 Utility::copy(Containers::arrayCast<const Vector2>(fieldData), translationDestination);
             } else if(field._fieldType == SceneFieldType::Vector2d) {
                 Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 2), Containers::arrayCast<2, Float>(translationDestination));
-            } else if(field._fieldType == SceneFieldType::Vector3 ||
-                      field._fieldType == SceneFieldType::Vector3d) {
-                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::translationsRotationsScalings2DInto(): field has a 3D translation type" << field._fieldType, );
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
     }
@@ -1057,9 +1122,6 @@ void SceneData::translationsRotationsScalings2DIntoInternal(const UnsignedInt tr
                 Utility::copy(Containers::arrayCast<const Complex>(fieldData), rotationDestination);
             } else if(field._fieldType == SceneFieldType::Complexd) {
                 Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 2), Containers::arrayCast<2, Float>(rotationDestination));
-            } else if(field._fieldType == SceneFieldType::Quaternion ||
-                      field._fieldType == SceneFieldType::Quaterniond) {
-                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::translationsRotationsScalings2DInto(): field has a 3D rotation type" << field._fieldType, );
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
     }
@@ -1078,9 +1140,6 @@ void SceneData::translationsRotationsScalings2DIntoInternal(const UnsignedInt tr
                 Utility::copy(Containers::arrayCast<const Vector2>(fieldData), scalingDestination);
             } else if(field._fieldType == SceneFieldType::Vector2d) {
                 Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 2), Containers::arrayCast<2, Float>(scalingDestination));
-            } else if(field._fieldType == SceneFieldType::Vector3 ||
-                      field._fieldType == SceneFieldType::Vector3d) {
-                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::translationsRotationsScalings2DInto(): field has a 3D scaling type" << field._fieldType, );
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
     }
@@ -1144,6 +1203,10 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
     /* *FieldId, offset and destination.size() is assumed to be in bounds (or
        an invalid field ID), checked by the callers */
 
+    /* If is3D() returned false as well, all *FieldId would be invalid, which
+       the caller is assumed to check. */
+    CORRADE_ASSERT(!is2D(), "Trade::SceneData::transformations3DInto(): scene has a 2D transformation type", );
+
     /** @todo apply scalings as well if dual quat? */
 
     /* Prefer the transformation field, if present */
@@ -1160,11 +1223,6 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
             convertTransformation<DualQuaternion>(fieldData, destination);
         } else if(field._fieldType == SceneFieldType::DualQuaterniond) {
             convertTransformation<DualQuaterniond>(fieldData, destination);
-        } else if(field._fieldType == SceneFieldType::Matrix3x3 ||
-                  field._fieldType == SceneFieldType::Matrix3x3d ||
-                  field._fieldType == SceneFieldType::DualComplex ||
-                  field._fieldType == SceneFieldType::DualComplexd) {
-            CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::transformations3DInto(): field has a 2D transformation type" << field._fieldType, );
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     /* If not, combine from TRS components */
@@ -1182,9 +1240,6 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
                 applyScaling<Vector3>(fieldData, destination);
             } else if(field._fieldType == SceneFieldType::Vector3d) {
                 applyScaling<Vector3d>(fieldData, destination);
-            } else if(field._fieldType == SceneFieldType::Vector2 ||
-                      field._fieldType == SceneFieldType::Vector2d) {
-                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::transformations3DInto(): field has a 2D scaling type" << field._fieldType, );
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
 
@@ -1197,9 +1252,6 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
                 applyRotation<Quaternion>(fieldData, destination);
             } else if(field._fieldType == SceneFieldType::Quaterniond) {
                 applyRotation<Quaterniond>(fieldData, destination);
-            } else if(field._fieldType == SceneFieldType::Complex ||
-                      field._fieldType == SceneFieldType::Complexd) {
-                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::transformations3DInto(): field has a 2D rotation type" << field._fieldType, );
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
 
@@ -1212,9 +1264,6 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
                 applyTranslation<Vector3>(fieldData, destination);
             } else if(field._fieldType == SceneFieldType::Vector3d) {
                 applyTranslation<Vector3d>(fieldData, destination);
-            } else if(field._fieldType == SceneFieldType::Vector2 ||
-                      field._fieldType == SceneFieldType::Vector2d) {
-                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::transformations3DInto(): field has a 2D translation type" << field._fieldType, );
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
 
@@ -1263,6 +1312,10 @@ void SceneData::translationsRotationsScalings3DIntoInternal(const UnsignedInt tr
     /* *FieldId, offset and *Destination.size() is assumed to be in bounds (or
        an invalid field ID), checked by the callers */
 
+    /* If is3D() returned false as well, all *FieldId would be invalid, which
+       the caller is assumed to check. */
+    CORRADE_ASSERT(!is2D(), "Trade::SceneData::translationsRotationsScalings3DInto(): scene has a 2D transformation type", );
+
     /* Retrieve translation, if desired. If no field is present, output a zero
        vector for all objects. */
     if(translationDestination) {
@@ -1277,9 +1330,6 @@ void SceneData::translationsRotationsScalings3DIntoInternal(const UnsignedInt tr
                 Utility::copy(Containers::arrayCast<const Vector3>(fieldData), translationDestination);
             } else if(field._fieldType == SceneFieldType::Vector3d) {
                 Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 3), Containers::arrayCast<2, Float>(translationDestination));
-            } else if(field._fieldType == SceneFieldType::Vector2 ||
-                      field._fieldType == SceneFieldType::Vector2d) {
-                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::translationsRotationsScalings3DInto(): field has a 2D translation type" << field._fieldType, );
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
     }
@@ -1298,9 +1348,6 @@ void SceneData::translationsRotationsScalings3DIntoInternal(const UnsignedInt tr
                 Utility::copy(Containers::arrayCast<const Quaternion>(fieldData), rotationDestination);
             } else if(field._fieldType == SceneFieldType::Quaterniond) {
                 Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 4), Containers::arrayCast<2, Float>(rotationDestination));
-            } else if(field._fieldType == SceneFieldType::Complex ||
-                      field._fieldType == SceneFieldType::Complexd) {
-                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::translationsRotationsScalings3DInto(): field has a 2D rotation type" << field._fieldType, );
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
     }
@@ -1319,9 +1366,6 @@ void SceneData::translationsRotationsScalings3DIntoInternal(const UnsignedInt tr
                 Utility::copy(Containers::arrayCast<const Vector3>(fieldData), scalingDestination);
             } else if(field._fieldType == SceneFieldType::Vector3d) {
                 Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 3), Containers::arrayCast<2, Float>(scalingDestination));
-            } else if(field._fieldType == SceneFieldType::Vector2 ||
-                      field._fieldType == SceneFieldType::Vector2d) {
-                CORRADE_ASSERT_UNREACHABLE("Trade::SceneData::translationsRotationsScalings3DInto(): field has a 2D scaling type" << field._fieldType, );
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
     }
@@ -1698,39 +1742,9 @@ Containers::Optional<Matrix3> SceneData::transformation2DFor(const UnsignedInt o
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, fieldWithObjectMapping;
     if(findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, &fieldWithObjectMapping) == ~std::size_t{}) return {};
 
-    #ifndef CORRADE_NO_ASSERT
-    if(transformationFieldId != ~UnsignedInt{}) {
-        const SceneFieldType type = _fields[transformationFieldId]._fieldType;
-        CORRADE_ASSERT(
-            type == SceneFieldType::Matrix3x3 ||
-            type == SceneFieldType::Matrix3x3d ||
-            type == SceneFieldType::DualComplex ||
-            type == SceneFieldType::DualComplexd,
-            "Trade::SceneData::transformation2DFor(): field has a 3D transformation type" << type, {});
-    } else {
-        if(translationFieldId != ~UnsignedInt{}) {
-            const SceneFieldType type = _fields[translationFieldId]._fieldType;
-            CORRADE_ASSERT(
-                type == SceneFieldType::Vector2 ||
-                type == SceneFieldType::Vector2d,
-            "Trade::SceneData::transformation2DFor(): field has a 3D translation type" << type, {});
-        }
-        if(rotationFieldId != ~UnsignedInt{}) {
-            const SceneFieldType type = _fields[rotationFieldId]._fieldType;
-            CORRADE_ASSERT(
-                type == SceneFieldType::Complex ||
-                type == SceneFieldType::Complexd,
-            "Trade::SceneData::transformation2DFor(): field has a 3D rotation type" << type, {});
-        }
-        if(scalingFieldId != ~UnsignedInt{}) {
-            const SceneFieldType type = _fields[scalingFieldId]._fieldType;
-            CORRADE_ASSERT(
-                type == SceneFieldType::Vector2 ||
-                type == SceneFieldType::Vector2d,
-            "Trade::SceneData::transformation2DFor(): field has a 3D scaling type" << type, {});
-        }
-    }
-    #endif
+    /* If is2D() returned false as well, all *FieldId would be invalid, which
+       is handled above. */
+    CORRADE_ASSERT(!is3D(), "Trade::SceneData::transformation2DFor(): scene has a 3D transformation type", {});
 
     const std::size_t offset = fieldFor(_fields[fieldWithObjectMapping], 0, object);
     if(offset == _fields[fieldWithObjectMapping]._size) return {};
@@ -1747,29 +1761,9 @@ Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> SceneData::t
     UnsignedInt translationFieldId, rotationFieldId, scalingFieldId, fieldWithObjectMapping;
     if(findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId, &fieldWithObjectMapping) == ~std::size_t{}) return {};
 
-    #ifndef CORRADE_NO_ASSERT
-    if(translationFieldId != ~UnsignedInt{}) {
-        const SceneFieldType type = _fields[translationFieldId]._fieldType;
-        CORRADE_ASSERT(
-            type == SceneFieldType::Vector2 ||
-            type == SceneFieldType::Vector2d,
-        "Trade::SceneData::translationRotationScaling2DFor(): field has a 3D translation type" << type, {});
-    }
-    if(rotationFieldId != ~UnsignedInt{}) {
-        const SceneFieldType type = _fields[rotationFieldId]._fieldType;
-        CORRADE_ASSERT(
-            type == SceneFieldType::Complex ||
-            type == SceneFieldType::Complexd,
-        "Trade::SceneData::translationRotationScaling2DFor(): field has a 3D rotation type" << type, {});
-    }
-    if(scalingFieldId != ~UnsignedInt{}) {
-        const SceneFieldType type = _fields[scalingFieldId]._fieldType;
-        CORRADE_ASSERT(
-            type == SceneFieldType::Vector2 ||
-            type == SceneFieldType::Vector2d,
-        "Trade::SceneData::translationRotationScaling2DFor(): field has a 3D scaling type" << type, {});
-    }
-    #endif
+    /* If is2D() returned false as well, all *FieldId would be invalid, which
+       is handled above. */
+    CORRADE_ASSERT(!is3D(), "Trade::SceneData::translationRotationScaling2DFor(): scene has a 3D transformation type", {});
 
     const std::size_t offset = fieldFor(_fields[fieldWithObjectMapping], 0, object);
     if(offset == _fields[fieldWithObjectMapping]._size) return {};
@@ -1788,39 +1782,9 @@ Containers::Optional<Matrix4> SceneData::transformation3DFor(const UnsignedInt o
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, fieldWithObjectMapping;
     if(findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, &fieldWithObjectMapping) == ~std::size_t{}) return {};
 
-    #ifndef CORRADE_NO_ASSERT
-    if(transformationFieldId != ~UnsignedInt{}) {
-        const SceneFieldType type = _fields[transformationFieldId]._fieldType;
-        CORRADE_ASSERT(
-            type == SceneFieldType::Matrix4x4 ||
-            type == SceneFieldType::Matrix4x4d ||
-            type == SceneFieldType::DualQuaternion ||
-            type == SceneFieldType::DualQuaterniond,
-            "Trade::SceneData::transformation3DFor(): field has a 2D transformation type" << type, {});
-    } else {
-        if(translationFieldId != ~UnsignedInt{}) {
-            const SceneFieldType type = _fields[translationFieldId]._fieldType;
-            CORRADE_ASSERT(
-                type == SceneFieldType::Vector3 ||
-                type == SceneFieldType::Vector3d,
-            "Trade::SceneData::transformation3DFor(): field has a 2D translation type" << type, {});
-        }
-        if(rotationFieldId != ~UnsignedInt{}) {
-            const SceneFieldType type = _fields[rotationFieldId]._fieldType;
-            CORRADE_ASSERT(
-                type == SceneFieldType::Quaternion ||
-                type == SceneFieldType::Quaterniond,
-            "Trade::SceneData::transformation3DFor(): field has a 2D rotation type" << type, {});
-        }
-        if(scalingFieldId != ~UnsignedInt{}) {
-            const SceneFieldType type = _fields[scalingFieldId]._fieldType;
-            CORRADE_ASSERT(
-                type == SceneFieldType::Vector3 ||
-                type == SceneFieldType::Vector3d,
-            "Trade::SceneData::transformation3DFor(): field has a 2D scaling type" << type, {});
-        }
-    }
-    #endif
+    /* If is3D() returned false as well, all *FieldId would be invalid, which
+       is handled above. */
+    CORRADE_ASSERT(!is2D(), "Trade::SceneData::transformation3DFor(): scene has a 2D transformation type", {});
 
     const std::size_t offset = fieldFor(_fields[fieldWithObjectMapping], 0, object);
     if(offset == _fields[fieldWithObjectMapping]._size) return {};
@@ -1837,29 +1801,9 @@ Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> SceneData
     UnsignedInt translationFieldId, rotationFieldId, scalingFieldId, fieldWithObjectMapping;
     if(findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId, &fieldWithObjectMapping) == ~std::size_t{}) return {};
 
-    #ifndef CORRADE_NO_ASSERT
-    if(translationFieldId != ~UnsignedInt{}) {
-        const SceneFieldType type = _fields[translationFieldId]._fieldType;
-        CORRADE_ASSERT(
-            type == SceneFieldType::Vector3 ||
-            type == SceneFieldType::Vector3d,
-        "Trade::SceneData::translationRotationScaling3DFor(): field has a 2D translation type" << type, {});
-    }
-    if(rotationFieldId != ~UnsignedInt{}) {
-        const SceneFieldType type = _fields[rotationFieldId]._fieldType;
-        CORRADE_ASSERT(
-            type == SceneFieldType::Quaternion ||
-            type == SceneFieldType::Quaterniond,
-        "Trade::SceneData::translationRotationScaling3DFor(): field has a 2D rotation type" << type, {});
-    }
-    if(scalingFieldId != ~UnsignedInt{}) {
-        const SceneFieldType type = _fields[scalingFieldId]._fieldType;
-        CORRADE_ASSERT(
-            type == SceneFieldType::Vector3 ||
-            type == SceneFieldType::Vector3d,
-        "Trade::SceneData::translationRotationScaling3DFor(): field has a 2D scaling type" << type, {});
-    }
-    #endif
+    /* If is3D() returned false as well, all *FieldId would be invalid, which
+       is handled above. */
+    CORRADE_ASSERT(!is2D(), "Trade::SceneData::translationRotationScaling3DFor(): scene has a 2D transformation type", {});
 
     const std::size_t offset = fieldFor(_fields[fieldWithObjectMapping], 0, object);
     if(offset == _fields[fieldWithObjectMapping]._size) return {};

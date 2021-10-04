@@ -121,15 +121,18 @@ enum class SceneField: UnsignedInt {
      *
      * The transformation can be also represented by separate
      * @ref SceneField::Translation, @ref SceneField::Rotation and
-     * @ref SceneField::Scaling fields. If both @ref SceneField::Transformation
-     * and TRS fields are specified, it's expected that all objects that have
-     * TRS fields have a combined transformation field as well, and
+     * @ref SceneField::Scaling fields. All present transformation-related
+     * fields are expected to have the same dimensionality --- either all 2D or
+     * all 3D. If both @ref SceneField::Transformation and TRS fields are
+     * specified, it's expected that all objects that have TRS fields have a
+     * combined transformation field as well, and
      * @ref SceneData::transformations2DAsArray() /
      * @ref SceneData::transformations3DAsArray() then takes into account only
      * the combined transformation field. TRS fields can however be specified
      * only for a subset of transformed objects, useful for example when only
      * certain objects have these properties animated.
-     * @see @ref SceneData::transformations2DAsArray(),
+     * @see @ref SceneData::is2D(), @ref SceneData::is3D(),
+     *      @ref SceneData::transformations2DAsArray(),
      *      @ref SceneData::transformations3DAsArray(),
      *      @ref SceneData::transformation2DFor(),
      *      @ref SceneData::transformation3DFor()
@@ -146,11 +149,13 @@ enum class SceneField: UnsignedInt {
      *
      * The translation field usually is (but doesn't have to be) complemented
      * by a @ref SceneField::Rotation and @ref SceneField::Scaling, which, if
-     * present, are expected to all share the same object mapping view. The TRS
+     * present, are expected to all share the same object mapping view and have
+     * the same dimensionality, either all 2D or all 3D. The TRS
      * components can either completely replace @ref SceneField::Transformation
      * or be provided just for a subset of it --- see its documentation for
      * details.
-     * @see @ref SceneData::transformations2DAsArray(),
+     * @see @ref SceneData::is2D(), @ref SceneData::is3D(),
+     *      @ref SceneData::transformations2DAsArray(),
      *      @ref SceneData::transformations3DAsArray(),
      *      @ref SceneData::transformation2DFor(),
      *      @ref SceneData::transformation3DFor(),
@@ -171,11 +176,13 @@ enum class SceneField: UnsignedInt {
      *
      * The rotation field usually is (but doesn't have to be) complemented by a
      * @ref SceneField::Translation and @ref SceneField::Scaling, which, if
-     * present, are expected to all share the same object mapping view. The TRS
+     * present, are expected to all share the same object mapping view and have
+     * the same dimensionality, either all 2D or all 3D. The TRS
      * components can either completely replace @ref SceneField::Transformation
      * or be provided just for a subset of it --- see its documentation for
      * details.
-     * @see @ref SceneData::transformations2DAsArray(),
+     * @see @ref SceneData::is2D(), @ref SceneData::is3D(),
+     *      @ref SceneData::transformations2DAsArray(),
      *      @ref SceneData::transformations3DAsArray(),
      *      @ref SceneData::transformation2DFor(),
      *      @ref SceneData::transformation3DFor(),
@@ -196,11 +203,13 @@ enum class SceneField: UnsignedInt {
      *
      * The scaling field usually is (but doesn't have to be) complemented by a
      * @ref SceneField::Translation and @ref SceneField::Rotation, which, if
-     * present, are expected to all share the same object mapping view. The TRS
+     * present, are expected to all share the same object mapping view and have
+     * the same dimensionality, either all 2D or all 3D. The TRS
      * components can either completely replace @ref SceneField::Transformation
      * or be provided just for a subset of it --- see its documentation for
      * details.
-     * @see @ref SceneData::transformations2DAsArray(),
+     * @see @ref SceneData::is2D(), @ref SceneData::is3D(),
+     *      @ref SceneData::transformations2DAsArray(),
      *      @ref SceneData::transformations3DAsArray(),
      *      @ref SceneData::transformation2DFor(),
      *      @ref SceneData::transformation3DFor(),
@@ -994,8 +1003,46 @@ class MAGNUM_TRADE_EXPORT SceneData {
         UnsignedShort fieldArraySize(UnsignedInt id) const;
 
         /**
+         * @brief Whether the scene is two-dimensional
+         * @m_since_latest
+         *
+         * Returns @cpp true @ce if the present
+         * @ref SceneField::Transformation,
+         * @relativeref{SceneField,Translation},
+         * @relativeref{SceneField,Rotation} and
+         * @relativeref{SceneField,Scaling} fields have a 2D type,
+         * @cpp false @ce otherwise.
+         *
+         * If there's no transformation-related field, the scene is treated as
+         * neither 2D nor 3D and both @ref is2D() and @ref is3D() return
+         * @cpp false @ce. On the other hand, a scene can't be both 2D and 3D.
+         * @see @ref hasField()
+         */
+        bool is2D() const { return _dimensions == 2; }
+
+        /**
+         * @brief Whether the scene is three-dimensional
+         * @m_since_latest
+         *
+         * Returns @cpp true @ce if the present
+         * @ref SceneField::Transformation,
+         * @relativeref{SceneField,Translation},
+         * @relativeref{SceneField,Rotation} and
+         * @relativeref{SceneField,Scaling} fields have a 3D type,
+         * @cpp false @ce otherwise.
+         *
+         * If there's no transformation-related field, the scene is treated as
+         * neither 2D nor 3D and both @ref is2D() and @ref is3D() return
+         * @cpp false @ce. On the other hand, a scene can't be both 2D and 3D.
+         * @see @ref hasField()
+         */
+        bool is3D() const { return _dimensions == 3; }
+
+        /**
          * @brief Whether the scene has given field
          * @m_since_latest
+         *
+         * @see @ref is2D(), @ref is3D()
          */
         bool hasField(SceneField name) const;
 
@@ -1430,7 +1477,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * expected to exist and they are expected to have a type corresponding
          * to 2D, otherwise you're supposed to use
          * @ref transformations3DAsArray().
-         * @see @ref transformations2DInto(), @ref hasField(),
+         * @see @ref is2D(), @ref transformations2DInto(), @ref hasField(),
          *      @ref fieldType(SceneField) const, @ref transformation2DFor()
          */
         Containers::Array<Matrix3> transformations2DAsArray() const;
@@ -1476,8 +1523,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * field isn't present, the second value is an identity rotation. If
          * the @relativeref{SceneField,Scaling} field isn't present, the third
          * value is an identity scaling (@cpp 1.0f @ce in both dimensions).
-         * @see @ref translationsRotationsScalings2DInto(), @ref hasField(),
-         *      @ref fieldType(SceneField) const,
+         * @see @ref is2D(), @ref translationsRotationsScalings2DInto(),
+         *      @ref hasField(), @ref fieldType(SceneField) const,
          *      @ref translationRotationScaling2DFor()
          */
         Containers::Array<Containers::Triple<Vector2, Complex, Vector2>> translationsRotationsScalings2DAsArray() const;
@@ -1522,7 +1569,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * expected to exist and they are expected to have a type corresponding
          * to 3D, otherwise you're supposed to use
          * @ref transformations2DAsArray().
-         * @see @ref transformations3DInto(), @ref hasField(),
+         * @see @ref is3D(), @ref transformations3DInto(), @ref hasField(),
          *      @ref fieldType(SceneField) const, @ref transformation3DFor()
          */
         Containers::Array<Matrix4> transformations3DAsArray() const;
@@ -1568,8 +1615,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * field isn't present, the second value is an identity rotation. If
          * the @relativeref{SceneField,Scaling} field isn't present, the third
          * value is an identity scaling (@cpp 1.0f @ce in all dimensions).
-         * @see @ref translationsRotationsScalings3DInto(), @ref hasField(),
-         *      @ref fieldType(SceneField) const,
+         * @see @ref is3D(), @ref translationsRotationsScalings3DInto(),
+         *      @ref hasField(), @ref fieldType(SceneField) const,
          *      @ref translationRotationScaling3DFor()
          */
         Containers::Array<Containers::Triple<Vector3, Quaternion, Vector3>> translationsRotationsScalings3DAsArray() const;
@@ -2114,7 +2161,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         DataFlags _dataFlags;
         SceneObjectType _objectType;
-        /* 2/6 bytes free */
+        UnsignedByte _dimensions;
+        /* 1/5 bytes free */
         UnsignedLong _objectCount;
         const void* _importerState;
         Containers::Array<SceneFieldData> _fields;
