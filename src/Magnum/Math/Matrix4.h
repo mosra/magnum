@@ -397,7 +397,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * If you need an off-center projection, use
          * @ref perspectiveProjection(const Vector2<T>&, const Vector2<T>&, T, T)
          * instead.
-         * @see @ref perspectiveProjection(Rad<T> fov, T, T, T),
+         * @see @ref perspectiveProjection(Rad<T>, T, T, T),
          *      @ref orthographicProjection(), @ref Matrix3::projection(),
          *      @ref Constants::inf()
          */
