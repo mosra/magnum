@@ -384,6 +384,7 @@ SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong object
     #ifndef CORRADE_NO_ASSERT
     UnsignedInt meshField = ~UnsignedInt{};
     UnsignedInt meshMaterialField = ~UnsignedInt{};
+    UnsignedInt skinField = ~UnsignedInt{};
     #endif
     for(std::size_t i = 0; i != _fields.size(); ++i) {
         const SceneFieldData& field = _fields[i];
@@ -465,6 +466,8 @@ SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong object
             meshField = i;
         } else if(_fields[i]._name == SceneField::MeshMaterial) {
             meshMaterialField = i;
+        } else if(_fields[i]._name == SceneField::Skin) {
+            skinField = i;
         }
         #endif
     }
@@ -560,6 +563,11 @@ SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong object
             _dimensions = 3;
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
+
+    /* A skin field requires some transformation field to exist in order to
+       disambiguate between 2D and 3D */
+    CORRADE_ASSERT(skinField == ~UnsignedInt{} || _dimensions,
+        "Trade::SceneData: a skin field requires some transformation field to be present in order to disambiguate between 2D and 3D", );
 }
 
 SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong objectCount, Containers::Array<char>&& data, const std::initializer_list<SceneFieldData> fields, const void* const importerState): SceneData{objectType, objectCount, std::move(data), Implementation::initializerListToArrayWithDefaultDeleter(fields), importerState} {}

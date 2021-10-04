@@ -273,12 +273,14 @@ enum class SceneField: UnsignedInt {
 
     /**
      * ID of a skin associated with this object, corresponding to the ID
-     * passed to @ref AbstractImporter::skin(). Type is usually
-     * @ref SceneFieldType::UnsignedInt, but can be also any of
-     * @relativeref{SceneFieldType,UnsignedByte} or
+     * passed to @ref AbstractImporter::skin2D() or
+     * @ref AbstractImporter::skin3D(), depending on whether the scene has a 2D
+     * or 3D transformation. Type is usually @ref SceneFieldType::UnsignedInt,
+     * but can be also any of @relativeref{SceneFieldType,UnsignedByte} or
      * @relativeref{SceneFieldType,UnsignedShort}. An object can have multiple
      * skins associated.
-     * @see @ref SceneData::skinsAsArray(), @ref SceneData::skinsFor()
+     * @see @ref SceneData::is2D(), @ref SceneData::is3D(),
+     *      @ref SceneData::skinsAsArray(), @ref SceneData::skinsFor()
      */
     Skin,
 
