@@ -681,10 +681,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Default scene
+         * @return Scene ID from range [0, @ref sceneCount()) or @cpp -1 @ce if
+         *      there's no default scene
          *
-         * When there is more than one scene, returns ID of the default one.
-         * If there is no default scene, returns @cpp -1 @ce. Expects that a
-         * file is opened.
+         * Expects that a file is opened.
          */
         Int defaultScene() const;
 
@@ -696,10 +696,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt sceneCount() const;
 
         /**
-         * @brief Scene ID for given name
+         * @brief Scene for given name
+         * @return Scene ID from range [0, @ref sceneCount()) or @cpp -1 @ce if
+         *      no scene for given name exists
          *
-         * If no scene for given name exists, returns @cpp -1 @ce. Expects that
-         * a file is opened.
+         * Expects that a file is opened.
          * @see @ref sceneName(), @ref scene(const std::string&)
          */
         Int sceneForName(const std::string& name);
@@ -744,10 +745,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt animationCount() const;
 
         /**
-         * @brief Animation ID for given name
+         * @brief Animation for given name
+         * @return Animation ID from range [0, @ref animationCount()) or
+         *      @cpp -1 @ce if no animation for given name exists
          *
-         * If no animation for given name exists, returns @cpp -1 @ce. Expects
-         * that a file is opened.
+         * Expects that a file is opened.
          * @see @ref animationName(), @ref animation(const std::string&)
          */
         Int animationForName(const std::string& name);
@@ -792,10 +794,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt lightCount() const;
 
         /**
-         * @brief Light ID for given name
+         * @brief Light for given name
+         * @return Light ID from range [0, @ref lightCount()) or @cpp -1 @ce if
+         *      no light for given name exists
          *
-         * If no light for given name exists, returns @cpp -1 @ce. Expects that
-         * a file is opened.
+         * Expects that a file is opened.
          * @see @ref lightName(), @ref light(const std::string&)
          */
         Int lightForName(const std::string& name);
@@ -840,10 +843,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt cameraCount() const;
 
         /**
-         * @brief Camera ID for given name
+         * @brief Camera for given name
+         * @return Camera ID from range [0, @ref cameraCount()) or @cpp -1 @ce
+         *      if no camera for given name exists
          *
-         * If no camera for given name exists, returns @cpp -1 @ce. Expects
-         * that a file is opened.
+         * Expects that a file is opened.
          * @see @ref cameraName(), @ref camera(const std::string&)
          */
         Int cameraForName(const std::string& name);
@@ -888,10 +892,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt object2DCount() const;
 
         /**
-         * @brief Two-dimensional object ID for given name
+         * @brief Two-dimensional object for given name
+         * @return Object ID from range [0, @ref object2DCount()) or
+         *      @cpp -1 @ce if no object for given name exists
          *
-         * If no object for given name exists, returns @cpp -1 @ce. Expects
-         * that a file is opened.
+         * Expects that a file is opened.
          * @see @ref object2DName(), @ref object2D(const std::string&)
          */
         Int object2DForName(const std::string& name);
@@ -936,10 +941,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt object3DCount() const;
 
         /**
-         * @brief Three-dimensional object ID for given name
+         * @brief Three-dimensional object for given name
+         * @return Object ID from range [0, @ref object3DCount()) or
+         *      @cpp -1 @ce if no object for given name exists
          *
-         * If no object for given name exists, returns @cpp -1 @ce. Expects
-         * that a file is opened.
+         * Expects that a file is opened.
          * @see @ref object3DName(), @ref object3D(const std::string&)
          */
         Int object3DForName(const std::string& name);
@@ -985,11 +991,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt skin2DCount() const;
 
         /**
-         * @brief Two-dimensional skin ID for given name
+         * @brief Two-dimensional skin for given name
+         * @return Skin ID from range [0, @ref skin2DCount()) or @cpp -1 @ce if
+         *      no skin for given name exists
          * @m_since_latest
          *
-         * If no skin for given name exists, returns @cpp -1 @ce. Expects that
-         * a file is opened.
+         * Expects that a file is opened.
          * @see @ref skin2DName(), @ref skin2D(const std::string&)
          */
         Int skin2DForName(const std::string& name);
@@ -1037,11 +1044,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt skin3DCount() const;
 
         /**
-         * @brief Three-dimensional skin ID for given name
+         * @brief Three-dimensional skin for given name
+         * @return Skin ID from range [0, @ref skin3DCount()) or @cpp -1 @ce if
+         *      no skin for given name exists
          * @m_since_latest
          *
-         * If no skin for given name exists, returns @cpp -1 @ce. Expects that
-         * a file is opened.
+         * Expects that a file is opened.
          * @see @ref skin3DName(), @ref skin3D(const std::string&)
          */
         Int skin3DForName(const std::string& name);
@@ -1100,11 +1108,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt meshLevelCount(UnsignedInt id);
 
         /**
-         * @brief Mesh ID for given name
+         * @brief Mesh for given name
+         * @return Mesh ID from range [0, @ref meshCount()) or @cpp -1 @ce if
+         *      no mesh for given name exists
          * @m_since{2020,06}
          *
-         * If no mesh for given name exists, returns @cpp -1 @ce. Expects that
-         * a file is opened.
+         * Expects that a file is opened.
          * @see @ref meshName(), @ref mesh(const std::string&, UnsignedInt)
          */
         Int meshForName(const std::string& name);
@@ -1267,10 +1276,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt materialCount() const;
 
         /**
-         * @brief Material ID for given name
+         * @brief Material for given name
+         * @return Material ID from range [0, @ref materialCount()) or
+         *      @cpp -1 @ce if no material for given name exists
          *
-         * If no material for given name exists, returns @cpp -1 @ce. Expects
-         * that a file is opened.
+         * Expects that a file is opened.
          * @see @ref materialName()
          */
         Int materialForName(const std::string& name);
@@ -1325,10 +1335,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt textureCount() const;
 
         /**
-         * @brief Texture ID for given name
+         * @brief Texture for given name
+         * @return Texture ID from range [0, @ref textureCount()) or
+         *      @cpp -1 @ce if no texture for given name exists
          *
-         * If no texture for given name exists, returns @cpp -1 @ce. Expects
-         * that a file is opened.
+         * Expects that a file is opened.
          * @see @ref textureName(), @ref texture(const std::string&)
          */
         Int textureForName(const std::string& name);
@@ -1384,10 +1395,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt image1DLevelCount(UnsignedInt id);
 
         /**
-         * @brief One-dimensional image ID for given name
+         * @brief One-dimensional image for given name
+         * @return Image ID from range [0, @ref image1DCount()) or @cpp -1 @ce
+         *      if no image for given name exists
          *
-         * If no image for given name exists, returns @cpp -1 @ce. Expects that
-         * a file is opened.
+         * Expects that a file is opened.
          * @see @ref image1DName(), @ref image1D(const std::string&, UnsignedInt)
          */
         Int image1DForName(const std::string& name);
@@ -1445,10 +1457,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt image2DLevelCount(UnsignedInt id);
 
         /**
-         * @brief Two-dimensional image ID for given name
+         * @brief Two-dimensional image for given name
+         * @return Image ID from range [0, @ref image2DCount()) or @cpp -1 @ce
+         *      if no image for given name exists
          *
-         * If no image for given name exists, returns @cpp -1 @ce. Expects that
-         * a file is opened.
+         * Expects that a file is opened.
          * @see @ref image2DName(), @ref image2D(const std::string&, UnsignedInt)
          */
         Int image2DForName(const std::string& name);
@@ -1506,10 +1519,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedInt image3DLevelCount(UnsignedInt id);
 
         /**
-         * @brief Three-dimensional image ID for given name
+         * @brief Three-dimensional image for given name
+         * @return Image ID from range [0, @ref image3DCount()) or @cpp -1 @ce
+         *      if no image for given name exists
          *
-         * If no image for given name exists, returns @cpp -1 @ce. Expects that
-         * a file is opened.
+         * Expects that a file is opened.
          * @see @ref image3DName(), @ref image3D(const std::string&, UnsignedInt)
          */
         Int image3DForName(const std::string& name);

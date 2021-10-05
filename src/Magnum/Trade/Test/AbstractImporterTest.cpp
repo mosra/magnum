@@ -101,15 +101,18 @@ struct AbstractImporterTest: TestSuite::Tester {
 
     void defaultScene();
     void defaultSceneNotImplemented();
+    void defaultSceneOutOfRange();
 
     void scene();
     void sceneNameNotImplemented();
+    void sceneForNameOutOfRange();
     void sceneNameOutOfRange();
     void sceneNotImplemented();
     void sceneOutOfRange();
 
     void animation();
     void animationNameNotImplemented();
+    void animationForNameOutOfRange();
     void animationNameOutOfRange();
     void animationNotImplemented();
     void animationOutOfRange();
@@ -120,30 +123,35 @@ struct AbstractImporterTest: TestSuite::Tester {
 
     void light();
     void lightNameNotImplemented();
+    void lightForNameOutOfRange();
     void lightNameOutOfRange();
     void lightNotImplemented();
     void lightOutOfRange();
 
     void camera();
     void cameraNameNotImplemented();
+    void cameraForNameOutOfRange();
     void cameraNameOutOfRange();
     void cameraNotImplemented();
     void cameraOutOfRange();
 
     void object2D();
     void object2DNameNotImplemented();
+    void object2DForNameOutOfRange();
     void object2DNameOutOfRange();
     void object2DNotImplemented();
     void object2DOutOfRange();
 
     void object3D();
     void object3DNameNotImplemented();
+    void object3DForNameOutOfRange();
     void object3DNameOutOfRange();
     void object3DNotImplemented();
     void object3DOutOfRange();
 
     void skin2D();
     void skin2DNameNotImplemented();
+    void skin2DForNameOutOfRange();
     void skin2DNameOutOfRange();
     void skin2DNotImplemented();
     void skin2DOutOfRange();
@@ -153,6 +161,7 @@ struct AbstractImporterTest: TestSuite::Tester {
 
     void skin3D();
     void skin3DNameNotImplemented();
+    void skin3DForNameOutOfRange();
     void skin3DNameOutOfRange();
     void skin3DNotImplemented();
     void skin3DOutOfRange();
@@ -167,6 +176,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void meshLevelCountNotImplemented();
     void meshLevelCountOutOfRange();
     void meshLevelCountZero();
+    void meshForNameOutOfRange();
     void meshNameNotImplemented();
     void meshNameOutOfRange();
     void meshNotImplemented();
@@ -212,6 +222,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     #ifdef MAGNUM_BUILD_DEPRECATED
     void materialDeprecatedFallback();
     #endif
+    void materialForNameOutOfRange();
     void materialNameNotImplemented();
     void materialNameOutOfRange();
     void materialNotImplemented();
@@ -221,6 +232,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void materialCustomLayerDataDeleter();
 
     void texture();
+    void textureForNameOutOfRange();
     void textureNameNotImplemented();
     void textureNameOutOfRange();
     void textureNotImplemented();
@@ -230,6 +242,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image1DLevelCountNotImplemented();
     void image1DLevelCountOutOfRange();
     void image1DLevelCountZero();
+    void image1DForNameOutOfRange();
     void image1DNameNotImplemented();
     void image1DNameOutOfRange();
     void image1DNotImplemented();
@@ -243,6 +256,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image2DLevelCountNotImplemented();
     void image2DLevelCountOutOfRange();
     void image2DLevelCountZero();
+    void image2DForNameOutOfRange();
     void image2DNameNotImplemented();
     void image2DNameOutOfRange();
     void image2DNotImplemented();
@@ -256,6 +270,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image3DLevelCountNotImplemented();
     void image3DLevelCountOutOfRange();
     void image3DLevelCountZero();
+    void image3DForNameOutOfRange();
     void image3DNameNotImplemented();
     void image3DNameOutOfRange();
     void image3DNotImplemented();
@@ -326,15 +341,18 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::thingNoFile,
 
               &AbstractImporterTest::defaultScene,
+              &AbstractImporterTest::defaultSceneOutOfRange,
               &AbstractImporterTest::defaultSceneNotImplemented,
 
               &AbstractImporterTest::scene,
+              &AbstractImporterTest::sceneForNameOutOfRange,
               &AbstractImporterTest::sceneNameNotImplemented,
               &AbstractImporterTest::sceneNameOutOfRange,
               &AbstractImporterTest::sceneNotImplemented,
               &AbstractImporterTest::sceneOutOfRange,
 
               &AbstractImporterTest::animation,
+              &AbstractImporterTest::animationForNameOutOfRange,
               &AbstractImporterTest::animationNameNotImplemented,
               &AbstractImporterTest::animationNameOutOfRange,
               &AbstractImporterTest::animationNotImplemented,
@@ -345,30 +363,35 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::animationCustomTrackDeleter,
 
               &AbstractImporterTest::light,
+              &AbstractImporterTest::lightForNameOutOfRange,
               &AbstractImporterTest::lightNameNotImplemented,
               &AbstractImporterTest::lightNameOutOfRange,
               &AbstractImporterTest::lightNotImplemented,
               &AbstractImporterTest::lightOutOfRange,
 
               &AbstractImporterTest::camera,
+              &AbstractImporterTest::cameraForNameOutOfRange,
               &AbstractImporterTest::cameraNameNotImplemented,
               &AbstractImporterTest::cameraNameOutOfRange,
               &AbstractImporterTest::cameraNotImplemented,
               &AbstractImporterTest::cameraOutOfRange,
 
               &AbstractImporterTest::object2D,
+              &AbstractImporterTest::object2DForNameOutOfRange,
               &AbstractImporterTest::object2DNameNotImplemented,
               &AbstractImporterTest::object2DNameOutOfRange,
               &AbstractImporterTest::object2DNotImplemented,
               &AbstractImporterTest::object2DOutOfRange,
 
               &AbstractImporterTest::object3D,
+              &AbstractImporterTest::object3DForNameOutOfRange,
               &AbstractImporterTest::object3DNameNotImplemented,
               &AbstractImporterTest::object3DNameOutOfRange,
               &AbstractImporterTest::object3DNotImplemented,
               &AbstractImporterTest::object3DOutOfRange,
 
               &AbstractImporterTest::skin2D,
+              &AbstractImporterTest::skin2DForNameOutOfRange,
               &AbstractImporterTest::skin2DNameNotImplemented,
               &AbstractImporterTest::skin2DNameOutOfRange,
               &AbstractImporterTest::skin2DNotImplemented,
@@ -378,6 +401,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::skin2DCustomInverseBindMatrixDataDeleter,
 
               &AbstractImporterTest::skin3D,
+              &AbstractImporterTest::skin3DForNameOutOfRange,
               &AbstractImporterTest::skin3DNameNotImplemented,
               &AbstractImporterTest::skin3DNameOutOfRange,
               &AbstractImporterTest::skin3DNotImplemented,
@@ -393,6 +417,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::meshLevelCountNotImplemented,
               &AbstractImporterTest::meshLevelCountOutOfRange,
               &AbstractImporterTest::meshLevelCountZero,
+              &AbstractImporterTest::meshForNameOutOfRange,
               &AbstractImporterTest::meshNameNotImplemented,
               &AbstractImporterTest::meshNameOutOfRange,
               &AbstractImporterTest::meshNotImplemented,
@@ -438,6 +463,7 @@ AbstractImporterTest::AbstractImporterTest() {
               #ifdef MAGNUM_BUILD_DEPRECATED
               &AbstractImporterTest::materialDeprecatedFallback,
               #endif
+              &AbstractImporterTest::materialForNameOutOfRange,
               &AbstractImporterTest::materialNameNotImplemented,
               &AbstractImporterTest::materialNameOutOfRange,
               &AbstractImporterTest::materialNotImplemented,
@@ -447,6 +473,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::materialCustomLayerDataDeleter,
 
               &AbstractImporterTest::texture,
+              &AbstractImporterTest::textureForNameOutOfRange,
               &AbstractImporterTest::textureNameNotImplemented,
               &AbstractImporterTest::textureNameOutOfRange,
               &AbstractImporterTest::textureNotImplemented,
@@ -456,6 +483,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image1DLevelCountNotImplemented,
               &AbstractImporterTest::image1DLevelCountOutOfRange,
               &AbstractImporterTest::image1DLevelCountZero,
+              &AbstractImporterTest::image1DForNameOutOfRange,
               &AbstractImporterTest::image1DNameNotImplemented,
               &AbstractImporterTest::image1DNameOutOfRange,
               &AbstractImporterTest::image1DNotImplemented,
@@ -469,6 +497,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image2DLevelCountNotImplemented,
               &AbstractImporterTest::image2DLevelCountOutOfRange,
               &AbstractImporterTest::image2DLevelCountZero,
+              &AbstractImporterTest::image2DForNameOutOfRange,
               &AbstractImporterTest::image2DNameNotImplemented,
               &AbstractImporterTest::image2DNameOutOfRange,
               &AbstractImporterTest::image2DNotImplemented,
@@ -482,6 +511,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image3DLevelCountNotImplemented,
               &AbstractImporterTest::image3DLevelCountOutOfRange,
               &AbstractImporterTest::image3DLevelCountZero,
+              &AbstractImporterTest::image3DForNameOutOfRange,
               &AbstractImporterTest::image3DNameNotImplemented,
               &AbstractImporterTest::image3DNameOutOfRange,
               &AbstractImporterTest::image3DNotImplemented,
@@ -1446,6 +1476,7 @@ void AbstractImporterTest::defaultScene() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        UnsignedInt doSceneCount() const override { return 43; }
         Int doDefaultScene() const override { return 42; }
     } importer;
 
@@ -1460,6 +1491,26 @@ void AbstractImporterTest::defaultSceneNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.defaultScene(), -1);
+}
+
+void AbstractImporterTest::defaultSceneOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 8; }
+        Int doDefaultScene() const override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.defaultScene();
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::defaultScene(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
 int state;
@@ -1498,6 +1549,26 @@ void AbstractImporterTest::scene() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::sceneForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 8; }
+        Int doSceneForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.sceneForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::sceneForName(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
 void AbstractImporterTest::sceneNameNotImplemented() {
@@ -1611,6 +1682,26 @@ void AbstractImporterTest::animation() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::animationForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doAnimationCount() const override { return 8; }
+        Int doAnimationForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.animationForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animationForName(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
 void AbstractImporterTest::animationNameNotImplemented() {
@@ -1816,6 +1907,26 @@ void AbstractImporterTest::light() {
     }
 }
 
+void AbstractImporterTest::lightForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doLightCount() const override { return 8; }
+        Int doLightForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.lightForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::lightForName(): implementation-returned index 8 out of range for 8 entries\n");
+}
+
 void AbstractImporterTest::lightNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1922,6 +2033,26 @@ void AbstractImporterTest::camera() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::cameraForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doCameraCount() const override { return 8; }
+        Int doCameraForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.cameraForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::cameraForName(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
 void AbstractImporterTest::cameraNameNotImplemented() {
@@ -2032,6 +2163,26 @@ void AbstractImporterTest::object2D() {
     }
 }
 
+void AbstractImporterTest::object2DForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doObject2DCount() const override { return 8; }
+        Int doObject2DForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.object2DForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2DForName(): implementation-returned index 8 out of range for 8 entries\n");
+}
+
 void AbstractImporterTest::object2DNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -2138,6 +2289,26 @@ void AbstractImporterTest::object3D() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::object3DForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doObject3DCount() const override { return 8; }
+        Int doObject3DForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.object3DForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3DForName(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
 void AbstractImporterTest::object3DNameNotImplemented() {
@@ -2248,6 +2419,26 @@ void AbstractImporterTest::skin2D() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::skin2DForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin2DCount() const override { return 8; }
+        Int doSkin2DForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.skin2DForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::skin2DForName(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
 void AbstractImporterTest::skin2DNameNotImplemented() {
@@ -2440,6 +2631,27 @@ void AbstractImporterTest::skin3D() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::skin3DForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin3DCount() const override { return 8; }
+        Int doSkin3DForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.skin3DForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::skin3DForName(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
 void AbstractImporterTest::skin3DNameNotImplemented() {
@@ -2734,6 +2946,26 @@ void AbstractImporterTest::meshLevelCountZero() {
         "Trade::AbstractImporter::meshLevelCount(): implementation reported zero levels\n"
         "Trade::AbstractImporter::mesh(): implementation reported zero levels\n"
         "Trade::AbstractImporter::mesh(): implementation reported zero levels\n");
+}
+
+void AbstractImporterTest::meshForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 8; }
+        Int doMeshForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.meshForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::meshForName(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
 void AbstractImporterTest::meshNameNotImplemented() {
@@ -3544,6 +3776,26 @@ void AbstractImporterTest::materialDeprecatedFallback() {
 }
 #endif
 
+void AbstractImporterTest::materialForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMaterialCount() const override { return 8; }
+        Int doMaterialForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.materialForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::materialForName(): implementation-returned index 8 out of range for 8 entries\n");
+}
+
 void AbstractImporterTest::materialNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3735,6 +3987,26 @@ void AbstractImporterTest::texture() {
     }
 }
 
+void AbstractImporterTest::textureForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doTextureCount() const override { return 8; }
+        Int doTextureForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.textureForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::textureForName(): implementation-returned index 8 out of range for 8 entries\n");
+}
+
 void AbstractImporterTest::textureNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3905,6 +4177,26 @@ void AbstractImporterTest::image1DLevelCountZero() {
         "Trade::AbstractImporter::image1DLevelCount(): implementation reported zero levels\n"
         "Trade::AbstractImporter::image1D(): implementation reported zero levels\n"
         "Trade::AbstractImporter::image1D(): implementation reported zero levels\n");
+}
+
+void AbstractImporterTest::image1DForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage1DCount() const override { return 8; }
+        Int doImage1DForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.image1DForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image1DForName(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
 void AbstractImporterTest::image1DNameNotImplemented() {
@@ -4168,6 +4460,26 @@ void AbstractImporterTest::image2DLevelCountZero() {
         "Trade::AbstractImporter::image2D(): implementation reported zero levels\n");
 }
 
+void AbstractImporterTest::image2DForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage2DCount() const override { return 8; }
+        Int doImage2DForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.image2DForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image2DForName(): implementation-returned index 8 out of range for 8 entries\n");
+}
+
 void AbstractImporterTest::image2DNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4368,6 +4680,26 @@ void AbstractImporterTest::image3D() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::image3DForNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage3DCount() const override { return 8; }
+        Int doImage3DForName(const std::string&) override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.image3DForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image3DForName(): implementation-returned index 8 out of range for 8 entries\n");
 }
 
 void AbstractImporterTest::image3DLevelCountNotImplemented() {
