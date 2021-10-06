@@ -764,7 +764,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * creates an instance that doesn't own the passed vertex and index
          * data. The @p indexDataFlags / @p vertexDataFlags parameters can
          * contain @ref DataFlag::Mutable to indicate the external data can be
-         * modified, and is expected to *not* have @ref DataFlag::Owned set.
+         * modified, and are expected to *not* have @ref DataFlag::Owned set.
          */
         explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr) noexcept;
 

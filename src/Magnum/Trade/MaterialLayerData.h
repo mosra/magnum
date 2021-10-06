@@ -40,7 +40,7 @@ namespace Magnum { namespace Trade {
 @m_since_latest
 
 Convenience wrapper that re-routes all @ref MaterialData base material layer
-and attribute accessors APIS from to a layer specified in the @p layer template
+and attribute accessors APIs from to a layer specified in the @p layer template
 parameter. All APIs expect that given layer exists. See
 @ref Trade-MaterialData-usage-layers for more information.
 */

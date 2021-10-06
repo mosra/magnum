@@ -1227,8 +1227,8 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          * In case of a @ref MaterialAttributeType::String, returns a
          * null-terminated @cpp const char* @ce (not a pointer to
          * @ref Containers::StringView). This doesn't preserve the actual
-         * string size in case the string data contain zero bytes, thus prefer
-         * to use typed access in that case.
+         * string size in case the string data contain @cpp '\0' @ce bytes,
+         * thus prefer to use typed access in that case.
          */
         const void* value() const;
 
@@ -2214,8 +2214,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * -    In case of a @ref MaterialAttributeType::String returns a
          *      null-terminated @cpp const char* @ce (not a pointer to
          *      @ref Containers::StringView). This doesn't preserve the actual
-         *      string size in case the string data contain zero bytes, thus prefer
-         *      to use typed access in that case.
+         *      string size in case the string data contain zero bytes, thus
+         *      prefer to use typed access in that case.
          *
          * @see @ref hasAttribute(), @ref tryAttribute(), @ref attributeOr()
          */
@@ -2235,8 +2235,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * -    In case of a @ref MaterialAttributeType::String returns a
          *      null-terminated @cpp const char* @ce (not a pointer to
          *      @ref Containers::StringView). This doesn't preserve the actual
-         *      string size in case the string data contain zero bytes, thus prefer
-         *      to use typed access in that case.
+         *      string size in case the string data contain zero bytes, thus
+         *      prefer to use typed access in that case.
          *
          * @see @ref hasLayer()
          */
@@ -2538,7 +2538,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * Releases the ownership of the layer offset array and resets internal
          * layer-related state to default. The material then behaves like if it
          * has no layers. Note that the returned array has a custom no-op
-         * deleter when the data are not owned by the mesh, and while the
+         * deleter when the data are not owned by the material, and while the
          * returned array type is mutable, the actual memory might be not.
          *
          * @attention Querying attributes after calling @ref releaseLayerData()
@@ -2555,8 +2555,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * Releases the ownership of the attribute array and resets internal
          * attribute-related state to default. The material then behaves like
          * if it has no attributes. Note that the returned array has a custom
-         * no-op deleter when the data are not owned by the mesh, and while the
-         * returned array type is mutable, the actual memory might be not.
+         * no-op deleter when the data are not owned by the material, and while
+         * the returned array type is mutable, the actual memory might be not.
          *
          * @attention Querying layers after calling @ref releaseAttributeData()
          *      has undefined behavior and might lead to crashes. This is done
