@@ -758,6 +758,7 @@ template<> MAGNUM_TRADE_EXPORT Containers::StringView MaterialData::attribute<Co
         "Trade::MaterialData::attribute():" << (data._data.data + 1) << "of" << data._data.type << "can't be retrieved as a string", {});
     return {data._data.s.nameValue + Implementation::MaterialAttributeDataSize - data._data.s.size - 3, data._data.s.size, Containers::StringViewFlag::NullTerminated};
 }
+#endif
 
 const void* MaterialData::tryAttribute(const UnsignedInt layer, const Containers::StringView name) const {
     CORRADE_ASSERT(layer < layerCount(),
@@ -772,7 +773,6 @@ const void* MaterialData::tryAttribute(const UnsignedInt layer, const MaterialAt
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::tryAttribute(): invalid name" << name, {});
     return tryAttribute(layer, string);
 }
-#endif
 
 const void* MaterialData::tryAttribute(const Containers::StringView layer, const Containers::StringView name) const {
     const UnsignedInt layerId = layerFor(layer);
