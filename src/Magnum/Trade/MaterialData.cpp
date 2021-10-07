@@ -203,7 +203,7 @@ template<> MAGNUM_TRADE_EXPORT Containers::StringView MaterialAttributeData::val
 }
 #endif
 
-MaterialData::MaterialData(const MaterialTypes types, Containers::Array<MaterialAttributeData>&& attributeData, Containers::Array<UnsignedInt>&& layerData, const void* const importerState) noexcept: _data{std::move(attributeData)}, _layerOffsets{std::move(layerData)}, _types{types}, _importerState{importerState} {
+MaterialData::MaterialData(const MaterialTypes types, Containers::Array<MaterialAttributeData>&& attributeData, Containers::Array<UnsignedInt>&& layerData, const void* const importerState) noexcept: _data{std::move(attributeData)}, _layerOffsets{std::move(layerData)}, _types{types}, _attributeDataFlags{DataFlag::Owned|DataFlag::Mutable}, _layerDataFlags{DataFlag::Owned|DataFlag::Mutable}, _importerState{importerState} {
     #ifndef CORRADE_NO_ASSERT
     /* Not checking what's already done in MaterialAttributeData constructor.
        Done before sorting so the index refers to the actual input index. */
@@ -247,7 +247,14 @@ MaterialData::MaterialData(const MaterialTypes types, Containers::Array<Material
 
 MaterialData::MaterialData(const MaterialTypes types, const std::initializer_list<MaterialAttributeData> attributeData, const std::initializer_list<UnsignedInt> layerData, const void* const importerState): MaterialData{types, Implementation::initializerListToArrayWithDefaultDeleter(attributeData), Implementation::initializerListToArrayWithDefaultDeleter(layerData), importerState} {}
 
-MaterialData::MaterialData(const MaterialTypes types, DataFlags, const Containers::ArrayView<const MaterialAttributeData> attributeData, DataFlags, Containers::ArrayView<const UnsignedInt> layerData, const void* const importerState) noexcept: _data{Containers::Array<MaterialAttributeData>{const_cast<MaterialAttributeData*>(attributeData.data()), attributeData.size(), reinterpret_cast<void(*)(MaterialAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)}}, _layerOffsets{Containers::Array<UnsignedInt>{const_cast<UnsignedInt*>(layerData.data()), layerData.size(), reinterpret_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter)}}, _types{types}, _importerState{importerState} {
+MaterialData::MaterialData(const MaterialTypes types, const DataFlags attributeDataFlags, const Containers::ArrayView<const MaterialAttributeData> attributeData, const DataFlags layerDataFlags, Containers::ArrayView<const UnsignedInt> layerData, const void* const importerState) noexcept: _data{Containers::Array<MaterialAttributeData>{const_cast<MaterialAttributeData*>(attributeData.data()), attributeData.size(), reinterpret_cast<void(*)(MaterialAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)}}, _layerOffsets{Containers::Array<UnsignedInt>{const_cast<UnsignedInt*>(layerData.data()), layerData.size(), reinterpret_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter)}}, _types{types}, _importerState{importerState} {
+    CORRADE_ASSERT(!(attributeDataFlags & DataFlag::Owned),
+        "Trade::MaterialData: can't construct with non-owned attribute data but" << attributeDataFlags, );
+    CORRADE_ASSERT(!(layerDataFlags & DataFlag::Owned),
+        "Trade::MaterialData: can't construct with non-owned layer data but" << layerDataFlags, );
+    _attributeDataFlags = attributeDataFlags;
+    _layerDataFlags = layerDataFlags;
+
     #ifndef CORRADE_NO_ASSERT
     /* Not checking what's already done in MaterialAttributeData constructor */
     for(std::size_t i = 0; i != _data.size(); ++i)
@@ -685,6 +692,16 @@ const void* MaterialData::attribute(const UnsignedInt layer, const UnsignedInt i
     return _data[layerOffset(layer) + id].value();
 }
 
+void* MaterialData::mutableAttribute(const UnsignedInt layer, const UnsignedInt id) {
+    CORRADE_ASSERT(_attributeDataFlags & DataFlag::Mutable,
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable", {});
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::mutableAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::mutableAttribute(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    return const_cast<void*>(_data[layerOffset(layer) + id].value());
+}
+
 const void* MaterialData::attribute(const UnsignedInt layer, const Containers::StringView name) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::attribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
@@ -694,10 +711,27 @@ const void* MaterialData::attribute(const UnsignedInt layer, const Containers::S
     return _data[layerOffset(layer) + id].value();
 }
 
+void* MaterialData::mutableAttribute(const UnsignedInt layer, const Containers::StringView name) {
+    CORRADE_ASSERT(_attributeDataFlags & DataFlag::Mutable,
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable", {});
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::mutableAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    const UnsignedInt id = attributeFor(layer, name);
+    CORRADE_ASSERT(id != ~UnsignedInt{},
+        "Trade::MaterialData::mutableAttribute(): attribute" << name << "not found in layer" << layer, {});
+    return const_cast<void*>(_data[layerOffset(layer) + id].value());
+}
+
 const void* MaterialData::attribute(const UnsignedInt layer, const MaterialAttribute name) const {
     const Containers::StringView string = attributeString(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << name, {});
     return attribute(layer, string);
+}
+
+void* MaterialData::mutableAttribute(const UnsignedInt layer, const MaterialAttribute name) {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << name, {});
+    return mutableAttribute(layer, string);
 }
 
 const void* MaterialData::attribute(const Containers::StringView layer, const UnsignedInt id) const {
@@ -707,6 +741,17 @@ const void* MaterialData::attribute(const Containers::StringView layer, const Un
     CORRADE_ASSERT(id < attributeCount(layer),
         "Trade::MaterialData::attribute(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
     return _data[layerOffset(layerId) + id].value();
+}
+
+void* MaterialData::mutableAttribute(const Containers::StringView layer, const UnsignedInt id) {
+    CORRADE_ASSERT(_attributeDataFlags & DataFlag::Mutable,
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable", {});
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::mutableAttribute(): layer" << layer << "not found", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::mutableAttribute(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    return const_cast<void*>(_data[layerOffset(layerId) + id].value());
 }
 
 const void* MaterialData::attribute(const Containers::StringView layer, const Containers::StringView name) const {
@@ -719,10 +764,28 @@ const void* MaterialData::attribute(const Containers::StringView layer, const Co
     return _data[layerOffset(layerId) + id].value();
 }
 
+void* MaterialData::mutableAttribute(const Containers::StringView layer, const Containers::StringView name) {
+    CORRADE_ASSERT(_attributeDataFlags & DataFlag::Mutable,
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable", {});
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::mutableAttribute(): layer" << layer << "not found", {});
+    const UnsignedInt id = attributeFor(layerId, name);
+    CORRADE_ASSERT(id != ~UnsignedInt{},
+        "Trade::MaterialData::mutableAttribute(): attribute" << name << "not found in layer" << layer, {});
+    return const_cast<void*>(_data[layerOffset(layerId) + id].value());
+}
+
 const void* MaterialData::attribute(const Containers::StringView layer, const MaterialAttribute name) const {
     const Containers::StringView string = attributeString(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << name, {});
     return attribute(layer, string);
+}
+
+void* MaterialData::mutableAttribute(const Containers::StringView layer, const MaterialAttribute name) {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << name, {});
+    return mutableAttribute(layer, string);
 }
 
 const void* MaterialData::attribute(const MaterialLayer layer, const UnsignedInt id) const {
@@ -731,16 +794,34 @@ const void* MaterialData::attribute(const MaterialLayer layer, const UnsignedInt
     return attribute(string, id);
 }
 
+void* MaterialData::mutableAttribute(const MaterialLayer layer, const UnsignedInt id) {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << layer, {});
+    return mutableAttribute(string, id);
+}
+
 const void* MaterialData::attribute(const MaterialLayer layer, const Containers::StringView name) const {
     const Containers::StringView string = layerString(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << layer, {});
     return attribute(string, name);
 }
 
+void* MaterialData::mutableAttribute(const MaterialLayer layer, const Containers::StringView name) {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << layer, {});
+    return mutableAttribute(string, name);
+}
+
 const void* MaterialData::attribute(const MaterialLayer layer, const MaterialAttribute name) const {
     const Containers::StringView string = layerString(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << layer, {});
     return attribute(string, name);
+}
+
+void* MaterialData::mutableAttribute(const MaterialLayer layer, const MaterialAttribute name) {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << layer, {});
+    return mutableAttribute(string, name);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -757,6 +838,21 @@ template<> MAGNUM_TRADE_EXPORT Containers::StringView MaterialData::attribute<Co
     CORRADE_ASSERT(data._data.type == MaterialAttributeType::String,
         "Trade::MaterialData::attribute():" << (data._data.data + 1) << "of" << data._data.type << "can't be retrieved as a string", {});
     return {data._data.s.nameValue + Implementation::MaterialAttributeDataSize - data._data.s.size - 3, data._data.s.size, Containers::StringViewFlag::NullTerminated};
+}
+
+template<> MAGNUM_TRADE_EXPORT Containers::MutableStringView MaterialData::mutableAttribute<Containers::MutableStringView>(const UnsignedInt layer, const UnsignedInt id) {
+    CORRADE_ASSERT(_attributeDataFlags & DataFlag::Mutable,
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable", {});
+    /* Can't delegate to mutableAttribute() returning void* because that
+       doesn't include the size */
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::mutableAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::mutableAttribute(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    const Trade::MaterialAttributeData& data = _data[layerOffset(layer) + id];
+    CORRADE_ASSERT(data._data.type == MaterialAttributeType::String,
+        "Trade::MaterialData::mutableAttribute():" << (data._data.data + 1) << "of" << data._data.type << "can't be retrieved as a string", {});
+    return {const_cast<char*>(data._data.s.nameValue) + Implementation::MaterialAttributeDataSize - data._data.s.size - 3, data._data.s.size, Containers::StringViewFlag::NullTerminated};
 }
 #endif
 

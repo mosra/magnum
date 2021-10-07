@@ -183,6 +183,21 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
         } /**< @overload */
 
         /**
+         * @brief Type-erased mutable value of an attribute in this layer
+         *
+         * Same as calling @ref MaterialData::mutableAttribute() with @p layer.
+         */
+        void* mutableAttribute(UnsignedInt id) {
+            return MaterialData::mutableAttribute(layer, id);
+        }
+        void* mutableAttribute(Containers::StringView name) {
+            return MaterialData::mutableAttribute(layer, name);
+        } /**< @overload */
+        void* mutableAttribute(MaterialAttribute name) {
+            return MaterialData::mutableAttribute(layer, name);
+        } /**< @overload */
+
+        /**
          * @brief Value of an attribute in this layer
          *
          * Same as calling @ref MaterialData::attribute() with @p layer.
@@ -195,6 +210,21 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
         } /**< @overload */
         template<class T> T attribute(MaterialAttribute name) const {
             return MaterialData::attribute<T>(layer, name);
+        } /**< @overload */
+
+        /**
+         * @brief Mutable value of an attribute in this layer
+         *
+         * Same as calling @ref MaterialData::attribute() with @p layer.
+         */
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(UnsignedInt id) {
+            return MaterialData::mutableAttribute<T>(layer, id);
+        }
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(Containers::StringView name) {
+            return MaterialData::mutableAttribute<T>(layer, name);
+        } /**< @overload */
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(MaterialAttribute name) {
+            return MaterialData::mutableAttribute<T>(layer, name);
         } /**< @overload */
 
         /**
@@ -257,6 +287,7 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
         using MaterialData::attributeName;
         using MaterialData::attributeType;
         using MaterialData::attribute;
+        using MaterialData::mutableAttribute;
         using MaterialData::tryAttribute;
         using MaterialData::attributeOr;
         #else
@@ -374,6 +405,34 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
             return MaterialData::attribute(layer_, name);
         }
 
+        void* mutableAttribute(UnsignedInt layer_, UnsignedInt id) {
+            return MaterialData::mutableAttribute(layer_, id);
+        }
+        void* mutableAttribute(Containers::StringView layer_, UnsignedInt id) {
+            return MaterialData::mutableAttribute(layer_, id);
+        }
+        void* mutableAttribute(MaterialLayer layer_, UnsignedInt id) {
+            return MaterialData::mutableAttribute(layer_, id);
+        }
+        void* mutableAttribute(UnsignedInt layer_, Containers::StringView name) {
+            return MaterialData::mutableAttribute(layer_, name);
+        }
+        void* mutableAttribute(UnsignedInt layer_, MaterialAttribute name) {
+            return MaterialData::mutableAttribute(layer_, name);
+        }
+        void* mutableAttribute(Containers::StringView layer_, Containers::StringView name) {
+            return MaterialData::mutableAttribute(layer_, name);
+        }
+        void* mutableAttribute(Containers::StringView layer_, MaterialAttribute name) {
+            return MaterialData::mutableAttribute(layer_, name);
+        }
+        void* mutableAttribute(MaterialLayer layer_, Containers::StringView name) {
+            return MaterialData::mutableAttribute(layer_, name);
+        }
+        void* mutableAttribute(MaterialLayer layer_, MaterialAttribute name) {
+            return MaterialData::mutableAttribute(layer_, name);
+        }
+
         template<class T> T attribute(UnsignedInt layer_, UnsignedInt id) const {
             return MaterialData::attribute<T>(layer_, id);
         }
@@ -400,6 +459,34 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
         }
         template<class T> T attribute(MaterialLayer layer_, MaterialAttribute name) const {
             return MaterialData::attribute<T>(layer_, name);
+        }
+
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(UnsignedInt layer_, UnsignedInt id) {
+            return MaterialData::mutableAttribute<T>(layer_, id);
+        }
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(Containers::StringView layer_, UnsignedInt id) {
+            return MaterialData::mutableAttribute<T>(layer_, id);
+        }
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(MaterialLayer layer_, UnsignedInt id) {
+            return MaterialData::mutableAttribute<T>(layer_, id);
+        }
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(UnsignedInt layer_, Containers::StringView name) {
+            return MaterialData::mutableAttribute<T>(layer_, name);
+        }
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(UnsignedInt layer_, MaterialAttribute name) {
+            return MaterialData::mutableAttribute<T>(layer_, name);
+        }
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(Containers::StringView layer_, Containers::StringView name) {
+            return MaterialData::mutableAttribute<T>(layer_, name);
+        }
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(Containers::StringView layer_, MaterialAttribute name) {
+            return MaterialData::mutableAttribute<T>(layer_, name);
+        }
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(MaterialLayer layer_, Containers::StringView name) {
+            return MaterialData::mutableAttribute<T>(layer_, name);
+        }
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(MaterialLayer layer_, MaterialAttribute name) {
+            return MaterialData::mutableAttribute<T>(layer_, name);
         }
 
         const void* tryAttribute(UnsignedInt layer_, Containers::StringView name) const {

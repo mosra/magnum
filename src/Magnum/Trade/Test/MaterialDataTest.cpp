@@ -96,6 +96,8 @@ class MaterialDataTest: public TestSuite::Tester {
         void constructNonOwnedDuplicateAttribute();
         void constructNonOwnedLayersNotMonotonic();
         void constructNonOwnedLayersOffsetOutOfBounds();
+        void constructNonOwnedAttributeFlagOwned();
+        void constructNonOwnedLayerFlagOwned();
 
         void constructCopy();
         void constructMove();
@@ -107,6 +109,7 @@ class MaterialDataTest: public TestSuite::Tester {
         void accessPointer();
         void accessString();
         void accessTextureSwizzle();
+        void accessMutable();
         void accessOptional();
         void accessOutOfBounds();
         void accessNotFound();
@@ -125,6 +128,9 @@ class MaterialDataTest: public TestSuite::Tester {
 
         void accessLayerLayerNameInBaseMaterial();
         void accessLayerEmptyLayer();
+        void accessLayerIndexMutable();
+        void accessLayerNameMutable();
+        void accessLayerStringMutable();
         void accessLayerIndexOptional();
         void accessLayerNameOptional();
         void accessLayerStringOptional();
@@ -135,11 +141,13 @@ class MaterialDataTest: public TestSuite::Tester {
         void accessOutOfBoundsInLayerString();
         void accessNotFoundInLayerIndex();
         void accessNotFoundInLayerString();
+        void accessMutableNotAllowed();
 
         void releaseAttributes();
         void releaseLayers();
 
         void templateLayerAccess();
+        void templateLayerAccessMutable();
 
         void debugLayer();
         void debugAttribute();
@@ -232,6 +240,8 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructNonOwnedDuplicateAttribute,
               &MaterialDataTest::constructNonOwnedLayersNotMonotonic,
               &MaterialDataTest::constructNonOwnedLayersOffsetOutOfBounds,
+              &MaterialDataTest::constructNonOwnedAttributeFlagOwned,
+              &MaterialDataTest::constructNonOwnedLayerFlagOwned,
 
               &MaterialDataTest::constructCopy,
               &MaterialDataTest::constructMove,
@@ -243,6 +253,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::accessPointer,
               &MaterialDataTest::accessString,
               &MaterialDataTest::accessTextureSwizzle,
+              &MaterialDataTest::accessMutable,
               &MaterialDataTest::accessOptional,
               &MaterialDataTest::accessOutOfBounds,
               &MaterialDataTest::accessNotFound,
@@ -261,6 +272,9 @@ MaterialDataTest::MaterialDataTest() {
 
               &MaterialDataTest::accessLayerLayerNameInBaseMaterial,
               &MaterialDataTest::accessLayerEmptyLayer,
+              &MaterialDataTest::accessLayerIndexMutable,
+              &MaterialDataTest::accessLayerNameMutable,
+              &MaterialDataTest::accessLayerStringMutable,
               &MaterialDataTest::accessLayerIndexOptional,
               &MaterialDataTest::accessLayerNameOptional,
               &MaterialDataTest::accessLayerStringOptional,
@@ -271,11 +285,13 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::accessOutOfBoundsInLayerString,
               &MaterialDataTest::accessNotFoundInLayerIndex,
               &MaterialDataTest::accessNotFoundInLayerString,
+              &MaterialDataTest::accessMutableNotAllowed,
 
               &MaterialDataTest::releaseAttributes,
               &MaterialDataTest::releaseLayers,
 
               &MaterialDataTest::templateLayerAccess,
+              &MaterialDataTest::templateLayerAccessMutable,
 
               &MaterialDataTest::debugLayer,
               &MaterialDataTest::debugAttribute,
@@ -799,6 +815,8 @@ void MaterialDataTest::construct() {
         {MaterialAttribute::AmbientTextureMatrix, Matrix3::scaling({0.5f, 1.0f})}
     }, &state};
 
+    CORRADE_COMPARE(data.attributeDataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_COMPARE(data.layerDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.types(), MaterialType::Phong);
     CORRADE_COMPARE(data.layerCount(), 1);
     CORRADE_VERIFY(!data.layerData());
@@ -825,11 +843,19 @@ void MaterialDataTest::construct() {
     CORRADE_COMPARE(data.attribute<UnsignedInt>(1), 5);
     CORRADE_COMPARE(data.attribute<bool>(2), true);
     CORRADE_COMPARE(data.attribute<Color4>(3), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(data.mutableAttribute<Matrix3>(0), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(data.mutableAttribute<UnsignedInt>(1), 5);
+    CORRADE_COMPARE(data.mutableAttribute<bool>(2), true);
+    CORRADE_COMPARE(data.mutableAttribute<Color4>(3), 0x335566ff_rgbaf);
 
     CORRADE_COMPARE(*static_cast<const Matrix3*>(data.attribute(0)), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(1)), 5);
     CORRADE_COMPARE(*static_cast<const bool*>(data.attribute(2)), true);
     CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute(3)), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(*static_cast<Matrix3*>(data.mutableAttribute(0)), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(*static_cast<UnsignedInt*>(data.mutableAttribute(1)), 5);
+    CORRADE_COMPARE(*static_cast<bool*>(data.mutableAttribute(2)), true);
+    CORRADE_COMPARE(*static_cast<Color4*>(data.mutableAttribute(3)), 0x335566ff_rgbaf);
 
     /* Access by name */
     CORRADE_VERIFY(data.hasAttribute(MaterialAttribute::DoubleSided));
@@ -847,10 +873,16 @@ void MaterialDataTest::construct() {
     CORRADE_COMPARE(data.attribute<Matrix3>(MaterialAttribute::AmbientTextureMatrix), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(data.attribute<UnsignedInt>(MaterialAttribute::DiffuseTextureCoordinates), 5);
     CORRADE_COMPARE(data.attribute<bool>(MaterialAttribute::DoubleSided), true);
+    CORRADE_COMPARE(data.mutableAttribute<Matrix3>(MaterialAttribute::AmbientTextureMatrix), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(data.mutableAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureCoordinates), 5);
+    CORRADE_COMPARE(data.mutableAttribute<bool>(MaterialAttribute::DoubleSided), true);
 
     CORRADE_COMPARE(*static_cast<const Matrix3*>(data.attribute(MaterialAttribute::AmbientTextureMatrix)), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(MaterialAttribute::DiffuseTextureCoordinates)), 5);
     CORRADE_COMPARE(*static_cast<const bool*>(data.attribute(MaterialAttribute::DoubleSided)), true);
+    CORRADE_COMPARE(*static_cast<Matrix3*>(data.mutableAttribute(MaterialAttribute::AmbientTextureMatrix)), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(*static_cast<UnsignedInt*>(data.mutableAttribute(MaterialAttribute::DiffuseTextureCoordinates)), 5);
+    CORRADE_COMPARE(*static_cast<bool*>(data.mutableAttribute(MaterialAttribute::DoubleSided)), true);
 
     /* Access by string */
     CORRADE_VERIFY(data.hasAttribute("DoubleSided"));
@@ -871,11 +903,19 @@ void MaterialDataTest::construct() {
     CORRADE_COMPARE(data.attribute<UnsignedInt>("DiffuseTextureCoordinates"), 5);
     CORRADE_COMPARE(data.attribute<bool>("DoubleSided"), true);
     CORRADE_COMPARE(data.attribute<Color4>("highlightColor"), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(data.mutableAttribute<Matrix3>("AmbientTextureMatrix"), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(data.mutableAttribute<UnsignedInt>("DiffuseTextureCoordinates"), 5);
+    CORRADE_COMPARE(data.mutableAttribute<bool>("DoubleSided"), true);
+    CORRADE_COMPARE(data.mutableAttribute<Color4>("highlightColor"), 0x335566ff_rgbaf);
 
     CORRADE_COMPARE(*static_cast<const Matrix3*>(data.attribute("AmbientTextureMatrix")), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute("DiffuseTextureCoordinates")), 5);
     CORRADE_COMPARE(*static_cast<const bool*>(data.attribute("DoubleSided")), true);
     CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute("highlightColor")), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(*static_cast<Matrix3*>(data.mutableAttribute("AmbientTextureMatrix")), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(*static_cast<UnsignedInt*>(data.mutableAttribute("DiffuseTextureCoordinates")), 5);
+    CORRADE_COMPARE(*static_cast<bool*>(data.mutableAttribute("DoubleSided")), true);
+    CORRADE_COMPARE(*static_cast<Color4*>(data.mutableAttribute("highlightColor")), 0x335566ff_rgbaf);
 }
 
 void MaterialDataTest::constructEmptyAttribute() {
@@ -952,6 +992,8 @@ void MaterialDataTest::constructLayers() {
         2, 5, 5, 7
     }, &state};
 
+    CORRADE_COMPARE(data.attributeDataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_COMPARE(data.layerDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.types(), MaterialType::Phong);
     CORRADE_COMPARE(data.importerState(), &state);
 
@@ -999,10 +1041,16 @@ void MaterialDataTest::constructLayers() {
     CORRADE_COMPARE(data.attribute<UnsignedInt>(0, 0), 5);
     CORRADE_COMPARE(data.attribute<Color4>(1, 2), 0x335566ff_rgbaf);
     CORRADE_COMPARE(data.attribute<Float>(3, 1), 0.015f);
+    CORRADE_COMPARE(data.mutableAttribute<UnsignedInt>(0, 0), 5);
+    CORRADE_COMPARE(data.mutableAttribute<Color4>(1, 2), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(data.mutableAttribute<Float>(3, 1), 0.015f);
 
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(0, 0)), 5);
     CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute(1, 2)), 0x335566ff_rgbaf);
     CORRADE_COMPARE(*static_cast<const Float*>(data.attribute(3, 1)), 0.015f);
+    CORRADE_COMPARE(*static_cast<UnsignedInt*>(data.mutableAttribute(0, 0)), 5);
+    CORRADE_COMPARE(*static_cast<Color4*>(data.mutableAttribute(1, 2)), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(*static_cast<Float*>(data.mutableAttribute(3, 1)), 0.015f);
 
     /* Access by layer ID and attribute name */
     CORRADE_VERIFY(data.hasAttribute(0, MaterialAttribute::DiffuseTextureCoordinates));
@@ -1027,11 +1075,19 @@ void MaterialDataTest::constructLayers() {
     CORRADE_COMPARE(data.attribute<bool>(1, MaterialAttribute::AlphaBlend), true);
     CORRADE_COMPARE(data.attribute<Containers::StringView>(1, MaterialAttribute::LayerName), "ClearCoat");
     CORRADE_COMPARE(data.attribute<UnsignedInt>(3, MaterialAttribute::NormalTexture), 3);
+    CORRADE_COMPARE(data.mutableAttribute<UnsignedInt>(0, MaterialAttribute::DiffuseTextureCoordinates), 5);
+    CORRADE_COMPARE(data.mutableAttribute<bool>(1, MaterialAttribute::AlphaBlend), true);
+    CORRADE_COMPARE(data.mutableAttribute<Containers::MutableStringView>(1, MaterialAttribute::LayerName), "ClearCoat"_s);
+    CORRADE_COMPARE(data.mutableAttribute<UnsignedInt>(3, MaterialAttribute::NormalTexture), 3);
 
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(0, MaterialAttribute::DiffuseTextureCoordinates)), 5);
     CORRADE_COMPARE(*static_cast<const bool*>(data.attribute(1, MaterialAttribute::AlphaBlend)), true);
     CORRADE_COMPARE(static_cast<const char*>(data.attribute(1, MaterialAttribute::LayerName)), "ClearCoat"_s);
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(3, MaterialAttribute::NormalTexture)), 3);
+    CORRADE_COMPARE(*static_cast<UnsignedInt*>(data.mutableAttribute(0, MaterialAttribute::DiffuseTextureCoordinates)), 5);
+    CORRADE_COMPARE(*static_cast<bool*>(data.mutableAttribute(1, MaterialAttribute::AlphaBlend)), true);
+    CORRADE_COMPARE(static_cast<char*>(data.mutableAttribute(1, MaterialAttribute::LayerName)), "ClearCoat"_s);
+    CORRADE_COMPARE(*static_cast<UnsignedInt*>(data.mutableAttribute(3, MaterialAttribute::NormalTexture)), 3);
 
     /* Access by layer ID and attribute string */
     CORRADE_VERIFY(data.hasAttribute(0, "DoubleSided"));
@@ -1056,11 +1112,19 @@ void MaterialDataTest::constructLayers() {
     CORRADE_COMPARE(data.attribute<Color4>(1, "highlightColor"), 0x335566ff_rgbaf);
     CORRADE_COMPARE(data.attribute<Containers::StringView>(1, "$LayerName"), "ClearCoat");
     CORRADE_COMPARE(data.attribute<UnsignedInt>(3, "NormalTexture"), 3);
+    CORRADE_COMPARE(data.mutableAttribute<bool>(0, "DoubleSided"), true);
+    CORRADE_COMPARE(data.mutableAttribute<Color4>(1, "highlightColor"), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(data.mutableAttribute<Containers::MutableStringView>(1, "$LayerName"), "ClearCoat"_s);
+    CORRADE_COMPARE(data.mutableAttribute<UnsignedInt>(3, "NormalTexture"), 3);
 
     CORRADE_COMPARE(*static_cast<const bool*>(data.attribute(0, "DoubleSided")), true);
     CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute(1, "highlightColor")), 0x335566ff_rgbaf);
     CORRADE_COMPARE(static_cast<const char*>(data.attribute(1, "$LayerName")), "ClearCoat"_s);
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(3, "NormalTexture")), 3);
+    CORRADE_COMPARE(*static_cast<bool*>(data.mutableAttribute(0, "DoubleSided")), true);
+    CORRADE_COMPARE(*static_cast<Color4*>(data.mutableAttribute(1, "highlightColor")), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(static_cast<char*>(data.mutableAttribute(1, "$LayerName")), "ClearCoat"_s);
+    CORRADE_COMPARE(*static_cast<UnsignedInt*>(data.mutableAttribute(3, "NormalTexture")), 3);
 
     /* Access by layer name and attribute ID */
     CORRADE_COMPARE(data.attributeName(MaterialLayer::ClearCoat, 1), "AlphaBlend");
@@ -1071,9 +1135,13 @@ void MaterialDataTest::constructLayers() {
 
     CORRADE_COMPARE(data.attribute<bool>(MaterialLayer::ClearCoat, 1), true);
     CORRADE_COMPARE(data.attribute<Color4>(MaterialLayer::ClearCoat, 2), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(data.mutableAttribute<bool>(MaterialLayer::ClearCoat, 1), true);
+    CORRADE_COMPARE(data.mutableAttribute<Color4>(MaterialLayer::ClearCoat, 2), 0x335566ff_rgbaf);
 
     CORRADE_COMPARE(*static_cast<const bool*>(data.attribute(MaterialLayer::ClearCoat, 1)), true);
     CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute(MaterialLayer::ClearCoat, 2)), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(*static_cast<bool*>(data.mutableAttribute(MaterialLayer::ClearCoat, 1)), true);
+    CORRADE_COMPARE(*static_cast<Color4*>(data.mutableAttribute(MaterialLayer::ClearCoat, 2)), 0x335566ff_rgbaf);
 
     /* Access by layer name and attribute name */
     CORRADE_VERIFY(data.hasAttribute(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend));
@@ -1087,9 +1155,13 @@ void MaterialDataTest::constructLayers() {
 
     CORRADE_COMPARE(data.attribute<bool>(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend), true);
     CORRADE_COMPARE(data.attribute<Containers::StringView>(MaterialLayer::ClearCoat, MaterialAttribute::LayerName), "ClearCoat");
+    CORRADE_COMPARE(data.mutableAttribute<bool>(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend), true);
+    CORRADE_COMPARE(data.mutableAttribute<Containers::MutableStringView>(MaterialLayer::ClearCoat, MaterialAttribute::LayerName), "ClearCoat"_s);
 
     CORRADE_COMPARE(*static_cast<const bool*>(data.attribute(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend)), true);
     CORRADE_COMPARE(static_cast<const char*>(data.attribute(MaterialLayer::ClearCoat, MaterialAttribute::LayerName)), "ClearCoat"_s);
+    CORRADE_COMPARE(*static_cast<bool*>(data.mutableAttribute(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend)), true);
+    CORRADE_COMPARE(static_cast<char*>(data.mutableAttribute(MaterialLayer::ClearCoat, MaterialAttribute::LayerName)), "ClearCoat"_s);
 
     /* Access by layer name and attribute string */
     CORRADE_VERIFY(data.hasAttribute(MaterialLayer::ClearCoat, "highlightColor"));
@@ -1103,9 +1175,13 @@ void MaterialDataTest::constructLayers() {
 
     CORRADE_COMPARE(data.attribute<Color4>(MaterialLayer::ClearCoat, "highlightColor"), 0x335566ff_rgbaf);
     CORRADE_COMPARE(data.attribute<Containers::StringView>(MaterialLayer::ClearCoat, "$LayerName"), "ClearCoat");
+    CORRADE_COMPARE(data.mutableAttribute<Color4>(MaterialLayer::ClearCoat, "highlightColor"), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(data.mutableAttribute<Containers::MutableStringView>(MaterialLayer::ClearCoat, "$LayerName"), "ClearCoat"_s);
 
     CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute(MaterialLayer::ClearCoat, "highlightColor")), 0x335566ff_rgbaf);
     CORRADE_COMPARE(static_cast<const char*>(data.attribute(MaterialLayer::ClearCoat, "$LayerName")), "ClearCoat"_s);
+    CORRADE_COMPARE(*static_cast<Color4*>(data.mutableAttribute(MaterialLayer::ClearCoat, "highlightColor")), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(static_cast<char*>(data.mutableAttribute(MaterialLayer::ClearCoat, "$LayerName")), "ClearCoat"_s);
 
     /* Access by layer string and attribute ID */
     CORRADE_COMPARE(data.attributeName("ClearCoat", 1), "AlphaBlend");
@@ -1116,9 +1192,13 @@ void MaterialDataTest::constructLayers() {
 
     CORRADE_COMPARE(data.attribute<bool>("ClearCoat", 1), true);
     CORRADE_COMPARE(data.attribute<Color4>("ClearCoat", 2), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(data.mutableAttribute<bool>("ClearCoat", 1), true);
+    CORRADE_COMPARE(data.mutableAttribute<Color4>("ClearCoat", 2), 0x335566ff_rgbaf);
 
     CORRADE_COMPARE(*static_cast<const bool*>(data.attribute("ClearCoat", 1)), true);
     CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute("ClearCoat", 2)), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(*static_cast<bool*>(data.mutableAttribute("ClearCoat", 1)), true);
+    CORRADE_COMPARE(*static_cast<Color4*>(data.mutableAttribute("ClearCoat", 2)), 0x335566ff_rgbaf);
 
     /* Access by layer string and attribute name */
     CORRADE_VERIFY(data.hasAttribute("ClearCoat", MaterialAttribute::AlphaBlend));
@@ -1132,9 +1212,13 @@ void MaterialDataTest::constructLayers() {
 
     CORRADE_COMPARE(data.attribute<bool>("ClearCoat", MaterialAttribute::AlphaBlend), true);
     CORRADE_COMPARE(data.attribute<Containers::StringView>("ClearCoat", MaterialAttribute::LayerName), "ClearCoat");
+    CORRADE_COMPARE(data.mutableAttribute<bool>("ClearCoat", MaterialAttribute::AlphaBlend), true);
+    CORRADE_COMPARE(data.mutableAttribute<Containers::MutableStringView>("ClearCoat", MaterialAttribute::LayerName), "ClearCoat"_s);
 
     CORRADE_COMPARE(*static_cast<const bool*>(data.attribute("ClearCoat", MaterialAttribute::AlphaBlend)), true);
     CORRADE_COMPARE(static_cast<const char*>(data.attribute("ClearCoat", MaterialAttribute::LayerName)), "ClearCoat"_s);
+    CORRADE_COMPARE(*static_cast<bool*>(data.mutableAttribute("ClearCoat", MaterialAttribute::AlphaBlend)), true);
+    CORRADE_COMPARE(static_cast<char*>(data.mutableAttribute("ClearCoat", MaterialAttribute::LayerName)), "ClearCoat"_s);
 
     /* Access by layer string and attribute string */
     CORRADE_VERIFY(data.hasAttribute("ClearCoat", "highlightColor"));
@@ -1148,9 +1232,13 @@ void MaterialDataTest::constructLayers() {
 
     CORRADE_COMPARE(data.attribute<Color4>("ClearCoat", "highlightColor"), 0x335566ff_rgbaf);
     CORRADE_COMPARE(data.attribute<Containers::StringView>("ClearCoat", "$LayerName"), "ClearCoat");
+    CORRADE_COMPARE(data.mutableAttribute<Color4>("ClearCoat", "highlightColor"), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(data.mutableAttribute<Containers::MutableStringView>("ClearCoat", "$LayerName"), "ClearCoat"_s);
 
     CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute("ClearCoat", "highlightColor")), 0x335566ff_rgbaf);
     CORRADE_COMPARE(static_cast<const char*>(data.attribute("ClearCoat", "$LayerName")), "ClearCoat"_s);
+    CORRADE_COMPARE(*static_cast<Color4*>(data.mutableAttribute("ClearCoat", "highlightColor")), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(static_cast<char*>(data.mutableAttribute("ClearCoat", "$LayerName")), "ClearCoat"_s);
 }
 
 void MaterialDataTest::constructLayersNotMonotonic() {
@@ -1200,6 +1288,8 @@ void MaterialDataTest::constructNonOwned() {
     int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     MaterialData data{MaterialType::Phong, {}, attributes, &state};
 
+    CORRADE_COMPARE(data.attributeDataFlags(), DataFlags{});
+    CORRADE_COMPARE(data.layerDataFlags(), DataFlags{});
     /* Expecting the same output as in construct() */
     CORRADE_COMPARE(data.types(), MaterialType::Phong);
     CORRADE_COMPARE(data.layerCount(), 1);
@@ -1244,6 +1334,8 @@ void MaterialDataTest::constructNonOwnedLayers() {
         {}, attributes,
         {}, layers, &state};
 
+    CORRADE_COMPARE(data.attributeDataFlags(), DataFlags{});
+    CORRADE_COMPARE(data.layerDataFlags(), DataFlags{});
     /* Expecting the same output as in constructLayers() */
     CORRADE_COMPARE(data.types(), MaterialType::Phong);
     CORRADE_COMPARE(data.importerState(), &state);
@@ -1382,6 +1474,40 @@ void MaterialDataTest::constructNonOwnedLayersOffsetOutOfBounds() {
     CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (2, 6) for layer 1 with 5 attributes in total\n");
 }
 
+void MaterialDataTest::constructNonOwnedAttributeFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialAttributeData attributes[]{
+        {MaterialAttribute::DoubleSided, true}
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialData data{{}, DataFlag::Owned, attributes};
+    CORRADE_COMPARE(out.str(), "Trade::MaterialData: can't construct with non-owned attribute data but Trade::DataFlag::Owned\n");
+}
+
+void MaterialDataTest::constructNonOwnedLayerFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialAttributeData attributes[]{
+        {MaterialAttribute::DoubleSided, true}
+    };
+
+    UnsignedInt layers[]{
+        0, 1
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialData data{{}, {}, attributes, DataFlag::Owned, layers};
+    CORRADE_COMPARE(out.str(), "Trade::MaterialData: can't construct with non-owned layer data but Trade::DataFlag::Owned\n");
+}
+
 void MaterialDataTest::constructCopy() {
     CORRADE_VERIFY(!std::is_copy_constructible<MaterialData>{});
     CORRADE_VERIFY(!std::is_copy_assignable<MaterialData>{});
@@ -1398,6 +1524,8 @@ void MaterialDataTest::constructMove() {
     }, &state};
 
     MaterialData b{std::move(a)};
+    CORRADE_COMPARE(b.attributeDataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_COMPARE(b.layerDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(a.layerCount(), 1);
     CORRADE_COMPARE(a.attributeCount(), 0);
     CORRADE_COMPARE(b.types(), MaterialType::Phong);
@@ -1412,6 +1540,8 @@ void MaterialDataTest::constructMove() {
     c = std::move(b);
     CORRADE_COMPARE(b.attributeCount(), 1);
     CORRADE_COMPARE(b.layerCount(), 1);
+    CORRADE_COMPARE(c.attributeDataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_COMPARE(c.layerDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(c.types(), MaterialType::Phong);
     CORRADE_COMPARE(c.layerCount(), 3);
     CORRADE_COMPARE(c.attributeCount(2), 2);
@@ -1541,6 +1671,29 @@ void MaterialDataTest::accessTextureSwizzle() {
     CORRADE_COMPARE(data.attribute<MaterialTextureSwizzle>(0), MaterialTextureSwizzle::BA);
 }
 
+void MaterialDataTest::accessMutable() {
+    MaterialData data{{}, {
+        {MaterialAttribute::LayerName, "aye"_s},
+        {MaterialAttribute::Roughness, 1.0f},
+    }};
+
+    *static_cast<Float*>(data.mutableAttribute(1)) *= 2.0f;
+    *static_cast<Float*>(data.mutableAttribute(MaterialAttribute::Roughness)) *= 2.0f;
+    *static_cast<Float*>(data.mutableAttribute("Roughness")) *= 2.0f;
+    data.mutableAttribute<Float>(1) *= 2.0f;
+    data.mutableAttribute<Float>(MaterialAttribute::Roughness) *= 2.0f;
+    data.mutableAttribute<Float>("Roughness") *= 2.0f;
+    CORRADE_COMPARE(data.attribute<Float>(MaterialAttribute::Roughness), 64.0f);
+
+    ++*static_cast<char*>(data.mutableAttribute(0));
+    ++*static_cast<char*>(data.mutableAttribute(MaterialAttribute::LayerName));
+    ++*static_cast<char*>(data.mutableAttribute("$LayerName"));
+    ++data.mutableAttribute<Containers::MutableStringView>(0)[0];
+    ++data.mutableAttribute<Containers::MutableStringView>(MaterialAttribute::LayerName)[0];
+    ++data.mutableAttribute<Containers::MutableStringView>("$LayerName")[0];
+    CORRADE_COMPARE(data.attribute<Containers::StringView>(MaterialAttribute::LayerName), "gye"_s);
+}
+
 void MaterialDataTest::accessOptional() {
     MaterialData data{{}, {
         {MaterialAttribute::AlphaMask, 0.5f},
@@ -1583,12 +1736,18 @@ void MaterialDataTest::accessOutOfBounds() {
     data.attribute(2);
     data.attribute<Int>(2);
     data.attribute<Containers::StringView>(2);
+    data.mutableAttribute(2);
+    data.mutableAttribute<Int>(2);
+    data.mutableAttribute<Containers::MutableStringView>(2);
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::attributeName(): index 2 out of range for 2 attributes in layer 0\n"
         "Trade::MaterialData::attributeType(): index 2 out of range for 2 attributes in layer 0\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 0\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 0\n"
-        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 0\n");
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 0\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 attributes in layer 0\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 attributes in layer 0\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 attributes in layer 0\n");
 }
 
 void MaterialDataTest::accessNotFound() {
@@ -1608,11 +1767,15 @@ void MaterialDataTest::accessNotFound() {
     data.attributeType("DiffuseColour");
     data.attribute("DiffuseColour");
     data.attribute<Color4>("DiffuseColour");
+    data.mutableAttribute("DiffuseColour");
+    data.mutableAttribute<Color4>("DiffuseColour");
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::attributeId(): attribute DiffuseColour not found in layer 0\n"
         "Trade::MaterialData::attributeType(): attribute DiffuseColour not found in layer 0\n"
         "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer 0\n"
-        "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer 0\n");
+        "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer 0\n"
+        "Trade::MaterialData::mutableAttribute(): attribute DiffuseColour not found in layer 0\n"
+        "Trade::MaterialData::mutableAttribute(): attribute DiffuseColour not found in layer 0\n");
 }
 
 void MaterialDataTest::accessWrongType() {
@@ -1629,6 +1792,9 @@ void MaterialDataTest::accessWrongType() {
     data.attribute<Color3>(0);
     data.attribute<Color3>(MaterialAttribute::DiffuseColor);
     data.attribute<Color3>("DiffuseColor");
+    data.mutableAttribute<Color3>(0);
+    data.mutableAttribute<Color3>(MaterialAttribute::DiffuseColor);
+    data.mutableAttribute<Color3>("DiffuseColor");
     data.tryAttribute<Color3>(MaterialAttribute::DiffuseColor);
     data.tryAttribute<Color3>("DiffuseColor");
     data.attributeOr(MaterialAttribute::DiffuseColor, Color3{1.0f});
@@ -1637,6 +1803,9 @@ void MaterialDataTest::accessWrongType() {
         "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
         "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
         "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
+        "Trade::MaterialData::mutableAttribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
+        "Trade::MaterialData::mutableAttribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
+        "Trade::MaterialData::mutableAttribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
         /* tryAttribute() and attributeOr() delegate to attribute() so the
            assert is the same */
         "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
@@ -1661,16 +1830,24 @@ void MaterialDataTest::accessWrongPointerType() {
     /* These are fine (type is not checked) */
     data.attribute<Byte*>("mutablePointer");
     data.attribute<const Float*>("pointer");
+    data.mutableAttribute<Byte*>("mutablePointer");
+    data.mutableAttribute<const Float*>("pointer");
 
     std::ostringstream out;
     Error redirectError{&out};
     data.attribute<Int>("mutablePointer");
     data.attribute<const Int*>("mutablePointer");
     data.attribute<Double*>("pointer");
+    data.mutableAttribute<Int>("mutablePointer");
+    data.mutableAttribute<const Int*>("mutablePointer");
+    data.mutableAttribute<Double*>("pointer");
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::attribute(): mutablePointer is Trade::MaterialAttributeType::MutablePointer but requested a type equivalent to Trade::MaterialAttributeType::Int\n"
         "Trade::MaterialData::attribute(): mutablePointer is Trade::MaterialAttributeType::MutablePointer but requested a type equivalent to Trade::MaterialAttributeType::Pointer\n"
-        "Trade::MaterialData::attribute(): pointer is Trade::MaterialAttributeType::Pointer but requested a type equivalent to Trade::MaterialAttributeType::MutablePointer\n");
+        "Trade::MaterialData::attribute(): pointer is Trade::MaterialAttributeType::Pointer but requested a type equivalent to Trade::MaterialAttributeType::MutablePointer\n"
+        "Trade::MaterialData::mutableAttribute(): mutablePointer is Trade::MaterialAttributeType::MutablePointer but requested a type equivalent to Trade::MaterialAttributeType::Int\n"
+        "Trade::MaterialData::mutableAttribute(): mutablePointer is Trade::MaterialAttributeType::MutablePointer but requested a type equivalent to Trade::MaterialAttributeType::Pointer\n"
+        "Trade::MaterialData::mutableAttribute(): pointer is Trade::MaterialAttributeType::Pointer but requested a type equivalent to Trade::MaterialAttributeType::MutablePointer\n");
 }
 
 void MaterialDataTest::accessWrongTypeString() {
@@ -1687,6 +1864,9 @@ void MaterialDataTest::accessWrongTypeString() {
     data.attribute<Containers::StringView>(0);
     data.attribute<Containers::StringView>(MaterialAttribute::Shininess);
     data.attribute<Containers::StringView>("Shininess");
+    data.mutableAttribute<Containers::MutableStringView>(0);
+    data.mutableAttribute<Containers::MutableStringView>(MaterialAttribute::Shininess);
+    data.mutableAttribute<Containers::MutableStringView>("Shininess");
     data.tryAttribute<Containers::StringView>(MaterialAttribute::Shininess);
     data.tryAttribute<Containers::StringView>("Shininess");
     data.attributeOr(MaterialAttribute::Shininess, Containers::StringView{});
@@ -1695,6 +1875,9 @@ void MaterialDataTest::accessWrongTypeString() {
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
+        "Trade::MaterialData::mutableAttribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
+        "Trade::MaterialData::mutableAttribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
+        "Trade::MaterialData::mutableAttribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
         /* tryAttribute() and attributeOr() delegate to attribute() so the
            assert is the same */
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
@@ -1910,6 +2093,117 @@ void MaterialDataTest::accessLayerEmptyLayer() {
     CORRADE_COMPARE(data.attribute<UnsignedInt>("crumples", MaterialAttribute::NormalTexture), 3u);
 }
 
+void MaterialDataTest::accessLayerIndexMutable() {
+    MaterialData data{{}, {
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::Roughness, 1.0f}
+    }, {0, 2}};
+
+    *static_cast<Float*>(data.mutableAttribute(1, 1)) *= 2.0f;
+    *static_cast<Float*>(data.mutableAttribute(1, "Roughness")) *= 2.0f;
+    *static_cast<Float*>(data.mutableAttribute(1, MaterialAttribute::Roughness)) *= 2.0f;
+    data.mutableAttribute<Float>(1, 1) *= 2.0f;
+    data.mutableAttribute<Float>(1, "Roughness") *= 2.0f;
+    data.mutableAttribute<Float>(1, MaterialAttribute::Roughness) *= 2.0f;
+    CORRADE_COMPARE(data.attribute<Float>(1, MaterialAttribute::Roughness), 64.0f);
+
+    ++*static_cast<char*>(data.mutableAttribute(1, 0));
+    ++*static_cast<char*>(data.mutableAttribute(1, "$LayerName"));
+    ++*static_cast<char*>(data.mutableAttribute(1, MaterialAttribute::LayerName));
+    ++data.mutableAttribute<Containers::MutableStringView>(1, 0)[0];
+    ++data.mutableAttribute<Containers::MutableStringView>(1, "$LayerName")[0];
+    ++data.mutableAttribute<Containers::MutableStringView>(1, MaterialAttribute::LayerName)[0];
+    CORRADE_COMPARE(data.attribute<Containers::StringView>(1, MaterialAttribute::LayerName), "IlearCoat"_s);
+}
+
+void MaterialDataTest::accessLayerNameMutable() {
+    MaterialData data{{}, {
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::Roughness, 1.0f}
+    }, {0, 2}};
+
+    *static_cast<Float*>(data.mutableAttribute(MaterialLayer::ClearCoat, 1)) *= 2.0f;
+    *static_cast<Float*>(data.mutableAttribute(MaterialLayer::ClearCoat, "Roughness")) *= 2.0f;
+    *static_cast<Float*>(data.mutableAttribute(MaterialLayer::ClearCoat, MaterialAttribute::Roughness)) *= 2.0f;
+    data.mutableAttribute<Float>(MaterialLayer::ClearCoat, 1) *= 2.0f;
+    data.mutableAttribute<Float>(MaterialLayer::ClearCoat, "Roughness") *= 2.0f;
+    data.mutableAttribute<Float>(MaterialLayer::ClearCoat, MaterialAttribute::Roughness) *= 2.0f;
+    CORRADE_COMPARE(data.attribute<Float>(MaterialLayer::ClearCoat, MaterialAttribute::Roughness), 64.0f);
+
+    /* Resetting back so the layer name always stays the same so the next call
+       can find it. Other than that, the result should be same as in
+       accessLayerIndexMutable(). */
+    {
+        *static_cast<char*>(data.mutableAttribute(MaterialLayer::ClearCoat, 0)) = 'D';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "DlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        *static_cast<char*>(data.mutableAttribute(MaterialLayer::ClearCoat, "$LayerName")) = 'E';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "ElearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        *static_cast<char*>(data.mutableAttribute(MaterialLayer::ClearCoat, MaterialAttribute::LayerName)) = 'F';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "FlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        data.mutableAttribute<Containers::MutableStringView>(MaterialLayer::ClearCoat, 0)[0] = 'G';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "GlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        data.mutableAttribute<Containers::MutableStringView>(MaterialLayer::ClearCoat, "$LayerName")[0] = 'H';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "HlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        data.mutableAttribute<Containers::MutableStringView>(MaterialLayer::ClearCoat, "$LayerName")[0] = 'I';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "IlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    }
+}
+
+void MaterialDataTest::accessLayerStringMutable() {
+    MaterialData data{{}, {
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::Roughness, 1.0f}
+    }, {0, 2}};
+
+    *static_cast<Float*>(data.mutableAttribute("ClearCoat", 1)) *= 2.0f;
+    *static_cast<Float*>(data.mutableAttribute("ClearCoat", "Roughness")) *= 2.0f;
+    *static_cast<Float*>(data.mutableAttribute("ClearCoat", MaterialAttribute::Roughness)) *= 2.0f;
+    data.mutableAttribute<Float>("ClearCoat", 1) *= 2.0f;
+    data.mutableAttribute<Float>("ClearCoat", "Roughness") *= 2.0f;
+    data.mutableAttribute<Float>("ClearCoat", MaterialAttribute::Roughness) *= 2.0f;
+    CORRADE_COMPARE(data.attribute<Float>("ClearCoat", MaterialAttribute::Roughness), 64.0f);
+
+    /* Resetting back so the layer name always stays the same so the next call
+       can find it. Other than that, the result should be same as in
+       accessLayerIndexMutable(). */
+    {
+        *static_cast<char*>(data.mutableAttribute("ClearCoat", 0)) = 'D';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "DlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        *static_cast<char*>(data.mutableAttribute("ClearCoat", "$LayerName")) = 'E';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "ElearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        *static_cast<char*>(data.mutableAttribute("ClearCoat", MaterialAttribute::LayerName)) = 'F';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "FlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        data.mutableAttribute<Containers::MutableStringView>("ClearCoat", 0)[0] = 'G';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "GlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        data.mutableAttribute<Containers::MutableStringView>("ClearCoat", "$LayerName")[0] = 'H';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "HlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        data.mutableAttribute<Containers::MutableStringView>("ClearCoat", "$LayerName")[0] = 'I';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "IlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    }
+}
+
 void MaterialDataTest::accessLayerIndexOptional() {
     MaterialData data{{}, {
         {MaterialAttribute::DiffuseColor, 0x335566ff_rgbaf},
@@ -2024,6 +2318,13 @@ void MaterialDataTest::accessLayerOutOfBounds() {
     data.attribute<Int>(2, "AlphaMask");
     data.attribute<Int>(2, MaterialAttribute::AlphaMask);
     data.attribute<Containers::StringView>(2, 0);
+    data.mutableAttribute(2, 0);
+    data.mutableAttribute(2, "AlphaMask");
+    data.mutableAttribute(2, MaterialAttribute::AlphaMask);
+    data.mutableAttribute<Int>(2, 0);
+    data.mutableAttribute<Int>(2, "AlphaMask");
+    data.mutableAttribute<Int>(2, MaterialAttribute::AlphaMask);
+    data.mutableAttribute<Containers::MutableStringView>(2, 0);
     data.tryAttribute(2, "AlphaMask");
     data.tryAttribute(2, MaterialAttribute::AlphaMask);
     data.tryAttribute<bool>(2, "AlphaMask");
@@ -2053,6 +2354,13 @@ void MaterialDataTest::accessLayerOutOfBounds() {
         "Trade::MaterialData::attribute(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::tryAttribute(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::tryAttribute(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::tryAttribute(): index 2 out of range for 2 layers\n"
@@ -2095,6 +2403,13 @@ void MaterialDataTest::accessLayerNotFound() {
     data.attribute<Int>("ClearCoat", "AlphaMask");
     data.attribute<Int>("ClearCoat", MaterialAttribute::AlphaMask);
     data.attribute<Containers::StringView>("ClearCoat", 0);
+    data.mutableAttribute("ClearCoat", 0);
+    data.mutableAttribute("ClearCoat", "AlphaMask");
+    data.mutableAttribute("ClearCoat", MaterialAttribute::AlphaMask);
+    data.mutableAttribute<Int>("ClearCoat", 0);
+    data.mutableAttribute<Int>("ClearCoat", "AlphaMask");
+    data.mutableAttribute<Int>("ClearCoat", MaterialAttribute::AlphaMask);
+    data.mutableAttribute<Containers::MutableStringView>("ClearCoat", 0);
     data.tryAttribute("ClearCoat", "AlphaMask");
     data.tryAttribute("ClearCoat", MaterialAttribute::AlphaMask);
     data.tryAttribute<bool>("ClearCoat", "AlphaMask");
@@ -2124,6 +2439,13 @@ void MaterialDataTest::accessLayerNotFound() {
         "Trade::MaterialData::attribute(): layer ClearCoat not found\n"
         "Trade::MaterialData::attribute(): layer ClearCoat not found\n"
         "Trade::MaterialData::attribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::mutableAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::mutableAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::mutableAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::mutableAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::mutableAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::mutableAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::mutableAttribute(): layer ClearCoat not found\n"
         "Trade::MaterialData::tryAttribute(): layer ClearCoat not found\n"
         "Trade::MaterialData::tryAttribute(): layer ClearCoat not found\n"
         "Trade::MaterialData::tryAttribute(): layer ClearCoat not found\n"
@@ -2164,6 +2486,13 @@ void MaterialDataTest::accessInvalidLayerName() {
     data.attribute<Int>(MaterialLayer(0xfefe), "AlphaMask");
     data.attribute<Int>(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
     data.attribute<Containers::StringView>(MaterialLayer(0xfefe), 0);
+    data.mutableAttribute(MaterialLayer(0xfefe), 0);
+    data.mutableAttribute(MaterialLayer(0xfefe), "AlphaMask");
+    data.mutableAttribute(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
+    data.mutableAttribute<Int>(MaterialLayer(0xfefe), 0);
+    data.mutableAttribute<Int>(MaterialLayer(0xfefe), "AlphaMask");
+    data.mutableAttribute<Int>(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
+    data.mutableAttribute<Containers::MutableStringView>(MaterialLayer(0xfefe), 0);
     data.tryAttribute(MaterialLayer(0xfefe), "AlphaMask");
     data.tryAttribute(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
     data.tryAttribute<bool>(MaterialLayer(0xfefe), "AlphaMask");
@@ -2194,6 +2523,13 @@ void MaterialDataTest::accessInvalidLayerName() {
         "Trade::MaterialData::attribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::attribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::attribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
@@ -2219,12 +2555,18 @@ void MaterialDataTest::accessOutOfBoundsInLayerIndex() {
     data.attribute(1, 2);
     data.attribute<Int>(1, 2);
     data.attribute<Containers::StringView>(1, 2);
+    data.mutableAttribute(1, 2);
+    data.mutableAttribute<Int>(1, 2);
+    data.mutableAttribute<Containers::MutableStringView>(1, 2);
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::attributeName(): index 2 out of range for 2 attributes in layer 1\n"
         "Trade::MaterialData::attributeType(): index 2 out of range for 2 attributes in layer 1\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 1\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 1\n"
-        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 1\n");
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 1\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 attributes in layer 1\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 attributes in layer 1\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 attributes in layer 1\n");
 }
 
 void MaterialDataTest::accessOutOfBoundsInLayerString() {
@@ -2244,12 +2586,18 @@ void MaterialDataTest::accessOutOfBoundsInLayerString() {
     data.attribute("ClearCoat", 2);
     data.attribute<Int>("ClearCoat", 2);
     data.attribute<Containers::StringView>("ClearCoat", 2);
+    data.mutableAttribute("ClearCoat", 2);
+    data.mutableAttribute<Int>("ClearCoat", 2);
+    data.mutableAttribute<Containers::MutableStringView>("ClearCoat", 2);
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::attributeName(): index 2 out of range for 2 attributes in layer ClearCoat\n"
         "Trade::MaterialData::attributeType(): index 2 out of range for 2 attributes in layer ClearCoat\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer ClearCoat\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer ClearCoat\n"
-        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer ClearCoat\n");
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer ClearCoat\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 attributes in layer ClearCoat\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 attributes in layer ClearCoat\n"
+        "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 attributes in layer ClearCoat\n");
 }
 
 void MaterialDataTest::accessNotFoundInLayerIndex() {
@@ -2269,11 +2617,15 @@ void MaterialDataTest::accessNotFoundInLayerIndex() {
     data.attributeType(1, "DiffuseColour");
     data.attribute(1, "DiffuseColour");
     data.attribute<Color4>(1, "DiffuseColour");
+    data.mutableAttribute(1, "DiffuseColour");
+    data.mutableAttribute<Color4>(1, "DiffuseColour");
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::attributeId(): attribute DiffuseColour not found in layer 1\n"
         "Trade::MaterialData::attributeType(): attribute DiffuseColour not found in layer 1\n"
         "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer 1\n"
-        "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer 1\n");
+        "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer 1\n"
+        "Trade::MaterialData::mutableAttribute(): attribute DiffuseColour not found in layer 1\n"
+        "Trade::MaterialData::mutableAttribute(): attribute DiffuseColour not found in layer 1\n");
 }
 
 void MaterialDataTest::accessNotFoundInLayerString() {
@@ -2294,11 +2646,15 @@ void MaterialDataTest::accessNotFoundInLayerString() {
     data.attributeType("ClearCoat", "DiffuseColour");
     data.attribute("ClearCoat", "DiffuseColour");
     data.attribute<Color4>("ClearCoat", "DiffuseColour");
+    data.mutableAttribute("ClearCoat", "DiffuseColour");
+    data.mutableAttribute<Color4>("ClearCoat", "DiffuseColour");
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::attributeId(): attribute DiffuseColour not found in layer ClearCoat\n"
         "Trade::MaterialData::attributeType(): attribute DiffuseColour not found in layer ClearCoat\n"
         "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer ClearCoat\n"
-        "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer ClearCoat\n");
+        "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer ClearCoat\n"
+        "Trade::MaterialData::mutableAttribute(): attribute DiffuseColour not found in layer ClearCoat\n"
+        "Trade::MaterialData::mutableAttribute(): attribute DiffuseColour not found in layer ClearCoat\n");
 }
 
 void MaterialDataTest::accessInvalidAttributeName() {
@@ -2323,6 +2679,10 @@ void MaterialDataTest::accessInvalidAttributeName() {
     data.attribute("Layer", MaterialAttribute(0xfefe));
     data.attribute<Int>(0, MaterialAttribute(0x0));
     data.attribute<Int>("Layer", MaterialAttribute(0xfefe));
+    data.mutableAttribute(0, MaterialAttribute(0x0));
+    data.mutableAttribute("Layer", MaterialAttribute(0xfefe));
+    data.mutableAttribute<Int>(0, MaterialAttribute(0x0));
+    data.mutableAttribute<Int>("Layer", MaterialAttribute(0xfefe));
     data.tryAttribute(0, MaterialAttribute(0x0));
     data.tryAttribute("Layer", MaterialAttribute(0xfefe));
     data.tryAttribute<Int>(0, MaterialAttribute(0x0));
@@ -2340,12 +2700,107 @@ void MaterialDataTest::accessInvalidAttributeName() {
         "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
         "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
         "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
         "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
         "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialAttribute(0xfefe)\n");
+}
+
+void MaterialDataTest::accessMutableNotAllowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    const MaterialAttributeData attributes[]{
+        {MaterialAttribute::DiffuseColor, 0x335566ff_rgbaf},
+        {MaterialAttribute::LayerName, "ClearCoat"},
+        {MaterialAttribute::Roughness, 0.5f}
+    };
+
+    const UnsignedInt layers[]{
+        1, 3
+    };
+
+    MaterialData data{{}, {}, attributes, {}, layers};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.mutableAttribute(0);
+    data.mutableAttribute("DiffuseColor");
+    data.mutableAttribute(MaterialAttribute::DiffuseColor);
+    data.mutableAttribute<Color4>(0);
+    data.mutableAttribute<Color4>("DiffuseColor");
+    data.mutableAttribute<Color4>(MaterialAttribute::DiffuseColor);
+
+    data.mutableAttribute(1, 1);
+    data.mutableAttribute(1, "Roughness");
+    data.mutableAttribute(1, MaterialAttribute::Roughness);
+    data.mutableAttribute<Float>(1, 1);
+    data.mutableAttribute<Float>(1, "Roughness");
+    data.mutableAttribute<Float>(1, MaterialAttribute::Roughness);
+    data.mutableAttribute<Containers::MutableStringView>(1, 0);
+    data.mutableAttribute<Containers::MutableStringView>(1, "$LayerName");
+    data.mutableAttribute<Containers::MutableStringView>(1, MaterialAttribute::LayerName);
+
+    data.mutableAttribute("ClearCoat", 1);
+    data.mutableAttribute("ClearCoat", "Roughness");
+    data.mutableAttribute("ClearCoat", MaterialAttribute::Roughness);
+    data.mutableAttribute<Float>("ClearCoat", 1);
+    data.mutableAttribute<Float>("ClearCoat", "Roughness");
+    data.mutableAttribute<Float>("ClearCoat", MaterialAttribute::Roughness);
+    data.mutableAttribute<Containers::MutableStringView>("ClearCoat", 0);
+    data.mutableAttribute<Containers::MutableStringView>("ClearCoat", "$LayerName");
+    data.mutableAttribute<Containers::MutableStringView>("ClearCoat", MaterialAttribute::LayerName);
+
+    data.mutableAttribute(MaterialLayer::ClearCoat, 1);
+    data.mutableAttribute(MaterialLayer::ClearCoat, "Roughness");
+    data.mutableAttribute(MaterialLayer::ClearCoat, MaterialAttribute::Roughness);
+    data.mutableAttribute<Float>(MaterialLayer::ClearCoat, 1);
+    data.mutableAttribute<Float>(MaterialLayer::ClearCoat, "Roughness");
+    data.mutableAttribute<Float>(MaterialLayer::ClearCoat, MaterialAttribute::Roughness);
+    data.mutableAttribute<Containers::MutableStringView>(MaterialLayer::ClearCoat, 0);
+    data.mutableAttribute<Containers::MutableStringView>(MaterialLayer::ClearCoat, "$LayerName");
+    data.mutableAttribute<Containers::MutableStringView>(MaterialLayer::ClearCoat, MaterialAttribute::LayerName);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n");
 }
 
 void MaterialDataTest::releaseAttributes() {
@@ -2427,10 +2882,16 @@ void MaterialDataTest::templateLayerAccess() {
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(2)), 3);
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(MaterialAttribute::LayerFactorTexture)), 3);
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute("LayerFactorTexture")), 3);
+    CORRADE_COMPARE(*static_cast<UnsignedInt*>(data.mutableAttribute(2)), 3);
+    CORRADE_COMPARE(*static_cast<UnsignedInt*>(data.mutableAttribute(MaterialAttribute::LayerFactorTexture)), 3);
+    CORRADE_COMPARE(*static_cast<UnsignedInt*>(data.mutableAttribute("LayerFactorTexture")), 3);
 
     CORRADE_COMPARE(data.attribute<UnsignedInt>(2), 3);
     CORRADE_COMPARE(data.attribute<UnsignedInt>(MaterialAttribute::LayerFactorTexture), 3);
     CORRADE_COMPARE(data.attribute<UnsignedInt>("LayerFactorTexture"), 3);
+    CORRADE_COMPARE(data.mutableAttribute<UnsignedInt>(2), 3);
+    CORRADE_COMPARE(data.mutableAttribute<UnsignedInt>(MaterialAttribute::LayerFactorTexture), 3);
+    CORRADE_COMPARE(data.mutableAttribute<UnsignedInt>("LayerFactorTexture"), 3);
 
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(MaterialAttribute::LayerFactorTexture)), 3);
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute("LayerFactorTexture")), 3);
@@ -2440,6 +2901,50 @@ void MaterialDataTest::templateLayerAccess() {
 
     CORRADE_COMPARE(data.attributeOr(MaterialAttribute::LayerFactorTexture, 5u), 3);
     CORRADE_COMPARE(data.attributeOr("LayerFactorTexture", 5u), 3);
+}
+
+void MaterialDataTest::templateLayerAccessMutable() {
+    MaterialLayerData<MaterialLayer::ClearCoat> data{{}, {
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::Roughness, 1.0f},
+    }, {0, 2}};
+
+    *static_cast<Float*>(data.mutableAttribute(1)) *= 2.0f;
+    *static_cast<Float*>(data.mutableAttribute(MaterialAttribute::Roughness)) *= 2.0f;
+    *static_cast<Float*>(data.mutableAttribute("Roughness")) *= 2.0f;
+    data.mutableAttribute<Float>(1) *= 2.0f;
+    data.mutableAttribute<Float>(MaterialAttribute::Roughness) *= 2.0f;
+    data.mutableAttribute<Float>("Roughness") *= 2.0f;
+    CORRADE_COMPARE(data.attribute<Float>(MaterialAttribute::Roughness), 64.0f);
+
+    /* Resetting back so the layer name always stays the same so the next call
+       can find it. Other than that, the result should be same as in
+       accessLayerIndexMutable(). */
+    {
+        *static_cast<char*>(data.mutableAttribute("ClearCoat", 0)) = 'D';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "DlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        *static_cast<char*>(data.mutableAttribute("ClearCoat", "$LayerName")) = 'E';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "ElearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        *static_cast<char*>(data.mutableAttribute("ClearCoat", MaterialAttribute::LayerName)) = 'F';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "FlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        data.mutableAttribute<Containers::MutableStringView>("ClearCoat", 0)[0] = 'G';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "GlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        data.mutableAttribute<Containers::MutableStringView>("ClearCoat", "$LayerName")[0] = 'H';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "HlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    } {
+        data.mutableAttribute<Containers::MutableStringView>("ClearCoat", "$LayerName")[0] = 'I';
+        CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "IlearCoat");
+        *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
+    }
 }
 
 void MaterialDataTest::debugLayer() {

@@ -38,6 +38,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/RectangularMatrix.h"
+#include "Magnum/Trade/Data.h"
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Trade/visibility.h"
 
@@ -1533,6 +1534,24 @@ accessor APIs. The above can be written in a more compact way using
 
 @snippet MagnumTrade.cpp MaterialData-usage-layers-types
 
+@subsection Trade-MaterialData-usage-mutable Mutable data access
+
+The interfaces implicitly return attribute values by copy or through
+@cpp const @ce views on the contained data through the @ref attributeData(),
+@ref layerData() and @ref attribute() accessors. This is done because in
+general case the data can also refer to a memory-mapped file or constant
+memory. In cases when it's desirable to modify the attribute values in-place,
+there's a set of @ref mutableAttribute() functions. To use these, you need to
+check that the data are mutable using @ref attributeDataFlags() first. The
+following snippet desaturates the base color of a PBR material:
+
+@snippet MagnumTrade.cpp MaterialData-usage-mutable
+
+Because the class internally expects the attribute data to be sorted and
+partitioned into layers, it's not possible to modify attribute names,
+add/remove attributes or change layer offsets --- only to edit values of
+existing attributes.
+
 @section Trade-MaterialData-populating Populating an instance
 
 A @ref MaterialData instance by default takes over ownership of an
@@ -1550,11 +1569,12 @@ internally sorted by name to allow a @f$ \mathcal{O}(\log n) @f$ lookup.
 
 In addition to passing ownership of an array it's also possible to have the
 @ref MaterialData instance refer to external data (for example in a
-memory-mapped file, constant memory etc.). The additional second argument is
-@ref DataFlags that's used only for safely disambiguating from the owning
-constructor, and you'll pass a @ref Corrade::Containers::ArrayView instead of
-an @ref Corrade::Containers::Array. Note that in this case, since the attribute
-data is treated as immutable, you *have to* ensure the list is sorted by name.
+memory-mapped file, constant memory etc.). Instead of moving in an
+@relativeref{Corrade,Containers::Array} you pass @ref DataFlags describing if
+the data is mutable or not together with an
+@relativeref{Corrade,Containers::ArrayView}. Note that in this case, since the
+attribute data is treated as immutable, you *have to* ensure the list is
+already sorted by name.
 
 @snippet MagnumTrade.cpp MaterialData-populating-non-owned
 
@@ -1680,6 +1700,12 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *
          * The @p attributeData gets sorted by name internally, expecting no
          * duplicates.
+         *
+         * The @ref attributeDataFlags() / @ref layerDataFlags() are implicitly
+         * set to a combination of @ref DataFlag::Owned and
+         * @ref DataFlag::Mutable. For non-owned data use the
+         * @ref MaterialData(MaterialTypes, DataFlags, Containers::ArrayView<const MaterialAttributeData>, const void*)
+         * constructor instead.
          */
         explicit MaterialData(MaterialTypes types, Containers::Array<MaterialAttributeData>&& attributeData, const void* importerState = nullptr) noexcept: MaterialData{types, std::move(attributeData), nullptr, importerState} {}
 
@@ -1691,13 +1717,17 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @brief Construct a non-owned material data
          * @param types                 Which material types are described by
          *      this data. Can be an empty set.
-         * @param attributeDataFlags    Ignored. Used only for a safer
-         *      distinction from the owning constructor.
+         * @param attributeDataFlags    Attribute data flags
          * @param attributeData         Attribute data
          * @param importerState         Importer-specific state
          *
-         * The @p attributeData is expected to be already sorted by name,
-         * without duplicates.
+         * Compared to @ref MaterialData(MaterialTypes, Containers::Array<MaterialAttributeData>&&, const void*)
+         * creates an instance that doesn't own the passed attribute data. The
+         * @p attributeData is expected to be already sorted by name, without
+         * duplicates. The @p attributeDataFlags can contain
+         * @ref DataFlag::Mutable to indicate the external data can be
+         * modified, and is expected to *not* have @ref DataFlag::Owned set.
+         * The @ref layerDataFlags() are implicitly set to empty @ref DataFlags.
          */
         explicit MaterialData(MaterialTypes types, DataFlags attributeDataFlags, Containers::ArrayView<const MaterialAttributeData> attributeData, const void* importerState = nullptr) noexcept: MaterialData{types, attributeDataFlags, attributeData, {}, nullptr, importerState} {}
 
@@ -1714,6 +1744,12 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * either empty or a monotonically non-decreasing sequence of offsets
          * not larger than @p attributeData size, with *i*-th item specifying
          * end offset of *i*-th layer.
+         *
+         * The @ref attributeDataFlags() / @ref layerDataFlags() are implicitly
+         * set to a combination of @ref DataFlag::Owned and
+         * @ref DataFlag::Mutable. For non-owned data use the
+         * @ref MaterialData(MaterialTypes, DataFlags, Containers::ArrayView<const MaterialAttributeData>, DataFlags, Containers::ArrayView<const UnsignedInt>, const void*)
+         * constructor instead.
          */
         explicit MaterialData(MaterialTypes types, Containers::Array<MaterialAttributeData>&& attributeData, Containers::Array<UnsignedInt>&& layerData, const void* importerState = nullptr) noexcept;
 
@@ -1725,19 +1761,21 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @brief Construct a non-owned material data with layers
          * @param types                 Which material types are described by
          *      this data. Can be an empty set.
-         * @param attributeDataFlags    Ignored. Used only for a safer
-         *      distinction from the owning constructor.
+         * @param attributeDataFlags    Attribute data flags
          * @param attributeData         Attribute data
-         * @param layerDataFlags        Ignored. Used only for a safer
-         *      distinction from the owning constructor.
+         * @param layerDataFlags        Layer offset data flags
          * @param layerData             Layer offset data
-         * @param importerState     Importer-specific state
+         * @param importerState         Importer-specific state
          *
          * The @p data is expected to be already sorted by name, without
          * duplicates inside each layer. The @p layerData is expected to be
          * either empty or a monotonically non-decreasing sequence of offsets
          * not larger than @p attributeData size, with *i*-th item specifying
          * end offset of *i*-th layer.
+         *
+         * The @p attributeDataFlags / @p layerDataFlags parameters can contain
+         * @ref DataFlag::Mutable to indicate the external data can be
+         * modified, and are expected to *not* have @ref DataFlag::Owned set.
          */
         /* The second (ignored) DataFlags is present in order to make it ready
            for a possible extension where only one of the data is non-owned.
@@ -1757,6 +1795,27 @@ class MAGNUM_TRADE_EXPORT MaterialData {
 
         /** @brief Move assignment */
         MaterialData& operator=(MaterialData&&) noexcept;
+
+        /**
+         * @brief Attribute data flags
+         *¨
+         * Since the attribute list is always assumed to be sorted and
+         * partitioned into layers, only attribute values can be edited when
+         * the @ref DataFlag::Mutable flag is present.
+         * @see @ref releaseAttributeData(), @ref mutableAttribute()
+         */
+        DataFlags attributeDataFlags() const { return _attributeDataFlags; }
+
+        /**
+         * @brief Layer data flags
+         *
+         * Since the attribute list is always assumed to be sorted and
+         * partitioned into layers, the @ref DataFlag::Mutable flag has no
+         * effect here --- only attribute values can be edited when
+         * @ref DataFlag::Mutable is present in @ref attributeDataFlags().
+         * @see @ref releaseLayerData()
+         */
+        DataFlags layerDataFlags() const { return _layerDataFlags; }
 
         /**
          * @brief Material types
@@ -2202,6 +2261,15 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         const void* attribute(UnsignedInt layer, UnsignedInt id) const;
 
         /**
+         * @brief Type-erased mutable value of an attribute in given material layer
+         *
+         * Like @ref attribute(UnsignedInt, UnsignedInt) const but returns a
+         * mutable pointer. Expects that the material is mutable.
+         * @see @ref attributeDataFlags()
+         */
+        void* mutableAttribute(UnsignedInt layer, UnsignedInt id);
+
+        /**
          * @brief Type-erased value of a named attribute in given material layer
          *
          * The @p layer is expected to be smaller than @ref layerCount() const
@@ -2223,6 +2291,16 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         const void* attribute(UnsignedInt layer, MaterialAttribute name) const; /**< @overload */
 
         /**
+         * @brief Type-erased value of a named attribute in given material layer
+         *
+         * Like @ref attribute(UnsignedInt, Containers::StringView) const, but
+         * returns a mutable pointer. Expects that the material is mutable.
+         * @see @ref attributeDataFlags()
+         */
+        void* mutableAttribute(UnsignedInt layer, Containers::StringView name);
+        void* mutableAttribute(UnsignedInt layer, MaterialAttribute name); /**< @overload */
+
+        /**
          * @brief Type-erased value of an attribute in a named material layer
          *
          * The @p layer is expected to exist and the @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const
@@ -2242,6 +2320,16 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         const void* attribute(Containers::StringView layer, UnsignedInt id) const;
         const void* attribute(MaterialLayer layer, UnsignedInt id) const; /**< @overload */
+
+        /**
+         * @brief Type-erased mutable value of an attribute in a named material layer
+         *
+         * Like @ref attribute(Containers::StringView, UnsignedInt) const but
+         * returns a mutable pointer. Expects that the material is mutable.
+         * @see @ref attributeDataFlags()
+         */
+        void* mutableAttribute(Containers::StringView layer, UnsignedInt id);
+        void* mutableAttribute(MaterialLayer layer, UnsignedInt id); /**< @overload */
 
         /**
          * @brief Type-erased value of a named attribute in a named material layer
@@ -2267,6 +2355,18 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         const void* attribute(MaterialLayer layer, MaterialAttribute name) const; /**< @overload */
 
         /**
+         * @brief Type-erased mutable value of a named attribute in a named material layer
+         *
+         * Like @ref attribute(Containers::StringView, Containers::StringView) const
+         * but returns a mutable pointer. Expects that the material is mutable.
+         * @see @ref attributeDataFlags()
+         */
+        void* mutableAttribute(Containers::StringView layer, Containers::StringView name);
+        void* mutableAttribute(Containers::StringView layer, MaterialAttribute name); /**< @overload */
+        void* mutableAttribute(MaterialLayer layer, Containers::StringView name); /**< @overload */
+        void* mutableAttribute(MaterialLayer layer, MaterialAttribute name); /**< @overload */
+
+        /**
          * @brief Type-erased value of an attribute in the base material
          *
          * Equivalent to calling @ref attribute(UnsignedInt, UnsignedInt) const
@@ -2274,6 +2374,17 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         const void* attribute(UnsignedInt id) const {
             return attribute(0, id);
+        }
+
+        /**
+         * @brief Type-erased mutable value of an attribute in the base material
+         *
+         * Like @ref attribute(UnsignedInt) const but returns a mutable
+         * pointer. Expects that the material is mutable.
+         * @see @ref attributeDataFlags()
+         */
+        void* mutableAttribute(UnsignedInt id) {
+            return mutableAttribute(0, id);
         }
 
         /**
@@ -2290,6 +2401,20 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         } /**< @overload */
 
         /**
+         * @brief Type-erased mutable value of a named attribute in the base material
+         *
+         * Like @ref attribute(Containers::StringView) const but returns a
+         * mutable pointer. Expects that the material is mutable.
+         * @see @ref attributeDataFlags()
+         */
+        void* mutableAttribute(Containers::StringView name) {
+            return mutableAttribute(0, name);
+        }
+        void* mutableAttribute(MaterialAttribute name) {
+            return mutableAttribute(0, name);
+        } /**< @overload */
+
+        /**
          * @brief Value of an attribute in given material layer
          *
          * The @p layer is expected to be smaller than @ref layerCount() const
@@ -2301,6 +2426,20 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * set.
          */
         template<class T> T attribute(UnsignedInt layer, UnsignedInt id) const;
+
+        /**
+         * @brief Mutable value of an attribute in given material layer
+         *
+         * Like @ref attribute(UnsignedInt, UnsignedInt) const but returns a
+         * mutable reference. Expects that the material is mutable. In case of
+         * a string, you're expected to use
+         * @relativeref{Corrade,Containers::MutableStringView} instead of
+         * @relativeref{Corrade,Containers::StringView} for @p T and you get a
+         * @relativeref{Corrade,Containers::MutableStringView} back by-value,
+         * not by-reference. Changing the string size is not possible.
+         * @see @ref attributeDataFlags()
+         */
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(UnsignedInt layer, UnsignedInt id);
 
         /**
          * @brief Value of a named attribute in given material layer
@@ -2317,6 +2456,21 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         template<class T> T attribute(UnsignedInt layer, MaterialAttribute name) const; /**< @overload */
 
         /**
+         * @brief Mutable value of a named attribute in given material layer
+         *
+         * Like @ref attribute(UnsignedInt, Containers::StringView) const but
+         * returns a mutable reference. Expects that the material is mutable.
+         * In case of a string, you're expected to use
+         * @relativeref{Corrade,Containers::MutableStringView} instead of
+         * @relativeref{Corrade,Containers::StringView} for @p T and you get a
+         * @relativeref{Corrade,Containers::MutableStringView} back by-value,
+         * not by-reference. Changing the string size is not possible.
+         * @see @ref attributeDataFlags()
+         */
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(UnsignedInt layer, Containers::StringView name);
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(UnsignedInt layer, MaterialAttribute name); /**< @overload */
+
+        /**
          * @brief Value of an attribute in a named material layer
          *
          * The @p layer is expected to exist and @p id is expected to be
@@ -2330,6 +2484,21 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         template<class T> T attribute(Containers::StringView layer, UnsignedInt id) const;
         template<class T> T attribute(MaterialLayer layer, UnsignedInt id) const; /**< @overload */
+
+        /**
+         * @brief Mutable value of an attribute in a named material layer
+         *
+         * Like @ref attribute(Containers::StringView, UnsignedInt) const but
+         * returns a mutable reference. Expects that the material is mutable.
+         * In case of a string, you're expected to use
+         * @relativeref{Corrade,Containers::MutableStringView} instead of
+         * @relativeref{Corrade,Containers::StringView} for @p T and you get a
+         * @relativeref{Corrade,Containers::MutableStringView} back by-value,
+         * not by-reference. Changing the string size is not possible.
+         * @see @ref attributeDataFlags()
+         */
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(Containers::StringView layer, UnsignedInt id);
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(MaterialLayer layer, UnsignedInt id); /**< @overload */
 
         /**
          * @brief Value of a named attribute in a named material layer
@@ -2348,6 +2517,23 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         template<class T> T attribute(MaterialLayer layer, MaterialAttribute name) const; /**< @overload */
 
         /**
+         * @brief Mutable value of a named attribute in a named material layer
+         *
+         * Like @ref attribute(Containers::StringView, Containers::StringView) const
+         * but returns a mutable reference. Expects that the material is
+         * mutable. In case of a string, you're expected to use
+         * @relativeref{Corrade,Containers::MutableStringView} instead of
+         * @relativeref{Corrade,Containers::StringView} for @p T and you get a
+         * @relativeref{Corrade,Containers::MutableStringView} back by-value,
+         * not by-reference. Changing the string size is not possible.
+         * @see @ref attributeDataFlags()
+         */
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(Containers::StringView layer, Containers::StringView name);
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(Containers::StringView layer, MaterialAttribute name); /**< @overload */
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(MaterialLayer layer, Containers::StringView name); /**< @overload */
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(MaterialLayer layer, MaterialAttribute name); /**< @overload */
+
+        /**
          * @brief Value of an attribute in the base material
          *
          * Equivalent to calling @ref attribute(UnsignedInt, UnsignedInt) const
@@ -2355,6 +2541,16 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         template<class T> T attribute(UnsignedInt id) const {
             return attribute<T>(0, id);
+        }
+
+        /**
+         * @brief Mutable value of an attribute in the base material
+         *
+         * Equivalent to calling @ref mutableAttribute(UnsignedInt, UnsignedInt)
+         * with @p layer set to @cpp 0 @ce.
+         */
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(UnsignedInt id) {
+            return mutableAttribute<T>(0, id);
         }
 
         /**
@@ -2368,6 +2564,19 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         }
         template<class T> T attribute(MaterialAttribute name) const {
             return attribute<T>(0, name);
+        } /**< @overload */
+
+        /**
+         * @brief Mutable value of a named attribute in the base material
+         *
+         * Equivalent to calling @ref mutableAttribute(UnsignedInt, Containers::StringView)
+         * with @p layer set to @cpp 0 @ce.
+         */
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(Containers::StringView name) {
+            return mutableAttribute<T>(0, name);
+        }
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(MaterialAttribute name) {
+            return mutableAttribute<T>(0, name);
         } /**< @overload */
 
         /**
@@ -2545,7 +2754,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *      has undefined behavior and might lead to crashes. This is done
          *      intentionally in order to simplify the interaction between this
          *      function and @ref releaseAttributeData().
-         * @see @ref layerData()
+         * @see @ref layerData(), @ref layerDataFlags()
          */
         Containers::Array<UnsignedInt> releaseLayerData();
 
@@ -2562,7 +2771,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *      has undefined behavior and might lead to crashes. This is done
          *      intentionally in order to simplify the interaction between this
          *      function and @ref releaseLayerData().
-         * @see @ref attributeData()
+         * @see @ref attributeData(), @ref attributeDataFlags()
          */
         Containers::Array<MaterialAttributeData> releaseAttributeData();
 
@@ -2591,6 +2800,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         Containers::Array<MaterialAttributeData> _data;
         Containers::Array<UnsignedInt> _layerOffsets;
         MaterialTypes _types;
+        DataFlags _attributeDataFlags, _layerDataFlags;
+        /* 2 bytes free */
         const void* _importerState;
 };
 
@@ -2732,8 +2943,22 @@ template<class T> T MaterialData::attribute(const UnsignedInt layer, const Unsig
     return *reinterpret_cast<const T*>(value);
 }
 
+template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const UnsignedInt layer, const UnsignedInt id) {
+    void* const value = mutableAttribute(layer, id);
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    if(!value) return *reinterpret_cast<T*>(this);
+    #endif
+    #ifndef CORRADE_NO_ASSERT
+    const Trade::MaterialAttributeData& data = _data[layerOffset(layer) + id];
+    #endif
+    CORRADE_ASSERT(Implementation::MaterialAttributeTypeFor<T>::type() == data._data.type,
+        "Trade::MaterialData::mutableAttribute():" << (data._data.data + 1) << "is" << data._data.type << "but requested a type equivalent to" << Implementation::MaterialAttributeTypeFor<T>::type(), *reinterpret_cast<T*>(this));
+    return *reinterpret_cast<T*>(value);
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> Containers::StringView MaterialData::attribute<Containers::StringView>(UnsignedInt, UnsignedInt) const;
+template<> Containers::MutableStringView MaterialData::mutableAttribute<Containers::MutableStringView>(UnsignedInt, UnsignedInt);
 #endif
 
 template<class T> T MaterialData::attribute(const UnsignedInt layer, const Containers::StringView name) const {
@@ -2745,10 +2970,25 @@ template<class T> T MaterialData::attribute(const UnsignedInt layer, const Conta
     return attribute<T>(layer, id);
 }
 
+template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const UnsignedInt layer, const Containers::StringView name) {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::mutableAttribute(): index" << layer << "out of range for" << layerCount() << "layers", *reinterpret_cast<T*>(this));
+    const UnsignedInt id = attributeFor(layer, name);
+    CORRADE_ASSERT(id != ~UnsignedInt{},
+        "Trade::MaterialData::mutableAttribute(): attribute" << name << "not found in layer" << layer, *reinterpret_cast<T*>(this));
+    return mutableAttribute<T>(layer, id);
+}
+
 template<class T> T MaterialData::attribute(const UnsignedInt layer, const MaterialAttribute name) const {
     const Containers::StringView string = attributeString(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << name, {});
     return attribute<T>(layer, string);
+}
+
+template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const UnsignedInt layer, const MaterialAttribute name) {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << name, *reinterpret_cast<T*>(this));
+    return mutableAttribute<T>(layer, string);
 }
 
 template<class T> T MaterialData::attribute(const Containers::StringView layer, const UnsignedInt id) const {
@@ -2758,6 +2998,15 @@ template<class T> T MaterialData::attribute(const Containers::StringView layer, 
     CORRADE_ASSERT(id < attributeCount(layer),
         "Trade::MaterialData::attribute(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
     return attribute<T>(layerId, id);
+}
+
+template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const Containers::StringView layer, const UnsignedInt id) {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::mutableAttribute(): layer" << layer << "not found", *reinterpret_cast<T*>(this));
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::mutableAttribute(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, *reinterpret_cast<T*>(this));
+    return mutableAttribute<T>(layerId, id);
 }
 
 template<class T> T MaterialData::attribute(const Containers::StringView layer, const Containers::StringView name) const {
@@ -2770,10 +3019,26 @@ template<class T> T MaterialData::attribute(const Containers::StringView layer, 
     return attribute<T>(layerId, id);
 }
 
+template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const Containers::StringView layer, const Containers::StringView name) {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::mutableAttribute(): layer" << layer << "not found", *reinterpret_cast<T*>(this));
+    const UnsignedInt id = attributeFor(layerId, name);
+    CORRADE_ASSERT(id != ~UnsignedInt{},
+        "Trade::MaterialData::mutableAttribute(): attribute" << name << "not found in layer" << layer, *reinterpret_cast<T*>(this));
+    return mutableAttribute<T>(layerId, id);
+}
+
 template<class T> T MaterialData::attribute(const Containers::StringView layer, const MaterialAttribute name) const {
     const Containers::StringView string = attributeString(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << name, {});
     return attribute<T>(layer, string);
+}
+
+template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const Containers::StringView layer, const MaterialAttribute name) {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << name, *reinterpret_cast<T*>(this));
+    return mutableAttribute<T>(layer, string);
 }
 
 template<class T> T MaterialData::attribute(const MaterialLayer layer, const UnsignedInt id) const {
@@ -2782,16 +3047,34 @@ template<class T> T MaterialData::attribute(const MaterialLayer layer, const Uns
     return attribute<T>(string, id);
 }
 
+template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const MaterialLayer layer, const UnsignedInt id) {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << layer, *reinterpret_cast<T*>(this));
+    return mutableAttribute<T>(string, id);
+}
+
 template<class T> T MaterialData::attribute(const MaterialLayer layer, const Containers::StringView name) const {
     const Containers::StringView string = layerString(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << layer, {});
     return attribute<T>(string, name);
 }
 
+template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const MaterialLayer layer, const Containers::StringView name) {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << layer, *reinterpret_cast<T*>(this));
+    return mutableAttribute<T>(string, name);
+}
+
 template<class T> T MaterialData::attribute(const MaterialLayer layer, const MaterialAttribute name) const {
     const Containers::StringView string = layerString(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << layer, {});
     return attribute<T>(string, name);
+}
+
+template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const MaterialLayer layer, const MaterialAttribute name) {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << layer, *reinterpret_cast<T*>(this));
+    return mutableAttribute<T>(string, name);
 }
 
 template<class T> Containers::Optional<T> MaterialData::tryAttribute(const UnsignedInt layer, const Containers::StringView name) const {

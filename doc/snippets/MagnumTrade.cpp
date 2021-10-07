@@ -469,6 +469,15 @@ if(data.types() & Trade::MaterialType::PbrClearCoat) {
 }
 
 {
+Trade::MaterialData data{{}, {}};
+/* [MaterialData-usage-mutable] */
+Color4& color = data.mutableAttribute<Color4>(Trade::MaterialAttribute::BaseColor);
+ColorHsv hsv = color.toHsv();
+color.rgb() = Color3::fromHsv({hsv.hue, hsv.saturation*0.85f, hsv.value});
+/* [MaterialData-usage-mutable] */
+}
+
+{
 /* [MaterialData-populating] */
 Trade::MaterialData data{Trade::MaterialType::PbrMetallicRoughness, {
     {Trade::MaterialAttribute::DoubleSided, true},
