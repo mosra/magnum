@@ -186,10 +186,7 @@ void AndroidApplication::redraw() {
     _flags |= Flag::Redraw;
 }
 
-void AndroidApplication::viewportEvent(ViewportEvent& event) {
-    static_cast<void>(event);
-}
-
+void AndroidApplication::viewportEvent(ViewportEvent&) {}
 void AndroidApplication::mousePressEvent(MouseEvent&) {}
 void AndroidApplication::mouseReleaseEvent(MouseEvent&) {}
 void AndroidApplication::mouseMoveEvent(MouseMoveEvent&) {}

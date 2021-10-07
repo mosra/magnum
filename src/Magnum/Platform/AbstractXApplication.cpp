@@ -191,10 +191,7 @@ bool AbstractXApplication::mainLoopIteration() {
     return !(_flags & Flag::Exit);
 }
 
-void AbstractXApplication::viewportEvent(ViewportEvent& event) {
-    static_cast<void>(event);
-}
-
+void AbstractXApplication::viewportEvent(ViewportEvent&) {}
 void AbstractXApplication::keyPressEvent(KeyEvent&) {}
 void AbstractXApplication::keyReleaseEvent(KeyEvent&) {}
 void AbstractXApplication::mousePressEvent(MouseEvent&) {}

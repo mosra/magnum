@@ -1171,10 +1171,7 @@ void Sdl2Application::anyEvent(SDL_Event&) {
     _flags |= Flag::NoAnyEvent;
 }
 
-void Sdl2Application::viewportEvent(ViewportEvent& event) {
-    static_cast<void>(event);
-}
-
+void Sdl2Application::viewportEvent(ViewportEvent&) {}
 void Sdl2Application::keyPressEvent(KeyEvent&) {}
 void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
 void Sdl2Application::mousePressEvent(MouseEvent&) {}
