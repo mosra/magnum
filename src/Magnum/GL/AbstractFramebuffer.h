@@ -262,7 +262,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         void bind();
 
         /** @brief Viewport rectangle */
-        Range2Di viewport() const { return _viewport; }
+        Range2Di viewport() const;
 
         /**
          * @brief Set viewport
@@ -740,8 +740,10 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
     #else
     protected:
     #endif
-        /* Used by the (constexpr) DefaultFramebuffer constructor and both
-           the NoCreate and normal constructor of Framebuffer */
+        /* Used by the (constexpr) DefaultFramebuffer constructor (which passes
+           in an empty viewport anyway so we don't need to pass it to the state
+           tracker instead) and both the NoCreate and normal constructor of
+           Framebuffer */
         constexpr explicit AbstractFramebuffer(GLuint id, const Range2Di& viewport, ObjectFlags flags) noexcept: _id{id}, _viewport{viewport}, _flags{flags} {}
 
         ~AbstractFramebuffer() = default;
@@ -767,6 +769,16 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         void MAGNUM_GL_LOCAL setViewportInternal();
 
         GLuint _id;
+        /* Used only if _id != 0, for default framebuffer the viewport is
+           stored inside the state tracker. This is done in order to avoid race
+           conditions when using Magnum from multiple threads (due to the
+           global GL::defaultFramebuffer) and to work around issues caused by
+           this very global symbol being duplicated when statically-compiled
+           Magnum is linked to multiple shared libraries (such as every shared
+           library thinking the default viewport is different). It's stored in
+           the state tracker because it wouldn't be possible to employ our
+           symbol deduplication tricks on GL::defaultFramebuffer on all
+           platforms without turning it into a pointer or a function. */
         Range2Di _viewport;
         ObjectFlags _flags;
 

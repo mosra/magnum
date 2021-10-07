@@ -114,7 +114,7 @@ struct FramebufferState {
     #ifndef MAGNUM_TARGET_GLES
     GLint maxDualSourceDrawBuffers;
     #endif
-    Range2Di viewport;
+    Range2Di defaultViewport, viewport;
     Vector2i maxViewportSize;
 };
 

@@ -285,12 +285,23 @@ void AbstractFramebuffer::blitImplementationNV(AbstractFramebuffer& source, Abst
 }
 #endif
 
+Range2Di AbstractFramebuffer::viewport() const {
+    /* For default framebuffer the viewport is stored inside the state tracker
+       instead. See the _viewport variable docs for details. */
+    return _id ? _viewport : Context::current().state().framebuffer.defaultViewport;
+}
+
 AbstractFramebuffer& AbstractFramebuffer::setViewport(const Range2Di& rectangle) {
+    Implementation::FramebufferState& state = Context::current().state().framebuffer;
+
     CORRADE_INTERNAL_ASSERT(rectangle != Implementation::FramebufferState::DisengagedViewport);
-    _viewport = rectangle;
+
+    /* For default framebuffer the viewport is stored inside the state tracker
+       instead. See the _viewport variable docs for details. */
+    (_id ? _viewport : state.defaultViewport) = rectangle;
 
     /* Update the viewport if the framebuffer is currently bound */
-    if(Context::current().state().framebuffer.drawBinding == _id)
+    if(state.drawBinding == _id)
         setViewportInternal();
 
     return *this;
@@ -299,16 +310,20 @@ AbstractFramebuffer& AbstractFramebuffer::setViewport(const Range2Di& rectangle)
 void AbstractFramebuffer::setViewportInternal() {
     Implementation::FramebufferState& state = Context::current().state().framebuffer;
 
-    CORRADE_INTERNAL_ASSERT(_viewport != Implementation::FramebufferState::DisengagedViewport);
+    /* For default framebuffer the viewport is stored inside the state tracker
+       instead. See the _viewport variable docs for details. */
+    const Range2Di& viewport = _id ? _viewport : Context::current().state().framebuffer.defaultViewport;
+
+    CORRADE_INTERNAL_ASSERT(viewport != Implementation::FramebufferState::DisengagedViewport);
     CORRADE_INTERNAL_ASSERT(state.drawBinding == _id);
 
     /* Already up-to-date, nothing to do */
-    if(state.viewport == _viewport)
+    if(state.viewport == viewport)
         return;
 
     /* Update the state and viewport */
-    state.viewport = _viewport;
-    glViewport(_viewport.left(), _viewport.bottom(), _viewport.sizeX(), _viewport.sizeY());
+    state.viewport = viewport;
+    glViewport(viewport.left(), viewport.bottom(), viewport.sizeX(), viewport.sizeY());
 }
 
 AbstractFramebuffer& AbstractFramebuffer::clear(const FramebufferClearMask mask) {

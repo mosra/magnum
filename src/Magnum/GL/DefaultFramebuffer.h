@@ -72,8 +72,6 @@ functions @ref checkStatus(), @ref mapForDraw(), @ref mapForRead() and
 See their respective documentation for more information.
 */
 class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
-    friend Context;
-
     public:
         /**
          * @brief Status
@@ -495,9 +493,6 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
         }
         #endif
         #endif
-
-    private:
-        static void MAGNUM_GL_LOCAL initializeContextBasedFunctionality(Context& context);
 };
 
 /** @brief Default framebuffer instance */

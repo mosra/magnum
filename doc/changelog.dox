@@ -283,6 +283,9 @@ See also:
     flag for integration with custom-created OpenGL contexts. See also
     [mosra/magnum#493](https://github.com/mosra/magnum/pull/493) and
     [mosra/magnum#494](https://github.com/mosra/magnum/pull/494).
+-   The @ref GL::defaultFramebuffer global now deduplicates its state when a
+    statically-built Magnum is linked to multiple shared libraries, following
+    what the global @ref GL::Context::current() already does
 
 @subsubsection changelog-latest-changes-math Math library
 

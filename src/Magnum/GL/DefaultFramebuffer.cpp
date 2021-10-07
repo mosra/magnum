@@ -113,16 +113,6 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
 }
 #endif
 
-void DefaultFramebuffer::initializeContextBasedFunctionality(Context& context) {
-    Implementation::FramebufferState& state = context.state().framebuffer;
-
-    /* Initial framebuffer size */
-    GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    defaultFramebuffer._viewport = state.viewport = Range2Di::fromSize({viewport[0], viewport[1]}, {viewport[2], viewport[3]});
-    CORRADE_INTERNAL_ASSERT(defaultFramebuffer._viewport != Implementation::FramebufferState::DisengagedViewport);
-}
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DefaultFramebuffer::Status value) {
     debug << "GL::DefaultFramebuffer::Status" << Debug::nospace;

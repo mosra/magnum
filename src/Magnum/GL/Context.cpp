@@ -41,7 +41,6 @@
 #ifndef MAGNUM_TARGET_WEBGL
 #include "Magnum/GL/DebugOutput.h"
 #endif
-#include "Magnum/GL/DefaultFramebuffer.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
@@ -982,13 +981,26 @@ bool Context::tryCreate(const Configuration& configuration) {
             if(!workaround.second) Debug(output) << "   " << workaround.first;
     }
 
-    /** @todo Get rid of these */
-    /* Initialize functionality based on current OpenGL version and extensions.
-       If we are on a windowless context don't touch the default framebuffer
-       to avoid potential race conditions with default framebuffer on another
-       thread. */
-    if(!(_configurationFlags & Configuration::Flag::Windowless))
-        DefaultFramebuffer::initializeContextBasedFunctionality(*this);
+    /* Fetch default framebuffer size and set up default clear color. If we are
+       on a windowless context don't bother retrieving the default framebuffer
+       viewport. This used to touch the GL::defaultFramebuffer global and the
+       Windowless flag got originally added to prevent a race when initializing
+       Magnum from multiple threads. But in order to work around issues caused
+       by this very global symbol being duplicated when statically-compiled
+       Magnum is linked to multiple shared libraries (such as every shared
+       library thinking the default viewport is different), the viewport had to
+       be moved to the state tracker, which is immune against symbol
+       duplication. It wouldn't be possible to deduplicate the
+       GL::defaultFramebuffer global itself without turning it into a pointer
+       or a function. */
+    if(!(_configurationFlags & Configuration::Flag::Windowless)) {
+        Implementation::FramebufferState& state = _state->framebuffer;
+        GLint viewport[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        state.defaultViewport = state.viewport = Range2Di::fromSize({viewport[0], viewport[1]}, {viewport[2], viewport[3]});
+        CORRADE_INTERNAL_ASSERT(state.defaultViewport != Implementation::FramebufferState::DisengagedViewport);
+    }
+    /** @todo Get rid of this as well somehow */
     Renderer::initializeContextBasedFunctionality();
 
     /* Enable GPU validation, if requested */

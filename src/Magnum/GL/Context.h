@@ -925,9 +925,8 @@ class MAGNUM_GL_EXPORT Context::Configuration {
 
             /**
              * Treat the context as windowless, assume there's no default
-             * framebuffer and thus don't touch @ref defaultFramebuffer in any
-             * way. Useful for preventing race conditions when creating OpenGL
-             * contexts in background threads.
+             * framebuffer and thus don't initialize or touch
+             * @ref defaultFramebuffer in any way.
              *
              * This flag is implicitly enabled in all
              * @ref Platform::WindowlessEglContext::Configuration "Platform::Windowless*Application::Configuration",
