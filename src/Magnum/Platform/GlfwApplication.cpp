@@ -866,7 +866,7 @@ void GlfwApplication::exitEvent(ExitEvent& event) {
     event.setAccepted();
 }
 
-void GlfwApplication::viewportEvent(ViewportEvent& event) {}
+void GlfwApplication::viewportEvent(ViewportEvent&) {}
 void GlfwApplication::keyPressEvent(KeyEvent&) {}
 void GlfwApplication::keyReleaseEvent(KeyEvent&) {}
 void GlfwApplication::mousePressEvent(MouseEvent&) {}
