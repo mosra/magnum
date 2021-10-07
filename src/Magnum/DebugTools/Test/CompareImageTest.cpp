@@ -556,8 +556,9 @@ void CompareImageTest::pixelDeltaSpecials() {
     Debug d{&out, Debug::Flag::DisableColors};
     Implementation::printPixelDeltas(d, DeltaSpecials, ActualSpecials.format(), ActualSpecials.pixels(), ExpectedSpecials.pixels(), 1.5f, 0.5f, 10);
 
-    /* MSVC prints -nan(ind) instead of ±nan. But only sometimes. */
-    #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL)
+    /* MSVC before version 2019 16.10(11?) prints -nan(ind) instead of ±nan.
+       But only sometimes. */
+    #if defined(CORRADE_TARGET_MSVC) && _MSC_VER < 1929 && !defined(CORRADE_TARGET_CLANG_CL)
     CORRADE_COMPARE(out.str(), "\n"
         "        Pixels above max/mean threshold:\n"
         "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
@@ -747,9 +748,11 @@ void CompareImageTest::compareSpecials() {
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
 
-    /* MSVC prints -nan(ind) instead of ±nan. But only sometimes, and
-       differently on 32/64bit builds. */
+    /* MSVC prints -nan(ind) instead of ±nan. But only sometimes, differently
+       on 32/64bit builds and differently since version 2019 16.10(11?). FFS I
+       need my own float printer already, this is utter madness. */
     #elif defined(CORRADE_TARGET_MSVC)
+    #if _MSC_VER < 1929
     #ifdef _M_X64
     CORRADE_COMPARE(out.str(),
         "Images a and b have both max and mean delta above threshold, actual 3.1/-nan(ind) but at most 1.5/0.5 expected. Delta image:\n"
@@ -769,6 +772,18 @@ void CompareImageTest::compareSpecials() {
         "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
         "          [3,0] Vector(0.3), expected Vector(-nan(ind)) (Δ = nan)\n"
         "          [2,0] Vector(-nan(ind)), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
+    #endif
+    #else
+    CORRADE_COMPARE(out.str(),
+        "Images a and b have both max and mean delta above threshold, actual 3.1/-nan(ind) but at most 1.5/0.5 expected. Delta image:\n"
+        "          |MMMM M ,M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(nan) (Δ = nan)\n"
+        "          [2,0] Vector(nan), expected Vector(0.3) (Δ = nan)\n"
         "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
@@ -842,9 +857,11 @@ void CompareImageTest::compareSpecialsMeanOnly() {
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
 
-    /* MSVC prints -nan(ind) instead of ±nan. But only sometimes, and
-       differently on 32/64bit builds. */
+    /* MSVC prints -nan(ind) instead of ±nan. But only sometimes, differently
+       on 32/64bit builds and differently since version 2019 16.10(11?). FFS I
+       need my own float printer already, this is utter madness. */
     #elif defined(CORRADE_TARGET_MSVC)
+    #if _MSC_VER < 1929
     #ifdef _M_X64
     CORRADE_COMPARE(out.str(),
         "Images a and b have mean delta above threshold, actual -nan(ind) but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
@@ -864,6 +881,18 @@ void CompareImageTest::compareSpecialsMeanOnly() {
         "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
         "          [3,0] Vector(0.3), expected Vector(-nan(ind)) (Δ = nan)\n"
         "          [2,0] Vector(-nan(ind)), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
+    #endif
+    #else
+    CORRADE_COMPARE(out.str(),
+        "Images a and b have mean delta above threshold, actual -nan(ind) but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
+        "          |MMMM M ,M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(nan) (Δ = nan)\n"
+        "          [2,0] Vector(nan), expected Vector(0.3) (Δ = nan)\n"
         "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
