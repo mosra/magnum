@@ -82,6 +82,24 @@ UnsignedInt sceneObjectTypeSize(const SceneObjectType type) {
     CORRADE_ASSERT_UNREACHABLE("Trade::sceneObjectTypeSize(): invalid type" << type, {});
 }
 
+UnsignedInt sceneObjectTypeAlignment(const SceneObjectType type) {
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
+    switch(type) {
+        case SceneObjectType::UnsignedByte: return 1;
+        case SceneObjectType::UnsignedShort: return 2;
+        case SceneObjectType::UnsignedInt: return 4;
+        case SceneObjectType::UnsignedLong: return 8;
+    }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
+
+    CORRADE_ASSERT_UNREACHABLE("Trade::sceneObjectTypeAlignment(): invalid type" << type, {});
+}
+
 Debug& operator<<(Debug& debug, const SceneField value) {
     debug << "Trade::SceneField" << Debug::nospace;
 
@@ -341,6 +359,118 @@ UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
     #endif
 
     CORRADE_ASSERT_UNREACHABLE("Trade::sceneFieldTypeSize(): invalid type" << type, {});
+}
+
+UnsignedInt sceneFieldTypeAlignment(const SceneFieldType type) {
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
+    switch(type) {
+        case SceneFieldType::UnsignedByte:
+        case SceneFieldType::Vector2ub:
+        case SceneFieldType::Vector3ub:
+        case SceneFieldType::Vector4ub:
+        case SceneFieldType::Byte:
+        case SceneFieldType::Vector2b:
+        case SceneFieldType::Vector3b:
+        case SceneFieldType::Vector4b:
+            return 1;
+        case SceneFieldType::UnsignedShort:
+        case SceneFieldType::Vector2us:
+        case SceneFieldType::Vector3us:
+        case SceneFieldType::Vector4us:
+        case SceneFieldType::Short:
+        case SceneFieldType::Vector2s:
+        case SceneFieldType::Vector3s:
+        case SceneFieldType::Vector4s:
+        case SceneFieldType::Half:
+        case SceneFieldType::Vector2h:
+        case SceneFieldType::Vector3h:
+        case SceneFieldType::Vector4h:
+        case SceneFieldType::Matrix2x2h:
+        case SceneFieldType::Matrix2x3h:
+        case SceneFieldType::Matrix2x4h:
+        case SceneFieldType::Matrix3x2h:
+        case SceneFieldType::Matrix3x3h:
+        case SceneFieldType::Matrix3x4h:
+        case SceneFieldType::Matrix4x2h:
+        case SceneFieldType::Matrix4x3h:
+        case SceneFieldType::Matrix4x4h:
+        case SceneFieldType::Range1Dh:
+        case SceneFieldType::Range2Dh:
+        case SceneFieldType::Range3Dh:
+        case SceneFieldType::Degh:
+        case SceneFieldType::Radh:
+            return 2;
+        case SceneFieldType::UnsignedInt:
+        case SceneFieldType::Vector2ui:
+        case SceneFieldType::Vector3ui:
+        case SceneFieldType::Vector4ui:
+        case SceneFieldType::Int:
+        case SceneFieldType::Vector2i:
+        case SceneFieldType::Vector3i:
+        case SceneFieldType::Vector4i:
+        case SceneFieldType::Float:
+        case SceneFieldType::Vector2:
+        case SceneFieldType::Vector3:
+        case SceneFieldType::Vector4:
+        case SceneFieldType::Matrix2x2:
+        case SceneFieldType::Matrix2x3:
+        case SceneFieldType::Matrix2x4:
+        case SceneFieldType::Matrix3x2:
+        case SceneFieldType::Matrix3x3:
+        case SceneFieldType::Matrix3x4:
+        case SceneFieldType::Matrix4x2:
+        case SceneFieldType::Matrix4x3:
+        case SceneFieldType::Matrix4x4:
+        case SceneFieldType::Range1Di:
+        case SceneFieldType::Range2Di:
+        case SceneFieldType::Range3Di:
+        case SceneFieldType::Range1D:
+        case SceneFieldType::Range2D:
+        case SceneFieldType::Range3D:
+        case SceneFieldType::Complex:
+        case SceneFieldType::Quaternion:
+        case SceneFieldType::DualComplex:
+        case SceneFieldType::DualQuaternion:
+        case SceneFieldType::Deg:
+        case SceneFieldType::Rad:
+            return 4;
+        case SceneFieldType::UnsignedLong:
+        case SceneFieldType::Long:
+        case SceneFieldType::Double:
+        case SceneFieldType::Vector2d:
+        case SceneFieldType::Vector3d:
+        case SceneFieldType::Vector4d:
+        case SceneFieldType::Matrix2x2d:
+        case SceneFieldType::Matrix2x3d:
+        case SceneFieldType::Matrix2x4d:
+        case SceneFieldType::Matrix3x2d:
+        case SceneFieldType::Matrix3x3d:
+        case SceneFieldType::Matrix3x4d:
+        case SceneFieldType::Matrix4x2d:
+        case SceneFieldType::Matrix4x3d:
+        case SceneFieldType::Matrix4x4d:
+        case SceneFieldType::Range1Dd:
+        case SceneFieldType::Range2Dd:
+        case SceneFieldType::Range3Dd:
+        case SceneFieldType::Complexd:
+        case SceneFieldType::Quaterniond:
+        case SceneFieldType::DualComplexd:
+        case SceneFieldType::DualQuaterniond:
+        case SceneFieldType::Degd:
+        case SceneFieldType::Radd:
+            return 8;
+        case SceneFieldType::Pointer:
+        case SceneFieldType::MutablePointer:
+            return sizeof(void*);
+    }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
+
+    CORRADE_ASSERT_UNREACHABLE("Trade::sceneFieldTypeAlignment(): invalid type" << type, {});
 }
 
 SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<const char>& objectData, const SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, const UnsignedShort fieldArraySize) noexcept: SceneFieldData{name, {}, Containers::StridedArrayView1D<const void>{{objectData.data(), ~std::size_t{}}, objectData.size()[0], objectData.stride()[0]}, fieldType, Containers::StridedArrayView1D<const void>{{fieldData.data(), ~std::size_t{}}, fieldData.size()[0], fieldData.stride()[0]}, fieldArraySize} {

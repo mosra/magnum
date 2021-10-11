@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Trade::SceneData, @ref Magnum::Trade::SceneFieldData, enum @ref Magnum::Trade::SceneObjectType, @ref Magnum::Trade::SceneField, @ref Magnum::Trade::SceneFieldType, function @ref Magnum::sceneObjectTypeSize(), @ref Magnum::sceneFieldTypeSize(), @ref Magnum::Trade::isSceneFieldCustom(), @ref Magnum::sceneFieldCustom()
+ * @brief Class @ref Magnum::Trade::SceneData, @ref Magnum::Trade::SceneFieldData, enum @ref Magnum::Trade::SceneObjectType, @ref Magnum::Trade::SceneField, @ref Magnum::Trade::SceneFieldType, function @ref Magnum::sceneObjectTypeSize(), @ref Magnum::sceneObjectTypeAlignment(), @ref Magnum::sceneFieldTypeSize(), @ref Magnum::sceneFieldTypeAlignment(), @ref Magnum::Trade::isSceneFieldCustom(), @ref Magnum::sceneFieldCustom()
  */
 
 #include <Corrade/Containers/Array.h>
@@ -51,7 +51,8 @@ Type used for mapping fields to corresponding objects. Unlike
 @ref SceneFieldType that is different for different fields, the object type is
 the same for all fields, and is guaranteed to be large enough to fit all
 @ref SceneData::objectCount() objects.
-@see @ref SceneData::objectType(), @ref sceneObjectTypeSize()
+@see @ref SceneData::objectType(), @ref sceneObjectTypeSize(),
+    @ref sceneObjectTypeAlignment()
 */
 enum class SceneObjectType: UnsignedByte {
     /* Zero used for an invalid value */
@@ -80,8 +81,18 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneObjectType value);
 /**
 @brief Size of given scene object type
 @m_since_latest
+
+@see @ref sceneObjectTypeAlignment()
 */
 MAGNUM_TRADE_EXPORT UnsignedInt sceneObjectTypeSize(SceneObjectType type);
+
+/**
+@brief Alignment of given scene object type
+@m_since_latest
+
+Returns the same value as @ref sceneObjectTypeSize().
+*/
+MAGNUM_TRADE_EXPORT UnsignedInt sceneObjectTypeAlignment(SceneObjectType type);
 
 /**
 @brief Scene field name
@@ -368,7 +379,8 @@ constexpr UnsignedInt sceneFieldCustom(SceneField name) {
 
 A type in which a @ref SceneField is stored. See @ref SceneData for more
 information.
-@see @ref SceneFieldData, @ref sceneFieldTypeSize()
+@see @ref SceneFieldData, @ref sceneFieldTypeSize(),
+    @ref sceneFieldTypeAlignment()
 */
 enum class SceneFieldType: UnsignedShort {
     /* Zero used for an invalid value */
@@ -509,8 +521,18 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneFieldType value);
 /**
 @brief Size of given scene field type
 @m_since_latest
+
+@see @ref sceneFieldTypeAlignment()
 */
 MAGNUM_TRADE_EXPORT UnsignedInt sceneFieldTypeSize(SceneFieldType type);
+
+/**
+@brief Alignment of given scene field type
+@m_since_latest
+
+@see @ref sceneFieldTypeSize()
+*/
+MAGNUM_TRADE_EXPORT UnsignedInt sceneFieldTypeAlignment(SceneFieldType type);
 
 /**
 @brief Scene field data
