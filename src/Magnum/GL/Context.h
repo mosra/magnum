@@ -409,54 +409,45 @@ class MAGNUM_GL_EXPORT Context {
         /**
          * @brief Detected driver
          *
-         * @see @ref DetectedDriver, @ref detectedDriver()
+         * On WebGL, if @webgl_extension{WEBGL,debug_renderer_info} is not
+         * available and the browser doesn't report the real values through
+         * @ref vendorString() and @ref rendererString(), driver detection can
+         * be performed only for limited cases --- see documentation of
+         * particular values for more information.
+         * @see @ref DetectedDrivers, @ref detectedDriver()
          */
         enum class DetectedDriver: UnsignedShort {
-            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Proprietary AMD desktop drivers on Windows and Linux. In
              * contrast, AMDGPU Mesa drivers report as
              * @ref DetectedDriver::Mesa instead.
-             * @requires_gles Not detectable on WebGL, as browsers
-             *      intentionally hide most of the driver information.
              */
             Amd = 1 << 0,
-            #endif
 
             #if defined(MAGNUM_TARGET_GLES) || defined(DOXYGEN_GENERATING_OUTPUT)
             /**
              * OpenGL ES implementation by ANGLE (translated to D3D), used by
-             * browsers on Windows for WebGL. As the WebGL specification
-             * explicitly disallows exposing driver information to the
-             * application, this check cannot be done reliably. See also
-             * @ref DetectedDriver::SwiftShader.
+             * browsers on Windows for WebGL. See also
+             * @ref DetectedDriver::SwiftShader. On WebGL, if
+             * @webgl_extension{WEBGL,debug_renderer_info} is not available,
+             * the detection is done by checking if the line size range is just
+             * 1, which is always the case on D3D but not always on GL.
              * @requires_gles ANGLE doesn't support desktop OpenGL contexts.
              */
             Angle = 1 << 1,
             #endif
 
-            #ifndef MAGNUM_TARGET_WEBGL
-            /**
-             * Intel desktop drivers on Windows
-             * @requires_gles Not detectable on WebGL, as browsers
-             *      intentionally hide most of the driver information.
-             */
+            /** Intel desktop drivers on Windows */
             IntelWindows = 1 << 2,
 
             /**
              * Mesa drivers on Windows and Linux. In particular, Intel, AMD
              * and NVidia Mesa drivers match as this. See also
              * @ref DetectedDriver::Svga3D.
-             * @requires_gles Not detectable on WebGL, as browsers
-             *      intentionally hide most of the driver information.
              */
             Mesa = 1 << 3,
 
-            /**
-             * Proprietary NVidia drivers on Windows and Linux
-             * @requires_gles Not detectable on WebGL, as browsers
-             *      intentionally hide most of the driver information.
-             */
+            /** Proprietary NVidia drivers on Windows and Linux */
             NVidia = 1 << 4,
 
             /**
@@ -464,8 +455,6 @@ class MAGNUM_GL_EXPORT Context {
              * Windows and Linux guests. See https://www.mesa3d.org/vmware-guest.html
              * for more information. Detected in combination with
              * @ref DetectedDriver::Mesa.
-             * @requires_gles Not detectable on WebGL, as browsers
-             *      intentionally hide most of the driver information.
              */
             Svga3D = 1 << 5,
 
@@ -475,12 +464,10 @@ class MAGNUM_GL_EXPORT Context {
              * renderer for OpenGL ES. Usually used by browsers in cases where
              * a GPU isn't available. See also @ref DetectedDriver::Angle.
              * @requires_gles SwiftShader doesn't support desktop OpenGL
-             *      contexts. Not detectable on WebGL, as browsers
-             *      intentionally hide most of the driver information.
+             *      contexts.
              * @m_since{2019,10}
              */
             SwiftShader = 1 << 6,
-            #endif
             #endif
 
             #if defined(CORRADE_TARGET_ANDROID) || defined(DOXYGEN_GENERATING_OUTPUT)

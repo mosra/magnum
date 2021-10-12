@@ -429,68 +429,90 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
     _detectedDrivers = DetectedDrivers{};
 
-    #if !defined(MAGNUM_TARGET_WEBGL) && !defined(CORRADE_TARGET_APPLE)
-    const Containers::StringView renderer = rendererString();
+    #ifndef CORRADE_TARGET_APPLE
+    const Containers::StringView renderer =
+        #ifndef MAGNUM_TARGET_WEBGL
+        rendererString()
+        #else
+        rendererStringUnmasked()
+        #endif
+        ;
     #endif
     #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
     const Containers::StringView version = versionString();
     #endif
-    #if (!defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)) || defined(MAGNUM_TARGET_GLES)
-    const Containers::StringView vendor = vendorString();
+    #if !defined(CORRADE_TARGET_APPLE) || defined(MAGNUM_TARGET_GLES)
+    const Containers::StringView vendor =
+        #ifndef MAGNUM_TARGET_WEBGL
+        vendorString()
+        #else
+        vendorStringUnmasked()
+        #endif
+        ;
     #endif
 
+    /* In some cases we can have a combination of drivers (e.g. ANGLE running
+       on top of Mesa, Mesa Zink running on top of NVidia drivers...) so the
+       detection has no early returns. */
+
     /* Apple has its own drivers */
-    #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
+    /** @todo when Zink on Apple is a thing, this needs an update */
+    #ifndef CORRADE_TARGET_APPLE
     /* AMD binary desktop drivers */
     if(vendor.contains("ATI Technologies Inc."_s))
-        return *_detectedDrivers |= DetectedDriver::Amd;
+        *_detectedDrivers |= DetectedDriver::Amd;
 
     #ifdef CORRADE_TARGET_WINDOWS
     /* Intel Windows drivers */
     if(vendor.contains("Intel"_s))
-        return *_detectedDrivers |= DetectedDriver::IntelWindows;
+        *_detectedDrivers |= DetectedDriver::IntelWindows;
     #endif
 
     /* Mesa drivers */
-    if(version.contains("Mesa"_s)) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(version.contains("Mesa"_s))
+    #else
+    if(renderer.contains("Mesa"_s))
+    #endif
+    {
         *_detectedDrivers |= DetectedDriver::Mesa;
 
         if(renderer.contains("SVGA3D"_s))
             *_detectedDrivers |= DetectedDriver::Svga3D;
 
-        return *_detectedDrivers;
+        *_detectedDrivers;
     }
 
     if(vendor.contains("NVIDIA Corporation"_s))
-        return *_detectedDrivers |= DetectedDriver::NVidia;
+        *_detectedDrivers |= DetectedDriver::NVidia;
     #endif
 
-    /** @todo there is also D3D9/D3D11 distinction on webglreport.com, is it useful? */
     #ifdef MAGNUM_TARGET_GLES
-    /* ANGLE. Can detect easily on ES, have to resort to hacks on WebGL.
-       Sources: http://stackoverflow.com/a/20149090 + http://webglreport.com */
-    #ifndef MAGNUM_TARGET_WEBGL
+    /* ANGLE. On WebGL only if we are so lucky and have access to the unmasked
+       renderer string. */
     if(renderer.contains("ANGLE"_s))
-        return *_detectedDrivers |= DetectedDriver::Angle;
-    #else
-    {
+        *_detectedDrivers |= DetectedDriver::Angle;
+    #ifdef MAGNUM_TARGET_WEBGL
+    /* Otherwise try to detect a D3D ANGLE backend by querying line width. It's
+       always exactly just 1 on D3D, usually more on GL, not sure about Metal.
+       so this is not a 100% match. Sources: http://stackoverflow.com/a/20149090
+       and http://webglreport.com */
+    else {
         Range1Di range;
         glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
         if(range.min() == 1 && range.max() == 1 && vendor != "Internet Explorer"_s)
-            return *_detectedDrivers |= DetectedDriver::Angle;
+            *_detectedDrivers |= DetectedDriver::Angle;
     }
     #endif
 
-    #ifndef MAGNUM_TARGET_WEBGL
     /* SwiftShader */
     if(renderer.contains("SwiftShader"_s))
-        return *_detectedDrivers |= DetectedDriver::SwiftShader;
-    #endif
+        *_detectedDrivers |= DetectedDriver::SwiftShader;
     #endif
 
     #ifdef CORRADE_TARGET_ANDROID
     if(vendor.contains("ARM"_s) && renderer.contains("Mali"_s))
-        return *_detectedDrivers |= DetectedDriver::ArmMali;
+        *_detectedDrivers |= DetectedDriver::ArmMali;
     #endif
 
     return *_detectedDrivers;

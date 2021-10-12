@@ -1317,20 +1317,16 @@ Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value) case Context::DetectedDriver::value: return debug << "::" #value;
-        #ifndef MAGNUM_TARGET_WEBGL
         _c(Amd)
-        #endif
         #ifdef MAGNUM_TARGET_GLES
         _c(Angle)
         #endif
-        #ifndef MAGNUM_TARGET_WEBGL
         _c(IntelWindows)
         _c(Mesa)
         _c(NVidia)
         _c(Svga3D)
         #ifdef MAGNUM_TARGET_GLES
         _c(SwiftShader)
-        #endif
         #endif
         #ifdef CORRADE_TARGET_ANDROID
         _c(ArmMali)
