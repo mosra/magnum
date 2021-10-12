@@ -42,6 +42,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
     , maxElementIndex{0}, maxElementsIndices{0}, maxElementsVertices{0}
     #endif
 {
+    /* Vertex array object implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::vertex_array_object>())
     #elif defined(MAGNUM_TARGET_GLES2)
@@ -87,7 +88,18 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
         #endif
         {
             createImplementation = &Mesh::createImplementationVAO;
-            attributePointerImplementation = &Mesh::attributePointerImplementationVAO;
+
+            /* ANGLE is ... also special! Equivalently below for the non-VAO
+               case. */
+            #ifdef MAGNUM_TARGET_GLES
+            if((context.detectedDriver() & Context::DetectedDriver::Angle) && !context.isDriverWorkaroundDisabled("angle-instanced-attributes-always-draw-instanced"_s)) {
+                attributePointerImplementation = &Mesh::attributePointerImplementationVAOAngleAlwaysInstanced;
+            } else
+            #endif
+            {
+                attributePointerImplementation = &Mesh::attributePointerImplementationVAO;
+            }
+
             bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAO;
         }
 
@@ -105,7 +117,17 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
         moveConstructImplementation = &Mesh::moveConstructImplementationDefault;
         moveAssignImplementation = &Mesh::moveAssignImplementationDefault;
         destroyImplementation = &Mesh::destroyImplementationDefault;
-        attributePointerImplementation = &Mesh::attributePointerImplementationDefault;
+
+        /* ANGLE is ... also special! Equivalently above for the VAO case. */
+        #ifdef MAGNUM_TARGET_GLES
+        if((context.detectedDriver() & Context::DetectedDriver::Angle) && !context.isDriverWorkaroundDisabled("angle-instanced-attributes-always-draw-instanced"_s)) {
+            attributePointerImplementation = &Mesh::attributePointerImplementationDefaultAngleAlwaysInstanced;
+        } else
+        #endif
+        {
+            attributePointerImplementation = &Mesh::attributePointerImplementationDefault;
+        }
+
         acquireVertexBufferImplementation = &Mesh::acquireVertexBufferImplementationDefault;
         bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationDefault;
         bindVAOImplementation = &Mesh::bindVAOImplementationDefault;

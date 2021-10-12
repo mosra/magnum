@@ -139,6 +139,11 @@ See also:
 -   A new @cpp "android-generic-hostname-might-be-swiftshader" @ce workaround
     needed for testing against Android Emulator SwiftShader GPU. See
     @ref opengl-workarounds for more information.
+-   A new @cpp "angle-instanced-attributes-always-draw-instanced" @ce
+    workaround for ANGLE's draw validation bug, where it complained about
+    instanced buffers being too small when drawing such mesh as non-instanced.
+    See @ref opengl-workarounds for more information, see also
+    [mosra/magnum#539](https://github.com/mosra/magnum/pull/539).
 
 @subsubsection changelog-latest-new-math Math library
 

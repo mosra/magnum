@@ -792,7 +792,13 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
     (this->*state.bindImplementation)();
 
     /* Non-instanced mesh */
-    if(instanceCount == 1) {
+    if(instanceCount == 1
+        #ifdef MAGNUM_TARGET_GLES
+        /* See the "angle-instanced-attributes-always-draw-instanced"
+           workaround */
+        && !_instanced
+        #endif
+    ) {
         /* Non-indexed mesh */
         if(!_indexBuffer.id()) {
             glDrawArrays(GLenum(_primitive), baseVertex, count);
@@ -1168,6 +1174,19 @@ void Mesh::attributePointerImplementationVAODSAIntelWindows(AttributeLayout&& at
         return attributePointerImplementationVAODSA(std::move(attribute));
 }
 #endif
+#endif
+
+#ifdef MAGNUM_TARGET_GLES
+/* See the "angle-instanced-attributes-always-draw-instanced" workaround for
+   these two */
+void Mesh::attributePointerImplementationDefaultAngleAlwaysInstanced(AttributeLayout&& attribute) {
+    if(attribute.divisor) _instanced = true;
+    return attributePointerImplementationDefault(std::move(attribute));
+}
+void Mesh::attributePointerImplementationVAOAngleAlwaysInstanced(AttributeLayout&& attribute) {
+    if(attribute.divisor) _instanced = true;
+    return attributePointerImplementationVAO(std::move(attribute));
+}
 #endif
 
 void Mesh::vertexAttribPointer(AttributeLayout& attribute) {

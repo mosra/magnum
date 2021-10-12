@@ -64,6 +64,18 @@ constexpr Containers::StringView KnownWorkarounds[]{
 "angle-chatty-shader-compiler"_s,
 #endif
 
+#ifdef MAGNUM_TARGET_GLES
+/* ANGLE has a buggy bounds validation when drawing a mesh with instanced
+   attributes added (with divisor set) using non-instanced glDraw*() APIs (in
+   particular, when instance count is 1). This should be allowed according to
+   the GL spec, which describes e.g. glDrawElements() as a special case of
+   the "virtual" glDrawElementsOneInstance(). To work around the validation
+   bug, gl*Draw*Instanced() is used unconditionally for all meshes that have
+   instanced attributes. A test that triggers this issue is in
+   MeshGLTest::drawInstancedAttributeSingleInstance(). */
+"angle-instanced-attributes-always-draw-instanced"_s,
+#endif
+
 #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
 /* Calling glBufferData(), glMapBuffer(), glMapBufferRange() or glUnmapBuffer()
    on ANY buffer when ANY buffer is attached to a currently bound

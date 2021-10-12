@@ -1278,6 +1278,10 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         void MAGNUM_GL_LOCAL attributePointerImplementationVAODSAIntelWindows(AttributeLayout&& attribute);
         #endif
         #endif
+        #ifdef MAGNUM_TARGET_GLES
+        void MAGNUM_GL_LOCAL attributePointerImplementationDefaultAngleAlwaysInstanced(AttributeLayout&& attribute);
+        void MAGNUM_GL_LOCAL attributePointerImplementationVAOAngleAlwaysInstanced(AttributeLayout&& attribute);
+        #endif
         void MAGNUM_GL_LOCAL vertexAttribPointer(AttributeLayout& attribute);
 
         #ifndef MAGNUM_TARGET_GLES
@@ -1358,6 +1362,10 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         /* Whether the _attributes storage was constructed (it's not when the
            object is constructed using NoCreate). Also fits in the gap. */
         bool _constructed{};
+        #ifdef MAGNUM_TARGET_GLES
+        /* See the "angle-instanced-attributes-always-draw-instanced" workaround */
+        bool _instanced{};
+        #endif
         Int _count{}, _baseVertex{}, _instanceCount{1};
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _baseInstance{};
