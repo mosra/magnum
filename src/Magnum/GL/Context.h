@@ -430,8 +430,13 @@ class MAGNUM_GL_EXPORT Context {
              * browsers on Windows for WebGL. See also
              * @ref DetectedDriver::SwiftShader. On WebGL, if
              * @webgl_extension{WEBGL,debug_renderer_info} is not available,
-             * the detection is done by checking if the line size range is just
-             * 1, which is always the case on D3D but not always on GL.
+             * the detection is attempted by checking for a presence of
+             * @webgl_extension{ANGLE,instanced_arrays} on WebGL 1 (which may
+             * also be implemented by other drivers than ANGLE) or
+             * @webgl_extension{WEBGL,multi_draw} on WebGL 2 (which may not be
+             * available yet on older ANGLE versions), and as a fallback by
+             * checking if the line size range is just 1, which is always the
+             * case on D3D but not always on GL.
              * @requires_gles ANGLE doesn't support desktop OpenGL contexts.
              */
             Angle = 1 << 1,
