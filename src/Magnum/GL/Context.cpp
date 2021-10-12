@@ -963,6 +963,11 @@ bool Context::tryCreate(const Configuration& configuration) {
     /* Print some info and initialize state tracker (which also prints some
        more info). Mesa's renderer string has a space at the end, trim that. */
     Debug{output} << "Renderer:" << rendererString().trimmed() << "by" << vendorString();
+    #ifdef MAGNUM_TARGET_WEBGL
+    if(isExtensionSupported<Extensions::WEBGL::debug_renderer_info>()) {
+        Debug{output} << "Unmasked renderer:" << rendererStringUnmasked() << "by" << vendorStringUnmasked();
+    }
+    #endif
     Debug{output} << "OpenGL version:" << versionString();
 
     /* Print the extensions that were disabled above */
@@ -1033,9 +1038,27 @@ Containers::StringView Context::vendorString() const {
     return {reinterpret_cast<const char*>(glGetString(GL_VENDOR)), Containers::StringViewFlag::Global};
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+Containers::StringView Context::vendorStringUnmasked() const {
+    return {reinterpret_cast<const char*>(glGetString(
+        isExtensionSupported<Extensions::WEBGL::debug_renderer_info>() ?
+            0x9245 /* GL_UNMASKED_VENDOR_WEBGL */ : GL_VENDOR
+    )), Containers::StringViewFlag::Global};
+}
+#endif
+
 Containers::StringView Context::rendererString() const {
     return {reinterpret_cast<const char*>(glGetString(GL_RENDERER)), Containers::StringViewFlag::Global};
 }
+
+#ifdef MAGNUM_TARGET_WEBGL
+Containers::StringView Context::rendererStringUnmasked() const {
+    return {reinterpret_cast<const char*>(glGetString(
+        isExtensionSupported<Extensions::WEBGL::debug_renderer_info>() ?
+            0x9246 /* GL_UNMASKED_RENDERER_WEBGL */ : GL_RENDERER
+    )), Containers::StringViewFlag::Global};
+}
+#endif
 
 Containers::StringView Context::versionString() const {
     return {reinterpret_cast<const char*>(glGetString(GL_VERSION)), Containers::StringViewFlag::Global};

@@ -30,6 +30,10 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/Math/Range.h"
 
+#if defined(MAGNUM_TARGET_WEBGL) && defined(CORRADE_TARGET_EMSCRIPTEN)
+#include <emscripten/html5.h>
+#endif
+
 namespace Magnum { namespace GL {
 
 namespace {
@@ -520,6 +524,16 @@ void Context::setupDriverWorkarounds() {
     #define _setRequiredVersion(extension, version)                           \
         if(_extensionRequiredVersion[Extensions::extension::Index] < Version::version) \
             _extensionRequiredVersion[Extensions::extension::Index] = Version::version
+
+    /* WEBGL_debug_renderer_info needs to be explicitly requested,
+       independently of whether Emscripten was told to implicitly request
+       extensions or not. Has to be done before any call to detectedDriver(),
+       which relies on this extension. */
+    #if defined(MAGNUM_TARGET_WEBGL) && defined(CORRADE_TARGET_EMSCRIPTEN)
+    if(isExtensionSupported<Extensions::WEBGL::debug_renderer_info>()) {
+        CORRADE_INTERNAL_ASSERT_OUTPUT(emscripten_webgl_enable_extension(emscripten_webgl_get_current_context(), "WEBGL_debug_renderer_info"));
+    }
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(!isDriverWorkaroundDisabled("no-layout-qualifiers-on-old-glsl"_s)) {

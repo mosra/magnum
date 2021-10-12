@@ -85,8 +85,11 @@ See also:
     available on all platforms
 -   Implemented @webgl_extension{EXT,frag_depth} WebGL 1.0 extension (shading
     language only)
--   Recognizing @webgl_extension{EXT,float_blend},
-    @webgl_extension{WEBGL,debug_renderer_info} and
+-   Implemented @webgl_extension{WEBGL,debug_renderer_info} as
+    @ref GL::Context::rendererStringUnmasked() and
+    @relativeref{GL::Context,vendorStringUnmasked()} together with printing
+    those in the engine startup log if the extension is available
+-   Recognizing @webgl_extension{EXT,float_blend} and
     @webgl_extension{WEBGL,debug_shaders} extensions, no implementation done
     yet
 -   Recognizing ANGLE GLES and WebGL base vertex, base instance and multi-draw

@@ -565,7 +565,7 @@ Extension                                   | Status
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{OVR,multiview2}            | |
 @webgl_extension{WEBGL,lose_context}        | |
-@webgl_extension{WEBGL,debug_renderer_info} | |
+@webgl_extension{WEBGL,debug_renderer_info} | done
 @webgl_extension{WEBGL,debug_shaders}       | |
 @webgl_extension{WEBGL,compressed_texture_s3tc} | done
 @webgl_extension{WEBGL,compressed_texture_pvrtc} | done

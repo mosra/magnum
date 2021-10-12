@@ -556,11 +556,34 @@ class MAGNUM_GL_EXPORT Context {
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. The returned view is always
          * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
-         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}. In WebGL
+         * the vendor string is implicitly masked away, use
+         * @ref vendorStringUnmasked() to access the real vendor string, if
+         * available.
          * @see @ref rendererString(), @fn_gl{GetString} with
          *      @def_gl_keyword{VENDOR}
          */
         Containers::StringView vendorString() const;
+
+        #if defined(MAGNUM_TARGET_WEBGL) || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Unmasked vendor string
+         * @m_since_latest
+         *
+         * A WebGL counterpart to @ref vendorString() that returns the real
+         * vendor string. If @webgl_extension{WEBGL,debug_renderer_info} is not
+         * available, returns the same as @ref vendorString().
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
+         * @see @ref rendererStringUnmasked(), @fn_gl{GetString} with
+         *      @def_gl_keyword{UNMASKED_VENDOR_WEBGL}
+         * @requires_webgl_only Not available on desktop or ES builds.
+         */
+        Containers::StringView vendorStringUnmasked() const;
+        #endif
 
         /**
          * @brief Renderer string
@@ -568,11 +591,34 @@ class MAGNUM_GL_EXPORT Context {
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. The returned view is always
          * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
-         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}. In WebGL
+         * the renderer string is implicitly masked away, use
+         * @ref rendererStringUnmasked() to access the real renderer string, if
+         * available.
          * @see @ref vendorString(), @fn_gl{GetString} with
          *      @def_gl_keyword{RENDERER}
          */
         Containers::StringView rendererString() const;
+
+        #if defined(MAGNUM_TARGET_WEBGL) || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Unmasked renderer string
+         * @m_since_latest
+         *
+         * A WebGL counterpart to @ref rendererString() that returns the real
+         * renderer string. If @webgl_extension{WEBGL,debug_renderer_info} is
+         * not available, returns the same as @ref rendererString().
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
+         * @see @ref vendorStringUnmasked(), @fn_gl{GetString} with
+         *      @def_gl_keyword{UNMASKED_RENDERER_WEBGL}
+         * @requires_webgl_only Not available on desktop or ES builds.
+         */
+        Containers::StringView rendererStringUnmasked() const;
+        #endif
 
         /**
          * @brief Version string
