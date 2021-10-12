@@ -31,6 +31,7 @@
 #include "Magnum/Math/Range.h"
 
 #if defined(MAGNUM_TARGET_WEBGL) && defined(CORRADE_TARGET_EMSCRIPTEN)
+#include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #endif
 
@@ -391,6 +392,15 @@ constexpr Containers::StringView KnownWorkarounds[]{
    Emscripten-side part of this workaround. */
 "firefox-fake-disjoint-timer-query-webgl2"_s,
 #endif
+
+#ifdef MAGNUM_TARGET_WEBGL
+/* Firefox 92+ says "WEBGL_debug_renderer_info is deprecated in Firefox and
+   will be removed. Please use RENDERER." if attempting to use the unmasked
+   renderer / vendor string. The information is provided through the regular
+   APIs instead. Disabling the extension if present on the new versions to
+   avoid console spam. */
+"firefox-deprecated-debug-renderer-info"_s
+#endif
 /* [workarounds] */
 };
 
@@ -525,10 +535,35 @@ void Context::setupDriverWorkarounds() {
         if(_extensionRequiredVersion[Extensions::extension::Index] < Version::version) \
             _extensionRequiredVersion[Extensions::extension::Index] = Version::version
 
+    /* Using WEBGL_debug_renderer_info results in deprecation warnings on
+       Firefox 92+, Firefox 92+ exposes the unmasked renderer and vendor string
+       through the usual APIs. Needs to be above the code that explicitly
+       enables the extension! */
+    #if defined(MAGNUM_TARGET_WEBGL) && defined(CORRADE_TARGET_EMSCRIPTEN)
+    /* Assuming the extension gets eventually removed, check for Firefox
+       version only if the extension is actually present. Then first detect the
+       version and only then ask if the workaround is disabled in order to
+       avoid having the workaround listed as used on older versions or other
+       browsers */
+    if(isExtensionSupported<Extensions::WEBGL::debug_renderer_info>()) {
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+        const Int firefoxVersion = EM_ASM_INT({
+            var match = navigator.userAgent.match(/Firefox\\\\/(\\\\d+)/);
+            if(match) return match[1]|0; /* coerce to an int (remember asm.js?) */
+            return 0;
+        });
+        #pragma GCC diagnostic pop
+        if(firefoxVersion >= 92 && !isDriverWorkaroundDisabled("firefox-deprecated-debug-renderer-info"_s))
+            _setRequiredVersion(WEBGL::debug_renderer_info, None);
+    }
+    #endif
+
     /* WEBGL_debug_renderer_info needs to be explicitly requested,
        independently of whether Emscripten was told to implicitly request
        extensions or not. Has to be done before any call to detectedDriver(),
-       which relies on this extension. */
+       which relies on this extension, but only after all other workarounds
+       that disable it! */
     #if defined(MAGNUM_TARGET_WEBGL) && defined(CORRADE_TARGET_EMSCRIPTEN)
     if(isExtensionSupported<Extensions::WEBGL::debug_renderer_info>()) {
         CORRADE_INTERNAL_ASSERT_OUTPUT(emscripten_webgl_enable_extension(emscripten_webgl_get_current_context(), "WEBGL_debug_renderer_info"));

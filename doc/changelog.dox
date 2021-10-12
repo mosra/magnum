@@ -88,7 +88,9 @@ See also:
 -   Implemented @webgl_extension{WEBGL,debug_renderer_info} as
     @ref GL::Context::rendererStringUnmasked() and
     @relativeref{GL::Context,vendorStringUnmasked()} together with printing
-    those in the engine startup log if the extension is available
+    those in the engine startup log if the extension is available. It also
+    resulted in a new @cpp "firefox-deprecated-debug-renderer-info" @ce
+    workaround being added, see @ref opengl-workarounds for more info.
 -   Recognizing @webgl_extension{EXT,float_blend} and
     @webgl_extension{WEBGL,debug_shaders} extensions, no implementation done
     yet
