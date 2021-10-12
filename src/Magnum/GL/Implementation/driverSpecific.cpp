@@ -438,9 +438,6 @@ auto Context::detectedDriver() -> DetectedDrivers {
         #endif
         ;
     #endif
-    #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
-    const Containers::StringView version = versionString();
-    #endif
     #if !defined(CORRADE_TARGET_APPLE) || defined(MAGNUM_TARGET_GLES)
     const Containers::StringView vendor =
         #ifndef MAGNUM_TARGET_WEBGL
@@ -468,13 +465,10 @@ auto Context::detectedDriver() -> DetectedDrivers {
         *_detectedDrivers |= DetectedDriver::IntelWindows;
     #endif
 
-    /* Mesa drivers */
-    #ifndef MAGNUM_TARGET_WEBGL
-    if(version.contains("Mesa"_s))
-    #else
-    if(renderer.contains("Mesa"_s))
-    #endif
-    {
+    /* Mesa drivers. On desktop GL and GLES the version string contains Mesa
+       as well, but not on WebGL. Renderer contains it on all three, except
+       for Firefox for some reason. */
+    if(renderer.contains("Mesa"_s)) {
         *_detectedDrivers |= DetectedDriver::Mesa;
 
         if(renderer.contains("SVGA3D"_s))
