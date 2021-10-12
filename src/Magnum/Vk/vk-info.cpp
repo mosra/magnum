@@ -103,12 +103,16 @@ int main(int argc, char** argv) {
     #ifdef CORRADE_TARGET_IOS
     Debug{} << "    CORRADE_TARGET_IOS";
     #endif
+    #ifdef CORRADE_TARGET_IOS_SIMULATOR
+    Debug{} << "    CORRADE_TARGET_IOS_SIMULATOR";
+    #endif
     #ifdef CORRADE_TARGET_WINDOWS
     Debug{} << "    CORRADE_TARGET_WINDOWS";
     #endif
     #ifdef CORRADE_TARGET_WINDOWS_RT
     Debug{} << "    CORRADE_TARGET_WINDOWS_RT";
     #endif
+    /* CORRADE_TARGET_EMSCRIPTEN omitted */
     #ifdef CORRADE_TARGET_ANDROID
     Debug{} << "    CORRADE_TARGET_ANDROID";
     #endif
@@ -120,6 +124,10 @@ int main(int argc, char** argv) {
     #endif
     #ifdef CORRADE_TARGET_POWERPC
     Debug{} << "    CORRADE_TARGET_POWERPC";
+    #endif
+    /* CORRADE_TARGET_WASM omitted */
+    #ifdef CORRADE_TARGET_32BIT
+    Debug{} << "    CORRADE_TARGET_32BIT";
     #endif
     #ifdef CORRADE_TARGET_BIG_ENDIAN
     Debug{} << "    CORRADE_TARGET_BIG_ENDIAN";
@@ -154,6 +162,43 @@ int main(int argc, char** argv) {
     #ifdef CORRADE_TARGET_SSE2
     Debug{} << "    CORRADE_TARGET_SSE2";
     #endif
+    #ifdef CORRADE_TARGET_SSE3
+    Debug{} << "    CORRADE_TARGET_SSE3";
+    #endif
+    #ifdef CORRADE_TARGET_SSSE3
+    Debug{} << "    CORRADE_TARGET_SSSE3";
+    #endif
+    #ifdef CORRADE_TARGET_SSE41
+    Debug{} << "    CORRADE_TARGET_SSE41";
+    #endif
+    #ifdef CORRADE_TARGET_SSE42
+    Debug{} << "    CORRADE_TARGET_SSE42";
+    #endif
+    #ifdef CORRADE_TARGET_AVX
+    Debug{} << "    CORRADE_TARGET_AVX";
+    #endif
+    #ifdef CORRADE_TARGET_AVX_F16C
+    Debug{} << "    CORRADE_TARGET_AVX_F16C";
+    #endif
+    #ifdef CORRADE_TARGET_AVX_FMA
+    Debug{} << "    CORRADE_TARGET_AVX_FMA";
+    #endif
+    #ifdef CORRADE_TARGET_AVX2
+    Debug{} << "    CORRADE_TARGET_AVX2";
+    #endif
+    #ifdef CORRADE_TARGET_AVX512F
+    Debug{} << "    CORRADE_TARGET_AVX512F";
+    #endif
+    #ifdef CORRADE_TARGET_NEON
+    Debug{} << "    CORRADE_TARGET_NEON";
+    #endif
+    #ifdef CORRADE_TARGET_NEON_FP16
+    Debug{} << "    CORRADE_TARGET_NEON_FP16";
+    #endif
+    #ifdef CORRADE_TARGET_NEON_FMA
+    Debug{} << "    CORRADE_TARGET_NEON_FMA";
+    #endif
+    /* CORRADE_TARGET_SIMD128 omitted */
     #ifdef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     Debug{} << "    CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT";
     #endif
