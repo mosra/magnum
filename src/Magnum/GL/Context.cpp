@@ -944,6 +944,11 @@ bool Context::tryCreate(const Configuration& configuration) {
         for(const Extension& extension: version.extensions)
             _extensionRequiredVersion[extension.index()] = extension.requiredVersion();
 
+    /* Disable extensions as requested by the user. Do that before querying
+       any extension support, especially for driver workarounds. */
+    for(const Extension& extension: _disabledExtensions)
+        _extensionRequiredVersion[extension.index()] = Version::None;
+
     /* Setup driver workarounds (increase required version for particular
        extensions), see Implementation/driverWorkarounds.cpp */
     setupDriverWorkarounds();
@@ -960,14 +965,11 @@ bool Context::tryCreate(const Configuration& configuration) {
     Debug{output} << "Renderer:" << rendererString().trimmed() << "by" << vendorString();
     Debug{output} << "OpenGL version:" << versionString();
 
-    /* Disable extensions as requested by the user */
+    /* Print the extensions that were disabled above */
     if(!_disabledExtensions.empty()) {
         Debug{output} << "Disabling extensions:";
-
-        for(const Extension& extension: _disabledExtensions) {
-            _extensionRequiredVersion[extension.index()] = Version::None;
+        for(const Extension& extension: _disabledExtensions)
             Debug{output} << "   " << extension.string();
-        }
     }
 
     std::pair<Containers::ArrayTuple, Implementation::State&> state = Implementation::State::allocate(*this, output);
