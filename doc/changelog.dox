@@ -114,7 +114,7 @@ See also:
     happening during EGL initialization in recent NVidia drivers.  See
     @ref opengl-workarounds and [mosra/magnum#491](https://github.com/mosra/magnum/pull/491)
     for more information.
--   A new @cpp "angle-chatty-shader-compiler" @ce workarounds for silencing
+-   A new @cpp "angle-chatty-shader-compiler" @ce workaround for silencing
     useless linker output on ANGLE. See @ref opengl-workarounds for more
     information.
 

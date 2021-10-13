@@ -47,7 +47,8 @@ constexpr Containers::StringView KnownWorkarounds[]{
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
 /* ANGLE's shader linker insists on returning a message consisting of a
    single newline on success, causing annoying noise in the console. Similar to
-   "intel-windows-chatty-shader-compiler". */
+   "intel-windows-chatty-shader-compiler". Not present on WebGL, apparently
+   browsers filter the noise out on their own. */
 "angle-chatty-shader-compiler"_s,
 #endif
 
