@@ -830,6 +830,19 @@ See also:
     children that got deprecated in favor of
     @ref Trade::SceneData::SceneData(SceneObjectType, UnsignedLong, Containers::Array<char>&&, Containers::Array<SceneFieldData>&&, const void*)
     no longer accepts a scene that has both 2D and 3D children.
+-   The deprecated @cpp Trade::AbstractImporter::object*DCount() @ce,
+    @cpp Trade::AbstractImporter::object*DForName() @ce,
+    @cpp Trade::AbstractImporter::object*DName() @ce and
+    @cpp Trade::AbstractImporter::object*D() @ce accessors now behave different
+    for objects with multiple mesh assignments. This handling was originally
+    present in importer plugins themselves, but as the new
+    @ref Trade::SceneData representation supports multiple mesh/camera/...
+    assignments to a single object natively, the handling was moved to a single
+    place in the compatibility layer. Because the compatibility layer cannot
+    renumber object IDs, the newly added objects are not immediately following
+    the original ID but instead allocated at the end of the object ID range
+    reported by the importer. While the newly added objects have different IDs,
+    they retain the parent name like before.
 -   @ref Trade::AbstractImporter::doDefaultScene() is now @cpp const @ce ---
     since the function is not expected to fail, no kind of complex lazy
     population can be done anyway. This is now consistent with `do*Count()`
