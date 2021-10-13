@@ -41,6 +41,8 @@ struct SceneToolsTest: TestSuite::Tester {
     void combineObjectsShared();
     void combineObjectsPlaceholderFieldPlaceholder();
     void combineObjectSharedFieldPlaceholder();
+
+    void convertToSingleFunctionObjects();
 };
 
 struct {
@@ -53,6 +55,15 @@ struct {
     {"UnsignedLong output", SceneObjectType::UnsignedLong},
 };
 
+struct {
+    const char* name;
+    UnsignedLong originalObjectCount;
+    UnsignedLong expectedObjectCount;
+} ConvertToSingleFunctionObjectsData[]{
+    {"original object count smaller than new", 64, 67},
+    {"original object count larger than new", 96, 96}
+};
+
 SceneToolsTest::SceneToolsTest() {
     addInstancedTests({&SceneToolsTest::combine},
         Containers::arraySize(CombineData));
@@ -61,6 +72,9 @@ SceneToolsTest::SceneToolsTest() {
               &SceneToolsTest::combineObjectsShared,
               &SceneToolsTest::combineObjectsPlaceholderFieldPlaceholder,
               &SceneToolsTest::combineObjectSharedFieldPlaceholder});
+
+    addInstancedTests({&SceneToolsTest::convertToSingleFunctionObjects},
+        Containers::arraySize(ConvertToSingleFunctionObjectsData));
 }
 
 using namespace Math::Literals;
@@ -317,6 +331,124 @@ void SceneToolsTest::combineObjectSharedFieldPlaceholder() {
         TestSuite::Compare::Container);
     CORRADE_COMPARE(scene.field(SceneField::MeshMaterial).data(), scene.data() + 3*4 + 3 + 1);
     CORRADE_COMPARE(scene.field(SceneField::MeshMaterial).stride()[0], 4);
+}
+
+void SceneToolsTest::convertToSingleFunctionObjects() {
+    auto&& data = ConvertToSingleFunctionObjectsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Haha now I can use sceneCombine() to conveniently prepare the initial
+       state here, without having to mess with an ArrayTuple */
+
+    const UnsignedShort parentObjects[]{15, 21, 22, 23, 1};
+    const Byte parents[]{-1, -1, 1, 2, -1};
+
+    /* Two objects have two and three mesh assignments respectively, meaning we
+       need three extra */
+    const UnsignedShort meshObjects[]{15, 23, 23, 23, 1, 15, 21};
+    const Containers::Pair<UnsignedInt, Int> meshesMaterials[]{
+        {6, 4},
+        {1, 0},
+        {2, 3},
+        {4, 2},
+        {7, 2},
+        {3, 1},
+        {5, -1}
+    };
+
+    /* One camera is attached to an object that already has a mesh, meaning we
+       need a third extra object */
+    const UnsignedShort cameraObjects[]{22, 1};
+    const UnsignedInt cameras[]{1, 5};
+    SceneData original = Implementation::sceneCombine(SceneObjectType::UnsignedShort, data.originalObjectCount, Containers::arrayView({
+        SceneFieldData{SceneField::Parent, Containers::arrayView(parentObjects), Containers::arrayView(parents)},
+        SceneFieldData{SceneField::Mesh, Containers::arrayView(meshObjects), Containers::StridedArrayView1D<const UnsignedInt>{meshesMaterials, &meshesMaterials[0].first(), Containers::arraySize(meshesMaterials), sizeof(meshesMaterials[0])}},
+        SceneFieldData{SceneField::MeshMaterial, Containers::arrayView(meshObjects), Containers::StridedArrayView1D<const Int>{meshesMaterials, &meshesMaterials[0].second(), Containers::arraySize(meshesMaterials), sizeof(meshesMaterials[0])}},
+        SceneFieldData{SceneField::Camera, Containers::arrayView(cameraObjects), Containers::arrayView(cameras)},
+    }));
+
+    SceneData scene = Implementation::sceneConvertToSingleFunctionObjects(original, Containers::arrayView({
+        SceneField::Mesh,
+        /* Deliberately not including MeshMaterial in the list -- these should
+           get automatically updated as they share the same object mapping.
+           OTOH including them would break the output. */
+        SceneField::Camera,
+        /* Include also a field that's not present -- it should get skipped */
+        SceneField::ImporterState
+    }), 63);
+
+    /* There should be three more objects, or the original count preserved if
+       it's large enough */
+    CORRADE_COMPARE(scene.objectCount(), data.expectedObjectCount);
+
+    /* Object 1 should have a new child that has the camera, as it has a mesh */
+    CORRADE_COMPARE_AS(scene.childrenFor(1),
+        Containers::arrayView<UnsignedInt>({66}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.meshesMaterialsFor(1),
+        (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({{7, 2}})),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.camerasFor(1),
+        Containers::arrayView<UnsignedInt>({}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.camerasFor(66),
+        Containers::arrayView<UnsignedInt>({5}),
+        TestSuite::Compare::Container);
+
+    /* Object 15 should have a new child that has the second mesh */
+    CORRADE_COMPARE_AS(scene.childrenFor(15),
+        Containers::arrayView<UnsignedInt>({65}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.meshesMaterialsFor(15),
+        (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({{6, 4}})),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.meshesMaterialsFor(65),
+        (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({{3, 1}})),
+        TestSuite::Compare::Container);
+
+    /* Object 23 should have two new children that have the second and third
+       mesh */
+    CORRADE_COMPARE_AS(scene.childrenFor(23),
+        Containers::arrayView<UnsignedInt>({63, 64}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.meshesMaterialsFor(23),
+        (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({{1, 0}})),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.meshesMaterialsFor(63),
+        (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({{2, 3}})),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.meshesMaterialsFor(64),
+        (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({{4, 2}})),
+        TestSuite::Compare::Container);
+
+    /* To be extra sure, verify the actual data. Parents have a few objects
+       added, the rest is the same */
+    CORRADE_COMPARE_AS(scene.objectsAsArray(SceneField::Parent), Containers::arrayView<UnsignedInt>({
+        15, 21, 22, 23, 1, 63, 64, 65, 66
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.parentsAsArray(), Containers::arrayView<Int>({
+        -1, -1, 1, 2, -1, 3, 3, 0, 4
+    }), TestSuite::Compare::Container);
+
+    /* Meshes have certain objects reassigned (and materials as well, as they
+       share the same object mapping view), field data stay the same */
+    CORRADE_COMPARE_AS(scene.objectsAsArray(SceneField::Mesh), Containers::arrayView<UnsignedInt>({
+        15, 23, 63, 64, 1, 65, 21
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.objectsAsArray(SceneField::MeshMaterial), Containers::arrayView<UnsignedInt>({
+        15, 23, 63, 64, 1, 65, 21
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.meshesMaterialsAsArray(),
+        Containers::arrayView(meshesMaterials),
+        TestSuite::Compare::Container);
+
+    /* Cameras have certain objects reassigned, field data stay the same */
+    CORRADE_COMPARE_AS(scene.objectsAsArray(SceneField::Camera), Containers::arrayView<UnsignedInt>({
+        22, 66
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.camerasAsArray(),
+        Containers::arrayView(cameras),
+        TestSuite::Compare::Container);
 }
 
 }}}}

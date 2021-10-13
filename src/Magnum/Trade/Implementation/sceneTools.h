@@ -28,9 +28,11 @@
 #include <unordered_map>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Algorithms.h>
 
+#include "Magnum/Math/Functions.h"
 #include "Magnum/Math/PackingBatch.h"
 #include "Magnum/Trade/SceneData.h"
 
@@ -186,6 +188,119 @@ inline SceneData sceneCombine(const SceneObjectType objectType, const UnsignedLo
     }
 
     return SceneData{objectType, objectCount, std::move(outData), std::move(outFields)};
+}
+
+/* Creates a SceneData copy where each object has at most one of the fields
+   listed in the passed array. This is done by enlarging the parents array
+   and moving extraneous features to new objects that are marked as a child of
+   the original. No transformations or other fields are added for the new
+   objects. Fields that are connected together (such as meshes and materials)
+   are assumed to share the same object mapping with only one of them passed in
+   the fieldsToConvert array, which will result for all fields from the same
+   set being reassociated to the new object.
+
+   Requies a SceneField::Parent to be present -- otherwise it wouldn't be
+   possible to know where to attach the new objects. */
+/** @todo when published, (again) add an initializer_list overload and turn all
+    internal asserts into (tested!) message asserts */
+inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Containers::ArrayView<const SceneField> fieldsToConvert, const UnsignedInt newObjectOffset) {
+    /** @todo assert for really high object counts (where this cast would fail) */
+    Containers::Array<UnsignedInt> objectAttachmentCount{ValueInit, std::size_t(scene.objectCount())};
+    for(const SceneField field: fieldsToConvert) {
+        CORRADE_INTERNAL_ASSERT(field != SceneField::Parent);
+
+        /* Skip fields that are not present -- is it's not present, then it
+           definitely won't be responsible for multi-function objects */
+        const Containers::Optional<UnsignedInt> fieldId = scene.findFieldId(field);
+        if(!fieldId) continue;
+
+        /** @todo use a statically-allocated array & Into() in a loop instead
+            once this is more than a private backwards-compatibility utility
+            where PERF WHATEVER WHO CARES */
+        for(const UnsignedInt object: scene.objectsAsArray(*fieldId)) {
+            CORRADE_INTERNAL_ASSERT(object < objectAttachmentCount.size());
+            ++objectAttachmentCount[object];
+        }
+    }
+
+    UnsignedInt objectsToAdd = 0;
+    for(const UnsignedInt count: objectAttachmentCount)
+        if(count > 1) objectsToAdd += count - 1;
+
+    /* Ensure we don't overflow the 32-bit object count with the objects to
+       add. This should also cover the case when the parent field would not be
+       representable in 32 bits. */
+    CORRADE_INTERNAL_ASSERT(newObjectOffset + objectsToAdd >= newObjectOffset);
+
+    /* Copy the fields over, enlarging them as necessary */
+    const UnsignedInt parentFieldId = scene.fieldId(SceneField::Parent);
+    Containers::Array<SceneFieldData> fields{scene.fieldCount()};
+    for(std::size_t i = 0; i != scene.fieldCount(); ++i) {
+        const SceneFieldData& field = scene.fieldData(i);
+
+        /* If this is a parent, enlarge it for the newly added objects */
+        if(field.name() == SceneField::Parent) {
+            /** @todo some nicer constructor for placeholders once this is in
+                public interest */
+            fields[i] = SceneFieldData{SceneField::Parent, Containers::ArrayView<const UnsignedInt>{nullptr, std::size_t(field.size() + objectsToAdd)}, Containers::ArrayView<const Int>{nullptr, std::size_t(field.size() + objectsToAdd)}};
+
+        /* All other fields are copied as-is */
+        } else fields[i] = field;
+    }
+
+    /* Combine the fields into a new SceneData */
+    SceneData out = sceneCombine(SceneObjectType::UnsignedInt, Math::max(scene.objectCount(), UnsignedLong(newObjectOffset) + objectsToAdd), fields);
+
+    /* Copy existing parent object/field data to a prefix of the output */
+    const Containers::StridedArrayView1D<UnsignedInt> outParentObjects = out.mutableObjects<UnsignedInt>(parentFieldId);
+    const Containers::StridedArrayView1D<Int> outParents = out.mutableField<Int>(parentFieldId);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(scene.objectsInto(parentFieldId, 0, outParentObjects) == scene.fieldSize(parentFieldId));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(scene.parentsInto(0, outParents) == scene.fieldSize(parentFieldId));
+
+    /* List new objects at the end of the extended parent field */
+    const Containers::StridedArrayView1D<UnsignedInt> newParentObjects = outParentObjects.suffix(scene.fieldSize(parentFieldId));
+    const Containers::StridedArrayView1D<Int> newParents = outParents.suffix(scene.fieldSize(parentFieldId));
+    for(std::size_t i = 0; i != newParentObjects.size(); ++i) {
+        newParentObjects[i] = newObjectOffset + i;
+        newParents[i] = -1;
+    }
+
+    /* Clear the objectAttachmentCount array to reuse it below */
+    /** @todo use a BitArray instead once it exists? */
+    constexpr UnsignedInt zero[1]{};
+    Utility::copy(Containers::stridedArrayView(zero).broadcasted<0>(scene.objectCount()), objectAttachmentCount);
+
+    /* For objects with multiple fields move the extra fields to newly added
+       children */
+    {
+        std::size_t newParentIndex = 0;
+        for(const SceneField field: fieldsToConvert) {
+            const Containers::Optional<UnsignedInt> fieldId = scene.findFieldId(field);
+            if(!fieldId) continue;
+
+            for(UnsignedInt& fieldObject: out.mutableObjects<UnsignedInt>(*fieldId)) {
+                /* If the object is not new (could happen when an object
+                   mapping array is shared among multiple fields, in which case
+                   it *might* have been updated already to an ID larger than
+                   the mapping array size) and it already has something
+                   attached, then attach the field to a new object and make
+                   that new object a child of the previous one. */
+                if(fieldObject < objectAttachmentCount.size() && objectAttachmentCount[fieldObject]) {
+                    /* Find an index of the old object and then use that index
+                       to denote the parent of the new object */
+                    newParents[newParentIndex] = out.fieldObjectOffset(parentFieldId, fieldObject);
+                    /* Assign the field to the new object */
+                    fieldObject = newParentObjects[newParentIndex];
+                    /* Move to the next reserved object */
+                    ++newParentIndex;
+                } else ++objectAttachmentCount[fieldObject];
+            }
+        }
+
+        CORRADE_INTERNAL_ASSERT(newParentIndex == objectsToAdd);
+    }
+
+    return out;
 }
 
 }}}
