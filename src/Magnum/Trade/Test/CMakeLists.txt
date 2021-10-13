@@ -59,6 +59,7 @@ corrade_add_test(TradePbrMetallicRoughnessMate___Test PbrMetallicRoughnessMateri
 corrade_add_test(TradePbrSpecularGlossinessMat___Test PbrSpecularGlossinessMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradePhongMaterialDataTest PhongMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeSceneDataTest SceneDataTest.cpp LIBRARIES MagnumTradeTestLib)
+corrade_add_test(TradeSceneToolsTest SceneToolsTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(TradeSkinDataTest SkinDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeTextureDataTest TextureDataTest.cpp LIBRARIES MagnumTrade)
 
@@ -84,6 +85,7 @@ set_target_properties(
     TradePbrSpecularGlossinessMat___Test
     TradePhongMaterialDataTest
     TradeSceneDataTest
+    TradeSceneToolsTest
     TradeTextureDataTest
     PROPERTIES FOLDER "Magnum/Trade/Test")
 
