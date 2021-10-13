@@ -2302,7 +2302,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         /* Returns the offset at which `object` is for field at index `id`, or
            the end offset if the object is not found. The returned offset can
            be then passed to fieldData{Object,Field}ViewInternal(). */
-        std::size_t findFieldObjectOffsetInternal(const SceneFieldData& field, UnsignedInt object, std::size_t offset) const;
+        MAGNUM_TRADE_LOCAL std::size_t findFieldObjectOffsetInternal(const SceneFieldData& field, UnsignedInt object, std::size_t offset) const;
 
         /* Like objects() / field(), but returning just a 1D view, sliced from
            offset to offset + size. The parameterless overloads are equal to
