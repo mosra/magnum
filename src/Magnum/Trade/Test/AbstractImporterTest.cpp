@@ -2530,13 +2530,15 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless2D() {
         std::vector<UnsignedInt>{},
         TestSuite::Compare::Container);
 
+    /* If we have neither a matrix nor a TRS, having an identity TRS is better
+       as it's more flexible compared to a matrix */
     {
         Containers::Pointer<ObjectData2D> o = importer.object2D(5);
         CORRADE_VERIFY(o);
         CORRADE_COMPARE(o->importerState(), nullptr);
         CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Empty);
         CORRADE_COMPARE(o->instance(), -1);
-        CORRADE_COMPARE(o->flags(), ObjectFlags2D{});
+        CORRADE_COMPARE(o->flags(), ObjectFlag2D::HasTranslationRotationScaling);
         CORRADE_COMPARE(o->transformation(), Matrix3{});
         CORRADE_COMPARE_AS(o->children(),
             (std::vector<UnsignedInt>{2, 3}),
@@ -2547,7 +2549,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless2D() {
         CORRADE_COMPARE(o->importerState(), nullptr);
         CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Empty);
         CORRADE_COMPARE(o->instance(), -1);
-        CORRADE_COMPARE(o->flags(), ObjectFlags2D{});
+        CORRADE_COMPARE(o->flags(), ObjectFlag2D::HasTranslationRotationScaling);
         CORRADE_COMPARE(o->transformation(), Matrix3{});
         CORRADE_COMPARE_AS(o->children(),
             std::vector<UnsignedInt>{},
@@ -2558,7 +2560,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless2D() {
         CORRADE_COMPARE(o->importerState(), nullptr);
         CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Empty);
         CORRADE_COMPARE(o->instance(), -1);
-        CORRADE_COMPARE(o->flags(), ObjectFlags2D{});
+        CORRADE_COMPARE(o->flags(), ObjectFlag2D::HasTranslationRotationScaling);
         CORRADE_COMPARE(o->transformation(), Matrix3{});
         CORRADE_COMPARE_AS(o->children(),
             std::vector<UnsignedInt>{},
@@ -2569,7 +2571,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless2D() {
         CORRADE_COMPARE(o->importerState(), nullptr);
         CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Empty);
         CORRADE_COMPARE(o->instance(), -1);
-        CORRADE_COMPARE(o->flags(), ObjectFlags2D{});
+        CORRADE_COMPARE(o->flags(), ObjectFlag2D::HasTranslationRotationScaling);
         CORRADE_COMPARE(o->transformation(), Matrix3{});
         CORRADE_COMPARE_AS(o->children(),
             std::vector<UnsignedInt>{},
@@ -2634,13 +2636,15 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless3D() {
         (std::vector<UnsignedInt>{5, 1}),
         TestSuite::Compare::Container);
 
+    /* If we have neither a matrix nor a TRS, having an identity TRS is better
+       as it's more flexible compared to a matrix */
     {
         Containers::Pointer<ObjectData3D> o = importer.object3D(5);
         CORRADE_VERIFY(o);
         CORRADE_COMPARE(o->importerState(), nullptr);
         CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Empty);
         CORRADE_COMPARE(o->instance(), -1);
-        CORRADE_COMPARE(o->flags(), ObjectFlags3D{});
+        CORRADE_COMPARE(o->flags(), ObjectFlag3D::HasTranslationRotationScaling);
         CORRADE_COMPARE(o->transformation(), Matrix4{});
         CORRADE_COMPARE_AS(o->children(),
             (std::vector<UnsignedInt>{2, 3}),
@@ -2651,7 +2655,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless3D() {
         CORRADE_COMPARE(o->importerState(), nullptr);
         CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Empty);
         CORRADE_COMPARE(o->instance(), -1);
-        CORRADE_COMPARE(o->flags(), ObjectFlags3D{});
+        CORRADE_COMPARE(o->flags(), ObjectFlag3D::HasTranslationRotationScaling);
         CORRADE_COMPARE(o->transformation(), Matrix4{});
         CORRADE_COMPARE_AS(o->children(),
             std::vector<UnsignedInt>{},
@@ -2662,7 +2666,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless3D() {
         CORRADE_COMPARE(o->importerState(), nullptr);
         CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Empty);
         CORRADE_COMPARE(o->instance(), -1);
-        CORRADE_COMPARE(o->flags(), ObjectFlags3D{});
+        CORRADE_COMPARE(o->flags(), ObjectFlag3D::HasTranslationRotationScaling);
         CORRADE_COMPARE(o->transformation(), Matrix4{});
         CORRADE_COMPARE_AS(o->children(),
             std::vector<UnsignedInt>{},
@@ -2673,7 +2677,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless3D() {
         CORRADE_COMPARE(o->importerState(), nullptr);
         CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Empty);
         CORRADE_COMPARE(o->instance(), -1);
-        CORRADE_COMPARE(o->flags(), ObjectFlags3D{});
+        CORRADE_COMPARE(o->flags(), ObjectFlag3D::HasTranslationRotationScaling);
         CORRADE_COMPARE(o->transformation(), Matrix4{});
         CORRADE_COMPARE_AS(o->children(),
             std::vector<UnsignedInt>{},

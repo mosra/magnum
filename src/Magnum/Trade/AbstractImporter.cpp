@@ -653,11 +653,13 @@ Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(const UnsignedInt
     ObjectFlags2D flags;
     Containers::Optional<Matrix3> transformation = scene.transformation2DFor(id);
     Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> trs = scene.translationRotationScaling2DFor(id);
+    /* If the object has neither a TRS nor a transformation field, assign an
+       empty TRS transform. Not a matrix, because a TRS is more flexible and
+       thus more desired. */
+    if(!transformation && !trs)
+        trs.emplace(Vector2{}, Complex{}, Vector2{1.0f});
     if(trs)
         flags |= ObjectFlag2D::HasTranslationRotationScaling;
-    /* If the object has neither a TRS nor a transformation field, assign an
-       identity transform to it */
-    else if(!transformation) transformation = Matrix3{};
 
     std::vector<UnsignedInt> children; /* not const so we can move it */
     {
@@ -825,11 +827,13 @@ Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(const UnsignedInt
     ObjectFlags3D flags;
     Containers::Optional<Matrix4> transformation = scene.transformation3DFor(id);
     Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> trs = scene.translationRotationScaling3DFor(id);
+    /* If the object has neither a TRS nor a transformation field, assign an
+       empty TRS transform. Not a matrix, because a TRS is more flexible and
+       thus more desired. */
+    if(!transformation && !trs)
+        trs.emplace(Vector3{}, Quaternion{}, Vector3{1.0f});
     if(trs)
         flags |= ObjectFlag3D::HasTranslationRotationScaling;
-    /* If the object has neither a TRS nor a transformation field, assign an
-       identity transform to it */
-    else if(!transformation) transformation = Matrix4{};
 
     std::vector<UnsignedInt> children; /* not const so we can move it */
     {
