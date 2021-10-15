@@ -66,8 +66,8 @@ tries to convert the file with it. Supported formats for uncompressed data:
     `HdrImageConverter`
 -   JPEG (`*.jpg`, `*.jpe`, `*.jpeg`), converted with @ref JpegImageConverter
     or any other plugin that provides it
--   KTX2 (`*.ktx2`), converted with any plugin that provides
-    `KtxImageConverter`
+-   KTX2 (`*.ktx2`), converted with @ref KtxImageConverter or any other plugin
+    that provides it
 -   Portable Network Graphics (`*.png`), converted with @ref PngImageConverter
     or any other plugin that provides it
 -   Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`), converted with

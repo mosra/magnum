@@ -199,6 +199,16 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <tr><td colspan="6"></td></tr>
 
 <tr>
+<th>KTX2 (`*.ktx2`)</th>
+<td>`KtxImporter`</td>
+<td>@ref Trade::KtxImporter "KtxImporter"</td>
+<td class="m-text-center m-warning">@ref Trade-KtxImporter-behavior "some"</td>
+<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center"></td>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
 <th rowspan="3">PNG<br/>(`*.png`)</th>
 <td rowspan="3">`PngImporter`</td>
 <td>@ref Trade::PngImporter "PngImporter"</td>
@@ -347,6 +357,16 @@ Derived from @ref Trade::AbstractImageConverter.
 <tr><td colspan="6"></td></tr>
 
 <tr>
+<th>KTX2 (`*.ktx2`)</th>
+<td>`KtxImageConverter`</td>
+<td>@ref Trade::KtxImageConverter "KtxImageConverter"</td>
+<td class="m-text-center m-warning">@ref Trade-KtxImageConverter-behavior "some"</td>
+<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center"></td>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
 <th rowspan="2">PNG<br/>(`*.png`)</th>
 <td rowspan="2">`PngImageConverter`</td>
 <td>@ref Trade::PngImageConverter "PngImageConverter"</td>
@@ -382,7 +402,7 @@ Derived from @ref Trade::AbstractImageConverter.
 
 @section file-formats-scene-importers Scene importers
 
-Together with @ref file-formats-image-importers "image-importers" derived from
+Together with @ref file-formats-image-importers "image importers" derived from
 @ref Trade::AbstractImporter.
 
 @m_class{m-row m-container-inflate}
@@ -455,8 +475,14 @@ Together with @ref file-formats-image-importers "image-importers" derived from
 <tr><td colspan="6"></td></tr>
 
 <tr>
-<th rowspan="2">glTF<br/>(`*.gltf`, `*.glb`)</th>
-<td rowspan="2">`GltfImporter`</td>
+<th rowspan="3">glTF<br/>(`*.gltf`, `*.glb`)</th>
+<td rowspan="3">`GltfImporter`</td>
+<td>@ref Trade::CgltfImporter "CgltfImporter"</td>
+<td class="m-text-center m-success">@ref Trade-CgltfImporter-behavior "minor"</td>
+<td class="m-text-center m-primary">bundled</td>
+<td class="m-text-center m-success">MIT</td>
+</tr>
+<tr>
 <td>@ref Trade::TinyGltfImporter "TinyGltfImporter"</td>
 <td class="m-text-center m-success">@ref Trade-TinyGltfImporter-behavior "minor"</td>
 <td class="m-text-center m-primary">bundled</td>

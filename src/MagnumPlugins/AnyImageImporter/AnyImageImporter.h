@@ -74,8 +74,8 @@ tries to open the file with it. Supported formats:
     loaded with @ref JpegImporter or any other plugin that provides it
 -   JPEG 2000 (`*.jp2`), loaded with any plugin that provides
     `Jpeg2000Importer`
--   KTX2 (`*.ktx2` or data with corresponding signature), loaded with any
-    plugin that provides `KtxImporter`
+-   KTX2 (`*.ktx2` or data with corresponding signature), loaded with
+    @ref KtxImporter or any other plugin that provides it
 -   Multiple-image Network Graphics (`*.mng`), loaded with any plugin that
     provides `MngImporter`
 -   Portable Bitmap (`*.pbm`), loaded with any plugin that provides `PbmImporter`
