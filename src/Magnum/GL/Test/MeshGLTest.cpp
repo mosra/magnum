@@ -1451,6 +1451,10 @@ void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
         CORRADE_SKIP(Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_SKIP("WebGL doesn't allow supplying signed data to an unsigned attribute.");
+    #endif
+
     constexpr Short data[] = { 0, 24563, 2128, 3821, 16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -1487,6 +1491,10 @@ void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_SKIP("WebGL doesn't allow supplying unsigned data to a signed attribute.");
     #endif
 
     constexpr UnsignedShort data[] = { 0, 49563, 2128, 3821, 16583 };
