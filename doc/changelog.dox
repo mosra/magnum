@@ -808,7 +808,8 @@ See also:
     docs as a set of @ref Debug etc typedefs instead, to make them more
     discoverable.
 -   Improved documentation about @ref opengl-wrapping-instances-nocreate "delayed OpenGL context creation"
-    and related pitfalls (see also [mosra/magnum-bootstrap#26](https://github.com/mosra/magnum-bootstrap/issues/26))
+    and related pitfalls (see also [mosra/magnum-bootstrap#26](https://github.com/mosra/magnum-bootstrap/issues/26),
+    [mosra/magnum-examples#98](https://github.com/mosra/magnum-examples/issues/98))
 -   Added introductory documentation about @ref features "library layout and essential workflows"
     (see [mosra/magnum#526](https://github.com/mosra/magnum/issues/526))
 
