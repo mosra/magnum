@@ -1158,4 +1158,25 @@ void Mesh::drawElementsInstancedBaseVertexImplementationAssert(GLenum, GLsizei, 
 #endif
 #endif
 
+#ifdef MAGNUM_TARGET_GLES
+#if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20005
+void Mesh::multiDrawElementsBaseVertexImplementationANGLE(const GLenum mode, const GLsizei* const count, const GLenum type, const void* const* const indices, const GLsizei drawCount, const GLint* const baseVertex) {
+    /** @todo merge with the allocation in multiDrawImplementationDefault */
+    Containers::ArrayView<GLsizei> instanceCount;
+    Containers::ArrayView<GLuint> baseInstance;
+    Containers::ArrayTuple data{
+        {NoInit, std::size_t(drawCount), instanceCount},
+        {ValueInit, std::size_t(drawCount), baseInstance},
+    };
+    for(GLsizei& i: instanceCount) i = 1;
+
+    glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE(mode, count, type, indices, instanceCount, baseVertex, baseInstance, drawCount);
+}
+#endif
+
+void Mesh::multiDrawElementsBaseVertexImplementationAssert(GLenum, const GLsizei*, GLenum, const void* const*, GLsizei, const GLint*) {
+    CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): no extension available for indexed mesh multi-draw with base vertex specification", );
+}
+#endif
+
 }}

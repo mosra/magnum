@@ -268,13 +268,6 @@ class MAGNUM_GL_EXPORT MeshView {
         static MAGNUM_GL_LOCAL void multiDrawImplementationFallback(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
         #endif
 
-        #ifdef MAGNUM_TARGET_GLES
-        #if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20005
-        static MAGNUM_GL_LOCAL void multiDrawElementsBaseVertexImplementationANGLE(GLenum mode, const GLsizei* count, GLenum type, const void* const* indices, GLsizei drawCount, const GLint* baseVertex);
-        #endif
-        static MAGNUM_GL_LOCAL void     multiDrawElementsBaseVertexImplementationAssert(GLenum, const GLsizei*, GLenum, const void* const*, GLsizei, const GLint*);
-        #endif
-
         Containers::Reference<Mesh> _original;
 
         bool _countSet{};

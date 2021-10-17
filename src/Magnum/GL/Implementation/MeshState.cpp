@@ -288,7 +288,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
                instance counts because there's no non-instanced variant. Only
                available since 2.0.5: https://github.com/emscripten-core/emscripten/pull/12282 */
             #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20005
-            multiDrawElementsBaseVertexImplementation = MeshView::multiDrawElementsBaseVertexImplementationANGLE;
+            multiDrawElementsBaseVertexImplementation = Mesh::multiDrawElementsBaseVertexImplementationANGLE;
             #else
             /* In Context::setupDriverWorkarounds() we make sure the extension
                is not even advertised, so this shouldn't be reached. */
@@ -297,7 +297,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
         } else
         #endif
         {
-            multiDrawElementsBaseVertexImplementation = MeshView::multiDrawElementsBaseVertexImplementationAssert;
+            multiDrawElementsBaseVertexImplementation = Mesh::multiDrawElementsBaseVertexImplementationAssert;
         }
         #endif
 
