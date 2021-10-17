@@ -932,8 +932,13 @@ void MeshGLTest::addVertexBufferUnsignedInt() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R32UI, mesh)
-        .get<UnsignedInt>(PixelFormat::RedInteger, PixelType::UnsignedInt);
+    const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R32UI, mesh).get<UnsignedInt>(
+        #ifndef MAGNUM_TARGET_WEBGL
+        PixelFormat::RedInteger,
+        #else
+        PixelFormat::RGBAInteger,
+        #endif
+        PixelType::UnsignedInt);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, 35681);
@@ -965,8 +970,13 @@ void MeshGLTest::addVertexBufferInt() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    const auto value = Checker(IntegerShader("int"), RenderbufferFormat::R32I, mesh)
-        .get<Int>(PixelFormat::RedInteger, PixelType::Int);
+    const auto value = Checker(IntegerShader("int"), RenderbufferFormat::R32I, mesh).get<Int>(
+        #ifndef MAGNUM_TARGET_WEBGL
+        PixelFormat::RedInteger,
+        #else
+        PixelFormat::RGBAInteger,
+        #endif
+        PixelType::Int);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, 27530);
@@ -1112,8 +1122,13 @@ void MeshGLTest::addVertexBufferVectorNi() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    const auto value = Checker(IntegerShader("ivec2"), RenderbufferFormat::RG32I, mesh)
-        .get<Vector2i>(PixelFormat::RGInteger, PixelType::Int);
+    const auto value = Checker(IntegerShader("ivec2"), RenderbufferFormat::RG32I, mesh).get<Vector2i>(
+        #ifndef MAGNUM_TARGET_WEBGL
+        PixelFormat::RGInteger
+        #else
+        PixelFormat::RGBAInteger
+        #endif
+    , PixelType::Int);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, Vector2i(27592, -157));
@@ -1413,8 +1428,13 @@ void MeshGLTest::addVertexBufferUnsignedIntWithUnsignedShort() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R16UI, mesh)
-        .get<UnsignedShort>(PixelFormat::RedInteger, PixelType::UnsignedShort);
+    const UnsignedShort value = Checker(IntegerShader("uint"), RenderbufferFormat::R16UI, mesh)
+        #ifndef MAGNUM_TARGET_WEBGL
+        .get<UnsignedShort>(PixelFormat::RedInteger, PixelType::UnsignedShort)
+        #else
+        .get<UnsignedInt>(PixelFormat::RGBAInteger, PixelType::UnsignedInt)
+        #endif
+    ;
 
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::SwiftShader,
@@ -1527,8 +1547,13 @@ void MeshGLTest::addVertexBufferIntWithShort() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    const auto value = Checker(IntegerShader("int"), RenderbufferFormat::R16I, mesh)
-        .get<Short>(PixelFormat::RedInteger, PixelType::Short);
+    const Short value = Checker(IntegerShader("int"), RenderbufferFormat::R16I, mesh)
+        #ifndef MAGNUM_TARGET_WEBGL
+        .get<Short>(PixelFormat::RedInteger, PixelType::Short)
+        #else
+        .get<Int>(PixelFormat::RGBAInteger, PixelType::Int)
+        #endif
+    ;
 
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::SwiftShader,
@@ -3289,8 +3314,13 @@ void MeshGLTest::addVertexBufferInstancedInteger() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R32UI, mesh)
-        .get<UnsignedInt>(PixelFormat::RedInteger, PixelType::UnsignedInt);
+    const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R32UI, mesh).get<UnsignedInt>(
+        #ifndef MAGNUM_TARGET_WEBGL
+        PixelFormat::RedInteger,
+        #else
+        PixelFormat::RGBAInteger,
+        #endif
+        PixelType::UnsignedInt);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, 35681);
