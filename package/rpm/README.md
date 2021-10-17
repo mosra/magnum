@@ -4,16 +4,16 @@
 corrade should be installed
 
 ```
-$ sudo dnf install openal-soft \
+sudo dnf install openal-soft \
                     SDL2 \
-                    freeglut \
+                    freeglut-devel \
                     glfw
 ```
 ## for build and devel package
 corrade-devel should be installed
 
 ```
-$ sudo dnf install git gcc-c++ cmake make rpmdevtools \
+sudo dnf install git gcc-c++ cmake make rpmdevtools \
                     openal-soft-devel \
                     SDL2-devel \
                     freeglut-devel \
@@ -22,7 +22,8 @@ $ sudo dnf install git gcc-c++ cmake make rpmdevtools \
 
 
 ## on centos
-for glfw and glfw-devel packages install EPEL repo:
+
+### for glfw and glfw-devel add EPEL repo:
 ```
-$ sudo dnf install --nogpgcheck https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+sudo dnf install --nogpgcheck https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 ```
