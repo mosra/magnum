@@ -9,12 +9,11 @@ Source0:        %{name}-%{version}-%{release}.tar.gz
 Requires:       corrade
 Requires:       SDL2
 %if %{defined suse_version}
-Requires:       freeglut-devel
 Requires:       libglfw3
 %else
-Requires:       freeglut
 Requires:       glfw
 %endif
+Requires:       freeglut-devel
 Requires:       openal-soft
 
 BuildRequires: gcc-c++
