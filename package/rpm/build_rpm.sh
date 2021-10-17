@@ -15,7 +15,7 @@ if [ "$?" -ne "0" ];
 then
     echo "------------------------------------------------------------------"
     echo "Build FAILED"
-    echo "Parameter should be either master or valid git tag|hash or empty string";
+    echo "USAGE: parameter should be either 'master' or any valid git tag|hash or no parameter for last tag";
     exit 1;
 fi
 # if hash provided as input param then name version as "hash"
@@ -52,6 +52,7 @@ then
 else
     echo "------------------------------------------------------------------"
     echo "Build of '${package_name}' SUCCEED"
+    echo "USAGE: pass either 'master' or any valid git tag|hash or no parameter for last tag"
     echo "Specfile: ${specfile}"
     arch=$(rpmbuild --eval=%{_arch})
     rpmdir=$(rpmbuild --eval=%{_rpmdir})
