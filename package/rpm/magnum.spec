@@ -8,8 +8,13 @@ URL:            https://magnum.graphics/
 Source0:        %{name}-%{version}-%{release}.tar.gz
 Requires:       corrade
 Requires:       SDL2
+%if %{defined suse_version}
+Requires:       freeglut-devel
+Requires:       libglfw3
+%else
 Requires:       freeglut
 Requires:       glfw
+%endif
 Requires:       openal-soft
 
 BuildRequires: gcc-c++
@@ -17,7 +22,11 @@ BuildRequires: cmake >= 3.4.0
 BuildRequires: SDL2-devel
 BuildRequires: freeglut-devel
 BuildRequires: corrade-devel
+%if %{defined suse_version}
+BuildRequires: libglfw-devel
+%else
 BuildRequires: glfw-devel
+%endif
 BuildRequires: openal-soft-devel
 
 %description
@@ -29,7 +38,11 @@ Requires:      corrade-devel
 Requires:      %{name} = %{version}
 Requires:      SDL2-devel
 Requires:      freeglut-devel
+%if %{defined suse_version}
+Requires:      libglfw-devel
+%else
 Requires:      glfw-devel
+%endif
 Requires:      openal-soft-devel
 
 %description devel
