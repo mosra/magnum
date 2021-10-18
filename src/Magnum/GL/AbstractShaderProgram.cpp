@@ -389,10 +389,11 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
     use();
 
     #ifndef MAGNUM_TARGET_GLES
-    Mesh::multiDrawImplementationDefault(mesh, counts, vertexOffsets, indexOffsets);
+    Mesh::multiDrawImplementationDefault
     #else
-    Context::current().state().mesh.multiDrawImplementation(mesh, counts, vertexOffsets, indexOffsets);
+    Context::current().state().mesh.multiDrawImplementation
     #endif
+        (mesh, counts, vertexOffsets, indexOffsets);
     return *this;
 }
 
@@ -403,10 +404,11 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
     use();
 
     #ifndef MAGNUM_TARGET_GLES
-    Mesh::multiDrawImplementationDefault(mesh, counts, vertexOffsets, indexOffsets);
+    Mesh::multiDrawImplementationDefault
     #else
-    Context::current().state().mesh.multiDrawLongImplementation(mesh, counts, vertexOffsets, indexOffsets);
+    Context::current().state().mesh.multiDrawLongImplementation
     #endif
+        (mesh, counts, vertexOffsets, indexOffsets);
     return *this;
 }
 
