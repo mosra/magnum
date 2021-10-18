@@ -867,7 +867,8 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @ref MeshView::setBaseVertex() and @p indexOffsets divided by size
          * of the index type for @ref MeshView::setIndexRange(). Note that
          * @webgl_extension{WEBGL,multi_draw} is only implemented since
-         * Emscripten 2.0.0, so it's not even advertised on older versions.
+         * Emscripten 2.0.0 and thus it's not even advertised on older
+         * versions.
          *
          * If @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0),
          * OpenGL ES 3.0, WebGL 2.0, @gl_extension{OES,vertex_array_object} in
@@ -880,24 +881,29 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * otherwise a temporary contiguous copy is allocated. On
          * @ref CORRADE_TARGET_32BIT "64-bit builds" the @p indexOffsets
          * additionally have to be 64-bit in order to avoid a copy because the
-         * @fn_gl{MultiDrawElements} function accepts them as pointers, see the
-         * @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedLong>&)
+         * @fn_gl{MultiDrawElements} /
+         * @fn_gl_keyword{MultiDrawElementsBaseVertex} functions accept them as
+         * pointers, see the @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedLong>&)
          * overload below.
          *
          * @see @ref draw(MeshView&), @fn_gl{UseProgram},
          *      @fn_gl_keyword{EnableVertexAttribArray}, @fn_gl{BindBuffer},
-         *      @fn_gl_keyword{VertexAttribPointer}, @fn_gl_keyword{DisableVertexAttribArray}
+         *      @fn_gl_keyword{VertexAttribPointer},
+         *      @fn_gl_keyword{DisableVertexAttribArray}
          *      or @fn_gl{BindVertexArray}, @fn_gl_keyword{MultiDrawArrays} or
-         *      @fn_gl_keyword{MultiDrawElements}/@fn_gl_keyword{MultiDrawElementsBaseVertex}
+         *      @fn_gl_keyword{MultiDrawElements} /
+         *      @fn_gl_keyword{MultiDrawElementsBaseVertex}
          * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
-         *      if the mesh is indexed and the @p baseVertex view is not empty.
+         *      if the mesh is indexed and the @p vertexOffsets view is not
+         *      empty.
          * @requires_es_extension OpenGL ES 3.0 and extension
          *      @gl_extension{OES,draw_elements_base_vertex} or
          *      @gl_extension{EXT,draw_elements_base_vertex} if the mesh is
-         *      indexed and the @p baseVertex view is not empty.
+         *      indexed and the @p vertexOffsets view is not empty.
          * @requires_webgl_extension WebGL 2.0 and extension
          *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
-         *      if the mesh is indexed and the @p baseVertex view is not empty.
+         *      if the mesh is indexed and the @p vertexOffsets view is not
+         *      empty.
          */
         AbstractShaderProgram& draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets);
 
@@ -910,8 +916,9 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * Defined only on @ref CORRADE_TARGET_32BIT "64-bit builds". Compared
          * to @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
          * this overload can avoid allocating an array of 64-bit pointers for
-         * the @fn_gl{MultiDrawElements} function and can instead directly
-         * reuse the @p indexOffsets view if it's contiguous.
+         * the @fn_gl_keyword{MultiDrawElements} /
+         * @fn_gl_keyword{MultiDrawElementsBaseVertex} function and can instead
+         * directly reuse the @p indexOffsets view if it's contiguous.
          */
         AbstractShaderProgram& draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets);
 
