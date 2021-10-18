@@ -190,13 +190,13 @@ struct MeshGLTest: OpenGLTester {
     void multiDrawIndexedSparseArrays();
     void multiDrawIndexedViews();
     void multiDrawWrongVertexOffsetSize();
-    void multiDrawIndexedWrongIndexOffsetSize();
     void multiDrawIndexedWrongVertexOffsetSize();
+    void multiDrawIndexedWrongIndexOffsetSize();
     #ifdef MAGNUM_TARGET_GLES
     void multiDrawIndexedBaseVertexNoExtensionAvailable();
     void multiDrawIndexedViewsBaseVertexNoExtensionAvailable();
     #endif
-    void multiDrawInstancedViews();
+    void multiDrawViewsInstanced();
     void multiDrawViewsDifferentMeshes();
 };
 
@@ -507,13 +507,13 @@ MeshGLTest::MeshGLTest() {
 
     addTests({
         &MeshGLTest::multiDrawWrongVertexOffsetSize,
-        &MeshGLTest::multiDrawIndexedWrongIndexOffsetSize,
         &MeshGLTest::multiDrawIndexedWrongVertexOffsetSize,
+        &MeshGLTest::multiDrawIndexedWrongIndexOffsetSize,
         #ifdef MAGNUM_TARGET_GLES
         &MeshGLTest::multiDrawIndexedBaseVertexNoExtensionAvailable,
         &MeshGLTest::multiDrawIndexedViewsBaseVertexNoExtensionAvailable,
         #endif
-        &MeshGLTest::multiDrawInstancedViews,
+        &MeshGLTest::multiDrawViewsInstanced,
         &MeshGLTest::multiDrawViewsDifferentMeshes
     });
 
@@ -4031,6 +4031,25 @@ void MeshGLTest::multiDrawWrongVertexOffsetSize() {
         "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 0\n");
 }
 
+void MeshGLTest::multiDrawIndexedWrongVertexOffsetSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Mesh mesh;
+    mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
+    MultiDrawShader shader;
+    UnsignedInt counts[3]{};
+    UnsignedInt vertexOffsets[2]{};
+    UnsignedInt indexOffsets[3]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.draw(mesh, counts, vertexOffsets, indexOffsets);
+    CORRADE_COMPARE(out.str(),
+        "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 2\n");
+}
+
 void MeshGLTest::multiDrawIndexedWrongIndexOffsetSize() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -4049,25 +4068,6 @@ void MeshGLTest::multiDrawIndexedWrongIndexOffsetSize() {
     CORRADE_COMPARE(out.str(),
         "GL::AbstractShaderProgram::draw(): expected 3 index offset items but got 2\n"
         "GL::AbstractShaderProgram::draw(): expected 3 index offset items but got 0\n");
-}
-
-void MeshGLTest::multiDrawIndexedWrongVertexOffsetSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    Mesh mesh;
-    mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
-    MultiDrawShader shader;
-    UnsignedInt counts[3]{};
-    UnsignedInt vertexOffsets[2]{};
-    UnsignedInt indexOffsets[3]{};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    shader.draw(mesh, counts, vertexOffsets, indexOffsets);
-    CORRADE_COMPARE(out.str(),
-        "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 2\n");
 }
 
 #ifdef MAGNUM_TARGET_GLES
@@ -4154,7 +4154,7 @@ void MeshGLTest::multiDrawIndexedViewsBaseVertexNoExtensionAvailable() {
 }
 #endif
 
-void MeshGLTest::multiDrawInstancedViews() {
+void MeshGLTest::multiDrawViewsInstanced() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
