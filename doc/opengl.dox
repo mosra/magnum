@@ -74,7 +74,6 @@ is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 -   @subpage requires-gl46
 -   @subpage requires-extension
 -   @subpage requires-gl
--   @subpage requires-gles20
 -   @subpage requires-gles30
 -   @subpage requires-gles31
 -   @subpage requires-gles32
@@ -82,6 +81,7 @@ is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 -   @subpage requires-gles
 -   @subpage requires-webgl20
 -   @subpage requires-webgl-extension
+-   @subpage requires-gles20-only
 
 @see @ref building, @ref cmake, @ref MAGNUM_TARGET_GLES,
     @ref MAGNUM_TARGET_GLES2
@@ -143,15 +143,6 @@ The following symbols are not defined when targeting OpenGL ES or WebGL.
 @see @ref MAGNUM_TARGET_GLES
 */
 
-/** @page requires-gles20 Functionality requiring OpenGL ES 2.0 or WebGL 1.0
-@m_footernavigation
-
-The following symbols are not defined when targeting OpenGL ES 3.0, WebGL 2.0
-or desktop OpenGL.
-
-@see @ref MAGNUM_TARGET_GLES2
-*/
-
 /** @page requires-gles30 Functionality requiring OpenGL ES 3.0
 @m_footernavigation
 
@@ -189,3 +180,12 @@ The following symbols are not defined when targeting WebGL.
 /** @page requires-webgl-extension Functionality requiring specific WebGL extension
  * @m_footernavigation
  */
+
+/** @page requires-gles20-only OpenGL ES 2.0-only and WebGL 1.0-only functionality
+@m_footernavigation
+
+The following symbols are not defined when targeting OpenGL ES 3.0, WebGL 2.0
+or desktop OpenGL.
+
+@see @ref MAGNUM_TARGET_GLES2
+*/

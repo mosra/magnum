@@ -98,8 +98,8 @@ enum class PixelFormat: GLenum {
     /**
      * Floating-point luminance channel. The value is used for all RGB
      * channels.
-     * @requires_gles20 Not available in ES 3.0, WebGL 2.0 or desktop OpenGL.
-     *      Use @ref PixelFormat::Red instead.
+     * @requires_gles20_only Not available in ES 3.0, WebGL 2.0 or desktop
+     *      OpenGL. Use @ref PixelFormat::Red instead.
      * @deprecated_gl Included for compatibility reasons only, use
      *      @ref PixelFormat::Red instead.
      */
@@ -128,8 +128,8 @@ enum class PixelFormat: GLenum {
     /**
      * Floating-point luminance and alpha channel. First value is used for all
      * RGB channels, second value is used for alpha channel.
-     * @requires_gles20 Not available in ES 3.0, WebGL 2.0 or desktop OpenGL.
-     *      Use @ref PixelFormat::RG instead.
+     * @requires_gles20_only Not available in ES 3.0, WebGL 2.0 or desktop
+     *      OpenGL. Use @ref PixelFormat::RG instead.
      * @deprecated_gl Included for compatibility reasons only, use
      *      @ref PixelFormat::RG instead.
      */
@@ -178,8 +178,8 @@ enum class PixelFormat: GLenum {
     #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
     /**
      * Floating-point sRGB.
-     * @requires_gles20 Not available in ES 3.0, WebGL 2.0 or desktop OpenGL.
-     *      Use @ref PixelFormat::RGB instead.
+     * @requires_gles20_only Not available in ES 3.0, WebGL 2.0 or desktop
+     *      OpenGL. Use @ref PixelFormat::RGB instead.
      * @deprecated_gl Included only in order to make it possible to upload
      *      sRGB image data with the @gl_extension{EXT,sRGB} ES2 extension, use
      *      @ref PixelFormat::RGB elsewhere instead.
@@ -188,8 +188,8 @@ enum class PixelFormat: GLenum {
 
     /**
      * Floating-point sRGB + alpha.
-     * @requires_gles20 Not available in ES 3.0, WebGL 2.0 or desktop OpenGL.
-     *      Use @ref PixelFormat::RGBA instead.
+     * @requires_gles20_only Not available in ES 3.0, WebGL 2.0 or desktop
+     *      OpenGL. Use @ref PixelFormat::RGBA instead.
      * @deprecated_gl Included only in order to make it possible to upload
      *      sRGB image data with the @gl_extension{EXT,sRGB} ES2 extension, use
      *      @ref PixelFormat::RGBA elsewhere instead.

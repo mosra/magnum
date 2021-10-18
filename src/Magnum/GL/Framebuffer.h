@@ -283,10 +283,10 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
             #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
             /**
              * The attached images have different sizes.
-             * @requires_gles20 This restriction is only present in OpenGL ES
-             *      2.0, not in desktop GL or OpenGL ES 3.0 anymore. Note that,
-             *      however, NVidia desktop drivers are known to emit this
-             *      value (@cpp 0x8CD9 @ce) in some cases.
+             * @requires_gles20_only This restriction is only present in OpenGL
+             *      ES 2.0, not in desktop GL or OpenGL ES 3.0 anymore. Note
+             *      that, however, NVidia desktop drivers are known to emit
+             *      this value (@cpp 0x8CD9 @ce) in some cases.
              */
             IncompleteDimensions = GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS,
             #endif

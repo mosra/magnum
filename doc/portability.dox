@@ -51,7 +51,7 @@ Example usage:
 @snippet MagnumGL.cpp portability-targets
 
 Each feature is marked accordingly if it is not available in some targets. See
-also @ref requires-gl, @ref requires-gles20 and @ref requires-gles30.
+also @ref requires-gl, @ref requires-gles30 and @ref requires-gles20-only.
 
 @section portability-compiler Compiler- and platform-specific code
 

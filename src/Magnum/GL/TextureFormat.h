@@ -921,8 +921,8 @@ enum class TextureFormat: GLenum {
      * Luminance, normalized unsigned, single value used for all RGB channels.
      * Size implementation-dependent. Not allowed in unemulated
      * @ref Texture::setStorage() "*Texture::setStorage()" calls.
-     * @requires_gles20 Not available in OpenGL ES 3.0, WebGL 2.0 or desktop
-     *      OpenGL. Use @ref TextureFormat::R8 instead.
+     * @requires_gles20_only Not available in OpenGL ES 3.0, WebGL 2.0 or
+     *      desktop OpenGL. Use @ref TextureFormat::R8 instead.
      * @deprecated_gl Included for compatibility reasons only, use
      *      @ref TextureFormat::R8 instead.
      */
@@ -933,8 +933,8 @@ enum class TextureFormat: GLenum {
      * RGB channels, second value is used for alpha channel. Size
      * implementation-dependent. Not allowed in unemulated
      * @ref Texture::setStorage() "*Texture::setStorage()" calls.
-     * @requires_gles20 Not available in OpenGL ES 3.0, WebGL 2.0 or desktop
-     *      OpenGL. Use @ref TextureFormat::RG8 instead.
+     * @requires_gles20_only Not available in OpenGL ES 3.0, WebGL 2.0 or
+     *      desktop OpenGL. Use @ref TextureFormat::RG8 instead.
      * @deprecated_gl Included for compatibility reasons only, use
      *      @ref TextureFormat::RG8 instead.
      */
