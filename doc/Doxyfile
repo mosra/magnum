@@ -297,6 +297,7 @@ ALIASES                = \
     "requires_gles=@xrefitem requires-gles \"Requires OpenGL ES or desktop OpenGL\" \"Functionality requiring OpenGL ES or desktop OpenGL\"" \
     "requires_webgl20=@xrefitem requires-webgl20 \"Requires WebGL 2.0\" \"Functionality requiring WebGL 2.0\"" \
     "requires_webgl_extension=@xrefitem requires-webgl-extension \"Requires WebGL extension\" \"Functionality requiring specific WebGL extension\"" \
+    "requires_gles_only=@xrefitem requires-gles-only \"OpenGL ES-only and WebGL-only\" \"OpenGL ES-only and WebGL-only functionality\"" \
     "requires_gles20_only=@xrefitem requires-gles20-only \"OpenGL ES 2.0-only and WebGL 1.0-only\" \"OpenGL ES 2.0-only and WebGL 1.0-only functionality\"" \
     "requires_webgl_only=@xrefitem requires-webgl-only \"WebGL-only\" \"WebGL-only functionality\"" \
     "webgl_extension{2}=<a href=\"https://www.khronos.org/registry/webgl/extensions/\1_\2/\">\1_\2</a>" \
