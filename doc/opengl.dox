@@ -82,6 +82,7 @@ is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 -   @subpage requires-webgl20
 -   @subpage requires-webgl-extension
 -   @subpage requires-gles20-only
+-   @subpage requires-webgl-only
 
 @see @ref building, @ref cmake, @ref MAGNUM_TARGET_GLES,
     @ref MAGNUM_TARGET_GLES2
@@ -170,7 +171,7 @@ The following symbols are not defined when targeting OpenGL ES 2.0.
 
 The following symbols are not defined when targeting WebGL.
 
-@see @ref MAGNUM_TARGET_WEBGL, @ref requires-gl
+@see @ref MAGNUM_TARGET_WEBGL, @ref requires-gl, @ref requires-webgl-only
 */
 
 /** @page requires-webgl20 Functionality requiring WebGL 2.0
@@ -187,5 +188,14 @@ The following symbols are not defined when targeting WebGL.
 The following symbols are not defined when targeting OpenGL ES 3.0, WebGL 2.0
 or desktop OpenGL.
 
-@see @ref MAGNUM_TARGET_GLES2
+@see @ref MAGNUM_TARGET_GLES2, @ref requires-webgl-only
+*/
+
+/** @page requires-webgl-only WebGL-only functionality
+@m_footernavigation
+
+The following symbols are not defined when targeting OpenGL ES or desktop
+OpenGL.
+
+@see @ref MAGNUM_TARGET_WEBGL, @ref requires-gles20-only
 */
