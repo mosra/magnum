@@ -1084,12 +1084,12 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         void MAGNUM_GL_LOCAL bindVAO();
 
         #ifndef MAGNUM_TARGET_GLES2
-        void drawInternal(Int count, Int baseVertex, Int instanceCount, UnsignedInt baseInstance, GLintptr indexOffset, Int indexStart, Int indexEnd);
+        MAGNUM_GL_LOCAL void drawInternal(Int count, Int baseVertex, Int instanceCount, UnsignedInt baseInstance, GLintptr indexOffset, Int indexStart, Int indexEnd);
         #else
-        void drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset);
+        MAGNUM_GL_LOCAL void drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset);
         #endif
 
-        void drawInternal(const Containers::ArrayView<const UnsignedInt>& counts, const Containers::ArrayView<const UnsignedInt>& vertexOffsets,
+        MAGNUM_GL_LOCAL void drawInternal(const Containers::ArrayView<const UnsignedInt>& counts, const Containers::ArrayView<const UnsignedInt>& vertexOffsets,
             #ifdef CORRADE_TARGET_32BIT
             const Containers::ArrayView<const UnsignedInt>& indexOffsets
             #else
@@ -1098,7 +1098,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         );
 
         #ifndef MAGNUM_TARGET_GLES
-        void drawInternal(TransformFeedback& xfb, UnsignedInt stream, Int instanceCount);
+        MAGNUM_GL_LOCAL void drawInternal(TransformFeedback& xfb, UnsignedInt stream, Int instanceCount);
         #endif
 
         void MAGNUM_GL_LOCAL createImplementationDefault(bool);
