@@ -64,6 +64,12 @@ See also:
 -   New @ref GL::AbstractShaderProgram::draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
     overload for data-oriented multi-draw workflows without @ref GL::MeshView
     and internal temporary allocations
+-   Implemented ANGLE- and WebGL-specific instanced multidraw with
+    @ref GL::AbstractShaderProgram::draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&).
+    It's added mainly in order to provide a fast rendering path on
+    resource-constrainted systems and as such doesn't have an overload taking
+    @ref GL::MeshView instances or a fallback path when the multidraw
+    extensions are not available.
 -   New @ref GL::Context::Configuration class providing runtime alternatives to
     the `--magnum-log`, `--magnum-gpu-validation`, `--magnum-disable-extensions`
     and `--magnum-disable-workarounds` command line options. The class is then

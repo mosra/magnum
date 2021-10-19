@@ -198,6 +198,27 @@ struct MeshGLTest: OpenGLTester {
     #endif
     void multiDrawViewsInstanced();
     void multiDrawViewsDifferentMeshes();
+    #ifdef MAGNUM_TARGET_GLES
+    void multiDrawInstanced();
+    void multiDrawInstancedSparseArrays();
+    /* no MeshView support for instanced multidraw */
+    template<class T> void multiDrawInstancedIndexed();
+    template<class T> void multiDrawInstancedIndexedSparseArrays();
+    /* no MeshView support for instanced multidraw */
+    void multiDrawInstancedWrongInstanceCountSize();
+    void multiDrawInstancedWrongVertexOffsetSize();
+    #ifndef MAGNUM_TARGET_GLES2
+    void multiDrawInstancedWrongInstanceOffsetSize();
+    #endif
+    void multiDrawInstancedIndexedWrongInstanceCountSize();
+    void multiDrawInstancedIndexedWrongVertexOffsetSize();
+    void multiDrawInstancedIndexedWrongIndexOffsetSize();
+    #ifndef MAGNUM_TARGET_GLES2
+    void multiDrawInstancedIndexedWrongInstanceOffsetSize();
+    void multiDrawInstancedBaseVertexNoExtensionAvailable();
+    void multiDrawInstancedBaseInstanceNoExtensionAvailable();
+    #endif
+    #endif
 };
 
 const struct {
@@ -350,6 +371,167 @@ const struct {
         /* The positions are fixed so this still renders in the same order */
         {0.25f, 0.5f, 0.0f, 1.0f}}
 };
+
+#ifdef MAGNUM_TARGET_GLES
+const struct {
+    const char* name;
+    bool vertexId;
+    bool drawId;
+    Vector3 values[2];
+    UnsignedInt counts[2];
+    UnsignedInt instanceCounts[2];
+    UnsignedInt vertexOffsets[2];
+    UnsignedInt instanceOffsets[2];
+    Vector4 expected;
+} MultiDrawInstancedData[] {
+    {"all zero vertex counts", false, false,
+        {{0.25f, 0.75f, 0.0f},
+         {0.5f, 1.0f, 0.0f}},
+        {0, 0},
+        {1, 1},
+        {0, 0},
+        {0, 0},
+        {0.0f, 0.0f, 0.0f, 0.0f}},
+    {"all zero instance counts", false, false,
+        {{0.25f, 0.75f, 0.0f},
+         {0.5f, 1.0f, 0.0f}},
+        {1, 1},
+        {0, 0},
+        {0, 0},
+        {0, 0},
+        {0.0f, 0.0f, 0.0f, 0.0f}},
+    {"single draw", false, false,
+        {{0.25f, 0.75f, 0.0f},
+         {0.5f, 1.0f, 0.0f}},
+        {2, 0},
+        {2, 0},
+        {0, 0},
+        {0, 0},
+        {0.25f, 0.5f, 0.75f, 1.0f}},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"single draw, vertex ID", true, false,
+        {{0.25f, 0.75f, 0.0f},
+         {0.0f, 0.5f, 1.0f}},
+        {2, 0},
+        {2, 0},
+        {0, 0},
+        {0, 0},
+        {0.25f, 0.5f, 0.75f, 1.0f}},
+    #endif
+    {"single draw, draw ID", false, true,
+        {{0.25f, 0.75f, 0.0f},
+         {0.5f, 1.0f, 0.0f}},
+        {2, 0},
+        {2, 0},
+        {0, 0},
+        {0, 0},
+        {0.25f, 0.5f, 0.75f, 1.0f}},
+    {"multi draw", false, false,
+        {{0.25f, 0.75f, 0.0f},
+         {0.5f, 1.0f, 0.0f}},
+        {1, 1},
+        {2, 2},
+        {0, 1},
+        {0, 0},
+        {0.25f, 0.5f, 0.75f, 1.0f}},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"multi draw, vertex ID", true, false,
+        {{0.25f, 0.75f, 0.0f},
+         {0.0f, 0.5f, 1.0f}},
+        {1, 1},
+        {2, 2},
+        {0, 1},
+        {0, 0},
+        {0.25f, 0.5f, 0.75f, 1.0f}},
+    #endif
+    {"multi draw, draw ID", false, true,
+        {{0.25f, 0.75f, 0.0f},
+         {0.0f, 0.5f, 1.0f}},
+        {1, 1},
+        {2, 2},
+        {0, 1},
+        {0, 0},
+        {0.25f, 0.5f, 0.75f, 1.0f}},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"multi draw, instance offset", false, false,
+        {{0.25f, 0.75f, 0.0f},
+         {0.5f, 1.0f, 0.0f}},
+        {2, 2},
+        {1, 1},
+        {0, 0},
+        {0, 1},
+        {0.25f, 0.5f, 0.75f, 1.0f}}
+    #endif
+};
+
+const struct {
+    const char* name;
+    bool vertexId;
+    Vector3 values[2];
+    UnsignedInt indices[2];
+    UnsignedInt counts[2];
+    UnsignedInt instanceCounts[2];
+    UnsignedInt indexOffsetsInBytes[2];
+    UnsignedInt vertexOffsets[2];
+    UnsignedInt instanceOffsets[2];
+    Vector4 expected;
+} MultiDrawInstancedIndexedData[] {
+    {"single draw", false,
+        {{0.25f, 0.75f, 0.0f},
+         {0.5f, 1.0f, 0.0f}},
+        {0, 1},
+        {2, 0},
+        {2, 0},
+        {0, 0},
+        {0, 0},
+        {0, 0},
+        {0.25f, 0.5f, 0.75f, 1.0f}},
+    {"multi draw", false,
+        {{0.25f, 0.75f, 0.0f},
+         {0.5f, 1.0f, 0.0f}},
+        {0, 1},
+        {1, 1},
+        {2, 2},
+        {0, 4},
+        {0, 0},
+        {0, 0},
+        {0.25f, 0.5f, 0.75f, 1.0f}},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"multi draw, vertex offset", false,
+        {{0.25f, 0.75f, 0.0f},
+         {0.5f, 1.0f, 0.0f}},
+        {0, 0},
+        {1, 1},
+        {2, 2},
+        {0, 0},
+        {0, 1},
+        {0, 0},
+        {0.25f, 0.5f, 0.75f, 1.0f}},
+    {"multi draw, vertex offset, vertex ID", true,
+        {{0.25f, 0.75f, 0.0f},
+         {0.0f, 0.5f, 1.0f}},
+        /* Same as in the non-indexed case, gl_VertexID includes the baseVertex
+           as well */
+        {0, 0},
+        {1, 1},
+        {2, 2},
+        {0, 0},
+        {0, 1},
+        {0, 0},
+        {0.25f, 0.5f, 0.75f, 1.0f}},
+    {"multi draw, instance offset", false,
+        {{0.25f, 0.75f, 0.0f},
+         {0.5f, 1.0f, 0.0f}},
+        {0, 1},
+        {2, 2},
+        {1, 1},
+        {0, 0},
+        {0, 0},
+        {0, 1},
+        {0.25f, 0.5f, 0.75f, 1.0f}},
+    #endif
+};
+#endif
 
 using namespace Math::Literals;
 
@@ -518,6 +700,39 @@ MeshGLTest::MeshGLTest() {
         &MeshGLTest::multiDrawViewsInstanced,
         &MeshGLTest::multiDrawViewsDifferentMeshes
     });
+
+    #ifdef MAGNUM_TARGET_GLES
+    addInstancedTests({&MeshGLTest::multiDrawInstanced,
+                       &MeshGLTest::multiDrawInstancedSparseArrays},
+        Containers::arraySize(MultiDrawInstancedData));
+
+    addInstancedTests<MeshGLTest>({
+        &MeshGLTest::multiDrawInstancedIndexed<UnsignedInt>,
+        #ifndef CORRADE_TARGET_32BIT
+        &MeshGLTest::multiDrawInstancedIndexed<UnsignedLong>,
+        #endif
+        &MeshGLTest::multiDrawInstancedIndexedSparseArrays<UnsignedInt>,
+        #ifndef CORRADE_TARGET_32BIT
+        &MeshGLTest::multiDrawInstancedIndexedSparseArrays<UnsignedLong>
+        #endif
+    }, Containers::arraySize(MultiDrawInstancedIndexedData));
+
+    addTests({
+        &MeshGLTest::multiDrawInstancedWrongInstanceCountSize,
+        &MeshGLTest::multiDrawInstancedWrongVertexOffsetSize,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshGLTest::multiDrawInstancedWrongInstanceOffsetSize,
+        #endif
+        &MeshGLTest::multiDrawInstancedIndexedWrongInstanceCountSize,
+        &MeshGLTest::multiDrawInstancedIndexedWrongVertexOffsetSize,
+        &MeshGLTest::multiDrawInstancedIndexedWrongIndexOffsetSize,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshGLTest::multiDrawInstancedIndexedWrongInstanceOffsetSize,
+        &MeshGLTest::multiDrawInstancedBaseVertexNoExtensionAvailable,
+        &MeshGLTest::multiDrawInstancedBaseInstanceNoExtensionAvailable
+        #endif
+    });
+    #endif
 
     /* Reset clear color to something trivial first */
     Renderer::setClearColor(0x000000_rgbf);
@@ -4060,6 +4275,7 @@ void MeshGLTest::multiDrawIndexedWrongVertexOffsetSize() {
     std::ostringstream out;
     Error redirectError{&out};
     shader.draw(mesh, counts, vertexOffsets, indexOffsets);
+    /* Omitting vertex offsets altogether is okay */
     CORRADE_COMPARE(out.str(),
         "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 2\n");
 }
@@ -4197,6 +4413,682 @@ void MeshGLTest::multiDrawViewsDifferentMeshes() {
     MultiDrawShader{}.draw({viewA, viewB});
     CORRADE_COMPARE(out.str(), Utility::formatString("GL::AbstractShaderProgram::draw(): all meshes must be views of the same original mesh, expected 0x{:x} but got 0x{:x} at index 1\n", reinterpret_cast<std::uintptr_t>(&a), reinterpret_cast<std::uintptr_t>(&b)));
 }
+
+#ifdef MAGNUM_TARGET_GLES
+struct MultiDrawInstancedShader: AbstractShaderProgram {
+    typedef Attribute<0, Float> PositionX;
+    typedef Attribute<1, Float> PositionY;
+    typedef Attribute<2, Vector3> Value;
+    #ifdef MAGNUM_TARGET_GLES2
+    /* ES2 has no integer attributes either */
+    typedef Attribute<3, Float> InstanceId;
+    #endif
+
+    explicit MultiDrawInstancedShader(bool vertexId = false, bool drawId = false
+        #ifndef MAGNUM_TARGET_GLES2
+        , bool instanceOffset = false
+        #endif
+    );
+};
+
+MultiDrawInstancedShader::MultiDrawInstancedShader(bool vertexId, bool drawId
+    #ifndef MAGNUM_TARGET_GLES2
+    , bool instanceOffset
+    #endif
+) {
+    /* Pick GLSL 3.0 / ESSL 3.0 for gl_VertexID, if available */
+    #ifndef MAGNUM_TARGET_GLES
+    #ifndef CORRADE_TARGET_APPLE
+    const Version version = Context::current().supportedVersion({Version::GL300, Version::GL210});
+    #else
+    const Version version = Version::GL310;
+    #endif
+    #else
+    const Version version = Context::current().supportedVersion({Version::GLES300, Version::GLES200});
+    #endif
+    Shader vert{version, Shader::Type::Vertex};
+    Shader frag{version, Shader::Type::Fragment};
+
+    if(drawId) vert.addSource(
+        "#extension GL_ANGLE_multi_draw: require\n"
+        "#define vertexOrDrawIdOrInstanceOffset gl_DrawID\n");
+    else if(vertexId) vert.addSource(
+        "#define vertexOrDrawIdOrInstanceOffset gl_VertexID\n");
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(instanceOffset) vert.addSource(
+        "#extension GL_ANGLE_base_vertex_base_instance: require\n"
+        "#define vertexOrDrawIdOrInstanceOffset gl_BaseInstance\n");
+    #endif
+    else vert.addSource(
+        "#define vertexOrDrawIdOrInstanceOffset 0\n");
+    vert.addSource(
+        "#if defined(GL_ES) && __VERSION__ == 100\n"
+        "#define in attribute\n"
+        "#define out varying\n"
+        "#endif\n"
+        "in mediump float positionX;\n"
+        "in mediump float positionY;\n"
+        "in mediump vec3 value;\n"
+        #ifdef MAGNUM_TARGET_GLES2
+        "in mediump float instanceId;\n"
+        #endif
+        "out mediump float valueInterpolated;\n"
+        "void main() {\n"
+        #ifndef MAGNUM_TARGET_GLES2
+        "    valueInterpolated = value[vertexOrDrawIdOrInstanceOffset + gl_InstanceID];\n"
+        #else
+        "    valueInterpolated = value[vertexOrDrawIdOrInstanceOffset + int(instanceId)];\n"
+        #endif
+        "    gl_Position = vec4(positionX, positionY, 0.0, 1.0);\n"
+        "}\n");
+    frag.addSource(
+        "#if defined(GL_ES) && __VERSION__ == 100\n"
+        "#define in varying\n"
+        "#define result gl_FragColor\n"
+        "#endif\n"
+        "in mediump float valueInterpolated;\n"
+        "#if defined(GL_ES) && __VERSION__ >= 300\n"
+        "out mediump vec4 result;\n"
+        "#endif\n"
+        "void main() { result.r = valueInterpolated; }\n");
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    attachShaders({vert, frag});
+
+    bindAttributeLocation(PositionX::Location, "positionX");
+    bindAttributeLocation(PositionY::Location, "positionY");
+    bindAttributeLocation(Value::Location, "value");
+    #ifdef MAGNUM_TARGET_GLES2
+    bindAttributeLocation(InstanceId::Location, "instanceId");
+    #endif
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+}
+
+void MeshGLTest::multiDrawInstanced() {
+    auto&& data = MultiDrawInstancedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.vertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        CORRADE_SKIP("gl_VertexID not supported");
+    #endif
+
+    bool hasBaseInstance = data.instanceOffsets[0] || data.instanceOffsets[1];
+    if(hasBaseInstance) {
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::base_vertex_base_instance>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::base_vertex_base_instance::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
+        #endif
+        #else
+        CORRADE_FAIL_IF(false, "Can't do base instance here.");
+        #endif
+    }
+
+    const struct {
+        Float positionX;
+        Vector3 value;
+    } vertexData[] {
+        {}, /* initial offset */
+        {-1.0f/3.0f, data.values[0]},
+        { 1.0f/3.0f, data.values[1]},
+    };
+    const Float instanceData[]{
+        {}, /* initial offset */
+        -1.0f/3.0f,
+         1.0f/3.0f
+    };
+
+    Mesh mesh{MeshPrimitive::Points};
+    mesh.addVertexBuffer(Buffer{vertexData}, sizeof(vertexData[0]), MultiDrawInstancedShader::PositionX{}, MultiDrawInstancedShader::Value{})
+        .addVertexBufferInstanced(Buffer{instanceData}, 1, sizeof(instanceData[0]), MultiDrawInstancedShader::PositionY{});
+
+    #ifdef MAGNUM_TARGET_GLES2
+    /* Because ANGLE_instanced_arrays on ES2 / WebGL 1 doesn't even provide
+       gl_InstanceID ... and there are no integer attributes either */
+    const Float instanceId[]{0.0f, 1.0f};
+    mesh.addVertexBufferInstanced(Buffer{instanceId}, 1, 0, MultiDrawInstancedShader::InstanceId{});
+    #endif
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    MultiDrawChecker checker;
+    MultiDrawInstancedShader{data.vertexId, data.drawId
+        #ifndef MAGNUM_TARGET_GLES2
+        , hasBaseInstance
+        #endif
+    }.draw(mesh, data.counts, data.instanceCounts, data.vertexOffsets, nullptr
+        #ifndef MAGNUM_TARGET_GLES2
+        , hasBaseInstance ? Containers::arrayView(data.instanceOffsets) : nullptr
+        #endif
+    );
+    Vector4 value = checker.get();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE_WITH(value, data.expected,
+        TestSuite::Compare::around(Vector4{1.0f/255.0f}));
+    #else
+    CORRADE_COMPARE_WITH(value, data.expected, /* it's only RGBA4 */
+        TestSuite::Compare::around(Vector4{1.0f/15.0f}));
+    #endif
+}
+
+void MeshGLTest::multiDrawInstancedSparseArrays() {
+    auto&& data = MultiDrawInstancedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.vertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        CORRADE_SKIP("gl_VertexID not supported");
+    #endif
+
+    bool hasBaseInstance = data.instanceOffsets[0] || data.instanceOffsets[1];
+    if(hasBaseInstance) {
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::base_vertex_base_instance>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::base_vertex_base_instance::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
+        #endif
+        #else
+        CORRADE_FAIL_IF(false, "Can't do base instance here.");
+        #endif
+    }
+
+    const struct {
+        Float positionX;
+        Vector3 value;
+    } vertexData[] {
+        {}, /* initial offset */
+        {-1.0f/3.0f, data.values[0]},
+        { 1.0f/3.0f, data.values[1]},
+    };
+    const Float instanceData[]{
+        {}, /* initial offset */
+        -1.0f/3.0f,
+         1.0f/3.0f
+    };
+
+    Mesh mesh{MeshPrimitive::Points};
+    mesh.addVertexBuffer(Buffer{vertexData}, sizeof(vertexData[0]), MultiDrawInstancedShader::PositionX{}, MultiDrawInstancedShader::Value{})
+        .addVertexBufferInstanced(Buffer{instanceData}, 1, sizeof(instanceData[0]), MultiDrawInstancedShader::PositionY{});
+
+    #ifdef MAGNUM_TARGET_GLES2
+    /* Because ANGLE_instanced_arrays on ES2 / WebGL 1 doesn't even provide
+       gl_InstanceID ... and there are no integer attributes either */
+    const Float instanceId[]{0.0f, 1.0f};
+    mesh.addVertexBufferInstanced(Buffer{instanceId}, 1, 0, MultiDrawInstancedShader::InstanceId{});
+    #endif
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* The signature accepted by glMultiDrawArraysIndirect() */
+    struct Command {
+        UnsignedInt count;
+        UnsignedInt instanceCount;
+        UnsignedInt first;
+        UnsignedInt baseInstance;
+    } commands[] {
+        {data.counts[0], data.instanceCounts[0], data.vertexOffsets[0], data.instanceOffsets[0]},
+        {data.counts[1], data.instanceCounts[1], data.vertexOffsets[1], data.instanceOffsets[1]}
+    };
+
+    MultiDrawChecker checker;
+    MultiDrawInstancedShader{data.vertexId, data.drawId
+        #ifndef MAGNUM_TARGET_GLES2
+        , hasBaseInstance
+        #endif
+    }.draw(mesh,
+        Containers::stridedArrayView(commands).slice(&Command::count),
+        Containers::stridedArrayView(commands).slice(&Command::instanceCount),
+        Containers::stridedArrayView(commands).slice(&Command::first),
+        nullptr
+        #ifndef MAGNUM_TARGET_GLES2
+        ,
+        hasBaseInstance ? Containers::stridedArrayView(commands).slice(&Command::baseInstance) : nullptr
+        #endif
+    );
+    Vector4 value = checker.get();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE_WITH(value, data.expected,
+        TestSuite::Compare::around(Vector4{1.0f/255.0f}));
+    #else
+    CORRADE_COMPARE_WITH(value, data.expected, /* it's only RGBA4 */
+        TestSuite::Compare::around(Vector4{1.0f/15.0f}));
+    #endif
+}
+
+template<class T> void MeshGLTest::multiDrawInstancedIndexed() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    auto&& data = MultiDrawInstancedIndexedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.vertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        CORRADE_SKIP("gl_VertexID not supported");
+    #endif
+
+    bool hasBaseVertex = data.vertexOffsets[0] || data.vertexOffsets[1];
+    bool hasBaseInstance = data.instanceOffsets[0] || data.instanceOffsets[1];
+    if(hasBaseVertex || hasBaseInstance) {
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        if(!Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+            CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is not supported.");
+        #else
+        if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
+            CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
+        #endif
+        #else
+        CORRADE_FAIL_IF(false, "Can't do base vertex or base instance here.");
+        #endif
+    }
+
+    const struct {
+        Float positionX;
+        Vector3 value;
+    } vertexData[] {
+        {}, /* initial offset */
+        {-1.0f/3.0f, data.values[0]},
+        { 1.0f/3.0f, data.values[1]},
+    };
+    const Float instanceData[]{
+        {}, /* initial offset */
+        -1.0f/3.0f,
+         1.0f/3.0f
+    };
+
+    Mesh mesh{MeshPrimitive::Points};
+    mesh.addVertexBuffer(Buffer{vertexData}, sizeof(vertexData[0]), MultiDrawInstancedShader::PositionX{}, MultiDrawInstancedShader::Value{})
+        .addVertexBufferInstanced(Buffer{instanceData}, 1, sizeof(instanceData[0]), MultiDrawInstancedShader::PositionY{})
+        .setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, data.indices}, 0, MeshIndexType::UnsignedInt);
+
+    #ifdef MAGNUM_TARGET_GLES2
+    /* Because ANGLE_instanced_arrays on ES2 / WebGL 1 doesn't even provide
+       gl_InstanceID ... and there are no integer attributes either */
+    const Float instanceId[]{0.0f, 1.0f};
+    mesh.addVertexBufferInstanced(Buffer{instanceId}, 1, 0, MultiDrawInstancedShader::InstanceId{});
+    #endif
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Converted to either a 32bit or 64bit type */
+    const T indexOffsetsInBytes[]{
+        data.indexOffsetsInBytes[0],
+        data.indexOffsetsInBytes[1]
+    };
+
+    MultiDrawChecker checker;
+    MultiDrawInstancedShader{data.vertexId, false
+        #ifndef MAGNUM_TARGET_GLES2
+        , hasBaseInstance
+        #endif
+    }.draw(mesh, data.counts, data.instanceCounts, hasBaseVertex ? Containers::arrayView(data.vertexOffsets) : nullptr, indexOffsetsInBytes
+        #ifndef MAGNUM_TARGET_GLES2
+        , hasBaseInstance ? Containers::arrayView(data.instanceOffsets) : nullptr
+        #endif
+    );
+    Vector4 value = checker.get();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE_WITH(value, data.expected,
+        TestSuite::Compare::around(Vector4{1.0f/255.0f}));
+    #else
+    CORRADE_COMPARE_WITH(value, data.expected, /* it's only RGBA4 */
+        TestSuite::Compare::around(Vector4{1.0f/15.0f}));
+    #endif
+}
+
+template<class T> void MeshGLTest::multiDrawInstancedIndexedSparseArrays() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    auto&& data = MultiDrawInstancedIndexedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.vertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        CORRADE_SKIP("gl_VertexID not supported");
+    #endif
+
+    bool hasBaseVertex = data.vertexOffsets[0] || data.vertexOffsets[1];
+    bool hasBaseInstance = data.instanceOffsets[0] || data.instanceOffsets[1];
+    if(hasBaseVertex || hasBaseInstance) {
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        if(!Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+            CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is not supported.");
+        #else
+        if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
+            CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
+        #endif
+        #else
+        CORRADE_FAIL_IF(false, "Can't do base vertex or base instance here.");
+        #endif
+    }
+
+    const struct {
+        Float positionX;
+        Vector3 value;
+    } vertexData[] {
+        {}, /* initial offset */
+        {-1.0f/3.0f, data.values[0]},
+        { 1.0f/3.0f, data.values[1]},
+    };
+    const Float instanceData[]{
+        {}, /* initial offset */
+        -1.0f/3.0f,
+         1.0f/3.0f
+    };
+
+    Mesh mesh{MeshPrimitive::Points};
+    mesh.addVertexBuffer(Buffer{vertexData}, sizeof(vertexData[0]), MultiDrawInstancedShader::PositionX{}, MultiDrawInstancedShader::Value{})
+        .addVertexBufferInstanced(Buffer{instanceData}, 1, sizeof(instanceData[0]), MultiDrawInstancedShader::PositionY{})
+        .setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, data.indices}, 0, MeshIndexType::UnsignedInt);
+
+    #ifdef MAGNUM_TARGET_GLES2
+    /* Because ANGLE_instanced_arrays on ES2 / WebGL 1 doesn't even provide
+       gl_InstanceID ... and there are no integer attributes either */
+    const Float instanceId[]{0.0f, 1.0f};
+    mesh.addVertexBufferInstanced(Buffer{instanceId}, 1, 0, MultiDrawInstancedShader::InstanceId{});
+    #endif
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* The signature accepted by glMultiDrawElementsIndirect() EXCEPT that
+       here we need firstIndex to be in bytes */
+    struct Command {
+        UnsignedInt count;
+        UnsignedInt instanceCount;
+        T firstIndexInBytes; /* !! */
+        UnsignedInt baseVertex;
+        UnsignedInt baseInstance;
+    } commands[] {
+        {data.counts[0], data.instanceCounts[0], data.indexOffsetsInBytes[0], data.vertexOffsets[0], data.instanceOffsets[0]},
+        {data.counts[1], data.instanceCounts[1], data.indexOffsetsInBytes[1], data.vertexOffsets[1], data.instanceOffsets[1]}
+    };
+
+    MultiDrawChecker checker;
+    MultiDrawInstancedShader{data.vertexId, false
+        #ifndef MAGNUM_TARGET_GLES2
+        , hasBaseInstance
+        #endif
+    }.draw(mesh,
+        Containers::stridedArrayView(commands).slice(&Command::count),
+        Containers::stridedArrayView(commands).slice(&Command::instanceCount),
+        hasBaseVertex ? Containers::stridedArrayView(commands).slice(&Command::baseVertex) : nullptr,
+        Containers::stridedArrayView(commands).slice(&Command::firstIndexInBytes)
+        #ifndef MAGNUM_TARGET_GLES2
+        ,
+        hasBaseInstance ? Containers::stridedArrayView(commands).slice(&Command::baseInstance) : nullptr
+        #endif
+    );
+    Vector4 value = checker.get();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE_WITH(value, data.expected,
+        TestSuite::Compare::around(Vector4{1.0f/255.0f}));
+    #else
+    CORRADE_COMPARE_WITH(value, data.expected, /* it's only RGBA4 */
+        TestSuite::Compare::around(Vector4{1.0f/15.0f}));
+    #endif
+}
+
+void MeshGLTest::multiDrawInstancedWrongInstanceCountSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Mesh mesh;
+    MultiDrawInstancedShader shader;
+    UnsignedInt counts[3]{};
+    UnsignedInt instanceCounts[2]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.draw(mesh, counts, instanceCounts, nullptr, nullptr);
+    shader.draw(mesh, counts, nullptr, nullptr, nullptr);
+    CORRADE_COMPARE(out.str(),
+        "GL::AbstractShaderProgram::draw(): expected 3 instance count items but got 2\n"
+        "GL::AbstractShaderProgram::draw(): expected 3 instance count items but got 0\n");
+}
+
+void MeshGLTest::multiDrawInstancedWrongVertexOffsetSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Mesh mesh;
+    MultiDrawInstancedShader shader;
+    UnsignedInt counts[3]{};
+    UnsignedInt instanceCounts[3]{};
+    UnsignedInt vertexOffsets[2]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.draw(mesh, counts, instanceCounts, vertexOffsets, nullptr);
+    shader.draw(mesh, counts, instanceCounts, nullptr, nullptr);
+    CORRADE_COMPARE(out.str(),
+        "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 2\n"
+        "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 0\n");
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshGLTest::multiDrawInstancedWrongInstanceOffsetSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Mesh mesh;
+    MultiDrawInstancedShader shader;
+    UnsignedInt counts[3]{};
+    UnsignedInt instanceCounts[3]{};
+    UnsignedInt vertexOffsets[3]{};
+    UnsignedInt instanceOffsets[2]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.draw(mesh, counts, instanceCounts, vertexOffsets, nullptr, instanceOffsets);
+    /* Omitting vertex offsets altogether is okay */
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): expected 3 instance offset items but got 2\n");
+}
+#endif
+
+void MeshGLTest::multiDrawInstancedIndexedWrongInstanceCountSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Mesh mesh;
+    mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
+    MultiDrawInstancedShader shader;
+    UnsignedInt counts[3]{};
+    UnsignedInt instanceCounts[2]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.draw(mesh, counts, instanceCounts, nullptr, nullptr);
+    shader.draw(mesh, counts, nullptr, nullptr, nullptr);
+    CORRADE_COMPARE(out.str(),
+        "GL::AbstractShaderProgram::draw(): expected 3 instance count items but got 2\n"
+        "GL::AbstractShaderProgram::draw(): expected 3 instance count items but got 0\n");
+}
+
+void MeshGLTest::multiDrawInstancedIndexedWrongVertexOffsetSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Mesh mesh;
+    mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
+    MultiDrawInstancedShader shader;
+    UnsignedInt counts[3]{};
+    UnsignedInt instanceCounts[3]{};
+    UnsignedInt vertexOffsets[2]{};
+    UnsignedInt indexOffsets[3]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.draw(mesh, counts, instanceCounts, vertexOffsets, indexOffsets);
+    /* Omitting vertex offsets altogether is okay */
+    CORRADE_COMPARE(out.str(),
+        "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 2\n");
+}
+
+void MeshGLTest::multiDrawInstancedIndexedWrongIndexOffsetSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Mesh mesh;
+    mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
+    MultiDrawInstancedShader shader;
+    UnsignedInt counts[3]{};
+    UnsignedInt instanceCounts[3]{};
+    UnsignedInt indexOffsets[2]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.draw(mesh, counts, instanceCounts, nullptr, indexOffsets);
+    shader.draw(mesh, counts, instanceCounts, nullptr, nullptr);
+    CORRADE_COMPARE(out.str(),
+        "GL::AbstractShaderProgram::draw(): expected 3 index offset items but got 2\n"
+        "GL::AbstractShaderProgram::draw(): expected 3 index offset items but got 0\n");
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshGLTest::multiDrawInstancedIndexedWrongInstanceOffsetSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Mesh mesh;
+    mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
+    MultiDrawInstancedShader shader;
+    UnsignedInt counts[3]{};
+    UnsignedInt instanceCounts[3]{};
+    UnsignedInt indexOffsets[3]{};
+    UnsignedInt instanceOffsets[2]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.draw(mesh, counts, instanceCounts, nullptr, indexOffsets, instanceOffsets);
+    /* Omitting instance offsets altogether is okay */
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): expected 3 instance offset items but got 2\n");
+}
+
+void MeshGLTest::multiDrawInstancedBaseVertexNoExtensionAvailable() {
+    /* The top-level multidraw extension isn't guarded (the user is expected to
+       do so), but the base vertex is as the conditions are more complex */
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(Extensions::ANGLE::multi_draw::string() << "is not supported.");
+    if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw::string() << "is not supported.");
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is supported.");
+    #endif
+
+    Mesh mesh;
+    mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
+
+    UnsignedInt counts[]{3};
+    UnsignedInt instanceCounts[]{3};
+    UnsignedInt vertexOffsets[]{0};
+    UnsignedInt indexOffsets[]{0};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MultiDrawInstancedShader{}.draw(mesh, counts, instanceCounts, vertexOffsets, indexOffsets);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh multi-draw with base vertex and base instance specification\n");
+    #else
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): instanced indexed mesh multi-draw with base vertex specification possible only since OpenGL ES 3.0 and WebGL 2.0\n");
+    #endif
+}
+
+void MeshGLTest::multiDrawInstancedBaseInstanceNoExtensionAvailable() {
+    /* The top-level multidraw extension isn't guarded (the user is expected to
+       do so), but the base vertex is as the conditions are more complex */
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(Extensions::ANGLE::multi_draw::string() << "is not supported.");
+    if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw::string() << "is not supported.");
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is supported.");
+    #endif
+
+    Mesh nonIndexed;
+    Mesh indexed;
+    indexed.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
+
+    UnsignedInt counts[]{3};
+    UnsignedInt instanceCounts[]{3};
+    UnsignedInt vertexOffsets[]{0};
+    UnsignedInt indexOffsets[]{0};
+    UnsignedInt instanceOffsets[]{0};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MultiDrawInstancedShader{}.draw(nonIndexed, counts, instanceCounts, vertexOffsets, nullptr, instanceOffsets);
+    MultiDrawInstancedShader{}.draw(indexed, counts, instanceCounts, nullptr, indexOffsets, instanceOffsets);
+    CORRADE_COMPARE(out.str(),
+        "GL::AbstractShaderProgram::draw(): no extension available for instanced mesh multi-draw with base instance specification\n"
+        "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh multi-draw with base vertex and base instance specification\n");
+}
+#endif
+#endif
 
 }}}}
 

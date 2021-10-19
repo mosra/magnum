@@ -922,6 +922,188 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         AbstractShaderProgram& draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t);
         #endif
 
+        #if defined(MAGNUM_TARGET_GLES) || defined(DOXYGEN_GENERATING_OUTPUT)
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Draw multiple instanced mesh views with instance offsets at once
+         * @param mesh          The mesh from which to draw
+         * @param counts        Vertex/index counts for each draw
+         * @param instanceCounts Instance counts for each draw. Expected to
+         *      have the same size as @p counts.
+         * @param vertexOffsets Offsets into the vertex array for non-indexed
+         *      meshes, base vertex for indexed meshes. Expected to have the
+         *      same size as @p counts, for indexed meshes it can be also empty
+         *      in which case the base vertex is assumed to be @cpp 0 @ce for
+         *      all draws.
+         * @param indexOffsets  Offsets into the index buffer for indexed
+         *      meshes, *in bytes*. Expected to have the same size as @p counts
+         *      for indexed meshes, ignored for non-indexed.
+         * @param instanceOffsets Offsets to be added to the instance index for
+         *      each draw. Expected to either be empty or have the same size as
+         *      @p counts.
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * If @p counts, @p instanceCounts, @p vertexOffsets, @p indexOffsets
+         * and @p instanceOffsets are contiguous views, they get passed
+         * directly to the underlying GL functions, otherwise a temporary
+         * contiguous copy is allocated. There are the following special cases,
+         * however:
+         *
+         * -    On @ref CORRADE_TARGET_32BIT "64-bit builds" the
+         *      @p indexOffsets additionally have to be 64-bit in order to
+         *      avoid a copy because the @m_class{m-doc-external} [glMultiDrawArraysInstancedANGLE()](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_multi_draw.txt)
+         *      / @m_class{m-doc-external} [glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE()](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
+         *      functions accept them as pointers, see the @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedLong>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
+         *      overload below.
+         * -    If the @p mesh is indexed, @p vertexOffsets and
+         *      @p instanceOffsets have to be either both specified or both
+         *      empty in order to avoid a copy with the missing one filled with
+         *      zeros, as there's only either @m_class{m-doc-external} [glMultiDrawElementsInstancedANGLE()](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_multi_draw.txt)
+         *      or @m_class{m-doc-external} [glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE()](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt),
+         *      but no function accepting just one of them.
+         *
+         * @see @ref draw(MeshView&), @fn_gl{UseProgram},
+         *      @fn_gl_keyword{EnableVertexAttribArray}, @fn_gl{BindBuffer},
+         *      @fn_gl_keyword{VertexAttribPointer}, @fn_gl_keyword{DisableVertexAttribArray}
+         *      or @fn_gl{BindVertexArray},
+         *      @m_class{m-doc-external} [glMultiDrawArraysInstancedANGLE()](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_multi_draw.txt)
+         *      / @m_class{m-doc-external} [glMultiDrawArraysInstancedBaseInstanceANGLE()](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt) or
+         *      @m_class{m-doc-external} [glMultiDrawElementsInstancedANGLE()](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_multi_draw.txt)
+         *      / @m_class{m-doc-external} [glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE()](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
+         * @requires_gles_only Not available on desktop OpenGL.
+         * @requires_gles30 Not defined in OpenGL ES 2.0. Use
+         *      @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&) without the
+         *      @p instanceOffsets parameter there instead.
+         * @requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
+         *      if the mesh is indexed and the @p vertexOffsets view is not
+         *      empty
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
+         *      if the @p instanceOffsets view is not empty
+         * @requires_webgl_extension Extension @webgl_extension{WEBGL,multi_draw}.
+         *      Note that this extension is only implemented since Emscripten
+         *      2.0.0 and thus it's not even advertised on older versions.
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
+         *      if the mesh is indexed and the @p vertexOffsets view is not
+         *      empty.
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
+         *      if the @p instanceOffsets view is not empty.
+         * @m_keywords{glMultiDrawArraysInstancedANGLE() glMultiDrawArraysInstancedBaseInstanceANGLE() glMultiDrawElementsInstancedANGLE() glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE()}
+         */
+        AbstractShaderProgram& draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& instanceOffsets);
+
+        #ifndef CORRADE_TARGET_32BIT
+        /**
+         * @brief Draw multiple instanced mesh views with instance offsets at once
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Defined only on @ref CORRADE_TARGET_32BIT "64-bit builds". Compared
+         * to @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
+         * this overload can avoid allocating an array of 64-bit pointers for
+         * the @m_class{m-doc-external} [glMultiDrawElementsInstancedANGLE()](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_multi_draw.txt)
+         * / @m_class{m-doc-external} [glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE()](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
+         * function and can instead directly reuse the @p indexOffsets view if
+         * it's contiguous. See the original overload for further information.
+         * @requires_gles_only Not available on desktop OpenGL.
+         * @requires_gles30 Not defined in OpenGL ES 2.0. Use
+         *      @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&) without the
+         *      @p instanceOffsets parameter there instead.
+         * @requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
+         *      if the mesh is indexed and the @p vertexOffsets view is not
+         *      empty
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
+         *      if the @p instanceOffsets view is not empty
+         * @requires_webgl_extension Extension @webgl_extension{WEBGL,multi_draw}
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
+         *      if the mesh is indexed and the @p vertexOffsets view is not
+         *      empty.
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
+         *      if the @p instanceOffsets view is not empty.
+         */
+        AbstractShaderProgram& draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& instanceOffsets);
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        AbstractShaderProgram& draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t, const Containers::StridedArrayView1D<const UnsignedInt>& instanceOffsets);
+        #endif
+        #endif
+
+        /**
+         * @brief Draw multiple instanced mesh views at once
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Compared to @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
+         * lacks the last @p instanceOffsets parameter and as such is available
+         * also in OpenGL ES 2.0 and WebGL 1.0.
+         *
+         * If OpenGL ES 3.0, WebGL 2.0, @gl_extension{OES,vertex_array_object}
+         * in OpenGL ES 2.0 or @webgl_extension{OES,vertex_array_object} in
+         * WebGL 1.0 is available, the associated vertex array object is bound
+         * instead of setting up the mesh from scratch.
+         *
+         * @requires_gles_only Not available on desktop OpenGL.
+         * @requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
+         *      if the mesh is indexed and the @p vertexOffsets view is not
+         *      empty
+         * @requires_webgl_extension Extension @webgl_extension{WEBGL,multi_draw}
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
+         *      if the mesh is indexed and the @p vertexOffsets view is not
+         *      empty.
+         */
+        AbstractShaderProgram& draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets);
+
+        #ifndef CORRADE_TARGET_32BIT
+        /**
+         * @brief Draw multiple instanced mesh views at once
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Defined only on @ref CORRADE_TARGET_32BIT "64-bit builds". Compared
+         * to @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
+         * this overload can avoid allocating an array of 64-bit pointers for
+         * the @m_class{m-doc-external} [glMultiDrawElementsInstancedANGLE()](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_multi_draw.txt)
+         * / @m_class{m-doc-external} [glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE()](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
+         * function and can instead directly reuse the @p indexOffsets view if
+         * it's contiguous. See the original overload for further information.
+         * @requires_gles_only Not available on desktop OpenGL.
+         * @requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
+         *      if the mesh is indexed and the @p vertexOffsets view is not
+         *      empty
+         * @requires_webgl_extension Extension @webgl_extension{WEBGL,multi_draw}
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
+         *      if the mesh is indexed and the @p vertexOffsets view is not
+         *      empty.
+         */
+        AbstractShaderProgram& draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets);
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        AbstractShaderProgram& draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t);
+        #endif
+        #endif
+
         /**
          * @brief Draw multiple mesh views at once
          * @return Reference to self (for method chaining)
@@ -941,7 +1123,13 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * Emscripten 2.0.0, so it's not even advertised on older versions.
          *
          * @attention All meshes must be views of the same original mesh and
-         *      must not be instanced.
+         *      must not be instanced. Instanced multidraw is available only
+         *      through @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
+         *      which relies on GLES- and WebGL-specific extensions. It exists
+         *      mainly in order to provide a fast rendering path on
+         *      resource-constrainted systems and as such doesn't have an
+         *      overload taking @ref MeshView instances or a fallback path when
+         *      the multidraw extensions are not available.
          *
          * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      if the mesh is indexed and @ref MeshView::baseVertex() is not

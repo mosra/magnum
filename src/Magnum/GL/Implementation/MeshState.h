@@ -83,6 +83,14 @@ struct MeshState {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void(APIENTRY *multiDrawElementsBaseVertexImplementation)(GLenum, const GLsizei*, GLenum, const void* const*, GLsizei, const GLint*);
     #endif
+    #ifdef MAGNUM_TARGET_GLES
+    void(APIENTRY *multiDrawArraysInstancedImplementation)(GLenum, const GLint*, const GLsizei*, const GLsizei*, GLsizei);
+    void(APIENTRY *multiDrawElementsInstancedImplementation)(GLenum, const GLint*, GLenum, const void* const*, const GLsizei*, GLsizei);
+    #ifndef MAGNUM_TARGET_GLES2
+    void(APIENTRY *multiDrawArraysInstancedBaseInstanceImplementation)(GLenum, const GLint*, const GLsizei*, const GLsizei*, const GLuint*, GLsizei);
+    void(APIENTRY *multiDrawElementsInstancedBaseVertexBaseInstanceImplementation)(GLenum, const GLint*, GLenum, const void* const*, const GLsizei*, const GLint*, const GLuint*, GLsizei);
+    #endif
+    #endif
     #endif
 
     void(*bindVAOImplementation)(GLuint);

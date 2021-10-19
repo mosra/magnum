@@ -450,7 +450,7 @@ Extension                                   | Status
 @gl_extension2{ANGLE,texture_compression_dxt3,ANGLE_texture_compression_dxt} | done
 @gl_extension2{ANGLE,texture_compression_dxt5,ANGLE_texture_compression_dxt} | done
 @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt) (unlisted) | done
-@m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_base_vertex_base_instance.txt) (unlisted) | done except instanced multi-draw
+@m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_base_vertex_base_instance.txt) (unlisted) | done
 @gl_extension{APPLE,texture_format_BGRA8888} | done
 @gl_extension{APPLE,clip_distance}          | done
 @gl_extension{ARM,shader_framebuffer_fetch} | missing renderer setup and limit query
@@ -574,7 +574,7 @@ Extension                                   | Status
 @webgl_extension{WEBGL,multi_draw}          | done
 @webgl_extension{WEBGL,blend_equation_advanced_coherent} | done
 @webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance} | done
-@webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance} | done except instanced multi-draw
+@webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance} | done
 
 @section opengl-unsupported Unsupported OpenGL features
 

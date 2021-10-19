@@ -227,6 +227,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
     if(context.isExtensionSupported<Extensions::WEBGL::multi_draw>())
     #endif
     {
+        /* General multi-draw extension */
         #ifndef MAGNUM_TARGET_WEBGL
         if(context.isExtensionSupported<Extensions::EXT::multi_draw_arrays>()) {
             extensions[Extensions::EXT::multi_draw_arrays::Index] =
@@ -260,8 +261,9 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
         }
         #endif
 
-        /* These function pointers make sense only if the general multi-draw
-           extension is supported. Also, not on WebGL 1 at all. */
+        /* Base vertex specification. These function pointers make sense only
+           if the general multi-draw extension is supported. Also, not on WebGL
+           1 at all. */
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         #ifndef MAGNUM_TARGET_WEBGL
         if(context.isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()) {
@@ -298,6 +300,74 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
         #endif
         {
             multiDrawElementsBaseVertexImplementation = Mesh::multiDrawElementsBaseVertexImplementationAssert;
+        }
+        #endif
+
+        /* Instanced multi-draw. ES- and WebGL-only. */
+        #ifdef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_WEBGL
+        if(context.isExtensionSupported<Extensions::ANGLE::multi_draw>()) {
+            extensions[Extensions::ANGLE::multi_draw::Index] =
+                       Extensions::ANGLE::multi_draw::string();
+
+            multiDrawArraysInstancedImplementation = glMultiDrawArraysInstancedANGLE;
+            multiDrawElementsInstancedImplementation = glMultiDrawElementsInstancedANGLE;
+        } else {
+            multiDrawArraysInstancedImplementation = nullptr;
+            multiDrawElementsInstancedImplementation = nullptr;
+        }
+        #else
+        {
+            extensions[Extensions::WEBGL::multi_draw::Index] =
+                       Extensions::WEBGL::multi_draw::string();
+
+            /* The WEBGL extension uses the same entrypoints as the ANGLE
+               extension it was based on. Only available since 2.0.0:
+               https://github.com/emscripten-core/emscripten/pull/11650 */
+            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20000
+            multiDrawArraysInstancedImplementation = glMultiDrawArraysInstancedANGLE;
+            multiDrawElementsInstancedImplementation = glMultiDrawElementsInstancedANGLE;
+            #else
+            /* In Context::setupDriverWorkarounds() we make sure the extension
+               is not even advertised, so this shouldn't be reached. */
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+            #endif
+        }
+        #endif
+        #endif
+
+        /* Instanced multi-draw with base vertex / base instance. ES 3.1 and
+           WebGL 2 only. */
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+        #ifndef MAGNUM_TARGET_WEBGL
+        if(context.isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()) {
+            extensions[Extensions::ANGLE::base_vertex_base_instance::Index] =
+                       Extensions::ANGLE::base_vertex_base_instance::string();
+
+            multiDrawArraysInstancedBaseInstanceImplementation = glMultiDrawArraysInstancedBaseInstanceANGLE;
+            multiDrawElementsInstancedBaseVertexBaseInstanceImplementation = glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE;
+        } else
+        #else
+        if(context.isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>()) {
+            extensions[Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::Index] =
+                       Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string();
+
+            /* The WEBGL extension uses the same entrypoints as the ANGLE
+               extension it was based on. Only available since 2.0.0:
+               https://github.com/emscripten-core/emscripten/pull/11650 */
+            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20000
+            multiDrawArraysInstancedBaseInstanceImplementation = glMultiDrawArraysInstancedBaseInstanceANGLE;
+            multiDrawElementsInstancedBaseVertexBaseInstanceImplementation = glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE;
+            #else
+            /* In Context::setupDriverWorkarounds() we make sure the extension
+               is not even advertised, so this shouldn't be reached. */
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+            #endif
+        } else
+        #endif
+        {
+            multiDrawArraysInstancedBaseInstanceImplementation = Mesh::multiDrawArraysInstancedBaseInstanceImplementationAssert;
+            multiDrawElementsInstancedBaseVertexBaseInstanceImplementation = Mesh::multiDrawElementsInstancedBaseVertexBaseInstanceImplementationAssert;
         }
         #endif
 

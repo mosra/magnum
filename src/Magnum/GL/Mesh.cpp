@@ -464,6 +464,83 @@ void Mesh::drawInternal(const Containers::ArrayView<const UnsignedInt>& counts, 
     (this->*state.unbindImplementation)();
 }
 
+#ifdef MAGNUM_TARGET_GLES
+void Mesh::drawInternal(const Containers::ArrayView<const UnsignedInt>& counts, const Containers::ArrayView<const UnsignedInt>& instanceCounts, const Containers::ArrayView<const UnsignedInt>& vertexOffsets,
+    #ifdef CORRADE_TARGET_32BIT
+    const Containers::ArrayView<const UnsignedInt>& indexOffsets
+    #else
+    const Containers::ArrayView<const UnsignedLong>& indexOffsets
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    , const Containers::ArrayView<const UnsignedInt>& instanceOffsets
+    #endif
+) {
+    const Implementation::MeshState& state = Context::current().state().mesh;
+    (this->*state.bindImplementation)();
+
+    CORRADE_ASSERT(instanceCounts.size() == counts.size(),
+        "GL::AbstractShaderProgram::draw(): expected" << counts.size() << "instance count items but got" << instanceCounts.size(), );
+
+    /* Non-indexed instanced meshes */
+    if(!_indexBuffer.id()) {
+        CORRADE_ASSERT(vertexOffsets.size() == counts.size(),
+            "GL::AbstractShaderProgram::draw(): expected" << counts.size() << "vertex offset items but got" << vertexOffsets.size(), );
+
+        /* Non-indexed instanced meshes */
+        #ifndef MAGNUM_TARGET_GLES2
+        if(instanceOffsets.empty())
+        #endif
+        {
+            state.multiDrawArraysInstancedImplementation(GLenum(_primitive), reinterpret_cast<const GLint*>(vertexOffsets.data()), reinterpret_cast<const GLsizei*>(counts.data()), reinterpret_cast<const GLsizei*>(instanceCounts.data()), counts.size());
+        }
+
+        /* Non-indexed instanced meshes with base instance */
+        #ifndef MAGNUM_TARGET_GLES2
+        else {
+            CORRADE_ASSERT(instanceOffsets.size() == counts.size(),
+                "GL::AbstractShaderProgram::draw(): expected" << counts.size() << "instance offset items but got" << instanceOffsets.size(), );
+
+            state.multiDrawArraysInstancedBaseInstanceImplementation(GLenum(_primitive), reinterpret_cast<const GLint*>(vertexOffsets.data()), reinterpret_cast<const GLsizei*>(counts.data()), reinterpret_cast<const GLsizei*>(instanceCounts.data()),
+            reinterpret_cast<const GLuint*>(instanceOffsets.data()), counts.size());
+        }
+        #endif
+
+    /* Indexed meshes */
+    } else {
+        CORRADE_ASSERT(indexOffsets.size() == counts.size(),
+            "GL::AbstractShaderProgram::draw(): expected" << counts.size() << "index offset items but got" << indexOffsets.size(), );
+
+        /* Indexed meshes */
+        if(vertexOffsets.empty()
+            #ifndef MAGNUM_TARGET_GLES2
+            && instanceOffsets.empty()
+            #endif
+        ) {
+            state.multiDrawElementsInstancedImplementation(GLenum(_primitive), reinterpret_cast<const GLsizei*>(counts.data()), GLenum(_indexType), reinterpret_cast<const void* const*>(indexOffsets.data()), reinterpret_cast<const GLsizei*>(instanceCounts.data()), counts.size());
+
+        /* Indexed meshes with base vertex / base instance. According to the
+           extension spec both have to be present, not just one. */
+        } else {
+            CORRADE_ASSERT(vertexOffsets.size() == counts.size(),
+                "GL::AbstractShaderProgram::draw(): expected" << counts.size() << "vertex offset items but got" << vertexOffsets.size(), );
+            #ifndef MAGNUM_TARGET_GLES2
+            CORRADE_ASSERT(instanceOffsets.size() == counts.size(),
+                "GL::AbstractShaderProgram::draw(): expected" << counts.size() << "instance offset items but got" << instanceOffsets.size(), );
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES2
+            state.multiDrawElementsInstancedBaseVertexBaseInstanceImplementation(GLenum(_primitive), reinterpret_cast<const GLsizei*>(counts.data()), GLenum(_indexType), reinterpret_cast<const void* const*>(indexOffsets.data()), reinterpret_cast<const GLsizei*>(instanceCounts.data()), reinterpret_cast<const GLint*>(vertexOffsets.data()),
+            reinterpret_cast<const GLuint*>(instanceOffsets.data()), counts.size());
+            #else
+            CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): instanced indexed mesh multi-draw with base vertex specification possible only since OpenGL ES 3.0 and WebGL 2.0", );
+            #endif
+        }
+    }
+
+    (this->*state.unbindImplementation)();
+}
+#endif
+
 void Mesh::drawInternalStrided(const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
     #ifdef CORRADE_TARGET_32BIT
     /* If all views are contiguous and we're on 32-bit, call the implementation
@@ -543,6 +620,161 @@ void Mesh::drawInternalStrided(const Containers::StridedArrayView1D<const Unsign
         ]
     );
 }
+#endif
+
+#ifdef MAGNUM_TARGET_GLES
+void Mesh::drawInternalStrided(const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets
+    #ifndef MAGNUM_TARGET_GLES2
+    , const Containers::StridedArrayView1D<const UnsignedInt>& instanceOffsets
+    #endif
+) {
+    #ifdef CORRADE_TARGET_32BIT
+    /* If all views are contiguous, the mesh specifies either both base vertex
+       and base instance or neither and we're on 32-bit, call the
+       implementation directly */
+    if(counts.isContiguous() && instanceCounts.isContiguous() && vertexOffsets.isContiguous() && indexOffsets.isContiguous()
+        #ifndef MAGNUM_TARGET_GLES2
+        && instanceOffsets.isContiguous() && (!_indexBuffer.id() || vertexOffsets.size() == instanceOffsets.size())
+        #endif
+    )
+        return drawInternal(counts.asContiguous(), instanceCounts.asContiguous(), vertexOffsets.asContiguous(), indexOffsets.asContiguous()
+            #ifndef MAGNUM_TARGET_GLES2
+            , instanceOffsets.asContiguous()
+            #endif
+        );
+    #endif
+
+    /* Expected vertex offset and instance offset count. If the mesh is
+       indexed, they either have to be both used or both empty. */
+    std::size_t expectedVertexOffsetCount = vertexOffsets.size();
+    #ifndef MAGNUM_TARGET_GLES2
+    std::size_t expectedInstanceOffsetCount = instanceOffsets.size();
+    if(_indexBuffer.id()) {
+        /* Use counts.size() instead of <the-other>OffsetCount to avoid hitting
+           a wrong assert in case the vertex/instance count doesn't match */
+        if(expectedVertexOffsetCount && !expectedInstanceOffsetCount)
+            expectedInstanceOffsetCount = counts.size();
+        else if(expectedInstanceOffsetCount && !expectedVertexOffsetCount)
+            expectedVertexOffsetCount = counts.size();
+    }
+    #endif
+
+    /* Otherwise allocate contiguous copies. While it's possible that some
+       views could have been contigous already and some not, such scenario is
+       unlikely to make a practical sense, so we'll allocate & copy always. */
+    Containers::ArrayView<UnsignedInt> countsContiguous;
+    Containers::ArrayView<UnsignedInt> instanceCountsContiguous;
+    Containers::ArrayView<UnsignedInt> vertexOffsetsContiguous;
+    #ifdef CORRADE_TARGET_32BIT
+    Containers::ArrayView<UnsignedInt>
+    #else
+    Containers::ArrayView<UnsignedLong>
+    #endif
+        indexOffsetsContiguous;
+    #ifndef MAGNUM_TARGET_GLES2
+    Containers::ArrayView<UnsignedInt> instanceOffsetsContiguous;
+    #endif
+    Containers::ArrayTuple data{
+        {NoInit, counts.size(), countsContiguous},
+        {NoInit, instanceCounts.size(), instanceCountsContiguous},
+        /* Zero init vertex offsets if we don't have them */
+        vertexOffsets.size() ?
+            Containers::ArrayTuple::Item{NoInit, expectedVertexOffsetCount, vertexOffsetsContiguous} :
+            Containers::ArrayTuple::Item{ValueInit, expectedVertexOffsetCount, vertexOffsetsContiguous},
+        /* On 64-bit we'll be filling just the lower 32 bits so zero-init the
+           array. On 32-bit we'll overwrite it completely, so NoInit is fine. */
+        {
+            #ifdef CORRADE_TARGET_32BIT
+            NoInit
+            #else
+            ValueInit
+            #endif
+            , indexOffsets.size(), indexOffsetsContiguous},
+        #ifndef MAGNUM_TARGET_GLES2
+        /* Zero init instance offsets if we don't have them */
+        instanceOffsets.size() ?
+            Containers::ArrayTuple::Item{NoInit, expectedInstanceOffsetCount, instanceOffsetsContiguous} :
+            Containers::ArrayTuple::Item{ValueInit, expectedInstanceOffsetCount, instanceOffsetsContiguous},
+        #endif
+    };
+    Utility::copy(counts, countsContiguous);
+    Utility::copy(instanceCounts, instanceCountsContiguous);
+    /* Copy vertex offsets only if we have them and leave them zero-init'd
+       otherwise */
+    if(vertexOffsets.size())
+        Utility::copy(vertexOffsets, vertexOffsetsContiguous);
+    Utility::copy(indexOffsets,
+        #ifdef CORRADE_TARGET_32BIT
+        indexOffsetsContiguous
+        #else
+        /* Write to the lower 32 bits of the index offsets, which is the
+           leftmost bits on Little-Endian and rightmost on Big-Endian. On LE it
+           could be just Containers::arrayCast<const UnsignedInt>(indexOffsets)
+           but to minimize a chance of error on BE platforms that are hard to
+           test on, the same code is used for both. */
+        Containers::arrayCast<2, UnsignedInt>(stridedArrayView(indexOffsetsContiguous)).transposed<0, 1>()[
+            #ifndef CORRADE_TARGET_BIG_ENDIAN
+            0
+            #else
+            1
+            #endif
+        ]
+        #endif
+    );
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Copy instance offsets only if we have them and leave them zero-init'd
+       otherwise */
+    if(instanceOffsets.size())
+        Utility::copy(instanceOffsets, instanceOffsetsContiguous);
+    #endif
+
+    drawInternal(countsContiguous, instanceCountsContiguous, vertexOffsetsContiguous, indexOffsetsContiguous
+        #ifndef MAGNUM_TARGET_GLES2
+        , instanceOffsetsContiguous
+        #endif
+    );
+}
+
+#ifndef CORRADE_TARGET_32BIT
+void Mesh::drawInternalStrided(const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets
+    #ifndef MAGNUM_TARGET_GLES2
+    , const Containers::StridedArrayView1D<const UnsignedInt>& instanceOffsets
+    #endif
+) {
+    /* If all views are contiguous, the mesh specifies either both base vertex
+       and base instance or neither, call the implementation directly */
+    if(counts.isContiguous() && instanceCounts.isContiguous() && vertexOffsets.isContiguous() && indexOffsets.isContiguous()
+        #ifndef MAGNUM_TARGET_GLES2
+        && instanceOffsets.isContiguous() && (!_indexBuffer.id() || vertexOffsets.size() == instanceOffsets.size())
+        #endif
+    )
+        return drawInternal(counts.asContiguous(), instanceCounts.asContiguous(), vertexOffsets.asContiguous(), indexOffsets.asContiguous()
+            #ifndef MAGNUM_TARGET_GLES2
+            , instanceOffsets.asContiguous()
+            #endif
+        );
+
+    /* Otherwise delegate into the 32-bit variant, which will allocate a
+       contiguous copy */
+    drawInternalStrided(counts, instanceCounts, vertexOffsets,
+        /* Get the lower 32 bits of the index offsets, which is the leftmost
+           bits on Little-Endian and rightmost on Big-Endian. On LE it could be
+           just Containers::arrayCast<const UnsignedInt>(indexOffsets) but to
+           minimize a chance of error on BE platforms that are hard to test on,
+           the same code is used for both. */
+        Containers::arrayCast<2, const UnsignedInt>(indexOffsets).transposed<0, 1>()[
+            #ifndef CORRADE_TARGET_BIG_ENDIAN
+            0
+            #else
+            1
+            #endif
+        ]
+        #ifndef MAGNUM_TARGET_GLES2
+        , instanceOffsets
+        #endif
+    );
+}
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -1120,6 +1352,16 @@ void Mesh::multiDrawElementsBaseVertexImplementationANGLE(const GLenum mode, con
 void Mesh::multiDrawElementsBaseVertexImplementationAssert(GLenum, const GLsizei*, GLenum, const void* const*, GLsizei, const GLint*) {
     CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): no extension available for indexed mesh multi-draw with base vertex specification", );
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void Mesh::multiDrawArraysInstancedBaseInstanceImplementationAssert(GLenum, const GLint*, const GLsizei*, const GLsizei*, const GLuint*, GLsizei) {
+    CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): no extension available for instanced mesh multi-draw with base instance specification", );
+}
+
+void Mesh::multiDrawElementsInstancedBaseVertexBaseInstanceImplementationAssert(GLenum, const GLint*, GLenum, const void* const*, const GLsizei*, const GLint*, const GLuint*, GLsizei) {
+    CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh multi-draw with base vertex and base instance specification", );
+}
+#endif
 #endif
 
 }}

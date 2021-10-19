@@ -407,6 +407,66 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
 }
 #endif
 
+#ifdef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
+AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& instanceOffsets) {
+    if(!counts.size()) return *this;
+
+    use();
+
+    mesh.drawInternalStrided(counts, instanceCounts, vertexOffsets, indexOffsets, instanceOffsets);
+    return *this;
+}
+
+#ifndef CORRADE_TARGET_32BIT
+AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& instanceOffsets) {
+    if(!counts.size()) return *this;
+
+    use();
+
+    mesh.drawInternalStrided(counts, instanceCounts, vertexOffsets, indexOffsets, instanceOffsets);
+    return *this;
+}
+
+AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t, const Containers::StridedArrayView1D<const UnsignedInt>& instanceOffsets) {
+    return draw(mesh, counts, instanceCounts, vertexOffsets, Containers::StridedArrayView1D<const UnsignedLong>{}, instanceOffsets);
+}
+#endif
+#endif
+
+AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
+    if(!counts.size()) return *this;
+
+    use();
+
+    mesh.drawInternalStrided(counts, instanceCounts, vertexOffsets, indexOffsets
+        #ifndef MAGNUM_TARGET_GLES2
+        , Containers::StridedArrayView1D<const UnsignedInt>{}
+        #endif
+    );
+    return *this;
+}
+
+#ifndef CORRADE_TARGET_32BIT
+AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
+    if(!counts.size()) return *this;
+
+    use();
+
+    mesh.drawInternalStrided(counts, instanceCounts, vertexOffsets, indexOffsets
+        #ifndef MAGNUM_TARGET_GLES2
+        , Containers::StridedArrayView1D<const UnsignedInt>{}
+        #endif
+    );
+    return *this;
+}
+
+AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t) {
+    return draw(mesh, counts, instanceCounts, vertexOffsets, Containers::StridedArrayView1D<const UnsignedLong>{});
+}
+#endif
+#endif
+
 AbstractShaderProgram& AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
     if(meshes.empty()) return *this;
 

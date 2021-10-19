@@ -1096,9 +1096,35 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             const Containers::ArrayView<const UnsignedLong>& indexOffsets
             #endif
         );
+        #ifdef MAGNUM_TARGET_GLES
+        MAGNUM_GL_LOCAL void drawInternal(const Containers::ArrayView<const UnsignedInt>& counts, const Containers::ArrayView<const UnsignedInt>& instanceCounts, const Containers::ArrayView<const UnsignedInt>& vertexOffsets,
+            #ifdef CORRADE_TARGET_32BIT
+            const Containers::ArrayView<const UnsignedInt>& indexOffsets
+            #else
+            const Containers::ArrayView<const UnsignedLong>& indexOffsets
+            #endif
+            #ifndef MAGNUM_TARGET_GLES2
+            , const Containers::ArrayView<const UnsignedInt>& instanceOffsets
+            #endif
+        );
+        #endif
         MAGNUM_GL_LOCAL void drawInternalStrided(const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets);
         #ifndef CORRADE_TARGET_32BIT
         MAGNUM_GL_LOCAL void drawInternalStrided(const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets);
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
+        MAGNUM_GL_LOCAL void drawInternalStrided(const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets
+            #ifndef MAGNUM_TARGET_GLES2
+            , const Containers::StridedArrayView1D<const UnsignedInt>& instanceOffsets
+            #endif
+        );
+        #ifndef CORRADE_TARGET_32BIT
+        MAGNUM_GL_LOCAL void drawInternalStrided(const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets
+            #ifndef MAGNUM_TARGET_GLES2
+            , const Containers::StridedArrayView1D<const UnsignedInt>& instanceOffsets
+            #endif
+        );
+        #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -1193,6 +1219,10 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         static MAGNUM_GL_LOCAL void multiDrawElementsBaseVertexImplementationANGLE(GLenum mode, const GLsizei* count, GLenum type, const void* const* indices, GLsizei drawCount, const GLint* baseVertex);
         #endif
         static MAGNUM_GL_LOCAL void     multiDrawElementsBaseVertexImplementationAssert(GLenum, const GLsizei*, GLenum, const void* const*, GLsizei, const GLint*);
+        #ifndef MAGNUM_TARGET_GLES2
+        static MAGNUM_GL_LOCAL void multiDrawArraysInstancedBaseInstanceImplementationAssert(GLenum, const GLint*, const GLsizei*, const GLsizei*, const GLuint*, GLsizei);
+        static MAGNUM_GL_LOCAL void multiDrawElementsInstancedBaseVertexBaseInstanceImplementationAssert(GLenum, const GLint*, GLenum, const void* const*, const GLsizei*, const GLint*, const GLuint*, GLsizei);
+        #endif
         #endif
 
         /* _id, _primitive, _flags set from constructors */
