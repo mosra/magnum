@@ -4051,15 +4051,22 @@ template<class T> void MeshGLTest::multiDrawIndexed() {
             CORRADE_SKIP(Extensions::ARB::draw_elements_base_vertex::string() << "is not supported.");
         #elif !defined(MAGNUM_TARGET_WEBGL)
         #ifndef MAGNUM_TARGET_GLES2
-        if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
-           !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>() &&
-           !Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()
+        /* {OES,EXT}_draw_elements_base_vertex requires EXT_multi_draw_arrays
+           for the multi-draw entrypoint */
+        if((!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() || (
+            !Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+            !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
+        )) &&
+            !Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()
         )
             CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "nor" << Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
         #else
-        if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
-           !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
-        )
+        /* {OES,EXT}_draw_elements_base_vertex requires EXT_multi_draw_arrays
+           for the multi-draw entrypoint */
+        if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() || (
+            !Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+            !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
+        ))
             CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
         #endif
         #elif !defined(MAGNUM_TARGET_GLES2)
@@ -4138,15 +4145,22 @@ template<class T> void MeshGLTest::multiDrawIndexedSparseArrays() {
             CORRADE_SKIP(Extensions::ARB::draw_elements_base_vertex::string() << "is not supported.");
         #elif !defined(MAGNUM_TARGET_WEBGL)
         #ifndef MAGNUM_TARGET_GLES2
-        if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
-           !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>() &&
-           !Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()
+        /* {OES,EXT}_draw_elements_base_vertex requires EXT_multi_draw_arrays
+           for the multi-draw entrypoint */
+        if((!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() || (
+            !Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+            !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
+        )) &&
+            !Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()
         )
             CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "nor" << Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
         #else
-        if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
-           !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
-        )
+        /* {OES,EXT}_draw_elements_base_vertex requires EXT_multi_draw_arrays
+           for the multi-draw entrypoint */
+        if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() || (
+            !Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+            !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
+        ))
             CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
         #endif
         #elif !defined(MAGNUM_TARGET_GLES2)
@@ -4221,15 +4235,22 @@ void MeshGLTest::multiDrawIndexedViews() {
             CORRADE_SKIP(Extensions::ARB::draw_elements_base_vertex::string() << "is not supported.");
         #elif !defined(MAGNUM_TARGET_WEBGL)
         #ifndef MAGNUM_TARGET_GLES2
-        if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
-           !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>() &&
-           !Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()
+        /* {OES,EXT}_draw_elements_base_vertex requires EXT_multi_draw_arrays
+           for the multi-draw entrypoint */
+        if((!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() || (
+            !Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+            !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
+        )) &&
+            !Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()
         )
             CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "nor" << Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
         #else
-        if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
-           !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
-        )
+        /* {OES,EXT}_draw_elements_base_vertex requires EXT_multi_draw_arrays
+           for the multi-draw entrypoint */
+        if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() || (
+            !Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+            !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
+        ))
             CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
         #endif
         #elif !defined(MAGNUM_TARGET_GLES2)

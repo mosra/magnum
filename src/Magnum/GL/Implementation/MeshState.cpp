@@ -277,12 +277,18 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
            1 at all. */
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         #ifndef MAGNUM_TARGET_WEBGL
-        if(context.isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()) {
+        /* The {EXT,OES}_draw_elements_base_vertex supports the multidraw
+           entrypoint only if EXT_multi_draw_arrays is supported as well. Which
+           is the case on Mesa, for example, but not on ANGLE -- there we have
+           to use the entrypoint from ANGLE_base_vertex_base_instance instead. */
+        if(context.isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
+           context.isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()) {
             extensions[Extensions::EXT::draw_elements_base_vertex::Index] =
                        Extensions::EXT::draw_elements_base_vertex::string();
 
             multiDrawElementsBaseVertexImplementation = glMultiDrawElementsBaseVertexEXT;
-        } else if(context.isExtensionSupported<Extensions::OES::draw_elements_base_vertex>()) {
+        } else if(context.isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
+           context.isExtensionSupported<Extensions::OES::draw_elements_base_vertex>()) {
             extensions[Extensions::OES::draw_elements_base_vertex::Index] =
                        Extensions::OES::draw_elements_base_vertex::string();
 
