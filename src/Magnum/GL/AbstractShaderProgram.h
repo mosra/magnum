@@ -976,13 +976,18 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&) without the
          *      @p instanceOffsets parameter there instead.
          * @requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
-         * @requires_es_extension OpenGL ES 3.1 and extension
+         * @requires_es_extension OpenGL ES 3.0 and extension
          *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
          *      if the mesh is indexed and the @p vertexOffsets view is not
-         *      empty
-         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      empty. The extension says ES 3.1 is required, but since ANGLE
+         *      is the only implementer of this extension and exposes just ES
+         *      3.0, there's no point in requiring 3.1.
+         * @requires_es_extension OpenGL ES 3.0 and extension
          *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
-         *      if the @p instanceOffsets view is not empty
+         *      if the @p instanceOffsets view is not empty. The extension says
+         *      ES 3.1 is required, but since ANGLE is the only implementer of
+         *      this extension and exposes just ES 3.0, there's no point in
+         *      requiring 3.1.
          * @requires_webgl_extension Extension @webgl_extension{WEBGL,multi_draw}.
          *      Note that this extension is only implemented since Emscripten
          *      2.0.0 and thus it's not even advertised on older versions.
@@ -1015,13 +1020,18 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&) without the
          *      @p instanceOffsets parameter there instead.
          * @requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
-         * @requires_es_extension OpenGL ES 3.1 and extension
+         * @requires_es_extension OpenGL ES 3.0 and extension
          *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
          *      if the mesh is indexed and the @p vertexOffsets view is not
-         *      empty
-         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      empty. The extension says ES 3.1 is required, but since ANGLE
+         *      is the only implementer of this extension and exposes only ES
+         *      3.0, there's no point in requiring 3.1.
+         * @requires_es_extension OpenGL ES 3.0 and extension
          *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
-         *      if the @p instanceOffsets view is not empty
+         *      if the @p instanceOffsets view is not empty. The extension says
+         *      ES 3.1 is required, but since ANGLE is the only implementer of
+         *      this extension and exposes only ES 3.0, there's no point in
+         *      requiring 3.1.
          * @requires_webgl_extension Extension @webgl_extension{WEBGL,multi_draw}
          * @requires_webgl_extension WebGL 2.0 and extension
          *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
@@ -1057,10 +1067,12 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * @requires_gles_only Not available on desktop OpenGL.
          * @requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
-         * @requires_es_extension OpenGL ES 3.1 and extension
+         * @requires_es_extension OpenGL ES 3.0 and extension
          *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
          *      if the mesh is indexed and the @p vertexOffsets view is not
-         *      empty
+         *      empty. The extension says ES 3.1 is required, but since ANGLE
+         *      is the only implementer of this extension and exposes just ES
+         *      3.0, there's no point in requiring 3.1.
          * @requires_webgl_extension Extension @webgl_extension{WEBGL,multi_draw}
          * @requires_webgl_extension WebGL 2.0 and extension
          *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
@@ -1084,10 +1096,12 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * it's contiguous. See the original overload for further information.
          * @requires_gles_only Not available on desktop OpenGL.
          * @requires_es_extension Extension @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
-         * @requires_es_extension OpenGL ES 3.1 and extension
+         * @requires_es_extension OpenGL ES 3.0 and extension
          *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
          *      if the mesh is indexed and the @p vertexOffsets view is not
-         *      empty
+         *      empty. The extension says ES 3.1 is required, but since ANGLE
+         *      is the only implementer of this extension and exposes just ES
+         *      3.0, there's no point in requiring 3.1.
          * @requires_webgl_extension Extension @webgl_extension{WEBGL,multi_draw}
          * @requires_webgl_extension WebGL 2.0 and extension
          *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}

@@ -374,7 +374,9 @@ namespace ANDROID {
        (which doesn't even follow the XML schema, so it had to be fixed). */
     _extension(  9,ANGLE,multi_draw,                GLES200,    None) // #???
     #ifndef MAGNUM_TARGET_GLES2
-    _extension( 10,ANGLE,base_vertex_base_instance, GLES310,    None) // #???
+    /* The spec says ES 3.1 is required, but ANGLE itself reports just ES 3.0
+       and this is THE ONLY SINGLE IMPLEMENTER so what gives?! */
+    _extension( 10,ANGLE,base_vertex_base_instance, GLES300,    None) // #???
     #endif
 } namespace APPLE {
     #ifdef MAGNUM_TARGET_GLES2
