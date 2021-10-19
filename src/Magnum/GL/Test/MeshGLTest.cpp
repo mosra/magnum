@@ -2970,9 +2970,18 @@ void MeshGLTest::setBaseVertex() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::ARB::draw_elements_base_vertex::string() << "is not supported.");
     #elif !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
-       !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
+       !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>() &&
+       !Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()
+    )
+        CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "nor" << Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
+    )
         CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
+    #endif
     #else
     if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
         CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is not supported.");
@@ -3010,6 +3019,10 @@ void MeshGLTest::setBaseVertexNoExtensionAvailable() {
         CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
     if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() << "is supported.");
+    #ifndef MAGNUM_TARGET_GLES2
+    if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
+    #endif
     #elif !defined(MAGNUM_TARGET_GLES2)
     if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
         CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is supported.");
@@ -3042,6 +3055,10 @@ void MeshGLTest::setBaseVertexRangeNoExtensionAvailable() {
         CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
     if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() << "is supported.");
+    #ifndef MAGNUM_TARGET_GLES2
+    if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
+    #endif
     #elif !defined(MAGNUM_TARGET_GLES2)
     if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
         CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is supported.");
@@ -3314,9 +3331,18 @@ void MeshGLTest::setInstanceCountIndexedBaseVertex() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::ARB::draw_elements_base_vertex::string() << "is not supported.");
     #elif !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
-       !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
+       !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>() &&
+       !Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()
+    )
+        CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "nor" << Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
+    )
         CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
+    #endif
     #else
     if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
         CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is not supported.");
@@ -3356,6 +3382,8 @@ void MeshGLTest::setInstanceCountIndexedBaseVertexNoExtensionAvailable() {
         CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
     if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() << "is supported.");
+    if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
     #else
     if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
         CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is supported.");
@@ -4022,9 +4050,18 @@ template<class T> void MeshGLTest::multiDrawIndexed() {
         if(!Context::current().isExtensionSupported<Extensions::ARB::draw_elements_base_vertex>())
             CORRADE_SKIP(Extensions::ARB::draw_elements_base_vertex::string() << "is not supported.");
         #elif !defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES2
         if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
-        !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
+           !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>() &&
+           !Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()
+        )
+            CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "nor" << Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
+        #else
+        if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+           !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
+        )
             CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
+        #endif
         #elif !defined(MAGNUM_TARGET_GLES2)
         if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
             CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
@@ -4100,9 +4137,18 @@ template<class T> void MeshGLTest::multiDrawIndexedSparseArrays() {
         if(!Context::current().isExtensionSupported<Extensions::ARB::draw_elements_base_vertex>())
             CORRADE_SKIP(Extensions::ARB::draw_elements_base_vertex::string() << "is not supported.");
         #elif !defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES2
         if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
-        !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
+           !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>() &&
+           !Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()
+        )
+            CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "nor" << Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
+        #else
+        if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+           !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
+        )
             CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
+        #endif
         #elif !defined(MAGNUM_TARGET_GLES2)
         if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
             CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
@@ -4174,9 +4220,18 @@ void MeshGLTest::multiDrawIndexedViews() {
         if(!Context::current().isExtensionSupported<Extensions::ARB::draw_elements_base_vertex>())
             CORRADE_SKIP(Extensions::ARB::draw_elements_base_vertex::string() << "is not supported.");
         #elif !defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES2
         if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
-        !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
+           !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>() &&
+           !Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()
+        )
+            CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "nor" << Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
+        #else
+        if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+           !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()
+        )
             CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
+        #endif
         #elif !defined(MAGNUM_TARGET_GLES2)
         if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
             CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
@@ -4320,6 +4375,10 @@ void MeshGLTest::multiDrawIndexedBaseVertexNoExtensionAvailable() {
         CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
     if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() << "is supported.");
+    #ifndef MAGNUM_TARGET_GLES2
+    if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
+    #endif
     #elif !defined(MAGNUM_TARGET_GLES2)
     if(Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
         CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is supported.");
@@ -4361,6 +4420,10 @@ void MeshGLTest::multiDrawIndexedViewsBaseVertexNoExtensionAvailable() {
         CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() << "is supported.");
     if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() << "is supported.");
+    #ifndef MAGNUM_TARGET_GLES2
+    if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
+    #endif
     #elif !defined(MAGNUM_TARGET_GLES2)
     if(Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
         CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is supported.");

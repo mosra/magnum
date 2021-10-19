@@ -1281,7 +1281,7 @@ void Mesh::unbindImplementationVAO() {}
 
 #ifdef MAGNUM_TARGET_GLES
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-#if defined(MAGNUM_TARGET_WEBGL) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915
+#if !defined(MAGNUM_TARGET_GLES2) && (!defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915)
 void Mesh::drawElementsBaseVertexImplementationANGLE(GLenum mode, GLsizei count, GLenum type, const void* indices, GLint baseVertex) {
     glDrawElementsInstancedBaseVertexBaseInstanceANGLE(mode, count, type, indices, 1, baseVertex, 0);
 }
@@ -1293,7 +1293,7 @@ void Mesh::drawElementsBaseVertexImplementationAssert(GLenum, GLsizei, GLenum, c
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-#if defined(MAGNUM_TARGET_WEBGL) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915
+#if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915
 void Mesh::drawRangeElementsBaseVertexImplementationANGLE(const GLenum mode, GLuint, GLuint, GLsizei count, GLenum type, const void* indices, GLint baseVertex) {
     glDrawElementsInstancedBaseVertexBaseInstanceANGLE(mode, count, type, indices, 1, baseVertex, 0);
 }
@@ -1321,7 +1321,7 @@ void Mesh::drawElementsInstancedBaseVertexBaseInstanceImplementationAssert(GLenu
     CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base vertex and base instance specification", );
 }
 
-#if defined(MAGNUM_TARGET_WEBGL) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915
+#if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915
 void Mesh::drawElementsInstancedBaseVertexImplementationANGLE(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instanceCount, GLint baseVertex) {
     glDrawElementsInstancedBaseVertexBaseInstanceANGLE(mode, count, type, indices, instanceCount, baseVertex, 0);
 }
@@ -1334,7 +1334,7 @@ void Mesh::drawElementsInstancedBaseVertexImplementationAssert(GLenum, GLsizei, 
 #endif
 
 #ifdef MAGNUM_TARGET_GLES
-#if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20005
+#if !defined(MAGNUM_TARGET_GLES2) && (!defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20005)
 void Mesh::multiDrawElementsBaseVertexImplementationANGLE(const GLenum mode, const GLsizei* const count, const GLenum type, const void* const* const indices, const GLsizei drawCount, const GLint* const baseVertex) {
     /** @todo merge with the allocation in multiDrawImplementationDefault */
     Containers::ArrayView<GLsizei> instanceCount;

@@ -143,14 +143,25 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
         drawElementsInstancedBaseVertexImplementation = glDrawElementsInstancedBaseVertexOES;
         #endif
     } else
+    #ifndef MAGNUM_TARGET_GLES2
+    if(context.isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()) {
+        extensions[Extensions::ANGLE::base_vertex_base_instance::Index] =
+                   Extensions::ANGLE::base_vertex_base_instance::string();
+
+        /* Have to wrap it to supply trivial instance count because there's no
+           non-instanced variant */
+        drawElementsBaseVertexImplementation = Mesh::drawElementsBaseVertexImplementationANGLE;
+        drawRangeElementsBaseVertexImplementation = Mesh::drawRangeElementsBaseVertexImplementationANGLE;
+        drawElementsInstancedBaseVertexImplementation = Mesh::drawElementsInstancedBaseVertexImplementationANGLE;
+    } else
+    #endif
     #else
     if(context.isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>()) {
         extensions[Extensions::WEBGL::draw_instanced_base_vertex_base_instance::Index] =
                    Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string();
 
         /* The WEBGL extension uses the same entrypoints as the ANGLE extension
-           it was based on, however we wrap it to supply trivial instance count
-           because there's no non-instanced variant. Only available since
+           it was based on, so it's the same as above. Only available since
            1.39.15: https://github.com/emscripten-core/emscripten/pull/11054 */
         #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
         drawElementsBaseVertexImplementation = Mesh::drawElementsBaseVertexImplementationANGLE;
@@ -280,14 +291,23 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
                extensions exist and why it isn't just one. */
             multiDrawElementsBaseVertexImplementation = glMultiDrawElementsBaseVertexEXT;
         } else
+        #ifndef MAGNUM_TARGET_GLES2
+        if(context.isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()) {
+            extensions[Extensions::ANGLE::base_vertex_base_instance::Index] =
+                       Extensions::ANGLE::base_vertex_base_instance::string();
+
+            /* Have to wrap it to supply trivial instance counts because
+               there's no non-instanced variant */
+            multiDrawElementsBaseVertexImplementation = Mesh::multiDrawElementsBaseVertexImplementationANGLE;
+        } else
+        #endif
         #else
         if(context.isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>()) {
             extensions[Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::Index] =
                        Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string();
 
             /* The WEBGL extension uses the same entrypoints as the ANGLE
-               extension it was based on, however we wrap it and supply trivial
-               instance counts because there's no non-instanced variant. Only
+               extension it was based on, so it's the same as above. Only
                available since 2.0.5: https://github.com/emscripten-core/emscripten/pull/12282 */
             #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20005
             multiDrawElementsBaseVertexImplementation = Mesh::multiDrawElementsBaseVertexImplementationANGLE;
