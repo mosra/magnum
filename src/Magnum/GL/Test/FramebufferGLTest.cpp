@@ -402,7 +402,7 @@ void FramebufferGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
        !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
-        CORRADE_SKIP("Required extension is not available");
+        CORRADE_SKIP("Required extension is not supported");
 
     Framebuffer framebuffer({{}, Vector2i(32)});
 
@@ -475,7 +475,7 @@ void FramebufferGLTest::attachRenderbufferMultisample() {
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::framebuffer_multisample>() &&
        !Context::current().isExtensionSupported<Extensions::NV::framebuffer_multisample>())
-        CORRADE_SKIP("Required extension is not available.");
+        CORRADE_SKIP("Neither" << Extensions::ANGLE::framebuffer_multisample::string() << "nor" << Extensions::NV::framebuffer_multisample::string() << "is supported.");
     #endif
 
     Renderbuffer color;
@@ -1150,7 +1150,7 @@ void FramebufferGLTest::clear() {
 void FramebufferGLTest::clearColorI() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isVersionSupported(Version::GL300))
-        CORRADE_SKIP("GL 3.0 is not available.");
+        CORRADE_SKIP("GL 3.0 is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1177,7 +1177,7 @@ void FramebufferGLTest::clearColorI() {
 void FramebufferGLTest::clearColorUI() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isVersionSupported(Version::GL300))
-        CORRADE_SKIP("GL 3.0 is not available.");
+        CORRADE_SKIP("GL 3.0 is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1204,7 +1204,7 @@ void FramebufferGLTest::clearColorUI() {
 void FramebufferGLTest::clearColorF() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isVersionSupported(Version::GL300))
-        CORRADE_SKIP("GL 3.0 is not available.");
+        CORRADE_SKIP("GL 3.0 is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1231,7 +1231,7 @@ void FramebufferGLTest::clearColorF() {
 void FramebufferGLTest::clearDepth() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isVersionSupported(Version::GL300))
-        CORRADE_SKIP("GL 3.0 is not available.");
+        CORRADE_SKIP("GL 3.0 is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1274,7 +1274,7 @@ void FramebufferGLTest::clearDepth() {
 void FramebufferGLTest::clearStencil() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isVersionSupported(Version::GL300))
-        CORRADE_SKIP("GL 3.0 is not available.");
+        CORRADE_SKIP("GL 3.0 is not supported.");
     #endif
 
     Renderbuffer color;
@@ -1323,7 +1323,7 @@ void FramebufferGLTest::clearStencil() {
 void FramebufferGLTest::clearDepthStencil() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isVersionSupported(Version::GL300))
-        CORRADE_SKIP("GL 3.0 is not available.");
+        CORRADE_SKIP("GL 3.0 is not supported.");
     #endif
 
     Renderbuffer color;
@@ -2226,9 +2226,9 @@ void FramebufferGLTest::blit() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current().isExtensionSupported<Extensions::NV::framebuffer_blit>() &&
-       !Context::current().isExtensionSupported<Extensions::ANGLE::framebuffer_blit>())
-        CORRADE_SKIP("Required extension is not available.");
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::framebuffer_blit>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::framebuffer_blit>())
+        CORRADE_SKIP("Neither" << Extensions::ANGLE::framebuffer_blit::string() << "nor" << Extensions::NV::framebuffer_blit::string() << "is supported.");
     #endif
 
     Renderbuffer colorA, colorB;

@@ -3010,7 +3010,7 @@ void MeshVisualizerGLTest::renderWireframe3DPerspective() {
 
     #ifdef MAGNUM_TARGET_GLES
     CORRADE_EXPECT_FAIL_IF(!GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>(),
-        "GL_NV_shader_noperspective_interpolation not available.");
+        GL::Extensions::NV::shader_noperspective_interpolation::string() << "not supported.");
     #endif
 
     /* Slight rasterization differences on AMD. */

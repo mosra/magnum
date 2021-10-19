@@ -181,7 +181,7 @@ void RenderbufferGLTest::setStorageMultisample() {
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::framebuffer_multisample>() &&
        !Context::current().isExtensionSupported<Extensions::NV::framebuffer_multisample>())
-        CORRADE_SKIP("Required extension is not available.");
+        CORRADE_SKIP("Neither" << Extensions::ANGLE::framebuffer_multisample::string() << "nor" << Extensions::NV::framebuffer_multisample::string() << "is supported.");
     #endif
 
     Renderbuffer renderbuffer;
