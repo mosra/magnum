@@ -44,9 +44,9 @@ AbstractObjectGLTest::AbstractObjectGLTest() {
 
 void AbstractObjectGLTest::labelNoOp() {
     if(Context::current().isExtensionSupported<GL::Extensions::KHR::debug>())
-        CORRADE_SKIP(GL::Extensions::KHR::debug::string() + std::string(" is supported."));
+        CORRADE_SKIP(GL::Extensions::KHR::debug::string() << "is supported.");
     if(Context::current().isExtensionSupported<GL::Extensions::EXT::debug_label>())
-        CORRADE_SKIP(GL::Extensions::EXT::debug_label::string() + std::string(" is supported."));
+        CORRADE_SKIP(GL::Extensions::EXT::debug_label::string() << "is supported.");
 
     Buffer buffer;
     buffer.setLabel("MyBuffer");

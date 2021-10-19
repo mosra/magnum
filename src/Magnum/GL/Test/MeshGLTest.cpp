@@ -2446,7 +2446,7 @@ void MeshGLTest::unbindVAOWhenSettingIndexBufferData() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::vertex_array_object>())
         CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() << "is not supported.");
     if(Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
-        CORRADE_SKIP(Extensions::ARB::direct_state_access::string() + std::string(" is active which circumvents the issue tested here."));
+        CORRADE_SKIP(Extensions::ARB::direct_state_access::string() << "is active which circumvents the issue tested here.");
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::OES::vertex_array_object>())
         CORRADE_SKIP(Extensions::OES::vertex_array_object::string() << "is not supported.");
@@ -2501,7 +2501,7 @@ void MeshGLTest::unbindIndexBufferWhenBindingVao() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::vertex_array_object>())
         CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() << "is not supported.");
     if(Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
-        CORRADE_SKIP(Extensions::ARB::direct_state_access::string() + std::string(" is active which circumvents the issue tested here."));
+        CORRADE_SKIP(Extensions::ARB::direct_state_access::string() << "is active which circumvents the issue tested here.");
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::OES::vertex_array_object>())
         CORRADE_SKIP(Extensions::OES::vertex_array_object::string() << "is not supported.");
@@ -2563,7 +2563,7 @@ void MeshGLTest::resetIndexBufferBindingWhenBindingVao() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::vertex_array_object>())
         CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() << "is not supported.");
     if(Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
-        CORRADE_SKIP(Extensions::ARB::direct_state_access::string() + std::string(" is active which circumvents the issue tested here."));
+        CORRADE_SKIP(Extensions::ARB::direct_state_access::string() << "is active which circumvents the issue tested here.");
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::OES::vertex_array_object>())
         CORRADE_SKIP(Extensions::OES::vertex_array_object::string() << "is not supported.");
@@ -2755,10 +2755,10 @@ void MeshGLTest::setBaseVertex() {
     #elif !defined(MAGNUM_TARGET_WEBGL)
     if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
        !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
-        CORRADE_SKIP(std::string{"Neither "} + Extensions::OES::draw_elements_base_vertex::string() + " nor " + Extensions::EXT::draw_elements_base_vertex::string() + " is available.");
+        CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is available.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is not available.");
     #endif
 
     Buffer vertices;
@@ -2790,12 +2790,12 @@ void MeshGLTest::setBaseVertexNoExtensionAvailable() {
     if(Context::current().isVersionSupported(Version::GLES320))
         CORRADE_SKIP("OpenGL ES 3.2 is available.");
     if(Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
-        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() << "is available.");
     if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
-        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() << "is available.");
     #elif !defined(MAGNUM_TARGET_GLES2)
     if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is available.");
     #endif
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
@@ -2822,12 +2822,12 @@ void MeshGLTest::setBaseVertexRangeNoExtensionAvailable() {
     if(Context::current().isVersionSupported(Version::GLES320))
         CORRADE_SKIP("OpenGL ES 3.2 is available.");
     if(Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
-        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() << "is available.");
     if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
-        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() << "is available.");
     #elif !defined(MAGNUM_TARGET_GLES2)
     if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is available.");
     #endif
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
@@ -2912,10 +2912,10 @@ void MeshGLTest::setInstanceCountBaseInstance() {
         CORRADE_SKIP(Extensions::ARB::base_instance::string() << "is not supported.");
     #elif !defined(MAGNUM_TARGET_WEBGL)
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() + std::string{" is not available."});
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is not available.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is not available.");
     #endif
 
     typedef Attribute<0, Float> Attribute;
@@ -2944,10 +2944,10 @@ void MeshGLTest::setInstanceCountBaseInstance() {
 void MeshGLTest::setInstanceCountBaseInstanceNoExtensionAvailable() {
     #ifndef MAGNUM_TARGET_WEBGL
     if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is available.");
     #else
     if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is available.");
     #endif
 
     Mesh mesh;
@@ -3027,10 +3027,10 @@ void MeshGLTest::setInstanceCountIndexedBaseInstance() {
         CORRADE_SKIP(Extensions::ARB::base_instance::string() << "is not supported.");
     #elif !defined(MAGNUM_TARGET_WEBGL)
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() + std::string{" is not available."});
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is not available.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is not available.");
     #endif
 
     Buffer vertices;
@@ -3060,10 +3060,10 @@ void MeshGLTest::setInstanceCountIndexedBaseInstance() {
 void MeshGLTest::setInstanceCountIndexedBaseInstanceNoExtensionAvailable() {
     #ifndef MAGNUM_TARGET_WEBGL
     if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is available.");
     #else
     if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is available.");
     #endif
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
@@ -3099,10 +3099,10 @@ void MeshGLTest::setInstanceCountIndexedBaseVertex() {
     #elif !defined(MAGNUM_TARGET_WEBGL)
     if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
        !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
-        CORRADE_SKIP(std::string{"Neither "} + Extensions::OES::draw_elements_base_vertex::string() + " nor " + Extensions::EXT::draw_elements_base_vertex::string() + " is available.");
+        CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is available.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is not available.");
     #endif
 
     Buffer vertices;
@@ -3136,12 +3136,12 @@ void MeshGLTest::setInstanceCountIndexedBaseVertexNoExtensionAvailable() {
     if(Context::current().isVersionSupported(Version::GLES320))
         CORRADE_SKIP("OpenGL ES 3.2 is available.");
     if(Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
-        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() << "is available.");
     if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
-        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() << "is available.");
     #else
     if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is available.");
     #endif
     #endif
 
@@ -3182,10 +3182,10 @@ void MeshGLTest::setInstanceCountIndexedBaseVertexBaseInstance() {
         CORRADE_SKIP(Extensions::ARB::base_instance::string() << "is not supported.");
     #elif !defined(MAGNUM_TARGET_WEBGL)
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() + std::string{" is not available."});
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is not available.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is not available.");
     #endif
 
     Buffer vertices;
@@ -3216,10 +3216,10 @@ void MeshGLTest::setInstanceCountIndexedBaseVertexBaseInstance() {
 void MeshGLTest::setInstanceCountIndexedBaseVertexBaseInstanceNoExtensionAvailable() {
     #ifndef MAGNUM_TARGET_WEBGL
     if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() << "is available.");
     #else
     if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is available.");
     #endif
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
@@ -3391,10 +3391,10 @@ void MeshGLTest::resetDivisorAfterInstancedDraw() {
     /* This doesn't affect VAOs, because they encapsulate the state */
     #ifndef MAGNUM_TARGET_GLES
     if(Context::current().isExtensionSupported<Extensions::ARB::vertex_array_object>())
-        CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() + std::string(" is enabled, can't test."));
+        CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() << "is enabled, can't test.");
     #elif defined(MAGNUM_TARGET_GLES2)
     if(Context::current().isExtensionSupported<Extensions::OES::vertex_array_object>())
-        CORRADE_SKIP(Extensions::OES::vertex_array_object::string() + std::string(" is enabled, can't test."));
+        CORRADE_SKIP(Extensions::OES::vertex_array_object::string() << "is enabled, can't test.");
     #endif
 
     typedef Attribute<0, Float> Attribute;
@@ -3794,10 +3794,10 @@ void MeshGLTest::multiDrawIndexed() {
         #elif !defined(MAGNUM_TARGET_WEBGL)
         if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
         !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
-            CORRADE_SKIP(std::string{"Neither "} + Extensions::OES::draw_elements_base_vertex::string() + " nor " + Extensions::EXT::draw_elements_base_vertex::string() + " is available.");
+            CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is available.");
         #elif !defined(MAGNUM_TARGET_GLES2)
         if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
-            CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+            CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not available.");
         #else
         CORRADE_FAIL_IF(false, "Can't do base vertex here.");
         #endif
@@ -3862,10 +3862,10 @@ void MeshGLTest::multiDrawIndexedSparseArrays() {
         #elif !defined(MAGNUM_TARGET_WEBGL)
         if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
         !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
-            CORRADE_SKIP(std::string{"Neither "} + Extensions::OES::draw_elements_base_vertex::string() + " nor " + Extensions::EXT::draw_elements_base_vertex::string() + " is available.");
+            CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is available.");
         #elif !defined(MAGNUM_TARGET_GLES2)
         if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
-            CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+            CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not available.");
         #else
         CORRADE_FAIL_IF(false, "Can't do base vertex here.");
         #endif
@@ -3947,10 +3947,10 @@ void MeshGLTest::multiDrawIndexedViews() {
         #elif !defined(MAGNUM_TARGET_WEBGL)
         if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
         !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
-            CORRADE_SKIP(std::string{"Neither "} + Extensions::OES::draw_elements_base_vertex::string() + " nor " + Extensions::EXT::draw_elements_base_vertex::string() + " is available.");
+            CORRADE_SKIP("Neither" << Extensions::OES::draw_elements_base_vertex::string() << "nor" << Extensions::EXT::draw_elements_base_vertex::string() << "is available.");
         #elif !defined(MAGNUM_TARGET_GLES2)
         if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
-            CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+            CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not available.");
         #else
         CORRADE_FAIL_IF(false, "Can't do base vertex here.");
         #endif
@@ -4078,21 +4078,21 @@ void MeshGLTest::multiDrawIndexedBaseVertexNoExtensionAvailable() {
     #ifndef MAGNUM_TARGET_WEBGL
     if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
-        CORRADE_SKIP(std::string{"Neither "} + Extensions::EXT::multi_draw_arrays::string() + " nor " + Extensions::ANGLE::multi_draw::string() + " is available.");
+        CORRADE_SKIP("Neither" << Extensions::EXT::multi_draw_arrays::string() << "nor" << Extensions::ANGLE::multi_draw::string() << "is available.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
-        CORRADE_SKIP(Extensions::WEBGL::multi_draw::string() + std::string{" is not available."});
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw::string() << "is not available.");
     #endif
     #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
     if(Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
-        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() << "is available.");
     if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
-        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() << "is available.");
     #elif !defined(MAGNUM_TARGET_GLES2)
     if(Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is available.");
     #endif
 
     Mesh mesh;
@@ -4119,21 +4119,21 @@ void MeshGLTest::multiDrawIndexedViewsBaseVertexNoExtensionAvailable() {
     #ifndef MAGNUM_TARGET_WEBGL
     if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
-        CORRADE_SKIP(std::string{"Neither "} + Extensions::EXT::multi_draw_arrays::string() + " nor " + Extensions::ANGLE::multi_draw::string() + " is available.");
+        CORRADE_SKIP("Neither" << Extensions::EXT::multi_draw_arrays::string() << "nor" << Extensions::ANGLE::multi_draw::string() << "is available.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
-        CORRADE_SKIP(Extensions::WEBGL::multi_draw::string() + std::string{" is not available."});
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw::string() << "is not available.");
     #endif
     #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
     if(Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
-        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() << "is available.");
     if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
-        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() << "is available.");
     #elif !defined(MAGNUM_TARGET_GLES2)
     if(Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
-        CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is available.");
     #endif
 
     Mesh mesh;

@@ -586,7 +586,7 @@ void TransformFeedbackGLTest::draw() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() << "is not supported.");
     if(DrawData[testCaseInstanceId()].stream && (!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback3>() || TransformFeedback::maxVertexStreams() < 2))
-        CORRADE_SKIP(Extensions::ARB::transform_feedback3::string() + std::string(" is not supported well enough."));
+        CORRADE_SKIP(Extensions::ARB::transform_feedback3::string() << "is not supported well enough.");
     if(DrawData[testCaseInstanceId()].instances && !Context::current().isExtensionSupported<Extensions::ARB::transform_feedback_instanced>())
         CORRADE_SKIP(Extensions::ARB::transform_feedback_instanced::string() << "is not supported.");
 
