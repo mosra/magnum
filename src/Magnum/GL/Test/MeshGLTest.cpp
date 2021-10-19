@@ -4139,13 +4139,13 @@ void MeshGLTest::multiDrawIndexedViewsBaseVertexNoExtensionAvailable() {
     Mesh mesh;
     mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
 
-    MeshView view{mesh};
-    view.setCount(3)
-        .setBaseVertex(1);
+    UnsignedInt counts[]{3};
+    UnsignedInt vertexOffsets[]{1};
+    UnsignedInt indexOffsets[]{0};
 
     std::ostringstream out;
     Error redirectError{&out};
-    MultiDrawShader{}.draw({view, view});
+    MultiDrawShader{}.draw(mesh, counts, vertexOffsets, indexOffsets);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for indexed mesh multi-draw with base vertex specification\n");
     #else
