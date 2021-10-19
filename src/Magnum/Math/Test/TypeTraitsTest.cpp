@@ -23,9 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
+#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Math.h"
@@ -161,8 +161,9 @@ TypeTraitsTest::TypeTraitsTest() {
 }
 
 void TypeTraitsTest::name() {
-    CORRADE_COMPARE(TypeTraits<UnsignedShort>::name(), std::string{"UnsignedShort"});
-    CORRADE_COMPARE(TypeTraits<Float>::name(), std::string{"Float"});
+    using namespace Corrade::Containers::Literals;
+    CORRADE_COMPARE(TypeTraits<UnsignedShort>::name(), "UnsignedShort"_s);
+    CORRADE_COMPARE(TypeTraits<Float>::name(), "Float"_s);
 }
 
 void TypeTraitsTest::isScalar() {
