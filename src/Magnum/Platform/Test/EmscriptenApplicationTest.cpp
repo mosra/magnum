@@ -124,9 +124,9 @@ struct EmscriptenApplicationTest: Platform::Application {
         {
             Debug d;
             if(event.key() != KeyEvent::Key::Unknown) {
-                d << "keyReleaseEvent(" << Debug::nospace << event.keyName().data() << Debug::nospace << "): ✔";
+                d << "keyReleaseEvent(" << Debug::nospace << event.keyName() << Debug::nospace << "): ✔";
             } else {
-                d << "keyReleaseEvent(" << Debug::nospace << event.keyName().data() << Debug::nospace << "): ✘";
+                d << "keyReleaseEvent(" << Debug::nospace << event.keyName() << Debug::nospace << "): ✘";
             }
 
             if(event.modifiers() & KeyEvent::Modifier::Shift) d << "Shift";
