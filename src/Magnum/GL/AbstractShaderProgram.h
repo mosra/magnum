@@ -866,13 +866,26 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * If @p counts, @p vertexOffsets and @p indexOffsets are contiguous
          * views, they get passed directly to the underlying GL functions,
-         * otherwise a temporary contiguous copy is allocated. On
-         * @ref CORRADE_TARGET_32BIT "64-bit builds" the @p indexOffsets
-         * additionally have to be 64-bit in order to avoid a copy because the
-         * @fn_gl{MultiDrawElements} /
-         * @fn_gl_keyword{MultiDrawElementsBaseVertex} functions accept them as
-         * pointers, see the @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedLong>&)
-         * overload below.
+         * otherwise a temporary contiguous copy is allocated. There are the
+         * folllowing special cases, however:
+         *
+         * -    On @ref CORRADE_TARGET_32BIT "64-bit builds" the
+         *      @p indexOffsets additionally have to be 64-bit in order to
+         *      avoid a copy because the @fn_gl{MultiDrawElements} /
+         *      @fn_gl_keyword{MultiDrawElementsBaseVertex} functions accept
+         *      them as pointers, see the @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedLong>&)
+         *      overload below.
+         * -    If the @p mesh is indexed, @p vertexOffsets are not empty and
+         *      the platform is WebGL or OpenGL ES with
+         *      @gl_extension{OES,draw_elements_base_vertex} /
+         *      @gl_extension{EXT,draw_elements_base_vertex} supported but
+         *      @gl_extension{EXT,multi_draw_arrays} not, the function has to
+         *      delegate to @ref draw(Mesh&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const UnsignedInt>&)
+         *      and allocate trivial instance counts and offsets. To avoid this
+         *      extra allocation, use the overload directly if the
+         *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions/ANGLE_base_vertex_base_instance.txt)
+         *      OpenGL ES or @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
+         *      WebGL extension is supported.
          *
          * @see @ref draw(MeshView&), @fn_gl{UseProgram},
          *      @fn_gl_keyword{EnableVertexAttribArray}, @fn_gl{BindBuffer},
