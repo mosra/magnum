@@ -301,17 +301,9 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
         }
         #endif
 
-        multiDrawImplementation = &Mesh::multiDrawImplementationDefault;
-        #ifndef CORRADE_TARGET_32BIT
-        multiDrawLongImplementation = &Mesh::multiDrawImplementationDefault;
-        #endif
         multiDrawViewImplementation = &MeshView::multiDrawImplementationDefault;
 
     } else {
-        multiDrawImplementation = &Mesh::multiDrawImplementationFallback;
-        #ifndef CORRADE_TARGET_32BIT
-        multiDrawLongImplementation = &Mesh::multiDrawImplementationFallback;
-        #endif
         multiDrawViewImplementation = &MeshView::multiDrawImplementationFallback;
     }
     #endif

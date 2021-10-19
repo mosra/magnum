@@ -858,18 +858,6 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
-         * On OpenGL ES, if neither @gl_extension{EXT,multi_draw_arrays} nor
-         * @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
-         * is present, and on WebGL if @webgl_extension{WEBGL,multi_draw} is
-         * not present, the functionality is emulated equivalently to a
-         * sequence of @ref draw(MeshView&) calls with items of @p counts used
-         * for @ref MeshView::setCount(), @p vertexOffsets for
-         * @ref MeshView::setBaseVertex() and @p indexOffsets divided by size
-         * of the index type for @ref MeshView::setIndexRange(). Note that
-         * @webgl_extension{WEBGL,multi_draw} is only implemented since
-         * Emscripten 2.0.0 and thus it's not even advertised on older
-         * versions.
-         *
          * If @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0),
          * OpenGL ES 3.0, WebGL 2.0, @gl_extension{OES,vertex_array_object} in
          * OpenGL ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL
@@ -896,10 +884,15 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      if the mesh is indexed and the @p vertexOffsets view is not
          *      empty.
+         * @requires_es_extension Extension @gl_extension{EXT,multi_draw_arrays}
+         *      or @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
          * @requires_es_extension OpenGL ES 3.0 and extension
          *      @gl_extension{OES,draw_elements_base_vertex} or
          *      @gl_extension{EXT,draw_elements_base_vertex} if the mesh is
          *      indexed and the @p vertexOffsets view is not empty.
+         * @requires_webgl_extension Extension @webgl_extension{WEBGL,multi_draw}.
+         *      Note that this extension is only implemented since Emscripten
+         *      2.0.0 and thus it's not even advertised on older versions.
          * @requires_webgl_extension WebGL 2.0 and extension
          *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
          *      if the mesh is indexed and the @p vertexOffsets view is not

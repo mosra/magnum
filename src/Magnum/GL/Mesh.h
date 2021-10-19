@@ -1096,6 +1096,10 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             const Containers::ArrayView<const UnsignedLong>& indexOffsets
             #endif
         );
+        MAGNUM_GL_LOCAL void drawInternalStrided(const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets);
+        #ifndef CORRADE_TARGET_32BIT
+        MAGNUM_GL_LOCAL void drawInternalStrided(const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets);
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         MAGNUM_GL_LOCAL void drawInternal(TransformFeedback& xfb, UnsignedInt stream, Int instanceCount);
@@ -1153,17 +1157,6 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
 
         void MAGNUM_GL_LOCAL unbindImplementationDefault();
         void MAGNUM_GL_LOCAL unbindImplementationVAO();
-
-        MAGNUM_GL_LOCAL static void multiDrawImplementationDefault(Mesh& self, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets);
-        #ifndef CORRADE_TARGET_32BIT
-        MAGNUM_GL_LOCAL static void multiDrawImplementationDefault(Mesh& self, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets);
-        #endif
-        #ifdef MAGNUM_TARGET_GLES
-        MAGNUM_GL_LOCAL static void multiDrawImplementationFallback(Mesh& self, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets);
-        #ifndef CORRADE_TARGET_32BIT
-        MAGNUM_GL_LOCAL static void multiDrawImplementationFallback(Mesh& self, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets);
-        #endif
-        #endif
 
         #ifdef MAGNUM_TARGET_GLES
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

@@ -3568,6 +3568,17 @@ void MeshGLTest::multiDraw() {
     auto&& data = MultiDrawData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP("Neither" << Extensions::EXT::multi_draw_arrays::string() << "nor" << Extensions::ANGLE::multi_draw::string() << "is supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw::string() << "is not supported.");
+    #endif
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES2
     if(data.vertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         CORRADE_SKIP("gl_VertexID not supported");
@@ -3585,17 +3596,6 @@ void MeshGLTest::multiDraw() {
             CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
         #endif
     }
-
-    #ifdef MAGNUM_TARGET_GLES
-    #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
-       !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
-        CORRADE_INFO("Neither" << Extensions::EXT::multi_draw_arrays::string() << "nor" << Extensions::ANGLE::multi_draw::string() << "is supported, using fallback implementation");
-    #else
-    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
-        CORRADE_INFO(Extensions::WEBGL::multi_draw::string() << "is not supported, using fallback implementation");
-    #endif
-    #endif
 
     const struct {
         Vector2 position;
@@ -3631,6 +3631,17 @@ void MeshGLTest::multiDrawSparseArrays() {
     auto&& data = MultiDrawData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP("Neither" << Extensions::EXT::multi_draw_arrays::string() << "nor" << Extensions::ANGLE::multi_draw::string() << "is supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw::string() << "is not supported.");
+    #endif
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES2
     if(data.vertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         CORRADE_SKIP("gl_VertexID not supported");
@@ -3648,17 +3659,6 @@ void MeshGLTest::multiDrawSparseArrays() {
             CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
         #endif
     }
-
-    #ifdef MAGNUM_TARGET_GLES
-    #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
-       !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
-        CORRADE_INFO("Neither" << Extensions::EXT::multi_draw_arrays::string() << "nor" << Extensions::ANGLE::multi_draw::string() << "is supported, using fallback implementation");
-    #else
-    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
-        CORRADE_INFO(Extensions::WEBGL::multi_draw::string() << "is not supported, using fallback implementation");
-    #endif
-    #endif
 
     const struct {
         Vector2 position;
@@ -3785,6 +3785,17 @@ template<class T> void MeshGLTest::multiDrawIndexed() {
     auto&& data = MultiDrawIndexedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP("Neither" << Extensions::EXT::multi_draw_arrays::string() << "nor" << Extensions::ANGLE::multi_draw::string() << "is supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw::string() << "is not supported.");
+    #endif
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES2
     if(data.vertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         CORRADE_SKIP("gl_VertexID not supported");
@@ -3806,17 +3817,6 @@ template<class T> void MeshGLTest::multiDrawIndexed() {
         CORRADE_FAIL_IF(false, "Can't do base vertex here.");
         #endif
     }
-
-    #ifdef MAGNUM_TARGET_GLES
-    #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
-       !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
-        CORRADE_INFO("Neither" << Extensions::EXT::multi_draw_arrays::string() << "nor" << Extensions::ANGLE::multi_draw::string() << "is supported, using fallback implementation");
-    #else
-    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
-        CORRADE_INFO(Extensions::WEBGL::multi_draw::string() << "is not supported, using fallback implementation");
-    #endif
-    #endif
 
     const struct {
         Vector2 position;
@@ -3863,6 +3863,17 @@ template<class T> void MeshGLTest::multiDrawIndexedSparseArrays() {
     auto&& data = MultiDrawIndexedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP("Neither" << Extensions::EXT::multi_draw_arrays::string() << "nor" << Extensions::ANGLE::multi_draw::string() << "is supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw::string() << "is not supported.");
+    #endif
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES2
     if(data.vertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         CORRADE_SKIP("gl_VertexID not supported");
@@ -3884,17 +3895,6 @@ template<class T> void MeshGLTest::multiDrawIndexedSparseArrays() {
         CORRADE_FAIL_IF(false, "Can't do base vertex here.");
         #endif
     }
-
-    #ifdef MAGNUM_TARGET_GLES
-    #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
-       !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
-        CORRADE_INFO("Neither" << Extensions::EXT::multi_draw_arrays::string() << "nor" << Extensions::ANGLE::multi_draw::string() << "is supported, using fallback implementation");
-    #else
-    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
-        CORRADE_INFO(Extensions::WEBGL::multi_draw::string() << "is not supported, using fallback implementation");
-    #endif
-    #endif
 
     const struct {
         Vector2 position;

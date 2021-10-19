@@ -388,12 +388,7 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
 
     use();
 
-    #ifndef MAGNUM_TARGET_GLES
-    Mesh::multiDrawImplementationDefault
-    #else
-    Context::current().state().mesh.multiDrawImplementation
-    #endif
-        (mesh, counts, vertexOffsets, indexOffsets);
+    mesh.drawInternalStrided(counts, vertexOffsets, indexOffsets);
     return *this;
 }
 
@@ -403,12 +398,7 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
 
     use();
 
-    #ifndef MAGNUM_TARGET_GLES
-    Mesh::multiDrawImplementationDefault
-    #else
-    Context::current().state().mesh.multiDrawLongImplementation
-    #endif
-        (mesh, counts, vertexOffsets, indexOffsets);
+    mesh.drawInternalStrided(counts, vertexOffsets, indexOffsets);
     return *this;
 }
 

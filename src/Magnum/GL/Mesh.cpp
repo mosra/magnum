@@ -464,12 +464,12 @@ void Mesh::drawInternal(const Containers::ArrayView<const UnsignedInt>& counts, 
     (this->*state.unbindImplementation)();
 }
 
-void Mesh::multiDrawImplementationDefault(Mesh& self, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
+void Mesh::drawInternalStrided(const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
     #ifdef CORRADE_TARGET_32BIT
     /* If all views are contiguous and we're on 32-bit, call the implementation
        directly */
     if(counts.isContiguous() && vertexOffsets.isContiguous() && indexOffsets.isContiguous())
-        return self.drawInternal(counts.asContiguous(), vertexOffsets.asContiguous(), indexOffsets.asContiguous());
+        return drawInternal(counts.asContiguous(), vertexOffsets.asContiguous(), indexOffsets.asContiguous());
     #endif
 
     /* Otherwise allocate contiguous copies. While it's possible that some
@@ -517,18 +517,18 @@ void Mesh::multiDrawImplementationDefault(Mesh& self, const Containers::StridedA
         #endif
     );
 
-    self.drawInternal(countsContiguous, vertexOffsetsContiguous, indexOffsetsContiguous);
+    drawInternal(countsContiguous, vertexOffsetsContiguous, indexOffsetsContiguous);
 }
 
 #ifndef CORRADE_TARGET_32BIT
-void Mesh::multiDrawImplementationDefault(Mesh& self, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
+void Mesh::drawInternalStrided(const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
     /* If all views are contiguous, call the implementation directly */
     if(counts.isContiguous() && vertexOffsets.isContiguous() && indexOffsets.isContiguous())
-        return self.drawInternal(counts.asContiguous(), vertexOffsets.asContiguous(), indexOffsets.asContiguous());
+        return drawInternal(counts.asContiguous(), vertexOffsets.asContiguous(), indexOffsets.asContiguous());
 
     /* Otherwise delegate into the 32-bit variant, which will allocate a
        contiguous copy */
-    multiDrawImplementationDefault(self, counts, vertexOffsets,
+    drawInternalStrided(counts, vertexOffsets,
         /* Get the lower 32 bits of the index offsets, which is the leftmost
            bits on Little-Endian and rightmost on Big-Endian. On LE it could be
            just Containers::arrayCast<const UnsignedInt>(indexOffsets) but to
@@ -543,63 +543,6 @@ void Mesh::multiDrawImplementationDefault(Mesh& self, const Containers::StridedA
         ]
     );
 }
-#endif
-
-#ifdef MAGNUM_TARGET_GLES
-void Mesh::multiDrawImplementationFallback(Mesh& self, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
-    const UnsignedInt zero[1]{};
-    Containers::StridedArrayView1D<const UnsignedInt> indexOffsetsNeverEmpty;
-    Containers::StridedArrayView1D<const UnsignedInt> vertexOffsetsNeverEmpty;
-    if(self._indexBuffer.id()) {
-        CORRADE_ASSERT(indexOffsets.size() == counts.size(),
-            "GL::AbstractShaderProgram::draw(): expected" << counts.size() << "index offset items but got" << indexOffsets.size(), );
-        indexOffsetsNeverEmpty = indexOffsets;
-
-        if(!vertexOffsets.empty()) {
-            CORRADE_ASSERT(vertexOffsets.size() == counts.size(),
-                "GL::AbstractShaderProgram::draw(): expected" << counts.size() << "vertex offset items but got" << vertexOffsets.size(), );
-            vertexOffsetsNeverEmpty = vertexOffsets;
-        } else vertexOffsetsNeverEmpty = Containers::StridedArrayView1D<const UnsignedInt>{zero, counts.size(), 0};
-    } else {
-        CORRADE_ASSERT(vertexOffsets.size() == counts.size(),
-            "GL::AbstractShaderProgram::draw(): expected" << counts.size() << "vertex offset items but got" << vertexOffsets.size(), );
-        vertexOffsetsNeverEmpty = vertexOffsets;
-        indexOffsetsNeverEmpty = Containers::StridedArrayView1D<const UnsignedInt>{zero, counts.size(), 0};
-    }
-
-    for(std::size_t i = 0; i != counts.size(); ++i) {
-        if(!counts[i]) continue;
-
-        self.drawInternal(
-            counts[i], vertexOffsetsNeverEmpty[i], 1,
-            #ifndef MAGNUM_TARGET_GLES2
-            0, indexOffsetsNeverEmpty[i], 0, 0
-            #else
-            indexOffsetsNeverEmpty[i]
-            #endif
-        );
-    }
-}
-
-#ifndef CORRADE_TARGET_32BIT
-void Mesh::multiDrawImplementationFallback(Mesh& self, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
-    /* Delegate straight into the 32-bit variant */
-    multiDrawImplementationFallback(self, counts, vertexOffsets,
-        /* Get the lower 32 bits of the index offsets, which is the leftmost
-           bits on Little-Endian and rightmost on Big-Endian. On LE it could be
-           just Containers::arrayCast<const UnsignedInt>(indexOffsets) but to
-           minimize a chance of error on BE platforms that are hard to test on,
-           the same code is used for both. */
-        Containers::arrayCast<2, const UnsignedInt>(indexOffsets).transposed<0, 1>()[
-            #ifndef CORRADE_TARGET_BIG_ENDIAN
-            0
-            #else
-            1
-            #endif
-        ]
-    );
-}
-#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
