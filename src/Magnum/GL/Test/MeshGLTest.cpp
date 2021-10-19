@@ -318,7 +318,7 @@ const struct {
         {0, 0, 0, 0},
         {0.25f, 0.5f, 0.75f, 1.0f}},
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    {"multi draw, base vertex", false,
+    {"multi draw, vertex offset", false,
         {{0.25f, 0.0f, 0.0f, 0.0f},
          {0.5f, 0.0f, 0.0f, 0.0f},
          {0.75f, 0.0f, 0.0f, 0.0f},
@@ -329,7 +329,7 @@ const struct {
         {0, 0, 2, 2},
         {0.25f, 0.5f, 0.75f, 1.0f}},
     #ifndef MAGNUM_TARGET_GLES2
-    {"multi draw, base vertex, vertex ID", true,
+    {"multi draw, vertex offset, vertex ID", true,
         /* Same as in the non-indexed case, gl_VertexID includes the baseVertex
            as well */
         {{0.25f, 0.0f, 0.0f, 0.0f},
