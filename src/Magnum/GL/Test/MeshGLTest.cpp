@@ -186,8 +186,8 @@ struct MeshGLTest: OpenGLTester {
     void multiDraw();
     void multiDrawSparseArrays();
     void multiDrawViews();
-    void multiDrawIndexed();
-    void multiDrawIndexedSparseArrays();
+    template<class T> void multiDrawIndexed();
+    template<class T> void multiDrawIndexedSparseArrays();
     void multiDrawIndexedViews();
     void multiDrawWrongVertexOffsetSize();
     void multiDrawIndexedWrongVertexOffsetSize();
@@ -288,12 +288,7 @@ const struct {
     Vector4 values[4];
     UnsignedInt indices[4];
     UnsignedInt counts[4];
-    #ifdef CORRADE_TARGET_32BIT
-    UnsignedInt
-    #else
-    UnsignedLong
-    #endif
-    indexOffsetsInBytes[4];
+    UnsignedInt indexOffsetsInBytes[4];
     UnsignedInt vertexOffsets[4];
     Vector4 expected;
 } MultiDrawIndexedData[] {
@@ -500,10 +495,17 @@ MeshGLTest::MeshGLTest() {
                        &MeshGLTest::multiDrawViews},
         Containers::arraySize(MultiDrawData));
 
-    addInstancedTests({&MeshGLTest::multiDrawIndexed,
-                       &MeshGLTest::multiDrawIndexedSparseArrays,
-                       &MeshGLTest::multiDrawIndexedViews},
-        Containers::arraySize(MultiDrawIndexedData));
+    addInstancedTests({
+        &MeshGLTest::multiDrawIndexed<UnsignedInt>,
+        #ifndef CORRADE_TARGET_32BIT
+        &MeshGLTest::multiDrawIndexed<UnsignedLong>,
+        #endif
+        &MeshGLTest::multiDrawIndexedSparseArrays<UnsignedInt>,
+        #ifndef CORRADE_TARGET_32BIT
+        &MeshGLTest::multiDrawIndexedSparseArrays<UnsignedLong>,
+        #endif
+        &MeshGLTest::multiDrawIndexedViews
+    }, Containers::arraySize(MultiDrawIndexedData));
 
     addTests({
         &MeshGLTest::multiDrawWrongVertexOffsetSize,
@@ -3777,7 +3779,9 @@ void MeshGLTest::multiDrawViews() {
     #endif
 }
 
-void MeshGLTest::multiDrawIndexed() {
+template<class T> void MeshGLTest::multiDrawIndexed() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     auto&& data = MultiDrawIndexedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -3831,8 +3835,16 @@ void MeshGLTest::multiDrawIndexed() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Converted to either a 32bit or 64bit type */
+    const T indexOffsetsInBytes[]{
+        data.indexOffsetsInBytes[0],
+        data.indexOffsetsInBytes[1],
+        data.indexOffsetsInBytes[2],
+        data.indexOffsetsInBytes[3]
+    };
+
     MultiDrawChecker checker;
-    MultiDrawShader{data.vertexId, false}.draw(mesh, data.counts, hasBaseVertex ? Containers::arrayView(data.vertexOffsets) : nullptr, data.indexOffsetsInBytes);
+    MultiDrawShader{data.vertexId, false}.draw(mesh, data.counts, hasBaseVertex ? Containers::arrayView(data.vertexOffsets) : nullptr, indexOffsetsInBytes);
     Vector4 value = checker.get();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -3845,7 +3857,9 @@ void MeshGLTest::multiDrawIndexed() {
     #endif
 }
 
-void MeshGLTest::multiDrawIndexedSparseArrays() {
+template<class T> void MeshGLTest::multiDrawIndexedSparseArrays() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     auto&& data = MultiDrawIndexedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -3904,14 +3918,14 @@ void MeshGLTest::multiDrawIndexedSparseArrays() {
     struct Command {
         UnsignedInt count;
         UnsignedInt instanceCount;
-        UnsignedInt firstIndexInBytes; /* !! */
+        T firstIndexInBytes; /* !! */
         UnsignedInt baseVertex;
         UnsignedInt baseInstance;
     } commands[] {
-        {data.counts[0], 0, UnsignedInt(data.indexOffsetsInBytes[0]), data.vertexOffsets[0], 0},
-        {data.counts[1], 0, UnsignedInt(data.indexOffsetsInBytes[1]), data.vertexOffsets[1], 0},
-        {data.counts[2], 0, UnsignedInt(data.indexOffsetsInBytes[2]), data.vertexOffsets[2], 0},
-        {data.counts[3], 0, UnsignedInt(data.indexOffsetsInBytes[3]), data.vertexOffsets[3], 0}
+        {data.counts[0], 0, data.indexOffsetsInBytes[0], data.vertexOffsets[0], 0},
+        {data.counts[1], 0, data.indexOffsetsInBytes[1], data.vertexOffsets[1], 0},
+        {data.counts[2], 0, data.indexOffsetsInBytes[2], data.vertexOffsets[2], 0},
+        {data.counts[3], 0, data.indexOffsetsInBytes[3], data.vertexOffsets[3], 0}
     };
 
     MultiDrawChecker checker;
