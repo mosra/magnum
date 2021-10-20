@@ -92,6 +92,9 @@ struct ObjImporterTest: TestSuite::Tester {
     void unsupportedKeyword();
     void unknownKeyword();
 
+    void openTwice();
+    void importTwice();
+
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
@@ -145,7 +148,10 @@ ObjImporterTest::ObjImporterTest() {
               &ObjImporterTest::wrongNormalIndexCount,
 
               &ObjImporterTest::unsupportedKeyword,
-              &ObjImporterTest::unknownKeyword});
+              &ObjImporterTest::unknownKeyword,
+
+              &ObjImporterTest::openTwice,
+              &ObjImporterTest::importTwice});
 
     #ifdef OBJIMPORTER_PLUGIN_FILENAME
     CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(OBJIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -795,6 +801,31 @@ void ObjImporterTest::unknownKeyword() {
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh(id));
     CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): unknown keyword bleh\n");
+}
+
+void ObjImporterTest::openTwice() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "pointMesh.obj")));
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "pointMesh.obj")));
+
+    /* Shouldn't crash, leak or anything */
+}
+
+void ObjImporterTest::importTwice() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "pointMesh.obj")));
+
+    /* Verify that everything is working the same way on second use */
+    {
+        Containers::Optional<Trade::MeshData> mesh = importer->mesh(0);
+        CORRADE_VERIFY(mesh);
+        CORRADE_COMPARE(mesh->vertexCount(), 3);
+    } {
+        Containers::Optional<Trade::MeshData> mesh = importer->mesh(0);
+        CORRADE_VERIFY(mesh);
+        CORRADE_COMPARE(mesh->vertexCount(), 3);
+    }
 }
 
 }}}}
