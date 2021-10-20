@@ -372,6 +372,10 @@ See also:
 
 @subsubsection changelog-latest-changes-trade Trade library
 
+-   A changed signature of the @ref Trade::AbstractImporter::doOpenData(Containers::Array<char>&&, DataFlags)
+    function allows importers to take over the ownership of passed data instead
+    of allocating a local copy, saving as much as half memory in certain
+    importer implementations
 -   @ref Trade::AbstractImageConverter::doConvertToFile() and
     @ref Trade::AbstractSceneConverter::doConvertToFile() are now
     @cpp protected @ce instead of @cpp private @ce to allow calling them from
@@ -621,6 +625,9 @@ See also:
     @ref MAGNUM_BUILD_DEPRECATED is enabled, the returned type acts as a
     @ref Corrade::Containers::Optional but has (deprecated) implicit conversion
     to a @ref Corrade::Containers::Pointer to avoid breaking user code.
+-   @ref Trade::AbstractImporter::doOpenData() taking an array view is
+    deprecated in favor of the more flexible signature that takes a r-value
+    @relativeref{Corrade,Containers::Array}
 -   @cpp Trade::ImageConverterFeature::ConvertImage @ce and
     @cpp Trade::ImageConverterFeature::ConvertCompressedImage @ce;
     @cpp Trade::AbstractImageConverter::exportToImage() @ce and

@@ -41,10 +41,13 @@ namespace Magnum { namespace Trade {
 @brief Data flag
 @m_since{2020,06}
 
+Used to describe data contained in various classes returned from
+@ref AbstractImporter interfaces and also data passed internally in the
+importer itself.
 @see @ref DataFlags, @ref AnimationData::dataFlags(),
     @ref ImageData::dataFlags(), @ref MaterialData::attributeDataFlags(),
     @ref MaterialData::layerDataFlags(), @ref MeshData::indexDataFlags(),
-    @ref MeshData::vertexDataFlags()
+    @ref MeshData::vertexDataFlags(), @ref AbstractImporter::doOpenData()
 */
 enum class DataFlag: UnsignedByte {
     /**

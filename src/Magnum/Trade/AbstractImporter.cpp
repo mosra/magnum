@@ -131,12 +131,25 @@ bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
        the check doesn't be done on the plugin side) because for some file
        formats it could be valid (e.g. OBJ or JSON-based formats). */
     close();
-    doOpenData(data);
+    doOpenData(Containers::Array<char>{const_cast<char*>(data.data()), data.size(), Implementation::nonOwnedArrayDeleter}, {});
     return isOpened();
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 void AbstractImporter::doOpenData(Containers::ArrayView<const char>) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::openData(): feature advertised but not implemented", );
+}
+#endif
+
+void AbstractImporter::doOpenData(Containers::Array<char>&& data, const DataFlags) {
+    #ifndef MAGNUM_BUILD_DEPRECATED
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::openData(): feature advertised but not implemented", );
+    static_cast<void>(data);
+    #else
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    doOpenData(data);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 }
 
 bool AbstractImporter::openState(const void* state, const std::string& filePath) {
@@ -179,7 +192,13 @@ bool AbstractImporter::openFile(const std::string& filename) {
             Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
             return isOpened();
         }
-        doOpenData(*data);
+        /** @todo it might be useful to use LoadPermanent and DataFlag::Owned
+            here, but it kinda depends on the plugin if it wants to keep a copy
+            of the data... which means it's probably the most straightforward
+            if we just provide an explicit doOpenFile() implementation there.
+
+            Same in doOpenFile() below. */
+        doOpenData(Containers::Array<char>{const_cast<char*>(data->data()), data->size(), Implementation::nonOwnedArrayDeleter}, {});
         _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Shouldn't get here, the assert is fired already in setFileCallback() */
@@ -192,14 +211,14 @@ void AbstractImporter::doOpenFile(const std::string& filename) {
     CORRADE_ASSERT(features() & ImporterFeature::OpenData, "Trade::AbstractImporter::openFile(): not implemented", );
 
     /* If callbacks are set, use them. This is the same implementation as in
-       openFile(), see the comment there for details. */
+       openFile(), see the comments there for details. */
     if(_fileCallback) {
         const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, InputFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
         if(!data) {
             Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
             return;
         }
-        doOpenData(*data);
+        doOpenData(Containers::Array<char>{const_cast<char*>(data->data()), data->size(), Implementation::nonOwnedArrayDeleter}, {});
         _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Otherwise open the file directly */
@@ -209,7 +228,7 @@ void AbstractImporter::doOpenFile(const std::string& filename) {
             return;
         }
 
-        doOpenData(Utility::Directory::read(filename));
+        doOpenData(Utility::Directory::read(filename), DataFlag::Owned|DataFlag::Mutable);
     }
 }
 

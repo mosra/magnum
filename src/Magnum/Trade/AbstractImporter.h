@@ -1636,8 +1636,47 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /** @brief Implementation for @ref isOpened() */
         virtual bool doIsOpened() const = 0;
 
-        /** @brief Implementation for @ref openData() */
-        virtual void doOpenData(Containers::ArrayView<const char> data);
+        /**
+         * @brief Implementation for @ref openData()
+         * @m_since_latest
+         *
+         * The @p data is mutable or owned depending on the value of
+         * @p dataFlags. This can be used for example to avoid allocating a
+         * local copy in order to preserve its lifetime. The following cases
+         * are possible:
+         *
+         * -    If @p dataFlags is empty, @p data is a @cpp const @ce
+         *      non-owning view. This happens when the function is called from
+         *      @ref openData(). You have to assume the data go out of scope
+         *      after the function exists, so if the importer needs to access
+         *      the data after, it has to allocate a local copy.
+         * -    If @p dataFlags is @ref DataFlag::Owned and
+         *      @ref DataFlag::Mutable, @p data is an owned memory. This
+         *      happens when the implementation is called from the default
+         *      @ref doOpenFile() implementation --- it reads a file into a
+         *      newly allocated array and passes it to this function. You can
+         *      take ownership of the @p data instance instead of allocating a
+         *      local copy.
+         *
+         * Example workflow in a plugin that needs to preserve access to the
+         * input data but wants to avoid allocating a copy if possible:
+         *
+         * @snippet MagnumTrade.cpp AbstractImporter-doOpenData-ownership
+         *
+         * The @p dataFlags can never be @ref DataFlag::Mutable without
+         * @ref DataFlag::Owned. The case of @ref DataFlag::Owned without
+         * @ref DataFlag::Mutable is currently unused but reserved for future.
+         */
+        virtual void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Implementation for @ref openData()
+         * @m_deprecated_since_latest Implement @ref doOpenData(Containers::Array<char>&&, DataFlags)
+         *      instead.
+         */
+        virtual CORRADE_DEPRECATED("implement doOpenData(Containers::Array<char>&&, DataFlags) instead") void doOpenData(Containers::ArrayView<const char> data);
+        #endif
 
         /** @brief Implementation for @ref openState() */
         virtual void doOpenState(const void* state, const std::string& filePath);

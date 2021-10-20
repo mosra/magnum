@@ -70,6 +70,9 @@ struct AbstractImporterTest: TestSuite::Tester {
     void setFlagsNotImplemented();
 
     void openData();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void openDataDeprecatedFallback();
+    #endif
     void openFileAsData();
     void openFileAsDataNotFound();
 
@@ -308,6 +311,9 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::setFlagsNotImplemented,
 
               &AbstractImporterTest::openData,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImporterTest::openDataDeprecatedFallback,
+              #endif
               &AbstractImporterTest::openFileAsData,
               &AbstractImporterTest::openFileAsDataNotFound,
 
@@ -630,10 +636,13 @@ void AbstractImporterTest::openData() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        void doOpenData(Containers::ArrayView<const char> data) override {
+        void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override {
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xa5'}),
                 TestSuite::Compare::Container);
+            CORRADE_COMPARE(dataFlags, DataFlags{});
+            /* The array should have a custom no-op deleter */
+            CORRADE_VERIFY(data.deleter());
             _opened = true;
         }
 
@@ -649,16 +658,48 @@ void AbstractImporterTest::openData() {
     CORRADE_VERIFY(!importer.isOpened());
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImporterTest::openDataDeprecatedFallback() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        void doOpenData(Containers::ArrayView<const char> data) override {
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xa5'}),
+                TestSuite::Compare::Container);
+            _opened = true;
+        }
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        bool _opened = false;
+    } importer;
+
+    CORRADE_VERIFY(!importer.isOpened());
+    const char a5 = '\xa5';
+    CORRADE_VERIFY(importer.openData({&a5, 1}));
+    CORRADE_VERIFY(importer.isOpened());
+
+    importer.close();
+    CORRADE_VERIFY(!importer.isOpened());
+}
+#endif
+
 void AbstractImporterTest::openFileAsData() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        void doOpenData(Containers::ArrayView<const char> data) override {
+        void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override {
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xa5'}),
                 TestSuite::Compare::Container);
+            CORRADE_COMPARE(dataFlags, DataFlag::Owned|DataFlag::Mutable);
+            /* I.e., we can take over the array, it's not just a view */
+            CORRADE_VERIFY(!data.deleter());
             _opened = true;
         }
 
@@ -680,7 +721,7 @@ void AbstractImporterTest::openFileAsDataNotFound() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        void doOpenData(Containers::ArrayView<const char>) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags) override {
             _opened = true;
         }
 
@@ -948,7 +989,7 @@ void AbstractImporterTest::setFileCallbackOpenFileDirectly() {
             _opened = true;
         }
 
-        void doOpenData(Containers::ArrayView<const char>) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags) override {
             /* Shouldn't be called because FileCallback is supported */
             openDataCalledNotSureWhy = true;
         }
@@ -982,10 +1023,11 @@ void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementation() {
             AbstractImporter::doOpenFile(filename);
         }
 
-        void doOpenData(Containers::ArrayView<const char> data) override {
+        void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override {
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xb0'}),
                 TestSuite::Compare::Container);
+            CORRADE_COMPARE(dataFlags, DataFlags{});
             _opened = true;
         }
 
@@ -1058,10 +1100,11 @@ void AbstractImporterTest::setFileCallbackOpenFileAsData() {
             openFileCalled = true;
         }
 
-        void doOpenData(Containers::ArrayView<const char> data) override {
+        void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override {
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xb0'}),
                 TestSuite::Compare::Container);
+            CORRADE_COMPARE(dataFlags, DataFlags{});
             _opened = true;
         }
 
