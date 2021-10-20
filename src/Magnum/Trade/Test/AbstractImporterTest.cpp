@@ -27,6 +27,7 @@
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
@@ -630,7 +631,10 @@ void AbstractImporterTest::openData() {
         void doClose() override { _opened = false; }
 
         void doOpenData(Containers::ArrayView<const char> data) override {
-            _opened = (data.size() == 1 && data[0] == '\xa5');
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xa5'}),
+                TestSuite::Compare::Container);
+            _opened = true;
         }
 
         bool _opened = false;
@@ -652,7 +656,10 @@ void AbstractImporterTest::openFileAsData() {
         void doClose() override { _opened = false; }
 
         void doOpenData(Containers::ArrayView<const char> data) override {
-            _opened = (data.size() == 1 && data[0] == '\xa5');
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xa5'}),
+                TestSuite::Compare::Container);
+            _opened = true;
         }
 
         bool _opened = false;
@@ -830,11 +837,15 @@ void AbstractImporterTest::setFileCallbackTemplateNull() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
         void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* userData) override {
-            called = !callback && !userData;
+            CORRADE_VERIFY(!callback);
+            CORRADE_VERIFY(!userData);
+            called = true;
         }
 
         bool called = false;
     } importer;
+
+    CORRADE_VERIFY(true); /* to record correct function name */
 
     int a = 0;
     importer.setFileCallback(static_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, int&)>(nullptr), a);
@@ -931,7 +942,10 @@ void AbstractImporterTest::setFileCallbackOpenFileDirectly() {
 
         void doOpenFile(const std::string& filename) override {
             /* Called because FileCallback is supported */
-            _opened = filename == "file.dat" && fileCallback() && fileCallbackUserData();
+            CORRADE_COMPARE(filename, "file.dat");
+            CORRADE_VERIFY(fileCallback());
+            CORRADE_VERIFY(fileCallbackUserData());
+            _opened = true;
         }
 
         void doOpenData(Containers::ArrayView<const char>) override {
@@ -961,12 +975,18 @@ void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementation() {
         void doClose() override { _opened = false; }
 
         void doOpenFile(const std::string& filename) override {
-            openFileCalled = filename == "file.dat" && fileCallback() && fileCallbackUserData();
+            CORRADE_COMPARE(filename, "file.dat");
+            CORRADE_VERIFY(fileCallback());
+            CORRADE_VERIFY(fileCallbackUserData());
+            openFileCalled = true;
             AbstractImporter::doOpenFile(filename);
         }
 
         void doOpenData(Containers::ArrayView<const char> data) override {
-            _opened = (data.size() == 1 && data[0] == '\xb0');
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xb0'}),
+                TestSuite::Compare::Container);
+            _opened = true;
         }
 
         bool _opened = false;
@@ -1039,7 +1059,10 @@ void AbstractImporterTest::setFileCallbackOpenFileAsData() {
         }
 
         void doOpenData(Containers::ArrayView<const char> data) override {
-            _opened = (data.size() == 1 && data[0] == '\xb0');
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xb0'}),
+                TestSuite::Compare::Container);
+            _opened = true;
         }
 
         bool _opened = false;
