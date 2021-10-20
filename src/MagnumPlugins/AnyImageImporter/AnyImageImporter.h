@@ -178,7 +178,7 @@ class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
         MAGNUM_ANYIMAGEIMPORTER_LOCAL bool doIsOpened() const override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL void doClose() override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;
-        MAGNUM_ANYIMAGEIMPORTER_LOCAL void doOpenData(Containers::ArrayView<const char> data) override;
+        MAGNUM_ANYIMAGEIMPORTER_LOCAL void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override;
 
         MAGNUM_ANYIMAGEIMPORTER_LOCAL UnsignedInt doImage1DCount() const override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL UnsignedInt doImage1DLevelCount(UnsignedInt id) override;

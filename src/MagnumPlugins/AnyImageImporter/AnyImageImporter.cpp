@@ -153,13 +153,14 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
     _in = std::move(importer);
 }
 
-void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
+void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
     using namespace Containers::Literals;
 
     CORRADE_INTERNAL_ASSERT(manager());
 
     /* So we can use the convenient hasSuffix() API */
-    const Containers::StringView dataString = data;
+    const Containers::ArrayView<const char> dataView = data;
+    const Containers::StringView dataString = dataView;
 
     std::string plugin;
     /* https://github.com/BinomialLLC/basis_universal/blob/7d784c728844c007d8c95d63231f7adcc0f65364/transcoder/basisu_file_headers.h#L78 */
@@ -193,22 +194,22 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
         plugin = "TiffImporter";
     /* https://github.com/file/file/blob/d04de269e0b06ccd0a7d1bf4974fed1d75be7d9e/magic/Magdir/images#L18-L22
        TGAs are a complete guesswork, so try after everything else fails. */
-    else if([data]() {
+    else if([dataView]() {
             /* TGA header is 18 bytes */
-            if(data.size() < 18) return false;
+            if(dataView.size() < 18) return false;
 
             /* Third byte (image type) must be one of these */
-            if(data[2] != 1 && data[2] != 2  && data[2] != 3 &&
-               data[2] != 9 && data[2] != 10 && data[2] != 11) return false;
+            if(dataView[2] != 1 && dataView[2] != 2  && dataView[2] != 3 &&
+               dataView[2] != 9 && dataView[2] != 10 && dataView[2] != 11) return false;
 
             /* If image type is 1 or 9, second byte (colormap type) must be 1 */
-            if((data[2] == 1 || data[2] == 9) && data[1] != 1) return false;
+            if((dataView[2] == 1 || dataView[2] == 9) && dataView[1] != 1) return false;
 
             /* ... and 0 otherwise */
-            if(data[2] != 1 && data[2] != 9 && data[1] != 0) return false;
+            if(dataView[2] != 1 && dataView[2] != 9 && dataView[1] != 0) return false;
 
             /* Colormap index (unsigned short, byte 3+4) should be 0 */
-            if(data[3] != 0 && data[4] != 0) return false;
+            if(dataView[3] != 0 && dataView[4] != 0) return false;
 
             /* Probably TGA, heh. Or random memory. */
             return true;
@@ -279,4 +280,4 @@ Containers::Optional<ImageData3D> AnyImageImporter::doImage3D(const UnsignedInt 
 }}
 
 CORRADE_PLUGIN_REGISTER(AnyImageImporter, Magnum::Trade::AnyImageImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.3.3")
+    "cz.mosra.magnum.Trade.AbstractImporter/0.3.4")

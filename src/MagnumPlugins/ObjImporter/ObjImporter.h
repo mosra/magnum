@@ -115,7 +115,7 @@ class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
         MAGNUM_OBJIMPORTER_LOCAL ImporterFeatures doFeatures() const override;
 
         MAGNUM_OBJIMPORTER_LOCAL bool doIsOpened() const override;
-        MAGNUM_OBJIMPORTER_LOCAL void doOpenData(Containers::ArrayView<const char> data) override;
+        MAGNUM_OBJIMPORTER_LOCAL void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override;
         MAGNUM_OBJIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;
         MAGNUM_OBJIMPORTER_LOCAL void doClose() override;
 

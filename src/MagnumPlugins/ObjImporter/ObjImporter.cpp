@@ -106,8 +106,9 @@ void ObjImporter::doOpenFile(const std::string& filename) {
     parseMeshNames();
 }
 
-void ObjImporter::doOpenData(Containers::ArrayView<const char> data) {
+void ObjImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
     _file.reset(new File);
+    /** @todo ARGH MY EYES what is this cursed thing, burn it to the ground */
     _file->in.reset(new std::istringstream{{data.begin(), data.size()}});
 
     parseMeshNames();
@@ -486,4 +487,4 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
 }}
 
 CORRADE_PLUGIN_REGISTER(ObjImporter, Magnum::Trade::ObjImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.3.3")
+    "cz.mosra.magnum.Trade.AbstractImporter/0.3.4")

@@ -50,7 +50,7 @@ bool TgaImporter::doIsOpened() const { return _in; }
 
 void TgaImporter::doClose() { _in = nullptr; }
 
-void TgaImporter::doOpenData(const Containers::ArrayView<const char> data) {
+void TgaImporter::doOpenData(Containers::Array<char>&& data, const DataFlags dataFlags) {
     /* Because here we're copying the data and using the _in to check if file
        is opened, having them nullptr would mean openData() would fail without
        any error message. It's not possible to do this check on the importer
@@ -63,8 +63,13 @@ void TgaImporter::doOpenData(const Containers::ArrayView<const char> data) {
         return;
     }
 
-    _in = Containers::Array<char>{NoInit, data.size()};
-    Utility::copy(data, _in);
+    /* Ttake over the existing array or copy the data if we can't */
+    if(dataFlags & DataFlag::Owned) {
+        _in = std::move(data);
+    } else {
+        _in = Containers::Array<char>{NoInit, data.size()};
+        Utility::copy(data, _in);
+    }
 }
 
 UnsignedInt TgaImporter::doImage2DCount() const { return 1; }
@@ -204,4 +209,4 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
 }}
 
 CORRADE_PLUGIN_REGISTER(TgaImporter, Magnum::Trade::TgaImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.3.3")
+    "cz.mosra.magnum.Trade.AbstractImporter/0.3.4")

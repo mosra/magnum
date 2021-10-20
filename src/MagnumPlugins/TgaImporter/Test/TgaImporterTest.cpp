@@ -59,6 +59,7 @@ struct TgaImporterTest: TestSuite::Tester {
 
     void rleTooLarge();
 
+    /* no openData() as all tests use openData() and openFile() is used below */
     void openTwice();
     void importTwice();
 
