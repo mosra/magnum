@@ -4631,7 +4631,7 @@ void MeshGLTest::multiDrawInstanced() {
         { 1.0f/3.0f, data.values[1]},
     };
     const Float instanceData[]{
-        {}, /* initial offset */
+        0, /* initial offset */
         -1.0f/3.0f,
          1.0f/3.0f
     };
@@ -4712,7 +4712,7 @@ void MeshGLTest::multiDrawInstancedSparseArrays() {
         { 1.0f/3.0f, data.values[1]},
     };
     const Float instanceData[]{
-        {}, /* initial offset */
+        0, /* initial offset */
         -1.0f/3.0f,
          1.0f/3.0f
     };
@@ -4812,7 +4812,7 @@ template<class T> void MeshGLTest::multiDrawInstancedIndexed() {
         { 1.0f/3.0f, data.values[1]},
     };
     const Float instanceData[]{
-        {}, /* initial offset */
+        0, /* initial offset */
         -1.0f/3.0f,
          1.0f/3.0f
     };
@@ -4903,7 +4903,7 @@ template<class T> void MeshGLTest::multiDrawInstancedIndexedSparseArrays() {
         { 1.0f/3.0f, data.values[1]},
     };
     const Float instanceData[]{
-        {}, /* initial offset */
+        0, /* initial offset */
         -1.0f/3.0f,
          1.0f/3.0f
     };
