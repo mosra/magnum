@@ -81,7 +81,9 @@ magnum-sceneconverter [-h|--help] [-I|--importer IMPORTER]
     [--remove-duplicates-fuzzy EPSILON]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]... [--mesh MESH]
-    [--level LEVEL] [--info] [--bounds] [-v|--verbose] [--profile]
+    [--level LEVEL] [--info-animations] [--info-images] [--info-lights]
+    [--info-materials] [--info-meshes] [--info-skins] [--info-textures]
+    [--info] [--bounds] [-v|--verbose] [--profile]
     [--] input output
 @endcode
 
@@ -107,13 +109,20 @@ Arguments:
     to pass to the converter(s)
 -   `--mesh MESH` --- mesh to import (default: `0`)
 -   `--level LEVEL` --- mesh level to import (default: `0`)
--   `--info` --- print info about the input file and exit
+-   `--info-animations` --- print into about animations in the input file and
+    exit
+-   `--info-images` --- print into about images in the input file and exit
+-   `--info-lights` --- print into about lights in the input file and exit
+-   `--info-materials` --- print into about materials in the input file and
+    exit
+-   `--info-meshes` --- print into about meshes in the input file and exit
+-   `--info-skins` --- print into about skins in the input file and exit
+-   `--info-textures` --- print into about textures in the input file and exit
+-   `--info` --- print info about everything in the input file and exit, same
+    as specifying all other `--info-*` options together
 -   `--bounds` --- show bounds of known attributes in `--info` output
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
 -   `--profile` --- measure import and conversion time
-
-If `--info` is given, the utility will print information about all lights,
-materials, meshes, images and textures present in the file.
 
 The `-i` / `--importer-options` and `-c` / `--converter-options` arguments
 accept a comma-separated list of key/value pairs to set in the importer /
@@ -196,6 +205,17 @@ UnsignedInt namedAttributeId(const Trade::MeshData& mesh, UnsignedInt id) {
     CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 }
 
+bool isInfoRequested(const Utility::Arguments& args) {
+    return args.isSet("info-animations") ||
+           args.isSet("info-images") ||
+           args.isSet("info-lights") ||
+           args.isSet("info-materials") ||
+           args.isSet("info-meshes") ||
+           args.isSet("info-skins") ||
+           args.isSet("info-textures") ||
+           args.isSet("info");
+}
+
 }
 
 int main(int argc, char** argv) {
@@ -212,22 +232,26 @@ int main(int argc, char** argv) {
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
         .addOption("mesh", "0").setHelp("mesh", "mesh to import")
         .addOption("level", "0").setHelp("level", "mesh level to import")
-        .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
+        .addBooleanOption("info-animations").setHelp("info-animations", "print info about animations in the input file and exit")
+        .addBooleanOption("info-images").setHelp("info-images", "print info about images in the input file and exit")
+        .addBooleanOption("info-lights").setHelp("info-lights", "print info about images in the input file and exit")
+        .addBooleanOption("info-materials").setHelp("info-materials", "print info about materials in the input file and exit")
+        .addBooleanOption("info-meshes").setHelp("info-meshes", "print info about meshes in the input file and exit")
+        .addBooleanOption("info-skins").setHelp("info-skins", "print info about skins in the input file and exit")
+        .addBooleanOption("info-textures").setHelp("info-textures", "print info about textures in the input file and exit")
+        .addBooleanOption("info").setHelp("info", "print info about everything in the input file and exit, same as specifying all other --info-* options together")
         .addBooleanOption("bounds").setHelp("bounds", "show bounds of known attributes in --info output")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .addBooleanOption("profile").setHelp("profile", "measure import and conversion time")
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
             /* If --info is passed, we don't need the output argument */
             if(error == Utility::Arguments::ParseError::MissingArgument &&
-                key == "output" && args.isSet("info")) return true;
+                key == "output" && isInfoRequested(args)) return true;
 
             /* Handle all other errors as usual */
             return false;
         })
         .setGlobalHelp(R"(Converts scenes of different formats.
-
-If --info is given, the utility will print information about all all lights,
-materials, meshes, images and textures present in the file.
 
 The -i / --importer-options and -c / --converter-options arguments accept a
 comma-separated list of key/value pairs to set in the importer / converter
@@ -246,9 +270,9 @@ used.)")
     /* Generic checks */
     if(!args.value<Containers::StringView>("output").isEmpty()) {
         /* Not an error in this case, it should be possible to just append
-           --info to existing command line without having to remove anything.
+           --info* to existing command line without having to remove anything.
            But print a warning at least, it could also be a mistyped option. */
-        if(args.isSet("info"))
+        if(isInfoRequested(args))
             Warning{} << "Ignoring output file for --info:" << args.value<Containers::StringView>("output");
     }
 
@@ -278,7 +302,7 @@ used.)")
     }
 
     /* Print file info, if requested */
-    if(args.isSet("info")) {
+    if(isInfoRequested(args)) {
         struct AnimationInfo {
             UnsignedInt animation;
             Trade::AnimationData data{{}, {}};
@@ -362,7 +386,7 @@ used.)")
         /* Animation properties */
         bool error = false;
         Containers::Array<AnimationInfo> animationInfos;
-        for(UnsignedInt i = 0; i != importer->animationCount(); ++i) {
+        if(args.isSet("info") || args.isSet("info-animations")) for(UnsignedInt i = 0; i != importer->animationCount(); ++i) {
             Containers::Optional<Trade::AnimationData> animation;
             {
                 Duration d{importTime};
@@ -382,7 +406,7 @@ used.)")
 
         /* Skin properties */
         Containers::Array<SkinInfo> skinInfos;
-        for(UnsignedInt i = 0; i != importer->skin3DCount(); ++i) {
+        if(args.isSet("info") || args.isSet("info-skins")) for(UnsignedInt i = 0; i != importer->skin3DCount(); ++i) {
             Containers::Optional<Trade::SkinData3D> skin;
             {
                 Duration d{importTime};
@@ -403,7 +427,7 @@ used.)")
 
         /* Light properties */
         Containers::Array<LightInfo> lightInfos;
-        for(UnsignedInt i = 0; i != importer->lightCount(); ++i) {
+        if(args.isSet("info") || args.isSet("info-lights")) for(UnsignedInt i = 0; i != importer->lightCount(); ++i) {
             Containers::Optional<Trade::LightData> light;
             {
                 Duration d{importTime};
@@ -425,7 +449,7 @@ used.)")
         /* Material properties */
         Containers::Array<MaterialInfo> materialInfos;
         Containers::Array<UnsignedInt> textureReferenceCount{importer->textureCount()};
-        for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
+        if(args.isSet("info") || args.isSet("info-materials")) for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
             Containers::Optional<Trade::MaterialData> material;
             {
                 Duration d{importTime};
@@ -459,7 +483,7 @@ used.)")
 
         /* Mesh properties */
         Containers::Array<MeshInfo> meshInfos;
-        for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
+        if(args.isSet("info") || args.isSet("info-meshes")) for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
             for(UnsignedInt j = 0; j != importer->meshLevelCount(i); ++j) {
                 Containers::Optional<Trade::MeshData> mesh;
                 {
@@ -543,7 +567,7 @@ used.)")
 
         /* Texture properties */
         Containers::Array<TextureInfo> textureInfos;
-        for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
+        if(args.isSet("info") || args.isSet("info-textures")) for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
             Containers::Optional<Trade::TextureData> texture;
             {
                 Duration d{importTime};
@@ -565,7 +589,8 @@ used.)")
         /* In case the images have all just a single level and no names, write
            them in a compact way without listing levels. */
         bool compactImages = false;
-        Containers::Array<Trade::Implementation::ImageInfo> imageInfos =
+        Containers::Array<Trade::Implementation::ImageInfo> imageInfos;
+        if(args.isSet("info") || args.isSet("info-images")) imageInfos =
             Trade::Implementation::imageInfo(*importer, error, compactImages);
 
         for(const AnimationInfo& info: animationInfos) {
