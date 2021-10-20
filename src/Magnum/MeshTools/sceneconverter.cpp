@@ -279,11 +279,6 @@ used.)")
 
     /* Print file info, if requested */
     if(args.isSet("info")) {
-        if(!importer->meshCount() && !importer->image1DCount() && !importer->image2DCount() && !importer->image2DCount()) {
-            Debug{} << "No meshes or images found.";
-            return 0;
-        }
-
         struct AnimationInfo {
             UnsignedInt animation;
             Trade::AnimationData data{{}, {}};
