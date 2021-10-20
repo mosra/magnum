@@ -25,8 +25,6 @@
 
 #include "TgaImporter.h"
 
-#include <fstream>
-#include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Algorithms.h>
@@ -65,8 +63,8 @@ void TgaImporter::doOpenData(const Containers::ArrayView<const char> data) {
         return;
     }
 
-    _in = Containers::Array<char>{data.size()};
-    std::copy(data.begin(), data.end(), _in.begin());
+    _in = Containers::Array<char>{NoInit, data.size()};
+    Utility::copy(data, _in);
 }
 
 UnsignedInt TgaImporter::doImage2DCount() const { return 1; }
