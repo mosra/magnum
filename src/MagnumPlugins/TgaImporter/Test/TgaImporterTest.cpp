@@ -185,7 +185,7 @@ void TgaImporterTest::openShort() {
 
 void TgaImporterTest::paletted() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
-    const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    const char data[]{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer->openData(data));
 
     std::ostringstream out;
@@ -196,7 +196,7 @@ void TgaImporterTest::paletted() {
 
 void TgaImporterTest::invalid() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
-    const char data[] = { 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    const char data[]{ 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer->openData(data));
 
     std::ostringstream out;
@@ -210,7 +210,7 @@ void TgaImporterTest::unsupportedBits() {
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
-    const char imageData[] = {
+    const char imageData[]{
         0, 0, data.imageType, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, data.bpp, 0
     };
     CORRADE_VERIFY(importer->openData(imageData));
@@ -227,11 +227,6 @@ void TgaImporterTest::color24() {
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     importer->setFlags(data.flags);
-    const char pixels[] = {
-        3, 2, 1, 4, 3, 2,
-        5, 4, 3, 6, 5, 4,
-        7, 6, 5, 8, 7, 6
-    };
     CORRADE_VERIFY(importer->openData(Color24));
 
     std::ostringstream out;
@@ -244,8 +239,11 @@ void TgaImporterTest::color24() {
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::RGB8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView<char>({
+        3, 2, 1, 4, 3, 2,
+        5, 4, 3, 6, 5, 4,
+        7, 6, 5, 8, 7, 6
+    }), TestSuite::Compare::Container);
     CORRADE_COMPARE(out.str(), data.message24);
 }
 
@@ -255,11 +253,6 @@ void TgaImporterTest::color24Rle() {
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     importer->setFlags(data.flags);
-    const char pixels[] = {
-        3, 2, 1, 4, 3, 2,
-        5, 4, 3, 6, 5, 4,
-        6, 5, 4, 6, 5, 4
-    };
     CORRADE_VERIFY(importer->openData(Color24Rle));
 
     std::ostringstream out;
@@ -272,8 +265,11 @@ void TgaImporterTest::color24Rle() {
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::RGB8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView<char>({
+        3, 2, 1, 4, 3, 2,
+        5, 4, 3, 6, 5, 4,
+        6, 5, 4, 6, 5, 4
+    }), TestSuite::Compare::Container);
     CORRADE_COMPARE(out.str(), data.message24);
 }
 
@@ -289,11 +285,6 @@ void TgaImporterTest::color32() {
         3, 4, 5, 6, 4, 5, 6, 7,
         5, 6, 7, 8, 6, 7, 8, 9
     };
-    const char pixels[] = {
-        3, 2, 1, 4, 4, 3, 2, 5,
-        5, 4, 3, 6, 6, 5, 4, 7,
-        7, 6, 5, 8, 8, 7, 6, 9
-    };
     CORRADE_VERIFY(importer->openData(input));
 
     std::ostringstream out;
@@ -306,8 +297,11 @@ void TgaImporterTest::color32() {
     CORRADE_COMPARE(image->storage().alignment(), 4);
     CORRADE_COMPARE(image->format(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView<char>({
+        3, 2, 1, 4, 4, 3, 2, 5,
+        5, 4, 3, 6, 6, 5, 4, 7,
+        7, 6, 5, 8, 8, 7, 6, 9
+    }), TestSuite::Compare::Container);
     CORRADE_COMPARE(out.str(), data.message32);
 }
 
@@ -327,11 +321,6 @@ void TgaImporterTest::color32Rle() {
                 5, 6, 7, 8,
                 6, 7, 8, 9
     };
-    const char pixels[] = {
-        3, 2, 1, 4, 3, 2, 1, 4,
-        5, 4, 3, 6, 6, 5, 4, 7,
-        7, 6, 5, 8, 8, 7, 6, 9
-    };
     CORRADE_VERIFY(importer->openData(input));
 
     std::ostringstream out;
@@ -344,8 +333,11 @@ void TgaImporterTest::color32Rle() {
     CORRADE_COMPARE(image->storage().alignment(), 4);
     CORRADE_COMPARE(image->format(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView<char>({
+        3, 2, 1, 4, 3, 2, 1, 4,
+        5, 4, 3, 6, 6, 5, 4, 7,
+        7, 6, 5, 8, 8, 7, 6, 9
+    }), TestSuite::Compare::Container);
     CORRADE_COMPARE(out.str(), data.message32);
 }
 
@@ -357,11 +349,6 @@ void TgaImporterTest::grayscale8() {
         3, 4,
         5, 6
     };
-    const char pixels[] {
-        1, 2,
-        3, 4,
-        5, 6
-    };
     CORRADE_VERIFY(importer->openData(data));
 
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
@@ -369,8 +356,11 @@ void TgaImporterTest::grayscale8() {
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView<char>({
+        1, 2,
+        3, 4,
+        5, 6
+    }), TestSuite::Compare::Container);
 }
 
 void TgaImporterTest::grayscale8Rle() {
@@ -386,11 +376,6 @@ void TgaImporterTest::grayscale8Rle() {
         /* 1 pixel 1x repeated */
         '\x00', 6
     };
-    const char pixels[] {
-        1, 2,
-        3, 3,
-        5, 6
-    };
     CORRADE_VERIFY(importer->openData(data));
 
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
@@ -398,8 +383,11 @@ void TgaImporterTest::grayscale8Rle() {
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView<char>({
+        1, 2,
+        3, 3,
+        5, 6
+    }), TestSuite::Compare::Container);
 }
 
 void TgaImporterTest::rleTooLarge() {
