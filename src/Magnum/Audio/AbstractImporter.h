@@ -167,7 +167,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * Returns @cpp true @ce on success, @cpp false @ce otherwise.
          * @see @ref features(), @ref openFile()
          */
-        bool openData(Containers::ArrayView<const char> data);
+        bool openData(Containers::ArrayView<const void> data);
 
         /**
          * @brief Open file

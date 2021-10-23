@@ -87,7 +87,7 @@ void AbstractFont::setFileCallback(Containers::Optional<Containers::ArrayView<co
 
 void AbstractFont::doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) {}
 
-bool AbstractFont::openData(Containers::ArrayView<const char> data, const Float size) {
+bool AbstractFont::openData(Containers::ArrayView<const void> data, const Float size) {
     CORRADE_ASSERT(features() & FontFeature::OpenData,
         "Text::AbstractFont::openData(): feature not supported", false);
 
@@ -95,7 +95,7 @@ bool AbstractFont::openData(Containers::ArrayView<const char> data, const Float 
        the check doesn't be done on the plugin side) because for some file
        formats it could be valid (MagnumFont in particular). */
     close();
-    const Metrics metrics = doOpenData(data, size);
+    const Metrics metrics = doOpenData(Containers::arrayCast<const char>(data), size);
     _size = metrics.size;
     _ascent = metrics.ascent;
     _descent = metrics.descent;

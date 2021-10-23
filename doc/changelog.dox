@@ -2305,7 +2305,7 @@ Released 2019-10-24, tagged as
 -   @cpp Text::AbstractFont::openSingleData() @ce and
     @cpp Text::AbstractFont::openData() @ce taking a list of files are
     deprecated in favor of
-    @ref Text::AbstractFont::openData(Containers::ArrayView<const char>, Float)
+    @ref Text::AbstractFont::openData(Containers::ArrayView<const void>, Float)
     and @ref Text::AbstractFont::setFileCallback()
 -   @ref GL::Buffer::setData() and @ref GL::Buffer::setSubData() no longer has
     overloads taking @ref std::vector / @ref std::array, but instead relies on

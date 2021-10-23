@@ -123,7 +123,7 @@ void AbstractImporter::setFileCallback(Containers::Optional<Containers::ArrayVie
 
 void AbstractImporter::doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) {}
 
-bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
+bool AbstractImporter::openData(Containers::ArrayView<const void> data) {
     CORRADE_ASSERT(features() & ImporterFeature::OpenData,
         "Trade::AbstractImporter::openData(): feature not supported", {});
 
@@ -131,7 +131,7 @@ bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
        the check doesn't be done on the plugin side) because for some file
        formats it could be valid (e.g. OBJ or JSON-based formats). */
     close();
-    doOpenData(Containers::Array<char>{const_cast<char*>(data.data()), data.size(), Implementation::nonOwnedArrayDeleter}, {});
+    doOpenData(Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, {});
     return isOpened();
 }
 

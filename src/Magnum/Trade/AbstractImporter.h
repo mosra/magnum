@@ -633,7 +633,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @p data is not expected to be alive after the function exits.
          * @see @ref features(), @ref openFile()
          */
-        bool openData(Containers::ArrayView<const char> data);
+        bool openData(Containers::ArrayView<const void> data);
 
         /**
          * @brief Open already loaded state

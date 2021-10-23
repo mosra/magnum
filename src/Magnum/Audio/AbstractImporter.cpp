@@ -73,12 +73,12 @@ AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& man
 
 AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager, plugin} {}
 
-bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
+bool AbstractImporter::openData(Containers::ArrayView<const void> data) {
     CORRADE_ASSERT(features() & ImporterFeature::OpenData,
         "Audio::AbstractImporter::openData(): feature not supported", {});
 
     close();
-    doOpenData(data);
+    doOpenData(Containers::arrayCast<const char>(data));
     return isOpened();
 }
 

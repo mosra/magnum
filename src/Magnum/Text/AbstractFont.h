@@ -318,20 +318,20 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Returns @cpp true @ce on success, @cpp false @ce otherwise.
          * @see @ref features(), @ref openFile()
          */
-        bool openData(Containers::ArrayView<const char> data, Float size);
+        bool openData(Containers::ArrayView<const void> data, Float size);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief openData(Containers::ArrayView<const char>, Float)
+        /** @brief @copybrief openData(Containers::ArrayView<const void>, Float)
          * @m_deprecated_since{2019,10} Use @ref openFile() with
          *      @ref setFileCallback() for opening multi-file fonts instead.
          */
         CORRADE_DEPRECATED("use openFile() with setFileCallback() for opening multi-file fonts instead") bool openData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float size);
 
-        /** @brief @copybrief openData(Containers::ArrayView<const char>, Float)
-         * @m_deprecated_since{2019,10} Use @ref openData(Containers::ArrayView<const char>, Float)
+        /** @brief @copybrief openData(Containers::ArrayView<const void>, Float)
+         * @m_deprecated_since{2019,10} Use @ref openData(Containers::ArrayView<const void>, Float)
          *      instead.
          */
-        CORRADE_DEPRECATED("use openData(Containers::ArrayView<const char>, Float) instead") bool openSingleData(Containers::ArrayView<const char> data, Float size);
+        CORRADE_DEPRECATED("use openData(Containers::ArrayView<const void>, Float) instead") bool openSingleData(Containers::ArrayView<const char> data, Float size);
         #endif
 
         /**
