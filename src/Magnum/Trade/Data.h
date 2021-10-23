@@ -42,7 +42,8 @@ namespace Magnum { namespace Trade {
 @m_since{2020,06}
 
 @see @ref DataFlags, @ref AnimationData::dataFlags(),
-    @ref ImageData::dataFlags(), @ref MeshData::indexDataFlags(),
+    @ref ImageData::dataFlags(), @ref MaterialData::attributeDataFlags(),
+    @ref MaterialData::layerDataFlags(), @ref MeshData::indexDataFlags(),
     @ref MeshData::vertexDataFlags()
 */
 enum class DataFlag: UnsignedByte {
