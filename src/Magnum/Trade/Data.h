@@ -51,11 +51,23 @@ importer itself.
 */
 enum class DataFlag: UnsignedByte {
     /**
-     * Data is owned by the instance. If this flag is not set, the instance
-     * might be for example referencing a memory-mapped file or a constant
-     * memory.
+     * Data is owned by the instance, meaning it stays in scope for as long as
+     * the instance. If neither this flag nor @ref DataFlag::ExternallyOwned is
+     * set, the data is considered to be just a temporary allocation and no
+     * assumptions about its lifetime can be made.
      */
     Owned = 1 << 0,
+
+    /**
+     * Data has an owner external to the instance, for example a memory-mapped
+     * file or a constant memory. In general the data lifetime exceeds lifetime
+     * of the instance wrapping it. If neither this flag nor
+     * @ref DataFlag::ExternallyOwned is set, the data is considered to be just
+     * a temporary allocation and no assumptions about its lifetime can be
+     * made.
+     * @m_since_latest
+     */
+    ExternallyOwned = 3 << 0,
 
     /**
      * Data is mutable. If this flag is not set, the instance might be for

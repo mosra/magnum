@@ -73,6 +73,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     #ifdef MAGNUM_BUILD_DEPRECATED
     void openDataDeprecatedFallback();
     #endif
+    void openMemory();
     void openFileAsData();
     void openFileAsDataNotFound();
 
@@ -314,6 +315,7 @@ AbstractImporterTest::AbstractImporterTest() {
               #ifdef MAGNUM_BUILD_DEPRECATED
               &AbstractImporterTest::openDataDeprecatedFallback,
               #endif
+              &AbstractImporterTest::openMemory,
               &AbstractImporterTest::openFileAsData,
               &AbstractImporterTest::openFileAsDataNotFound,
 
@@ -686,6 +688,34 @@ void AbstractImporterTest::openDataDeprecatedFallback() {
     CORRADE_VERIFY(!importer.isOpened());
 }
 #endif
+
+void AbstractImporterTest::openMemory() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override {
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xa5'}),
+                TestSuite::Compare::Container);
+            CORRADE_COMPARE(dataFlags, DataFlag::ExternallyOwned);
+            /* The array should have a custom no-op deleter */
+            CORRADE_VERIFY(data.deleter());
+            _opened = true;
+        }
+
+        bool _opened = false;
+    } importer;
+
+    CORRADE_VERIFY(!importer.isOpened());
+    const char a5 = '\xa5';
+    CORRADE_VERIFY(importer.openMemory({&a5, 1}));
+    CORRADE_VERIFY(importer.isOpened());
+
+    importer.close();
+    CORRADE_VERIFY(!importer.isOpened());
+}
 
 void AbstractImporterTest::openFileAsData() {
     struct: AbstractImporter {

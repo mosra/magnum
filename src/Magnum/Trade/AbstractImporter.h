@@ -49,7 +49,11 @@ namespace Magnum { namespace Trade {
 @see @ref ImporterFeatures, @ref AbstractImporter::features()
 */
 enum class ImporterFeature: UnsignedByte {
-    /** Opening files from raw data using @ref AbstractImporter::openData() */
+    /**
+     * Opening files from raw data or non-temporary memory using
+     * @ref AbstractImporter::openData() or
+     * @relativeref{AbstractImporter,openMemory()}
+     */
     OpenData = 1 << 0,
 
     /** Opening already loaded state using @ref AbstractImporter::openState() */
@@ -199,9 +203,9 @@ expected to always check the count before attempting an import.
 
 Importers are commonly implemented as plugins, which means the concrete
 importer implementation is loaded and instantiated through a @relativeref{Corrade,PluginManager::Manager}. A file is opened using either
-@ref openFile(), @ref openData() or, in rare cases, @ref openState() amd it
-stays open until the importer is destroyed, @ref close() is called or another
-file is opened.
+@ref openFile(), @ref openData() / @ref openMemory() or, in rare cases,
+@ref openState(). Then it stays open until the importer is destroyed,
+@ref close() is called or another file is opened.
 
 With a file open you can then query the importer for particular data. Where
 possible, the import is performed lazily only when you actually request that
@@ -236,9 +240,9 @@ importer plugins.
 @subsection Trade-AbstractImporter-usage-callbacks Loading data from memory, using file callbacks
 
 Besides loading data directly from the filesystem using @ref openFile() like
-shown above, it's possible to use @ref openData() to import data from memory
-(for example from @relativeref{Corrade,Utility::Resource}). Note that the
-particular importer implementation has to support
+shown above, it's possible to use @ref openData() / @ref openMemory() to import
+data from memory (for example from @relativeref{Corrade,Utility::Resource}).
+Note that the particular importer implementation has to support
 @ref ImporterFeature::OpenData for this method to work:
 
 @snippet MagnumTrade.cpp AbstractImporter-usage-data
@@ -629,11 +633,31 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Closes previous file, if it was opened, and tries to open given raw
          * data. Available only if @ref ImporterFeature::OpenData is supported.
-         * Returns @cpp true @ce on success, @cpp false @ce otherwise. The
-         * @p data is not expected to be alive after the function exits.
-         * @see @ref features(), @ref openFile()
+         * Returns @cpp true @ce on success, @cpp false @ce otherwise.
+         *
+         * The @p data is not expected to be alive after the function exits.
+         * Using @ref openMemory() instead as can avoid unnecessary copies in
+         * exchange for stricter requirements on @p data lifetime.
+         * @see @ref features(), @ref openFile(), @ref openState()
          */
         bool openData(Containers::ArrayView<const void> data);
+
+        /**
+         * @brief Open a non-temporary memory
+         * @m_since_latest
+         *
+         * Closes previous file, if it was opened, and tries to open given raw
+         * data. Available only if @ref ImporterFeature::OpenData is supported.
+         * Returns @cpp true @ce on success, @cpp false @ce otherwise.
+         *
+         * Unlike @ref openData(), this function expects @p memory to stay in
+         * scope until the importer is destructed, @ref close() is called or
+         * another file is opened. This allows the implementation to directly
+         * operate on the provided memory, without having to allocate a local
+         * copy to extend its lifetime.
+         * @see @ref features(), @ref openFile(), @ref openState()
+         */
+        bool openMemory(Containers::ArrayView<const void> memory);
 
         /**
          * @brief Open already loaded state
@@ -648,7 +672,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * See documentation of a particular plugin for more information about
          * type and contents of the @p state parameter.
-         * @see @ref features(), @ref openData()
+         * @see @ref features(), @ref openData(), @ref openMemory(),
+         *      @ref openFile()
          */
         bool openState(const void* state, const std::string& filePath = {});
 
@@ -662,7 +687,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * callback to load the file and passes the memory view to
          * @ref openData() instead. See @ref setFileCallback() for more
          * information.
-         * @see @ref features(), @ref openData()
+         * @see @ref features(), @ref openData(), @ref openMemory(),
+         *      @ref openState()
          */
         bool openFile(const std::string& filename);
 
@@ -1637,7 +1663,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         virtual bool doIsOpened() const = 0;
 
         /**
-         * @brief Implementation for @ref openData()
+         * @brief Implementation for @ref openData() and @ref openMemory()
          * @m_since_latest
          *
          * The @p data is mutable or owned depending on the value of
@@ -1657,6 +1683,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *      newly allocated array and passes it to this function. You can
          *      take ownership of the @p data instance instead of allocating a
          *      local copy.
+         * -    If @p dataFlags is @ref DataFlag::ExternallyOwned, it can be
+         *      assumed that @p data will stay in scope until @ref doClose() is
+         *      called or the importer is destructed. This happens when the
+         *      function is called from @ref openMemory().
          *
          * Example workflow in a plugin that needs to preserve access to the
          * input data but wants to avoid allocating a copy if possible:
@@ -1664,8 +1694,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @snippet MagnumTrade.cpp AbstractImporter-doOpenData-ownership
          *
          * The @p dataFlags can never be @ref DataFlag::Mutable without
-         * @ref DataFlag::Owned. The case of @ref DataFlag::Owned without
-         * @ref DataFlag::Mutable is currently unused but reserved for future.
+         * any other flag set. The case of @ref DataFlag::Mutable with
+         * @ref DataFlag::ExternallyOwned is currently unused but reserved for
+         * future.
          */
         virtual void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags);
 

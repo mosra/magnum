@@ -152,6 +152,18 @@ void AbstractImporter::doOpenData(Containers::Array<char>&& data, const DataFlag
     #endif
 }
 
+bool AbstractImporter::openMemory(Containers::ArrayView<const void> memory) {
+    CORRADE_ASSERT(features() & ImporterFeature::OpenData,
+        "Trade::AbstractImporter::openMemory(): feature not supported", {});
+
+    /* We accept empty data here (instead of checking for them and failing so
+       the check doesn't be done on the plugin side) because for some file
+       formats it could be valid (e.g. OBJ or JSON-based formats). */
+    close();
+    doOpenData(Containers::Array<char>{const_cast<char*>(static_cast<const char*>(memory.data())), memory.size(), Implementation::nonOwnedArrayDeleter}, DataFlag::ExternallyOwned);
+    return isOpened();
+}
+
 bool AbstractImporter::openState(const void* state, const std::string& filePath) {
     CORRADE_ASSERT(features() & ImporterFeature::OpenState,
         "Trade::AbstractImporter::openState(): feature not supported", {});

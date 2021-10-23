@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
@@ -59,7 +60,7 @@ struct TgaImporterTest: TestSuite::Tester {
 
     void rleTooLarge();
 
-    /* no openData() as all tests use openData() and openFile() is used below */
+    void openMemory();
     void openTwice();
     void importTwice();
 
@@ -124,6 +125,22 @@ const struct {
         "RLE file too short at pixel 0"}
 };
 
+/* Shared among all plugins that implement data copying optimizations */
+const struct {
+    const char* name;
+    bool(*open)(AbstractImporter&, Containers::ArrayView<const void>);
+} OpenMemoryData[]{
+    {"data", [](AbstractImporter& importer, Containers::ArrayView<const void> data) {
+        /* Copy to ensure the original memory isn't referenced */
+        Containers::Array<char> copy{NoInit, data.size()};
+        Utility::copy(Containers::arrayCast<const char>(data), copy);
+        return importer.openData(copy);
+    }},
+    {"memory", [](AbstractImporter& importer, Containers::ArrayView<const void> data) {
+        return importer.openMemory(data);
+    }},
+};
+
 TgaImporterTest::TgaImporterTest() {
     addTests({&TgaImporterTest::openEmpty});
 
@@ -148,6 +165,9 @@ TgaImporterTest::TgaImporterTest() {
               &TgaImporterTest::grayscale8Rle,
 
               &TgaImporterTest::rleTooLarge});
+
+    addInstancedTests({&TgaImporterTest::openMemory},
+        Containers::arraySize(OpenMemoryData));
 
     addTests({&TgaImporterTest::openTwice,
               &TgaImporterTest::importTwice});
@@ -408,6 +428,30 @@ void TgaImporterTest::rleTooLarge() {
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->image2D(0));
     CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): RLE data larger than advertised Vector(2, 3) pixels at byte 28\n");
+}
+
+void TgaImporterTest::openMemory() {
+    /* same as dxt1() except that it uses openData() & openMemory() to test
+       data copying on import */
+
+    auto&& data = OpenMemoryData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    /* Eh fuck off, GCC, why can't you convert the array to an ArrayView on
+       your own if it's passed to a function pointer?! Clang can. */
+    CORRADE_VERIFY(data.open(*importer, Containers::arrayView(Color24)));
+
+    Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->storage().alignment(), 1);
+    CORRADE_COMPARE(image->format(), PixelFormat::RGB8Unorm);
+    CORRADE_COMPARE(image->size(), Vector2i(2, 3));
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView<char>({
+        3, 2, 1, 4, 3, 2,
+        5, 4, 3, 6, 5, 4,
+        7, 6, 5, 8, 7, 6
+    }), TestSuite::Compare::Container);
 }
 
 void TgaImporterTest::openTwice() {

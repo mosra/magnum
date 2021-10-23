@@ -228,6 +228,9 @@ See also:
     @relativeref{Trade::AbstractImporter,clearFlags()} convenience helpers that
     are encouraged over @relativeref{Trade::AbstractImporter,setFlags()} as it
     avoid accidentally clearing default flags potentially added in the future.
+-   New @ref Trade::AbstractImporter::openMemory() function for passing
+    non-temporary memory to the importer, allowing the implementations to avoid
+    allocating an internal copy
 -   Ability to convert also 1D and 3D images with the
     @ref magnum-imageconverter "magnum-imageconverter" utility, as well as
     combining layers into images of one dimension more (or vice versa) and
@@ -373,8 +376,9 @@ See also:
 @subsubsection changelog-latest-changes-trade Trade library
 
 -   A changed signature of the @ref Trade::AbstractImporter::doOpenData(Containers::Array<char>&&, DataFlags)
-    function allows importers to take over the ownership of passed data instead
-    of allocating a local copy, saving as much as half memory in certain
+    function and a new @ref Trade::DataFlag::ExternallyOwned flag that allows
+    importers to reason about ownership of passed data instead of being forced
+    to allocate a local copy, saving as much as half memory in certain
     importer implementations
 -   @ref Trade::AbstractImageConverter::doConvertToFile() and
     @ref Trade::AbstractSceneConverter::doConvertToFile() are now

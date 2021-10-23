@@ -140,7 +140,7 @@ Containers::Pointer<Trade::AbstractImporter> importer;
 /* [AbstractImporter-usage-data] */
 Utility::Resource rs{"data"};
 Containers::ArrayView<const char> data = rs.getRaw("image.png");
-if(!importer->openData(data))
+if(!importer->openData(data)) /* or openMemory() */
     Fatal{} << "Can't open image data with AnyImageImporter";
 
 // import & use the image like above ...
@@ -229,7 +229,7 @@ struct: Trade::AbstractImporter {
 void doOpenData(Containers::Array<char>&& data, Trade::DataFlags dataFlags) override
 {
     /* Take over the existing array or copy the data if we can't */
-    if(dataFlags & Trade::DataFlag::Owned) {
+    if(dataFlags & (Trade::DataFlag::Owned|Trade::DataFlag::ExternallyOwned)) {
         _in = std::move(data);
     } else {
         _in = Containers::Array<char>{NoInit, data.size()};
