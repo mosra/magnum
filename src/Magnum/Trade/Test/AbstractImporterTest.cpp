@@ -596,19 +596,6 @@ void AbstractImporterTest::setFlags() {
     CORRADE_COMPARE(importer._flags, ImporterFlag(4));
 }
 
-void AbstractImporterTest::setFlagsNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.flags(), ImporterFlags{});
-    importer.setFlags(ImporterFlag::Verbose);
-    CORRADE_COMPARE(importer.flags(), ImporterFlag::Verbose);
-    /* Should just work, no need to implement the function */
-}
-
 void AbstractImporterTest::setFlagsFileOpened() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -630,6 +617,19 @@ void AbstractImporterTest::setFlagsFileOpened() {
         /* These all call into setFlags(), so the same assert is reused */
         "Trade::AbstractImporter::setFlags(): can't be set while a file is opened\n"
         "Trade::AbstractImporter::setFlags(): can't be set while a file is opened\n");
+}
+
+void AbstractImporterTest::setFlagsNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_COMPARE(importer.flags(), ImporterFlags{});
+    importer.setFlags(ImporterFlag::Verbose);
+    CORRADE_COMPARE(importer.flags(), ImporterFlag::Verbose);
+    /* Should just work, no need to implement the function */
 }
 
 void AbstractImporterTest::openData() {
