@@ -881,8 +881,8 @@ class MAGNUM_GL_EXPORT Context {
         MAGNUM_GL_LOCAL void setupDriverWorkarounds();
 
         #ifndef MAGNUM_TARGET_GLES
-        MAGNUM_GL_LOCAL bool isCoreProfileImplementationDefault();
-        MAGNUM_GL_LOCAL bool isCoreProfileImplementationNV();
+        MAGNUM_GL_LOCAL static bool isCoreProfileImplementationDefault(Context& self);
+        MAGNUM_GL_LOCAL static bool isCoreProfileImplementationNV(Context& self);
         #endif
 
         void(*_functionLoader)(Context&){};

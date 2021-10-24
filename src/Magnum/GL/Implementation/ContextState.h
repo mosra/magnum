@@ -28,13 +28,6 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
 
-#ifdef _MSC_VER
-/* Otherwise the member function pointers will have different size based on
-   whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
-   IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
-#include "Magnum/GL/Context.h"
-#endif
-
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct ContextState {
@@ -47,7 +40,7 @@ struct ContextState {
         Compatibility
     } coreProfile = CoreProfile::Initial;
 
-    bool (Context::*isCoreProfileImplementation)();
+    bool(*isCoreProfileImplementation)(Context&);
     #endif
 };
 

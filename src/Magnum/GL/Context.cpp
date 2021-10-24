@@ -1129,7 +1129,7 @@ bool Context::isCoreProfileInternal(Implementation::ContextState& state) {
            that */
         if(_version < Version::GL320)
             value = Implementation::ContextState::CoreProfile::Compatibility;
-        else value = (this->*state.isCoreProfileImplementation)() ?
+        else value = state.isCoreProfileImplementation(*this) ?
             Implementation::ContextState::CoreProfile::Core :
             Implementation::ContextState::CoreProfile::Compatibility;
     }
@@ -1137,14 +1137,14 @@ bool Context::isCoreProfileInternal(Implementation::ContextState& state) {
     return value == Implementation::ContextState::CoreProfile::Core;
 }
 
-bool Context::isCoreProfileImplementationDefault() {
+bool Context::isCoreProfileImplementationDefault(Context&) {
     GLint value = 0;
     glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &value);
     return value & GL_CONTEXT_CORE_PROFILE_BIT;
 }
 
-bool Context::isCoreProfileImplementationNV() {
-    auto extensions = extensionStrings();
+bool Context::isCoreProfileImplementationNV(Context& self) {
+    auto extensions = self.extensionStrings();
     return std::find(extensions.begin(), extensions.end(), "GL_ARB_compatibility") == extensions.end();
 }
 #endif
