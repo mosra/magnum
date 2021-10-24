@@ -566,6 +566,41 @@ name doesn't exist.
 -   Texture names using @ref textureName() & @ref textureForName(), imported
     with @ref texture(const std::string&)
 
+@subsection Trade-AbstractImporter-usage-zerocopy Zero-copy data import
+
+Some file formats have the data structured in a way that allows them to be
+loaded directly into memory or onto the GPU and used as-is. If you memory-map
+such a a file and open it with a capable importer, it can give you a view on a
+sub-range of the memory-mapped file instead of allocating a copy. Importers
+advertise such capabilities with @ref ImporterFeature::ZeroCopyImages,
+@relativeref{ImporterFeature,ZeroCopyMeshIndices},
+@relativeref{ImporterFeature,ZeroCopyMeshVertices} and related flags. Because
+this puts additional constraints on data lifetime, you have to explicitly
+enable the behavior with @ref ImporterFlag::ZeroCopy. Then use
+@ref openMemory() to open the memory and ensure it stays in scope for as long
+as you operate on the instances returned from the importer:
+
+@snippet MagnumTrade.cpp AbstractImporter-usage-zerocopy
+
+Returned instances that reference the original memory are indicated with a
+presence of @ref DataFlag::ExternallyOwned. If you use the mutable
+@ref openMemory(Containers::ArrayView<void>) overload, the returned data will
+have also @ref DataFlag::Mutable set, allowing you to do in-place modifications
+on the original file.
+
+In some cases the importer might still need to process the data on import ---
+for example converting image endianness or flipping image origin, and in that
+case it'll still return a copy of the data, indicated with
+@ref DataFlag::Owned instead. To enforce zero-copy behavior, enable one of the
+@ref ImporterFlag::ForceZeroCopyImages, ... flags, providing the plugin
+actually supports the corresponding feature. In that case import of particular
+data will fail instead of returning a copy, which is useful when you want to,
+for example, operate in-place on the imported file or when it's needed to avoid
+accidental slowdowns.
+
+See documentation of a particular importer plugin for information about
+provided zero-copy features and their limitations.
+
 @subsection Trade-AbstractImporter-usage-state Internal importer state
 
 Some importers, especially ones that make use of well-known external libraries,
