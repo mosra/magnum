@@ -77,8 +77,8 @@ information.
 
 @code{.sh}
 magnum-sceneconverter [-h|--help] [-I|--importer IMPORTER]
-    [-I|--converter CONVERTER]... [--plugin-dir DIR] [--remove-duplicates]
-    [--remove-duplicates-fuzzy EPSILON]
+    [-I|--converter CONVERTER]... [--plugin-dir DIR] [--map]
+    [--remove-duplicates] [--remove-duplicates-fuzzy EPSILON]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]... [--mesh MESH]
     [--level LEVEL] [--info-animations] [--info-images] [--info-lights]
@@ -96,6 +96,8 @@ Arguments:
     @ref Trade::AnySceneImporter "AnySceneImporter")
 -   `-C`, `--converter CONVERTER` --- scene converter plugin(s)
 -   `--plugin-dir DIR` --- override base plugin dir
+-   `--map` --- memory-map the input for zero-copy import (works only for
+    standalone files)
 -   `--only-attributes "i j …"` --- include only attributes of given IDs in the
     output
 -   `--remove-duplicates` --- remove duplicate vertices using
@@ -225,6 +227,9 @@ int main(int argc, char** argv) {
         .addOption('I', "importer", "AnySceneImporter").setHelp("importer", "scene importer plugin")
         .addArrayOption('C', "converter").setHelp("converter", "scene converter plugin(s)")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
+        #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
+        .addBooleanOption("map").setHelp("map", "memory-map the input for zero-copy import (works only for standalone files)")
+        #endif
         .addOption("only-attributes").setHelp("only-attributes", "include only attributes of given IDs in the output", "\"i j …\"")
         .addBooleanOption("remove-duplicates").setHelp("remove-duplicates", "remove duplicate vertices in the mesh after import")
         .addOption("remove-duplicates-fuzzy").setHelp("remove-duplicates-fuzzy", "remove duplicate vertices with fuzzy comparison in the mesh after import", "EPSILON")
@@ -292,7 +297,17 @@ used.)")
 
     std::chrono::high_resolution_clock::duration importTime;
 
-    /* Open the file */
+    /* Open the file or map it if requested */
+    #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
+    Containers::Array<const char, Utility::Directory::MapDeleter> mapped;
+    if(args.isSet("map")) {
+        Duration d{importTime};
+        if(!(mapped = Utility::Directory::mapRead(args.value("input"))) || !importer->openMemory(mapped)) {
+            Error() << "Cannot memory-map file" << args.value("input");
+            return 3;
+        }
+    } else
+    #endif
     {
         Duration d{importTime};
         if(!importer->openFile(args.value("input"))) {

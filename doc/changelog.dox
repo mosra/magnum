@@ -230,7 +230,9 @@ See also:
     avoid accidentally clearing default flags potentially added in the future.
 -   New @ref Trade::AbstractImporter::openMemory() function for passing
     non-temporary memory to the importer, allowing the implementations to avoid
-    allocating an internal copy
+    allocating an internal copy; for benchmarking and testing purposes it's
+    also exposed via a `--map` option in the
+    @ref magnum-sceneconverter "magnum-sceneconverter" utility
 -   Ability to convert also 1D and 3D images with the
     @ref magnum-imageconverter "magnum-imageconverter" utility, as well as
     combining layers into images of one dimension more (or vice versa) and
