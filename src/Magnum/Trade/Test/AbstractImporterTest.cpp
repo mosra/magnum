@@ -667,14 +667,12 @@ void AbstractImporterTest::openDataDeprecatedFallback() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        CORRADE_IGNORE_DEPRECATED_PUSH
         void doOpenData(Containers::ArrayView<const char> data) override {
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xa5'}),
                 TestSuite::Compare::Container);
             _opened = true;
         }
-        CORRADE_IGNORE_DEPRECATED_POP
 
         bool _opened = false;
     } importer;

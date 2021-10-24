@@ -1706,7 +1706,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_deprecated_since_latest Implement @ref doOpenData(Containers::Array<char>&&, DataFlags)
          *      instead.
          */
-        virtual CORRADE_DEPRECATED("implement doOpenData(Containers::Array<char>&&, DataFlags) instead") void doOpenData(Containers::ArrayView<const char> data);
+        /* MSVC warns when overriding such methods and there's no way to
+           suppress that warning, making the RT build (which treats deprecation
+           warnings as errors) fail and other builds extremely noisy. So
+           disabling those on MSVC. */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doOpenData(Containers::Array<char>&&, DataFlags) instead")
+        #endif
+        virtual void doOpenData(Containers::ArrayView<const char> data);
         #endif
 
         /** @brief Implementation for @ref openState() */
