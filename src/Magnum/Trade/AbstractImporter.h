@@ -113,6 +113,28 @@ enum class ImporterFlag: UnsignedByte {
      */
     Verbose = 1 << 0,
 
+    /**
+     * Opt-in to zero-copy import, if possible. When this flag is set and
+     * @ref AbstractImporter::openMemory() is used, returned @ref AnimationData,
+     * @ref ImageData, @ref MaterialData, @ref MeshData and @ref SkinData
+     * instances may be views on memory passed to
+     * @relativeref{AbstractImporter,openMemory()} instead of allocated copies,
+     * indicated with @ref DataFlag::ExternallyOwned.
+     *
+     * Since it's not always possible to directly reference the input memory
+     * (for example because the input data may need to be parsed from text,
+     * gathered from an incompatible data layout or patched in some way), this
+     * flag doesn't put any requirement on the importer --- plugins that don't
+     * support zero-copy import will behave the same as if this flag was not
+     * set.
+     *
+     * Setting this flag however means you're responsible to keep the memory
+     * passed to @relativeref{AbstractImporter,openMemory()} in scope for as
+     * long as any `*Data` instances referencing it are alive.
+     * @m_since_latest
+     */
+    ZeroCopy = 1 << 1,
+
     /** @todo ~~Y flip~~ Y up for images, "I want to import just once, don't copy" ... */
 };
 
@@ -654,7 +676,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * scope until the importer is destructed, @ref close() is called or
          * another file is opened. This allows the implementation to directly
          * operate on the provided memory, without having to allocate a local
-         * copy to extend its lifetime.
+         * copy to extend its lifetime. See also @ref ImporterFlag::ZeroCopy
+         * for a possibility of further optimizations.
          * @see @ref features(), @ref openFile(), @ref openState()
          */
         bool openMemory(Containers::ArrayView<const void> memory);

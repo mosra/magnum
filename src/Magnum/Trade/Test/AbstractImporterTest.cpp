@@ -586,14 +586,13 @@ void AbstractImporterTest::setFlags() {
     CORRADE_COMPARE(importer.flags(), ImporterFlag::Verbose);
     CORRADE_COMPARE(importer._flags, ImporterFlag::Verbose);
 
-    /** @todo use a real flag when we have more than one */
-    importer.addFlags(ImporterFlag(4));
-    CORRADE_COMPARE(importer.flags(), ImporterFlag::Verbose|ImporterFlag(4));
-    CORRADE_COMPARE(importer._flags, ImporterFlag::Verbose|ImporterFlag(4));
+    importer.addFlags(ImporterFlag::ZeroCopy);
+    CORRADE_COMPARE(importer.flags(), ImporterFlag::Verbose|ImporterFlag::ZeroCopy);
+    CORRADE_COMPARE(importer._flags, ImporterFlag::Verbose|ImporterFlag::ZeroCopy);
 
     importer.clearFlags(ImporterFlag::Verbose);
-    CORRADE_COMPARE(importer.flags(), ImporterFlag(4));
-    CORRADE_COMPARE(importer._flags, ImporterFlag(4));
+    CORRADE_COMPARE(importer.flags(), ImporterFlag::ZeroCopy);
+    CORRADE_COMPARE(importer._flags, ImporterFlag::ZeroCopy);
 }
 
 void AbstractImporterTest::setFlagsFileOpened() {
