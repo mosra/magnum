@@ -48,7 +48,7 @@ namespace Magnum { namespace Trade {
 
 @see @ref ImporterFeatures, @ref AbstractImporter::features()
 */
-enum class ImporterFeature: UnsignedByte {
+enum class ImporterFeature: UnsignedShort {
     /**
      * Opening files from raw data or non-temporary memory using
      * @ref AbstractImporter::openData() or
@@ -68,7 +68,121 @@ enum class ImporterFeature: UnsignedByte {
      * See @ref Trade-AbstractImporter-usage-callbacks and particular importer
      * documentation for more information.
      */
-    FileCallback = 1 << 2
+    FileCallback = 1 << 2,
+
+    /**
+     * Importing animations without data copies. If the
+     * @ref AbstractImporter::openMemory() function is used,
+     * @ref ImporterFlag::ZeroCopy is set and the animation data doesn't need
+     * to be processed in any way during the import,
+     * @ref AbstractImporter::animation() will then return an
+     * @ref AnimationData that's a view on the memory passed to
+     * @relativeref{AbstractImporter,openMemory()}, indicated with
+     * @ref DataFlag::ExternallyOwned in @ref AnimationData::dataFlags().
+     * @see @ref ImporterFlag::ForceZeroCopyAnimations
+     * @m_since_latest
+     */
+    ZeroCopyAnimations = 1 << 3,
+
+    /**
+     * Importing images without data copies. If the
+     * @ref AbstractImporter::openMemory() function is used,
+     * @ref ImporterFlag::ZeroCopy is set and the image data doesn't need to be
+     * processed in any way during the import,
+     * @ref AbstractImporter::image1D() / @relativeref{AbstractImporter,image2D()}
+     * / @relativeref{AbstractImporter,image3D()} will then return an
+     * @ref ImageData that's a view on the memory passed to
+     * @relativeref{AbstractImporter,openMemory()}, indicated with
+     * @ref DataFlag::ExternallyOwned in @ref ImageData::dataFlags().
+     * @see @ref ImporterFlag::ForceZeroCopyImages
+     * @m_since_latest
+     */
+    ZeroCopyImages = 1 << 4,
+
+    /**
+     * Importing material attributes without data copies. If the
+     * @ref AbstractImporter::openMemory() function is used,
+     * @ref ImporterFlag::ZeroCopy is set and the material attribute data
+     * doesn't need to be processed in any way during the import,
+     * @ref AbstractImporter::material() will then return a
+     * @ref MaterialData with attributes being a view on the memory passed to
+     * @relativeref{AbstractImporter,openMemory()}, indicated with
+     * @ref DataFlag::ExternallyOwned in @ref MaterialData::attributeDataFlags().
+     * @see @ref ImporterFlag::ForceZeroCopyMaterialAttributes
+     * @m_since_latest
+     */
+    ZeroCopyMaterialAttributes = 1 << 5,
+
+    /**
+     * Importing material layers without data copies. If the
+     * @ref AbstractImporter::openMemory() function is used,
+     * @ref ImporterFlag::ZeroCopy is set and the material layer data doesn't
+     * need to be processed in any way during the import,
+     * @ref AbstractImporter::material() will then return a
+     * @ref MaterialData with layers being a view on the memory passed to
+     * @relativeref{AbstractImporter,openMemory()}, indicated with
+     * @ref DataFlag::ExternallyOwned in @ref MaterialData::layerDataFlags().
+     * @see @ref ImporterFlag::ForceZeroCopyMaterialLayers
+     * @m_since_latest
+     */
+    ZeroCopyMaterialLayers = 1 << 6,
+
+    /**
+     * Importing mesh indices without data copies. If the
+     * @ref AbstractImporter::openMemory() function is used,
+     * @ref ImporterFlag::ZeroCopy is set and the mesh index data doesn't need
+     * to be processed in any way during the import,
+     * @ref AbstractImporter::mesh() will then return a @ref MeshData with
+     * indices being a view on the memory passed to
+     * @relativeref{AbstractImporter,openMemory()}, indicated with
+     * @ref DataFlag::ExternallyOwned in @ref MeshData::indexDataFlags().
+     * @see @ref ImporterFlag::ForceZeroCopyMeshIndices
+     * @m_since_latest
+     */
+    ZeroCopyMeshIndices = 1 << 7,
+
+    /**
+     * Importing mesh vertices without data copies. If the
+     * @ref AbstractImporter::openMemory() function is used,
+     * @ref ImporterFlag::ZeroCopy is set and the mesh vertex data doesn't need
+     * to be processed in any way during the import,
+     * @ref AbstractImporter::mesh() will then return a @ref MeshData with
+     * vertices being a view on the memory passed to
+     * @relativeref{AbstractImporter,openMemory()}, indicated with
+     * @ref DataFlag::ExternallyOwned in @ref MeshData::vertexDataFlags().
+     * @see @ref ImporterFlag::ForceZeroCopyMeshVertices
+     * @m_since_latest
+     */
+    ZeroCopyMeshVertices = 1 << 8,
+
+    /**
+     * Importing skin joints without data copies. If the
+     * @ref AbstractImporter::openMemory() function is used,
+     * @ref ImporterFlag::ZeroCopy is set and the skin joint data doesn't need
+     * to be processed in any way during the import,
+     * @ref AbstractImporter::skin2D() / @relativeref{AbstractImporter,skin3D()}
+     * will then return a @ref SkinData with vertices being a view on the
+     * memory passed to @relativeref{AbstractImporter,openMemory()}, indicated
+     * with @ref DataFlag::ExternallyOwned in @ref SkinData::jointDataFlags().
+     * @see @ref ImporterFlag::ForceZeroCopySkinJoints
+     * @m_since_latest
+     */
+    ZeroCopySkinJoints = 1 << 9,
+
+    /**
+     * Importing skin inverse bind matrices without data copies. If the
+     * @ref AbstractImporter::openMemory() function is used,
+     * @ref ImporterFlag::ZeroCopy is set and the skin joint data doesn't need
+     * to be processed in any way during the import,
+     * @ref AbstractImporter::skin2D() / @relativeref{AbstractImporter,skin3D()}
+     * will then return a @ref SkinData with vertices being a view on the
+     * memory passed to @relativeref{AbstractImporter,openMemory()}, indicated
+     * with @ref DataFlag::ExternallyOwned in
+     * @ref SkinData::inverseBindMatrixDataFlags().
+     * @see @ref ImporterFlag::ForceZeroCopySkinInverseBindMatrices
+     * @m_since_latest
+     */
+    ZeroCopySkinInverseBindMatrices = 1 << 10
 };
 
 /**
@@ -100,7 +214,7 @@ typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallb
 
 @see @ref ImporterFlags, @ref AbstractImporter::setFlags()
 */
-enum class ImporterFlag: UnsignedByte {
+enum class ImporterFlag: UnsignedShort {
     /**
      * Print verbose diagnostic during import. By default the importer only
      * prints messages on error or when some operation might cause unexpected
@@ -134,6 +248,122 @@ enum class ImporterFlag: UnsignedByte {
      * @m_since_latest
      */
     ZeroCopy = 1 << 1,
+
+    /**
+     * Force zero-copy import of animation data opened through
+     * @ref AbstractImporter::openMemory(). Implies
+     * @ref ImporterFlag::ZeroCopy, can be set only if the importer supports
+     * @ref ImporterFeature::ZeroCopyAnimations.
+     *
+     * By default, if the data has to be processed in some way, preventing
+     * zero-copy import, the importer will return a modified copy of the data.
+     * Setting this flag will cause @ref AbstractImporter::animation() to fail
+     * if it can't perform a zero-copy import.
+     * @m_since_latest
+     */
+    ForceZeroCopyAnimations = ZeroCopy|(1 << 2),
+
+    /**
+     * Force zero-copy import of image data opened through
+     * @ref AbstractImporter::openMemory(). Implies
+     * @ref ImporterFlag::ZeroCopy, can be set only if the importer supports
+     * @ref ImporterFeature::ZeroCopyImages.
+     *
+     * By default, if the data has to be processed in some way, preventing
+     * zero-copy import, the importer will return a modified copy of the data.
+     * Setting this flag will cause @ref AbstractImporter::image1D() /
+     * @relativeref{AbstractImporter,image2D()} /
+     * @relativeref{AbstractImporter,image3D()} to fail if it can't perform a
+     * zero-copy import.
+     * @m_since_latest
+     */
+    ForceZeroCopyImages = ZeroCopy|(1 << 3),
+
+    /**
+     * Force zero-copy import of material attribute data opened through
+     * @ref AbstractImporter::openMemory(). Implies
+     * @ref ImporterFlag::ZeroCopy, can be set only if the importer supports
+     * @ref ImporterFeature::ZeroCopyMaterialAttributes.
+     *
+     * By default, if the data has to be processed in some way, preventing
+     * zero-copy import, the importer will return a modified copy of the data.
+     * Setting this flag will cause @ref AbstractImporter::material() to fail
+     * if it can't perform a zero-copy import.
+     * @m_since_latest
+     */
+    ForceZeroCopyMaterialAttributes = ZeroCopy|(1 << 4),
+
+    /**
+     * Force zero-copy import of material layer data opened through
+     * @ref AbstractImporter::openMemory(). Implies
+     * @ref ImporterFlag::ZeroCopy, can be set only if the importer supports
+     * @ref ImporterFeature::ZeroCopyMaterialLayers.
+     *
+     * By default, if the data has to be processed in some way, preventing
+     * zero-copy import, the importer will return a modified copy of the data.
+     * Setting this flag will cause @ref AbstractImporter::material() to fail
+     * if it can't perform a zero-copy import.
+     * @m_since_latest
+     */
+    ForceZeroCopyMaterialLayers = ZeroCopy|(1 << 5),
+
+    /**
+     * Force zero-copy import of mesh index data opened through
+     * @ref AbstractImporter::openMemory(). Implies
+     * @ref ImporterFlag::ZeroCopy, can be set only if the importer supports
+     * @ref ImporterFeature::ZeroCopyMeshIndices.
+     *
+     * By default, if the data has to be processed in some way, preventing
+     * zero-copy import, the importer will return a modified copy of the data.
+     * Setting this flag will cause @ref AbstractImporter::mesh() to fail if it
+     * can't perform a zero-copy import.
+     * @m_since_latest
+     */
+    ForceZeroCopyMeshIndices = ZeroCopy|(1 << 6),
+
+    /**
+     * Force zero-copy import of mesh vertex data opened through
+     * @ref AbstractImporter::openMemory(). Implies
+     * @ref ImporterFlag::ZeroCopy, can be set only if the importer supports
+     * @ref ImporterFeature::ZeroCopyMeshVertices.
+     *
+     * By default, if the data has to be processed in some way, preventing
+     * zero-copy import, the importer will return a modified copy of the data.
+     * Setting this flag will cause @ref AbstractImporter::mesh() to fail if it
+     * can't perform a zero-copy import.
+     * @m_since_latest
+     */
+    ForceZeroCopyMeshVertices = ZeroCopy|(1 << 7),
+
+    /**
+     * Force zero-copy import of skin joint data opened through
+     * @ref AbstractImporter::openMemory(). Implies
+     * @ref ImporterFlag::ZeroCopy, can be set only if the importer supports
+     * @ref ImporterFeature::ZeroCopySkinJoints.
+     *
+     * By default, if the data has to be processed in some way, preventing
+     * zero-copy import, the importer will return a modified copy of the data.
+     * Setting this flag will cause @ref AbstractImporter::skin2D() /
+     * @relativeref{AbstractImporter,skin3D()} to fail if it can't perform a
+     * zero-copy import.
+     * @m_since_latest
+     */
+    ForceZeroCopySkinJoints = ZeroCopy|(1 << 8),
+
+    /**
+     * Force zero-copy import of skin inverse bind matrix data opened through
+     * @ref AbstractImporter::openMemory(). Implies
+     * @ref ImporterFlag::ZeroCopy, can be set only if the importer supports
+     * @ref ImporterFeature::ZeroCopySkinInverseBindMatrices.
+     *
+     * By default, if the data has to be processed in some way, preventing
+     * zero-copy import, the importer will return a modified copy of the data.
+     * Setting this flag will cause @ref AbstractImporter::skin2D() /
+     * @relativeref{AbstractImporter,skin3D()} to fail if it can't perform a
+     * zero-copy import.
+     * @m_since_latest
+     */
+    ForceZeroCopySkinInverseBindMatrices = ZeroCopy|(1 << 9)
 
     /** @todo ~~Y flip~~ Y up for images, "I want to import just once, don't copy" ... */
 };

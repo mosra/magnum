@@ -98,6 +98,30 @@ AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, cons
 void AbstractImporter::setFlags(ImporterFlags flags) {
     CORRADE_ASSERT(!isOpened(),
         "Trade::AbstractImporter::setFlags(): can't be set while a file is opened", );
+    #ifndef CORRADE_NO_ASSERT
+    /* Separating the common string prefix in a hope that the compiler
+       deduplicates the literals to reduce binary size. There's probably also a
+       fancy loop-ish way to do this if we'd have the same binary value for the
+       features and flags but it's Sunday evening and my brain capacity is
+       limited. */
+    const ImporterFeatures features = this->features();
+    CORRADE_ASSERT(!(flags >= ImporterFlag::ForceZeroCopyAnimations) || (features & ImporterFeature::ZeroCopyAnimations),
+        "Trade::AbstractImporter::setFlags(): importer doesn't support zero-copy" << "animations", );
+    CORRADE_ASSERT(!(flags >= ImporterFlag::ForceZeroCopyImages) || (features & ImporterFeature::ZeroCopyImages),
+        "Trade::AbstractImporter::setFlags(): importer doesn't support zero-copy" << "images", );
+    CORRADE_ASSERT(!(flags >= ImporterFlag::ForceZeroCopyMaterialAttributes) || (features & ImporterFeature::ZeroCopyMaterialAttributes),
+        "Trade::AbstractImporter::setFlags(): importer doesn't support zero-copy" << "material attributes", );
+    CORRADE_ASSERT(!(flags >= ImporterFlag::ForceZeroCopyMaterialLayers) || (features & ImporterFeature::ZeroCopyMaterialLayers),
+        "Trade::AbstractImporter::setFlags(): importer doesn't support zero-copy" << "material layers", );
+    CORRADE_ASSERT(!(flags >= ImporterFlag::ForceZeroCopyMeshIndices) || (features & ImporterFeature::ZeroCopyMeshIndices),
+        "Trade::AbstractImporter::setFlags(): importer doesn't support zero-copy" << "mesh indices", );
+    CORRADE_ASSERT(!(flags >= ImporterFlag::ForceZeroCopyMeshVertices) || (features & ImporterFeature::ZeroCopyMeshVertices),
+        "Trade::AbstractImporter::setFlags(): importer doesn't support zero-copy" << "mesh vertices", );
+    CORRADE_ASSERT(!(flags >= ImporterFlag::ForceZeroCopySkinJoints) || (features & ImporterFeature::ZeroCopySkinJoints),
+        "Trade::AbstractImporter::setFlags(): importer doesn't support zero-copy" << "skin joints", );
+    CORRADE_ASSERT(!(flags >= ImporterFlag::ForceZeroCopySkinInverseBindMatrices) || (features & ImporterFeature::ZeroCopySkinInverseBindMatrices),
+        "Trade::AbstractImporter::setFlags(): importer doesn't support zero-copy" << "skin inverse bind matrices", );
+    #endif
     _flags = flags;
     doSetFlags(flags);
 }
@@ -1155,11 +1179,19 @@ Debug& operator<<(Debug& debug, const ImporterFeature value) {
         _c(OpenData)
         _c(OpenState)
         _c(FileCallback)
+        _c(ZeroCopyAnimations)
+        _c(ZeroCopyImages)
+        _c(ZeroCopyMaterialAttributes)
+        _c(ZeroCopyMaterialLayers)
+        _c(ZeroCopyMeshIndices)
+        _c(ZeroCopyMeshVertices)
+        _c(ZeroCopySkinJoints)
+        _c(ZeroCopySkinInverseBindMatrices)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const ImporterFeatures value) {
@@ -1177,17 +1209,33 @@ Debug& operator<<(Debug& debug, const ImporterFlag value) {
         #define _c(v) case ImporterFlag::v: return debug << "::" #v;
         _c(Verbose)
         _c(ZeroCopy)
+        _c(ForceZeroCopyAnimations)
+        _c(ForceZeroCopyImages)
+        _c(ForceZeroCopyMaterialAttributes)
+        _c(ForceZeroCopyMaterialLayers)
+        _c(ForceZeroCopyMeshIndices)
+        _c(ForceZeroCopyMeshVertices)
+        _c(ForceZeroCopySkinJoints)
+        _c(ForceZeroCopySkinInverseBindMatrices)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const ImporterFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "Trade::ImporterFlags{}", {
         ImporterFlag::Verbose,
-        ImporterFlag::ZeroCopy});
+        ImporterFlag::ZeroCopy,
+        ImporterFlag::ForceZeroCopyAnimations,
+        ImporterFlag::ForceZeroCopyImages,
+        ImporterFlag::ForceZeroCopyMaterialAttributes,
+        ImporterFlag::ForceZeroCopyMaterialLayers,
+        ImporterFlag::ForceZeroCopyMeshIndices,
+        ImporterFlag::ForceZeroCopyMeshVertices,
+        ImporterFlag::ForceZeroCopySkinJoints,
+        ImporterFlag::ForceZeroCopySkinInverseBindMatrices});
 }
 
 }}
