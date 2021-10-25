@@ -1901,6 +1901,34 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
     protected:
         /**
+         * @brief Open data that originated elsewhere
+         * @m_since_latest
+         *
+         * Closes previous file, if it was opened, and tries to open given raw
+         * data. Available only if @ref ImporterFeature::OpenData is supported.
+         * Returns @cpp true @ce on success, @cpp false @ce otherwise.
+         *
+         * Designed to be called instead of the public
+         * @ref openData(Containers::ArrayView<const void>) by importers that
+         * proxy loading to other plugins, with the intent of enabling
+         * zero-copy import in the proxied-to implementations as well. Possible
+         * scenarios:
+         *
+         * -    Called from inside a @ref doOpenData() implementation that
+         *      proxies loading to other plugins (for example based on file
+         *      type). In this case it's meant to pass through the @p data and
+         *      @p dataFlags unchanged.
+         * -    Called from inside (for example) a @ref doImage2D() in a scene
+         *      importer that delegates image loading to specialized plugins.
+         *      Assuming the delegated-to importer receives a subrange of the
+         *      data held by the originating importer and its lifetime doesn't
+         *      exceed the originating importer lifetime, the @p data should
+         *      have a no-op deleter and @p dataFlags should be
+         *      @ref DataFlag::Owned.
+         */
+        bool openData(Containers::Array<char>&& data, DataFlags dataFlags);
+
+        /**
          * @brief Implementation for @ref openFile()
          *
          * If @ref ImporterFeature::OpenData is supported, default
