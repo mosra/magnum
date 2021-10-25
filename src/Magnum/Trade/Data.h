@@ -67,13 +67,13 @@ enum class DataFlag: UnsignedByte {
      * made.
      * @m_since_latest
      */
-    ExternallyOwned = 3 << 0,
+    ExternallyOwned = 1 << 3,
 
     /**
      * Data is mutable. If this flag is not set, the instance might be for
      * example referencing a readonly memory-mapped file or a constant memory.
      */
-    Mutable = 2 << 0
+    Mutable = 1 << 2
 
     /** @todo owned by importer, owned by the GPU, ... */
 };
