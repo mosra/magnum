@@ -782,7 +782,7 @@ Containers::StridedArrayView1D<const void> SceneData::fieldDataObjectViewInterna
         /* We're *sure* the view is correct, so faking the view size */
         {static_cast<const char*>(field._isOffsetOnly ?
             _data.data() + field._objectData.offset : field._objectData.pointer)
-            + field._fieldStride*offset, ~std::size_t{}},
+            + field._objectStride*offset, ~std::size_t{}},
         size, field._objectStride};
 }
 
