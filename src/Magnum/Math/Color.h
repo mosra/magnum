@@ -297,7 +297,8 @@ template<class T> class Color3: public Vector3<T> {
          * @brief Blue color
          *
          * Convenience alternative to e.g. @cpp Color3{0.0f, 0.0f, blue} @ce.
-         * With floating-point underlying type equivalent to @ref Vector3::zAxis().
+         * With a floating-point underlying type it's equivalent to
+         * @ref Vector3::zAxis().
          * @see @ref red(), @ref green(), @ref yellow()
          */
         constexpr static Color3<T> blue(T blue = Implementation::fullChannel<T>()) {
@@ -308,7 +309,8 @@ template<class T> class Color3: public Vector3<T> {
          * @brief Cyan color
          *
          * Convenience alternative to e.g. @cpp Color3{red, 1.0f, 1.0f} @ce.
-         * With floating-point underlying type equivalent to @ref Vector3::xScale().
+         * With a floating-point underlying type it's equivalent to
+         * @ref Vector3::xScale().
          * @see @ref magenta(), @ref yellow(), @ref red()
          */
         constexpr static Color3<T> cyan(T red = T(0)) {
@@ -319,7 +321,8 @@ template<class T> class Color3: public Vector3<T> {
          * @brief Magenta color
          *
          * Convenience alternative to e.g. @cpp Color3{1.0f, green, 1.0f} @ce.
-         * With floating-point underlying type equivalent to @ref Vector3::yScale().
+         * With a floating-point underlying type it's equivalent to
+         * @ref Vector3::yScale().
          * @see @ref cyan(), @ref yellow(), @ref green()
          */
         constexpr static Color3<T> magenta(T green = T(0)) {
@@ -329,8 +332,9 @@ template<class T> class Color3: public Vector3<T> {
         /**
          * @brief Yellow color
          *
-         * Convenience alternative to e.g. @cpp Color3{1.0f, 1.0f, yellow} @ce.
-         * With floating-point underlying type equivalent to @ref Vector3::zScale().
+         * Convenience alternative to e.g. @cpp Color3{1.0f, 1.0f, blue} @ce.
+         * With a floating-point underlying type it's equivalent to
+         * @ref Vector3::zScale().
          * @see @ref cyan(), @ref magenta(), @ref red()
          */
         constexpr static Color3<T> yellow(T blue = T(0)) {
