@@ -127,9 +127,15 @@ enum class SceneField: UnsignedInt {
      * Transformation. Type is usually @ref SceneFieldType::Matrix3x3 for 2D
      * and @ref SceneFieldType::Matrix4x4 for 3D, but can be also any of
      * @relativeref{SceneFieldType,Matrix3x3d},
+     * @relativeref{SceneFieldType,Matrix3x2} or
+     * @relativeref{SceneFieldType,Matrix3x2d} (with the bottom row implicitly
+     * assumed to be @f$ \begin{pmatrix} 0 & 0 & 1 \end{pmatrix} @f$),
      * @relativeref{SceneFieldType,DualComplex} or
      * @relativeref{SceneFieldType,DualComplexd} for 2D and
      * @relativeref{SceneFieldType,Matrix4x4d},
+     * @relativeref{SceneFieldType,Matrix4x3} or
+     * @relativeref{SceneFieldType,Matrix4x3d} (with the bottom row implicitly
+     * assumed to be @f$ \begin{pmatrix} 0 & 0 & 0 & 1 \end{pmatrix} @f$),
      * @relativeref{SceneFieldType,DualQuaternion} or
      * @relativeref{SceneFieldType,DualQuaterniond} for 3D. An object should
      * have only one transformation, altough this isn't enforced in any way,
@@ -2490,6 +2496,10 @@ namespace Implementation {
                  type == SceneFieldType::Matrix3x3d ||
                  type == SceneFieldType::Matrix4x4 ||
                  type == SceneFieldType::Matrix4x4d ||
+                 type == SceneFieldType::Matrix3x2 ||
+                 type == SceneFieldType::Matrix3x2d ||
+                 type == SceneFieldType::Matrix4x3 ||
+                 type == SceneFieldType::Matrix4x3d ||
                  type == SceneFieldType::DualComplex ||
                  type == SceneFieldType::DualComplexd ||
                  type == SceneFieldType::DualQuaternion ||

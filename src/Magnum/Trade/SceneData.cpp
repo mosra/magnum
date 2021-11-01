@@ -644,11 +644,15 @@ SceneData::SceneData(const SceneObjectType objectType, const UnsignedLong object
         const SceneFieldType fieldType = _fields[transformationField]._fieldType;
         if(fieldType == SceneFieldType::Matrix3x3 ||
            fieldType == SceneFieldType::Matrix3x3d ||
+           fieldType == SceneFieldType::Matrix3x2 ||
+           fieldType == SceneFieldType::Matrix3x2d ||
            fieldType == SceneFieldType::DualComplex ||
            fieldType == SceneFieldType::DualComplexd)
             _dimensions = 2;
         else if(fieldType == SceneFieldType::Matrix4x4 ||
                 fieldType == SceneFieldType::Matrix4x4d ||
+                fieldType == SceneFieldType::Matrix4x3 ||
+                fieldType == SceneFieldType::Matrix4x3d ||
                 fieldType == SceneFieldType::DualQuaternion ||
                 fieldType == SceneFieldType::DualQuaterniond)
             _dimensions = 3;
@@ -1200,6 +1204,18 @@ template<class Source, class Destination> void convertTransformation(const Conta
         destination[i] = Destination{sourceT[i].toMatrix()};
 }
 
+/* Expands 2x3 to 3x3, 4x3 to 4x4, while potentially also converting floats to
+   doubles */
+/** @todo also have some optimized batched API for this? doing a strided copy
+    and a fill seemed silly as that would cause the whole memory go through
+    cache twice */
+template<class Source, class Destination> void expandTransformationMatrix(const Containers::StridedArrayView1D<const void>& source, const Containers::StridedArrayView1D<Destination>& destination) {
+    CORRADE_INTERNAL_ASSERT(source.size() == destination.size());
+    const auto sourceT = Containers::arrayCast<const Source>(source);
+    for(std::size_t i = 0; i != sourceT.size(); ++i)
+        destination[i] = Destination{Math::RectangularMatrix<Source::Cols, Source::Rows, Float>{sourceT[i]}};
+}
+
 /** @todo these (or the float variants at least) should eventually be replaced
     with optimized batched APIs (applyTranslationsInto() updating just the
     last matrix column etc.) */
@@ -1299,6 +1315,10 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
             Utility::copy(Containers::arrayCast<const Matrix3>(fieldData), destination);
         } else if(field._fieldType == SceneFieldType::Matrix3x3d) {
             Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 9), destination1f);
+        } else if(field._fieldType == SceneFieldType::Matrix3x2) {
+            expandTransformationMatrix<Matrix3x2>(fieldData, destination);
+        } else if(field._fieldType == SceneFieldType::Matrix3x2d) {
+            expandTransformationMatrix<Matrix3x2d>(fieldData, destination);
         } else if(field._fieldType == SceneFieldType::DualComplex) {
             convertTransformation<DualComplex>(fieldData, destination);
         } else if(field._fieldType == SceneFieldType::DualComplexd) {
@@ -1525,6 +1545,10 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
             Utility::copy(Containers::arrayCast<const Matrix4>(fieldData), destination);
         } else if(field._fieldType == SceneFieldType::Matrix4x4d) {
             Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 16), destination1f);
+        } else if(field._fieldType == SceneFieldType::Matrix4x3) {
+            expandTransformationMatrix<Matrix4x3>(fieldData, destination);
+        } else if(field._fieldType == SceneFieldType::Matrix4x3d) {
+            expandTransformationMatrix<Matrix4x3d>(fieldData, destination);
         } else if(field._fieldType == SceneFieldType::DualQuaternion) {
             convertTransformation<DualQuaternion>(fieldData, destination);
         } else if(field._fieldType == SceneFieldType::DualQuaterniond) {

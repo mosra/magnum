@@ -335,6 +335,8 @@ SceneDataTest::SceneDataTest() {
     addTests({&SceneDataTest::parentsIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::transformations2DAsArray<Matrix3>,
               &SceneDataTest::transformations2DAsArray<Matrix3d>,
+              &SceneDataTest::transformations2DAsArray<Matrix3x2>,
+              &SceneDataTest::transformations2DAsArray<Matrix3x2d>,
               &SceneDataTest::transformations2DAsArray<DualComplex>,
               &SceneDataTest::transformations2DAsArray<DualComplexd>,
               &SceneDataTest::transformations2DAsArrayTRS<Float, Float, Double>,
@@ -349,6 +351,8 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffsetTRS,
               &SceneDataTest::transformations3DAsArray<Matrix4>,
               &SceneDataTest::transformations3DAsArray<Matrix4d>,
+              &SceneDataTest::transformations3DAsArray<Matrix4x3>,
+              &SceneDataTest::transformations3DAsArray<Matrix4x3d>,
               &SceneDataTest::transformations3DAsArray<DualQuaternion>,
               &SceneDataTest::transformations3DAsArray<DualQuaterniond>,
               &SceneDataTest::transformations3DAsArrayTRS<Float, Double, Double>,
@@ -1779,8 +1783,12 @@ _c(Vector3)
 _c(Vector3d)
 _c(Matrix3)
 _c(Matrix3d)
+_c(Matrix3x2)
+_c(Matrix3x2d)
 _c(Matrix4)
 _c(Matrix4d)
+_c(Matrix4x3)
+_c(Matrix4x3d)
 _c(Complex)
 _c(Complexd)
 _c(Quaternion)
@@ -1805,8 +1813,10 @@ template<class T> void SceneDataTest::constructMismatchedTRSDimensionality() {
     #endif
 
     SceneFieldData transformationMatrices2D{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Matrix3<T>>::type(), nullptr};
+    SceneFieldData transformationRectangularMatrices2D{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Matrix3x2<T>>::type(), nullptr};
     SceneFieldData transformations2D{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::DualComplex<T>>::type(), nullptr};
     SceneFieldData transformationMatrices3D{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Matrix4<T>>::type(), nullptr};
+    SceneFieldData transformationRectangularMatrices3D{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Matrix4x3<T>>::type(), nullptr};
     SceneFieldData transformations3D{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::DualQuaternion<T>>::type(), nullptr};
     SceneFieldData translations2D{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector2<T>>::type(), nullptr};
     SceneFieldData translations3D{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector3<T>>::type(), nullptr};
@@ -1821,6 +1831,10 @@ template<class T> void SceneDataTest::constructMismatchedTRSDimensionality() {
     SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationMatrices2D, translations3D}};
     SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationMatrices2D, rotations3D}};
     SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationMatrices2D, scalings3D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationRectangularMatrices2D, translations3D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationRectangularMatrices2D, rotations3D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationRectangularMatrices2D, scalings3D}};
+
     SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformations2D, translations3D}};
     SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformations2D, rotations3D}};
     SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformations2D, scalings3D}};
@@ -1831,6 +1845,10 @@ template<class T> void SceneDataTest::constructMismatchedTRSDimensionality() {
     SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationMatrices3D, translations2D}};
     SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationMatrices3D, rotations2D}};
     SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationMatrices3D, scalings2D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationRectangularMatrices3D, translations2D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationRectangularMatrices3D, rotations2D}};
+    SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformationRectangularMatrices3D, scalings2D}};
+
     SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformations3D, translations2D}};
     SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformations3D, rotations2D}};
     SceneData{SceneObjectType::UnsignedInt, 0, nullptr, {transformations3D, scalings2D}};
@@ -1844,6 +1862,10 @@ template<class T> void SceneDataTest::constructMismatchedTRSDimensionality() {
         "Trade::SceneData: expected a 2D translation field but got Trade::SceneFieldType::{0}\n"
         "Trade::SceneData: expected a 2D rotation field but got Trade::SceneFieldType::{1}\n"
         "Trade::SceneData: expected a 2D scaling field but got Trade::SceneFieldType::{0}\n"
+
+        "Trade::SceneData: expected a 2D translation field but got Trade::SceneFieldType::{0}\n"
+        "Trade::SceneData: expected a 2D rotation field but got Trade::SceneFieldType::{1}\n"
+        "Trade::SceneData: expected a 2D scaling field but got Trade::SceneFieldType::{0}\n"
         "Trade::SceneData: expected a 2D rotation field but got Trade::SceneFieldType::{1}\n"
         "Trade::SceneData: expected a 2D scaling field but got Trade::SceneFieldType::{0}\n"
         "Trade::SceneData: expected a 2D scaling field but got Trade::SceneFieldType::{0}\n"
@@ -1851,6 +1873,10 @@ template<class T> void SceneDataTest::constructMismatchedTRSDimensionality() {
         "Trade::SceneData: expected a 3D translation field but got Trade::SceneFieldType::{2}\n"
         "Trade::SceneData: expected a 3D rotation field but got Trade::SceneFieldType::{3}\n"
         "Trade::SceneData: expected a 3D scaling field but got Trade::SceneFieldType::{2}\n"
+        "Trade::SceneData: expected a 3D translation field but got Trade::SceneFieldType::{2}\n"
+        "Trade::SceneData: expected a 3D rotation field but got Trade::SceneFieldType::{3}\n"
+        "Trade::SceneData: expected a 3D scaling field but got Trade::SceneFieldType::{2}\n"
+
         "Trade::SceneData: expected a 3D translation field but got Trade::SceneFieldType::{2}\n"
         "Trade::SceneData: expected a 3D rotation field but got Trade::SceneFieldType::{3}\n"
         "Trade::SceneData: expected a 3D scaling field but got Trade::SceneFieldType::{2}\n"
@@ -2429,10 +2455,21 @@ void SceneDataTest::parentsIntoArrayInvalidSizeOrOffset() {
         "Trade::SceneData::parentsInto(): offset 4 out of bounds for a field of size 3\n");
 }
 
+template<class T> struct TransformationTypeFor {
+    typedef T Type;
+};
+template<class T> struct TransformationTypeFor<Math::Matrix3x2<T>> {
+    typedef Math::Matrix3<T> Type;
+};
+template<class T> struct TransformationTypeFor<Math::Matrix4x3<T>> {
+    typedef Math::Matrix4<T> Type;
+};
+
 template<class T> void SceneDataTest::transformations2DAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
     typedef typename T::Type U;
+    typedef typename TransformationTypeFor<T>::Type TT;
 
     struct Transformation {
         UnsignedInt object;
@@ -2451,12 +2488,12 @@ template<class T> void SceneDataTest::transformations2DAsArray() {
         {NoInit, 4, transformations},
         {NoInit, 2, components}
     };
-    transformations[0] = {1, T::translation({U(3.0), U(2.0)})};
-    transformations[1] = {0, T::rotation(Math::Deg<U>(35.0))};
-    transformations[2] = {4, T::translation({U(1.5), U(2.5)})*
-                             T::rotation(Math::Deg<U>(-15.0))};
-    transformations[3] = {5, T::rotation(Math::Deg<U>(-15.0))*
-                             T::translation({U(1.5), U(2.5)})};
+    transformations[0] = {1, T{TT::translation({U(3.0), U(2.0)})}};
+    transformations[1] = {0, T{TT::rotation(Math::Deg<U>(35.0))}};
+    transformations[2] = {4, T{TT::translation({U(1.5), U(2.5)})*
+                               TT::rotation(Math::Deg<U>(-15.0))}};
+    transformations[3] = {5, T{TT::rotation(Math::Deg<U>(-15.0))*
+                               TT::translation({U(1.5), U(2.5)})}};
     /* Object number 4 additionally has a scaling component (which isn't
        representable with dual complex numbers). It currently doesn't get added
        to the transformations returned from transformations2DInto() but that
@@ -2980,6 +3017,7 @@ template<class T> void SceneDataTest::transformations3DAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
     typedef typename T::Type U;
+    typedef typename TransformationTypeFor<T>::Type TT;
 
     struct Transformation {
         UnsignedInt object;
@@ -2998,15 +3036,15 @@ template<class T> void SceneDataTest::transformations3DAsArray() {
         {NoInit, 4, transformations},
         {NoInit, 2, components}
     };
-    transformations[0] = {1, T::translation({U(3.0), U(2.0), U(-0.5)})};
-    transformations[1] = {0, T::rotation(Math::Deg<U>(35.0),
-                                         Math::Vector3<U>::yAxis())};
-    transformations[2] = {4, T::translation({U(1.5), U(2.5), U(0.75)})*
-                             T::rotation(Math::Deg<U>(-15.0),
-                                         Math::Vector3<U>::xAxis())};
-    transformations[3] = {5, T::rotation(Math::Deg<U>(-15.0),
-                                         Math::Vector3<U>::xAxis())*
-                             T::translation({U(1.5), U(2.5), U(0.75)})};
+    transformations[0] = {1, T{TT::translation({U(3.0), U(2.0), U(-0.5)})}};
+    transformations[1] = {0, T{TT::rotation(Math::Deg<U>(35.0),
+                                            Math::Vector3<U>::yAxis())}};
+    transformations[2] = {4, T{TT::translation({U(1.5), U(2.5), U(0.75)})*
+                               TT::rotation(Math::Deg<U>(-15.0),
+                                            Math::Vector3<U>::xAxis())}};
+    transformations[3] = {5, T{TT::rotation(Math::Deg<U>(-15.0),
+                                            Math::Vector3<U>::xAxis())*
+                               TT::translation({U(1.5), U(2.5), U(0.75)})}};
     /* Object number 4 additionally has a scaling component (which isn't
        representable with dual quaternions). It currently doesn't get added
        to the transformations returned from transformations2DInto() but that
