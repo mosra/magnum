@@ -2210,12 +2210,24 @@ Containers::Optional<const void*> SceneData::importerStateFor(const UnsignedInt 
 #ifdef MAGNUM_BUILD_DEPRECATED
 std::vector<UnsignedInt> SceneData::children2D() const {
     if(_dimensions != 2) return {};
+
+    /* Even though (or exactly because?) this API is deprecated, it's better to
+       warn than to spend several hours debugging what's wrong */
+    if(!hasField(SceneField::Parent))
+        Warning{} << "Trade::SceneData::children2D(): no parent field present, returned array will be empty";
+
     const Containers::Array<UnsignedInt> children = childrenFor(-1);
     return {children.begin(), children.end()};
 }
 
 std::vector<UnsignedInt> SceneData::children3D() const {
     if(_dimensions != 3) return {};
+
+    /* Even though (or exactly because?) this API is deprecated, it's better to
+       warn than to spend several hours debugging what's wrong */
+    if(!hasField(SceneField::Parent))
+        Warning{} << "Trade::SceneData::children3D(): no parent field present, returned array will be empty";
+
     const Containers::Array<UnsignedInt> children = childrenFor(-1);
     return {children.begin(), children.end()};
 }

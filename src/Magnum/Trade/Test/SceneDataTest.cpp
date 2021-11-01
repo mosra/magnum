@@ -218,10 +218,14 @@ const struct {
     const char* name;
     bool is2D;
     bool is3D;
+    bool skipParent;
 } ChildrenDeprecatedData[]{
-    {"2D", true, false},
-    {"3D", false, true},
-    {"neither", false, false}
+    {"2D", true, false, false},
+    {"2D with no parent", true, false, true},
+    {"3D", false, true, false},
+    {"3D with no parent", false, true, true},
+    {"neither", false, false, false},
+    {"neither with no parent", false, false, true}
 };
 #endif
 
@@ -4978,21 +4982,38 @@ void SceneDataTest::childrenDeprecated() {
     Containers::StridedArrayView1D<Field> view = fields;
 
     Containers::Array<SceneFieldData> fieldData;
-    arrayAppend(fieldData, SceneFieldData{SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)});
+    if(!data.skipParent)
+        arrayAppend(fieldData, SceneFieldData{SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)});
     if(data.is2D)
         arrayAppend(fieldData, SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedByte, nullptr, SceneFieldType::Vector2, nullptr});
     if(data.is3D)
         arrayAppend(fieldData, SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedByte, nullptr, SceneFieldType::Vector3, nullptr});
 
     SceneData scene{SceneObjectType::UnsignedByte, 25, {}, fields, std::move(fieldData)};
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    CORRADE_COMPARE_AS(scene.children2D(),
-        (data.is2D ? std::vector<UnsignedInt>{5, 0, 4} : std::vector<UnsignedInt>{}),
-        TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(scene.children3D(),
-        (data.is3D ? std::vector<UnsignedInt>{5, 0, 4} : std::vector<UnsignedInt>{}),
-        TestSuite::Compare::Container);
-    CORRADE_IGNORE_DEPRECATED_POP
+
+    if(!data.skipParent) {
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        CORRADE_COMPARE_AS(scene.children2D(),
+            (data.is2D ? std::vector<UnsignedInt>{5, 0, 4} : std::vector<UnsignedInt>{}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.children3D(),
+            (data.is3D ? std::vector<UnsignedInt>{5, 0, 4} : std::vector<UnsignedInt>{}),
+            TestSuite::Compare::Container);
+        CORRADE_IGNORE_DEPRECATED_POP
+    } else {
+        std::ostringstream out;
+        Warning redirectWarning{&out};
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        CORRADE_VERIFY(scene.children2D().empty());
+        CORRADE_VERIFY(scene.children3D().empty());
+        CORRADE_IGNORE_DEPRECATED_POP
+        if(data.is2D)
+            CORRADE_COMPARE(out.str(), "Trade::SceneData::children2D(): no parent field present, returned array will be empty\n");
+        else if(data.is3D)
+            CORRADE_COMPARE(out.str(), "Trade::SceneData::children3D(): no parent field present, returned array will be empty\n");
+        else
+            CORRADE_COMPARE(out.str(), "");
+    }
 }
 #endif
 
