@@ -169,7 +169,9 @@ struct SceneDataTest: TestSuite::Tester {
     void fieldWrongArrayAccess();
 
     void parentFor();
+    void parentForTrivialParent();
     void childrenFor();
+    void childrenForTrivialParent();
     void transformation2DFor();
     void transformation2DForTRS();
     void transformation2DForBut3DType();
@@ -416,7 +418,9 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::fieldWrongArrayAccess,
 
               &SceneDataTest::parentFor,
+              &SceneDataTest::parentForTrivialParent,
               &SceneDataTest::childrenFor,
+              &SceneDataTest::childrenForTrivialParent,
               &SceneDataTest::transformation2DFor,
               &SceneDataTest::transformation2DForTRS,
               &SceneDataTest::transformation2DForBut3DType,
@@ -4595,6 +4599,32 @@ void SceneDataTest::parentFor() {
     CORRADE_COMPARE(scene.parentFor(1), Containers::NullOpt);
 }
 
+void SceneDataTest::parentForTrivialParent() {
+    /* Going a bit overboard with the arrays, it makes the view creation below
+       easier tho */
+    struct Field {
+        UnsignedInt object[4];
+        Int parent[1];
+    } fields[]{{
+        {3, 4, 2, 4 /* duplicate, ignored */}, {-1}
+    }};
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        SceneFieldData{SceneField::Parent,
+            Containers::stridedArrayView(fields->object), Containers::stridedArrayView(fields->parent).broadcasted<0>(4)}
+    }};
+
+    CORRADE_COMPARE(scene.parentFor(2), -1);
+    CORRADE_COMPARE(scene.parentFor(3), -1);
+
+    /* Duplicate entries -- only the first one gets used, it doesn't traverse
+       further */
+    CORRADE_COMPARE(scene.parentFor(4), -1);
+
+    /* Object that's not in the array at all */
+    CORRADE_COMPARE(scene.parentFor(1), Containers::NullOpt);
+}
+
 void SceneDataTest::childrenFor() {
     struct Field {
         UnsignedInt object;
@@ -4633,6 +4663,37 @@ void SceneDataTest::childrenFor() {
 
     /* Object that is not in the parent array at all */
     CORRADE_COMPARE_AS(scene.childrenFor(6),
+        Containers::arrayView<UnsignedInt>({}),
+        TestSuite::Compare::Container);
+}
+
+void SceneDataTest::childrenForTrivialParent() {
+    /* Going a bit overboard with the arrays, it makes the view creation below
+       easier tho */
+    struct Field {
+        UnsignedInt object[4];
+        Int parent[1];
+    } fields[]{{
+        {3, 4, 2, 4 /* duplicate, gets put to the output */}, {-1}
+    }};
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        SceneFieldData{SceneField::Parent,
+            Containers::stridedArrayView(fields->object), Containers::stridedArrayView(fields->parent).broadcasted<0>(4)}
+    }};
+
+    /* Trivial children */
+    CORRADE_COMPARE_AS(scene.childrenFor(-1),
+        Containers::arrayView<UnsignedInt>({3, 4, 2, 4}),
+        TestSuite::Compare::Container);
+
+    /* Object that is present in the parent array but has no children */
+    CORRADE_COMPARE_AS(scene.childrenFor(4),
+        Containers::arrayView<UnsignedInt>({}),
+        TestSuite::Compare::Container);
+
+    /* Object that is not in the parent array */
+    CORRADE_COMPARE_AS(scene.childrenFor(5),
         Containers::arrayView<UnsignedInt>({}),
         TestSuite::Compare::Container);
 }
