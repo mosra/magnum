@@ -25,8 +25,17 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* OpenGL ES on BeagleBoard needs this (originally added in August 2012). Not
+   sure if that's still the case, but given that USE_X11 is needed below, it's
+   not unlikely they did the same thing 9 years earlier. */
 #ifndef SUPPORT_X11
-#define SUPPORT_X11 // OpenGL ES on BeagleBoard needs this (?)
+#define SUPPORT_X11
+#endif
+/* This is needed since https://github.com/KhronosGroup/EGL-Registry/pull/130
+   (and libglvnd 1.3.4), otherwise EGLNativeDisplayType is void* and not
+   Display*. */
+#ifndef USE_X11
+#define USE_X11
 #endif
 #include <EGL/egl.h>
 /* undef Xlib nonsense to avoid conflicts */
