@@ -16,6 +16,11 @@ class Magnum < Formula
     cd "build" do
       system "cmake",
         *std_cmake_args,
+        # Without this, it will try to look for plugins somewhere deep in
+        # homebrew's Cellar in per-package directories instead of in the
+        # location everything's symlinked to, thus finding only magnum's core
+        # plugins and not those from the magnum-plugins package. Please
+        # complain to Homebrew about this insane filesystem layout.
         "-DMAGNUM_PLUGINS_DIR=#{HOMEBREW_PREFIX}/lib/magnum",
         "-DWITH_AUDIO=ON",
         "-DWITH_GLFWAPPLICATION=ON",
