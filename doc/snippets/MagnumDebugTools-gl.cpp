@@ -115,7 +115,7 @@ GL::SampleQuery queries[3]{
     GL::SampleQuery{GL::SampleQuery::Target::SamplesPassed},
     GL::SampleQuery{GL::SampleQuery::Target::SamplesPassed}
 };
-DebugTools::FrameProfiler profiler{{
+DebugTools::FrameProfiler _profiler{{
     DebugTools::FrameProfiler::Measurement{"Samples",
         DebugTools::FrameProfiler::Units::Count,
         UnsignedInt(Containers::arraySize(queries)),
@@ -150,7 +150,7 @@ new DebugTools::ObjectRenderer3D{manager, *object, "my", &debugDrawables};
 
 {
 /* [FrameProfilerGL-usage] */
-DebugTools::FrameProfilerGL profiler{
+DebugTools::FrameProfilerGL _profiler{
     DebugTools::FrameProfilerGL::Value::FrameTime|
     DebugTools::FrameProfilerGL::Value::GpuDuration, 50};
 /* [FrameProfilerGL-usage] */
