@@ -48,7 +48,7 @@ are included from @m_class{m-doc} [Magnum/Math/](dir_d816e7cf853e6723911731706bc
 provides platform abstraction, basic utilities and containers.
 
 To reduce redundant verbosity, references throughout the documentation and
-code in example snippets have the the root @ref Magnum and
+code in example snippets have the root @ref Magnum and
 @m_class{m-doc-external} [Corrade](https://doc.magnum.graphics/corrade/namespaceCorrade.html)
 namespaces omitted. In other words, as if the following was done:
 
