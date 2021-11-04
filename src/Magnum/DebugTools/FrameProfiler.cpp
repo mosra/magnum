@@ -560,6 +560,13 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
                 const auto input = static_cast<State*>(state)->clippingInputPrimitivesQueries[previous].result<UnsignedLong>();
                 if(!input) return UnsignedLong{};
 
+                /* If we have more output primitives than input, it's because
+                   a triangle got split into multiple. To avoid an underflow,
+                   return zero as well. A corresponding test case is in
+                   FrameProfilerGLTest::primitiveClipRatioNegative(). */
+                const auto output = static_cast<State*>(state)->clippingOutputPrimitivesQueries[previous].result<UnsignedLong>();
+                if(input < output) return UnsignedLong{};
+
                 return 100000 - static_cast<State*>(state)->clippingOutputPrimitivesQueries[previous].result<UnsignedLong>()*100000/input;
             }, _state.get());
         _state->primitiveClipRatioIndex = index++;
