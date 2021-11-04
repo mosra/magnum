@@ -38,6 +38,10 @@
 #include "Magnum/Primitives/Cube.h"
 #include "Magnum/Shaders/FlatGL.h"
 #include "Magnum/Trade/MeshData.h"
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/Primitives/Plane.h"
+#endif
 
 namespace Magnum { namespace DebugTools { namespace Test { namespace {
 
@@ -48,8 +52,11 @@ struct FrameProfilerGLTest: GL::OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES
     void vertexFetchRatioDivisionByZero();
     void primitiveClipRatioDivisionByZero();
+    void primitiveClipRatioNegative();
     #endif
 };
+
+using namespace Math::Literals;
 
 struct {
     const char* name;
@@ -70,7 +77,8 @@ FrameProfilerGLTest::FrameProfilerGLTest() {
 
     #ifndef MAGNUM_TARGET_GLES
     addTests({&FrameProfilerGLTest::vertexFetchRatioDivisionByZero,
-              &FrameProfilerGLTest::primitiveClipRatioDivisionByZero});
+              &FrameProfilerGLTest::primitiveClipRatioDivisionByZero,
+              &FrameProfilerGLTest::primitiveClipRatioNegative});
     #endif
 }
 
@@ -228,6 +236,64 @@ void FrameProfilerGLTest::primitiveClipRatioDivisionByZero() {
     profiler.endFrame();
 
     profiler.beginFrame();
+    profiler.endFrame();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* No draws happened, so the ratio should be 0 (and not crashing with a
+       division by zero) */
+    CORRADE_VERIFY(profiler.isMeasurementAvailable(FrameProfilerGL::Value::PrimitiveClipRatio));
+    CORRADE_COMPARE(profiler.primitiveClipRatioMean(), 0.0);
+}
+
+void FrameProfilerGLTest::primitiveClipRatioNegative() {
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::pipeline_statistics_query>())
+        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() << "is not supported.");
+
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    GL::Renderbuffer color;
+    color.setStorage(
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        GL::RenderbufferFormat::RGBA8,
+        #else
+        GL::RenderbufferFormat::RGBA4,
+        #endif
+        Vector2i{32});
+    GL::Framebuffer fb{{{}, Vector2i{32}}};
+    fb.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, color)
+      .bind();
+
+    /* Rotate a plane so it cuts through the near/far clipping plane. That
+       forces the primitive clipping pipeline to cut the two input primitives
+       into four, causing the number of output primitives being larger than the
+       number of input primitives, which would then result in an underflow of
+       the unsigned counter and tripping up various assertions if not accounted
+       for.
+
+       Implementations are allowed to split up primitives in other cases as
+       well, but this is guaranteed to happen everywhere. */
+    GL::Mesh mesh = MeshTools::compile(Primitives::planeSolid());
+    Shaders::FlatGL3D shader;
+    shader.setTransformationProjectionMatrix(
+        Matrix4::rotationX(45.0_degf)*
+        Matrix4::scaling(Vector3{2.0f}));
+
+    FrameProfilerGL profiler{FrameProfilerGL::Value::PrimitiveClipRatio, 4};
+
+    profiler.beginFrame();
+    shader.draw(mesh);
+    profiler.endFrame();
+
+    profiler.beginFrame();
+    shader.draw(mesh);
+    profiler.endFrame();
+
+    profiler.beginFrame();
+    shader.draw(mesh);
+    profiler.endFrame();
+
+    profiler.beginFrame();
+    shader.draw(mesh);
     profiler.endFrame();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
