@@ -229,8 +229,11 @@ void FrameProfiler::endFrame() {
         /* If we have enough frames, add the new measurement to the moving sum.
            For _delay of 0 or 1, delayedCurrentData(Math::max(1u, measurement._delay))
            is equal to _currentData. */
-        if(_measuredFrameCount >= measurementDelay)
-            _measurements[i]._movingSum += _data[delayedCurrentData(measurementDelay)*_measurements.size() + i];
+        if(_measuredFrameCount >= measurementDelay) {
+            const UnsignedLong data = _data[delayedCurrentData(measurementDelay)*_measurements.size() + i];
+            CORRADE_INTERNAL_ASSERT(_measurements[i]._movingSum + data >= _measurements[i]._movingSum);
+            _measurements[i]._movingSum += data;
+        }
     }
 }
 
