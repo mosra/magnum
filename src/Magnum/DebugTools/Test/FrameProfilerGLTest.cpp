@@ -109,8 +109,8 @@ void FrameProfilerGLTest::test() {
     fb.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, color)
       .bind();
 
-    Shaders::FlatGL3D shader;
     GL::Mesh mesh = MeshTools::compile(Primitives::cubeSolid());
+    Shaders::FlatGL3D shader;
 
     FrameProfilerGL profiler{data.values, 4};
     CORRADE_COMPARE(profiler.maxFrameCount(), 4);
