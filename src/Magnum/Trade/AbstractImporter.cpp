@@ -547,6 +547,17 @@ void AbstractImporter::populateCachedScenes() {
             newObjectOffset = Math::max(newObjectOffset, _cachedScenes->scenes[i]->objectCount());
         }
     }
+
+    /* If there are scenes but no objects (because for example all scenes
+       failed to import), use the dimension-less object count at least, and
+       assume the scene was 3D. Otherwise this may cause unexpected assertions
+       in code that expected proper object count to be reported even if a scene
+       contains errors.
+
+       Not ideal, especially regarding the 3D assumption, but better than
+       nothing. */
+    if(!_cachedScenes->scenes.empty() && !_cachedScenes->object2DCount && !_cachedScenes->object3DCount)
+        _cachedScenes->object3DCount = objectCount();
 }
 
 UnsignedInt AbstractImporter::object2DCount() const {

@@ -126,6 +126,8 @@ struct AbstractImporterTest: TestSuite::Tester {
     void sceneDeprecatedFallbackTransformless3D();
     void sceneDeprecatedFallbackMultiFunctionObjects2D();
     void sceneDeprecatedFallbackMultiFunctionObjects3D();
+    void sceneDeprecatedFallbackObjectCountNoScenes();
+    void sceneDeprecatedFallbackObjectCountAllSceneImportFailed();
     #endif
     void sceneNameNotImplemented();
     void objectNameNotImplemented();
@@ -410,6 +412,8 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::sceneDeprecatedFallbackTransformless3D,
               &AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D,
               &AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D,
+              &AbstractImporterTest::sceneDeprecatedFallbackObjectCountNoScenes,
+              &AbstractImporterTest::sceneDeprecatedFallbackObjectCountAllSceneImportFailed,
               #endif
               &AbstractImporterTest::sceneForNameOutOfRange,
               &AbstractImporterTest::objectForNameOutOfRange,
@@ -3217,6 +3221,45 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
         MeshObjectData3D& mo = static_cast<MeshObjectData3D&>(*o);
         CORRADE_COMPARE(mo.material(), -1);
     }
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::sceneDeprecatedFallbackObjectCountNoScenes() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 0; }
+        UnsignedLong doObjectCount() const override { return 27; }
+    } importer;
+
+    /* There's no scenes to get data or hierarchy from, so there are no
+       2D/3D objects reported even though objectCount() says 27 */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer.object2DCount(), 0);
+    CORRADE_COMPARE(importer.object3DCount(), 0);
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::sceneDeprecatedFallbackObjectCountAllSceneImportFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 1; }
+        UnsignedLong doObjectCount() const override { return 27; }
+        Containers::Optional<SceneData> doScene(UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* There's a scene but it failed to import, assume it was 3D and proxy the
+       objectCount() */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer.object2DCount(), 0);
+    CORRADE_COMPARE(importer.object3DCount(), 27);
     CORRADE_IGNORE_DEPRECATED_POP
 }
 #endif
