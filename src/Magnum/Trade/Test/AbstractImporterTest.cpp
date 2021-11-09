@@ -128,6 +128,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void sceneDeprecatedFallbackMultiFunctionObjects3D();
     void sceneDeprecatedFallbackObjectCountNoScenes();
     void sceneDeprecatedFallbackObjectCountAllSceneImportFailed();
+    void sceneDeprecatedFallbackBoth2DAnd3DScene();
     #endif
     void sceneNameNotImplemented();
     void objectNameNotImplemented();
@@ -414,6 +415,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D,
               &AbstractImporterTest::sceneDeprecatedFallbackObjectCountNoScenes,
               &AbstractImporterTest::sceneDeprecatedFallbackObjectCountAllSceneImportFailed,
+              &AbstractImporterTest::sceneDeprecatedFallbackBoth2DAnd3DScene,
               #endif
               &AbstractImporterTest::sceneForNameOutOfRange,
               &AbstractImporterTest::objectForNameOutOfRange,
@@ -3261,6 +3263,60 @@ void AbstractImporterTest::sceneDeprecatedFallbackObjectCountAllSceneImportFaile
     CORRADE_COMPARE(importer.object2DCount(), 0);
     CORRADE_COMPARE(importer.object3DCount(), 27);
     CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void AbstractImporterTest::sceneDeprecatedFallbackBoth2DAnd3DScene() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 2; }
+        UnsignedLong doObjectCount() const override { return 7; }
+        Long doObjectForName(const std::string& name) override {
+            if(name == "sixth") return 5;
+            return -1;
+        }
+        std::string doObjectName(UnsignedLong id) override {
+            if(id == 5) return "sixth";
+            return {};
+        }
+        Containers::Optional<SceneData> doScene(UnsignedInt id) override {
+            if(id == 0) return SceneData{SceneObjectType::UnsignedInt, 7, nullptr, {
+                SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+                SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Vector2, nullptr},
+            }};
+            if(id == 1) return SceneData{SceneObjectType::UnsignedInt, 7, nullptr, {
+                SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+                SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Vector3, nullptr},
+            }};
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        }
+    } importer;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer.object2DCount(), 7);
+    CORRADE_COMPARE(importer.object3DCount(), 7);
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    {
+        CORRADE_EXPECT_FAIL("No check for whether given object is 2D or 3D is done, so the names are reported for both 2D and 3D objects.");
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        CORRADE_COMPARE(importer.object2DForName("sixth"), -1);
+        CORRADE_COMPARE(importer.object2DName(5), "");
+        CORRADE_COMPARE(importer.object3DForName("sixth"), -1);
+        CORRADE_COMPARE(importer.object3DName(5), "");
+        CORRADE_IGNORE_DEPRECATED_POP
+    } {
+        /* Just to be sure, verify that the names get really reported for both
+           instead of some other weird shit happening */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        CORRADE_COMPARE(importer.object2DForName("sixth"), 5);
+        CORRADE_COMPARE(importer.object2DName(5), "sixth");
+        CORRADE_COMPARE(importer.object3DForName("sixth"), 5);
+        CORRADE_COMPARE(importer.object3DName(5), "sixth");
+        CORRADE_IGNORE_DEPRECATED_POP
+    }
 }
 #endif
 

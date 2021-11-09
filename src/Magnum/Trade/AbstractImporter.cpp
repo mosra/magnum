@@ -589,7 +589,11 @@ Int AbstractImporter::object2DForName(const std::string& name) {
 Int AbstractImporter::doObject2DForName(const std::string& name) {
     /* Alias to the new interface. If it returns an ID that's larger than
        reported 2D object count, then it's probably for a 3D object instead
-       -- ignore it in that case. */
+       -- ignore it in that case. Ideally this would be solved by checking if
+       the ID is actually present in a 2D scene (and same in doObject2DName())
+       but that's a lot of extra code for just a backwards compatibility
+       feature that almost nobody needs. The only pre-existing 2D importer is
+       PrimitiveImporter, which is rarely used. */
     const Long id = doObjectForName(name);
     CORRADE_IGNORE_DEPRECATED_PUSH
     return id < doObject2DCount() ? id : -1;
@@ -763,7 +767,11 @@ Int AbstractImporter::object3DForName(const std::string& name) {
 Int AbstractImporter::doObject3DForName(const std::string& name) {
     /* Alias to the new interface. If it returns an ID that's larger than
        reported 3D object count, then it's probably for a 2D object instead
-       -- ignore it in that case. */
+       -- ignore it in that case. Ideally this would be solved by checking if
+       the ID is actually present in a 3D scene (and same in doObject3DName())
+       but that's a lot of extra code for just a backwards compatibility
+       feature that almost nobody needs. The only pre-existing 2D importer is
+       PrimitiveImporter, which is rarely used. */
     const Long id = doObjectForName(name);
     CORRADE_IGNORE_DEPRECATED_PUSH
     return id < doObject3DCount() ? id : -1;
