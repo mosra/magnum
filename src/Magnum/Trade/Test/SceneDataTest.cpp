@@ -3006,7 +3006,7 @@ void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffset() {
     struct Field {
         UnsignedInt object;
         Matrix3 transformation;
-    } fields[3]{};
+    } fields[3]; /* GCC 4.8 ICEs if I do a {} here */
 
     Containers::StridedArrayView1D<Field> view = fields;
 
@@ -3032,7 +3032,7 @@ void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffsetTRS() {
     struct Field {
         UnsignedInt object;
         Vector2 translation;
-    } fields[3]{};
+    } fields[3]; /* GCC 4.8 ICEs if I do a {} here */
 
     Containers::StridedArrayView1D<Field> view = fields;
 
@@ -3557,7 +3557,7 @@ void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffset() {
     struct Field {
         UnsignedInt object;
         Matrix4 transformation;
-    } fields[3]{};
+    } fields[3]; /* GCC 4.8 ICEs if I do a {} here */
 
     Containers::StridedArrayView1D<Field> view = fields;
 
@@ -3583,7 +3583,7 @@ void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffsetTRS() {
     struct Field {
         UnsignedInt object;
         Vector2 translation;
-    } fields[3]{};
+    } fields[3]; /* GCC 4.8 ICEs if I do a {} here */
 
     Containers::StridedArrayView1D<Field> view = fields;
 
