@@ -65,9 +65,6 @@ template<template<class> class Derived, class T> class Unit {
         /** @brief Construct from another underlying type */
         template<class U> constexpr explicit Unit(Unit<Derived, U> value) noexcept: _value(T(value._value)) {}
 
-        /** @brief Copy constructor */
-        constexpr /*implicit*/ Unit(const Unit<Derived, T>& other) noexcept = default;
-
         /** @brief Explicit conversion to underlying type */
         constexpr explicit operator T() const { return _value; }
 

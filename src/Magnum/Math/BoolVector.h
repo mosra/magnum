@@ -123,9 +123,6 @@ template<std::size_t size> class BoolVector {
         /** @brief Construct a boolean vector from external representation */
         template<class U, class V = decltype(Implementation::BoolVectorConverter<size, U>::from(std::declval<U>()))> constexpr explicit BoolVector(const U& other) noexcept: BoolVector{Implementation::BoolVectorConverter<size, U>::from(other)} {}
 
-        /** @brief Copy constructor */
-        constexpr /*implicit*/ BoolVector(const BoolVector<size>&) noexcept = default;
-
         /** @brief Convert a boolean vector to external representation */
         template<class U, class V = decltype(Implementation::BoolVectorConverter<size, U>::to(std::declval<BoolVector<size>>()))> constexpr explicit operator U() const {
             return Implementation::BoolVectorConverter<size, U>::to(*this);

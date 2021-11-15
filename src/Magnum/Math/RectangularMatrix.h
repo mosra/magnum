@@ -211,9 +211,6 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /** @brief Construct a matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
 
-        /** @brief Copy constructor */
-        constexpr /*implicit*/ RectangularMatrix(const RectangularMatrix<cols, rows, T>&) noexcept = default;
-
         /** @brief Convert a matrix to external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> constexpr explicit operator U() const {
             return Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(*this);

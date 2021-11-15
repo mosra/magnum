@@ -176,9 +176,6 @@ template<class T> class Complex {
         /** @brief Construct a complex number from external representation */
         template<class U, class V = decltype(Implementation::ComplexConverter<T, U>::from(std::declval<U>()))> constexpr explicit Complex(const U& other): Complex{Implementation::ComplexConverter<T, U>::from(other)} {}
 
-        /** @brief Copy constructor */
-        constexpr /*implicit*/ Complex(const Complex<T>&) noexcept = default;
-
         /** @brief Convert a complex number to external representation */
         template<class U, class V = decltype(Implementation::ComplexConverter<T, U>::to(std::declval<Complex<T>>()))> constexpr explicit operator U() const {
             return Implementation::ComplexConverter<T, U>::to(*this);

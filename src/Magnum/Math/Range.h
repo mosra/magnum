@@ -171,9 +171,6 @@ template<UnsignedInt dimensions, class T> class Range {
         /** @brief Construct range from external representation */
         template<class U, class V = decltype(Implementation::RangeConverter<dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Range(const U& other): Range{Implementation::RangeConverter<dimensions, T, U>::from(other)} {}
 
-        /** @brief Copy constructor */
-        constexpr /*implicit*/ Range(const Range<dimensions, T>&) noexcept = default;
-
         /** @brief Convert range to external representation */
         template<class U, class V = decltype(Implementation::RangeConverter<dimensions, T, U>::to(std::declval<Range<dimensions, T>>()))> constexpr explicit operator U() const {
             return Implementation::RangeConverter<dimensions, T, U>::to(*this);

@@ -111,9 +111,6 @@ template<class T> class Dual {
          */
         template<class U> constexpr explicit Dual(const Dual<U>& other) noexcept: _real{T(other._real)}, _dual{T(other._dual)} {}
 
-        /** @brief Copy constructor */
-        constexpr /*implicit*/ Dual(const Dual<T>&) noexcept = default;
-
         /**
          * @brief Raw data
          * @return One-dimensional array of two elements
