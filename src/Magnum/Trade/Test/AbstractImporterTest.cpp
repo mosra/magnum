@@ -1372,6 +1372,25 @@ void AbstractImporterTest::thingByNameNotFound() {
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 1; }
+        UnsignedInt doAnimationCount() const override { return 2; }
+        UnsignedInt doLightCount() const override { return 3; }
+        UnsignedInt doCameraCount() const override { return 4; }
+
+        UnsignedInt doObject2DCount() const override { return 5; }
+        UnsignedInt doObject3DCount() const override { return 6; }
+
+        UnsignedInt doSkin2DCount() const override { return 7; }
+        UnsignedInt doSkin3DCount() const override { return 8; }
+
+        UnsignedInt doMeshCount() const override { return 9; }
+        UnsignedInt doMaterialCount() const override { return 10; }
+        UnsignedInt doTextureCount() const override { return 11; }
+
+        UnsignedInt doImage1DCount() const override { return 12; }
+        UnsignedInt doImage2DCount() const override { return 13; }
+        UnsignedInt doImage3DCount() const override { return 14; }
     } importer;
 
     std::ostringstream out;
@@ -1401,24 +1420,24 @@ void AbstractImporterTest::thingByNameNotFound() {
 
     if(data.checkMessage) {
         CORRADE_COMPARE(out.str(),
-            "Trade::AbstractImporter::scene(): scene foobar not found\n"
-            "Trade::AbstractImporter::animation(): animation foobar not found\n"
-            "Trade::AbstractImporter::light(): light foobar not found\n"
-            "Trade::AbstractImporter::camera(): camera foobar not found\n"
+            "Trade::AbstractImporter::scene(): scene foobar not found among 1 entries\n"
+            "Trade::AbstractImporter::animation(): animation foobar not found among 2 entries\n"
+            "Trade::AbstractImporter::light(): light foobar not found among 3 entries\n"
+            "Trade::AbstractImporter::camera(): camera foobar not found among 4 entries\n"
 
-            "Trade::AbstractImporter::object2D(): object foobar not found\n"
-            "Trade::AbstractImporter::object3D(): object foobar not found\n"
+            "Trade::AbstractImporter::object2D(): object foobar not found among 5 entries\n"
+            "Trade::AbstractImporter::object3D(): object foobar not found among 6 entries\n"
 
-            "Trade::AbstractImporter::skin2D(): skin foobar not found\n"
-            "Trade::AbstractImporter::skin3D(): skin foobar not found\n"
+            "Trade::AbstractImporter::skin2D(): skin foobar not found among 7 entries\n"
+            "Trade::AbstractImporter::skin3D(): skin foobar not found among 8 entries\n"
 
-            "Trade::AbstractImporter::mesh(): mesh foobar not found\n"
-            "Trade::AbstractImporter::material(): material foobar not found\n"
-            "Trade::AbstractImporter::texture(): texture foobar not found\n"
+            "Trade::AbstractImporter::mesh(): mesh foobar not found among 9 entries\n"
+            "Trade::AbstractImporter::material(): material foobar not found among 10 entries\n"
+            "Trade::AbstractImporter::texture(): texture foobar not found among 11 entries\n"
 
-            "Trade::AbstractImporter::image1D(): image foobar not found\n"
-            "Trade::AbstractImporter::image2D(): image foobar not found\n"
-            "Trade::AbstractImporter::image3D(): image foobar not found\n");
+            "Trade::AbstractImporter::image1D(): image foobar not found among 12 entries\n"
+            "Trade::AbstractImporter::image2D(): image foobar not found among 13 entries\n"
+            "Trade::AbstractImporter::image3D(): image foobar not found among 14 entries\n");
     }
 }
 

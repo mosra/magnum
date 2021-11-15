@@ -300,7 +300,7 @@ Containers::Optional<SceneData> AbstractImporter::scene(const std::string& name)
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::scene(): no file opened", {});
     const Int id = doSceneForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::scene(): scene" << name << "not found";
+        Error{} << "Trade::AbstractImporter::scene(): scene" << name << "not found among" << doSceneCount() << "entries";
         return {};
     }
     return scene(id); /* not doScene(), so we get the range checks also */
@@ -350,7 +350,7 @@ Containers::Optional<AnimationData> AbstractImporter::animation(const std::strin
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animation(): no file opened", {});
     const Int id = doAnimationForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::animation(): animation" << name << "not found";
+        Error{} << "Trade::AbstractImporter::animation(): animation" << name << "not found among" << doAnimationCount() << "entries";
         return {};
     }
     return animation(id); /* not doAnimation(), so we get the checks also */
@@ -395,7 +395,7 @@ Containers::Optional<LightData> AbstractImporter::light(const std::string& name)
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::light(): no file opened", {});
     const Int id = doLightForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::light(): light" << name << "not found";
+        Error{} << "Trade::AbstractImporter::light(): light" << name << "not found among" << doLightCount() << "entries";
         return {};
     }
     return light(id); /* not doLight(), so we get the range checks also */
@@ -440,7 +440,7 @@ Containers::Optional<CameraData> AbstractImporter::camera(const std::string& nam
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::camera(): no file opened", {});
     const Int id = doCameraForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::camera(): camera" << name << "not found";
+        Error{} << "Trade::AbstractImporter::camera(): camera" << name << "not found among" << doCameraCount() << "entries";
         return {};
     }
     return camera(id); /* not doCamera(), so we get the range checks also */
@@ -485,7 +485,7 @@ Containers::Pointer<ObjectData2D> AbstractImporter::object2D(const std::string& 
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2D(): no file opened", {});
     const Int id = doObject2DForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::object2D(): object" << name << "not found";
+        Error{} << "Trade::AbstractImporter::object2D(): object" << name << "not found among" << doObject2DCount() << "entries";
         return {};
     }
     return object2D(id); /* not doObject2D(), so we get the range checks also */
@@ -530,7 +530,7 @@ Containers::Pointer<ObjectData3D> AbstractImporter::object3D(const std::string& 
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3D(): no file opened", {});
     const Int id = doObject3DForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::object3D(): object" << name << "not found";
+        Error{} << "Trade::AbstractImporter::object3D(): object" << name << "not found among" << doObject3DCount() << "entries";
         return {};
     }
     return object3D(id); /* not doObject3D(), so we get the range checks also */
@@ -580,7 +580,7 @@ Containers::Optional<SkinData2D> AbstractImporter::skin2D(const std::string& nam
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin2D(): no file opened", {});
     const Int id = doSkin2DForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::skin2D(): skin" << name << "not found";
+        Error{} << "Trade::AbstractImporter::skin2D(): skin" << name << "not found among" << doSkin2DCount() << "entries";
         return {};
     }
     return skin2D(id); /* not doSkin2D(), so we get the range checks also */
@@ -630,7 +630,7 @@ Containers::Optional<SkinData3D> AbstractImporter::skin3D(const std::string& nam
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin3D(): no file opened", {});
     const Int id = doSkin3DForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::skin3D(): skin" << name << "not found";
+        Error{} << "Trade::AbstractImporter::skin3D(): skin" << name << "not found among" << doSkin3DCount() << "entries";
         return {};
     }
     return skin3D(id); /* not doSkin3D(), so we get the range checks also */
@@ -702,7 +702,7 @@ Containers::Optional<MeshData> AbstractImporter::mesh(const std::string& name, c
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh(): no file opened", {});
     const Int id = doMeshForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::mesh(): mesh" << name << "not found";
+        Error{} << "Trade::AbstractImporter::mesh(): mesh" << name << "not found among" << doMeshCount() << "entries";
         return {};
     }
     return mesh(id, level); /* not doMesh(), so we get the checks also */
@@ -878,7 +878,7 @@ AbstractImporter::material(const std::string& name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::material(): no file opened", {});
     const Int id = doMaterialForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::material(): material" << name << "not found";
+        Error{} << "Trade::AbstractImporter::material(): material" << name << "not found among" << doMaterialCount() << "entries";
         return {};
     }
     return material(id); /* not doMaterial(), so we get the range checks also */
@@ -923,7 +923,7 @@ Containers::Optional<TextureData> AbstractImporter::texture(const std::string& n
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::texture(): no file opened", {});
     const Int id = doTextureForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::texture(): texture" << name << "not found";
+        Error{} << "Trade::AbstractImporter::texture(): texture" << name << "not found among" << doTextureCount() << "entries";
         return {};
     }
     return texture(id); /* not doTexture(), so we get the range checks also */
@@ -992,7 +992,7 @@ Containers::Optional<ImageData1D> AbstractImporter::image1D(const std::string& n
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1D(): no file opened", {});
     const Int id = doImage1DForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::image1D(): image" << name << "not found";
+        Error{} << "Trade::AbstractImporter::image1D(): image" << name << "not found among" << doImage1DCount() << "entries";
         return {};
     }
     /* not doImage1D(), so we get the range checks also */
@@ -1062,7 +1062,7 @@ Containers::Optional<ImageData2D> AbstractImporter::image2D(const std::string& n
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2D(): no file opened", {});
     const Int id = doImage2DForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::image2D(): image" << name << "not found";
+        Error{} << "Trade::AbstractImporter::image2D(): image" << name << "not found among" << doImage2DCount() << "entries";
         return {};
     }
     /* not doImage2D(), so we get the range checks also */
@@ -1132,7 +1132,7 @@ Containers::Optional<ImageData3D> AbstractImporter::image3D(const std::string& n
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3D(): no file opened", {});
     const Int id = doImage3DForName(name);
     if(id == -1) {
-        Error{} << "Trade::AbstractImporter::image3D(): image" << name << "not found";
+        Error{} << "Trade::AbstractImporter::image3D(): image" << name << "not found among" << doImage3DCount() << "entries";
         return {};
     }
     /* not doImage3D(), so we get the range checks also */
