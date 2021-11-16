@@ -432,7 +432,7 @@ template<class T> class Range2D: public Range<2, T> {
             >
         constexpr explicit Range2D(const U& other): Range<2, T>{Implementation::RangeConverter<2, T, U>::from(other)} {}
 
-        /** @copydoc Range(const Range&) */
+        /** @brief Copy constructor */
         constexpr /*implicit*/ Range2D(const Range<2, T>& other) noexcept: Range<2, T>(other) {}
 
         /**
@@ -579,7 +579,7 @@ template<class T> class Range3D: public Range<3, T> {
          */
         template<class U, class V = decltype(Implementation::RangeConverter<3, T, U>::from(std::declval<U>()))> constexpr explicit Range3D(const U& other) noexcept: Range<3, T>{Implementation::RangeConverter<3, T, U>::from(other)} {}
 
-        /** @copydoc Range(const Range&) */
+        /** @brief Copy constructor */
         constexpr /*implicit*/ Range3D(const Range<3, T>& other) noexcept: Range<3, T>(other) {}
 
         /**
