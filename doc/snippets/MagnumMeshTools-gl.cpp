@@ -38,6 +38,8 @@
 #include <vector>
 #endif
 
+#define DOXYGEN_IGNORE(...) __VA_ARGS__
+
 using namespace Magnum;
 
 int main() {
@@ -55,8 +57,9 @@ GL::Mesh mesh = MeshTools::compile(meshData, indices, vertices);
 
 {
 Trade::MeshData meshData{MeshPrimitive::Lines, 5};
-Trade::MeshAttribute myCustomAttribute{};
 /* [compile-external-attributes] */
+Trade::MeshAttribute myCustomAttribute = DOXYGEN_IGNORE({});
+
 GL::Buffer indices, vertices;
 indices.setData(meshData.indexData());
 vertices.setData(meshData.vertexData());
@@ -66,10 +69,8 @@ GL::Mesh mesh = MeshTools::compile(meshData, std::move(indices), vertices);
 mesh.addVertexBuffer(std::move(vertices),
     meshData.attributeOffset(myCustomAttribute),
     meshData.attributeStride(myCustomAttribute),
-    GL::DynamicAttribute{
-        GL::DynamicAttribute::Kind::Generic, 7,
-        GL::DynamicAttribute::Components::One,
-        GL::DynamicAttribute::DataType::Float});
+    GL::DynamicAttribute{GL::DynamicAttribute::Kind::Generic, 7,
+        meshData.attributeFormat(myCustomAttribute)});
 /* [compile-external-attributes] */
 }
 

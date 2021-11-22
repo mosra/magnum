@@ -638,7 +638,7 @@ constexpr Trade::MeshAttributeData colors{Trade::MeshAttribute::Color,
 
 /* Actual data populated later */
 Containers::Array<char> vertexData{15*sizeof(Vertex)};
-// ...
+DOXYGEN_IGNORE()
 Trade::MeshData{MeshPrimitive::Triangles, std::move(vertexData),
     {positions, colors}};
 /* [MeshAttributeData-usage-offset-only] */
@@ -657,6 +657,14 @@ Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
 
 #ifdef MAGNUM_TARGET_GL
 {
+/* [MeshData-usage-compile] */
+Trade::MeshData data = DOXYGEN_IGNORE(Trade::MeshData{MeshPrimitive::Points, 0});
+
+GL::Mesh mesh = MeshTools::compile(data);
+/* [MeshData-usage-compile] */
+}
+
+{
 Trade::MeshData data{MeshPrimitive::Points, 0};
 /* [MeshData-usage] */
 /* Check that we have at least positions and normals */
@@ -672,7 +680,7 @@ vertices.setData(MeshTools::interleave(data.positions3DAsArray(),
 mesh.addVertexBuffer(std::move(vertices), 0,
     Shaders::PhongGL::Position{}, Shaders::PhongGL::Normal{});
 
-/* Set up an index buffer, if the mesh is indexed*/
+/* Set up an index buffer, if the mesh is indexed */
 if(data.isIndexed()) {
     GL::Buffer indices;
     indices.setData(data.indicesAsArray());
@@ -702,8 +710,6 @@ mesh.addVertexBuffer(vertices,
     GL::DynamicAttribute{Shaders::PhongGL::Normal{},
         data.attributeFormat(Trade::MeshAttribute::Normal)});
 
-// Set up other attributes ...
-
 /* Upload the original packed index data */
 if(data.isIndexed()) {
     GL::Buffer indices;
@@ -712,13 +718,6 @@ if(data.isIndexed()) {
         .setCount(data.indexCount());
 } else mesh.setCount(data.vertexCount());
 /* [MeshData-usage-advanced] */
-}
-
-{
-Trade::MeshData data{MeshPrimitive::Points, 0};
-/* [MeshData-usage-compile] */
-GL::Mesh mesh = MeshTools::compile(data);
-/* [MeshData-usage-compile] */
 }
 #endif
 
@@ -747,7 +746,7 @@ struct Vertex {
 
 Containers::Array<char> indexData{indexCount*sizeof(UnsignedShort)};
 Containers::Array<char> vertexData{vertexCount*sizeof(Vertex)};
-// …
+DOXYGEN_IGNORE()
 auto vertices = Containers::arrayCast<const Vertex>(vertexData);
 auto indices = Containers::arrayCast<const UnsignedShort>(indexData);
 

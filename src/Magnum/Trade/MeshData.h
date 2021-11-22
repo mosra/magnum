@@ -223,7 +223,7 @@ index array. The @ref MeshIndexType gets inferred from the view type:
 Alternatively, you can pass a typeless @cpp const void @ce view and supply
 @ref MeshIndexType explicitly, or a contiguous 2D view and let the class detect
 the actual index type from second dimension size. Note that the class accepts
-only contiguous views and not @ref Corrade::Containers::StridedArrayView,
+only contiguous views and not @relativeref{Corrade,Containers::StridedArrayView},
 following limitations of GPU index buffers that also have to be contiguous.
 @see @ref MeshAttributeData
 */
@@ -594,47 +594,60 @@ information such as primitive type. Populated instances of this class are
 returned from @ref AbstractImporter::mesh() and from particular functions in
 the @ref Primitives library.
 
+@section Trade-MeshData-usage-compile Quick usage with MeshTools::compile()
+
+If all you want is to create a @ref GL::Mesh that can be rendered by builtin
+shaders, a simple yet efficient way is to use @ref MeshTools::compile():
+
+@snippet MagnumTrade.cpp MeshData-usage-compile
+
+This one-liner uploads the data and configures the mesh for all attributes
+known by Magnum that are present in it. It's however rather opaque and doesn't
+give you any opportunity to do anything with the mesh data before they get sent
+to the GPU. It also won't be able to deal with any custom attributes that the
+mesh contains. Continue below to see how to achieve a similar effect with
+lower-level APIs.
+
 @section Trade-MeshData-usage Basic usage
 
-The simplest usage is through the convenience functions @ref positions2DAsArray(),
-@ref positions3DAsArray(), @ref tangentsAsArray(), @ref bitangentsAsArray(),
-@ref normalsAsArray(), @ref tangentsAsArray(), @ref textureCoordinates2DAsArray(),
-@ref colorsAsArray() and @ref objectIdsAsArray(). Each of these takes an index
-(as there can be multiple sets of texture coordinates, for example) and you're
-expected to check for attribute presence first with either @ref hasAttribute()
-or @ref attributeCount(MeshAttribute) const:
+The second simplest usage is accessing attributes through the convenience
+functions @ref positions2DAsArray(), @ref positions3DAsArray(),
+@ref tangentsAsArray(), @ref bitangentsAsArray(), @ref normalsAsArray(),
+@ref tangentsAsArray(), @ref textureCoordinates2DAsArray(),
+@ref colorsAsArray() and @ref objectIdsAsArray(). You're expected to check for
+attribute presence first with either @ref hasAttribute() (or
+@ref attributeCount(MeshAttribute) const, as there can be multiple sets of
+texture coordinates, for example). If you are creating a @ref GL::Mesh, the
+usual path forward is then to @ref MeshTools::interleave() attributes of
+interest, upload them to a @ref GL::Buffer and configure attribute binding for
+the mesh.
+
+The mesh can be also indexed, in which case the index buffer is exposed through
+@ref indicesAsArray().
 
 @snippet MagnumTrade.cpp MeshData-usage
 
 @section Trade-MeshData-usage-advanced Advanced usage
 
 The @ref positions2DAsArray(), ... functions shown above always return a
-newly-allocated @ref Corrade::Containers::Array instance with a clearly defined
-type that's large enough to represent most data. While that's fine for many use
-cases, sometimes you may want to minimize the import time of a large model or
-the imported data may be already in a well-optimized layout and format that you
-want to preserve. The @ref MeshData class internally stores a contiguous blob
-of data, which you can directly upload, and then use provided metadata to let
-the GPU know of the format and layout. Because there's a lot of possible types
-of each attribute (floats, packed integers, ...), the @ref GL::DynamicAttribute
-can accept a pair of @ref GL::Attribute defined by the shader and the actual
-@ref VertexFormat, figuring out all properties such as component count and
-element data type without having to explicitly handle all relevant types:
+newly-allocated @relativeref{Corrade,Containers::Array} instance of a type
+that's large enough to represent most data. While that's fine for many use
+cases, it can take significant amount of time for large models or maybe the
+imported data is already in a well-optimized layout and format that you want to
+preserve. The @ref MeshData class internally stores a contiguous blob of data,
+which you can directly upload, and then use provided metadata to let the GPU
+know of the format and layout. There's a lot of possible types of each
+attribute (floats, packed integers, ...), so @ref GL::DynamicAttribute accepts
+also a pair of @ref GL::Attribute defined by the shader and the actual
+@ref VertexFormat, figuring out gthe GL-specific properties such as component
+count or element data type for you:
 
 @snippet MagnumTrade.cpp MeshData-usage-advanced
 
-@section Trade-MeshData-usage-compile Using MeshTools::compile()
-
-For a quick yet efficient way to upload all data and configure a mesh for all
-known attributes that are present, @ref MeshTools::compile() can be used.
-Compared to the above, it's just an oneliner:
-
-@snippet MagnumTrade.cpp MeshData-usage-compile
-
-Compared to configuring the mesh manually you may lose a bit of flexibility,
-especially when you need to set up custom attributes or modify the data after.
-See @ref MeshTools::compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
-for a possible solution.
+This approach is especially useful when dealing with custom attributes. See
+also @ref MeshTools::compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
+for a combined way that gives you both the flexibility needed for custom
+attributes as well as the convenience for builtin attributes.
 
 @section Trade-MeshData-usage-mutable Mutable data access
 
@@ -658,21 +671,21 @@ to do a similar operation with normals and tangents as well.
 @section Trade-MeshData-populating Populating an instance
 
 A @ref MeshData instance by default takes over the ownership of an
-@ref Corrade::Containers::Array containing the vertex / index data together
-with a @ref MeshIndexData instance and a list of @ref MeshAttributeData
-describing various index and vertex properties. For example, an interleaved
-indexed mesh with 3D positions and RGBA colors would look like this ---
-and variants with just vertex data or just index data or neither are possible
-too:
+@relativeref{Corrade,Containers::Array} containing the vertex / index data
+together with a @ref MeshIndexData instance and a list of
+@ref MeshAttributeData describing various index and vertex properties. For
+example, an interleaved indexed mesh with 3D positions and RGBA colors would
+look like this --- and variants with just vertex data or just index data or
+neither are possible too:
 
 @snippet MagnumTrade.cpp MeshData-populating
 
 In cases where you want the @ref MeshData instance to only refer to external
 data without taking ownership (for example in a memory-mapped file, constant
-memory etc.). Instead of moving in an @ref Corrade::Containers::Array you pass
-@ref DataFlags describing if the data is mutable or not together with an
-@ref Corrade::Containers::ArrayView. A variant of the above where the index
-data is constant and vertex data mutable, both referenced externally:
+memory etc.). Instead of moving in an @relativeref{Corrade,Containers::Array}
+you pass @ref DataFlags describing if the data is mutable or not together with
+an @relativeref{Corrade,Containers::ArrayView}. A variant of the above where
+the index data is constant and vertex data mutable, both referenced externally:
 
 @snippet MagnumTrade.cpp MeshData-populating-non-owned
 
@@ -1092,7 +1105,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * Use the templated overload below to get the indices in a concrete
          * type.
-         * @see @ref Corrade::Containers::StridedArrayView::isContiguous()
+         * @see @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
          */
         Containers::StridedArrayView2D<const char> indices() const;
 
@@ -1315,7 +1328,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * implementation-specific values) and is guaranteed to be contiguous.
          * Use the templated overload below to get the attribute in a concrete
          * type.
-         * @see @ref Corrade::Containers::StridedArrayView::isContiguous(),
+         * @see @relativeref{Corrade,Containers::StridedArrayView::isContiguous()},
          *      @ref vertexFormatSize(),
          *      @ref isVertexFormatImplementationSpecific()
          */
@@ -1398,7 +1411,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * type.
          * @see @ref attribute(UnsignedInt) const,
          *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
-         *      @ref Corrade::Containers::StridedArrayView::isContiguous(),
+         *      @relativeref{Corrade,Containers::StridedArrayView::isContiguous()},
          *      @ref isVertexFormatImplementationSpecific()
          */
         Containers::StridedArrayView2D<const char> attribute(MeshAttribute name, UnsignedInt id = 0) const;
