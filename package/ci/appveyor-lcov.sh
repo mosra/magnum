@@ -1,27 +1,31 @@
 #!/bin/bash
 set -ev
 
-# https://www.msys2.org/news/#2020-06-29-new-packagers
-# TODO: drop this once AppVeyor updates the images
-curl -O http://repo.msys2.org/msys/x86_64/msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz
-curl -O http://repo.msys2.org/msys/x86_64/msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz.sig
-# The instructions say {.sig,} at the end, which is apparently wrong
-pacman-key --verify msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz.sig
-pacman -U --noconfirm msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz
+# This thing used to use MSYS's pacman to fetch lcov. However:
+#
+# - the lcov 1.13 package there was empty for some reason, so we had to
+#   download the source on our own (https://github.com/appveyor/ci/issues/1628)
+# - at some point, MSYS repos got new packagers and we had to update the
+#   keyring by hand (https://www.msys2.org/news/#2020-06-29-new-packagers)
+# - then, zstd-compressed packages happened, however the used version of pacman
+#   didn't understand zstd yet, so for perl, which lcov depends on, we had to
+#   manually download an archive that was still compressed with XZ (instead of
+#   going the more complicated way of updating pacman itself first, in every CI
+#   run)
+# - and THEN, since 2021-11-20, the perl XZ packages were removed, causing a
+#   404, but a rather weird one, since curl just downloaded the 404 page but
+#   didn't treat that as an error
+#
+# Then I made a step back and laughed at the needless suffering, because
+# AppVeyor ships Perl on its own and since we fetch our own lcov anyway, the
+# MSYS insanity is not needed for ANYTHING AT ALL, in fact.
 
-# Newer packages use zstd, but this old pacman has no idea what that is.
-# Download the last perl that's still compressed with xz.
-curl -O http://repo.msys2.org/msys/x86_64/perl-5.30.2-1-x86_64.pkg.tar.xz
-pacman -U --noconfirm perl-5.30.2-1-x86_64.pkg.tar.xz
-
-# mingw lcov package is empty, so download and use it manually
-# https://github.com/appveyor/ci/issues/1628
-wget https://github.com/linux-test-project/lcov/archive/v1.13.tar.gz
-tar -xzf v1.13.tar.gz
+wget https://github.com/linux-test-project/lcov/archive/v1.15.tar.gz
+tar -xzf v1.15.tar.gz
 
 # Keep in sync with PKBUILD-coverage and travis.yml, please
-lcov-1.13/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --directory . --capture --output-file coverage.info > /dev/null
-lcov-1.13/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null
-lcov-1.13/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/src/MagnumExternal/*" --output-file coverage.info > /dev/null
-lcov-1.13/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null
-lcov-1.13/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/build/src/*" --output-file coverage.info > /dev/null
+lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --directory . --capture --output-file coverage.info > /dev/null
+lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null
+lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/src/MagnumExternal/*" --output-file coverage.info > /dev/null
+lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null
+lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/build/src/*" --output-file coverage.info > /dev/null
