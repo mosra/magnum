@@ -318,7 +318,9 @@ assertions.
 @m_class{m-note m-success}
 
 @par
-    There's also a @ref magnum-shaderconverter "magnum-shaderconverter" tool, exposing functionality of all shader converter plugins on a command line.
+    There's also the @ref magnum-shaderconverter "magnum-shaderconverter" tool
+    that exposes functionality of all shader converter plugins through a
+    command line interface.
 
 @m_class{m-block m-warning}
 

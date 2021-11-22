@@ -86,6 +86,16 @@ class MAGNUM_AUDIO_EXPORT Extension {
 /**
 @brief OpenAL context
 
+Provides access to OpenAL version and extension information and manages
+Magnum's internal OpenAL context.
+
+@m_class{m-note m-success}
+
+@par
+    There's also the @ref magnum-al-info "magnum-al-info" tool that provides
+    access to OpenAL version and extension information through a command line
+    interface.
+
 @section AL-Context-command-line Command-line options
 
 The context is configurable through command-line options, that can be passed

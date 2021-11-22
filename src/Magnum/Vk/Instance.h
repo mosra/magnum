@@ -56,6 +56,13 @@ pointers. An instance provides device enumeration and management of Vulkan
 layers that enable additional functionality such as command validation or
 tracing / debugging.
 
+@m_class{m-note m-success}
+
+@par
+    There's also the @ref magnum-vk-info "magnum-vk-info" tool that provides
+    access to Vulkan instance and device version, layer, extension and feature
+    information through a command line interface.
+
 @section Vk-Instance-creation Instance creation
 
 While an @ref Instance can be default-constructed without much fuss, it's

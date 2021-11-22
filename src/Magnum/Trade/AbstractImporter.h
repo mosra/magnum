@@ -233,9 +233,9 @@ importer plugins.
 @m_class{m-note m-success}
 
 @par
-    There are also @ref magnum-imageconverter "magnum-imageconverter" and
-    @ref magnum-sceneconverter "magnum-sceneconverter" tools which you can use
-    to perform introspection of image and scene files.
+    There's also the @ref magnum-imageconverter "magnum-imageconverter" and
+    @ref magnum-sceneconverter "magnum-sceneconverter" tools that you can use
+    to perform introspection and conversion of image and scene files.
 
 @subsection Trade-AbstractImporter-usage-callbacks Loading data from memory, using file callbacks
 

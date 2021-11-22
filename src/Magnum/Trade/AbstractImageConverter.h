@@ -491,9 +491,9 @@ image converter plugins.
 @m_class{m-note m-success}
 
 @par
-    There's also a @ref magnum-imageconverter "magnum-imageconverter" tool,
-    exposing functionality of all image converter plugins on a command line as
-    well as performing introspection of image files.
+    There's also the @ref magnum-imageconverter "magnum-imageconverter" tool
+    that exposes functionality of all image converter plugins through a command
+    line interface.
 
 @subsection Trade-AbstractImageConverter-usage-file-levels Saving a set of mip levels
 

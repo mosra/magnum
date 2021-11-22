@@ -190,9 +190,9 @@ scene converter plugins.
 @m_class{m-note m-success}
 
 @par
-    There's also a @ref magnum-sceneconverter "magnum-sceneconverter" tool,
-    exposing functionality of all scene converter plugins on a command line as
-    well as performing introspection of scene files.
+    There's also the @ref magnum-sceneconverter "magnum-sceneconverter" tool
+    that exposes functionality of all scene converter plugins through a command
+    line interface.
 
 @subsection Trade-AbstractSceneConverter-usage-mesh Converting mesh data
 

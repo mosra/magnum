@@ -123,6 +123,13 @@ class MAGNUM_GL_EXPORT Extension {
 Provides access to OpenGL version and extension information and manages
 Magnum's internal OpenGL state tracker.
 
+@m_class{m-note m-success}
+
+@par
+    There's also the @ref magnum-gl-info "magnum-gl-info" tool that provides
+    access to OpenGL version, extension and platform-specific limit information
+    through a command line interface.
+
 @section GL-Context-usage Creating a context
 
 In order to use any Magnum OpenGL functionality, an instance of this class has

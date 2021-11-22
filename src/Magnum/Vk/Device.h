@@ -57,6 +57,13 @@ Wraps a @type_vk_keyword{Device} and stores device-specific Vulkan function
 pointers. A device provides an abstraction over a physical GPU or a CPU with
 Vulkan capabilities.
 
+@m_class{m-note m-success}
+
+@par
+    There's also the @ref magnum-vk-info "magnum-vk-info" tool that provides
+    access to Vulkan instance and device version, layer, extension and feature
+    information through a command line interface.
+
 @section Vk-Device-creation Device creation
 
 With an @ref Instance ready, a device has to be picked first. Commonly it's

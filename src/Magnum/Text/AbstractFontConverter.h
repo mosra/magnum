@@ -129,8 +129,9 @@ font conversion on command-line.
 @m_class{m-note m-success}
 
 @par
-    There's also a @ref magnum-fontconverter "magnum-fontconverter" tool,
-    exposing functionality of all font converter plugins on a command line.
+    There's also the @ref magnum-fontconverter "magnum-fontconverter" tool that
+    exposes functionality of all font converter plugins through a command line
+    interface.
 
 @section Text-AbstractFontConverter-subclassing Subclassing
 
