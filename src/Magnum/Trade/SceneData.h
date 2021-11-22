@@ -1240,10 +1240,18 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * The @p fieldId is expected to be smaller than @ref fieldCount() and
-         * @p T is expected to correspond to @ref objectType(). You can also
-         * use the non-templated @ref objectsAsArray() accessor to get the
-         * object mapping converted to the usual type, but note that such
-         * operation involves extra allocation and data conversion.
+         * @p T is expected to correspond to @ref objectType().
+         *
+         * You can also use the non-templated @ref objectsAsArray() accessor
+         * (or the combined @ref parentsAsArray(),
+         * @ref transformations2DAsArray(), @ref transformations3DAsArray(),
+         * @ref translationsRotationsScalings2DAsArray(),
+         * @ref translationsRotationsScalings3DAsArray(),
+         * @ref meshesMaterialsAsArray(), @ref lightsAsArray(),
+         * @ref camerasAsArray(), @ref skinsAsArray(),
+         * @ref importerStateAsArray() accessors) to get the object mapping
+         * converted to the usual type, but note that these operations involve
+         * extra allocation and data conversion.
          * @see @ref mutableObjects(UnsignedInt)
          */
         template<class T> Containers::StridedArrayView1D<const T> objects(UnsignedInt fieldId) const;
@@ -1287,10 +1295,18 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * The @p fieldName is expected to exist and @p T is expected to
-         * correspond to @ref objectType(). You can also use the non-templated
-         * @ref objectsAsArray() accessor to get the object mapping converted
-         * to the usual type, but note that such operation involves extra
-         * allocation and data conversion.
+         * correspond to @ref objectType().
+         *
+         * You can also use the non-templated @ref objectsAsArray() accessor
+         * (or the combined @ref parentsAsArray(),
+         * @ref transformations2DAsArray(), @ref transformations3DAsArray(),
+         * @ref translationsRotationsScalings2DAsArray(),
+         * @ref translationsRotationsScalings3DAsArray(),
+         * @ref meshesMaterialsAsArray(), @ref lightsAsArray(),
+         * @ref camerasAsArray(), @ref skinsAsArray(),
+         * @ref importerStateAsArray() accessors) to get the object mapping
+         * converted to the usual type, but note that these operations involve
+         * extra allocation and data conversion.
          * @see @ref hasField(), @ref objects(UnsignedInt) const,
          *      @ref mutableObjects(UnsignedInt)
          */
@@ -1338,6 +1354,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * is expected to correspond to @ref fieldType(UnsignedInt) const. The
          * field is also expected to not be an array, in that case you need to
          * use the overload below by using @cpp T[] @ce instead of @cpp T @ce.
+         *
          * You can also use the non-templated @ref parentsAsArray(),
          * @ref transformations2DAsArray(), @ref transformations3DAsArray(),
          * @ref translationsRotationsScalings2DAsArray(),
@@ -1418,8 +1435,9 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * The @p name is expected to exist and @p T is expected to correspond
          * to @ref fieldType(SceneField) const. The field is also expected to
          * not be an array, in that case you need to use the overload below by
-         * using @cpp T[] @ce instead of @cpp T @ce. You can also use the
-         * non-templated @ref parentsAsArray(),
+         * using @cpp T[] @ce instead of @cpp T @ce.
+         *
+         * You can also use the non-templated @ref parentsAsArray(),
          * @ref transformations2DAsArray(), @ref transformations3DAsArray(),
          * @ref translationsRotationsScalings2DAsArray(),
          * @ref translationsRotationsScalings3DAsArray(),
@@ -1474,6 +1492,16 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref objects(UnsignedInt) const that converts the field from an
          * arbitrary underlying type and returns it in a newly-allocated array.
          * The @p fieldId is expected to be smaller than @ref fieldCount().
+         *
+         * Note that, for common fields, you can also use the
+         * @ref parentsAsArray(), @ref transformations2DAsArray(),
+         * @ref transformations3DAsArray(),
+         * @ref translationsRotationsScalings2DAsArray(),
+         * @ref translationsRotationsScalings3DAsArray(),
+         * @ref meshesMaterialsAsArray(), @ref lightsAsArray(),
+         * @ref camerasAsArray(), @ref skinsAsArray(),
+         * @ref importerStateAsArray() accessors, which give out the object
+         * mapping together with the field data.
          * @see @ref objectsInto(UnsignedInt, const Containers::StridedArrayView1D<UnsignedInt>&) const
          */
         Containers::Array<UnsignedInt> objectsAsArray(UnsignedInt fieldId) const;
@@ -1485,6 +1513,16 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * Like @ref objectsAsArray(UnsignedInt) const, but puts the result
          * into @p destination instead of allocating a new array. Expects that
          * @p destination is sized to contain exactly all data.
+         *
+         * Note that, for common fields, you can also use the
+         * @ref parentsInto(), @ref transformations2DInto(),
+         * @ref transformations3DInto(),
+         * @ref translationsRotationsScalings2DInto(),
+         * @ref translationsRotationsScalings3DInto(),
+         * @ref meshesMaterialsInto(), @ref lightsInto(), @ref camerasInto(),
+         * @ref skinsInto(), @ref importerStateInto() accessors, which can give
+         * out the object mapping together with the field data.
+         *
          * @see @ref fieldSize(UnsignedInt) const
          */
         void objectsInto(UnsignedInt fieldId, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
@@ -1498,6 +1536,16 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * and size of the @p destination view, returning the count of items
          * actually extracted. The @p offset is expected to not be larger than
          * the field size.
+         *
+         * Note that, for common fields, you can also use the
+         * @ref parentsInto(), @ref transformations2DInto(),
+         * @ref transformations3DInto(),
+         * @ref translationsRotationsScalings2DInto(),
+         * @ref translationsRotationsScalings3DInto(),
+         * @ref meshesMaterialsInto(), @ref lightsInto(), @ref camerasInto(),
+         * @ref skinsInto(), @ref importerStateInto() accessors, which can give
+         * out the object mapping together with the field data.
+         *
          * @see @ref fieldSize(UnsignedInt) const,
          *      @ref fieldObjectOffset(UnsignedInt, UnsignedInt, std::size_t) const
          */
@@ -1511,6 +1559,16 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref objects(SceneField) const that converts the field from an
          * arbitrary underlying type and returns it in a newly-allocated array.
          * The @p fieldName is expected to exist.
+         *
+         * Note that, for common fields, you can also use the
+         * @ref parentsAsArray(), @ref transformations2DAsArray(),
+         * @ref transformations3DAsArray(),
+         * @ref translationsRotationsScalings2DAsArray(),
+         * @ref translationsRotationsScalings3DAsArray(),
+         * @ref meshesMaterialsAsArray(), @ref lightsAsArray(),
+         * @ref camerasAsArray(), @ref skinsAsArray(),
+         * @ref importerStateAsArray() accessors, which give out the object
+         * mapping together with the field data.
          * @see @ref objectsInto(SceneField, const Containers::StridedArrayView1D<UnsignedInt>&) const,
          *      @ref hasField()
          */
@@ -1523,6 +1581,16 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * Like @ref objectsAsArray(SceneField) const, but puts the result into
          * @p destination instead of allocating a new array. Expects that
          * @p destination is sized to contain exactly all data.
+         *
+         * Note that, for common fields, you can also use the
+         * @ref parentsInto(), @ref transformations2DInto(),
+         * @ref transformations3DInto(),
+         * @ref translationsRotationsScalings2DInto(),
+         * @ref translationsRotationsScalings3DInto(),
+         * @ref meshesMaterialsInto(), @ref lightsInto(), @ref camerasInto(),
+         * @ref skinsInto(), @ref importerStateInto() accessors, which can give
+         * out the object mapping together with the field data.
+         *
          * @see @ref fieldSize(SceneField) const
          */
         void objectsInto(SceneField fieldName, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
@@ -1536,6 +1604,16 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * and size of the @p destination view, returning the count of items
          * actually extracted. The @p offset is expected to not be larger than
          * the field size.
+         *
+         * Note that, for common fields, you can also use the
+         * @ref parentsInto(), @ref transformations2DInto(),
+         * @ref transformations3DInto(),
+         * @ref translationsRotationsScalings2DInto(),
+         * @ref translationsRotationsScalings3DInto(),
+         * @ref meshesMaterialsInto(), @ref lightsInto(), @ref camerasInto(),
+         * @ref skinsInto(), @ref importerStateInto() accessors, which can give
+         * out the object mapping together with the field data.
+         *
          * @see @ref fieldSize(SceneField) const,
          *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          */
@@ -1545,95 +1623,107 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Parent indices as 32-bit integers
          * @m_since_latest
          *
-         * Convenience alternative to @ref field(SceneField) const with
-         * @ref SceneField::Parent as the argument that converts the field from
-         * an arbitrary underlying type and returns it in a newly-allocated
+         * Convenience alternative to @ref objects(SceneField) const together
+         * with @ref field(SceneField) const with @ref SceneField::Parent as
+         * the argument. Converts the object mapping and the field from
+         * arbitrary underlying types and returns them in a newly-allocated
          * array. The field is expected to exist.
          * @see @ref parentsInto(), @ref hasField(), @ref parentFor(),
          *      @ref childrenFor()
          */
-        Containers::Array<Int> parentsAsArray() const;
+        Containers::Array<Containers::Pair<UnsignedInt, Int>> parentsAsArray() const;
 
         /**
          * @brief Parent indices as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
-         * Like @ref parentsAsArray(), but puts the result into @p destination
-         * instead of allocating a new array. Expects that @p destination is
-         * sized to contain exactly all data.
+         * Like @ref parentsAsArray(), but puts the result into
+         * @p objectDestination and @p fieldDestination instead of allocating a
+         * new array. Expects that each view is either @cpp nullptr @ce or
+         * sized to contain exactly all data. If @p fieldDestination is
+         * @cpp nullptr @ce, the effect is the same as calling
+         * @ref objectsInto() with @ref SceneField::Parent.
          * @see @ref fieldSize(SceneField) const
          */
-        void parentsInto(const Containers::StridedArrayView1D<Int>& destination) const;
+        void parentsInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Int>& fieldDestination) const;
 
         /**
          * @brief A subrange of parent indices as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
-         * Compared to @ref parentsInto(const Containers::StridedArrayView1D<Int>&) const
+         * Compared to @ref parentsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Int>&) const
          * extracts only a subrange of the field defined by @p offset and size
-         * of the @p destination view, returning the count of items actually
-         * extracted. The @p offset is expected to not be larger than the field
-         * size.
+         * of the views, returning the count of items actually extracted. The
+         * @p offset is expected to not be larger than the field size, views
+         * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
          *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          */
-        std::size_t parentsInto(std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
+        std::size_t parentsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Int>& fieldDestination) const;
 
         /**
          * @brief 2D transformations as 3x3 float matrices
          * @m_since_latest
          *
-         * Convenience alternative to @ref field(SceneField) const with
+         * Convenience alternative to @ref objects(SceneField) const together
+         * with @ref field(SceneField) const with
          * @ref SceneField::Transformation as the argument, or, if not present,
          * to a matrix created out of a subset of the
          * @ref SceneField::Translation, @ref SceneField::Rotation and
-         * @ref SceneField::Scaling fields that's present. The transformation
-         * is converted and composed from an arbitrary underlying type and
-         * returned in a newly-allocated array. At least one of the fields is
+         * @ref SceneField::Scaling fields that's present. Converts the object
+         * mapping and the fields from arbitrary underlying types and returns
+         * them in a newly-allocated array. At least one of the fields is
          * expected to exist and they are expected to have a type corresponding
          * to 2D, otherwise you're supposed to use
          * @ref transformations3DAsArray().
          * @see @ref is2D(), @ref transformations2DInto(), @ref hasField(),
          *      @ref fieldType(SceneField) const, @ref transformation2DFor()
          */
-        Containers::Array<Matrix3> transformations2DAsArray() const;
+        Containers::Array<Containers::Pair<UnsignedInt, Matrix3>> transformations2DAsArray() const;
 
         /**
          * @brief 2D transformations as 3x3 float matrices into a pre-allocated view
          * @m_since_latest
          *
          * Like @ref transformations2DAsArray(), but puts the result into
-         * @p destination instead of allocating a new array. Expects that
-         * @p destination is sized to contain exactly all data.
+         * @p objectDestination and @p fieldDestination instead of allocating a
+         * new array. Expects that each view is either @cpp nullptr @ce or
+         * sized to contain exactly all data. If @p fieldDestination is
+         * @cpp nullptr @ce, the effect is the same as calling
+         * @ref objectsInto() with the first of the
+         * @ref SceneField::Transformation, @ref SceneField::Translation,
+         * @ref SceneField::Rotation and @ref SceneField::Scaling fields that's
+         * present.
          * @see @ref fieldSize(SceneField) const
          */
-        void transformations2DInto(const Containers::StridedArrayView1D<Matrix3>& destination) const;
+        void transformations2DInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Matrix3>& fieldDestination) const;
 
         /**
          * @brief A subrange of 2D transformations as 3x3 float matrices into a pre-allocated view
          * @m_since_latest
          *
-         * Compared to @ref transformations2DInto(const Containers::StridedArrayView1D<Matrix3>&) const
+         * Compared to @ref transformations2DInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Matrix3>&) const
          * extracts only a subrange of the field defined by @p offset and size
-         * of the @p destination view, returning the count of items actually
-         * extracted. The @p offset is expected to not be larger than the field
-         * size.
+         * of the views, returning the count of items actually extracted. The
+         * @p offset is expected to not be larger than the field size, views
+         * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
          *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          */
-        std::size_t transformations2DInto(std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const;
+        std::size_t transformations2DInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Matrix3>& fieldDestination) const;
 
         /**
          * @brief 2D transformations as float translation, rotation and scaling components
          * @m_since_latest
          *
-         * Convenience alternative to @ref field(SceneField) const with
-         * @ref SceneField::Translation, @ref SceneField::Rotation and
-         * @ref SceneField::Scaling as the arguments, as these are required to
-         * share the same object mapping. Converts the fields from an arbitrary
-         * underlying type and returns them in a newly-allocated array. At
-         * least one of the fields is expected to exist and they are expected
-         * to have a type corresponding to 2D, otherwise you're supposed to use
+         * Convenience alternative to @ref objects(SceneField) const together
+         * with @ref field(SceneField) const with @ref SceneField::Translation,
+         * @ref SceneField::Rotation and @ref SceneField::Scaling as the
+         * arguments, as these are required to share the same object mapping.
+         * Converts the object mapping and the fields from arbitrary underlying
+         * types and returns them in a newly-allocated array. At least one of
+         * the fields is expected to exist and they are expected to have a type
+         * corresponding to 2D, otherwise you're supposed to use
          * @ref translationsRotationsScalings3DAsArray(). If the
          * @ref SceneField::Translation field isn't present, the first returned
          * value is a zero vector. If the @relativeref{SceneField,Rotation}
@@ -1644,26 +1734,31 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *      @ref hasField(), @ref fieldType(SceneField) const,
          *      @ref translationRotationScaling2DFor()
          */
-        Containers::Array<Containers::Triple<Vector2, Complex, Vector2>> translationsRotationsScalings2DAsArray() const;
+        Containers::Array<Containers::Pair<UnsignedInt, Containers::Triple<Vector2, Complex, Vector2>>> translationsRotationsScalings2DAsArray() const;
 
         /**
          * @brief 2D transformations as float translation, rotation and scaling components into a pre-allocated view
          * @m_since_latest
          *
          * Like @ref translationsRotationsScalings2DAsArray(), but puts the
-         * result into @p translationDestination, @p rotationDestination and
-         * @p scalingDestination instead of allocating a new array. Expects
-         * that each view is either @cpp nullptr @ce or sized to contain
-         * exactly all data.
+         * result into @p objectDestination, @p translationDestination,
+         * @p rotationDestination and @p scalingDestination instead of
+         * allocating a new array. Expects that each view is either
+         * @cpp nullptr @ce or sized to contain exactly all data. If
+         * @p translationDestination, @p rotationDestination and
+         * @p scalingDestination are all @cpp nullptr @ce, the effect is the
+         * same as calling @ref objectsInto() with one of the
+         * @ref SceneField::Translation, @ref SceneField::Rotation and
+         * @ref SceneField::Scaling fields that's present.
          * @see @ref fieldSize(SceneField) const
          */
-        void translationsRotationsScalings2DInto(const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const;
+        void translationsRotationsScalings2DInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const;
 
         /**
          * @brief A subrange of 2D transformations as float translation, rotation and scaling components into a pre-allocated view
          * @m_since_latest
          *
-         * Compared to @ref translationsRotationsScalings2DInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Complex>&, const Containers::StridedArrayView1D<Vector2>&) const
+         * Compared to @ref translationsRotationsScalings2DInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Complex>&, const Containers::StridedArrayView1D<Vector2>&) const
          * extracts only a subrange of the field defined by @p offset and size
          * of the views, returning the count of items actually extracted. The
          * @p offset is expected to not be larger than the field size, views
@@ -1671,63 +1766,71 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref fieldSize(SceneField) const,
          *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          */
-        std::size_t translationsRotationsScalings2DInto(std::size_t offset, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const;
+        std::size_t translationsRotationsScalings2DInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const;
 
         /**
          * @brief 3D transformations as 4x4 float matrices
          * @m_since_latest
          *
-         * Convenience alternative to @ref field(SceneField) const with
+         * Convenience alternative to @ref objects(SceneField) const together
+         * with @ref field(SceneField) const with
          * @ref SceneField::Transformation as the argument, or, if not present,
          * to a matrix created out of a subset of the
          * @ref SceneField::Translation, @ref SceneField::Rotation and
-         * @ref SceneField::Scaling fields that's present. The transformation
-         * is converted and composed from an arbitrary underlying type and
-         * returned in a newly-allocated array. At least one of the fields is
+         * @ref SceneField::Scaling fields that's present. Converts the object
+         * mapping and the fields from arbitrary underlying types and returns
+         * them in a newly-allocated array. At least one of the fields is
          * expected to exist and they are expected to have a type corresponding
          * to 3D, otherwise you're supposed to use
          * @ref transformations2DAsArray().
          * @see @ref is3D(), @ref transformations3DInto(), @ref hasField(),
          *      @ref fieldType(SceneField) const, @ref transformation3DFor()
          */
-        Containers::Array<Matrix4> transformations3DAsArray() const;
+        Containers::Array<Containers::Pair<UnsignedInt, Matrix4>> transformations3DAsArray() const;
 
         /**
          * @brief 3D transformations as 4x4 float matrices into a pre-allocated view
          * @m_since_latest
          *
          * Like @ref transformations3DAsArray(), but puts the result into
-         * @p destination instead of allocating a new array. Expects that
-         * @p destination is sized to contain exactly all data.
+         * @p objectDestination and @p fieldDestination instead of allocating a
+         * new array. Expects that the two views are either @cpp nullptr @ce or
+         * sized to contain exactly all data. If @p fieldDestination is
+         * @cpp nullptr @ce, the effect is the same as calling
+         * @ref objectsInto() with the first of the
+         * @ref SceneField::Transformation, @ref SceneField::Translation,
+         * @ref SceneField::Rotation and @ref SceneField::Scaling fields that's
+         * present.
          * @see @ref fieldSize(SceneField) const
          */
-        void transformations3DInto(const Containers::StridedArrayView1D<Matrix4>& destination) const;
+        void transformations3DInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Matrix4>& destination) const;
 
         /**
          * @brief A subrange of 3D transformations as 4x4 float matrices into a pre-allocated view
          * @m_since_latest
          *
-         * Compared to @ref transformations3DInto(const Containers::StridedArrayView1D<Matrix4>&) const
+         * Compared to @ref transformations3DInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Matrix4>&) const
          * extracts only a subrange of the field defined by @p offset and size
-         * of the @p destination view, returning the count of items actually
-         * extracted. The @p offset is expected to not be larger than the field
-         * size.
+         * of the views, returning the count of items actually extracted. The
+         * @p offset is expected to not be larger than the field size, views
+         * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
          *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          */
-        std::size_t transformations3DInto(std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const;
+        std::size_t transformations3DInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Matrix4>& destination) const;
 
         /**
          * @brief 3D transformations as float translation, rotation and scaling components
          * @m_since_latest
          *
-         * Convenience alternative to @ref field(SceneField) const with
-         * @ref SceneField::Translation, @ref SceneField::Rotation and
-         * @ref SceneField::Scaling as the arguments, as these are required to
-         * share the same object mapping. Converts the fields from an arbitrary
-         * underlying type and returns them in a newly-allocated array. At
-         * least one of the fields is expected to exist and they are expected
-         * to have a type corresponding to 3D, otherwise you're supposed to use
+         * Convenience alternative to @ref objects(SceneField) const together
+         * with @ref field(SceneField) const with @ref SceneField::Translation,
+         * @ref SceneField::Rotation and @ref SceneField::Scaling as the
+         * arguments, as these are required to share the same object mapping.
+         * Converts the object mapping and the fields from arbitrary underlying
+         * types and returns them in a newly-allocated array. At least one of
+         * the fields is expected to exist and they are expected to have a type
+         * corresponding to 3D, otherwise you're supposed to use
          * @ref translationsRotationsScalings2DAsArray(). If the
          * @ref SceneField::Translation field isn't present, the first returned
          * value is a zero vector. If the @relativeref{SceneField,Rotation}
@@ -1738,26 +1841,31 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *      @ref hasField(), @ref fieldType(SceneField) const,
          *      @ref translationRotationScaling3DFor()
          */
-        Containers::Array<Containers::Triple<Vector3, Quaternion, Vector3>> translationsRotationsScalings3DAsArray() const;
+        Containers::Array<Containers::Pair<UnsignedInt, Containers::Triple<Vector3, Quaternion, Vector3>>> translationsRotationsScalings3DAsArray() const;
 
         /**
          * @brief 3D transformations as float translation, rotation and scaling components into a pre-allocated view
          * @m_since_latest
          *
          * Like @ref translationsRotationsScalings3DAsArray(), but puts the
-         * result into @p translationDestination, @p rotationDestination and
-         * @p scalingDestination instead of allocating a new array. Expects
-         * that each view is either @cpp nullptr @ce or sized to contain
-         * exactly all data.
+         * result into @p objectDestination, @p translationDestination,
+         * @p rotationDestination and @p scalingDestination instead of
+         * allocating a new array. Expects that each view is either
+         * @cpp nullptr @ce or sized to contain exactly all data. If
+         * @p translationDestination, @p rotationDestination and
+         * @p scalingDestination are all @cpp nullptr @ce, the effect is the
+         * same as calling @ref objectsInto() with one of the
+         * @ref SceneField::Translation, @ref SceneField::Rotation and
+         * @ref SceneField::Scaling fields that's present.
          * @see @ref fieldSize(SceneField) const
          */
-        void translationsRotationsScalings3DInto(const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const;
+        void translationsRotationsScalings3DInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const;
 
         /**
          * @brief A subrange of 3D transformations as float translation, rotation and scaling components into a pre-allocated view
          * @m_since_latest
          *
-         * Compared to @ref translationsRotationsScalings3DInto(const Containers::StridedArrayView1D<Vector3>&, const Containers::StridedArrayView1D<Quaternion>&, const Containers::StridedArrayView1D<Vector3>&) const
+         * Compared to @ref translationsRotationsScalings3DInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&, const Containers::StridedArrayView1D<Quaternion>&, const Containers::StridedArrayView1D<Vector3>&) const
          * extracts only a subrange of the field defined by @p offset and size
          * of the views, returning the count of items actually extracted. The
          * @p offset is expected to not be larger than the field size, views
@@ -1765,41 +1873,45 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref fieldSize(SceneField) const,
          *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          */
-        std::size_t translationsRotationsScalings3DInto(std::size_t offset, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const;
+        std::size_t translationsRotationsScalings3DInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const;
 
         /**
          * @brief Mesh and material IDs as 32-bit integers
          * @m_since_latest
          *
-         * Convenience alternative to @ref field(SceneField) const with
-         * @ref SceneField::Mesh and @ref SceneField::MeshMaterial as the
-         * argument, as the two are required to share the same object mapping.
-         * Converts the fields from an arbitrary underlying type and returns it
-         * in a newly-allocated array. The @ref SceneField::Mesh field is
+         * Convenience alternative to @ref objects(SceneField) const together
+         * with @ref field(SceneField) const with @ref SceneField::Mesh and
+         * @ref SceneField::MeshMaterial as the argument, as the two are
+         * required to share the same object mapping. Converts the object
+         * mapping and the fields from arbitrary underlying types and returns
+         * them in a newly-allocated array. The @ref SceneField::Mesh field is
          * expected to exist, if @ref SceneField::MeshMaterial isn't present,
          * the second returned values are all @cpp -1 @ce.
          * @see @ref meshesMaterialsInto(), @ref hasField(),
          *      @ref meshesMaterialsFor()
          */
-        Containers::Array<Containers::Pair<UnsignedInt, Int>> meshesMaterialsAsArray() const;
+        Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>> meshesMaterialsAsArray() const;
 
         /**
          * @brief Mesh and material IDs as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
          * Like @ref meshesMaterialsAsArray(), but puts the results into
-         * @p meshDestination and @p meshMaterialDestination instead of
-         * allocating a new array. Expects that each view is either
-         * @cpp nullptr @ce or sized to contain exactly all data.
+         * @p objectDestination, @p meshDestination and
+         * @p meshMaterialDestination instead of allocating a new array.
+         * Expects that each view is either @cpp nullptr @ce or sized to
+         * contain exactly all data. If @p meshDestination and
+         * @p meshMaterialDestination are both @cpp nullptr @ce, the effect is
+         * the same as calling @ref objectsInto() with @ref SceneField::Mesh.
          * @see @ref fieldSize(SceneField) const
          */
-        void meshesMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const;
+        void meshesMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const;
 
         /**
          * @brief A subrange of mesh and material IDs as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
-         * Compared to @ref meshesMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Int>&) const
+         * Compared to @ref meshesMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Int>&) const
          * extracts only a subrange of the field defined by @p offset and size
          * of the views, returning the count of items actually extracted. The
          * @p offset is expected to not be larger than the field size, views
@@ -1807,158 +1919,174 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref fieldSize(SceneField) const,
          *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          */
-        std::size_t meshesMaterialsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialsDestination) const;
+        std::size_t meshesMaterialsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialsDestination) const;
 
         /**
          * @brief Light IDs as 32-bit integers
          * @m_since_latest
          *
-         * Convenience alternative to @ref field(SceneField) const with
-         * @ref SceneField::Light as the argument that converts the field from
-         * an arbitrary underlying type and returns it in a newly-allocated
-         * array. The field is expected to exist.
+         * Convenience alternative to @ref objects(SceneField) const together
+         * with @ref field(SceneField) const with @ref SceneField::Light as the
+         * argument. Converts the object mapping and the field from arbitrary
+         * underlying types and returns them in a newly-allocated array. The
+         * field is expected to exist.
          * @see @ref lightsInto(), @ref hasField(), @ref lightsFor()
          */
-        Containers::Array<UnsignedInt> lightsAsArray() const;
+        Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> lightsAsArray() const;
 
         /**
          * @brief Light IDs as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
-         * Like @ref lightsAsArray(), but puts the result into @p destination
-         * instead of allocating a new array. Expects that @p destination is
-         * sized to contain exactly all data.
+         * Like @ref lightsAsArray(), but puts the result into
+         * @p objectDestination and @p fieldDestination instead of allocating a
+         * new array. Expects that each view is either @cpp nullptr @ce or
+         * sized to contain exactly all data. If @p fieldDestination is
+         * @cpp nullptr @ce, the effect is the same as calling
+         * @ref lightsInto() with @ref SceneField::Light.
          * @see @ref fieldSize(SceneField) const
          */
-        void lightsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+        void lightsInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const;
 
         /**
          * @brief A subrange of light IDs as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
-         * Compared to @ref lightsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const
+         * Compared to @ref lightsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&) const
          * extracts only a subrange of the field defined by @p offset and size
-         * of the @p destination view, returning the count of items actually
-         * extracted. The @p offset is expected to not be larger than the field
-         * size.
+         * of the views, returning the count of items actually extracted. The
+         * @p offset is expected to not be larger than the field size, views
+         * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
          *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          */
-        std::size_t lightsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+        std::size_t lightsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const;
 
         /**
          * @brief Camera IDs as 32-bit integers
          * @m_since_latest
          *
-         * Convenience alternative to @ref field(SceneField) const with
-         * @ref SceneField::Camera as the argument that converts the field from
-         * an arbitrary underlying type and returns it in a newly-allocated
+         * Convenience alternative to @ref objects(SceneField) const together
+         * with @ref field(SceneField) const with @ref SceneField::Camera as
+         * the argument. Converts the object mapping and the field from
+         * arbitrary underlying types and returns them in a newly-allocated
          * array. The field is expected to exist.
          * @see @ref camerasInto(), @ref hasField(), @ref camerasFor()
          */
-        Containers::Array<UnsignedInt> camerasAsArray() const;
+        Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> camerasAsArray() const;
 
         /**
          * @brief Camera IDs as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
          * Like @ref camerasAsArray(), but puts the result into
-         * @p destination instead of allocating a new array. Expects that
-         * @p destination is sized to contain exactly all data.
+         * @p objectDestination and @p fieldDestination instead of allocating a
+         * new array. Expects that each view is either @cpp nullptr @ce or
+         * sized to contain exactly all data. If @p fieldDestination is
+         * @cpp nullptr @ce, the effect is the same as calling
+         * @ref objectsInto() with @ref SceneField::Camera.
          * @see @ref fieldSize(SceneField) const
          */
-        void camerasInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+        void camerasInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const;
 
         /**
          * @brief A subrange of camera IDs as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
-         * Compared to @ref camerasInto(const Containers::StridedArrayView1D<UnsignedInt>&) const
+         * Compared to @ref camerasInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&) const
          * extracts only a subrange of the field defined by @p offset and size
-         * of the @p destination view, returning the count of items actually
-         * extracted. The @p offset is expected to not be larger than the field
-         * size.
+         * of the views, returning the count of items actually extracted. The
+         * @p offset is expected to not be larger than the field size, views
+         * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
          *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          */
-        std::size_t camerasInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+        std::size_t camerasInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const;
 
         /**
          * @brief Skin IDs as 32-bit integers
          * @m_since_latest
          *
-         * Convenience alternative to @ref field(SceneField) const with
-         * @ref SceneField::Skin as the argument that converts the field from
-         * an arbitrary underlying type and returns it in a newly-allocated
-         * array. The field is expected to exist.
+         * Convenience alternative to @ref objects(SceneField) const together
+         * with @ref field(SceneField) const with @ref SceneField::Skin as the
+         * argument. Converts the object mapping and the field from arbitrary
+         * underlying types and returns them in a newly-allocated array. The
+         * field is expected to exist.
          * @see @ref skinsInto(), @ref hasField(), @ref skinsFor()
          */
-        Containers::Array<UnsignedInt> skinsAsArray() const;
+        Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> skinsAsArray() const;
 
         /**
          * @brief Skin IDs as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
-         * Like @ref skinsAsArray(), but puts the result into @p destination
-         * instead of allocating a new array. Expects that @p destination is
-         * sized to contain exactly all data.
+         * Like @ref skinsAsArray(), but puts the result into
+         * @p objectDestination and @p fieldDestination instead of allocating a
+         * new array. Expects that each view is either @cpp nullptr @ce or
+         * sized to contain exactly all data. If @p fieldDestination is
+         * @cpp nullptr @ce, the effect is the same as calling
+         * @ref objectsInto() with @ref SceneField::Skin.
          * @see @ref fieldSize(SceneField) const
          */
-        void skinsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+        void skinsInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const;
 
         /**
          * @brief A subrange of skin IDs as 32-bit integers into a pre-allocated view
          * @m_since_latest
          *
-         * Compared to @ref skinsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const
+         * Compared to @ref skinsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&) const
          * extracts only a subrange of the field defined by @p offset and size
-         * of the @p destination view, returning the count of items actually
-         * extracted. The @p offset is expected to not be larger than the field
-         * size.
+         * of the views, returning the count of items actually extracted. The
+         * @p offset is expected to not be larger than the field size, views
+         * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
          *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          */
-        std::size_t skinsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
+        std::size_t skinsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const;
 
         /**
          * @brief Per-object importer state as `void` pointers
          * @m_since_latest
          *
-         * Convenience alternative to @ref field(SceneField) const with
-         * @ref SceneField::ImporterState as the argument that converts the
-         * field from an arbitrary underlying type and returns it in a
-         * newly-allocated array. The field is expected to exist.
+         * Convenience alternative to @ref objects(SceneField) const together
+         * with @ref field(SceneField) const with @ref SceneField::ImporterState
+         * as the argument. Converts the object mapping and the field from
+         * arbitrary underlying types and returns them in a newly-allocated
+         * array. The field is expected to exist.
          *
          * This is different from @ref importerState(), which returns importer
          * state for the scene itself, not particular objects.
          * @see @ref importerStateInto(), @ref hasField(), @ref importerStateFor()
          */
-        Containers::Array<const void*> importerStateAsArray() const;
+        Containers::Array<Containers::Pair<UnsignedInt, const void*>> importerStateAsArray() const;
 
         /**
          * @brief Per-object importer state as `void` pointers into a pre-allocated view
          * @m_since_latest
          *
          * Like @ref importerStateAsArray(), but puts the result into
-         * @p destination instead of allocating a new array. Expects that
-         * @p destination is sized to contain exactly all data.
+         * @p objectDestination and @p fieldDestination instead of allocating a
+         * new array. Expects that each view is either @cpp nullptr @ce or
+         * sized to contain exactly all data. If @p fieldDestination is
+         * @cpp nullptr @ce, the effect is the same as calling
+         * @ref objectsInto() with @ref SceneField::ImporterState.
          * @see @ref fieldSize(SceneField) const
          */
-        void importerStateInto(const Containers::StridedArrayView1D<const void*>& destination) const;
+        void importerStateInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<const void*>& fieldDestination) const;
 
         /**
          * @brief A subrange of per-object importer state as `void` pointers into a pre-allocated view
          * @m_since_latest
          *
-         * Compared to @ref importerStateInto(const Containers::StridedArrayView1D<const void*>&) const
+         * Compared to @ref importerStateInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<const void*>&) const
          * extracts only a subrange of the field defined by @p offset and size
-         * of the @p destination view, returning the count of items actually
-         * extracted. The @p offset is expected to not be larger than the field
-         * size.
+         * of the views, returning the count of items actually extracted. The
+         * @p offset is expected to not be larger than the field size, views
+         * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
          *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          */
-        std::size_t importerStateInto(std::size_t offset, const Containers::StridedArrayView1D<const void*>& destination) const;
+        std::size_t importerStateInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<const void*>& fieldDestination) const;
 
         /**
          * @brief Parent for given object
@@ -2300,15 +2428,15 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         MAGNUM_TRADE_LOCAL void objectsIntoInternal(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
         MAGNUM_TRADE_LOCAL void parentsIntoInternal(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
-        MAGNUM_TRADE_LOCAL std::size_t findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId, UnsignedInt* fieldWithObjectMappingDestination = nullptr) const;
-        MAGNUM_TRADE_LOCAL std::size_t findTranslationRotationScalingFields(UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId, UnsignedInt* fieldWithObjectMappingDestination = nullptr) const;
+        MAGNUM_TRADE_LOCAL UnsignedInt findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const;
+        MAGNUM_TRADE_LOCAL UnsignedInt findTranslationRotationScalingFields(UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const;
         MAGNUM_TRADE_LOCAL void transformations2DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const;
         MAGNUM_TRADE_LOCAL void translationsRotationsScalings2DIntoInternal(UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const;
         MAGNUM_TRADE_LOCAL void transformations3DIntoInternal(UnsignedInt transformationFieldId, UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const;
         MAGNUM_TRADE_LOCAL void translationsRotationsScalings3DIntoInternal(UnsignedInt translationFieldId, UnsignedInt rotationFieldId, UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const;
         MAGNUM_TRADE_LOCAL void unsignedIndexFieldIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
         MAGNUM_TRADE_LOCAL void indexFieldIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const;
-        MAGNUM_TRADE_LOCAL Containers::Array<UnsignedInt> unsignedIndexFieldAsArrayInternal(const UnsignedInt fieldId) const;
+        MAGNUM_TRADE_LOCAL Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> unsignedIndexFieldAsArrayInternal(const UnsignedInt fieldId) const;
         MAGNUM_TRADE_LOCAL void meshesMaterialsIntoInternal(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const;
         MAGNUM_TRADE_LOCAL void importerStateIntoInternal(const UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<const void*>& destination) const;
 

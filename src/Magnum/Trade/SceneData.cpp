@@ -1162,34 +1162,43 @@ void SceneData::parentsIntoInternal(const UnsignedInt fieldId, const std::size_t
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-void SceneData::parentsInto(const Containers::StridedArrayView1D<Int>& destination) const {
+void SceneData::parentsInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Int>& fieldDestination) const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Parent);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::parentsInto(): field not found", );
-    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
-        "Trade::SceneData::parentsInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
-    parentsIntoInternal(fieldId, 0, destination);
+    CORRADE_ASSERT(!objectDestination || objectDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::parentsInto(): expected object destination view either empty or with" << _fields[fieldId]._size << "elements but got" << objectDestination.size(), );
+    CORRADE_ASSERT(!fieldDestination || fieldDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::parentsInto(): expected field destination view either empty or with" << _fields[fieldId]._size << "elements but got" << fieldDestination.size(), );
+    objectsIntoInternal(fieldId, 0, objectDestination);
+    parentsIntoInternal(fieldId, 0, fieldDestination);
 }
 
-std::size_t SceneData::parentsInto(const std::size_t offset, const Containers::StridedArrayView1D<Int>& destination) const {
+std::size_t SceneData::parentsInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Int>& fieldDestination) const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Parent);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::parentsInto(): field not found", {});
-    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
-        "Trade::SceneData::parentsInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
-    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
-    parentsIntoInternal(fieldId, offset, destination.prefix(size));
+    const std::size_t fieldSize = _fields[fieldId]._size;
+    CORRADE_ASSERT(offset <= fieldSize,
+        "Trade::SceneData::parentsInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+    CORRADE_ASSERT(!objectDestination != !fieldDestination|| objectDestination.size() == fieldDestination.size(),
+        "Trade::SceneData::parentsInto(): object and field destination views have different size," << objectDestination.size() << "vs" << fieldDestination.size(), {});
+    const std::size_t size = Math::min(Math::max(objectDestination.size(), fieldDestination.size()), fieldSize - offset);
+    if(objectDestination) objectsIntoInternal(fieldId, offset, objectDestination.prefix(size));
+    if(fieldDestination) parentsIntoInternal(fieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
-Containers::Array<Int> SceneData::parentsAsArray() const {
+Containers::Array<Containers::Pair<UnsignedInt, Int>> SceneData::parentsAsArray() const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Parent);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
         "Trade::SceneData::parentsInto(): field not found", {});
-    Containers::Array<Int> out{NoInit, std::size_t(_fields[fieldId]._size)};
-    parentsIntoInternal(fieldId, 0, out);
+    Containers::Array<Containers::Pair<UnsignedInt, Int>> out{NoInit, std::size_t(_fields[fieldId]._size)};
+    /** @todo use slicing once Pair exposes members somehow */
+    objectsIntoInternal(fieldId, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
+    parentsIntoInternal(fieldId, 0, {out, reinterpret_cast<Int*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)});
     return out;
 }
 
@@ -1241,7 +1250,7 @@ template<class Source, class Destination> void applyScaling(const Containers::St
 
 }
 
-std::size_t SceneData::findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId, UnsignedInt* const fieldWithObjectMappingDestination) const {
+UnsignedInt SceneData::findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const {
     UnsignedInt fieldWithObjectMapping = ~UnsignedInt{};
     transformationFieldId = ~UnsignedInt{};
     translationFieldId = ~UnsignedInt{};
@@ -1262,15 +1271,10 @@ std::size_t SceneData::findTransformFields(UnsignedInt& transformationFieldId, U
         }
     }
 
-    if(fieldWithObjectMappingDestination)
-        *fieldWithObjectMappingDestination = fieldWithObjectMapping;
-
-    /* Assuming the caller fires an appropriate assertion */
-    return fieldWithObjectMapping == ~UnsignedInt{} ?
-        ~std::size_t{} : _fields[fieldWithObjectMapping]._size;
+    return fieldWithObjectMapping;
 }
 
-std::size_t SceneData::findTranslationRotationScalingFields(UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId, UnsignedInt* const fieldWithObjectMappingDestination) const {
+UnsignedInt SceneData::findTranslationRotationScalingFields(UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const {
     UnsignedInt fieldWithObjectMapping = ~UnsignedInt{};
     translationFieldId = ~UnsignedInt{};
     rotationFieldId = ~UnsignedInt{};
@@ -1285,12 +1289,7 @@ std::size_t SceneData::findTranslationRotationScalingFields(UnsignedInt& transla
         }
     }
 
-    if(fieldWithObjectMappingDestination)
-        *fieldWithObjectMappingDestination = fieldWithObjectMapping;
-
-    /* Assuming the caller fires an appropriate assertion */
-    return fieldWithObjectMapping == ~UnsignedInt{} ?
-        ~std::size_t{} : _fields[fieldWithObjectMapping]._size;
+    return fieldWithObjectMapping;
 }
 
 void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFieldId, const UnsignedInt translationFieldId, const UnsignedInt rotationFieldId, const UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const {
@@ -1369,40 +1368,46 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-void SceneData::transformations2DInto(const Containers::StridedArrayView1D<Matrix3>& destination) const {
+void SceneData::transformations2DInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Matrix3>& fieldDestination) const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    #ifndef CORRADE_NO_ASSERT
-    const std::size_t expectedSize =
-    #endif
-        findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
-    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         "Trade::SceneData::transformations2DInto(): no transformation-related field found", );
-    CORRADE_ASSERT(expectedSize == destination.size(),
-        "Trade::SceneData::transformations2DInto(): expected a view with" << expectedSize << "elements but got" << destination.size(), );
-    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, destination);
+    CORRADE_ASSERT(!objectDestination || objectDestination.size() == _fields[fieldWithObjectMapping]._size,
+        "Trade::SceneData::transformations2DInto(): expected object destination view either empty or with" << _fields[fieldWithObjectMapping]._size << "elements but got" << objectDestination.size(), );
+    CORRADE_ASSERT(!fieldDestination || fieldDestination.size() == _fields[fieldWithObjectMapping]._size,
+        "Trade::SceneData::transformations2DInto(): expected field destination view either empty or with" << _fields[fieldWithObjectMapping]._size << "elements but got" << fieldDestination.size(), );
+    objectsIntoInternal(fieldWithObjectMapping, 0, objectDestination);
+    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, fieldDestination);
 }
 
-std::size_t SceneData::transformations2DInto(const std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const {
+std::size_t SceneData::transformations2DInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Matrix3>& fieldDestination) const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    const std::size_t expectedSize = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
-    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         "Trade::SceneData::transformations2DInto(): no transformation-related field found", {});
-    CORRADE_ASSERT(offset <= expectedSize,
-        "Trade::SceneData::transformations2DInto(): offset" << offset << "out of bounds for a field of size" << expectedSize, {});
-    const std::size_t size = Math::min(destination.size(), expectedSize - offset);
-    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, destination.prefix(size));
+    const std::size_t fieldSize = _fields[fieldWithObjectMapping]._size;
+    CORRADE_ASSERT(offset <= fieldSize,
+        "Trade::SceneData::transformations2DInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+    CORRADE_ASSERT(!objectDestination != !fieldDestination|| objectDestination.size() == fieldDestination.size(),
+        "Trade::SceneData::transformations2DInto(): object and field destination views have different size," << objectDestination.size() << "vs" << fieldDestination.size(), {});
+    const std::size_t size = Math::min(Math::max(objectDestination.size(), fieldDestination.size()), fieldSize - offset);
+    if(objectDestination) objectsIntoInternal(fieldWithObjectMapping, offset, objectDestination.prefix(size));
+    if(fieldDestination) transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
-Containers::Array<Matrix3> SceneData::transformations2DAsArray() const {
+Containers::Array<Containers::Pair<UnsignedInt, Matrix3>> SceneData::transformations2DAsArray() const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    const std::size_t expectedSize = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
-    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
         "Trade::SceneData::transformations2DInto(): no transformation-related field found", {});
-    Containers::Array<Matrix3> out{NoInit, expectedSize};
-    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, out);
+    Containers::Array<Containers::Pair<UnsignedInt, Matrix3>> out{NoInit, std::size_t(_fields[fieldWithObjectMapping]._size)};
+    /** @todo use slicing once Pair exposes members somehow */
+    objectsIntoInternal(fieldWithObjectMapping, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
+    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, {out, reinterpret_cast<Matrix3*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)});
     return out;
 }
 
@@ -1469,37 +1474,45 @@ void SceneData::translationsRotationsScalings2DIntoInternal(const UnsignedInt tr
     }
 }
 
-void SceneData::translationsRotationsScalings2DInto(const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const {
+void SceneData::translationsRotationsScalings2DInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const {
     UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
-    #ifndef CORRADE_NO_ASSERT
-    const std::size_t expectedSize =
-    #endif
-        findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
-    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+    const UnsignedInt fieldWithObjectMapping = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         "Trade::SceneData::translationsRotationsScalings2DInto(): no transformation-related field found", );
-    CORRADE_ASSERT(!translationDestination || translationDestination.size() == expectedSize,
-        "Trade::SceneData::translationsRotationsScalings2DInto(): expected translation destination view either empty or with" << expectedSize << "elements but got" << translationDestination.size(), );
-    CORRADE_ASSERT(!rotationDestination || rotationDestination.size() == expectedSize,
-        "Trade::SceneData::translationsRotationsScalings2DInto(): expected rotation destination view either empty or with" << expectedSize << "elements but got" << rotationDestination.size(), );
-    CORRADE_ASSERT(!scalingDestination || scalingDestination.size() == expectedSize,
-        "Trade::SceneData::translationsRotationsScalings2DInto(): expected scaling destination view either empty or with" << expectedSize << "elements but got" << scalingDestination.size(), );
+    CORRADE_ASSERT(!objectDestination || objectDestination.size() == _fields[fieldWithObjectMapping]._size,
+        "Trade::SceneData::translationsRotationsScalings2DInto(): expected object destination view either empty or with" << _fields[fieldWithObjectMapping]._size << "elements but got" << objectDestination.size(), );
+    CORRADE_ASSERT(!translationDestination || translationDestination.size() == _fields[fieldWithObjectMapping]._size,
+        "Trade::SceneData::translationsRotationsScalings2DInto(): expected translation destination view either empty or with" << _fields[fieldWithObjectMapping]._size << "elements but got" << translationDestination.size(), );
+    CORRADE_ASSERT(!rotationDestination || rotationDestination.size() == _fields[fieldWithObjectMapping]._size,
+        "Trade::SceneData::translationsRotationsScalings2DInto(): expected rotation destination view either empty or with" << _fields[fieldWithObjectMapping]._size << "elements but got" << rotationDestination.size(), );
+    CORRADE_ASSERT(!scalingDestination || scalingDestination.size() == _fields[fieldWithObjectMapping]._size,
+        "Trade::SceneData::translationsRotationsScalings2DInto(): expected scaling destination view either empty or with" << _fields[fieldWithObjectMapping]._size << "elements but got" << scalingDestination.size(), );
+    objectsIntoInternal(fieldWithObjectMapping, 0, objectDestination);
     translationsRotationsScalings2DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, 0, translationDestination, rotationDestination, scalingDestination);
 }
 
-std::size_t SceneData::translationsRotationsScalings2DInto(const std::size_t offset, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const {
+std::size_t SceneData::translationsRotationsScalings2DInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const {
     UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
-    const std::size_t expectedSize = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
-    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+    const UnsignedInt fieldWithObjectMapping = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         "Trade::SceneData::translationsRotationsScalings2DInto(): no transformation-related field found", {});
-    CORRADE_ASSERT(offset <= expectedSize,
-        "Trade::SceneData::translationsRotationsScalings2DInto(): offset" << offset << "out of bounds for a field of size" << expectedSize, {});
+    const std::size_t fieldSize = _fields[fieldWithObjectMapping]._size;
+    CORRADE_ASSERT(offset <= fieldSize,
+        "Trade::SceneData::translationsRotationsScalings2DInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+    CORRADE_ASSERT(!objectDestination != !translationDestination || objectDestination.size() == translationDestination.size(),
+        "Trade::SceneData::translationsRotationsScalings2DInto(): object and translation destination views have different size," << objectDestination.size() << "vs" << translationDestination.size(), {});
+    CORRADE_ASSERT(!objectDestination != !rotationDestination || objectDestination.size() == rotationDestination.size(),
+        "Trade::SceneData::translationsRotationsScalings2DInto(): object and rotation destination views have different size," << objectDestination.size() << "vs" << rotationDestination.size(), {});
+    CORRADE_ASSERT(!objectDestination != !scalingDestination || objectDestination.size() == scalingDestination.size(),
+        "Trade::SceneData::translationsRotationsScalings2DInto(): object and scaling destination views have different size," << objectDestination.size() << "vs" << scalingDestination.size(), {});
     CORRADE_ASSERT(!translationDestination != !rotationDestination || translationDestination.size() == rotationDestination.size(),
         "Trade::SceneData::translationsRotationsScalings2DInto(): translation and rotation destination views have different size," << translationDestination.size() << "vs" << rotationDestination.size(), {});
     CORRADE_ASSERT(!translationDestination != !scalingDestination || translationDestination.size() == scalingDestination.size(),
         "Trade::SceneData::translationsRotationsScalings2DInto(): translation and scaling destination views have different size," << translationDestination.size() << "vs" << scalingDestination.size(), {});
     CORRADE_ASSERT(!rotationDestination != !scalingDestination || rotationDestination.size() == scalingDestination.size(),
         "Trade::SceneData::translationsRotationsScalings2DInto(): rotation and scaling destination views have different size," << rotationDestination.size() << "vs" << scalingDestination.size(), {});
-    const std::size_t size = Math::min(Math::max({translationDestination.size(), rotationDestination.size(), scalingDestination.size()}), expectedSize - offset);
+    const std::size_t size = Math::min(Math::max({objectDestination.size(), translationDestination.size(), rotationDestination.size(), scalingDestination.size()}), fieldSize - offset);
+    if(objectDestination) objectsIntoInternal(fieldWithObjectMapping, offset, objectDestination.prefix(size));
     translationsRotationsScalings2DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, offset,
         translationDestination ? translationDestination.prefix(size) : nullptr,
         rotationDestination ? rotationDestination.prefix(size) : nullptr,
@@ -1507,18 +1520,19 @@ std::size_t SceneData::translationsRotationsScalings2DInto(const std::size_t off
     return size;
 }
 
-Containers::Array<Containers::Triple<Vector2, Complex, Vector2>> SceneData::translationsRotationsScalings2DAsArray() const {
+Containers::Array<Containers::Pair<UnsignedInt, Containers::Triple<Vector2, Complex, Vector2>>> SceneData::translationsRotationsScalings2DAsArray() const {
     UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
-    const std::size_t expectedSize = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
-    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+    const UnsignedInt fieldWithObjectMapping = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
         "Trade::SceneData::translationsRotationsScalings2DInto(): no transformation-related field found", {});
-    Containers::Array<Containers::Triple<Vector2, Complex, Vector2>> out{NoInit, expectedSize};
+    Containers::Array<Containers::Pair<UnsignedInt, Containers::Triple<Vector2, Complex, Vector2>>> out{NoInit, std::size_t(_fields[fieldWithObjectMapping]._size)};
     /** @todo use slicing once Triple exposes members somehow */
-    const Containers::StridedArrayView1D<Vector2> translationsOut{out, reinterpret_cast<Vector2*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)};
-    const Containers::StridedArrayView1D<Complex> rotationsOut{out, reinterpret_cast<Complex*>(reinterpret_cast<char*>(out.data()) + sizeof(Vector2)), out.size(), sizeof(decltype(out)::Type)};
-    const Containers::StridedArrayView1D<Vector2> scalingsOut{out, reinterpret_cast<Vector2*>(reinterpret_cast<char*>(out.data()) + sizeof(Vector2) + sizeof(Complex)), out.size(), sizeof(decltype(out)::Type)};
+    objectsIntoInternal(fieldWithObjectMapping, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
+    const Containers::StridedArrayView1D<Vector2> translationsOut{out, reinterpret_cast<Vector2*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)};
+    const Containers::StridedArrayView1D<Complex> rotationsOut{out, reinterpret_cast<Complex*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt) + sizeof(Vector2)), out.size(), sizeof(decltype(out)::Type)};
+    const Containers::StridedArrayView1D<Vector2> scalingsOut{out, reinterpret_cast<Vector2*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt) + sizeof(Vector2) + sizeof(Complex)), out.size(), sizeof(decltype(out)::Type)};
     translationsRotationsScalings2DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, 0, translationsOut, rotationsOut, scalingsOut);
     return out;
 }
@@ -1599,40 +1613,46 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-void SceneData::transformations3DInto(const Containers::StridedArrayView1D<Matrix4>& destination) const {
+void SceneData::transformations3DInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Matrix4>& fieldDestination) const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    #ifndef CORRADE_NO_ASSERT
-    const std::size_t expectedSize =
-    #endif
-        findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
-    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+    const std::size_t fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         "Trade::SceneData::transformations3DInto(): no transformation-related field found", );
-    CORRADE_ASSERT(expectedSize == destination.size(),
-        "Trade::SceneData::transformations3DInto(): expected a view with" << expectedSize << "elements but got" << destination.size(), );
-    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, destination);
+    CORRADE_ASSERT(!objectDestination || objectDestination.size() == _fields[fieldWithObjectMapping]._size,
+        "Trade::SceneData::transformations3DInto(): expected object destination view either empty or with" << _fields[fieldWithObjectMapping]._size << "elements but got" << objectDestination.size(), );
+    CORRADE_ASSERT(!fieldDestination || fieldDestination.size() == _fields[fieldWithObjectMapping]._size,
+        "Trade::SceneData::transformations3DInto(): expected field destination view either empty or with" << _fields[fieldWithObjectMapping]._size << "elements but got" << fieldDestination.size(), );
+    objectsIntoInternal(fieldWithObjectMapping, 0, objectDestination);
+    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, fieldDestination);
 }
 
-std::size_t SceneData::transformations3DInto(const std::size_t offset, const Containers::StridedArrayView1D<Matrix4>& destination) const {
+std::size_t SceneData::transformations3DInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Matrix4>& fieldDestination) const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    const std::size_t expectedSize = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
-    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         "Trade::SceneData::transformations3DInto(): no transformation-related field found", {});
-    CORRADE_ASSERT(offset <= expectedSize,
-        "Trade::SceneData::transformations3DInto(): offset" << offset << "out of bounds for a field of size" << expectedSize, {});
-    const std::size_t size = Math::min(destination.size(), expectedSize - offset);
-    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, destination.prefix(size));
+    const std::size_t fieldSize = _fields[fieldWithObjectMapping]._size;
+    CORRADE_ASSERT(offset <= fieldSize,
+        "Trade::SceneData::transformations3DInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+    CORRADE_ASSERT(!objectDestination != !fieldDestination|| objectDestination.size() == fieldDestination.size(),
+        "Trade::SceneData::transformations3DInto(): object and field destination views have different size," << objectDestination.size() << "vs" << fieldDestination.size(), {});
+    const std::size_t size = Math::min(Math::max(objectDestination.size(), fieldDestination.size()), fieldSize - offset);
+    if(objectDestination) objectsIntoInternal(fieldWithObjectMapping, offset, objectDestination.prefix(size));
+    if(fieldDestination) transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
-Containers::Array<Matrix4> SceneData::transformations3DAsArray() const {
+Containers::Array<Containers::Pair<UnsignedInt, Matrix4>> SceneData::transformations3DAsArray() const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    const std::size_t expectedSize = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
-    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
         "Trade::SceneData::transformations3DInto(): no transformation-related field found", {});
-    Containers::Array<Matrix4> out{NoInit, expectedSize};
-    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, out);
+    Containers::Array<Containers::Pair<UnsignedInt, Matrix4>> out{NoInit, std::size_t(_fields[fieldWithObjectMapping]._size)};
+    /** @todo use slicing once Pair exposes members somehow */
+    objectsIntoInternal(fieldWithObjectMapping, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
+    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, {out, reinterpret_cast<Matrix4*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)});
     return out;
 }
 
@@ -1699,37 +1719,45 @@ void SceneData::translationsRotationsScalings3DIntoInternal(const UnsignedInt tr
     }
 }
 
-void SceneData::translationsRotationsScalings3DInto(const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const {
+void SceneData::translationsRotationsScalings3DInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const {
     UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
-    #ifndef CORRADE_NO_ASSERT
-    const std::size_t expectedSize =
-    #endif
-        findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
-    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+    const UnsignedInt fieldWithObjectMapping = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         "Trade::SceneData::translationsRotationsScalings3DInto(): no transformation-related field found", );
-    CORRADE_ASSERT(!translationDestination || translationDestination.size() == expectedSize,
-        "Trade::SceneData::translationsRotationsScalings3DInto(): expected translation destination view either empty or with" << expectedSize << "elements but got" << translationDestination.size(), );
-    CORRADE_ASSERT(!rotationDestination || rotationDestination.size() == expectedSize,
-        "Trade::SceneData::translationsRotationsScalings3DInto(): expected rotation destination view either empty or with" << expectedSize << "elements but got" << rotationDestination.size(), );
-    CORRADE_ASSERT(!scalingDestination || scalingDestination.size() == expectedSize,
-        "Trade::SceneData::translationsRotationsScalings3DInto(): expected scaling destination view either empty or with" << expectedSize << "elements but got" << scalingDestination.size(), );
+    CORRADE_ASSERT(!objectDestination || objectDestination.size() == _fields[fieldWithObjectMapping]._size,
+        "Trade::SceneData::translationsRotationsScalings3DInto(): expected object destination view either empty or with" << _fields[fieldWithObjectMapping]._size << "elements but got" << objectDestination.size(), );
+    CORRADE_ASSERT(!translationDestination || translationDestination.size() == _fields[fieldWithObjectMapping]._size,
+        "Trade::SceneData::translationsRotationsScalings3DInto(): expected translation destination view either empty or with" << _fields[fieldWithObjectMapping]._size << "elements but got" << translationDestination.size(), );
+    CORRADE_ASSERT(!rotationDestination || rotationDestination.size() == _fields[fieldWithObjectMapping]._size,
+        "Trade::SceneData::translationsRotationsScalings3DInto(): expected rotation destination view either empty or with" << _fields[fieldWithObjectMapping]._size << "elements but got" << rotationDestination.size(), );
+    CORRADE_ASSERT(!scalingDestination || scalingDestination.size() == _fields[fieldWithObjectMapping]._size,
+        "Trade::SceneData::translationsRotationsScalings3DInto(): expected scaling destination view either empty or with" << _fields[fieldWithObjectMapping]._size << "elements but got" << scalingDestination.size(), );
+    objectsIntoInternal(fieldWithObjectMapping, 0, objectDestination);
     translationsRotationsScalings3DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, 0, translationDestination, rotationDestination, scalingDestination);
 }
 
-std::size_t SceneData::translationsRotationsScalings3DInto(const std::size_t offset, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const {
+std::size_t SceneData::translationsRotationsScalings3DInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const {
     UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
-    const std::size_t expectedSize = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
-    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+    const UnsignedInt fieldWithObjectMapping = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         "Trade::SceneData::translationsRotationsScalings3DInto(): no transformation-related field found", {});
-    CORRADE_ASSERT(offset <= expectedSize,
-        "Trade::SceneData::translationsRotationsScalings3DInto(): offset" << offset << "out of bounds for a field of size" << expectedSize, {});
+    const std::size_t fieldSize = _fields[fieldWithObjectMapping]._size;
+    CORRADE_ASSERT(offset <= fieldSize,
+        "Trade::SceneData::translationsRotationsScalings3DInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+    CORRADE_ASSERT(!objectDestination != !translationDestination || objectDestination.size() == translationDestination.size(),
+        "Trade::SceneData::translationsRotationsScalings3DInto(): object and translation destination views have different size," << objectDestination.size() << "vs" << translationDestination.size(), {});
+    CORRADE_ASSERT(!objectDestination != !rotationDestination || objectDestination.size() == rotationDestination.size(),
+        "Trade::SceneData::translationsRotationsScalings3DInto(): object and rotation destination views have different size," << objectDestination.size() << "vs" << rotationDestination.size(), {});
+    CORRADE_ASSERT(!objectDestination != !scalingDestination || objectDestination.size() == scalingDestination.size(),
+        "Trade::SceneData::translationsRotationsScalings3DInto(): object and scaling destination views have different size," << objectDestination.size() << "vs" << scalingDestination.size(), {});
     CORRADE_ASSERT(!translationDestination != !rotationDestination || translationDestination.size() == rotationDestination.size(),
         "Trade::SceneData::translationsRotationsScalings3DInto(): translation and rotation destination views have different size," << translationDestination.size() << "vs" << rotationDestination.size(), {});
     CORRADE_ASSERT(!translationDestination != !scalingDestination || translationDestination.size() == scalingDestination.size(),
         "Trade::SceneData::translationsRotationsScalings3DInto(): translation and scaling destination views have different size," << translationDestination.size() << "vs" << scalingDestination.size(), {});
     CORRADE_ASSERT(!rotationDestination != !scalingDestination || rotationDestination.size() == scalingDestination.size(),
         "Trade::SceneData::translationsRotationsScalings3DInto(): rotation and scaling destination views have different size," << rotationDestination.size() << "vs" << scalingDestination.size(), {});
-    const std::size_t size = Math::min(Math::max({translationDestination.size(), rotationDestination.size(), scalingDestination.size()}), expectedSize - offset);
+    const std::size_t size = Math::min(Math::max({objectDestination.size(), translationDestination.size(), rotationDestination.size(), scalingDestination.size()}), fieldSize - offset);
+    if(objectDestination) objectsIntoInternal(fieldWithObjectMapping, offset, objectDestination.prefix(size));
     translationsRotationsScalings3DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, offset,
         translationDestination ? translationDestination.prefix(size) : nullptr,
         rotationDestination ? rotationDestination.prefix(size) : nullptr,
@@ -1737,18 +1765,19 @@ std::size_t SceneData::translationsRotationsScalings3DInto(const std::size_t off
     return size;
 }
 
-Containers::Array<Containers::Triple<Vector3, Quaternion, Vector3>> SceneData::translationsRotationsScalings3DAsArray() const {
+Containers::Array<Containers::Pair<UnsignedInt, Containers::Triple<Vector3, Quaternion, Vector3>>> SceneData::translationsRotationsScalings3DAsArray() const {
     UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
-    const std::size_t expectedSize = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
-    CORRADE_ASSERT(expectedSize != ~std::size_t{},
+    const UnsignedInt fieldWithObjectMapping = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
         "Trade::SceneData::translationsRotationsScalings3DInto(): no transformation-related field found", {});
-    Containers::Array<Containers::Triple<Vector3, Quaternion, Vector3>> out{NoInit, expectedSize};
+    Containers::Array<Containers::Pair<UnsignedInt, Containers::Triple<Vector3, Quaternion, Vector3>>> out{NoInit, std::size_t(_fields[fieldWithObjectMapping]._size)};
     /** @todo use slicing once Triple exposes members somehow */
-    const Containers::StridedArrayView1D<Vector3> translationsOut{out, reinterpret_cast<Vector3*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)};
-    const Containers::StridedArrayView1D<Quaternion> rotationsOut{out, reinterpret_cast<Quaternion*>(reinterpret_cast<char*>(out.data()) + sizeof(Vector3)), out.size(), sizeof(decltype(out)::Type)};
-    const Containers::StridedArrayView1D<Vector3> scalingsOut{out, reinterpret_cast<Vector3*>(reinterpret_cast<char*>(out.data()) + sizeof(Vector3) + sizeof(Quaternion)), out.size(), sizeof(decltype(out)::Type)};
+    objectsIntoInternal(fieldWithObjectMapping, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
+    const Containers::StridedArrayView1D<Vector3> translationsOut{out, reinterpret_cast<Vector3*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)};
+    const Containers::StridedArrayView1D<Quaternion> rotationsOut{out, reinterpret_cast<Quaternion*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt) + sizeof(Vector3)), out.size(), sizeof(decltype(out)::Type)};
+    const Containers::StridedArrayView1D<Vector3> scalingsOut{out, reinterpret_cast<Vector3*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt) + sizeof(Vector3) + sizeof(Quaternion)), out.size(), sizeof(decltype(out)::Type)};
     translationsRotationsScalings3DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, 0, translationsOut, rotationsOut, scalingsOut);
     return out;
 }
@@ -1787,9 +1816,11 @@ void SceneData::indexFieldIntoInternal(const UnsignedInt fieldId, const std::siz
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-Containers::Array<UnsignedInt> SceneData::unsignedIndexFieldAsArrayInternal(const UnsignedInt fieldId) const {
-    Containers::Array<UnsignedInt> out{NoInit, std::size_t(_fields[fieldId]._size)};
-    unsignedIndexFieldIntoInternal(fieldId, 0, out);
+Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> SceneData::unsignedIndexFieldAsArrayInternal(const UnsignedInt fieldId) const {
+    Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> out{NoInit, std::size_t(_fields[fieldId]._size)};
+    /** @todo use slicing once Pair exposes members somehow */
+    objectsIntoInternal(fieldId, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
+    unsignedIndexFieldIntoInternal(fieldId, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)});
     return out;
 }
 
@@ -1812,67 +1843,84 @@ void SceneData::meshesMaterialsIntoInternal(const UnsignedInt fieldId, const std
     }
 }
 
-void SceneData::meshesMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const {
+void SceneData::meshesMaterialsInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Mesh);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::meshesMaterialsInto(): field" << SceneField::Mesh << "not found", );
+    CORRADE_ASSERT(!objectDestination || objectDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::meshesMaterialsInto(): expected object destination view either empty or with" << _fields[fieldId]._size << "elements but got" << objectDestination.size(), );
     CORRADE_ASSERT(!meshDestination || meshDestination.size() == _fields[fieldId]._size,
         "Trade::SceneData::meshesMaterialsInto(): expected mesh destination view either empty or with" << _fields[fieldId]._size << "elements but got" << meshDestination.size(), );
     CORRADE_ASSERT(!meshMaterialDestination || meshMaterialDestination.size() == _fields[fieldId]._size,
         "Trade::SceneData::meshesMaterialsInto(): expected mesh material destination view either empty or with" << _fields[fieldId]._size << "elements but got" << meshMaterialDestination.size(), );
+    objectsIntoInternal(fieldId, 0, objectDestination);
     meshesMaterialsIntoInternal(fieldId, 0, meshDestination, meshMaterialDestination);
 }
 
-std::size_t SceneData::meshesMaterialsInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const {
+std::size_t SceneData::meshesMaterialsInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialDestination) const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Mesh);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::meshesMaterialsInto(): field" << SceneField::Mesh << "not found", {});
-    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
-        "Trade::SceneData::meshesMaterialsInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
+    const std::size_t fieldSize = _fields[fieldId]._size;
+    CORRADE_ASSERT(offset <= fieldSize,
+        "Trade::SceneData::meshesMaterialsInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+    CORRADE_ASSERT(!objectDestination != !meshDestination || objectDestination.size() == meshDestination.size(),
+        "Trade::SceneData::meshesMaterialsInto(): object and mesh destination views have different size," << objectDestination.size() << "vs" << meshDestination.size(), {});
+    CORRADE_ASSERT(!objectDestination != !meshMaterialDestination || objectDestination.size() == meshMaterialDestination.size(),
+        "Trade::SceneData::meshesMaterialsInto(): object and mesh material destination views have different size," << objectDestination.size() << "vs" << meshMaterialDestination.size(), {});
     CORRADE_ASSERT(!meshDestination != !meshMaterialDestination || meshMaterialDestination.size() == meshDestination.size(),
         "Trade::SceneData::meshesMaterialsInto(): mesh and mesh material destination views have different size," << meshDestination.size() << "vs" << meshMaterialDestination.size(), {});
-    const std::size_t size = Math::min(Math::max(meshDestination.size(), meshMaterialDestination.size()), std::size_t(_fields[fieldId]._size) - offset);
+    const std::size_t size = Math::min(Math::max({objectDestination.size(), meshDestination.size(), meshMaterialDestination.size()}), fieldSize - offset);
+    if(objectDestination) objectsIntoInternal(fieldId, offset, objectDestination.prefix(size));
     meshesMaterialsIntoInternal(fieldId, offset,
         meshDestination ? meshDestination.prefix(size) : nullptr,
         meshMaterialDestination ? meshMaterialDestination.prefix(size) : nullptr);
     return size;
 }
 
-Containers::Array<Containers::Pair<UnsignedInt, Int>> SceneData::meshesMaterialsAsArray() const {
+Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>> SceneData::meshesMaterialsAsArray() const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Mesh);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
         "Trade::SceneData::meshesMaterialsInto(): field" << SceneField::Mesh << "not found", {});
-    Containers::Array<Containers::Pair<UnsignedInt, Int>> out{NoInit, std::size_t(_fields[fieldId]._size)};
+    Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>> out{NoInit, std::size_t(_fields[fieldId]._size)};
     /** @todo use slicing once Pair exposes members somehow */
-    const Containers::StridedArrayView1D<UnsignedInt> meshesOut{out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)};
-    const Containers::StridedArrayView1D<Int> meshMaterialsOut{out, reinterpret_cast<Int*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)};
+    objectsIntoInternal(fieldId, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
+    const Containers::StridedArrayView1D<UnsignedInt> meshesOut{out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)};
+    const Containers::StridedArrayView1D<Int> meshMaterialsOut{out, reinterpret_cast<Int*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)};
     meshesMaterialsIntoInternal(fieldId, 0, meshesOut, meshMaterialsOut);
     return out;
 }
 
-void SceneData::lightsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+void SceneData::lightsInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Light);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::lightsInto(): field not found", );
-    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
-        "Trade::SceneData::lightsInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
-    unsignedIndexFieldIntoInternal(fieldId, 0, destination);
+    CORRADE_ASSERT(!objectDestination || objectDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::lightsInto(): expected object destination view either empty or with" << _fields[fieldId]._size << "elements but got" << objectDestination.size(), );
+    CORRADE_ASSERT(!fieldDestination || fieldDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::lightsInto(): expected field destination view either empty or with" << _fields[fieldId]._size << "elements but got" << fieldDestination.size(), );
+    objectsIntoInternal(fieldId, 0, objectDestination);
+    unsignedIndexFieldIntoInternal(fieldId, 0, fieldDestination);
 }
 
-std::size_t SceneData::lightsInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+std::size_t SceneData::lightsInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Light);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::lightsInto(): field not found", {});
-    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
-        "Trade::SceneData::lightsInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
-    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
-    unsignedIndexFieldIntoInternal(fieldId, offset, destination.prefix(size));
+    const std::size_t fieldSize = _fields[fieldId]._size;
+    CORRADE_ASSERT(offset <= fieldSize,
+        "Trade::SceneData::lightsInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+    CORRADE_ASSERT(!objectDestination != !fieldDestination|| objectDestination.size() == fieldDestination.size(),
+        "Trade::SceneData::lightsInto(): object and field destination views have different size," << objectDestination.size() << "vs" << fieldDestination.size(), {});
+    const std::size_t size = Math::min(Math::max(objectDestination.size(), fieldDestination.size()), fieldSize - offset);
+    if(objectDestination) objectsIntoInternal(fieldId, offset, objectDestination.prefix(size));
+    if(fieldDestination) unsignedIndexFieldIntoInternal(fieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
-Containers::Array<UnsignedInt> SceneData::lightsAsArray() const {
+Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> SceneData::lightsAsArray() const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Light);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
@@ -1881,27 +1929,34 @@ Containers::Array<UnsignedInt> SceneData::lightsAsArray() const {
     return unsignedIndexFieldAsArrayInternal(fieldId);
 }
 
-void SceneData::camerasInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+void SceneData::camerasInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Camera);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::camerasInto(): field not found", );
-    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
-        "Trade::SceneData::camerasInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
-    unsignedIndexFieldIntoInternal(fieldId, 0, destination);
+    CORRADE_ASSERT(!objectDestination || objectDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::camerasInto(): expected object destination view either empty or with" << _fields[fieldId]._size << "elements but got" << objectDestination.size(), );
+    CORRADE_ASSERT(!fieldDestination || fieldDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::camerasInto(): expected field destination view either empty or with" << _fields[fieldId]._size << "elements but got" << fieldDestination.size(), );
+    objectsIntoInternal(fieldId, 0, objectDestination);
+    unsignedIndexFieldIntoInternal(fieldId, 0, fieldDestination);
 }
 
-std::size_t SceneData::camerasInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+std::size_t SceneData::camerasInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Camera);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::camerasInto(): field not found", {});
-    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
-        "Trade::SceneData::camerasInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
-    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
-    unsignedIndexFieldIntoInternal(fieldId, offset, destination.prefix(size));
+    const std::size_t fieldSize = _fields[fieldId]._size;
+    CORRADE_ASSERT(offset <= fieldSize,
+        "Trade::SceneData::camerasInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+    CORRADE_ASSERT(!objectDestination != !fieldDestination|| objectDestination.size() == fieldDestination.size(),
+        "Trade::SceneData::camerasInto(): object and field destination views have different size," << objectDestination.size() << "vs" << fieldDestination.size(), {});
+    const std::size_t size = Math::min(Math::max(objectDestination.size(), fieldDestination.size()), fieldSize - offset);
+    if(objectDestination) objectsIntoInternal(fieldId, offset, objectDestination.prefix(size));
+    if(fieldDestination) unsignedIndexFieldIntoInternal(fieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
-Containers::Array<UnsignedInt> SceneData::camerasAsArray() const {
+Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> SceneData::camerasAsArray() const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Camera);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
@@ -1910,27 +1965,34 @@ Containers::Array<UnsignedInt> SceneData::camerasAsArray() const {
     return unsignedIndexFieldAsArrayInternal(fieldId);
 }
 
-void SceneData::skinsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+void SceneData::skinsInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Skin);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::skinsInto(): field not found", );
-    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
-        "Trade::SceneData::skinsInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
-    unsignedIndexFieldIntoInternal(fieldId, 0, destination);
+    CORRADE_ASSERT(!objectDestination || objectDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::skinsInto(): expected object destination view either empty or with" << _fields[fieldId]._size << "elements but got" << objectDestination.size(), );
+    CORRADE_ASSERT(!fieldDestination || fieldDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::skinsInto(): expected field destination view either empty or with" << _fields[fieldId]._size << "elements but got" << fieldDestination.size(), );
+    objectsIntoInternal(fieldId, 0, objectDestination);
+    unsignedIndexFieldIntoInternal(fieldId, 0, fieldDestination);
 }
 
-std::size_t SceneData::skinsInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
+std::size_t SceneData::skinsInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Skin);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::skinsInto(): field not found", {});
-    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
-        "Trade::SceneData::skinsInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
-    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
-    unsignedIndexFieldIntoInternal(fieldId, offset, destination.prefix(size));
+    const std::size_t fieldSize = _fields[fieldId]._size;
+    CORRADE_ASSERT(offset <= fieldSize,
+        "Trade::SceneData::skinsInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+    CORRADE_ASSERT(!objectDestination != !fieldDestination|| objectDestination.size() == fieldDestination.size(),
+        "Trade::SceneData::skinsInto(): object and field destination views have different size," << objectDestination.size() << "vs" << fieldDestination.size(), {});
+    const std::size_t size = Math::min(Math::max(objectDestination.size(), fieldDestination.size()), fieldSize - offset);
+    if(objectDestination) objectsIntoInternal(fieldId, offset, objectDestination.prefix(size));
+    if(fieldDestination) unsignedIndexFieldIntoInternal(fieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
-Containers::Array<UnsignedInt> SceneData::skinsAsArray() const {
+Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> SceneData::skinsAsArray() const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Skin);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
@@ -1949,34 +2011,52 @@ void SceneData::importerStateIntoInternal(const UnsignedInt fieldId, const std::
     Utility::copy(Containers::arrayCast<const void* const>(fieldDataFieldViewInternal(field, offset, destination.size())), destination);
 }
 
-void SceneData::importerStateInto(const Containers::StridedArrayView1D<const void*>& destination) const {
+void SceneData::importerStateInto(const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<const void*>& fieldDestination) const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::ImporterState);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::importerStateInto(): field not found", );
-    CORRADE_ASSERT(destination.size() == _fields[fieldId]._size,
-        "Trade::SceneData::importerStateInto(): expected a view with" << _fields[fieldId]._size << "elements but got" << destination.size(), );
-    importerStateIntoInternal(fieldId, 0, destination);
+    CORRADE_ASSERT(!objectDestination || objectDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::importerStateInto(): expected object destination view either empty or with" << _fields[fieldId]._size << "elements but got" << objectDestination.size(), );
+    CORRADE_ASSERT(!fieldDestination || fieldDestination.size() == _fields[fieldId]._size,
+        "Trade::SceneData::importerStateInto(): expected field destination view either empty or with" << _fields[fieldId]._size << "elements but got" << fieldDestination.size(), );
+    objectsIntoInternal(fieldId, 0, objectDestination);
+    importerStateIntoInternal(fieldId, 0, fieldDestination);
 }
 
-std::size_t SceneData::importerStateInto(const std::size_t offset, const Containers::StridedArrayView1D<const void*>& destination) const {
+std::size_t SceneData::importerStateInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& objectDestination, const Containers::StridedArrayView1D<const void*>& fieldDestination) const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::ImporterState);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::importerStateInto(): field not found", {});
-    CORRADE_ASSERT(offset <= _fields[fieldId]._size,
-        "Trade::SceneData::importerStateInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
-    const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
-    importerStateIntoInternal(fieldId, offset, destination.prefix(size));
+    const std::size_t fieldSize = _fields[fieldId]._size;
+    CORRADE_ASSERT(offset <= fieldSize,
+        "Trade::SceneData::importerStateInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+    CORRADE_ASSERT(!objectDestination != !fieldDestination|| objectDestination.size() == fieldDestination.size(),
+        "Trade::SceneData::importerStateInto(): object and field destination views have different size," << objectDestination.size() << "vs" << fieldDestination.size(), {});
+    const std::size_t size = Math::min(Math::max(objectDestination.size(), fieldDestination.size()), fieldSize - offset);
+    if(objectDestination) objectsIntoInternal(fieldId, offset, objectDestination.prefix(size));
+    if(fieldDestination) importerStateIntoInternal(fieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
-Containers::Array<const void*> SceneData::importerStateAsArray() const {
+Containers::Array<Containers::Pair<UnsignedInt, const void*>> SceneData::importerStateAsArray() const {
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::ImporterState);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
         "Trade::SceneData::importerStateInto(): field not found", {});
-    Containers::Array<const void*> out{NoInit, std::size_t(_fields[fieldId]._size)};
-    importerStateIntoInternal(fieldId, 0, out);
+    Containers::Array<Containers::Pair<UnsignedInt, const void*>> out{
+        /* There's padding before the pointer on 64bit, zero-initialize to
+           avoid keeping random bytes in there */
+        #ifdef CORRADE_TARGET_32BIT
+        NoInit
+        #else
+        ValueInit
+        #endif
+    , std::size_t(_fields[fieldId]._size)};
+    /** @todo use slicing once Pair exposes members somehow, especially because
+        this is EXTREMELY prone to bugs due to the padding before the pointer */
+    objectsIntoInternal(fieldId, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
+    importerStateIntoInternal(fieldId, 0, {out, reinterpret_cast<const void**>(reinterpret_cast<char*>(out.data()) + sizeof(const void*)), out.size(), sizeof(decltype(out)::Type)});
     return out;
 }
 
@@ -2040,8 +2120,9 @@ Containers::Optional<Matrix3> SceneData::transformation2DFor(const UnsignedInt o
     CORRADE_ASSERT(object < _objectCount,
         "Trade::SceneData::transformation2DFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
 
-    UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, fieldWithObjectMapping;
-    if(findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, &fieldWithObjectMapping) == ~std::size_t{}) return {};
+    UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
+    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    if(fieldWithObjectMapping == ~UnsignedInt{}) return {};
 
     /* If is2D() returned false as well, all *FieldId would be invalid, which
        is handled above. */
@@ -2060,8 +2141,9 @@ Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> SceneData::t
     CORRADE_ASSERT(object < _objectCount,
         "Trade::SceneData::translationRotationScaling2DFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
 
-    UnsignedInt translationFieldId, rotationFieldId, scalingFieldId, fieldWithObjectMapping;
-    if(findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId, &fieldWithObjectMapping) == ~std::size_t{}) return {};
+    UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
+    const UnsignedInt fieldWithObjectMapping = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    if(fieldWithObjectMapping == ~UnsignedInt{}) return {};
 
     /* If is2D() returned false as well, all *FieldId would be invalid, which
        is handled above. */
@@ -2082,8 +2164,9 @@ Containers::Optional<Matrix4> SceneData::transformation3DFor(const UnsignedInt o
     CORRADE_ASSERT(object < _objectCount,
         "Trade::SceneData::transformation3DFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
 
-    UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, fieldWithObjectMapping;
-    if(findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, &fieldWithObjectMapping) == ~std::size_t{}) return {};
+    UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
+    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    if(fieldWithObjectMapping == ~UnsignedInt{}) return {};
 
     /* If is3D() returned false as well, all *FieldId would be invalid, which
        is handled above. */
@@ -2102,8 +2185,9 @@ Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> SceneData
     CORRADE_ASSERT(object < _objectCount,
         "Trade::SceneData::translationRotationScaling3DFor(): object" << object << "out of bounds for" << _objectCount << "objects", {});
 
-    UnsignedInt translationFieldId, rotationFieldId, scalingFieldId, fieldWithObjectMapping;
-    if(findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId, &fieldWithObjectMapping) == ~std::size_t{}) return {};
+    UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
+    const UnsignedInt fieldWithObjectMapping = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
+    if(fieldWithObjectMapping == ~UnsignedInt{}) return {};
 
     /* If is3D() returned false as well, all *FieldId would be invalid, which
        is handled above. */

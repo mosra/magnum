@@ -254,8 +254,7 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
     /* Copy existing parent object/field data to a prefix of the output */
     const Containers::StridedArrayView1D<UnsignedInt> outParentObjects = out.mutableObjects<UnsignedInt>(parentFieldId);
     const Containers::StridedArrayView1D<Int> outParents = out.mutableField<Int>(parentFieldId);
-    CORRADE_INTERNAL_ASSERT_OUTPUT(scene.objectsInto(parentFieldId, 0, outParentObjects) == scene.fieldSize(parentFieldId));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(scene.parentsInto(0, outParents) == scene.fieldSize(parentFieldId));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(scene.parentsInto(0, outParentObjects, outParents) == scene.fieldSize(parentFieldId));
 
     /* List new objects at the end of the extended parent field */
     const Containers::StridedArrayView1D<UnsignedInt> newParentObjects = outParentObjects.suffix(scene.fieldSize(parentFieldId));

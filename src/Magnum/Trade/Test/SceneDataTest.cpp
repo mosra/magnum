@@ -122,6 +122,7 @@ struct SceneDataTest: TestSuite::Tester {
     void objectsIntoArrayByIndex();
     void objectsIntoArrayByName();
     void objectsIntoArrayInvalidSizeOrOffset();
+
     template<class T> void parentsAsArray();
     void parentsIntoArray();
     void parentsIntoArrayInvalidSizeOrOffset();
@@ -129,6 +130,7 @@ struct SceneDataTest: TestSuite::Tester {
     template<class T, class U, class V> void transformations2DAsArrayTRS();
     void transformations2DAsArrayBut3DType();
     void transformations2DIntoArray();
+    void transformations2DTRSIntoArray();
     void transformations2DIntoArrayTRS();
     void transformations2DIntoArrayInvalidSizeOrOffset();
     void transformations2DIntoArrayInvalidSizeOrOffsetTRS();
@@ -136,6 +138,7 @@ struct SceneDataTest: TestSuite::Tester {
     template<class T, class U, class V> void transformations3DAsArrayTRS();
     void transformations3DAsArrayBut2DType();
     void transformations3DIntoArray();
+    void transformations3DTRSIntoArray();
     void transformations3DIntoArrayTRS();
     void transformations3DIntoArrayInvalidSizeOrOffset();
     void transformations3DIntoArrayInvalidSizeOrOffsetTRS();
@@ -210,6 +213,59 @@ const struct {
     {"one element in the middle", 1, 1, 1},
     {"suffix to a larger array", 2, 10, 1},
     {"offset at the end", 3, 10, 0}
+};
+
+const struct {
+    const char* name;
+    std::size_t offset;
+    std::size_t size;
+    std::size_t expectedSize;
+    bool objects, field;
+} IntoArrayOffset1Data[]{
+    {"whole", 0, 3, 3, true, true},
+    {"one element in the middle", 1, 1, 1, true, true},
+    {"suffix to a larger array", 2, 10, 1, true, true},
+    {"offset at the end", 3, 10, 0, true, true},
+    {"only objects", 0, 3, 3, true, false},
+    {"only field", 0, 3, 3, false, true},
+    {"neither", 0, 3, 0, false, false}
+};
+
+const struct {
+    const char* name;
+    std::size_t offset;
+    std::size_t size;
+    std::size_t expectedSize;
+    bool objects, field1, field2;
+} IntoArrayOffset2Data[]{
+    {"whole", 0, 3, 3, true, true, true},
+    {"one element in the middle", 1, 1, 1, true, true, true},
+    {"suffix to a larger array", 2, 10, 1, true, true, true},
+    {"offset at the end", 3, 10, 0, true, true, true},
+    {"only objects", 0, 3, 3, true, false, false},
+    {"only fields", 0, 3, 3, false, true, true},
+    {"only first field", 0, 3, 3, false, true, false},
+    {"only second field", 0, 3, 3, false, false, true},
+    {"none", 0, 3, 0, false, false, false}
+};
+
+const struct {
+    const char* name;
+    std::size_t offset;
+    std::size_t size;
+    std::size_t expectedSize;
+    bool objects, field1, field2, field3;
+} IntoArrayOffset3Data[]{
+    {"whole", 0, 3, 3, true, true, true, true},
+    {"one element in the middle", 1, 1, 1, true, true, true, true},
+    {"suffix to a larger array", 2, 10, 1, true, true, true, true},
+    {"offset at the end", 3, 10, 0, true, true, true, true},
+    {"only objects", 0, 3, 3, true, false, false, true},
+    {"only fields", 0, 3, 3, false, true, true, true},
+    {"only first field", 0, 3, 3, false, true, false, false},
+    {"only second field", 0, 3, 3, false, false, true, false},
+    {"only third field", 0, 3, 3, false, false, false, true},
+    {"none", 0, 3, 0, false, false, false, false}
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -319,13 +375,14 @@ SceneDataTest::SceneDataTest() {
         Containers::arraySize(IntoArrayOffsetData));
 
     addTests({&SceneDataTest::objectsIntoArrayInvalidSizeOrOffset,
+
               &SceneDataTest::parentsAsArray<Byte>,
               &SceneDataTest::parentsAsArray<Short>,
               &SceneDataTest::parentsAsArray<Int>,
               &SceneDataTest::parentsAsArray<Long>});
 
     addInstancedTests({&SceneDataTest::parentsIntoArray},
-        Containers::arraySize(IntoArrayOffsetData));
+        Containers::arraySize(IntoArrayOffset1Data));
 
     addTests({&SceneDataTest::parentsIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::transformations2DAsArray<Matrix3>,
@@ -339,8 +396,11 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::transformations2DAsArrayBut3DType});
 
     addInstancedTests({&SceneDataTest::transformations2DIntoArray,
-                       &SceneDataTest::transformations2DIntoArrayTRS},
-        Containers::arraySize(IntoArrayOffsetData));
+                       &SceneDataTest::transformations2DTRSIntoArray},
+        Containers::arraySize(IntoArrayOffset1Data));
+
+    addInstancedTests({&SceneDataTest::transformations2DIntoArrayTRS},
+        Containers::arraySize(IntoArrayOffset3Data));
 
     addTests({&SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffsetTRS,
@@ -355,8 +415,11 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::transformations3DAsArrayBut2DType});
 
     addInstancedTests({&SceneDataTest::transformations3DIntoArray,
-                       &SceneDataTest::transformations3DIntoArrayTRS},
-        Containers::arraySize(IntoArrayOffsetData));
+                       &SceneDataTest::transformations3DTRSIntoArray},
+        Containers::arraySize(IntoArrayOffset1Data));
+
+    addInstancedTests({&SceneDataTest::transformations3DIntoArrayTRS},
+        Containers::arraySize(IntoArrayOffset3Data));
 
     addTests({&SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffsetTRS,
@@ -365,7 +428,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::meshesMaterialsAsArray<UnsignedInt, Short>});
 
     addInstancedTests({&SceneDataTest::meshesMaterialsIntoArray},
-        Containers::arraySize(IntoArrayOffsetData));
+        Containers::arraySize(IntoArrayOffset2Data));
 
     addTests({&SceneDataTest::meshesMaterialsIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::lightsAsArray<UnsignedByte>,
@@ -373,7 +436,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::lightsAsArray<UnsignedInt>});
 
     addInstancedTests({&SceneDataTest::lightsIntoArray},
-        Containers::arraySize(IntoArrayOffsetData));
+        Containers::arraySize(IntoArrayOffset1Data));
 
     addTests({&SceneDataTest::lightsIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::camerasAsArray<UnsignedByte>,
@@ -381,7 +444,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::camerasAsArray<UnsignedInt>});
 
     addInstancedTests({&SceneDataTest::camerasIntoArray},
-        Containers::arraySize(IntoArrayOffsetData));
+        Containers::arraySize(IntoArrayOffset1Data));
 
     addTests({&SceneDataTest::camerasIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::skinsAsArray<UnsignedByte>,
@@ -389,14 +452,14 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::skinsAsArray<UnsignedInt>});
 
     addInstancedTests({&SceneDataTest::skinsIntoArray},
-        Containers::arraySize(IntoArrayOffsetData));
+        Containers::arraySize(IntoArrayOffset1Data));
 
     addTests({&SceneDataTest::skinsIntoArrayInvalidSizeOrOffset,
               &SceneDataTest::importerStateAsArray<const void*>,
               &SceneDataTest::importerStateAsArray<void*>});
 
     addInstancedTests({&SceneDataTest::importerStateIntoArray},
-        Containers::arraySize(IntoArrayOffsetData));
+        Containers::arraySize(IntoArrayOffset1Data));
 
     addTests({&SceneDataTest::importerStateIntoArrayInvalidSizeOrOffset,
 
@@ -2366,13 +2429,15 @@ template<class T> void SceneDataTest::parentsAsArray() {
         SceneFieldData{SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
     }};
 
-    CORRADE_COMPARE_AS(scene.parentsAsArray(),
-        Containers::arrayView({15, -1, 44}),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.parentsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+        {0, 15},
+        {1, -1},
+        {15, 44}
+    })), TestSuite::Compare::Container);
 }
 
 void SceneDataTest::parentsIntoArray() {
-    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    auto&& data = IntoArrayOffset1Data[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     /* Both AsArray() and Into() share a common helper. The AsArray() test
@@ -2400,17 +2465,32 @@ void SceneDataTest::parentsIntoArray() {
 
     /* The offset-less overload should give back all data */
     {
-        Int out[3];
-        scene.parentsInto(out);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+        UnsignedInt objects[3];
+        Int field[3];
+        scene.parentsInto(
+            data.objects ? Containers::arrayView(objects) : nullptr,
+            data.field ? Containers::arrayView(field) : nullptr
+        );
+        if(data.objects) CORRADE_COMPARE_AS(Containers::stridedArrayView(objects),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(Containers::stridedArrayView(field),
             view.slice(&Field::parent),
             TestSuite::Compare::Container);
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<Int> out{data.size};
-        CORRADE_COMPARE(scene.parentsInto(data.offset, out), data.expectedSize);
-        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+        Containers::Array<UnsignedInt> objects{data.size};
+        Containers::Array<Int> field{data.size};
+        CORRADE_COMPARE(scene.parentsInto(data.offset,
+            data.objects ? arrayView(objects) : nullptr,
+            data.field ? arrayView(field) : nullptr
+        ), data.expectedSize);
+        if(data.objects) CORRADE_COMPARE_AS(objects.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(field.prefix(data.expectedSize),
             view.slice(&Field::parent)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
@@ -2435,12 +2515,19 @@ void SceneDataTest::parentsIntoArrayInvalidSizeOrOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    Int destination[2];
-    scene.parentsInto(destination);
-    scene.parentsInto(4, destination);
+    UnsignedInt objectDestinationCorrect[3];
+    UnsignedInt objectDestination[2];
+    Int fieldDestinationCorrect[3];
+    Int fieldDestination[2];
+    scene.parentsInto(objectDestination, fieldDestinationCorrect);
+    scene.parentsInto(objectDestinationCorrect, fieldDestination);
+    scene.parentsInto(4, objectDestination, fieldDestination);
+    scene.parentsInto(0, objectDestinationCorrect, fieldDestination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::parentsInto(): expected a view with 3 elements but got 2\n"
-        "Trade::SceneData::parentsInto(): offset 4 out of bounds for a field of size 3\n");
+        "Trade::SceneData::parentsInto(): expected object destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::parentsInto(): expected field destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::parentsInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::parentsInto(): object and field destination views have different size, 3 vs 2\n");
 }
 
 template<class T> struct TransformationTypeFor {
@@ -2511,12 +2598,12 @@ template<class T> void SceneDataTest::transformations2DAsArray() {
 
     CORRADE_VERIFY(scene.is2D());
     CORRADE_VERIFY(!scene.is3D());
-    CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView({
-        Matrix3::translation({3.0f, 2.0f}),
-        Matrix3::rotation(35.0_degf),
-        Matrix3::translation({1.5f, 2.5f})*Matrix3::rotation(-15.0_degf),
-        Matrix3::rotation(-15.0_degf)*Matrix3::translation({1.5f, 2.5f})
-    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
+        {1, Matrix3::translation({3.0f, 2.0f})},
+        {0, Matrix3::rotation(35.0_degf)},
+        {4, Matrix3::translation({1.5f, 2.5f})*Matrix3::rotation(-15.0_degf)},
+        {5, Matrix3::rotation(-15.0_degf)*Matrix3::translation({1.5f, 2.5f})}
+    })), TestSuite::Compare::Container);
 }
 
 template<class T, class U, class V> void SceneDataTest::transformations2DAsArrayTRS() {
@@ -2564,19 +2651,19 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
-            Matrix3::translation({3.0f, 2.0f}),
-            Matrix3{Math::IdentityInit},
-            Matrix3{Math::IdentityInit},
-            Matrix3{Math::IdentityInit},
-            Matrix3::translation({1.5f, 2.5f})
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Triple<Vector2, Complex, Vector2>>({
-            {{3.0f, 2.0f}, {}, Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{1.5f, 2.5f}, {}, Vector2{1.0f}},
+        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
+            {1, Matrix3::translation({3.0f, 2.0f})},
+            {0, Matrix3{Math::IdentityInit}},
+            {2, Matrix3{Math::IdentityInit}},
+            {4, Matrix3{Math::IdentityInit}},
+            {7, Matrix3::translation({1.5f, 2.5f})}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector2, Complex, Vector2>>>({
+            {1, {{3.0f, 2.0f}, {}, Vector2{1.0f}}},
+            {0, {{}, {}, Vector2{1.0f}}},
+            {2, {{}, {}, Vector2{1.0f}}},
+            {4, {{}, {}, Vector2{1.0f}}},
+            {7, {{1.5f, 2.5f}, {}, Vector2{1.0f}}},
         })), TestSuite::Compare::Container);
     } {
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
@@ -2584,19 +2671,19 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
-            Matrix3{Math::IdentityInit},
-            Matrix3::rotation(35.0_degf),
-            Matrix3{Math::IdentityInit},
-            Matrix3{Math::IdentityInit},
-            Matrix3::rotation(-15.0_degf)
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Triple<Vector2, Complex, Vector2>>({
-            {{}, {}, Vector2{1.0f}},
-            {{}, Complex::rotation(35.0_degf), Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{}, Complex::rotation(-15.0_degf), Vector2{1.0f}},
+        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
+            {1, Matrix3{Math::IdentityInit}},
+            {0, Matrix3::rotation(35.0_degf)},
+            {2, Matrix3{Math::IdentityInit}},
+            {4, Matrix3{Math::IdentityInit}},
+            {7, Matrix3::rotation(-15.0_degf)}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector2, Complex, Vector2>>>({
+            {1, {{}, {}, Vector2{1.0f}}},
+            {0, {{}, Complex::rotation(35.0_degf), Vector2{1.0f}}},
+            {2, {{}, {}, Vector2{1.0f}}},
+            {4, {{}, {}, Vector2{1.0f}}},
+            {7, {{}, Complex::rotation(-15.0_degf), Vector2{1.0f}}},
         })), TestSuite::Compare::Container);
     } {
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
@@ -2604,19 +2691,19 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
-            Matrix3{Math::IdentityInit},
-            Matrix3{Math::IdentityInit},
-            Matrix3{Math::IdentityInit},
-            Matrix3::scaling({2.0f, 1.0f}),
-            Matrix3::scaling({-0.5f, 4.0f})
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Triple<Vector2, Complex, Vector2>>({
-            {{}, {}, Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{}, {}, {2.0f, 1.0f}},
-            {{}, {}, {-0.5f, 4.0f}},
+        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
+            {1, Matrix3{Math::IdentityInit}},
+            {0, Matrix3{Math::IdentityInit}},
+            {2, Matrix3{Math::IdentityInit}},
+            {4, Matrix3::scaling({2.0f, 1.0f})},
+            {7, Matrix3::scaling({-0.5f, 4.0f})}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector2, Complex, Vector2>>>({
+            {1, {{}, {}, Vector2{1.0f}}},
+            {0, {{}, {}, Vector2{1.0f}}},
+            {2, {{}, {}, Vector2{1.0f}}},
+            {4, {{}, {}, {2.0f, 1.0f}}},
+            {7, {{}, {}, {-0.5f, 4.0f}}},
         })), TestSuite::Compare::Container);
     }
 
@@ -2628,19 +2715,19 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
-            Matrix3::translation({3.0f, 2.0f}),
-            Matrix3::rotation(35.0_degf),
-            Matrix3{Math::IdentityInit},
-            Matrix3{Math::IdentityInit},
-            Matrix3::translation({1.5f, 2.5f})*Matrix3::rotation({-15.0_degf})
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Triple<Vector2, Complex, Vector2>>({
-            {{3.0f, 2.0f}, {}, Vector2{1.0f}},
-            {{}, Complex::rotation(35.0_degf), Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{1.5f, 2.5f}, Complex::rotation(-15.0_degf), Vector2{1.0f}},
+        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
+            {1, Matrix3::translation({3.0f, 2.0f})},
+            {0, Matrix3::rotation(35.0_degf)},
+            {2, Matrix3{Math::IdentityInit}},
+            {4, Matrix3{Math::IdentityInit}},
+            {7, Matrix3::translation({1.5f, 2.5f})*Matrix3::rotation({-15.0_degf})}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector2, Complex, Vector2>>>({
+            {1, {{3.0f, 2.0f}, {}, Vector2{1.0f}}},
+            {0, {{}, Complex::rotation(35.0_degf), Vector2{1.0f}}},
+            {2, {{}, {}, Vector2{1.0f}}},
+            {4, {{}, {}, Vector2{1.0f}}},
+            {7, {{1.5f, 2.5f}, Complex::rotation(-15.0_degf), Vector2{1.0f}}},
         })), TestSuite::Compare::Container);
     } {
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
@@ -2649,19 +2736,19 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
-            Matrix3::translation({3.0f, 2.0f}),
-            Matrix3{Math::IdentityInit},
-            Matrix3{Math::IdentityInit},
-            Matrix3::scaling({2.0f, 1.0f}),
-            Matrix3::translation({1.5f, 2.5f})*Matrix3::scaling({-0.5f, 4.0f})
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Triple<Vector2, Complex, Vector2>>({
-            {{3.0f, 2.0f}, {}, Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{}, {}, {2.0f, 1.0f}},
-            {{1.5f, 2.5f}, {}, {-0.5f, 4.0f}},
+        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
+            {1, Matrix3::translation({3.0f, 2.0f})},
+            {0, Matrix3{Math::IdentityInit}},
+            {2, Matrix3{Math::IdentityInit}},
+            {4, Matrix3::scaling({2.0f, 1.0f})},
+            {7, Matrix3::translation({1.5f, 2.5f})*Matrix3::scaling({-0.5f, 4.0f})}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector2, Complex, Vector2>>>({
+            {1, {{3.0f, 2.0f}, {}, Vector2{1.0f}}},
+            {0, {{}, {}, Vector2{1.0f}}},
+            {2, {{}, {}, Vector2{1.0f}}},
+            {4, {{}, {}, {2.0f, 1.0f}}},
+            {7, {{1.5f, 2.5f}, {}, {-0.5f, 4.0f}}},
         })), TestSuite::Compare::Container);
     } {
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
@@ -2670,19 +2757,19 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
-            Matrix3{Math::IdentityInit},
-            Matrix3::rotation(35.0_degf),
-            Matrix3{Math::IdentityInit},
-            Matrix3::scaling({2.0f, 1.0f}),
-            Matrix3::rotation({-15.0_degf})*Matrix3::scaling({-0.5f, 4.0f})
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Triple<Vector2, Complex, Vector2>>({
-            {{}, {}, Vector2{1.0f}},
-            {{}, Complex::rotation(35.0_degf), Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{}, {}, {2.0f, 1.0f}},
-            {{}, Complex::rotation(-15.0_degf), {-0.5f, 4.0f}},
+        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
+            {1, Matrix3{Math::IdentityInit}},
+            {0, Matrix3::rotation(35.0_degf)},
+            {2, Matrix3{Math::IdentityInit}},
+            {4, Matrix3::scaling({2.0f, 1.0f})},
+            {7, Matrix3::rotation({-15.0_degf})*Matrix3::scaling({-0.5f, 4.0f})}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector2, Complex, Vector2>>>({
+            {1, {{}, {}, Vector2{1.0f}}},
+            {0, {{}, Complex::rotation(35.0_degf), Vector2{1.0f}}},
+            {2, {{}, {}, Vector2{1.0f}}},
+            {4, {{}, {}, {2.0f, 1.0f}}},
+            {7, {{}, Complex::rotation(-15.0_degf), {-0.5f, 4.0f}}},
         })), TestSuite::Compare::Container);
     }
 
@@ -2695,19 +2782,19 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), Containers::arrayView<Matrix3>({
-            Matrix3::translation({3.0f, 2.0f}),
-            Matrix3::rotation(35.0_degf),
-            Matrix3{Math::IdentityInit},
-            Matrix3::scaling({2.0f, 1.0f}),
-            Matrix3::translation({1.5f, 2.5f})*Matrix3::rotation({-15.0_degf})*Matrix3::scaling({-0.5f, 4.0f})
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Triple<Vector2, Complex, Vector2>>({
-            {{3.0f, 2.0f}, {}, Vector2{1.0f}},
-            {{}, Complex::rotation(35.0_degf), Vector2{1.0f}},
-            {{}, {}, Vector2{1.0f}},
-            {{}, {}, {2.0f, 1.0f}},
-            {{1.5f, 2.5f}, Complex::rotation(-15.0_degf), {-0.5f, 4.0f}},
+        CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
+            {1, Matrix3::translation({3.0f, 2.0f})},
+            {0, Matrix3::rotation(35.0_degf)},
+            {2, Matrix3{Math::IdentityInit}},
+            {4, Matrix3::scaling({2.0f, 1.0f})},
+            {7, Matrix3::translation({1.5f, 2.5f})*Matrix3::rotation({-15.0_degf})*Matrix3::scaling({-0.5f, 4.0f})}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector2, Complex, Vector2>>>({
+            {1, {{3.0f, 2.0f}, {}, Vector2{1.0f}}},
+            {0, {{}, Complex::rotation(35.0_degf), Vector2{1.0f}}},
+            {2, {{}, {}, Vector2{1.0f}}},
+            {4, {{}, {}, {2.0f, 1.0f}}},
+            {7, {{1.5f, 2.5f}, Complex::rotation(-15.0_degf), {-0.5f, 4.0f}}},
         })), TestSuite::Compare::Container);
     }
 }
@@ -2736,7 +2823,7 @@ void SceneDataTest::transformations2DAsArrayBut3DType() {
 }
 
 void SceneDataTest::transformations2DIntoArray() {
-    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    auto&& data = IntoArrayOffset1Data[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     /* Both AsArray() and Into() share a common helper. The AsArray() test
@@ -2764,30 +2851,44 @@ void SceneDataTest::transformations2DIntoArray() {
 
     /* The offset-less overload should give back all data */
     {
-        Matrix3 out[3];
-        scene.transformations2DInto(out);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+        UnsignedInt objects[3];
+        Matrix3 field[3];
+        scene.transformations2DInto(
+            data.objects ? Containers::arrayView(objects) : nullptr,
+            data.field ? Containers::arrayView(field) : nullptr
+        );
+        if(data.objects) CORRADE_COMPARE_AS(Containers::stridedArrayView(objects),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(Containers::stridedArrayView(field),
             view.slice(&Field::transformation),
             TestSuite::Compare::Container);
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<Matrix3> out{data.size};
-        CORRADE_COMPARE(scene.transformations2DInto(data.offset, out), data.expectedSize);
-        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+        Containers::Array<UnsignedInt> objects{data.size};
+        Containers::Array<Matrix3> field{data.size};
+        CORRADE_COMPARE(scene.transformations2DInto(data.offset,
+            data.objects ? arrayView(objects) : nullptr,
+            data.field ? arrayView(field) : nullptr
+        ), data.expectedSize);
+        if(data.objects) CORRADE_COMPARE_AS(objects.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(field.prefix(data.expectedSize),
             view.slice(&Field::transformation)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
     }
 }
 
-void SceneDataTest::transformations2DIntoArrayTRS() {
-    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+void SceneDataTest::transformations2DTRSIntoArray() {
+    auto&& data = IntoArrayOffset1Data[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    /* Both AsArray() and Into() share a common helper. The AsArray() test
-       above verified handling of various data types and this checks the
-       offset/size parameters of the Into() variant. */
+    /* Same APIs tested as in transformations2DIntoArray(), but with a TRS
+       input */
 
     struct Field {
         UnsignedInt object;
@@ -2824,113 +2925,125 @@ void SceneDataTest::transformations2DIntoArrayTRS() {
 
     /* The offset-less overload should give back all data */
     {
-        Matrix3 out[3];
-        scene.transformations2DInto(out);
-        CORRADE_COMPARE_AS(Containers::arrayView(out),
+        UnsignedInt objects[3];
+        Matrix3 field[3];
+        scene.transformations2DInto(
+            data.objects ? Containers::arrayView(objects) : nullptr,
+            data.field ? Containers::arrayView(field) : nullptr
+        );
+        if(data.objects) CORRADE_COMPARE_AS(Containers::stridedArrayView(objects),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(Containers::stridedArrayView(field),
             Containers::arrayView(expected),
             TestSuite::Compare::Container);
 
-    /* Variant with TRS components */
+    /* The offset variant only a subset */
     } {
-        Vector2 translationsOut[3];
-        Complex rotationsOut[3];
-        Vector2 scalingsOut[3];
-        scene.translationsRotationsScalings2DInto(translationsOut, rotationsOut, scalingsOut);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(translationsOut),
+        Containers::Array<UnsignedInt> objects{data.size};
+        Containers::Array<Matrix3> field{data.size};
+        CORRADE_COMPARE(scene.transformations2DInto(data.offset,
+            data.objects ? arrayView(objects) : nullptr,
+            data.field ? arrayView(field) : nullptr
+        ), data.expectedSize);
+        if(data.objects) CORRADE_COMPARE_AS(objects.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(field.prefix(data.expectedSize),
+            Containers::arrayView(expected).slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::transformations2DIntoArrayTRS() {
+    auto&& data = IntoArrayOffset3Data[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        Vector2 translation;
+        Complex rotation;
+        Vector2 scaling;
+    } fields[] {
+        {1, {3.0f, 2.0f}, {}, {1.5f, 2.0f}},
+        {0, {}, Complex::rotation(35.0_degf), {1.0f, 1.0f}},
+        {4, {3.0f, 2.0f}, Complex::rotation(35.0_degf), {1.0f, 1.0f}}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Translation,
+            view.slice(&Field::object),
+            view.slice(&Field::translation)},
+        SceneFieldData{SceneField::Rotation,
+            view.slice(&Field::object),
+            view.slice(&Field::rotation)},
+        SceneFieldData{SceneField::Scaling,
+            view.slice(&Field::object),
+            view.slice(&Field::scaling)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        UnsignedInt objects[3];
+        Vector2 translations[3];
+        Complex rotations[3];
+        Vector2 scalings[3];
+        scene.translationsRotationsScalings2DInto(
+            data.objects ? Containers::arrayView(objects) : nullptr,
+            data.field1 ? Containers::arrayView(translations) : nullptr,
+            data.field2 ? Containers::arrayView(rotations) : nullptr,
+            data.field3 ? Containers::arrayView(scalings) : nullptr
+        );
+        if(data.objects) CORRADE_COMPARE_AS(Containers::stridedArrayView(objects),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+        if(data.field1) CORRADE_COMPARE_AS(Containers::stridedArrayView(translations),
             view.slice(&Field::translation),
             TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(rotationsOut),
+        if(data.field2) CORRADE_COMPARE_AS(Containers::stridedArrayView(rotations),
             view.slice(&Field::rotation),
             TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(scalingsOut),
+        if(data.field3) CORRADE_COMPARE_AS(Containers::stridedArrayView(scalings),
             view.slice(&Field::scaling),
             TestSuite::Compare::Container);
-
-    /* Variant with just translations */
-    } {
-        Vector2 translationsOut[3];
-        scene.translationsRotationsScalings2DInto(translationsOut, nullptr, nullptr);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(translationsOut),
-            view.slice(&Field::translation),
-            TestSuite::Compare::Container);
-
-    /* Variant with just rotations */
-    } {
-        Complex rotationsOut[3];
-        scene.translationsRotationsScalings2DInto(nullptr, rotationsOut, nullptr);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(rotationsOut),
-            view.slice(&Field::rotation),
-            TestSuite::Compare::Container);
-
-    /* Variant with just scalings */
-    } {
-        Vector2 scalingsOut[3];
-        scene.translationsRotationsScalings2DInto(nullptr, nullptr, scalingsOut);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(scalingsOut),
-            view.slice(&Field::scaling),
-            TestSuite::Compare::Container);
-
-    /* Variant with neither is stupid, but should work too */
-    } {
-        scene.translationsRotationsScalings2DInto(nullptr, nullptr, nullptr);
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<Matrix3> out{data.size};
-        CORRADE_COMPARE(scene.transformations2DInto(data.offset, out), data.expectedSize);
-        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
-            Containers::arrayView(expected).slice(data.offset, data.offset + data.expectedSize),
+        Containers::Array<UnsignedInt> objects{data.size};
+        Containers::Array<Vector2> translations{data.size};
+        Containers::Array<Complex> rotations{data.size};
+        Containers::Array<Vector2> scalings{data.size};
+        CORRADE_COMPARE(scene.translationsRotationsScalings2DInto(data.offset,
+            data.objects ? arrayView(objects) : nullptr,
+            data.field1 ? arrayView(translations) : nullptr,
+            data.field2 ? arrayView(rotations) : nullptr,
+            data.field3 ? arrayView(scalings) : nullptr
+        ), data.expectedSize);
+        if(data.objects) CORRADE_COMPARE_AS(objects.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
-
-    /* Variant with TRS components */
-    } {
-        Containers::Array<Vector2> translationsOut{data.size};
-        Containers::Array<Complex> rotationsOut{data.size};
-        Containers::Array<Vector2> scalingsOut{data.size};
-        CORRADE_COMPARE(scene.translationsRotationsScalings2DInto(data.offset, translationsOut, rotationsOut, scalingsOut), data.expectedSize);
-        CORRADE_COMPARE_AS(translationsOut.prefix(data.expectedSize),
+        if(data.field1) CORRADE_COMPARE_AS(translations.prefix(data.expectedSize),
             view.slice(&Field::translation)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(rotationsOut.prefix(data.expectedSize),
+        if(data.field2) CORRADE_COMPARE_AS(rotations.prefix(data.expectedSize),
             view.slice(&Field::rotation)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scalingsOut.prefix(data.expectedSize),
+        if(data.field3) CORRADE_COMPARE_AS(scalings.prefix(data.expectedSize),
             view.slice(&Field::scaling)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
-
-    /* Variant with just translations */
-    } {
-        Containers::Array<Vector2> translationsOut{data.size};
-        CORRADE_COMPARE(scene.translationsRotationsScalings2DInto(data.offset, translationsOut, nullptr, nullptr), data.expectedSize);
-        CORRADE_COMPARE_AS(translationsOut.prefix(data.expectedSize),
-            view.slice(&Field::translation)
-                .slice(data.offset, data.offset + data.expectedSize),
-            TestSuite::Compare::Container);
-
-    /* Variant with just rotations */
-    } {
-        Containers::Array<Complex> rotationsOut{data.size};
-        CORRADE_COMPARE(scene.translationsRotationsScalings2DInto(data.offset, nullptr, rotationsOut, nullptr), data.expectedSize);
-        CORRADE_COMPARE_AS(rotationsOut.prefix(data.expectedSize),
-            view.slice(&Field::rotation)
-                .slice(data.offset, data.offset + data.expectedSize),
-            TestSuite::Compare::Container);
-
-    /* Variant with just scalings */
-    } {
-        Containers::Array<Vector2> scalingsOut{data.size};
-        CORRADE_COMPARE(scene.translationsRotationsScalings2DInto(data.offset, nullptr, nullptr, scalingsOut), data.expectedSize);
-        CORRADE_COMPARE_AS(scalingsOut.prefix(data.expectedSize),
-            view.slice(&Field::scaling)
-                .slice(data.offset, data.offset + data.expectedSize),
-            TestSuite::Compare::Container);
-
-    /* Variant with neither is stupid, but should work too */
-    } {
-        CORRADE_COMPARE(scene.translationsRotationsScalings2DInto(data.offset, nullptr, nullptr, nullptr), 0);
     }
 }
 
@@ -2952,12 +3065,19 @@ void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    Matrix3 destination[2];
-    scene.transformations2DInto(destination);
-    scene.transformations2DInto(4, destination);
+    UnsignedInt objectDestinationCorrect[3];
+    UnsignedInt objectDestination[2];
+    Matrix3 fieldDestinationCorrect[3];
+    Matrix3 fieldDestination[2];
+    scene.transformations2DInto(objectDestination, fieldDestinationCorrect);
+    scene.transformations2DInto(objectDestinationCorrect, fieldDestination);
+    scene.transformations2DInto(4, objectDestination, fieldDestination);
+    scene.transformations2DInto(0, objectDestinationCorrect, fieldDestination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::transformations2DInto(): expected a view with 3 elements but got 2\n"
-        "Trade::SceneData::transformations2DInto(): offset 4 out of bounds for a field of size 3\n");
+        "Trade::SceneData::transformations2DInto(): expected object destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::transformations2DInto(): expected field destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::transformations2DInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::transformations2DInto(): object and field destination views have different size, 3 vs 2\n");
 }
 
 void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffsetTRS() {
@@ -2978,24 +3098,34 @@ void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffsetTRS() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    UnsignedInt objectDestinationCorrect[3];
+    UnsignedInt objectDestination[2];
     Vector2 translationDestinationCorrect[3];
     Vector2 translationDestination[2];
     Complex rotationDestinationCorrect[3];
     Complex rotationDestination[2];
     Vector2 scalingDestinationCorrect[3];
     Vector2 scalingDestination[2];
-    scene.translationsRotationsScalings2DInto(translationDestination, rotationDestinationCorrect, scalingDestinationCorrect);
-    scene.translationsRotationsScalings2DInto(translationDestinationCorrect, rotationDestination, scalingDestinationCorrect);
-    scene.translationsRotationsScalings2DInto(translationDestinationCorrect, rotationDestinationCorrect, scalingDestination);
-    scene.translationsRotationsScalings2DInto(4, translationDestination, rotationDestination, scalingDestination);
-    scene.translationsRotationsScalings2DInto(0, translationDestinationCorrect, rotationDestination, nullptr);
-    scene.translationsRotationsScalings2DInto(0, translationDestinationCorrect, nullptr, scalingDestination);
-    scene.translationsRotationsScalings2DInto(0, nullptr, rotationDestinationCorrect, scalingDestination);
+    scene.translationsRotationsScalings2DInto(objectDestination, translationDestinationCorrect, rotationDestinationCorrect, scalingDestinationCorrect);
+    scene.translationsRotationsScalings2DInto(objectDestinationCorrect, translationDestination, rotationDestinationCorrect, scalingDestinationCorrect);
+    scene.translationsRotationsScalings2DInto(objectDestinationCorrect, translationDestinationCorrect, rotationDestination, scalingDestinationCorrect);
+    scene.translationsRotationsScalings2DInto(objectDestinationCorrect, translationDestinationCorrect, rotationDestinationCorrect, scalingDestination);
+    scene.translationsRotationsScalings2DInto(4, objectDestination, translationDestination, rotationDestination, scalingDestination);
+    scene.translationsRotationsScalings2DInto(0, objectDestinationCorrect, translationDestination, nullptr, nullptr);
+    scene.translationsRotationsScalings2DInto(0, objectDestinationCorrect, nullptr, rotationDestination, nullptr);
+    scene.translationsRotationsScalings2DInto(0, objectDestinationCorrect, nullptr, nullptr, scalingDestination);
+    scene.translationsRotationsScalings2DInto(0, nullptr, translationDestinationCorrect, rotationDestination, nullptr);
+    scene.translationsRotationsScalings2DInto(0, nullptr, translationDestinationCorrect, nullptr, scalingDestination);
+    scene.translationsRotationsScalings2DInto(0, nullptr, nullptr, rotationDestinationCorrect, scalingDestination);
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::translationsRotationsScalings2DInto(): expected object destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): expected translation destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): expected rotation destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): expected scaling destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::translationsRotationsScalings2DInto(): object and translation destination views have different size, 3 vs 2\n"
+        "Trade::SceneData::translationsRotationsScalings2DInto(): object and rotation destination views have different size, 3 vs 2\n"
+        "Trade::SceneData::translationsRotationsScalings2DInto(): object and scaling destination views have different size, 3 vs 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): translation and rotation destination views have different size, 3 vs 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): translation and scaling destination views have different size, 3 vs 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): rotation and scaling destination views have different size, 3 vs 2\n");
@@ -3062,12 +3192,12 @@ template<class T> void SceneDataTest::transformations3DAsArray() {
 
     CORRADE_VERIFY(!scene.is2D());
     CORRADE_VERIFY(scene.is3D());
-    CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView({
-        Matrix4::translation({3.0f, 2.0f, -0.5f}),
-        Matrix4::rotationY(35.0_degf),
-        Matrix4::translation({1.5f, 2.5f, 0.75f})*Matrix4::rotationX(-15.0_degf),
-        Matrix4::rotationX(-15.0_degf)*Matrix4::translation({1.5f, 2.5f, 0.75f})
-    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
+        {1, Matrix4::translation({3.0f, 2.0f, -0.5f})},
+        {0, Matrix4::rotationY(35.0_degf)},
+        {4, Matrix4::translation({1.5f, 2.5f, 0.75f})*Matrix4::rotationX(-15.0_degf)},
+        {5, Matrix4::rotationX(-15.0_degf)*Matrix4::translation({1.5f, 2.5f, 0.75f})}
+    })), TestSuite::Compare::Container);
 }
 
 template<class T, class U, class V> void SceneDataTest::transformations3DAsArrayTRS() {
@@ -3115,19 +3245,19 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
-            Matrix4::translation({3.0f, 2.0, 1.0f}),
-            Matrix4{Math::IdentityInit},
-            Matrix4{Math::IdentityInit},
-            Matrix4{Math::IdentityInit},
-            Matrix4::translation({1.5f, 2.5f, 3.5f})
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Triple<Vector3, Quaternion, Vector3>>({
-            {{3.0f, 2.0, 1.0f}, {}, Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{1.5f, 2.5f, 3.5f}, {}, Vector3{1.0f}},
+        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
+            {1, Matrix4::translation({3.0f, 2.0, 1.0f})},
+            {0, Matrix4{Math::IdentityInit}},
+            {2, Matrix4{Math::IdentityInit}},
+            {4, Matrix4{Math::IdentityInit}},
+            {7, Matrix4::translation({1.5f, 2.5f, 3.5f})}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector3, Quaternion, Vector3>>>({
+            {1, {{3.0f, 2.0, 1.0f}, {}, Vector3{1.0f}}},
+            {0, {{}, {}, Vector3{1.0f}}},
+            {2, {{}, {}, Vector3{1.0f}}},
+            {4, {{}, {}, Vector3{1.0f}}},
+            {7, {{1.5f, 2.5f, 3.5f}, {}, Vector3{1.0f}}},
         })), TestSuite::Compare::Container);
     } {
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
@@ -3135,19 +3265,19 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
-            Matrix4{Math::IdentityInit},
-            Matrix4::rotationY(35.0_degf),
-            Matrix4{Math::IdentityInit},
-            Matrix4{Math::IdentityInit},
-            Matrix4::rotationX(-15.0_degf)
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Triple<Vector3, Quaternion, Vector3>>({
-            {{}, {}, Vector3{1.0f}},
-            {{}, Quaternion::rotation(35.0_degf, Vector3::yAxis()), Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{}, Quaternion::rotation(-15.0_degf, Vector3::xAxis()), Vector3{1.0f}},
+        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
+            {1, Matrix4{Math::IdentityInit}},
+            {0, Matrix4::rotationY(35.0_degf)},
+            {2, Matrix4{Math::IdentityInit}},
+            {4, Matrix4{Math::IdentityInit}},
+            {7, Matrix4::rotationX(-15.0_degf)}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector3, Quaternion, Vector3>>>({
+            {1, {{}, {}, Vector3{1.0f}}},
+            {0, {{}, Quaternion::rotation(35.0_degf, Vector3::yAxis()), Vector3{1.0f}}},
+            {2, {{}, {}, Vector3{1.0f}}},
+            {4, {{}, {}, Vector3{1.0f}}},
+            {7, {{}, Quaternion::rotation(-15.0_degf, Vector3::xAxis()), Vector3{1.0f}}},
         })), TestSuite::Compare::Container);
     } {
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
@@ -3155,19 +3285,19 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
-            Matrix4{Math::IdentityInit},
-            Matrix4{Math::IdentityInit},
-            Matrix4{Math::IdentityInit},
-            Matrix4::scaling({2.0f, 1.0f, 0.0f}),
-            Matrix4::scaling({-0.5f, 4.0f, -16.0f})
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Triple<Vector3, Quaternion, Vector3>>({
-            {{}, {}, Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{}, {}, {2.0f, 1.0f, 0.0f}},
-            {{}, {}, {-0.5f, 4.0f, -16.0f}},
+        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
+            {1, Matrix4{Math::IdentityInit}},
+            {0, Matrix4{Math::IdentityInit}},
+            {2, Matrix4{Math::IdentityInit}},
+            {4, Matrix4::scaling({2.0f, 1.0f, 0.0f})},
+            {7, Matrix4::scaling({-0.5f, 4.0f, -16.0f})}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector3, Quaternion, Vector3>>>({
+            {1, {{}, {}, Vector3{1.0f}}},
+            {0, {{}, {}, Vector3{1.0f}}},
+            {2, {{}, {}, Vector3{1.0f}}},
+            {4, {{}, {}, {2.0f, 1.0f, 0.0f}}},
+            {7, {{}, {}, {-0.5f, 4.0f, -16.0f}}},
         })), TestSuite::Compare::Container);
     }
 
@@ -3179,19 +3309,19 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
-            Matrix4::translation({3.0f, 2.0, 1.0f}),
-            Matrix4::rotationY(35.0_degf),
-            Matrix4{Math::IdentityInit},
-            Matrix4{Math::IdentityInit},
-            Matrix4::translation({1.5f, 2.5f, 3.5f})*Matrix4::rotationX(-15.0_degf)
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Triple<Vector3, Quaternion, Vector3>>({
-            {{3.0f, 2.0, 1.0f}, {}, Vector3{1.0f}},
-            {{}, Quaternion::rotation(35.0_degf, Vector3::yAxis()), Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{1.5f, 2.5f, 3.5f}, Quaternion::rotation(-15.0_degf, Vector3::xAxis()), Vector3{1.0f}},
+        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
+            {1, Matrix4::translation({3.0f, 2.0, 1.0f})},
+            {0, Matrix4::rotationY(35.0_degf)},
+            {2, Matrix4{Math::IdentityInit}},
+            {4, Matrix4{Math::IdentityInit}},
+            {7, Matrix4::translation({1.5f, 2.5f, 3.5f})*Matrix4::rotationX(-15.0_degf)}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector3, Quaternion, Vector3>>>({
+            {1, {{3.0f, 2.0, 1.0f}, {}, Vector3{1.0f}}},
+            {0, {{}, Quaternion::rotation(35.0_degf, Vector3::yAxis()), Vector3{1.0f}}},
+            {2, {{}, {}, Vector3{1.0f}}},
+            {4, {{}, {}, Vector3{1.0f}}},
+            {7, {{1.5f, 2.5f, 3.5f}, Quaternion::rotation(-15.0_degf, Vector3::xAxis()), Vector3{1.0f}}},
         })), TestSuite::Compare::Container);
     } {
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
@@ -3200,19 +3330,19 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
-            Matrix4::translation({3.0f, 2.0, 1.0f}),
-            Matrix4{Math::IdentityInit},
-            Matrix4{Math::IdentityInit},
-            Matrix4::scaling({2.0f, 1.0f, 0.0f}),
-            Matrix4::translation({1.5f, 2.5f, 3.5f})*Matrix4::scaling({-0.5f, 4.0f, -16.0f})
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Triple<Vector3, Quaternion, Vector3>>({
-            {{3.0f, 2.0, 1.0f}, {}, Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{}, {}, {2.0f, 1.0f, 0.0f}},
-            {{1.5f, 2.5f, 3.5f}, {}, {-0.5f, 4.0f, -16.0f}},
+        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
+            {1, Matrix4::translation({3.0f, 2.0, 1.0f})},
+            {0, Matrix4{Math::IdentityInit}},
+            {2, Matrix4{Math::IdentityInit}},
+            {4, Matrix4::scaling({2.0f, 1.0f, 0.0f})},
+            {7, Matrix4::translation({1.5f, 2.5f, 3.5f})*Matrix4::scaling({-0.5f, 4.0f, -16.0f})}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector3, Quaternion, Vector3>>>({
+            {1, {{3.0f, 2.0, 1.0f}, {}, Vector3{1.0f}}},
+            {0, {{}, {}, Vector3{1.0f}}},
+            {2, {{}, {}, Vector3{1.0f}}},
+            {4, {{}, {}, {2.0f, 1.0f, 0.0f}}},
+            {7, {{1.5f, 2.5f, 3.5f}, {}, {-0.5f, 4.0f, -16.0f}}},
         })), TestSuite::Compare::Container);
     } {
         SceneData scene{SceneObjectType::UnsignedInt, 8, {}, fields, {
@@ -3221,19 +3351,19 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
-            Matrix4{Math::IdentityInit},
-            Matrix4::rotationY(35.0_degf),
-            Matrix4{Math::IdentityInit},
-            Matrix4::scaling({2.0f, 1.0f, 0.0f}),
-            Matrix4::rotationX({-15.0_degf})*Matrix4::scaling({-0.5f, 4.0f, -16.0f})
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Triple<Vector3, Quaternion, Vector3>>({
-            {{}, {}, Vector3{1.0f}},
-            {{}, Quaternion::rotation(35.0_degf, Vector3::yAxis()), Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{}, {}, {2.0f, 1.0f, 0.0f}},
-            {{}, Quaternion::rotation(-15.0_degf, Vector3::xAxis()), {-0.5f, 4.0f, -16.0f}},
+        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
+            {1, Matrix4{Math::IdentityInit}},
+            {0, Matrix4::rotationY(35.0_degf)},
+            {2, Matrix4{Math::IdentityInit}},
+            {4, Matrix4::scaling({2.0f, 1.0f, 0.0f})},
+            {7, Matrix4::rotationX({-15.0_degf})*Matrix4::scaling({-0.5f, 4.0f, -16.0f})}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector3, Quaternion, Vector3>>>({
+            {1, {{}, {}, Vector3{1.0f}}},
+            {0, {{}, Quaternion::rotation(35.0_degf, Vector3::yAxis()), Vector3{1.0f}}},
+            {2, {{}, {}, Vector3{1.0f}}},
+            {4, {{}, {}, {2.0f, 1.0f, 0.0f}}},
+            {7, {{}, Quaternion::rotation(-15.0_degf, Vector3::xAxis()), {-0.5f, 4.0f, -16.0f}}},
         })), TestSuite::Compare::Container);
     }
 
@@ -3246,19 +3376,19 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
-        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), Containers::arrayView<Matrix4>({
-            Matrix4::translation({3.0f, 2.0, 1.0f}),
-            Matrix4::rotationY(35.0_degf),
-            Matrix4{Math::IdentityInit},
-            Matrix4::scaling({2.0f, 1.0f, 0.0f}),
-            Matrix4::translation({1.5f, 2.5f, 3.5f})*Matrix4::rotationX({-15.0_degf})*Matrix4::scaling({-0.5f, 4.0f, -16.0f})
-        }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Triple<Vector3, Quaternion, Vector3>>({
-            {{3.0f, 2.0, 1.0f}, {}, Vector3{1.0f}},
-            {{}, Quaternion::rotation(35.0_degf, Vector3::yAxis()), Vector3{1.0f}},
-            {{}, {}, Vector3{1.0f}},
-            {{}, {}, {2.0f, 1.0f, 0.0f}},
-            {{1.5f, 2.5f, 3.5f}, Quaternion::rotation(-15.0_degf, Vector3::xAxis()), {-0.5f, 4.0f, -16.0f}},
+        CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
+            {1, Matrix4::translation({3.0f, 2.0, 1.0f})},
+            {0, Matrix4::rotationY(35.0_degf)},
+            {2, Matrix4{Math::IdentityInit}},
+            {4, Matrix4::scaling({2.0f, 1.0f, 0.0f})},
+            {7, Matrix4::translation({1.5f, 2.5f, 3.5f})*Matrix4::rotationX({-15.0_degf})*Matrix4::scaling({-0.5f, 4.0f, -16.0f})}
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.translationsRotationsScalings3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Triple<Vector3, Quaternion, Vector3>>>({
+            {1, {{3.0f, 2.0, 1.0f}, {}, Vector3{1.0f}}},
+            {0, {{}, Quaternion::rotation(35.0_degf, Vector3::yAxis()), Vector3{1.0f}}},
+            {2, {{}, {}, Vector3{1.0f}}},
+            {4, {{}, {}, {2.0f, 1.0f, 0.0f}}},
+            {7, {{1.5f, 2.5f, 3.5f}, Quaternion::rotation(-15.0_degf, Vector3::xAxis()), {-0.5f, 4.0f, -16.0f}}},
         })), TestSuite::Compare::Container);
     }
 }
@@ -3287,7 +3417,7 @@ void SceneDataTest::transformations3DAsArrayBut2DType() {
 }
 
 void SceneDataTest::transformations3DIntoArray() {
-    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    auto&& data = IntoArrayOffset1Data[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     /* Both AsArray() and Into() share a common helper. The AsArray() test
@@ -3315,30 +3445,44 @@ void SceneDataTest::transformations3DIntoArray() {
 
     /* The offset-less overload should give back all data */
     {
-        Matrix4 out[3];
-        scene.transformations3DInto(out);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+        UnsignedInt objects[3];
+        Matrix4 field[3];
+        scene.transformations3DInto(
+            data.objects ? Containers::arrayView(objects) : nullptr,
+            data.field ? Containers::arrayView(field) : nullptr
+        );
+        if(data.objects) CORRADE_COMPARE_AS(Containers::stridedArrayView(objects),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(Containers::stridedArrayView(field),
             view.slice(&Field::transformation),
             TestSuite::Compare::Container);
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<Matrix4> out{data.size};
-        CORRADE_COMPARE(scene.transformations3DInto(data.offset, out), data.expectedSize);
-        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+        Containers::Array<UnsignedInt> objects{data.size};
+        Containers::Array<Matrix4> field{data.size};
+        CORRADE_COMPARE(scene.transformations3DInto(data.offset,
+            data.objects ? arrayView(objects) : nullptr,
+            data.field ? arrayView(field) : nullptr
+        ), data.expectedSize);
+        if(data.objects) CORRADE_COMPARE_AS(objects.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(field.prefix(data.expectedSize),
             view.slice(&Field::transformation)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
     }
 }
 
-void SceneDataTest::transformations3DIntoArrayTRS() {
-    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+void SceneDataTest::transformations3DTRSIntoArray() {
+    auto&& data = IntoArrayOffset1Data[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    /* Both AsArray() and Into() share a common helper. The AsArray() test
-       above verified handling of various data types and this checks the
-       offset/size parameters of the Into() variant. */
+    /* Same APIs tested as in transformations3DIntoArray(), but with a TRS
+       input */
 
     struct Field {
         UnsignedInt object;
@@ -3375,113 +3519,125 @@ void SceneDataTest::transformations3DIntoArrayTRS() {
 
     /* The offset-less overload should give back all data */
     {
-        Matrix4 out[3];
-        scene.transformations3DInto(out);
-        CORRADE_COMPARE_AS(Containers::arrayView(out),
+        UnsignedInt objects[3];
+        Matrix4 field[3];
+        scene.transformations3DInto(
+            data.objects ? Containers::arrayView(objects) : nullptr,
+            data.field ? Containers::arrayView(field) : nullptr
+        );
+        if(data.objects) CORRADE_COMPARE_AS(Containers::stridedArrayView(objects),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(Containers::stridedArrayView(field),
             Containers::arrayView(expected),
             TestSuite::Compare::Container);
 
-    /* Variant with TRS components */
+    /* The offset variant only a subset */
     } {
-        Vector3 translationsOut[3];
-        Quaternion rotationsOut[3];
-        Vector3 scalingsOut[3];
-        scene.translationsRotationsScalings3DInto(translationsOut, rotationsOut, scalingsOut);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(translationsOut),
+        Containers::Array<UnsignedInt> objects{data.size};
+        Containers::Array<Matrix4> field{data.size};
+        CORRADE_COMPARE(scene.transformations3DInto(data.offset,
+            data.objects ? arrayView(objects) : nullptr,
+            data.field ? arrayView(field) : nullptr
+        ), data.expectedSize);
+        if(data.objects) CORRADE_COMPARE_AS(objects.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(field.prefix(data.expectedSize),
+            Containers::arrayView(expected).slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+    }
+}
+
+void SceneDataTest::transformations3DIntoArrayTRS() {
+    auto&& data = IntoArrayOffset3Data[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Both AsArray() and Into() share a common helper. The AsArray() test
+       above verified handling of various data types and this checks the
+       offset/size parameters of the Into() variant. */
+
+    struct Field {
+        UnsignedInt object;
+        Vector3 translation;
+        Quaternion rotation;
+        Vector3 scaling;
+    } fields[] {
+        {1, {3.0f, 2.0f, 1.0f}, {}, {1.5f, 2.0f, 4.5f}},
+        {0, {}, Quaternion::rotation(35.0_degf, Vector3::xAxis()), {1.0f, 1.0f, 1.0f}},
+        {4, {3.0f, 2.0f, 1.0f}, Quaternion::rotation(35.0_degf, Vector3::xAxis()), {1.0f, 1.0f, 1.0f}}
+    };
+
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 5, {}, fields, {
+        /* To verify it isn't just picking the first ever field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Translation,
+            view.slice(&Field::object),
+            view.slice(&Field::translation)},
+        SceneFieldData{SceneField::Rotation,
+            view.slice(&Field::object),
+            view.slice(&Field::rotation)},
+        SceneFieldData{SceneField::Scaling,
+            view.slice(&Field::object),
+            view.slice(&Field::scaling)},
+    }};
+
+    /* The offset-less overload should give back all data */
+    {
+        UnsignedInt objects[3];
+        Vector3 translations[3];
+        Quaternion rotations[3];
+        Vector3 scalings[3];
+        scene.translationsRotationsScalings3DInto(
+            data.objects ? Containers::arrayView(objects) : nullptr,
+            data.field1 ? Containers::arrayView(translations) : nullptr,
+            data.field2 ? Containers::arrayView(rotations) : nullptr,
+            data.field3 ? Containers::arrayView(scalings) : nullptr
+        );
+        if(data.objects) CORRADE_COMPARE_AS(Containers::stridedArrayView(objects),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+        if(data.field1) CORRADE_COMPARE_AS(Containers::stridedArrayView(translations),
             view.slice(&Field::translation),
             TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(rotationsOut),
+        if(data.field2) CORRADE_COMPARE_AS(Containers::stridedArrayView(rotations),
             view.slice(&Field::rotation),
             TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(scalingsOut),
+        if(data.field3) CORRADE_COMPARE_AS(Containers::stridedArrayView(scalings),
             view.slice(&Field::scaling),
             TestSuite::Compare::Container);
-
-    /* Variant with just translations */
-    } {
-        Vector3 translationsOut[3];
-        scene.translationsRotationsScalings3DInto(translationsOut, nullptr, nullptr);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(translationsOut),
-            view.slice(&Field::translation),
-            TestSuite::Compare::Container);
-
-    /* Variant with just rotations */
-    } {
-        Quaternion rotationsOut[3];
-        scene.translationsRotationsScalings3DInto(nullptr, rotationsOut, nullptr);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(rotationsOut),
-            view.slice(&Field::rotation),
-            TestSuite::Compare::Container);
-
-    /* Variant with just scalings */
-    } {
-        Vector3 scalingsOut[3];
-        scene.translationsRotationsScalings3DInto(nullptr, nullptr, scalingsOut);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(scalingsOut),
-            view.slice(&Field::scaling),
-            TestSuite::Compare::Container);
-
-    /* Variant with neither is stupid, but should work too */
-    } {
-        scene.translationsRotationsScalings3DInto(nullptr, nullptr, nullptr);
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<Matrix4> out{data.size};
-        CORRADE_COMPARE(scene.transformations3DInto(data.offset, out), data.expectedSize);
-        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
-            Containers::arrayView(expected).slice(data.offset, data.offset + data.expectedSize),
+        Containers::Array<UnsignedInt> objects{data.size};
+        Containers::Array<Vector3> translations{data.size};
+        Containers::Array<Quaternion> rotations{data.size};
+        Containers::Array<Vector3> scalings{data.size};
+        CORRADE_COMPARE(scene.translationsRotationsScalings3DInto(data.offset,
+            data.objects ? arrayView(objects) : nullptr,
+            data.field1 ? arrayView(translations) : nullptr,
+            data.field2 ? arrayView(rotations) : nullptr,
+            data.field3 ? arrayView(scalings) : nullptr
+        ), data.expectedSize);
+        if(data.objects) CORRADE_COMPARE_AS(objects.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
-
-    /* Variant with TRS components */
-    } {
-        Containers::Array<Vector3> translationsOut{data.size};
-        Containers::Array<Quaternion> rotationsOut{data.size};
-        Containers::Array<Vector3> scalingsOut{data.size};
-        CORRADE_COMPARE(scene.translationsRotationsScalings3DInto(data.offset, translationsOut, rotationsOut, scalingsOut), data.expectedSize);
-        CORRADE_COMPARE_AS(translationsOut.prefix(data.expectedSize),
+        if(data.field1) CORRADE_COMPARE_AS(translations.prefix(data.expectedSize),
             view.slice(&Field::translation)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(rotationsOut.prefix(data.expectedSize),
+        if(data.field2) CORRADE_COMPARE_AS(rotations.prefix(data.expectedSize),
             view.slice(&Field::rotation)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(scalingsOut.prefix(data.expectedSize),
+        if(data.field3) CORRADE_COMPARE_AS(scalings.prefix(data.expectedSize),
             view.slice(&Field::scaling)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
-
-    /* Variant with just translations */
-    } {
-        Containers::Array<Vector3> translationsOut{data.size};
-        CORRADE_COMPARE(scene.translationsRotationsScalings3DInto(data.offset, translationsOut, nullptr, nullptr), data.expectedSize);
-        CORRADE_COMPARE_AS(translationsOut.prefix(data.expectedSize),
-            view.slice(&Field::translation)
-                .slice(data.offset, data.offset + data.expectedSize),
-            TestSuite::Compare::Container);
-
-    /* Variant with just rotations */
-    } {
-        Containers::Array<Quaternion> rotationsOut{data.size};
-        CORRADE_COMPARE(scene.translationsRotationsScalings3DInto(data.offset, nullptr, rotationsOut, nullptr), data.expectedSize);
-        CORRADE_COMPARE_AS(rotationsOut.prefix(data.expectedSize),
-            view.slice(&Field::rotation)
-                .slice(data.offset, data.offset + data.expectedSize),
-            TestSuite::Compare::Container);
-
-    /* Variant with just scalings */
-    } {
-        Containers::Array<Vector3> scalingsOut{data.size};
-        CORRADE_COMPARE(scene.translationsRotationsScalings3DInto(data.offset, nullptr, nullptr, scalingsOut), data.expectedSize);
-        CORRADE_COMPARE_AS(scalingsOut.prefix(data.expectedSize),
-            view.slice(&Field::scaling)
-                .slice(data.offset, data.offset + data.expectedSize),
-            TestSuite::Compare::Container);
-
-    /* Variant with neither is stupid, but should work too */
-    } {
-        CORRADE_COMPARE(scene.translationsRotationsScalings3DInto(data.offset, nullptr, nullptr, nullptr), 0);
     }
 }
 
@@ -3503,12 +3659,19 @@ void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    Matrix4 destination[2];
-    scene.transformations3DInto(destination);
-    scene.transformations3DInto(4, destination);
+    UnsignedInt objectDestinationCorrect[3];
+    UnsignedInt objectDestination[2];
+    Matrix4 fieldDestinationCorrect[3];
+    Matrix4 fieldDestination[2];
+    scene.transformations3DInto(objectDestination, fieldDestinationCorrect);
+    scene.transformations3DInto(objectDestinationCorrect, fieldDestination);
+    scene.transformations3DInto(4, objectDestination, fieldDestination);
+    scene.transformations3DInto(0, objectDestinationCorrect, fieldDestination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::transformations3DInto(): expected a view with 3 elements but got 2\n"
-        "Trade::SceneData::transformations3DInto(): offset 4 out of bounds for a field of size 3\n");
+        "Trade::SceneData::transformations3DInto(): expected object destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::transformations3DInto(): expected field destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::transformations3DInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::transformations3DInto(): object and field destination views have different size, 3 vs 2\n");
 }
 
 void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffsetTRS() {
@@ -3529,24 +3692,34 @@ void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffsetTRS() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    UnsignedInt objectDestinationCorrect[3];
+    UnsignedInt objectDestination[2];
     Vector3 translationDestinationCorrect[3];
     Vector3 translationDestination[2];
     Quaternion rotationDestinationCorrect[3];
     Quaternion rotationDestination[2];
     Vector3 scalingDestinationCorrect[3];
     Vector3 scalingDestination[2];
-    scene.translationsRotationsScalings3DInto(translationDestination, rotationDestinationCorrect, scalingDestinationCorrect);
-    scene.translationsRotationsScalings3DInto(translationDestinationCorrect, rotationDestination, scalingDestinationCorrect);
-    scene.translationsRotationsScalings3DInto(translationDestinationCorrect, rotationDestinationCorrect, scalingDestination);
-    scene.translationsRotationsScalings3DInto(4, translationDestination, rotationDestination, scalingDestination);
-    scene.translationsRotationsScalings3DInto(0, translationDestinationCorrect, rotationDestination, nullptr);
-    scene.translationsRotationsScalings3DInto(0, translationDestinationCorrect, nullptr, scalingDestination);
-    scene.translationsRotationsScalings3DInto(0, nullptr, rotationDestinationCorrect, scalingDestination);
+    scene.translationsRotationsScalings3DInto(objectDestination, translationDestinationCorrect, rotationDestinationCorrect, scalingDestinationCorrect);
+    scene.translationsRotationsScalings3DInto(objectDestinationCorrect, translationDestination, rotationDestinationCorrect, scalingDestinationCorrect);
+    scene.translationsRotationsScalings3DInto(objectDestinationCorrect, translationDestinationCorrect, rotationDestination, scalingDestinationCorrect);
+    scene.translationsRotationsScalings3DInto(objectDestinationCorrect, translationDestinationCorrect, rotationDestinationCorrect, scalingDestination);
+    scene.translationsRotationsScalings3DInto(4, objectDestination, translationDestination, rotationDestination, scalingDestination);
+    scene.translationsRotationsScalings3DInto(0, objectDestinationCorrect, translationDestination, nullptr, nullptr);
+    scene.translationsRotationsScalings3DInto(0, objectDestinationCorrect, nullptr, rotationDestination, nullptr);
+    scene.translationsRotationsScalings3DInto(0, objectDestinationCorrect, nullptr, nullptr, scalingDestination);
+    scene.translationsRotationsScalings3DInto(0, nullptr, translationDestinationCorrect, rotationDestination, nullptr);
+    scene.translationsRotationsScalings3DInto(0, nullptr, translationDestinationCorrect, nullptr, scalingDestination);
+    scene.translationsRotationsScalings3DInto(0, nullptr, nullptr, rotationDestinationCorrect, scalingDestination);
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::translationsRotationsScalings3DInto(): expected object destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): expected translation destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): expected rotation destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): expected scaling destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::translationsRotationsScalings3DInto(): object and translation destination views have different size, 3 vs 2\n"
+        "Trade::SceneData::translationsRotationsScalings3DInto(): object and rotation destination views have different size, 3 vs 2\n"
+        "Trade::SceneData::translationsRotationsScalings3DInto(): object and scaling destination views have different size, 3 vs 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): translation and rotation destination views have different size, 3 vs 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): translation and scaling destination views have different size, 3 vs 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): rotation and scaling destination views have different size, 3 vs 2\n");
@@ -3583,12 +3756,11 @@ template<class T, class U> void SceneDataTest::meshesMaterialsAsArray() {
             meshMaterials
         }};
 
-        CORRADE_COMPARE_AS(scene.meshesMaterialsAsArray(),
-            (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
-                {15, 3},
-                {37, -1},
-                {44, 25}
-            })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.meshesMaterialsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>>({
+            {0, {15, 3}},
+            {1, {37, -1}},
+            {15, {44, 25}}
+        })), TestSuite::Compare::Container);
 
     /* Only meshes */
     } {
@@ -3596,17 +3768,16 @@ template<class T, class U> void SceneDataTest::meshesMaterialsAsArray() {
             meshes
         }};
 
-        CORRADE_COMPARE_AS(scene.meshesMaterialsAsArray(),
-            (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
-                {15, -1},
-                {37, -1},
-                {44, -1}
-            })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.meshesMaterialsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>>({
+            {0, {15, -1}},
+            {1, {37, -1}},
+            {15, {44, -1}}
+        })), TestSuite::Compare::Container);
     }
 }
 
 void SceneDataTest::meshesMaterialsIntoArray() {
-    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    auto&& data = IntoArrayOffset2Data[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     /* Both AsArray() and Into() share a common helper. The AsArray() test
@@ -3638,71 +3809,46 @@ void SceneDataTest::meshesMaterialsIntoArray() {
 
     /* The offset-less overload should give back all data */
     {
-        UnsignedInt meshesOut[3];
-        Int meshMaterialsOut[3];
-        scene.meshesMaterialsInto(meshesOut, meshMaterialsOut);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(meshesOut),
+        UnsignedInt objects[3];
+        UnsignedInt meshes[3];
+        Int meshMaterials[3];
+        scene.meshesMaterialsInto(
+            data.objects ? Containers::arrayView(objects) : nullptr,
+            data.field1 ? Containers::arrayView(meshes) : nullptr,
+            data.field2 ? Containers::arrayView(meshMaterials) : nullptr
+        );
+        if(data.objects) CORRADE_COMPARE_AS(Containers::stridedArrayView(objects),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+        if(data.field1) CORRADE_COMPARE_AS(Containers::stridedArrayView(meshes),
             view.slice(&Field::mesh),
             TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(meshMaterialsOut),
+        if(data.field2) CORRADE_COMPARE_AS(Containers::stridedArrayView(meshMaterials),
             view.slice(&Field::meshMaterial),
             TestSuite::Compare::Container);
-
-    /* Variant with just meshes */
-    } {
-        UnsignedInt meshesOut[3];
-        scene.meshesMaterialsInto(meshesOut, nullptr);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(meshesOut),
-            view.slice(&Field::mesh),
-            TestSuite::Compare::Container);
-
-    /* Variant with just materials */
-    } {
-        Int meshMaterialsOut[3];
-        scene.meshesMaterialsInto(nullptr, meshMaterialsOut);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(meshMaterialsOut),
-            view.slice(&Field::meshMaterial),
-            TestSuite::Compare::Container);
-
-    /* Variant with neither is stupid, but should work too */
-    } {
-        scene.meshesMaterialsInto(nullptr, nullptr);
 
     /* The offset variant should give back only a subset */
     } {
-        Containers::Array<UnsignedInt> meshesOut{data.size};
-        Containers::Array<Int> meshMaterialsOut{data.size};
-        CORRADE_COMPARE(scene.meshesMaterialsInto(data.offset, meshesOut, meshMaterialsOut), data.expectedSize);
-        CORRADE_COMPARE_AS(meshesOut.prefix(data.expectedSize),
+        Containers::Array<UnsignedInt> objects{data.size};
+        Containers::Array<UnsignedInt> meshes{data.size};
+        Containers::Array<Int> meshMaterials{data.size};
+        CORRADE_COMPARE(scene.meshesMaterialsInto(data.offset,
+            data.objects ? arrayView(objects) : nullptr,
+            data.field1 ? arrayView(meshes) : nullptr,
+            data.field2 ? arrayView(meshMaterials) : nullptr
+        ), data.expectedSize);
+        if(data.objects) CORRADE_COMPARE_AS(objects.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+        if(data.field1) CORRADE_COMPARE_AS(meshes.prefix(data.expectedSize),
             view.slice(&Field::mesh)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(meshMaterialsOut.prefix(data.expectedSize),
+        if(data.field2) CORRADE_COMPARE_AS(meshMaterials.prefix(data.expectedSize),
             view.slice(&Field::meshMaterial)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
-
-    /* Variant with just meshes */
-    } {
-        Containers::Array<UnsignedInt> meshesOut{data.size};
-        CORRADE_COMPARE(scene.meshesMaterialsInto(data.offset, meshesOut, nullptr), data.expectedSize);
-        CORRADE_COMPARE_AS(meshesOut.prefix(data.expectedSize),
-            view.slice(&Field::mesh)
-                .slice(data.offset, data.offset + data.expectedSize),
-            TestSuite::Compare::Container);
-
-    /* Variant with just materials */
-    } {
-        Containers::Array<Int> meshMaterialsOut{data.size};
-        CORRADE_COMPARE(scene.meshesMaterialsInto(data.offset, nullptr, meshMaterialsOut), data.expectedSize);
-        CORRADE_COMPARE_AS(meshMaterialsOut.prefix(data.expectedSize),
-            view.slice(&Field::meshMaterial)
-                .slice(data.offset, data.offset + data.expectedSize),
-            TestSuite::Compare::Container);
-
-    /* Variant with neither is stupid, but should work too */
-    } {
-        CORRADE_COMPARE(scene.meshesMaterialsInto(data.offset, nullptr, nullptr), 0);
     }
 }
 
@@ -3724,18 +3870,26 @@ void SceneDataTest::meshesMaterialsIntoArrayInvalidSizeOrOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    UnsignedInt objectDestinationCorrect[3];
+    UnsignedInt objectDestination[2];
     UnsignedInt meshDestinationCorrect[3];
     UnsignedInt meshDestination[2];
     Int meshMaterialDestinationCorrect[3];
     Int meshMaterialDestination[2];
-    scene.meshesMaterialsInto(meshDestination, meshMaterialDestinationCorrect);
-    scene.meshesMaterialsInto(meshDestinationCorrect, meshMaterialDestination);
-    scene.meshesMaterialsInto(4, meshDestination, meshMaterialDestination);
-    scene.meshesMaterialsInto(0, meshDestinationCorrect, meshMaterialDestination);
+    scene.meshesMaterialsInto(objectDestination, meshDestinationCorrect, meshMaterialDestinationCorrect);
+    scene.meshesMaterialsInto(objectDestinationCorrect, meshDestination, meshMaterialDestinationCorrect);
+    scene.meshesMaterialsInto(objectDestinationCorrect, meshDestinationCorrect, meshMaterialDestination);
+    scene.meshesMaterialsInto(4, objectDestination, meshDestination, meshMaterialDestination);
+    scene.meshesMaterialsInto(0, objectDestinationCorrect, meshDestination, nullptr);
+    scene.meshesMaterialsInto(0, objectDestinationCorrect, nullptr, meshMaterialDestination);
+    scene.meshesMaterialsInto(0, nullptr, meshDestinationCorrect, meshMaterialDestination);
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::meshesMaterialsInto(): expected object destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::meshesMaterialsInto(): expected mesh destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::meshesMaterialsInto(): expected mesh material destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::meshesMaterialsInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::meshesMaterialsInto(): object and mesh destination views have different size, 3 vs 2\n"
+        "Trade::SceneData::meshesMaterialsInto(): object and mesh material destination views have different size, 3 vs 2\n"
         "Trade::SceneData::meshesMaterialsInto(): mesh and mesh material destination views have different size, 3 vs 2\n");
 }
 
@@ -3759,13 +3913,15 @@ template<class T> void SceneDataTest::lightsAsArray() {
         SceneFieldData{SceneField::Light, view.slice(&Field::object), view.slice(&Field::light)}
     }};
 
-    CORRADE_COMPARE_AS(scene.lightsAsArray(),
-        Containers::arrayView<UnsignedInt>({15, 37, 44}),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.lightsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, UnsignedInt>>({
+        {0, 15},
+        {1, 37},
+        {15, 44}
+    })), TestSuite::Compare::Container);
 }
 
 void SceneDataTest::lightsIntoArray() {
-    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    auto&& data = IntoArrayOffset1Data[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     /* Both AsArray() and Into() share a common helper. The AsArray() test
@@ -3793,17 +3949,32 @@ void SceneDataTest::lightsIntoArray() {
 
     /* The offset-less overload should give back all data */
     {
-        UnsignedInt out[3];
-        scene.lightsInto(out);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+        UnsignedInt objects[3];
+        UnsignedInt field[3];
+        scene.lightsInto(
+            data.objects ? Containers::arrayView(objects) : nullptr,
+            data.field ? Containers::arrayView(field) : nullptr
+        );
+        if(data.objects) CORRADE_COMPARE_AS(Containers::stridedArrayView(objects),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(Containers::stridedArrayView(field),
             view.slice(&Field::light),
             TestSuite::Compare::Container);
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> out{data.size};
-        CORRADE_COMPARE(scene.lightsInto(data.offset, out), data.expectedSize);
-        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+        Containers::Array<UnsignedInt> objects{data.size};
+        Containers::Array<UnsignedInt> field{data.size};
+        CORRADE_COMPARE(scene.lightsInto(data.offset,
+            data.objects ? arrayView(objects) : nullptr,
+            data.field ? arrayView(field) : nullptr
+        ), data.expectedSize);
+        if(data.objects) CORRADE_COMPARE_AS(objects.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(field.prefix(data.expectedSize),
             view.slice(&Field::light)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
@@ -3828,12 +3999,19 @@ void SceneDataTest::lightsIntoArrayInvalidSizeOrOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    UnsignedInt destination[2];
-    scene.lightsInto(destination);
-    scene.lightsInto(4, destination);
+    UnsignedInt objectDestinationCorrect[3];
+    UnsignedInt objectDestination[2];
+    UnsignedInt fieldDestinationCorrect[3];
+    UnsignedInt fieldDestination[2];
+    scene.lightsInto(objectDestination, fieldDestinationCorrect);
+    scene.lightsInto(objectDestinationCorrect, fieldDestination);
+    scene.lightsInto(4, objectDestination, fieldDestination);
+    scene.lightsInto(0, objectDestinationCorrect, fieldDestination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::lightsInto(): expected a view with 3 elements but got 2\n"
-        "Trade::SceneData::lightsInto(): offset 4 out of bounds for a field of size 3\n");
+        "Trade::SceneData::lightsInto(): expected object destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::lightsInto(): expected field destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::lightsInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::lightsInto(): object and field destination views have different size, 3 vs 2\n");
 }
 
 template<class T> void SceneDataTest::camerasAsArray() {
@@ -3856,13 +4034,15 @@ template<class T> void SceneDataTest::camerasAsArray() {
         SceneFieldData{SceneField::Camera, view.slice(&Field::object), view.slice(&Field::camera)}
     }};
 
-    CORRADE_COMPARE_AS(scene.camerasAsArray(),
-        Containers::arrayView<UnsignedInt>({15, 37, 44}),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.camerasAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, UnsignedInt>>({
+        {0, 15},
+        {1, 37},
+        {15, 44}
+    })), TestSuite::Compare::Container);
 }
 
 void SceneDataTest::camerasIntoArray() {
-    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    auto&& data = IntoArrayOffset1Data[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     /* Both AsArray() and Into() share a common helper. The AsArray() test
@@ -3890,17 +4070,32 @@ void SceneDataTest::camerasIntoArray() {
 
     /* The offset-less overload should give back all data */
     {
-        UnsignedInt out[3];
-        scene.camerasInto(out);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+        UnsignedInt objects[3];
+        UnsignedInt field[3];
+        scene.camerasInto(
+            data.objects ? Containers::arrayView(objects) : nullptr,
+            data.field ? Containers::arrayView(field) : nullptr
+        );
+        if(data.objects) CORRADE_COMPARE_AS(Containers::stridedArrayView(objects),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(Containers::stridedArrayView(field),
             view.slice(&Field::camera),
             TestSuite::Compare::Container);
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> out{data.size};
-        CORRADE_COMPARE(scene.camerasInto(data.offset, out), data.expectedSize);
-        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+        Containers::Array<UnsignedInt> objects{data.size};
+        Containers::Array<UnsignedInt> field{data.size};
+        CORRADE_COMPARE(scene.camerasInto(data.offset,
+            data.objects ? arrayView(objects) : nullptr,
+            data.field ? arrayView(field) : nullptr
+        ), data.expectedSize);
+        if(data.objects) CORRADE_COMPARE_AS(objects.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(field.prefix(data.expectedSize),
             view.slice(&Field::camera)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
@@ -3925,12 +4120,19 @@ void SceneDataTest::camerasIntoArrayInvalidSizeOrOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    UnsignedInt destination[2];
-    scene.camerasInto(destination);
-    scene.camerasInto(4, destination);
+    UnsignedInt objectDestinationCorrect[3];
+    UnsignedInt objectDestination[2];
+    UnsignedInt fieldDestinationCorrect[3];
+    UnsignedInt fieldDestination[2];
+    scene.camerasInto(objectDestination, fieldDestinationCorrect);
+    scene.camerasInto(objectDestinationCorrect, fieldDestination);
+    scene.camerasInto(4, objectDestination, fieldDestination);
+    scene.camerasInto(0, objectDestinationCorrect, fieldDestination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::camerasInto(): expected a view with 3 elements but got 2\n"
-        "Trade::SceneData::camerasInto(): offset 4 out of bounds for a field of size 3\n");
+        "Trade::SceneData::camerasInto(): expected object destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::camerasInto(): expected field destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::camerasInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::camerasInto(): object and field destination views have different size, 3 vs 2\n");
 }
 
 template<class T> void SceneDataTest::skinsAsArray() {
@@ -3955,13 +4157,15 @@ template<class T> void SceneDataTest::skinsAsArray() {
         SceneFieldData{SceneField::Skin, view.slice(&Field::object), view.slice(&Field::skin)}
     }};
 
-    CORRADE_COMPARE_AS(scene.skinsAsArray(),
-        Containers::arrayView<UnsignedInt>({15, 37, 44}),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.skinsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, UnsignedInt>>({
+        {0, 15},
+        {1, 37},
+        {15, 44}
+    })), TestSuite::Compare::Container);
 }
 
 void SceneDataTest::skinsIntoArray() {
-    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    auto&& data = IntoArrayOffset1Data[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     /* Both AsArray() and Into() share a common helper. The AsArray() test
@@ -3991,17 +4195,32 @@ void SceneDataTest::skinsIntoArray() {
 
     /* The offset-less overload should give back all data */
     {
-        UnsignedInt out[3];
-        scene.skinsInto(out);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+        UnsignedInt objects[3];
+        UnsignedInt field[3];
+        scene.skinsInto(
+            data.objects ? Containers::arrayView(objects) : nullptr,
+            data.field ? Containers::arrayView(field) : nullptr
+        );
+        if(data.objects) CORRADE_COMPARE_AS(Containers::stridedArrayView(objects),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(Containers::stridedArrayView(field),
             view.slice(&Field::skin),
             TestSuite::Compare::Container);
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> out{data.size};
-        CORRADE_COMPARE(scene.skinsInto(data.offset, out), data.expectedSize);
-        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+        Containers::Array<UnsignedInt> objects{data.size};
+        Containers::Array<UnsignedInt> field{data.size};
+        CORRADE_COMPARE(scene.skinsInto(data.offset,
+            data.objects ? arrayView(objects) : nullptr,
+            data.field ? arrayView(field) : nullptr
+        ), data.expectedSize);
+        if(data.objects) CORRADE_COMPARE_AS(objects.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(field.prefix(data.expectedSize),
             view.slice(&Field::skin)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
@@ -4029,12 +4248,19 @@ void SceneDataTest::skinsIntoArrayInvalidSizeOrOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    UnsignedInt destination[2];
-    scene.skinsInto(destination);
-    scene.skinsInto(4, destination);
+    UnsignedInt objectDestinationCorrect[3];
+    UnsignedInt objectDestination[2];
+    UnsignedInt fieldDestinationCorrect[3];
+    UnsignedInt fieldDestination[2];
+    scene.skinsInto(objectDestination, fieldDestinationCorrect);
+    scene.skinsInto(objectDestinationCorrect, fieldDestination);
+    scene.skinsInto(4, objectDestination, fieldDestination);
+    scene.skinsInto(0, objectDestinationCorrect, fieldDestination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::skinsInto(): expected a view with 3 elements but got 2\n"
-        "Trade::SceneData::skinsInto(): offset 4 out of bounds for a field of size 3\n");
+        "Trade::SceneData::skinsInto(): expected object destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::skinsInto(): expected field destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::skinsInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::skinsInto(): object and field destination views have different size, 3 vs 2\n");
 }
 
 template<class T> void SceneDataTest::importerStateAsArray() {
@@ -4059,13 +4285,15 @@ template<class T> void SceneDataTest::importerStateAsArray() {
         SceneFieldData{SceneField::ImporterState, view.slice(&Field::object), view.slice(&Field::importerState)}
     }};
 
-    CORRADE_COMPARE_AS(scene.importerStateAsArray(),
-        Containers::arrayView<const void*>({&a, nullptr, &b}),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.importerStateAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, const void*>>({
+        {0, &a},
+        {1, nullptr},
+        {15, &b}
+    })), TestSuite::Compare::Container);
 }
 
 void SceneDataTest::importerStateIntoArray() {
-    auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
+    auto&& data = IntoArrayOffset1Data[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     /* Both AsArray() and Into() share a common helper. The AsArray() test
@@ -4095,17 +4323,32 @@ void SceneDataTest::importerStateIntoArray() {
 
     /* The offset-less overload should give back all data */
     {
-        const void* out[3];
-        scene.importerStateInto(out);
-        CORRADE_COMPARE_AS(Containers::stridedArrayView(out),
+        UnsignedInt objects[3];
+        const void* field[3];
+        scene.importerStateInto(
+            data.objects ? Containers::arrayView(objects) : nullptr,
+            data.field ? Containers::arrayView(field) : nullptr
+        );
+        if(data.objects) CORRADE_COMPARE_AS(Containers::stridedArrayView(objects),
+            view.slice(&Field::object),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(Containers::stridedArrayView(field),
             view.slice(&Field::importerState),
             TestSuite::Compare::Container);
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<const void*> out{data.size};
-        CORRADE_COMPARE(scene.importerStateInto(data.offset, out), data.expectedSize);
-        CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
+        Containers::Array<UnsignedInt> objects{data.size};
+        Containers::Array<const void*> field{data.size};
+        CORRADE_COMPARE(scene.importerStateInto(data.offset,
+            data.objects ? arrayView(objects) : nullptr,
+            data.field ? arrayView(field) : nullptr
+        ), data.expectedSize);
+        if(data.objects) CORRADE_COMPARE_AS(objects.prefix(data.expectedSize),
+            view.slice(&Field::object)
+                .slice(data.offset, data.offset + data.expectedSize),
+            TestSuite::Compare::Container);
+        if(data.field) CORRADE_COMPARE_AS(field.prefix(data.expectedSize),
             view.slice(&Field::importerState)
                 .slice(data.offset, data.offset + data.expectedSize),
             TestSuite::Compare::Container);
@@ -4130,12 +4373,19 @@ void SceneDataTest::importerStateIntoArrayInvalidSizeOrOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    const void* destination[2];
-    scene.importerStateInto(destination);
-    scene.importerStateInto(4, destination);
+    UnsignedInt objectDestinationCorrect[3];
+    UnsignedInt objectDestination[2];
+    const void* fieldDestinationCorrect[3];
+    const void* fieldDestination[2];
+    scene.importerStateInto(objectDestination, fieldDestinationCorrect);
+    scene.importerStateInto(objectDestinationCorrect, fieldDestination);
+    scene.importerStateInto(4, objectDestination, fieldDestination);
+    scene.importerStateInto(0, objectDestinationCorrect, fieldDestination);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::importerStateInto(): expected a view with 3 elements but got 2\n"
-        "Trade::SceneData::importerStateInto(): offset 4 out of bounds for a field of size 3\n");
+        "Trade::SceneData::importerStateInto(): expected object destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::importerStateInto(): expected field destination view either empty or with 3 elements but got 2\n"
+        "Trade::SceneData::importerStateInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::importerStateInto(): object and field destination views have different size, 3 vs 2\n");
 }
 
 void SceneDataTest::mutableAccessNotAllowed() {
@@ -4312,35 +4562,35 @@ void SceneDataTest::fieldNotFound() {
     scene.mutableField<UnsignedInt[]>(sceneFieldCustom(666));
 
     scene.parentsAsArray();
-    scene.parentsInto(nullptr);
-    scene.parentsInto(0, nullptr);
+    scene.parentsInto(nullptr, nullptr);
+    scene.parentsInto(0, nullptr, nullptr);
     scene.transformations2DAsArray();
-    scene.transformations2DInto(nullptr);
-    scene.transformations2DInto(0, nullptr);
+    scene.transformations2DInto(nullptr, nullptr);
+    scene.transformations2DInto(0, nullptr, nullptr);
     scene.translationsRotationsScalings2DAsArray();
-    scene.translationsRotationsScalings2DInto(nullptr, nullptr, nullptr);
-    scene.translationsRotationsScalings2DInto(0, nullptr, nullptr, nullptr);
+    scene.translationsRotationsScalings2DInto(nullptr, nullptr, nullptr, nullptr);
+    scene.translationsRotationsScalings2DInto(0, nullptr, nullptr, nullptr, nullptr);
     scene.transformations3DAsArray();
-    scene.transformations3DInto(nullptr);
-    scene.transformations3DInto(0, nullptr);
+    scene.transformations3DInto(nullptr, nullptr);
+    scene.transformations3DInto(0, nullptr, nullptr);
     scene.translationsRotationsScalings3DAsArray();
-    scene.translationsRotationsScalings3DInto(nullptr, nullptr, nullptr);
-    scene.translationsRotationsScalings3DInto(0, nullptr, nullptr, nullptr);
+    scene.translationsRotationsScalings3DInto(nullptr, nullptr, nullptr, nullptr);
+    scene.translationsRotationsScalings3DInto(0, nullptr, nullptr, nullptr, nullptr);
     scene.meshesMaterialsAsArray();
-    scene.meshesMaterialsInto(nullptr, nullptr);
-    scene.meshesMaterialsInto(0, nullptr, nullptr);
+    scene.meshesMaterialsInto(nullptr, nullptr, nullptr);
+    scene.meshesMaterialsInto(0, nullptr, nullptr, nullptr);
     scene.lightsAsArray();
-    scene.lightsInto(nullptr);
-    scene.lightsInto(0, nullptr);
+    scene.lightsInto(nullptr, nullptr);
+    scene.lightsInto(0, nullptr, nullptr);
     scene.camerasAsArray();
-    scene.camerasInto(nullptr);
-    scene.camerasInto(0, nullptr);
+    scene.camerasInto(nullptr, nullptr);
+    scene.camerasInto(0, nullptr, nullptr);
     scene.skinsAsArray();
-    scene.skinsInto(nullptr);
-    scene.skinsInto(0, nullptr);
+    scene.skinsInto(nullptr, nullptr);
+    scene.skinsInto(0, nullptr, nullptr);
     scene.importerStateAsArray();
-    scene.importerStateInto(nullptr);
-    scene.importerStateInto(0, nullptr);
+    scene.importerStateInto(nullptr, nullptr);
+    scene.importerStateInto(0, nullptr, nullptr);
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::findFieldObjectOffset(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldObjectOffset(): index 2 out of range for 2 fields\n"

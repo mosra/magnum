@@ -423,32 +423,35 @@ void SceneToolsTest::convertToSingleFunctionObjects() {
 
     /* To be extra sure, verify the actual data. Parents have a few objects
        added, the rest is the same */
-    CORRADE_COMPARE_AS(scene.objectsAsArray(SceneField::Parent), Containers::arrayView<UnsignedInt>({
-        15, 21, 22, 23, 1, 63, 64, 65, 66
-    }), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(scene.parentsAsArray(), Containers::arrayView<Int>({
-        -1, -1, 1, 2, -1, 3, 3, 0, 4
-    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.parentsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+        {15, -1},
+        {21, -1},
+        {22, 1},
+        {23, 2},
+        {1, -1},
+        {63, 3},
+        {64, 3},
+        {65, 0},
+        {66, 4}
+    })), TestSuite::Compare::Container);
 
-    /* Meshes have certain objects reassigned (and materials as well, as they
-       share the same object mapping view), field data stay the same */
-    CORRADE_COMPARE_AS(scene.objectsAsArray(SceneField::Mesh), Containers::arrayView<UnsignedInt>({
-        15, 23, 63, 64, 1, 65, 21
-    }), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(scene.objectsAsArray(SceneField::MeshMaterial), Containers::arrayView<UnsignedInt>({
-        15, 23, 63, 64, 1, 65, 21
-    }), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(scene.meshesMaterialsAsArray(),
-        Containers::arrayView(meshesMaterials),
-        TestSuite::Compare::Container);
+    /* Meshes / materials have certain objects reassigned, field data stay the
+       same */
+    CORRADE_COMPARE_AS(scene.meshesMaterialsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>>({
+        {15, {6, 4}},
+        {23, {1, 0}},
+        {63, {2, 3}},
+        {64, {4, 2}},
+        {1, {7, 2}},
+        {65, {3, 1}},
+        {21, {5, -1}}
+    })), TestSuite::Compare::Container);
 
     /* Cameras have certain objects reassigned, field data stay the same */
-    CORRADE_COMPARE_AS(scene.objectsAsArray(SceneField::Camera), Containers::arrayView<UnsignedInt>({
-        22, 66
-    }), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(scene.camerasAsArray(),
-        Containers::arrayView(cameras),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.camerasAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, UnsignedInt>>({
+        {22, 1},
+        {66, 5}
+    })), TestSuite::Compare::Container);
 }
 
 }}}}

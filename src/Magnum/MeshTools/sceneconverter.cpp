@@ -417,22 +417,22 @@ used.)")
             for(UnsignedInt j = 0; j != scene->fieldCount(); ++j) {
                 const Trade::SceneField name = scene->fieldName(j);
 
-                if(name == Trade::SceneField::Mesh) for(const Containers::Pair<UnsignedInt, Int>& meshMaterial: scene->meshesMaterialsAsArray()) {
+                if(name == Trade::SceneField::Mesh) for(const Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>& meshMaterial: scene->meshesMaterialsAsArray()) {
                     if(meshMaterial.first() < meshReferenceCount.size())
                         ++meshReferenceCount[meshMaterial.first()];
-                    if(UnsignedInt(meshMaterial.second()) < materialReferenceCount.size())
-                        ++materialReferenceCount[meshMaterial.second()];
+                    if(UnsignedInt(meshMaterial.second().second()) < materialReferenceCount.size())
+                        ++materialReferenceCount[meshMaterial.second().second()];
                 }
 
-                if(name == Trade::SceneField::Skin) for(const UnsignedInt skin: scene->skinsAsArray()) {
-                    if(skin < skinReferenceCount.size())
-                        ++skinReferenceCount[skin];
+                if(name == Trade::SceneField::Skin) for(const Containers::Pair<UnsignedInt, UnsignedInt> skin: scene->skinsAsArray()) {
+                    if(skin.second() < skinReferenceCount.size())
+                        ++skinReferenceCount[skin.second()];
                     /** @todo 2D/3D distinction */
                 }
 
-                if(name == Trade::SceneField::Light) for(const UnsignedInt light: scene->lightsAsArray()) {
-                    if(light < lightReferenceCount.size())
-                        ++lightReferenceCount[light];
+                if(name == Trade::SceneField::Light) for(const Containers::Pair<UnsignedInt, UnsignedInt>& light: scene->lightsAsArray()) {
+                    if(light.second() < lightReferenceCount.size())
+                        ++lightReferenceCount[light.second()];
                 }
 
                 arrayAppend(info.fields, InPlaceInit,
