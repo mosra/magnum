@@ -1088,7 +1088,6 @@ void SceneData::objectsIntoInternal(const UnsignedInt fieldId, const std::size_t
     else if(field._objectType == SceneObjectType::UnsignedByte)
         Math::castInto(Containers::arrayCast<2, const UnsignedByte>(objectData, 1), destination1ui);
     else if(field._objectType == SceneObjectType::UnsignedLong) {
-        CORRADE_ASSERT(_objectCount <= 0xffffffffull, "Trade::SceneData::objectsInto(): indices for up to" << _objectCount << "objects can't fit into a 32-bit type, access them directly via objects() instead", );
         Math::castInto(Containers::arrayCast<2, const UnsignedLong>(objectData, 1), destination1ui);
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
@@ -1159,7 +1158,6 @@ void SceneData::parentsIntoInternal(const UnsignedInt fieldId, const std::size_t
     else if(field._fieldType == SceneFieldType::Byte)
         Math::castInto(Containers::arrayCast<2, const Byte>(fieldData, 1), destination1i);
     else if(field._fieldType == SceneFieldType::Long) {
-        CORRADE_ASSERT(field._size <= 0xffffffffull, "Trade::SceneData::parentsInto(): parent indices for up to"  << field._size << "objects can't fit into a 32-bit type, access them directly via field() instead", );
         Math::castInto(Containers::arrayCast<2, const Long>(fieldData, 1), destination1i);
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }

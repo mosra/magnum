@@ -60,16 +60,7 @@ enum class SceneObjectType: UnsignedByte {
     UnsignedByte = 1,   /**< @relativeref{Magnum,UnsignedByte} */
     UnsignedShort,      /**< @relativeref{Magnum,UnsignedShort} */
     UnsignedInt,        /**< @relativeref{Magnum,UnsignedInt} */
-
-    /**
-     * @relativeref{Magnum,UnsignedLong}. Meant to be used only in rare cases
-     * for *really huge* scenes. If this type is used and
-     * @ref SceneData::objectCount() is larger than the max representable
-     * 32-bit value, the indices can't be retrieved using
-     * @ref SceneData::objectsAsArray(), but only using appropriately typed
-     * @ref SceneData::objects().
-     */
-    UnsignedLong
+    UnsignedLong        /**< @relativeref{Magnum,UnsignedLong} */
 };
 
 /**
@@ -109,7 +100,7 @@ enum class SceneField: UnsignedInt {
     /**
      * Parent index. Type is usually @ref SceneFieldType::Int, but can be also
      * any of @relativeref{SceneFieldType,Byte},
-     * @relativeref{SceneFieldType,Short} or, rarely, a
+     * @relativeref{SceneFieldType,Short} or a
      * @relativeref{SceneFieldType,Long}. A value of @cpp -1 @ce means there's
      * no parent. An object should have only one parent, altough this isn't
      * enforced in any way, and which of the duplicate fields gets used is not
@@ -1483,11 +1474,6 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref objects(UnsignedInt) const that converts the field from an
          * arbitrary underlying type and returns it in a newly-allocated array.
          * The @p fieldId is expected to be smaller than @ref fieldCount().
-         * @attention In the rare case when @ref objectType() is
-         *      @ref SceneObjectType::UnsignedLong and @ref objectCount() is
-         *      larger than the max representable 32-bit value, this function
-         *      can't be used, only an appropriately typed
-         *      @ref objects(UnsignedInt) const.
          * @see @ref objectsInto(UnsignedInt, const Containers::StridedArrayView1D<UnsignedInt>&) const
          */
         Containers::Array<UnsignedInt> objectsAsArray(UnsignedInt fieldId) const;
@@ -1525,11 +1511,6 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref objects(SceneField) const that converts the field from an
          * arbitrary underlying type and returns it in a newly-allocated array.
          * The @p fieldName is expected to exist.
-         * @attention In the rare case when @ref objectType() is
-         *      @ref SceneObjectType::UnsignedLong and @ref objectCount() is
-         *      larger than the max representable 32-bit value, this function
-         *      can't be used, only an appropriately typed
-         *      @ref objects(SceneField) const.
          * @see @ref objectsInto(SceneField, const Containers::StridedArrayView1D<UnsignedInt>&) const,
          *      @ref hasField()
          */
@@ -1568,11 +1549,6 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref SceneField::Parent as the argument that converts the field from
          * an arbitrary underlying type and returns it in a newly-allocated
          * array. The field is expected to exist.
-         * @attention In the rare case when @ref fieldType(SceneField) const is
-         *      @ref SceneFieldType::Long and @ref fieldSize(SceneField) const
-         *      is larger than the max representable 32-bit value, this
-         *      function can't be used, only an appropriately typed
-         *      @ref field(SceneField) const.
          * @see @ref parentsInto(), @ref hasField(), @ref parentFor(),
          *      @ref childrenFor()
          */

@@ -119,14 +119,10 @@ struct SceneDataTest: TestSuite::Tester {
 
     template<class T> void objectsAsArrayByIndex();
     template<class T> void objectsAsArrayByName();
-    void objectsAsArrayLongType();
     void objectsIntoArrayByIndex();
     void objectsIntoArrayByName();
     void objectsIntoArrayInvalidSizeOrOffset();
     template<class T> void parentsAsArray();
-    #ifndef CORRADE_TARGET_32BIT
-    void parentsAsArrayLongType();
-    #endif
     void parentsIntoArray();
     void parentsIntoArrayInvalidSizeOrOffset();
     template<class T> void transformations2DAsArray();
@@ -316,8 +312,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::objectsAsArrayByName<UnsignedByte>,
               &SceneDataTest::objectsAsArrayByName<UnsignedShort>,
               &SceneDataTest::objectsAsArrayByName<UnsignedInt>,
-              &SceneDataTest::objectsAsArrayByName<UnsignedLong>,
-              &SceneDataTest::objectsAsArrayLongType});
+              &SceneDataTest::objectsAsArrayByName<UnsignedLong>});
 
     addInstancedTests({&SceneDataTest::objectsIntoArrayByIndex,
                        &SceneDataTest::objectsIntoArrayByName},
@@ -327,11 +322,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::parentsAsArray<Byte>,
               &SceneDataTest::parentsAsArray<Short>,
               &SceneDataTest::parentsAsArray<Int>,
-              &SceneDataTest::parentsAsArray<Long>,
-              #ifndef CORRADE_TARGET_32BIT
-              &SceneDataTest::parentsAsArrayLongType,
-              #endif
-              });
+              &SceneDataTest::parentsAsArray<Long>});
 
     addInstancedTests({&SceneDataTest::parentsIntoArray},
         Containers::arraySize(IntoArrayOffsetData));
@@ -2233,33 +2224,6 @@ template<class T> void SceneDataTest::objectsAsArrayByName() {
         TestSuite::Compare::Container);
 }
 
-void SceneDataTest::objectsAsArrayLongType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    struct Field {
-        UnsignedLong object;
-        UnsignedByte mesh;
-    } fields[3]{};
-
-    Containers::StridedArrayView1D<Field> view = fields;
-
-    SceneData scene{SceneObjectType::UnsignedLong, 0x100000000ull, {}, fields, {
-        SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
-    }};
-
-    /* AsArray calls into IntoArray, which then has the assert, so this tests
-       both */
-    std::ostringstream out;
-    Error redirectError{&out};
-    scene.objectsAsArray(0);
-    scene.objectsAsArray(SceneField::Mesh);
-    CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::objectsInto(): indices for up to 4294967296 objects can't fit into a 32-bit type, access them directly via objects() instead\n"
-        "Trade::SceneData::objectsInto(): indices for up to 4294967296 objects can't fit into a 32-bit type, access them directly via objects() instead\n");
-}
-
 void SceneDataTest::objectsIntoArrayByIndex() {
     auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -2406,34 +2370,6 @@ template<class T> void SceneDataTest::parentsAsArray() {
         Containers::arrayView({15, -1, 44}),
         TestSuite::Compare::Container);
 }
-
-#ifndef CORRADE_TARGET_32BIT
-void SceneDataTest::parentsAsArrayLongType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    struct Field {
-        UnsignedLong object;
-        Long parent;
-    };
-
-    Containers::Array<char> data{nullptr, 0x100000000ull*sizeof(Field), [](char*, std::size_t) {}};
-    Containers::StridedArrayView1D<Field> view = Containers::arrayCast<Field>(data);
-
-    SceneData scene{SceneObjectType::UnsignedLong, 0x100000000ull, std::move(data), {
-        SceneFieldData{SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
-    }};
-
-    /* AsArray calls into IntoArray, which then has the assert, so this tests
-       both */
-    std::ostringstream out;
-    Error redirectError{&out};
-    scene.parentsAsArray();
-    CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::parentsInto(): parent indices for up to 4294967296 objects can't fit into a 32-bit type, access them directly via field() instead\n");
-}
-#endif
 
 void SceneDataTest::parentsIntoArray() {
     auto&& data = IntoArrayOffsetData[testCaseInstanceId()];
