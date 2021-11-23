@@ -1112,6 +1112,8 @@ mesh.setIndexBuffer(indices, 0, type);
 /* [Mesh-indices-tool] */
 }
 
+/* The damn thing doesn't understand unnamed bitfields in local structs */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY
 {
 GL::Mesh mesh;
 /* [Mesh-formats] */
@@ -1146,6 +1148,7 @@ mesh.addVertexBuffer(vertices, offsetof(Packed, normal), sizeof(Packed),
                          VertexFormat::Vector3sNormalized});
 /* [Mesh-formats-vertexformat] */
 }
+#endif
 
 {
 GL::Mesh mesh;
