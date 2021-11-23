@@ -647,7 +647,7 @@ Wraps a @type_vk_keyword{CopyImageInfo2KHR}. This class is subsequently used in
 @ref CommandBuffer::copyImage(). See @ref Vk-Image-usage-copy for more
 information.
 
-@section Vk-CopyImageInfo-compatibility Compatibility with vkCmdCopyImager()
+@section Vk-CopyImageInfo-compatibility Compatibility with vkCmdCopyImage()
 
 While the class operates on the @type_vk{CopyImageInfo2KHR} structure that's
 provided by the @vk_extension{KHR,copy_commands2} extension, conversion from
