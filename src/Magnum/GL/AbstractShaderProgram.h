@@ -48,6 +48,16 @@ namespace Implementation { struct ShaderProgramState; }
 /**
 @brief Base for shader program implementations
 
+Wraps an OpenGL shader program object. Meant to be only used through
+subclasses, either via builtin shaders in the @ref Shaders namespace or by
+creating a custom shader implementation.
+
+@m_class{m-note m-success}
+
+@par
+    A simple custom shader implementation is shown in the
+    @ref examples-texturedquad "Textured Quad example".
+
 @section GL-AbstractShaderProgram-subclassing Subclassing workflow
 
 This class is designed to be used via subclassing. Subclasses define these

@@ -45,17 +45,22 @@ namespace Magnum { namespace GL {
 namespace Implementation { template<class> struct Attribute; }
 
 /**
-@brief Base class for vertex attribute location and type
+@brief Base class for specifying shader attributes
 
-For use in @ref AbstractShaderProgram subclasses. The @p location template
-parameter is vertex attribute location, a number between @cpp 0 @ce and
-@ref AbstractShaderProgram::maxVertexAttributes(). To ensure compatibility, you
-should always have a vertex attribute with location @cpp 0 @ce.
+Meant to be used mainly through a @cpp typedef @ce in
+@ref AbstractShaderProgram subclasses. Shader consumers are then supposed to
+use the @cpp typedef @ce, or in case of builtin attributes the definitions from
+@ref Shaders::GenericGL and other classes from the @ref Shaders namespace.
 
-The @p T template parameter is the type which is used for shader attribute,
-e.g. @ref Magnum::Vector4i "Vector4i" for @glsl ivec4 @ce. @ref DataType is
-type of passed data when adding vertex buffers to mesh. By default it is the
-same as type used in shader (e.g. @ref DataType::Int for
+The @p location template parameter is a vertex attribute location, a number
+between @cpp 0 @ce and @ref AbstractShaderProgram::maxVertexAttributes(). To
+ensure compatibility, you should always have a vertex attribute with location
+@cpp 0 @ce.
+
+The @p T template parameter is the type that matches the shader attribute
+declaration, e.g. @ref Magnum::Vector4i "Vector4i" for @glsl ivec4 @ce.
+@ref DataType is the type of passed data when adding vertex buffers to mesh.
+By default it is the same as type used in shader (e.g. @ref DataType::Int for
 @ref Magnum::Vector4i "Vector4i"). It's also possible to pass integer data to
 floating-point shader inputs. In this case you may want to normalize the values
 (e.g. color components from @cpp 0 @ce -- @cpp 255 @ce to @cpp 0.0f @ce --
