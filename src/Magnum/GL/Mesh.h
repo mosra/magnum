@@ -213,81 +213,155 @@ template<class T> struct IsDynamicAttribute<T, DynamicAttribute>: std::true_type
 /**
 @brief Mesh
 
+Wraps an OpenGL vertex array object, or a collection of buffers and attribute
+bindings in case vertex array objects are not available or are disabled.
+
+@section GL-Mesh-configuration-compile Quick usage with MeshTools::compile()
+
+If you have a @ref Trade::MeshData instance that you got for example from
+@ref Trade::AbstractImporter::mesh() or from the @ref Primitives library, the
+simplest possible way is to use @ref MeshTools::compile():
+
+@snippet MagnumTrade.cpp MeshData-usage-compile
+
+This one-liner uploads the data and configures the mesh for all attributes
+known by Magnum that are present in it, making it suitable to be drawn by
+builtin shaders. It's however rather opaque and the @ref Trade::MeshData may be
+an overly generic abstraction if you already have your vertex data in known
+types. Continue below to see how to configure a mesh for builtin shaders with
+lower-level APIs.
+
+@m_class{m-note m-success}
+
+@par
+    A generic mesh setup using the high-level utility is used in the
+    @ref examples-primitives and @ref examples-viewer examples.
+
 @section GL-Mesh-configuration Mesh configuration
 
-You have to specify at least primitive and vertex/index count using
-@ref setPrimitive() and @ref setCount(). Then fill your vertex buffers with
-data, add them to the mesh and specify @ref Attribute "shader attribute" layout
-inside the buffers using @ref addVertexBuffer(). You can also use
-@ref MeshTools::interleave() to conveniently interleave vertex data.
+A mesh is, at the very least, a @ref MeshPrimitive and associated vertex/index
+count. To prevent accidentally drawing empty meshes, you're required to call
+@ref setCount() always, the primitive is however implicitly
+@ref MeshPrimitive::Triangles and you can change it either in the constructor
+or via @ref setPrimitive(). If @ref setCount() (or @ref setInstanceCount()) is
+zero, the mesh is considered empty and no draw commands are issued when calling
+@ref AbstractShaderProgram::draw().
 
-If you want indexed mesh, fill your index buffer with data and specify its
-layout using @ref setIndexBuffer(). You can also use @ref MeshTools::compressIndices()
-to conveniently compress the indices based on the range used.
+While a mesh can be attribute-less and rely on a specialized vertex shader to
+generate positions and other data, in most cases it has one or more associated
+vertex buffers and corresponding attribute bindings added using
+@ref addVertexBuffer(). In the following snippet, a single position attribute
+is specified, making it suitable to be rendered with the @ref Shaders::FlatGL
+shader. The @relativeref{Magnum,Vector3} type we use for the data matches the
+type expected by @ref Shaders::FlatGL3D::Position, so the default constructor
+is sufficient for it. The @ref GL-Mesh-configuration-formats section below
+shows cases where the types don't match.
 
-There is also @ref MeshTools::compile() function which operates directly on
-@ref Trade::MeshData and returns fully configured mesh and vertex/index buffers
-for use with stock shaders.
+@snippet MagnumGL.cpp Mesh-vertices
 
-@attention Note that, by default, neither vertex buffers nor index buffer is
-    managed (e.g. deleted on destruction) by the mesh, so you have to manage
-    them on your own and ensure that they are available for whole mesh
-    lifetime. See @ref GL-Mesh-buffer-ownership for a way to transfer buffer
-    ownership to the mesh.
+Here's a mesh with a position and a normal interleaved together, as is needed
+for @ref Shaders::PhongGL. See the docs of @ref addVertexBuffer() for
+detailed description how particular attributes, offsets and paddings are
+specified. Note that @ref Shaders::FlatGL::Position and
+@ref Shaders::PhongGL::Position are both aliases to
+@ref Shaders::GenericGL::Position, meaning you can render a mesh configured for
+the Phong shader with the Flat shader as well:
 
-If vertex/index count or instance count is zero, the mesh is empty and no draw
-commands are issued when calling @ref AbstractShaderProgram::draw().
+@snippet MagnumGL.cpp Mesh-vertices-interleaved
 
-@subsection GL-Mesh-configuration-example Example mesh configuration
+Indexed meshes have the index buffer and corresponding index type set using
+@ref setIndexBuffer().
 
-@subsubsection GL-Mesh-configuration-example-basic Basic non-indexed mesh
+@snippet MagnumGL.cpp Mesh-indices
 
-@snippet MagnumGL.cpp Mesh-nonindexed
+<b></b>
 
-@subsubsection GL-Mesh-configuration-interleaved Interleaved vertex data
+@m_class{m-note m-warning}
 
-@snippet MagnumGL.cpp Mesh-interleaved
+@par
+    Note that, by default, the mesh doesn't deal with buffer ownership. You
+    have to ensure the index and vertex buffers stay in scope for as long as
+    the mesh is used, otherwise you'll end up with broken rendering or driver
+    crashes. See @ref GL-Mesh-buffer-ownership below for a way to transfer
+    buffer ownership to the mesh.
 
-@subsubsection GL-Mesh-configuration-indexed Indexed mesh
+<b></b>
 
-@snippet MagnumGL.cpp Mesh-indexed
+@m_class{m-note m-success}
 
-Or using @ref MeshTools::interleave() and @ref MeshTools::compressIndices():
+@par
+    A basic non-indexed mesh setup using the low-level interface is shown in
+    the @ref examples-triangle "Triangle example", an indexed mesh then in the
+    following @ref examples-texturedquad "Textured Quad example".
 
-@snippet MagnumGL.cpp Mesh-indexed-tools
+@subsection GL-Mesh-configuration-tools Using MeshTools
 
-Or, if you plan to use the mesh with stock shaders, you can just use
-@ref MeshTools::compile().
+Real-world use cases rarely have a statically defined @cpp struct @ce with the
+desired vertex attribute layout. If you have loose attribute arrays, you can
+use @ref MeshTools::interleave() to interleave them together. The usage
+including the padding specification, is similar to @ref addVertexBuffer(). The
+above vertex buffer setup but with separate position and normal arrays that get interleaved can be expressed like this:
 
-@subsubsection GL-Mesh-configuration-formats Specific formats of vertex data
+@snippet MagnumGL.cpp Mesh-vertices-interleaved-tool
+
+For indices it's often beneficial to store them in a 16-bit type if they don't
+need the full 32-bit range. That's what @ref MeshTools::compressIndices() is
+for:
+
+@snippet MagnumGL.cpp Mesh-indices-tool
+
+The ultimate generic tool is the already-shown @ref MeshTools::compile(),
+together with all @ref MeshTools APIs that operate on @ref Trade::MeshData
+instances. See the class documentation for additional ways of accessing and
+processing the data contained there.
+
+@subsection GL-Mesh-configuration-formats Advanced formats of vertex data
+
+Even though a shader accepts, say, a 32-bit floating-point vector, the actual
+mesh data don't need to match that and can be in a smaller type to save on
+memory bandwidth. The GPU vertex fetching hardware will then unpack them as
+necessary. The following snippet shows a setup similar to the above position +
+normal mesh, except that the position is a @relativeref{Magnum,Vector3h} and
+the normal is a packed normalized @relativeref{Magnum,Vector3s}, together with
+padding for having vertex boundaries aligned to four bytes to make the GPU
+happier:
 
 @snippet MagnumGL.cpp Mesh-formats
 
-@subsubsection GL-Mesh-configuration-dynamic Dynamically specified attributes
+@subsection GL-Mesh-configuration-dynamic Dynamically specified attributes
 
 In some cases, for example when the shader code is fully generated at runtime,
 it's not possible to know attribute locations and types at compile time. In
 that case, there are overloads of @ref addVertexBuffer() and
-@ref addVertexBufferInstanced() that take @ref DynamicAttribute instead of
-@ref Attribute typedefs. Adding a RGB attribute at location 3 normalized from
-unsigned byte to float with one byte padding at the end could then look like
-this:
+@ref addVertexBufferInstanced() that take a @ref DynamicAttribute instead of
+the @ref Attribute typedefs, however then you're responsible for explicitly
+specifying also the stride. Adding a RGB attribute at location 3 normalized
+from unsigned byte to float with one byte padding at the end (or, in other
+words, stride of four bytes) could then look like this:
 
 @snippet MagnumGL.cpp Mesh-dynamic
 
-@section GL-Mesh-buffer-ownership Transferring buffer ownership
+The @ref DynamicAttribute also allows @ref VertexFormat to be used for
+specifying attribute types instead of the rather verbose
+@ref GL::Attribute::Components, @relativeref{GL::Attribute,DataType} and
+@relativeref{GL::Attribute,DataOptions} tuple that GL itself accepts. The above
+packed position + normal attribute specification would then look like this:
+
+@snippet MagnumGL.cpp Mesh-formats-vertexformat
+
+@subsection GL-Mesh-buffer-ownership Transferring buffer ownership
 
 If a vertex/index buffer is used only by a single mesh, it's possible to
 transfer its ownership to the mesh itself to simplify resource management on
-the user side. Simply use the @ref addVertexBuffer() /
+the application side. Simply use the @ref addVertexBuffer() /
 @ref addVertexBufferInstanced() and @ref setIndexBuffer() overloads that take
-a @ref Buffer as a rvalue:
+a @ref Buffer as a rvalue. While this allows you to discard the buffer
+instances and pass just the mesh around, it also means you lose a way to access
+or update the buffers afterwards.
 
 @snippet MagnumGL.cpp Mesh-buffer-ownership
 
-While this allows you to destruct the buffer instances and pass just the mesh
-around, this also means you lose a way to access or update the buffers. If
-adding the same buffer multiple times or using it for both vertex and index
+If adding the same buffer multiple times or using it for both vertex and index
 data, be sure to transfer the ownership last to avoid the other functions
 getting only a moved-out instance. For example:
 
@@ -295,15 +369,21 @@ getting only a moved-out instance. For example:
 
 @section GL-Mesh-rendering Rendering meshes
 
-Basic workflow is: bind specific framebuffer for drawing (if needed), set up
-respective shader (see
-@ref GL-AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
-for more information) and call @ref AbstractShaderProgram::draw().
+With a framebuffer bound and a compatible shader set up, it's only a matter of
+calling @ref AbstractShaderProgram::draw():
+
+@snippet MagnumGL.cpp Mesh-draw
 
 @section GL-Mesh-webgl-restrictions WebGL restrictions
 
 @ref MAGNUM_TARGET_WEBGL "WebGL" puts some restrictions on vertex buffer
 layout, see @ref addVertexBuffer() documentation for details.
+
+The @ref Buffer binding restriction transitively affects meshes as well,
+requiring @ref Buffer::TargetHint::ElementArray to be used for index buffers.
+To simplify debugging, the @ref addVertexBuffer() and @ref setIndexBuffer()
+functions checks proper target hint when adding vertex and index buffers under
+WebGL.
 
 @section GL-Mesh-performance-optimization Performance optimizations
 

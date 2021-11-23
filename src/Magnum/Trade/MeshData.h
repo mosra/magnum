@@ -608,6 +608,12 @@ to the GPU. It also won't be able to deal with any custom attributes that the
 mesh contains. Continue below to see how to achieve a similar effect with
 lower-level APIs.
 
+@m_class{m-note m-success}
+
+@par
+    A generic mesh setup using the high-level utility is used in the
+    @ref examples-primitives and @ref examples-viewer examples.
+
 @section Trade-MeshData-usage Basic usage
 
 The second simplest usage is accessing attributes through the convenience

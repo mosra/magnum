@@ -657,6 +657,7 @@ Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
 
 #ifdef MAGNUM_TARGET_GL
 {
+/* This snippet is also used by GL::Mesh, bear that in mind when updating */
 /* [MeshData-usage-compile] */
 Trade::MeshData data = DOXYGEN_IGNORE(Trade::MeshData{MeshPrimitive::Points, 0});
 

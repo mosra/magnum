@@ -135,22 +135,35 @@ namespace Implementation { struct BufferState; }
 /**
 @brief Buffer
 
-Encapsulates one OpenGL buffer object and provides functions for convenient
-data updates.
+Wraps an OpenGL buffer object.
 
-@section GL-Buffer-data-updating Data updating
+@section GL-Buffer-data-upload Data upload
 
-Default way to set or update buffer data with @ref setData(), @ref setSubData()
-or the shorthand @ref Buffer() constructor is to use
-@ref Corrade::Containers::ArrayView. See its documentation for more information
-about automatic conversions etc.
+Data can be uploaded to the buffer with @ref setData(), @ref setSubData() or
+the shorthand @ref Buffer(Containers::ArrayView<const void>, BufferUsage) "Buffer()"
+constructor. All these functions accept a @relativeref{Corrade,Containers::ArrayView}, which is among other things
+implicitly convertible from statically sized C arrays or can be constructed
+from a pair of a pointer and a size. You can optionally specify a usage hint
+in the second argument, which defaults to @ref BufferUsage::StaticDraw.
 
 @snippet MagnumGL.cpp Buffer-setdata
 
-If you @cpp #include @ce @ref Corrade/Containers/ArrayViewStl.h, you can also
-pass directly STL types such as @ref std::vector or @link std::array @endlink:
+Furthermore, if you @cpp #include @ce @ref Corrade/Containers/ArrayViewStl.h,
+you can also directly pass STL types such as a @ref std::vector or a
+@ref std::array; with @ref Corrade/Containers/ArrayViewStlSpan.h the
+@ref std::span is convertible to it as well:
 
 @snippet MagnumGL.cpp Buffer-setdata-stl
+
+An alternative to @ref setData() that provides more flexibility and better
+performance guarantees is @ref setStorage(). It's similar in spirit to texture
+storage, however as it's only available on desktop OpenGL 4.4
+(@gl_extension{ARB,buffer_storage}), its usage isn't encouraged like with
+textures. The minimal variant of the call shown below creates an immutable
+buffer from given data in device memory, in the second argument you can specify
+@ref StorageFlags that make it CPU-accessible, (persistently) mappable etc.
+
+@snippet MagnumGL.cpp Buffer-setstorage
 
 @section GL-Buffer-data-mapping Memory mapping
 
@@ -178,19 +191,19 @@ Buffers in @ref MAGNUM_TARGET_WEBGL "WebGL" need to be bound only to one unique
 target, i.e., @ref Buffer bound to @ref Buffer::TargetHint::Array cannot be
 later rebound to @ref Buffer::TargetHint::ElementArray. However, Magnum by
 default uses any sufficient target when binding the buffer internally (e.g. for
-setting data). To avoid GL errors, the following, while completely fine on
-desktop, is not sufficient on WebGL:
+setting data). Which means the following, while completely fine on desktop and
+OpenGL ES, is not sufficient on WebGL:
 
 @snippet MagnumGL.cpp Buffer-webgl-nope
 
-You have to set target hint to desired target, either in constructor or using
-@ref Buffer::setTargetHint() like this (and similarly for other bufffer types
-such as UBOs):
+To avoid GL errors, you have to set target hint to desired target, either in
+the constructor or using @ref setTargetHint(). A similar care needs to be taken
+for uniform buffers and other types of buffers.
 
 @snippet MagnumGL.cpp Buffer-webgl
 
-To simplify debugging, @ref Mesh checks proper target hint when adding vertex
-and index buffers in WebGL.
+To simplify debugging, the @ref Mesh class checks proper target hint when
+adding vertex and index buffers under WebGL.
 
 @section GL-Buffer-performance-optimizations Performance optimizations
 

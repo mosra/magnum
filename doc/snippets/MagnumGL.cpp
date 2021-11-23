@@ -47,11 +47,14 @@
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/GL/Version.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/Primitives/Cube.h"
 #include "Magnum/Primitives/Plane.h"
+#include "Magnum/Shaders/FlatGL.h"
 #include "Magnum/Shaders/PhongGL.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -81,6 +84,8 @@
 #ifndef MAGNUM_TARGET_GLES
 #include "Magnum/GL/RectangleTexture.h"
 #endif
+
+#define DOXYGEN_IGNORE(...) __VA_ARGS__
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -446,9 +451,12 @@ GL::BufferImage2D image = framebuffer.read(framebuffer.viewport(),
 #endif
 
 {
-GL::Buffer buffer;
 /* [Buffer-setdata] */
-Containers::ArrayView<Vector3> data;
+const Vector3 data[]{
+    DOXYGEN_IGNORE({})
+};
+
+GL::Buffer buffer;
 buffer.setData(data);
 
 GL::Buffer buffer2{data}; // or construct & fill in a single step
@@ -458,10 +466,23 @@ GL::Buffer buffer2{data}; // or construct & fill in a single step
 {
 GL::Buffer buffer;
 /* [Buffer-setdata-stl] */
-std::vector<Vector3> data;
+std::vector<Vector3> data = DOXYGEN_IGNORE({});
 buffer.setData(data);
 /* [Buffer-setdata-stl] */
+}
 
+#ifndef MAGNUM_TARGET_GLES
+{
+Containers::ArrayView<const void> data;
+/* [Buffer-setstorage] */
+GL::Buffer buffer;
+buffer.setStorage(data, {});
+/* [Buffer-setstorage] */
+}
+#endif
+
+{
+GL::Buffer buffer;
 /* [Buffer-setdata-allocate] */
 buffer.setData({nullptr, 200*sizeof(Vector3)});
 /* [Buffer-setdata-allocate] */
@@ -471,8 +492,9 @@ buffer.setData({nullptr, 200*sizeof(Vector3)});
 {
 GL::Buffer buffer;
 /* [Buffer-map] */
-Containers::ArrayView<Vector3> data = Containers::arrayCast<Vector3>(buffer.map(0,
-    200*sizeof(Vector3), GL::Buffer::MapFlag::Write|GL::Buffer::MapFlag::InvalidateBuffer));
+Containers::ArrayView<Vector3> data = Containers::arrayCast<Vector3>(
+    buffer.map(0, 200*sizeof(Vector3),
+        GL::Buffer::MapFlag::Write|GL::Buffer::MapFlag::InvalidateBuffer));
 CORRADE_INTERNAL_ASSERT(data);
 for(Vector3& d: data)
     d = {/*...*/};
@@ -483,8 +505,9 @@ CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 {
 GL::Buffer buffer;
 /* [Buffer-flush] */
-Containers::ArrayView<Vector3> data = Containers::arrayCast<Vector3>(buffer.map(0,
-    200*sizeof(Vector3), GL::Buffer::MapFlag::Write|GL::Buffer::MapFlag::FlushExplicit));
+Containers::ArrayView<Vector3> data = Containers::arrayCast<Vector3>(
+    buffer.map(0, 200*sizeof(Vector3),
+        GL::Buffer::MapFlag::Write|GL::Buffer::MapFlag::FlushExplicit));
 CORRADE_INTERNAL_ASSERT(data);
 for(std::size_t i: {7, 27, 56, 128}) {
     data[i] = {/*...*/};
@@ -497,14 +520,15 @@ CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 
 {
 /* [Buffer-webgl-nope] */
-GL::Buffer vertices, indices;
+GL::Buffer vertices;
+GL::Buffer indices;
 /* [Buffer-webgl-nope] */
 }
 
 {
 /* [Buffer-webgl] */
-GL::Buffer vertices{GL::Buffer::TargetHint::Array},
-    indices{GL::Buffer::TargetHint::ElementArray};
+GL::Buffer vertices{GL::Buffer::TargetHint::Array};
+GL::Buffer indices{GL::Buffer::TargetHint::ElementArray};
 /* [Buffer-webgl] */
 }
 
@@ -1016,156 +1040,112 @@ framebuffer.mapForDraw({
 #endif
 
 {
-/* [Mesh-nonindexed] */
-/* Custom shader, needing only position data */
-class MyShader: public GL::AbstractShaderProgram {
-    public:
-        typedef GL::Attribute<0, Vector3> Position;
-
-    // ...
+/* [Mesh-vertices] */
+const Vector3 positions[]{
+    DOXYGEN_IGNORE({})
 };
+GL::Buffer vertices{positions};
 
-/* Fill vertex buffer with position data */
-Vector3 positions[30]{
-    // ...
-};
-GL::Buffer vertexBuffer;
-vertexBuffer.setData(positions, GL::BufferUsage::StaticDraw);
-
-/* Configure the mesh, add vertex buffer */
 GL::Mesh mesh;
-mesh.setPrimitive(MeshPrimitive::Triangles)
-    .addVertexBuffer(vertexBuffer, 0, MyShader::Position{})
-    .setCount(30);
-/* [Mesh-nonindexed] */
+mesh.setCount(Containers::arraySize(positions))
+    .addVertexBuffer(vertices, 0, Shaders::FlatGL3D::Position{});
+/* [Mesh-vertices] */
 }
 
 {
-/* [Mesh-interleaved] */
-/* Non-indexed primitive with positions and normals */
-Trade::MeshData plane = Primitives::planeSolid();
+/* [Mesh-vertices-interleaved] */
+struct Vertex {
+    Vector3 position;
+    Vector3 normal;
+};
+const Vertex vertexData[]{
+    DOXYGEN_IGNORE({})
+};
+GL::Buffer vertices{vertexData};
 
-/* Fill a vertex buffer with interleaved position and normal data */
-GL::Buffer buffer;
-buffer.setData(MeshTools::interleave(plane.positions3DAsArray(),
-                                     plane.normalsAsArray()));
-
-/* Configure the mesh, add the vertex buffer */
 GL::Mesh mesh;
-mesh.setPrimitive(plane.primitive())
-    .setCount(plane.vertexCount())
-    .addVertexBuffer(buffer, 0, Shaders::PhongGL::Position{}, Shaders::PhongGL::Normal{});
-/* [Mesh-interleaved] */
+mesh.setCount(Containers::arraySize(vertexData))
+    .addVertexBuffer(vertices, 0,
+        Shaders::PhongGL::Position{},
+        Shaders::PhongGL::Normal{});
+/* [Mesh-vertices-interleaved] */
 }
 
 {
-/* [Mesh-indexed] */
-/* Custom shader */
-class MyShader: public GL::AbstractShaderProgram {
-    public:
-        typedef GL::Attribute<0, Vector3> Position;
-
-    // ...
-};
-
-/* Fill vertex buffer with position data */
-Vector3 positions[240]{
-    // ...
-};
-GL::Buffer vertexBuffer;
-vertexBuffer.setData(positions);
-
-/* Fill index buffer with index data */
-UnsignedByte indices[75]{
-    // ...
-};
-GL::Buffer indexBuffer;
-indexBuffer.setData(indices);
-
-/* Configure the mesh, add both vertex and index buffer */
 GL::Mesh mesh;
-mesh.setPrimitive(MeshPrimitive::Triangles)
-    .setCount(75)
-    .addVertexBuffer(vertexBuffer, 0, MyShader::Position{})
-    .setIndexBuffer(indexBuffer, 0, GL::MeshIndexType::UnsignedByte, 176, 229);
-/* [Mesh-indexed] */
+/* [Mesh-indices] */
+const UnsignedInt indexData[]{
+    DOXYGEN_IGNORE(0)
+};
+GL::Buffer indices{indexData};
+
+DOXYGEN_IGNORE()
+mesh.setIndexBuffer(indices, 0, MeshIndexType::UnsignedInt);
+/* [Mesh-indices] */
 }
 
 {
-/* [Mesh-indexed-tools] */
-// Indexed primitive
-Trade::MeshData cube = Primitives::cubeSolid();
-
-// Fill vertex buffer with interleaved position and normal data
-GL::Buffer vertexBuffer;
-vertexBuffer.setData(MeshTools::interleave(cube.positions3DAsArray(),
-                                           cube.normalsAsArray()));
-
-// Compress index data
-Containers::Array<char> indexData;
-MeshIndexType indexType;
-std::tie(indexData, indexType) = MeshTools::compressIndices(cube.indices());
-
-// Fill index buffer
-GL::Buffer indexBuffer;
-indexBuffer.setData(indexData);
-
-// Configure the mesh, add both vertex and index buffer
 GL::Mesh mesh;
-mesh.setPrimitive(cube.primitive())
-    .setCount(cube.indexCount())
-    .addVertexBuffer(vertexBuffer, 0, Shaders::PhongGL::Position{}, Shaders::PhongGL::Normal{})
-    .setIndexBuffer(indexBuffer, 0, indexType);
-/* [Mesh-indexed-tools] */
+/* [Mesh-vertices-interleaved-tool] */
+Containers::ArrayView<const Vector3> positions = DOXYGEN_IGNORE({});
+Containers::ArrayView<const Vector3> normals = DOXYGEN_IGNORE({});
+GL::Buffer vertices{MeshTools::interleave(positions, normals)};
+
+DOXYGEN_IGNORE()
+mesh.addVertexBuffer(vertices, 0,
+    Shaders::PhongGL::Position{},
+    Shaders::PhongGL::Normal{});
+/* [Mesh-vertices-interleaved-tool] */
 }
 
-#ifndef MAGNUM_TARGET_GLES
 {
+GL::Mesh mesh;
+const UnsignedInt indexData[1]{};
+/* [Mesh-indices-tool] */
+Containers::Array<char> compressed;
+MeshIndexType type;
+std::tie(compressed, type) = MeshTools::compressIndices(indexData);
+GL::Buffer indices{compressed};
+
+DOXYGEN_IGNORE()
+mesh.setIndexBuffer(indices, 0, type);
+/* [Mesh-indices-tool] */
+}
+
+{
+GL::Mesh mesh;
 /* [Mesh-formats] */
-// Custom shader with colors specified as four floating-point values
-class MyShader: public GL::AbstractShaderProgram {
-    public:
-        typedef GL::Attribute<0, Vector3> Position;
-        typedef GL::Attribute<1, Color4> Color;
-
-    // ...
+struct Packed {
+    Vector3h position;
+    Short:16;
+    Vector3s normal;
+    Short:16;
 };
-
-/* Initial mesh configuration */
-GL::Mesh mesh;
-mesh.setPrimitive(MeshPrimitive::Triangles)
-    .setCount(30);
-
-/* Fill position buffer with positions specified as two-component XY (i.e.,
-   no Z component, which is meant to be always 0) */
-Vector2 positions[30]{
-    // ...
+const Packed vertexData[]{
+    DOXYGEN_IGNORE({})
 };
-GL::Buffer positionBuffer;
-positionBuffer.setData(positions, GL::BufferUsage::StaticDraw);
+GL::Buffer vertices{vertexData};
 
-/* Specify layout of positions buffer -- only two components, unspecified Z
-   component will be automatically set to 0 */
-mesh.addVertexBuffer(positionBuffer, 0,
-    MyShader::Position{MyShader::Position::Components::Two});
-
-/* Fill color buffer with colors specified as four-byte BGRA (i.e., directly
-   from a TGA file) */
-UnsignedByte colors[4*30]{
-    // ...
-};
-GL::Buffer colorBuffer;
-colorBuffer.setData(colors, GL::BufferUsage::StaticDraw);
-
-/* Specify color buffer layout -- BGRA, each component unsigned byte and we
-   want to normalize them from [0, 255] to [0.0f, 1.0f] */
-mesh.addVertexBuffer(colorBuffer, 0, MyShader::Color{
-    MyShader::Color::Components::BGRA,
-    MyShader::Color::DataType::UnsignedByte,
-    MyShader::Color::DataOption::Normalized});
+DOXYGEN_IGNORE()
+mesh.addVertexBuffer(vertices, 0,
+    Shaders::PhongGL::Position{Shaders::PhongGL::Position::Components::Three,
+                               Shaders::PhongGL::Position::DataType::Half},
+    2,
+    Shaders::PhongGL::Normal{Shaders::PhongGL::Normal::Components::Three,
+                             Shaders::PhongGL::Normal::DataType::Short,
+                             Shaders::PhongGL::Normal::DataOption::Normalized},
+    2);
 /* [Mesh-formats] */
+
+/* [Mesh-formats-vertexformat] */
+mesh.addVertexBuffer(vertices, offsetof(Packed, position), sizeof(Packed),
+    GL::DynamicAttribute{Shaders::PhongGL::Position{},
+                         VertexFormat::Vector3h});
+mesh.addVertexBuffer(vertices, offsetof(Packed, normal), sizeof(Packed),
+    GL::DynamicAttribute{Shaders::PhongGL::Normal{},
+                         VertexFormat::Vector3sNormalized});
+/* [Mesh-formats-vertexformat] */
 }
-#endif
 
 {
 GL::Mesh mesh;
@@ -1182,7 +1162,7 @@ mesh.addVertexBuffer(colorBuffer, 0, 4, GL::DynamicAttribute{
 GL::Mesh mesh;
 /* [Mesh-buffer-ownership] */
 GL::Buffer vertices, indices;
-// ...
+DOXYGEN_IGNORE()
 mesh.addVertexBuffer(std::move(vertices), 0,
         Shaders::PhongGL::Position{},
         Shaders::PhongGL::Normal{})
@@ -1194,6 +1174,16 @@ mesh.addVertexBuffer(vertices, 0, Shaders::PhongGL::Position{}, 20)
     .addVertexBuffer(std::move(vertices), 0, 20, Shaders::PhongGL::Normal{});
 /* [Mesh-buffer-ownership-multiple] */
 }
+
+{
+GL::Mesh mesh;
+/* [Mesh-draw] */
+Shaders::PhongGL shader{DOXYGEN_IGNORE()};
+DOXYGEN_IGNORE()
+shader.draw(mesh);
+/* [Mesh-draw] */
+}
+
 
 {
 /* [Mesh-addVertexBuffer1] */
