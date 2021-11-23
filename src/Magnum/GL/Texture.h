@@ -65,8 +65,7 @@ namespace Implementation {
 /**
 @brief Texture
 
-Template class for one- to three-dimensional textures. See also
-@ref AbstractTexture documentation for more information.
+Template class for one- to three-dimensional textures. See @ref AbstractTexture documentation for a common interface shared by all texture types.
 
 @section GL-Texture-usage Usage
 
@@ -83,12 +82,12 @@ trilinear anisotropic filtering, i.e. the best you can ask for:
     of the mip chain or call @ref setMinificationFilter() with another value to
     disable mipmapping.
 
-In shader, the texture is used via @glsl sampler1D @ce / @glsl sampler2D @ce /
-@glsl sampler3D @ce, @glsl sampler1DShadow @ce / @glsl sampler2DShadow @ce /
-@glsl sampler3DShadow @ce, @glsl isampler1D @ce / @glsl isampler2D @ce /
-@glsl isampler3D @ce or @glsl usampler1D @ce / @glsl usampler2D @ce /
-@glsl usampler3D @ce. See @ref AbstractShaderProgram documentation for more
-information about usage in shaders.
+In a shader, the texture is used via @glsl sampler1D @ce / @glsl sampler2D @ce
+/ @glsl sampler3D @ce, @glsl sampler1DShadow @ce / @glsl sampler2DShadow @ce,
+@glsl isampler1D @ce / @glsl isampler2D @ce / @glsl isampler3D @ce or
+@glsl usampler1D @ce / @glsl usampler2D @ce / @glsl usampler3D @ce. See
+@ref AbstractShaderProgram documentation for more information about usage in
+shaders.
 
 @see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref TextureArray,
     @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,

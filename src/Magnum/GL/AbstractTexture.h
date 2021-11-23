@@ -55,10 +55,10 @@ namespace Implementation {
 /**
 @brief Base for textures
 
-Encapsulates one OpenGL texture object. See @ref Texture, @ref TextureArray,
-@ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
-@ref BufferTexture and @ref MultisampleTexture documentation for more
-information and usage examples.
+Wraps an OpenGL texture object. Meant to be only used through
+subclasses, see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
+@ref CubeMapTextureArray, @ref RectangleTexture, @ref BufferTexture and
+@ref MultisampleTexture documentation for more information and usage examples.
 
 @section GL-AbstractTexture-webgl-restrictions WebGL restrictions
 
