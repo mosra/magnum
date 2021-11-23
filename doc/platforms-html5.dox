@@ -434,12 +434,12 @@ you need more advanced styling, check out [m.css](https://mcss.mosra.cz).
 Emscripten applications don't have access to a filesystem, which means you need
 to bundle the files explicitly. One possibility is via
 @ref Corrade::Utility::Resource (basically the same way as you probably already
-bundle shader code etc., as shown in the @ref examples-textured-triangle
-example). In this case the file is compiled directly into the `*.wasm` binary,
-which is the most optimal way, but it means you need to port your code away
-from the usual filesystem APIs. Another possibility is via the
-@cmake emscripten_embed_file() @ce CMake macro, which is available
-when you build for Emscripten, coming from the [UseEmscripten.cmake](https://github.com/mosra/toolchains/blob/master/modules/UseEmscripten.cmake)
+bundle shader code etc., as shown in the @ref examples-texturedquad example).
+In this case the file is compiled directly into the `*.wasm` binary, which is
+the most optimal way, but it means you need to port your code away from the
+usual filesystem APIs. Another possibility is via the
+@cmake emscripten_embed_file() @ce CMake macro, which is available when you
+build for Emscripten, coming from the [UseEmscripten.cmake](https://github.com/mosra/toolchains/blob/master/modules/UseEmscripten.cmake)
 module:
 
 @code{.cmake}
