@@ -16,7 +16,8 @@ in `doc/getting-started.dox`.
 
 ### triangulate.svg
 
-Created by Inkscape from `doc/triangulate.svg` by saving as Optimized SVG and:
+Created by Inkscape from `doc/artwork/triangulate.svg` by saving as Optimized
+SVG and:
 
 -   cleaning up the `<svg>` header
 -   converting to a `style=""`, *keeping* `viewBox`
