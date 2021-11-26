@@ -636,9 +636,9 @@ The mesh can be also indexed, in which case the index buffer is exposed through
 @section Trade-MeshData-usage-advanced Advanced usage
 
 The @ref positions2DAsArray(), ... functions shown above always return a
-newly-allocated @relativeref{Corrade,Containers::Array} instance of a type
-that's large enough to represent most data. While that's fine for many use
-cases, it can take significant amount of time for large models or maybe the
+newly-allocated @relativeref{Corrade,Containers::Array} instance in a
+well-defined canonical type. While that's convenient and fine at a smaller
+scale, it can take significant amount of time for large models. Or maybe the
 imported data is already in a well-optimized layout and format that you want to
 preserve. The @ref MeshData class internally stores a contiguous blob of data,
 which you can directly upload, and then use provided metadata to let the GPU
