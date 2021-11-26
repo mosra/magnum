@@ -2073,11 +2073,7 @@ Containers::Optional<Int> SceneData::parentFor(const UnsignedInt object) const {
 
     Int index[1];
     parentsIntoInternal(fieldId, offset, index);
-    if(*index == -1) return -1;
-
-    UnsignedInt parent[1];
-    objectsIntoInternal(fieldId, *index, parent);
-    return Int(*parent);
+    return *index;
 }
 
 Containers::Array<UnsignedInt> SceneData::childrenFor(const Int object) const {
@@ -2089,22 +2085,12 @@ Containers::Array<UnsignedInt> SceneData::childrenFor(const Int object) const {
 
     const SceneFieldData& parentField = _fields[parentFieldId];
 
-    /* Figure out the parent object index to look for or -1 if we want
-       top-level objects */
-    Int parentIndexToLookFor;
-    if(object == -1) parentIndexToLookFor = -1;
-    else {
-        const std::size_t parentObjectIndex = findFieldObjectOffsetInternal(parentField, object, 0);
-        if(parentObjectIndex == parentField._size) return {};
-        parentIndexToLookFor = parentObjectIndex;
-    }
-
-    /* Collect IDs of all objects that reference this index */
+    /* Collect IDs of all objects that reference this object */
     Containers::Array<UnsignedInt> out;
     for(std::size_t offset = 0; offset != parentField.size(); ++offset) {
         Int parentIndex[1];
         parentsIntoInternal(parentFieldId, offset, parentIndex);
-        if(*parentIndex == parentIndexToLookFor) {
+        if(*parentIndex == object) {
             UnsignedInt child[1];
             /** @todo bleh slow, use the children <-> parent field proxying
                 when implemented */

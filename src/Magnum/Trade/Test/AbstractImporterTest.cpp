@@ -1850,13 +1850,13 @@ void AbstractImporterTest::sceneDeprecatedFallback2D() {
     cameras[0] = {3, 15};
     importerState[0] = {3, &a};
 
-    /* Object 5 is a child of object 3 (which is at index 0), has a skin (which
-       gets ignored by the legacy interface) */
-    transformations[1] = {5, 0, Matrix3::rotation(-15.0_degf)};
+    /* Object 5 is a child of object 3, has a skin (which gets ignored by the
+       legacy interface) */
+    transformations[1] = {5, 3, Matrix3::rotation(-15.0_degf)};
     skins[0] = {5, 226};
 
-    /* Object 1 is a child of object 2 (which will be at index 3) */
-    transformations[2] = {1, 3, Matrix3::translation({1.0f, 0.5f})*Matrix3::rotation(15.0_degf)};
+    /* Object 1 is a child of object 2 */
+    transformations[2] = {1, 2, Matrix3::translation({1.0f, 0.5f})*Matrix3::rotation(15.0_degf)};
 
     /* Object 2 is in the root, has object 1 as a child but nothing else */
     transformations[3] = {2, -1, {}};
@@ -1866,9 +1866,9 @@ void AbstractImporterTest::sceneDeprecatedFallback2D() {
     meshes[0] = {0, 33, -1};
 
     /* Object 4 has TRS also, a mesh with a material and a skin and is a child
-       of object 3 (which is at index 0). The transformation gets ignored
-       again. Has importer state. */
-    transformations[5] = {4, 0, Matrix3::translation(Vector2::xAxis(5.0f))};
+       of object 3. The transformation gets ignored again. Has importer
+       state. */
+    transformations[5] = {4, 3, Matrix3::translation(Vector2::xAxis(5.0f))};
     trs[1] = {4, {}, {}, {1.5f, -0.5f}};
     meshes[1] = {4, 27, 46};
     skins[1] = {4, 72};
@@ -2121,13 +2121,13 @@ void AbstractImporterTest::sceneDeprecatedFallback3D() {
     cameras[0] = {3, 15};
     importerState[0] = {3, &a};
 
-    /* Object 5 is a child of object 3 (which is at index 0), has a skin (which
-       gets ignored by the legacy interface) */
-    transformations[1] = {5, 0, Matrix4::rotationY(-15.0_degf)};
+    /* Object 5 is a child of object 3, has a skin (which gets ignored by the
+       legacy interface) */
+    transformations[1] = {5, 3, Matrix4::rotationY(-15.0_degf)};
     skins[0] = {5, 226};
 
-    /* Object 1 is a child of object 2 (which will be at index 3), has a light. */
-    transformations[2] = {1, 3, Matrix4::translation({1.0f, 0.0f, 1.0f})*Matrix4::rotationZ(15.0_degf)};
+    /* Object 1 is a child of object 2, has a light. */
+    transformations[2] = {1, 2, Matrix4::translation({1.0f, 0.0f, 1.0f})*Matrix4::rotationZ(15.0_degf)};
     lights[0] = {1, 113};
 
     /* Object 2 is in the root, has object 1 as a child but nothing else */
@@ -2138,9 +2138,9 @@ void AbstractImporterTest::sceneDeprecatedFallback3D() {
     meshes[0] = {0, 33, -1};
 
     /* Object 4 has TRS also, a mesh with a material and a skin and is a child
-       of object 3 (which is at index 0). The transformation gets ignored
-       again. Has importer state. */
-    transformations[5] = {4, 0, Matrix4::translation(Vector3::xAxis(5.0f))};
+       of object 3. The transformation gets ignored again. Has importer
+       state. */
+    transformations[5] = {4, 3, Matrix4::translation(Vector3::xAxis(5.0f))};
     trs[1] = {4, {}, {}, {1.5f, 3.0f, -0.5f}};
     meshes[1] = {4, 27, 46};
     skins[1] = {4, 72};
@@ -2489,8 +2489,8 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless2D() {
         Int parent;
     } fields[]{
         {5, -1},
-        {2, 0},
-        {3, 0},
+        {2, 5},
+        {3, 5},
         {1, -1}
     };
 
@@ -2595,8 +2595,8 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless3D() {
         Int parent;
     } fields[]{
         {5, -1},
-        {2, 0},
-        {3, 0},
+        {2, 5},
+        {3, 5},
         {1, -1}
     };
 
@@ -2718,7 +2718,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
         {NoInit, 7, meshes},
         {NoInit, 2, cameras},
     };
-    Utility::copy({{15, -1}, {21, -1}, {22, 1}, {23, 2}, {1, -1}}, parents);
+    Utility::copy({{15, -1}, {21, -1}, {22, 21}, {23, 22}, {1, -1}}, parents);
     Utility::copy({
         {15, 6, 4},
         {23, 1, 0},
@@ -2985,7 +2985,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
         {NoInit, 7, meshes},
         {NoInit, 2, cameras},
     };
-    Utility::copy({{15, -1}, {21, -1}, {22, 1}, {23, 2}, {1, -1}}, parents);
+    Utility::copy({{15, -1}, {21, -1}, {22, 21}, {23, 22}, {1, -1}}, parents);
     Utility::copy({
         {15, 6, 4},
         {23, 1, 0},

@@ -285,9 +285,8 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
                    attached, then attach the field to a new object and make
                    that new object a child of the previous one. */
                 if(fieldObject < objectAttachmentCount.size() && objectAttachmentCount[fieldObject]) {
-                    /* Find an index of the old object and then use that index
-                       to denote the parent of the new object */
-                    newParents[newParentIndex] = out.fieldObjectOffset(parentFieldId, fieldObject);
+                    /* Use the old object as a parent of the new object */
+                    newParents[newParentIndex] = fieldObject;
                     /* Assign the field to the new object */
                     fieldObject = newParentObjects[newParentIndex];
                     /* Move to the next reserved object */

@@ -90,7 +90,7 @@ void SceneToolsTest::combine() {
     const UnsignedByte meshes[]{3, 5, 17};
 
     const UnsignedShort parentObjects[]{33, 25};
-    const Short parents[]{-1, 0};
+    const Short parents[]{-1, 33};
 
     const UnsignedByte translationObjects[]{16};
     const Vector2d translations[]{{1.5, -0.5}};
@@ -341,7 +341,7 @@ void SceneToolsTest::convertToSingleFunctionObjects() {
        state here, without having to mess with an ArrayTuple */
 
     const UnsignedShort parentObjects[]{15, 21, 22, 23, 1};
-    const Byte parents[]{-1, -1, 1, 2, -1};
+    const Byte parents[]{-1, -1, 21, 22, -1};
 
     /* Two objects have two and three mesh assignments respectively, meaning we
        need three extra */
@@ -426,13 +426,13 @@ void SceneToolsTest::convertToSingleFunctionObjects() {
     CORRADE_COMPARE_AS(scene.parentsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
         {15, -1},
         {21, -1},
-        {22, 1},
-        {23, 2},
+        {22, 21},
+        {23, 22},
         {1, -1},
-        {63, 3},
-        {64, 3},
-        {65, 0},
-        {66, 4}
+        {63, 23},
+        {64, 23},
+        {65, 15},
+        {66, 1}
     })), TestSuite::Compare::Container);
 
     /* Meshes / materials have certain objects reassigned, field data stay the

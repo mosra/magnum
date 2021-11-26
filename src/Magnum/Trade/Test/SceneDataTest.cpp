@@ -4812,8 +4812,8 @@ void SceneDataTest::parentFor() {
         Int parent;
     } fields[]{
         {3, -1},
-        {4, 0},
-        {2, 1},
+        {4, 3},
+        {2, 4},
         {4, 2} /* duplicate, ignored */
     };
     Containers::StridedArrayView1D<Field> view = fields;
@@ -4865,10 +4865,10 @@ void SceneDataTest::childrenFor() {
         Int parent;
     } fields[]{
         {4, -1},
-        {3, 0},
-        {2, 1},
-        {1, 0},
-        {5, 0},
+        {3, 4},
+        {2, 3},
+        {1, 4},
+        {5, 4},
         {0, -1},
     };
     Containers::StridedArrayView1D<Field> view = fields;

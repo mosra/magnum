@@ -98,17 +98,13 @@ enum class SceneField: UnsignedInt {
     /* Zero used for an invalid value */
 
     /**
-     * Parent index. Type is usually @ref SceneFieldType::Int, but can be also
+     * Parent object. Type is usually @ref SceneFieldType::Int, but can be also
      * any of @relativeref{SceneFieldType,Byte},
      * @relativeref{SceneFieldType,Short} or a
      * @relativeref{SceneFieldType,Long}. A value of @cpp -1 @ce means there's
      * no parent. An object should have only one parent, altough this isn't
      * enforced in any way, and which of the duplicate fields gets used is not
      * defined.
-     *
-     * Note that the index points to the parent array itself and isn't the
-     * actual object index --- the object mapping is stored in the
-     * corresponding @ref SceneData::objects() array.
      * @see @ref SceneData::parentsAsArray(), @ref SceneData::parentFor(),
      *      @ref SceneData::childrenFor()
      */
