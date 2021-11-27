@@ -93,7 +93,7 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialLayer value);
 Convenience aliases to actual attribute name strings. In most cases the alias
 is in the same form and capitalization --- so for example
 @ref MaterialAttribute::DoubleSided is an alias for @cpp "DoubleSided" @ce, the
-only exception is @ref MaterialAttribute::LayerName which is @cpp "$LayerName" @ce.
+only exception is @ref MaterialAttribute::LayerName which is @cpp " LayerName" @ce (with a space at the front).
 
 When this enum si used in
 @ref MaterialAttributeData constructors, the data are additionally checked for
@@ -108,9 +108,9 @@ enum class MaterialAttribute: UnsignedInt {
      * Layer name, @ref MaterialAttributeType::String.
      *
      * Unlike other attributes where string name matches the enum name, in this
-     * case the corresponding string is @cpp "$LayerName" @ce, done in order to
-     * have the layer name attribute appear first in each layer and thus
-     * simplify layer implementation.
+     * case the corresponding string is @cpp " LayerName" @ce (with a space at
+     * the front), done in order to have the layer name attribute appear first
+     * in each layer and thus simplify layer implementation.
      * @see @ref MaterialData::layerName()
      */
     LayerName = 1,
@@ -1591,10 +1591,11 @@ already sorted by name.
 
 @subsection Trade-MaterialData-populating-custom Custom material attributes
 
-While attribute names beginning with uppercase letters are reserved for builtin
-Magnum attributes, anything beginning with a lowercase letter or a non-letter
-can be a custom attribute. For greater flexibility, custom attributes can be
-also strings or pointers, allowing you to store arbitrary properties or direct
+While attribute names beginning with uppercase letters and whitespace are
+reserved for builtin Magnum attributes, anything beginning with a lowercase
+letter or a printable non-letter character can be a custom attribute. For
+greater flexibility, custom attributes can be also strings or pointers,
+allowing you to store arbitrary properties such as image filenames or direct
 texture pointers instead of IDs:
 
 @snippet MagnumTrade.cpp MaterialData-populating-custom

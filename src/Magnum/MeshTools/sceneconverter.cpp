@@ -694,7 +694,7 @@ used.)")
                     /* Ignore layer name (which is always first) unless it's in
                        the base material, in which case we print it as it
                        wouldn't otherwise be shown anywhere */
-                    if(i && !j && info.data.attributeName(i, j) == "$LayerName")
+                    if(i && !j && info.data.attributeName(i, j) == " LayerName")
                         continue;
 
                     d << Debug::newline << indent

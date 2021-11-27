@@ -314,7 +314,7 @@ Containers::StringView MaterialData::attributeString(const MaterialAttribute nam
 UnsignedInt MaterialData::layerFor(const Containers::StringView layer) const {
     for(std::size_t i = 1; i < _layerOffsets.size(); ++i) {
         if(_layerOffsets[i] > _layerOffsets[i - 1] &&
-           _data[_layerOffsets[i - 1]].name() == "$LayerName"_s &&
+           _data[_layerOffsets[i - 1]].name() == " LayerName"_s &&
            _data[_layerOffsets[i - 1]].value<Containers::StringView>() == layer)
             return i;
     }
@@ -348,7 +348,7 @@ Containers::StringView MaterialData::layerName(const UnsignedInt layer) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::layerName(): index" << layer << "out of range for" << layerCount() << "layers", {});
     /* Deliberately ignore this attribute in the base material */
-    if(layer && _layerOffsets[layer] > _layerOffsets[layer - 1] && _data[_layerOffsets[layer - 1]].name() == "$LayerName")
+    if(layer && _layerOffsets[layer] > _layerOffsets[layer - 1] && _data[_layerOffsets[layer - 1]].name() == " LayerName")
         return _data[_layerOffsets[layer - 1]].value<Containers::StringView>();
     return {};
 }
@@ -953,9 +953,9 @@ Debug& operator<<(Debug& debug, const MaterialAttribute value) {
     if(UnsignedInt(value) - 1 >= Containers::arraySize(AttributeMap))
         return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 
-    /* LayerName is prefixed with $, drop that */
+    /* LayerName is prefixed with a single space, drop that */
     Containers::StringView string = AttributeMap[UnsignedInt(value) - 1].name;
-    if(string[0] == '$') string = string.suffix(1);
+    if(string[0] == ' ') string = string.suffix(1);
 
     return debug << "::" << Debug::nospace << string;
 }
