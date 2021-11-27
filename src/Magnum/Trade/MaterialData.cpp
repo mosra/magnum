@@ -233,8 +233,13 @@ MaterialData::MaterialData(const MaterialTypes types, Containers::Array<Material
             std::sort(_data + begin, _data + end, [](const MaterialAttributeData& a, const MaterialAttributeData& b) {
                 /* Need to check here (instead of in the outer for loop) as we
                    exit the loop right after the sort and thus duplicates that
-                   occur after the first non-sorted pair wouldn't get detected. */
-                CORRADE_ASSERT(a.name() != b.name(),
+                   occur after the first non-sorted pair wouldn't get detected.
+
+                   Additionally an *extra paranoid* check for shitty STL
+                   implementations that might call this comparator with both
+                   arguments the same (in which case the assert would fire,
+                   which is undesirable). */
+                CORRADE_ASSERT(&a == &b || a.name() != b.name(),
                     "Trade::MaterialData: duplicate attribute" << a.name(), false);
                 return a.name() < b.name();
             });
