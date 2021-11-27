@@ -238,7 +238,8 @@ MaterialData::MaterialData(const MaterialTypes types, Containers::Array<Material
                    Additionally an *extra paranoid* check for shitty STL
                    implementations that might call this comparator with both
                    arguments the same (in which case the assert would fire,
-                   which is undesirable). */
+                   which is undesirable). Apparently libc++ is responsible for
+                   such atrocities. */
                 CORRADE_ASSERT(&a == &b || a.name() != b.name(),
                     "Trade::MaterialData: duplicate attribute" << a.name(), false);
                 return a.name() < b.name();
