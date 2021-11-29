@@ -53,6 +53,7 @@ enum class MaterialTextureSwizzle: UnsignedInt;
 enum class MaterialAttributeType: UnsignedByte;
 enum class MaterialLayer: UnsignedInt;
 enum class MaterialType: UnsignedInt;
+typedef Containers::EnumSet<MaterialType> MaterialTypes;
 enum class MaterialAlphaMode: UnsignedByte;
 class MaterialAttributeData;
 class MaterialData;
