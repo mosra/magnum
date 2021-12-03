@@ -386,8 +386,8 @@ used.)")
 
         struct SceneInfo {
             UnsignedInt scene;
-            Trade::SceneObjectType objectType;
-            UnsignedLong objectCount;
+            Trade::SceneMappingType mappingType;
+            UnsignedLong mappingBound;
             Containers::Array<SceneFieldInfo> fields;
             std::size_t dataSize;
             std::string name;
@@ -410,8 +410,8 @@ used.)")
 
             SceneInfo info{};
             info.scene = i;
-            info.objectType = scene->objectType();
-            info.objectCount = scene->objectCount();
+            info.mappingType = scene->mappingType();
+            info.mappingBound = scene->mappingBound();
             info.dataSize = scene->data().size();
             info.name = importer->sceneName(i);
             for(UnsignedInt j = 0; j != scene->fieldCount(); ++j) {
@@ -666,7 +666,7 @@ used.)")
             d << "Scene" << info.scene << Debug::nospace << ":";
             if(!info.name.empty()) d << info.name;
             d << Debug::newline;
-            d << "   " << info.objectCount << "objects," << info.objectType
+            d << "    bound:" << info.mappingBound << "objects," << info.mappingType
                 << "(" << Debug::nospace << Utility::formatString("{:.1f}", info.dataSize/1024.0f) << "kB)";
 
             for(const SceneFieldInfo& field: info.fields) {

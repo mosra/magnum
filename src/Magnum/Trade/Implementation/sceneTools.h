@@ -59,29 +59,30 @@ template<class T> void sceneCombineCopyObjects(const Containers::ArrayView<const
 
         /* If the field has null object data, no need to copy anything. This
            covers reserved fields but also fields of zero size. */
-        if(!fields[i].objectData()) continue;
+        if(!fields[i].mappingData()) continue;
 
-        const Containers::StridedArrayView1D<const void> src = fields[i].objectData();
+        const Containers::StridedArrayView1D<const void> src = fields[i].mappingData();
         const Containers::StridedArrayView1D<T> dst = Containers::arrayCast<1, T>(itemViews[mapping]);
-        if(fields[i].objectType() == SceneObjectType::UnsignedByte)
+        if(fields[i].mappingType() == SceneMappingType::UnsignedByte)
             copyOrCastInto(Containers::arrayCast<const UnsignedByte>(src), dst);
-        else if(fields[i].objectType() == SceneObjectType::UnsignedShort)
+        else if(fields[i].mappingType() == SceneMappingType::UnsignedShort)
             copyOrCastInto(Containers::arrayCast<const UnsignedShort>(src), dst);
-        else if(fields[i].objectType() == SceneObjectType::UnsignedInt)
+        else if(fields[i].mappingType() == SceneMappingType::UnsignedInt)
             copyOrCastInto(Containers::arrayCast<const UnsignedInt>(src), dst);
-        else if(fields[i].objectType() == SceneObjectType::UnsignedLong)
+        else if(fields[i].mappingType() == SceneMappingType::UnsignedLong)
             copyOrCastInto(Containers::arrayCast<const UnsignedLong>(src), dst);
         else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 }
 
-/* Combine fields of varying object type together into a SceneData of a single
-   given objectType. The fields are expected to point to existing object/field
-   memory, which will be then copied to the resulting scene. If you supply a
-   field with null object or field data, the object or field data will not get
-   copied, only a placeholder for copying the data later will be allocated. If
-   you however need to have placeholder object data shared among
-   Offset-only fields are not allowed.
+/* Combine fields of varying mapping type together into a SceneData of a single
+   given mappingType. The fields are expected to point to existing
+   mapping/field memory, which will be then copied to the resulting scene. If
+   you supply a field with null mapping or field data, the mapping or field
+   data will not get copied, only a placeholder for copying the data later will
+   be allocated. If you however need to have placeholder mapping data shared
+   among multiple fields you have to allocate them upfront. Offset-only fields
+   are not allowed.
 
    The resulting fields are always tightly packed (not interleaved).
 
@@ -90,9 +91,9 @@ template<class T> void sceneCombineCopyObjects(const Containers::ArrayView<const
    with different lengths will assert. */
 /** @todo when published, add an initializer_list overload and turn all
     internal asserts into (tested!) message asserts */
-inline SceneData sceneCombine(const SceneObjectType objectType, const UnsignedLong objectCount, const Containers::ArrayView<const SceneFieldData> fields) {
-    const std::size_t objectTypeSize = sceneObjectTypeSize(objectType);
-    const std::size_t objectTypeAlignment = sceneObjectTypeAlignment(objectType);
+inline SceneData sceneCombine(const SceneMappingType mappingType, const UnsignedLong mappingBound, const Containers::ArrayView<const SceneFieldData> fields) {
+    const std::size_t mappingTypeSize = sceneMappingTypeSize(mappingType);
+    const std::size_t mappingTypeAlignment = sceneMappingTypeAlignment(mappingType);
 
     /* Go through all fields and collect ArrayTuple allocations for these */
     std::unordered_map<const void*, UnsignedInt> objectMappings;
@@ -110,12 +111,12 @@ inline SceneData sceneCombine(const SceneObjectType objectType, const UnsignedLo
         const SceneFieldData& field = fields[i];
         CORRADE_INTERNAL_ASSERT(!field.isOffsetOnly());
 
-        /* Object data. Allocate if the view is a placeholder of if it wasn't
+        /* Mapping data. Allocate if the view is a placeholder of if it wasn't
            used by other fields yet. */
         std::pair<std::unordered_map<const void*, UnsignedInt>::iterator, bool> inserted;
-        if(field.objectData().data())
-            inserted = objectMappings.emplace(field.objectData().data(), itemViewOffset);
-        if(field.objectData().data() && !inserted.second) {
+        if(field.mappingData().data())
+            inserted = objectMappings.emplace(field.mappingData().data(), itemViewOffset);
+        if(field.mappingData().data() && !inserted.second) {
             itemViewMappings[i].first() = inserted.first->second;
             /* Expect that fields sharing the same object mapping view have the
                exact same length (the length gets stored in the output view
@@ -145,7 +146,7 @@ inline SceneData sceneCombine(const SceneObjectType objectType, const UnsignedLo
             CORRADE_INTERNAL_ASSERT(itemViews[inserted.first->second].size()[0] == field.size());
         } else {
             itemViewMappings[i].first() = itemViewOffset;
-            arrayAppend(items, InPlaceInit, NoInit, std::size_t(field.size()), objectTypeSize, objectTypeAlignment, itemViews[itemViewOffset]);
+            arrayAppend(items, InPlaceInit, NoInit, std::size_t(field.size()), mappingTypeSize, mappingTypeAlignment, itemViews[itemViewOffset]);
             ++itemViewOffset;
         }
 
@@ -162,13 +163,13 @@ inline SceneData sceneCombine(const SceneObjectType objectType, const UnsignedLo
     CORRADE_INTERNAL_ASSERT(!outData.deleter());
 
     /* Copy the object data over and cast them as necessary */
-    if(objectType == SceneObjectType::UnsignedByte)
+    if(mappingType == SceneMappingType::UnsignedByte)
         sceneCombineCopyObjects<UnsignedByte>(fields, itemViews, itemViewMappings);
-    else if(objectType == SceneObjectType::UnsignedShort)
+    else if(mappingType == SceneMappingType::UnsignedShort)
         sceneCombineCopyObjects<UnsignedShort>(fields, itemViews, itemViewMappings);
-    else if(objectType == SceneObjectType::UnsignedInt)
+    else if(mappingType == SceneMappingType::UnsignedInt)
         sceneCombineCopyObjects<UnsignedInt>(fields, itemViews, itemViewMappings);
-    else if(objectType == SceneObjectType::UnsignedLong)
+    else if(mappingType == SceneMappingType::UnsignedLong)
         sceneCombineCopyObjects<UnsignedLong>(fields, itemViews, itemViewMappings);
 
     /* Copy the field data over. No special handling needed here. */
@@ -187,7 +188,7 @@ inline SceneData sceneCombine(const SceneObjectType objectType, const UnsignedLo
         outFields[i] = SceneFieldData{fields[i].name(), itemViews[itemViewMappings[i].first()], fields[i].fieldType(), itemViews[itemViewMappings[i].second()], fields[i].fieldArraySize()};
     }
 
-    return SceneData{objectType, objectCount, std::move(outData), std::move(outFields)};
+    return SceneData{mappingType, mappingBound, std::move(outData), std::move(outFields)};
 }
 
 /* Creates a SceneData copy where each object has at most one of the fields
@@ -205,7 +206,7 @@ inline SceneData sceneCombine(const SceneObjectType objectType, const UnsignedLo
     internal asserts into (tested!) message asserts */
 inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Containers::ArrayView<const SceneField> fieldsToConvert, const UnsignedInt newObjectOffset) {
     /** @todo assert for really high object counts (where this cast would fail) */
-    Containers::Array<UnsignedInt> objectAttachmentCount{ValueInit, std::size_t(scene.objectCount())};
+    Containers::Array<UnsignedInt> objectAttachmentCount{ValueInit, std::size_t(scene.mappingBound())};
     for(const SceneField field: fieldsToConvert) {
         CORRADE_INTERNAL_ASSERT(field != SceneField::Parent);
 
@@ -217,7 +218,7 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
         /** @todo use a statically-allocated array & Into() in a loop instead
             once this is more than a private backwards-compatibility utility
             where PERF WHATEVER WHO CARES */
-        for(const UnsignedInt object: scene.objectsAsArray(*fieldId)) {
+        for(const UnsignedInt object: scene.mappingAsArray(*fieldId)) {
             CORRADE_INTERNAL_ASSERT(object < objectAttachmentCount.size());
             ++objectAttachmentCount[object];
         }
@@ -249,25 +250,25 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
     }
 
     /* Combine the fields into a new SceneData */
-    SceneData out = sceneCombine(SceneObjectType::UnsignedInt, Math::max(scene.objectCount(), UnsignedLong(newObjectOffset) + objectsToAdd), fields);
+    SceneData out = sceneCombine(SceneMappingType::UnsignedInt, Math::max(scene.mappingBound(), UnsignedLong(newObjectOffset) + objectsToAdd), fields);
 
     /* Copy existing parent object/field data to a prefix of the output */
-    const Containers::StridedArrayView1D<UnsignedInt> outParentObjects = out.mutableObjects<UnsignedInt>(parentFieldId);
+    const Containers::StridedArrayView1D<UnsignedInt> outParentMapping = out.mutableMapping<UnsignedInt>(parentFieldId);
     const Containers::StridedArrayView1D<Int> outParents = out.mutableField<Int>(parentFieldId);
-    CORRADE_INTERNAL_ASSERT_OUTPUT(scene.parentsInto(0, outParentObjects, outParents) == scene.fieldSize(parentFieldId));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(scene.parentsInto(0, outParentMapping, outParents) == scene.fieldSize(parentFieldId));
 
     /* List new objects at the end of the extended parent field */
-    const Containers::StridedArrayView1D<UnsignedInt> newParentObjects = outParentObjects.suffix(scene.fieldSize(parentFieldId));
+    const Containers::StridedArrayView1D<UnsignedInt> newParentMapping = outParentMapping.suffix(scene.fieldSize(parentFieldId));
     const Containers::StridedArrayView1D<Int> newParents = outParents.suffix(scene.fieldSize(parentFieldId));
-    for(std::size_t i = 0; i != newParentObjects.size(); ++i) {
-        newParentObjects[i] = newObjectOffset + i;
+    for(std::size_t i = 0; i != newParentMapping.size(); ++i) {
+        newParentMapping[i] = newObjectOffset + i;
         newParents[i] = -1;
     }
 
     /* Clear the objectAttachmentCount array to reuse it below */
     /** @todo use a BitArray instead once it exists? */
     constexpr UnsignedInt zero[1]{};
-    Utility::copy(Containers::stridedArrayView(zero).broadcasted<0>(scene.objectCount()), objectAttachmentCount);
+    Utility::copy(Containers::stridedArrayView(zero).broadcasted<0>(scene.mappingBound()), objectAttachmentCount);
 
     /* For objects with multiple fields move the extra fields to newly added
        children */
@@ -277,7 +278,7 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
             const Containers::Optional<UnsignedInt> fieldId = scene.findFieldId(field);
             if(!fieldId) continue;
 
-            for(UnsignedInt& fieldObject: out.mutableObjects<UnsignedInt>(*fieldId)) {
+            for(UnsignedInt& fieldObject: out.mutableMapping<UnsignedInt>(*fieldId)) {
                 /* If the object is not new (could happen when an object
                    mapping array is shared among multiple fields, in which case
                    it *might* have been updated already to an ID larger than
@@ -288,7 +289,7 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
                     /* Use the old object as a parent of the new object */
                     newParents[newParentIndex] = fieldObject;
                     /* Assign the field to the new object */
-                    fieldObject = newParentObjects[newParentIndex];
+                    fieldObject = newParentMapping[newParentIndex];
                     /* Move to the next reserved object */
                     ++newParentIndex;
                 } else ++objectAttachmentCount[fieldObject];

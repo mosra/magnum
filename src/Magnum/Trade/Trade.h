@@ -100,7 +100,7 @@ class PbrSpecularGlossinessMaterialData;
 class PhongMaterialData;
 class TextureData;
 
-enum class SceneObjectType: UnsignedByte;
+enum class SceneMappingType: UnsignedByte;
 enum class SceneField: UnsignedInt;
 enum class SceneFieldType: UnsignedShort;
 class SceneFieldData;

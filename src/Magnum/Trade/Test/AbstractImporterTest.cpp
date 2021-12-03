@@ -1703,8 +1703,8 @@ void AbstractImporterTest::scene() {
         }
         Containers::Optional<SceneData> doScene(UnsignedInt id) override {
             if(id == 7)
-                return SceneData{SceneObjectType::UnsignedByte, 0, nullptr, {}, &state};
-            return SceneData{SceneObjectType::UnsignedByte, 0, nullptr, {}};
+                return SceneData{SceneMappingType::UnsignedByte, 0, nullptr, {}, &state};
+            return SceneData{SceneMappingType::UnsignedByte, 0, nullptr, {}};
         }
     } importer;
 
@@ -1899,21 +1899,21 @@ void AbstractImporterTest::sceneDeprecatedFallback2D() {
             /* This one has seven objects, but no fields for them so it should
                get skipped */
             if(id == 0)
-                return SceneData{SceneObjectType::UnsignedByte, 7, nullptr, {}};
+                return SceneData{SceneMappingType::UnsignedByte, 7, nullptr, {}};
             /* This one has no objects, so it should get skipped as well
                without even querying any fieldFor() API (as those would
                assert) */
             if(id == 1)
-                return SceneData{SceneObjectType::UnsignedShort, 0, nullptr, {}};
+                return SceneData{SceneMappingType::UnsignedShort, 0, nullptr, {}};
             /* This one is the one */
             if(id == 2)
-                return SceneData{SceneObjectType::UnsignedInt, 7, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+                return SceneData{SceneMappingType::UnsignedInt, 7, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
 
         private:
             SceneData _data;
-    } importer{SceneData{SceneObjectType::UnsignedInt, 7, std::move(data), {
+    } importer{SceneData{SceneMappingType::UnsignedInt, 7, std::move(data), {
         SceneFieldData{SceneField::Parent,
             transformations.slice(&Transform::object),
             transformations.slice(&Transform::parent)},
@@ -2171,21 +2171,21 @@ void AbstractImporterTest::sceneDeprecatedFallback3D() {
             /* This one has seven objects, but no fields for them so it should
                get skipped */
             if(id == 0)
-                return SceneData{SceneObjectType::UnsignedByte, 7, nullptr, {}};
+                return SceneData{SceneMappingType::UnsignedByte, 7, nullptr, {}};
             /* This one has no objects, so it should get skipped as well
                without even querying any fieldFor() API (as those would
                assert) */
             if(id == 1)
-                return SceneData{SceneObjectType::UnsignedShort, 0, nullptr, {}};
+                return SceneData{SceneMappingType::UnsignedShort, 0, nullptr, {}};
             /* This one is the one */
             if(id == 2)
-                return SceneData{SceneObjectType::UnsignedInt, 7, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+                return SceneData{SceneMappingType::UnsignedInt, 7, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
 
         private:
             SceneData _data;
-    } importer{SceneData{SceneObjectType::UnsignedInt, 7, std::move(data), {
+    } importer{SceneData{SceneMappingType::UnsignedInt, 7, std::move(data), {
         SceneFieldData{SceneField::Parent,
             transformations.slice(&Transform::object),
             transformations.slice(&Transform::parent)},
@@ -2356,12 +2356,12 @@ void AbstractImporterTest::sceneDeprecatedFallbackParentless2D() {
         UnsignedInt doSceneCount() const override { return 1; }
         UnsignedLong doObjectCount() const override { return 6; }
         Containers::Optional<SceneData> doScene(UnsignedInt) override {
-            return SceneData{SceneObjectType::UnsignedInt, 6, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+            return SceneData{SceneMappingType::UnsignedInt, 6, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
         }
 
         private:
             SceneData _data;
-    } importer{SceneData{SceneObjectType::UnsignedInt, 6, {}, fields, {
+    } importer{SceneData{SceneMappingType::UnsignedInt, 6, {}, fields, {
         SceneFieldData{SceneField::Transformation,
             view.slice(&Field::object),
             view.slice(&Field::transformation)}
@@ -2431,12 +2431,12 @@ void AbstractImporterTest::sceneDeprecatedFallbackParentless3D() {
         UnsignedInt doSceneCount() const override { return 1; }
         UnsignedLong doObjectCount() const override { return 6; }
         Containers::Optional<SceneData> doScene(UnsignedInt) override {
-            return SceneData{SceneObjectType::UnsignedInt, 6, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+            return SceneData{SceneMappingType::UnsignedInt, 6, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
         }
 
         private:
             SceneData _data;
-    } importer{SceneData{SceneObjectType::UnsignedInt, 6, {}, fields, {
+    } importer{SceneData{SceneMappingType::UnsignedInt, 6, {}, fields, {
         SceneFieldData{SceneField::Transformation,
             view.slice(&Field::object),
             view.slice(&Field::transformation)}
@@ -2506,17 +2506,17 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless2D() {
         UnsignedInt doSceneCount() const override { return 1; }
         UnsignedLong doObjectCount() const override { return 6; }
         Containers::Optional<SceneData> doScene(UnsignedInt) override {
-            return SceneData{SceneObjectType::UnsignedInt, 6, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+            return SceneData{SceneMappingType::UnsignedInt, 6, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
         }
 
         private:
             SceneData _data;
-    } importer{SceneData{SceneObjectType::UnsignedInt, 6, {}, fields, {
+    } importer{SceneData{SceneMappingType::UnsignedInt, 6, {}, fields, {
         SceneFieldData{SceneField::Parent,
             view.slice(&Field::object),
             view.slice(&Field::parent)},
         /* Required in order to have the scene recognized as 2D */
-        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Matrix3x3, nullptr}
+        SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Matrix3x3, nullptr}
     }}};
 
     CORRADE_COMPARE(importer.sceneCount(), 1);
@@ -2612,17 +2612,17 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless3D() {
         UnsignedInt doSceneCount() const override { return 1; }
         UnsignedLong doObjectCount() const override { return 6; }
         Containers::Optional<SceneData> doScene(UnsignedInt) override {
-            return SceneData{SceneObjectType::UnsignedInt, 6, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+            return SceneData{SceneMappingType::UnsignedInt, 6, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
         }
 
         private:
             SceneData _data;
-    } importer{SceneData{SceneObjectType::UnsignedInt, 6, {}, fields, {
+    } importer{SceneData{SceneMappingType::UnsignedInt, 6, {}, fields, {
         SceneFieldData{SceneField::Parent,
             view.slice(&Field::object),
             view.slice(&Field::parent)},
         /* Required in order to have the scene recognized as 3D */
-        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Matrix4x4, nullptr}
+        SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Matrix4x4, nullptr}
     }}};
 
     CORRADE_COMPARE(importer.sceneCount(), 1);
@@ -2747,20 +2747,20 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
         {30, 1, -1}
     }, meshesSecondary);
 
-    SceneData data{SceneObjectType::UnsignedInt, 32, std::move(dataData), {
+    SceneData data{SceneMappingType::UnsignedInt, 32, std::move(dataData), {
         SceneFieldData{SceneField::Parent, parents.slice(&Parent::object), parents.slice(&Parent::parent)},
         SceneFieldData{SceneField::Mesh, meshes.slice(&Mesh::object), meshes.slice(&Mesh::mesh)},
         SceneFieldData{SceneField::MeshMaterial, meshes.slice(&Mesh::object), meshes.slice(&Mesh::meshMaterial)},
         SceneFieldData{SceneField::Camera, cameras.slice(&Camera::object), cameras.slice(&Camera::camera)},
         /* Just to disambiguate this as a 2D scene */
-        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Matrix3x3, nullptr},
+        SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Matrix3x3, nullptr},
     }};
-    SceneData dataSecondary{SceneObjectType::UnsignedInt, 31, std::move(dataDataSecondary), {
+    SceneData dataSecondary{SceneMappingType::UnsignedInt, 31, std::move(dataDataSecondary), {
         SceneFieldData{SceneField::Parent, parentsSecondary.slice(&Parent::object), parentsSecondary.slice(&Parent::parent)},
         SceneFieldData{SceneField::Mesh, meshesSecondary.slice(&Mesh::object), meshesSecondary.slice(&Mesh::mesh)},
         SceneFieldData{SceneField::MeshMaterial, meshesSecondary.slice(&Mesh::object), meshesSecondary.slice(&Mesh::meshMaterial)},
         /* Just to disambiguate this as a 2D scene */
-        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Matrix3x3, nullptr},
+        SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Matrix3x3, nullptr},
     }};
 
     struct Importer: AbstractImporter {
@@ -2784,19 +2784,19 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
             /* This scene should get skipped when querying names as it's not
                2D */
             if(id == 0)
-                return SceneData{SceneObjectType::UnsignedByte, 32, nullptr, {}};
+                return SceneData{SceneMappingType::UnsignedByte, 32, nullptr, {}};
             /* This scene should get skipped when querying names as it has too
                little objects */
             if(id == 1)
-                return SceneData{SceneObjectType::UnsignedByte, 32, nullptr, {
-                    SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedByte, nullptr, SceneFieldType::Matrix3x3, nullptr}
+                return SceneData{SceneMappingType::UnsignedByte, 32, nullptr, {
+                    SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedByte, nullptr, SceneFieldType::Matrix3x3, nullptr}
                 }};
             if(id == 2)
-                return SceneData{SceneObjectType::UnsignedInt, 32, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+                return SceneData{SceneMappingType::UnsignedInt, 32, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
             /* A secondary scene, which should have non-overlapping IDs for the
                newly added objects */
             if(id == 3)
-                return SceneData{SceneObjectType::UnsignedInt, 31, {}, _dataSecondary.data(), sceneFieldDataNonOwningArray(_dataSecondary.fieldData())};
+                return SceneData{SceneMappingType::UnsignedInt, 31, {}, _dataSecondary.data(), sceneFieldDataNonOwningArray(_dataSecondary.fieldData())};
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
 
@@ -3014,20 +3014,20 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
         {30, 1, -1}
     }, meshesSecondary);
 
-    SceneData data{SceneObjectType::UnsignedInt, 32, std::move(dataData), {
+    SceneData data{SceneMappingType::UnsignedInt, 32, std::move(dataData), {
         SceneFieldData{SceneField::Parent, parents.slice(&Parent::object), parents.slice(&Parent::parent)},
         SceneFieldData{SceneField::Mesh, meshes.slice(&Mesh::object), meshes.slice(&Mesh::mesh)},
         SceneFieldData{SceneField::MeshMaterial, meshes.slice(&Mesh::object), meshes.slice(&Mesh::meshMaterial)},
         SceneFieldData{SceneField::Camera, cameras.slice(&Camera::object), cameras.slice(&Camera::camera)},
         /* Just to disambiguate this as a 3D scene */
-        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Matrix4x4, nullptr},
+        SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Matrix4x4, nullptr},
     }};
-    SceneData dataSecondary{SceneObjectType::UnsignedInt, 31, std::move(dataDataSecondary), {
+    SceneData dataSecondary{SceneMappingType::UnsignedInt, 31, std::move(dataDataSecondary), {
         SceneFieldData{SceneField::Parent, parentsSecondary.slice(&Parent::object), parentsSecondary.slice(&Parent::parent)},
         SceneFieldData{SceneField::Mesh, meshesSecondary.slice(&Mesh::object), meshesSecondary.slice(&Mesh::mesh)},
         SceneFieldData{SceneField::MeshMaterial, meshesSecondary.slice(&Mesh::object), meshesSecondary.slice(&Mesh::meshMaterial)},
         /* Just to disambiguate this as a 3D scene */
-        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Matrix4x4, nullptr},
+        SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Matrix4x4, nullptr},
     }};
 
     struct Importer: AbstractImporter {
@@ -3051,19 +3051,19 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
             /* This scene should get skipped when querying names as it's not
                2D */
             if(id == 0)
-                return SceneData{SceneObjectType::UnsignedByte, 32, nullptr, {}};
+                return SceneData{SceneMappingType::UnsignedByte, 32, nullptr, {}};
             /* This scene should get skipped when querying names as it has too
                little objects */
             if(id == 1)
-                return SceneData{SceneObjectType::UnsignedByte, 32, nullptr, {
-                    SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedByte, nullptr, SceneFieldType::Matrix4x4, nullptr}
+                return SceneData{SceneMappingType::UnsignedByte, 32, nullptr, {
+                    SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedByte, nullptr, SceneFieldType::Matrix4x4, nullptr}
                 }};
             if(id == 2)
-                return SceneData{SceneObjectType::UnsignedInt, 32, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+                return SceneData{SceneMappingType::UnsignedInt, 32, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
             /* A secondary scene, which should have non-overlapping IDs for the
                newly added objects */
             if(id == 3)
-                return SceneData{SceneObjectType::UnsignedInt, 31, {}, _dataSecondary.data(), sceneFieldDataNonOwningArray(_dataSecondary.fieldData())};
+                return SceneData{SceneMappingType::UnsignedInt, 31, {}, _dataSecondary.data(), sceneFieldDataNonOwningArray(_dataSecondary.fieldData())};
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
 
@@ -3282,13 +3282,13 @@ void AbstractImporterTest::sceneDeprecatedFallbackBoth2DAnd3DScene() {
             return {};
         }
         Containers::Optional<SceneData> doScene(UnsignedInt id) override {
-            if(id == 0) return SceneData{SceneObjectType::UnsignedInt, 7, nullptr, {
-                SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
-                SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Vector2, nullptr},
+            if(id == 0) return SceneData{SceneMappingType::UnsignedInt, 7, nullptr, {
+                SceneFieldData{SceneField::Parent, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+                SceneFieldData{SceneField::Translation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Vector2, nullptr},
             }};
-            if(id == 1) return SceneData{SceneObjectType::UnsignedInt, 7, nullptr, {
-                SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
-                SceneFieldData{SceneField::Translation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Vector3, nullptr},
+            if(id == 1) return SceneData{SceneMappingType::UnsignedInt, 7, nullptr, {
+                SceneFieldData{SceneField::Parent, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+                SceneFieldData{SceneField::Translation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Vector3, nullptr},
             }};
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
@@ -3432,14 +3432,14 @@ void AbstractImporterTest::sceneNonOwningDeleters() {
 
         UnsignedInt doSceneCount() const override { return 1; }
         Containers::Optional<SceneData> doScene(UnsignedInt) override {
-            return SceneData{SceneObjectType::UnsignedInt, 0,
+            return SceneData{SceneMappingType::UnsignedInt, 0,
                 Containers::Array<char>{data, 1, Implementation::nonOwnedArrayDeleter},
                 sceneFieldDataNonOwningArray(fields)};
         }
 
         char data[1];
         SceneFieldData fields[1]{
-            SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr}
+            SceneFieldData{SceneField::Parent, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr}
         };
     } importer;
 
@@ -3462,7 +3462,7 @@ void AbstractImporterTest::sceneCustomDataDeleter() {
         UnsignedInt doSceneCount() const override { return 1; }
         Int doSceneForName(const std::string&) override { return 0; }
         Containers::Optional<SceneData> doScene(UnsignedInt) override {
-            return SceneData{SceneObjectType::UnsignedInt, 0,
+            return SceneData{SceneMappingType::UnsignedInt, 0,
                 Containers::Array<char>{data, 1, [](char*, std::size_t) {}},
                 {}};
         }
@@ -3493,10 +3493,10 @@ void AbstractImporterTest::sceneCustomFieldDataDeleter() {
         UnsignedInt doSceneCount() const override { return 1; }
         Int doSceneForName(const std::string&) override { return 0; }
         Containers::Optional<SceneData> doScene(UnsignedInt) override {
-            return SceneData{SceneObjectType::UnsignedInt, 0, nullptr, Containers::Array<SceneFieldData>{&parents, 1, [](SceneFieldData*, std::size_t) {}}};
+            return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, Containers::Array<SceneFieldData>{&parents, 1, [](SceneFieldData*, std::size_t) {}}};
         }
 
-        SceneFieldData parents{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr};
+        SceneFieldData parents{SceneField::Parent, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr};
     } importer;
 
     std::ostringstream out;

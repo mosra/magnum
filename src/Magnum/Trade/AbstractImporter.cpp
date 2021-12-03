@@ -538,13 +538,13 @@ void AbstractImporter::populateCachedScenes() {
                except for the above, also because it doesn't take into account
                the restriction for unique-functioning objects. */
             if(_cachedScenes->scenes[i]->is2D())
-                _cachedScenes->object2DCount = Math::max(_cachedScenes->object2DCount, UnsignedInt(_cachedScenes->scenes[i]->objectCount()));
+                _cachedScenes->object2DCount = Math::max(_cachedScenes->object2DCount, UnsignedInt(_cachedScenes->scenes[i]->mappingBound()));
             if(_cachedScenes->scenes[i]->is3D())
-                _cachedScenes->object3DCount = Math::max(_cachedScenes->object3DCount, UnsignedInt(_cachedScenes->scenes[i]->objectCount()));
+                _cachedScenes->object3DCount = Math::max(_cachedScenes->object3DCount, UnsignedInt(_cachedScenes->scenes[i]->mappingBound()));
 
             /* Ensure the newly added objects for each scene don't overlap each
                other */
-            newObjectOffset = Math::max(newObjectOffset, _cachedScenes->scenes[i]->objectCount());
+            newObjectOffset = Math::max(newObjectOffset, _cachedScenes->scenes[i]->mappingBound());
         }
     }
 
@@ -618,7 +618,7 @@ std::string AbstractImporter::doObject2DName(const UnsignedInt id) {
     for(UnsignedInt i = 0; i != _cachedScenes->scenes.size(); ++i) {
         if(!_cachedScenes->scenes[i] ||
            !_cachedScenes->scenes[i]->is2D() ||
-           _cachedScenes->scenes[i]->objectCount() <= id)
+           _cachedScenes->scenes[i]->mappingBound() <= id)
             continue;
 
         if(Containers::Optional<Int> parent = _cachedScenes->scenes[i]->parentFor(id))
@@ -643,7 +643,7 @@ Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(const UnsignedInt
     populateCachedScenes();
 
     /* Find the first 2D scene with this object, which we'll detect from the
-       object count reported for the scene, whether it's 2D or 3D, and a
+       mapping bound reported for the scene, whether it's 2D or 3D, and a
        presence of a parent attribute. If a parent attribute is not present, it
        means the object isn't a part of this scene, in which case we skip it.
        It could also mean isn't a part of the hierarchy and is standalone
@@ -652,7 +652,7 @@ Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(const UnsignedInt
     std::size_t sceneCandidate = ~std::size_t{};
     for(std::size_t i = 0; i != _cachedScenes->scenes.size(); ++i) {
         const Containers::Optional<SceneData>& scene = _cachedScenes->scenes[i];
-        if(scene && scene->is2D() && id < scene->objectCount() && scene->parentFor(id)) {
+        if(scene && scene->is2D() && id < scene->mappingBound() && scene->parentFor(id)) {
             sceneCandidate = i;
             break;
         }
@@ -796,7 +796,7 @@ std::string AbstractImporter::doObject3DName(const UnsignedInt id) {
     for(UnsignedInt i = 0; i != _cachedScenes->scenes.size(); ++i) {
         if(!_cachedScenes->scenes[i] ||
            !_cachedScenes->scenes[i]->is3D() ||
-           _cachedScenes->scenes[i]->objectCount() <= id)
+           _cachedScenes->scenes[i]->mappingBound() <= id)
             continue;
 
         if(Containers::Optional<Int> parent = _cachedScenes->scenes[i]->parentFor(id))
@@ -821,7 +821,7 @@ Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(const UnsignedInt
     populateCachedScenes();
 
     /* Find the first 3D scene with this object, which we'll detect from the
-       object count reported for the scene, whether it's 2D or 3D, and a
+       mapping bound reported for the scene, whether it's 2D or 3D, and a
        presence of a parent attribute. If a parent attribute is not present, it
        means the object isn't a part of this scene, in which case we skip it.
        It could also mean isn't a part of the hierarchy and is standalone
@@ -830,7 +830,7 @@ Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(const UnsignedInt
     std::size_t sceneCandidate = ~std::size_t{};
     for(std::size_t i = 0; i != _cachedScenes->scenes.size(); ++i) {
         const Containers::Optional<SceneData>& scene = _cachedScenes->scenes[i];
-        if(scene && scene->is3D() && id < scene->objectCount() && scene->parentFor(id)) {
+        if(scene && scene->is3D() && id < scene->mappingBound() && scene->parentFor(id)) {
             sceneCandidate = i;
             break;
         }

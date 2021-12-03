@@ -634,7 +634,7 @@ See also:
     etc.
 -   @ref Trade::SceneData constructor taking a @ref std::vector of 2D and 3D
     children is deprecated in favor of the new scene representation. Use
-    @ref Trade::SceneData::SceneData(SceneObjectType, UnsignedLong, Containers::Array<char>&&, Containers::Array<SceneFieldData>&&, const void*)
+    @ref Trade::SceneData::SceneData(SceneMappingType, UnsignedLong, Containers::Array<char>&&, Containers::Array<SceneFieldData>&&, const void*)
     instead.
 -   @cpp Trade::SceneData::children2D() @ce and
     @cpp Trade::SceneData::children3D() @ce are deprecated in favor of the
@@ -828,7 +828,7 @@ See also:
     desired use case anymore.
 -   @ref Trade::SceneData constructor taking a @ref std::vector of 2D and 3D
     children that got deprecated in favor of
-    @ref Trade::SceneData::SceneData(SceneObjectType, UnsignedLong, Containers::Array<char>&&, Containers::Array<SceneFieldData>&&, const void*)
+    @ref Trade::SceneData::SceneData(SceneMappingType, UnsignedLong, Containers::Array<char>&&, Containers::Array<SceneFieldData>&&, const void*)
     no longer accepts a scene that has both 2D and 3D children.
 -   The deprecated @cpp Trade::AbstractImporter::object*DCount() @ce,
     @cpp Trade::AbstractImporter::object*DForName() @ce,
