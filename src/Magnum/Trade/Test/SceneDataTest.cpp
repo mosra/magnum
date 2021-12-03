@@ -111,6 +111,11 @@ struct SceneDataTest: TestSuite::Tester {
     void constructCopy();
     void constructMove();
 
+    void findFieldId();
+    template<class T> void findFieldObjectOffset();
+    void findFieldObjectOffsetInvalidOffset();
+    void fieldObjectOffsetNotFound();
+
     template<class T> void objectsAsArrayByIndex();
     template<class T> void objectsAsArrayByName();
     void objectsAsArrayLongType();
@@ -163,9 +168,7 @@ struct SceneDataTest: TestSuite::Tester {
     void fieldWrongPointerType();
     void fieldWrongArrayAccess();
 
-    /* Different object types checked just for the parentFor(), other APIs
-       use the same helper */
-    template<class T> void parentFor();
+    void parentFor();
     void childrenFor();
     void transformation2DFor();
     void transformation2DForTRS();
@@ -184,7 +187,7 @@ struct SceneDataTest: TestSuite::Tester {
     #endif
 
     void fieldForFieldMissing();
-    void fieldForInvalidObject();
+    void findFieldObjectOffsetInvalidObject();
 
     void releaseFieldData();
     void releaseData();
@@ -289,6 +292,14 @@ SceneDataTest::SceneDataTest() {
 
               &SceneDataTest::constructCopy,
               &SceneDataTest::constructMove,
+
+              &SceneDataTest::findFieldId,
+              &SceneDataTest::findFieldObjectOffset<UnsignedByte>,
+              &SceneDataTest::findFieldObjectOffset<UnsignedShort>,
+              &SceneDataTest::findFieldObjectOffset<UnsignedInt>,
+              &SceneDataTest::findFieldObjectOffset<UnsignedLong>,
+              &SceneDataTest::findFieldObjectOffsetInvalidOffset,
+              &SceneDataTest::fieldObjectOffsetNotFound,
 
               &SceneDataTest::objectsAsArrayByIndex<UnsignedByte>,
               &SceneDataTest::objectsAsArrayByIndex<UnsignedShort>,
@@ -396,10 +407,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::fieldWrongPointerType,
               &SceneDataTest::fieldWrongArrayAccess,
 
-              &SceneDataTest::parentFor<UnsignedByte>,
-              &SceneDataTest::parentFor<UnsignedShort>,
-              &SceneDataTest::parentFor<UnsignedInt>,
-              &SceneDataTest::parentFor<UnsignedLong>,
+              &SceneDataTest::parentFor,
               &SceneDataTest::childrenFor,
               &SceneDataTest::transformation2DFor,
               &SceneDataTest::transformation2DForTRS,
@@ -419,7 +427,7 @@ SceneDataTest::SceneDataTest() {
     #endif
 
     addTests({&SceneDataTest::fieldForFieldMissing,
-              &SceneDataTest::fieldForInvalidObject,
+              &SceneDataTest::findFieldObjectOffsetInvalidObject,
 
               &SceneDataTest::releaseFieldData,
               &SceneDataTest::releaseData});
@@ -1298,15 +1306,6 @@ void SceneDataTest::construct() {
     CORRADE_COMPARE(scene.mutableField<Float[]>(3)[0][1], 1.5f);
 
     /* Field property access by name */
-    CORRADE_COMPARE(scene.fieldId(SceneField::Transformation), 0);
-    CORRADE_COMPARE(scene.fieldId(SceneField::Parent), 1);
-    CORRADE_COMPARE(scene.fieldId(SceneField::Mesh), 2);
-    CORRADE_COMPARE(scene.fieldId(sceneFieldCustom(37)), 3);
-    CORRADE_VERIFY(scene.hasField(SceneField::Transformation));
-    CORRADE_VERIFY(scene.hasField(SceneField::Parent));
-    CORRADE_VERIFY(scene.hasField(SceneField::Mesh));
-    CORRADE_VERIFY(scene.hasField(sceneFieldCustom(37)));
-    CORRADE_VERIFY(!scene.hasField(SceneField::Skin));
     CORRADE_COMPARE(scene.fieldType(SceneField::Transformation), SceneFieldType::Matrix4x4);
     CORRADE_COMPARE(scene.fieldType(SceneField::Parent), SceneFieldType::Int);
     CORRADE_COMPARE(scene.fieldType(SceneField::Mesh), SceneFieldType::UnsignedByte);
@@ -1955,6 +1954,151 @@ void SceneDataTest::constructMove() {
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<SceneData>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<SceneData>::value);
+}
+
+void SceneDataTest::findFieldId() {
+    SceneData scene{SceneObjectType::UnsignedInt, 0, {}, nullptr, {
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Mesh, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::UnsignedByte, nullptr}
+    }};
+
+    CORRADE_COMPARE(scene.findFieldId(SceneField::Parent), 0);
+    CORRADE_COMPARE(scene.findFieldId(SceneField::Mesh), 1);
+    CORRADE_COMPARE(scene.findFieldId(SceneField::MeshMaterial), Containers::NullOpt);
+
+    CORRADE_COMPARE(scene.fieldId(SceneField::Parent), 0);
+    CORRADE_COMPARE(scene.fieldId(SceneField::Mesh), 1);
+
+    CORRADE_VERIFY(scene.hasField(SceneField::Parent));
+    CORRADE_VERIFY(scene.hasField(SceneField::Mesh));
+    CORRADE_VERIFY(!scene.hasField(SceneField::MeshMaterial));
+}
+
+template<class T> void SceneDataTest::findFieldObjectOffset() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    /** @todo update once field flags describing object order are present */
+
+    struct Field {
+        T object;
+        UnsignedInt mesh;
+    } fields[]{
+        {4, 1},
+        {1, 3},
+        {2, 4},
+        {0, 5},
+        {2, 5}
+    };
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{Implementation::sceneObjectTypeFor<T>(), 7, {}, fields, {
+        /* Test also with a completely empty field */
+        SceneFieldData{SceneField::Parent, Implementation::sceneObjectTypeFor<T>(), nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
+    }};
+
+    CORRADE_COMPARE(scene.findFieldObjectOffset(0, 4), Containers::NullOpt);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Parent, 4), Containers::NullOpt);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(1, 4), 0);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(1, 1), 1);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(1, 2), 2);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(1, 2, 3), 4);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(1, 2, 5), Containers::NullOpt);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(1, 3), Containers::NullOpt);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, 4), 0);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, 1), 1);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, 2), 2);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, 2, 3), 4);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, 2, 5), Containers::NullOpt);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, 3), Containers::NullOpt);
+
+    CORRADE_COMPARE(scene.fieldObjectOffset(1, 4), 0);
+    CORRADE_COMPARE(scene.fieldObjectOffset(1, 1), 1);
+    CORRADE_COMPARE(scene.fieldObjectOffset(1, 2), 2);
+    CORRADE_COMPARE(scene.fieldObjectOffset(1, 2, 3), 4);
+    CORRADE_COMPARE(scene.fieldObjectOffset(SceneField::Mesh, 4), 0);
+    CORRADE_COMPARE(scene.fieldObjectOffset(SceneField::Mesh, 1), 1);
+    CORRADE_COMPARE(scene.fieldObjectOffset(SceneField::Mesh, 2), 2);
+    CORRADE_COMPARE(scene.fieldObjectOffset(SceneField::Mesh, 2, 3), 4);
+
+    CORRADE_VERIFY(!scene.hasFieldObject(0, 4));
+    CORRADE_VERIFY(!scene.hasFieldObject(SceneField::Parent, 4));
+    CORRADE_VERIFY(scene.hasFieldObject(1, 4));
+    CORRADE_VERIFY(scene.hasFieldObject(1, 1));
+    CORRADE_VERIFY(scene.hasFieldObject(1, 2));
+    CORRADE_VERIFY(!scene.hasFieldObject(1, 3));
+    CORRADE_VERIFY(scene.hasFieldObject(SceneField::Mesh, 4));
+    CORRADE_VERIFY(scene.hasFieldObject(SceneField::Mesh, 1));
+    CORRADE_VERIFY(scene.hasFieldObject(SceneField::Mesh, 2));
+    CORRADE_VERIFY(!scene.hasFieldObject(SceneField::Mesh, 3));
+}
+
+void SceneDataTest::findFieldObjectOffsetInvalidOffset() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt mesh;
+    } fields[]{
+        {4, 1},
+        {1, 3},
+        {2, 4}
+    };
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    scene.findFieldObjectOffset(0, 1, 4);
+    scene.findFieldObjectOffset(SceneField::Mesh, 1, 4);
+    scene.fieldObjectOffset(0, 1, 4);
+    scene.fieldObjectOffset(SceneField::Mesh, 1, 4);
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::findFieldObjectOffset(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::findFieldObjectOffset(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::fieldObjectOffset(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::fieldObjectOffset(): offset 4 out of bounds for a field of size 3\n");
+}
+
+void SceneDataTest::fieldObjectOffsetNotFound() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct Field {
+        UnsignedInt object;
+        UnsignedInt mesh;
+    } fields[]{
+        {4, 1},
+        {1, 3},
+        {2, 4},
+        {0, 5},
+        {2, 5}
+    };
+    Containers::StridedArrayView1D<Field> view = fields;
+
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
+        /* Test also with a completely empty field */
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+        SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    scene.fieldObjectOffset(0, 4);
+    scene.fieldObjectOffset(SceneField::Parent, 4);
+    scene.fieldObjectOffset(1, 1, 2);
+    scene.fieldObjectOffset(SceneField::Mesh, 1, 2);
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::fieldObjectOffset(): object 4 not found in field Trade::SceneField::Parent starting at offset 0\n"
+        "Trade::SceneData::fieldObjectOffset(): object 4 not found in field Trade::SceneField::Parent starting at offset 0\n"
+        "Trade::SceneData::fieldObjectOffset(): object 1 not found in field Trade::SceneField::Mesh starting at offset 2\n"
+        "Trade::SceneData::fieldObjectOffset(): object 1 not found in field Trade::SceneField::Mesh starting at offset 2\n");
 }
 
 template<class T> void SceneDataTest::objectsAsArrayByIndex() {
@@ -4108,6 +4252,9 @@ void SceneDataTest::fieldNotFound() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    scene.findFieldObjectOffset(2, 0);
+    scene.fieldObjectOffset(2, 0);
+    scene.hasFieldObject(2, 0);
     scene.fieldData(2);
     scene.fieldName(2);
     scene.fieldType(2);
@@ -4121,6 +4268,9 @@ void SceneDataTest::fieldNotFound() {
     scene.mutableField<UnsignedInt[]>(2);
 
     scene.fieldId(sceneFieldCustom(666));
+    scene.findFieldObjectOffset(sceneFieldCustom(666), 0);
+    scene.fieldObjectOffset(sceneFieldCustom(666), 0);
+    scene.hasFieldObject(sceneFieldCustom(666), 0);
     scene.fieldType(sceneFieldCustom(666));
     scene.fieldSize(sceneFieldCustom(666));
     scene.fieldArraySize(sceneFieldCustom(666));
@@ -4162,6 +4312,9 @@ void SceneDataTest::fieldNotFound() {
     scene.importerStateInto(nullptr);
     scene.importerStateInto(0, nullptr);
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::findFieldObjectOffset(): index 2 out of range for 2 fields\n"
+        "Trade::SceneData::fieldObjectOffset(): index 2 out of range for 2 fields\n"
+        "Trade::SceneData::hasFieldObject(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldData(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldName(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldType(): index 2 out of range for 2 fields\n"
@@ -4175,6 +4328,9 @@ void SceneDataTest::fieldNotFound() {
         "Trade::SceneData::mutableField(): index 2 out of range for 2 fields\n"
 
         "Trade::SceneData::fieldId(): field Trade::SceneField::Custom(666) not found\n"
+        "Trade::SceneData::findFieldObjectOffset(): field Trade::SceneField::Custom(666) not found\n"
+        "Trade::SceneData::fieldObjectOffset(): field Trade::SceneField::Custom(666) not found\n"
+        "Trade::SceneData::hasFieldObject(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::fieldType(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::fieldSize(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::fieldArraySize(): field Trade::SceneField::Custom(666) not found\n"
@@ -4370,11 +4526,9 @@ void SceneDataTest::fieldWrongArrayAccess() {
         "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n");
 }
 
-template<class T> void SceneDataTest::parentFor() {
-    setTestCaseTemplateName(NameTraits<T>::name());
-
+void SceneDataTest::parentFor() {
     struct Field {
-        T object;
+        UnsignedInt object;
         Int parent;
     } fields[]{
         {3, -1},
@@ -4384,7 +4538,7 @@ template<class T> void SceneDataTest::parentFor() {
     };
     Containers::StridedArrayView1D<Field> view = fields;
 
-    SceneData scene{Implementation::sceneObjectTypeFor<T>(), 7, {}, fields, {
+    SceneData scene{SceneObjectType::UnsignedInt, 7, {}, fields, {
         SceneFieldData{SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
     }};
 
@@ -4867,15 +5021,23 @@ void SceneDataTest::fieldForFieldMissing() {
         TestSuite::Compare::Container);
 }
 
-void SceneDataTest::fieldForInvalidObject() {
+void SceneDataTest::findFieldObjectOffsetInvalidObject() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    SceneData scene{SceneObjectType::UnsignedInt, 7, nullptr, {}};
+    SceneData scene{SceneObjectType::UnsignedInt, 7, nullptr, {
+        SceneFieldData{SceneField::Parent, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
+    scene.findFieldObjectOffset(0, 7);
+    scene.findFieldObjectOffset(SceneField::Parent, 7);
+    scene.fieldObjectOffset(0, 7);
+    scene.fieldObjectOffset(SceneField::Parent, 7);
+    scene.hasFieldObject(0, 7);
+    scene.hasFieldObject(SceneField::Parent, 7);
     scene.parentFor(7);
     scene.childrenFor(-2);
     scene.childrenFor(7);
@@ -4888,6 +5050,12 @@ void SceneDataTest::fieldForInvalidObject() {
     scene.camerasFor(7);
     scene.skinsFor(7);
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::findFieldObjectOffset(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::findFieldObjectOffset(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::fieldObjectOffset(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::fieldObjectOffset(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::hasFieldObject(): object 7 out of bounds for 7 objects\n"
+        "Trade::SceneData::hasFieldObject(): object 7 out of bounds for 7 objects\n"
         "Trade::SceneData::parentFor(): object 7 out of bounds for 7 objects\n"
         "Trade::SceneData::childrenFor(): object -2 out of bounds for 7 objects\n"
         "Trade::SceneData::childrenFor(): object 7 out of bounds for 7 objects\n"
