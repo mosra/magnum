@@ -248,7 +248,7 @@ void AbstractShaderProgramGLTest::create() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
     {
-        #ifdef CORRADE_TARGET_APPLE
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(valid);
@@ -429,7 +429,7 @@ void AbstractShaderProgramGLTest::uniformNotFound() {
         , Shader::Type::Fragment);
     vert.addSource("void main() { gl_Position = vec4(0.0); }");
     frag.addSource(
-        #ifndef CORRADE_TARGET_APPLE
+        #if !defined(CORRADE_TARGET_APPLE) || defined(MAGNUM_TARGET_GLES)
         "void main() { gl_FragColor = vec4(1.0); }"
         #else
         "out vec4 color;\n"
@@ -694,7 +694,7 @@ void AbstractShaderProgramGLTest::createUniformBlocks() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
     {
-        #ifdef CORRADE_TARGET_APPLE
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(valid);

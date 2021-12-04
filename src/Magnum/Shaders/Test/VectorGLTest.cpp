@@ -354,7 +354,7 @@ template<UnsignedInt dimensions> void VectorGLTest::construct() {
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
-        #ifdef CORRADE_TARGET_APPLE
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
@@ -393,7 +393,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffers() {
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
     CORRADE_VERIFY(shader.id());
     {
-        #ifdef CORRADE_TARGET_APPLE
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);

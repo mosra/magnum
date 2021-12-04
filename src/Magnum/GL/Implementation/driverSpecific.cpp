@@ -430,7 +430,7 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
     _detectedDrivers = DetectedDrivers{};
 
-    #ifndef CORRADE_TARGET_APPLE
+    #if !defined(CORRADE_TARGET_APPLE) || defined(MAGNUM_TARGET_GLES)
     const Containers::StringView renderer =
         #ifndef MAGNUM_TARGET_WEBGL
         rendererString()
@@ -439,7 +439,7 @@ auto Context::detectedDriver() -> DetectedDrivers {
         #endif
         ;
     #endif
-    #if !defined(CORRADE_TARGET_APPLE) || defined(MAGNUM_TARGET_GLES)
+    #ifndef CORRADE_TARGET_APPLE
     const Containers::StringView vendor =
         #ifndef MAGNUM_TARGET_WEBGL
         vendorString()

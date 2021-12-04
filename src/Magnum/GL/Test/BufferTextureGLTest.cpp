@@ -34,7 +34,7 @@
 #include "Magnum/GL/ImageFormat.h"
 #include "Magnum/GL/OpenGLTester.h"
 
-#if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+#if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
 #endif
@@ -57,7 +57,7 @@ struct BufferTextureGLTest: OpenGLTester {
 
     void resetBuffer();
 
-    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+    #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
     void appleSetBufferSubData();
     void appleSetUnrelatedBufferData();
     void appleSetBufferQueryData();
@@ -81,7 +81,7 @@ BufferTextureGLTest::BufferTextureGLTest() {
 
               &BufferTextureGLTest::resetBuffer,
 
-              #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+              #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
               &BufferTextureGLTest::appleSetBufferSubData,
               &BufferTextureGLTest::appleSetUnrelatedBufferData,
               &BufferTextureGLTest::appleSetBufferQueryData,
@@ -348,7 +348,7 @@ void BufferTextureGLTest::resetBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-#if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+#if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
 void BufferTextureGLTest::appleSetBufferSubData() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
         CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
