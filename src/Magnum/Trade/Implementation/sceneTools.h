@@ -109,7 +109,7 @@ inline SceneData sceneCombine(const SceneMappingType mappingType, const Unsigned
 
     for(std::size_t i = 0; i != fields.size(); ++i) {
         const SceneFieldData& field = fields[i];
-        CORRADE_INTERNAL_ASSERT(!field.isOffsetOnly());
+        CORRADE_INTERNAL_ASSERT(!(field.flags() & SceneFieldFlag::OffsetOnly));
 
         /* Mapping data. Allocate if the view is a placeholder of if it wasn't
            used by other fields yet. */

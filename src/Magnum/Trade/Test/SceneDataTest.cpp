@@ -63,6 +63,10 @@ struct SceneDataTest: TestSuite::Tester {
     void fieldTypeSizeAlignmentInvalid();
     void debugFieldType();
 
+    void debugFieldFlag();
+    void debugFieldFlags();
+    void debugFieldFlagsSupersets();
+
     void constructField();
     void constructFieldDefault();
     void constructFieldCustom();
@@ -79,6 +83,7 @@ struct SceneDataTest: TestSuite::Tester {
     void constructFieldInconsistentViewSize();
     void constructFieldTooLargeMappingStride();
     void constructFieldTooLargeFieldStride();
+    void constructFieldOffsetOnlyNotAllowed();
     void constructFieldWrongDataAccess();
     void constructField2DWrongSize();
     void constructField2DNonContiguous();
@@ -205,6 +210,57 @@ const struct {
 
 const struct {
     const char* name;
+    SceneFieldFlags flags;
+    UnsignedInt mapping[5];
+    UnsignedInt object;
+    UnsignedInt offset;
+    Containers::Optional<std::size_t> expected;
+} FindFieldObjectOffsetData[]{
+    {"", {},
+        {4, 2, 1, 0, 2}, 2, 0, 1},
+    {"not found", {},
+        {4, 2, 1, 0, 2}, 3, 0, Containers::NullOpt},
+    {"offset", {},
+        {4, 2, 1, 0, 2}, 2, 2, 4},
+    {"offset, not found", {},
+        {4, 2, 1, 0, 2}, 2, 5, Containers::NullOpt},
+
+    {"ordered", SceneFieldFlag::OrderedMapping,
+        {1, 3, 4, 4, 5}, 4, 0, 2},
+    {"ordered, not found", SceneFieldFlag::OrderedMapping,
+        /* It *is* there but the binary search expects an ordered range and thus
+           should not even see it */
+        {1, 3, 4, 4, 2}, 2, 0, Containers::NullOpt},
+    {"ordered, not found, too small", SceneFieldFlag::OrderedMapping,
+        {1, 3, 4, 4, 5}, 0, 0, Containers::NullOpt},
+    {"ordered, not found, too large", SceneFieldFlag::OrderedMapping,
+        {1, 3, 4, 4, 5}, 6, 0, Containers::NullOpt},
+    {"ordered, offset", SceneFieldFlag::OrderedMapping,
+        {1, 3, 4, 4, 5}, 4, 3, 3},
+    {"ordered, offset, not found", SceneFieldFlag::OrderedMapping,
+        {1, 3, 4, 4, 5}, 4, 4, Containers::NullOpt},
+
+    {"implicit", SceneFieldFlag::ImplicitMapping,
+        /* Not there but the assumption is that the ID matches the offset */
+        {5, 5, 5, 5, 5}, 3, 0, 3},
+    {"implicit, not found", SceneFieldFlag::ImplicitMapping,
+        /* Is there but the assumption is that the ID matches the offset, which
+           is out of bounds */
+        {5, 5, 5, 5, 5}, 5, 0, Containers::NullOpt},
+    {"implicit, offset", SceneFieldFlag::ImplicitMapping,
+        /* Not there but the assumption is that the ID matches the offset;
+           verifying that the offset is properly accounted for */
+        {5, 5, 5, 5, 5}, 3, 3, 3},
+    {"implicit, offset, not found, less than offset", SceneFieldFlag::ImplicitMapping,
+        /* Cerifying that the offset is properly accounted for -- it's never
+           found if offset > id */
+        {5, 5, 5, 5, 5}, 3, 4, Containers::NullOpt},
+    {"implicit, offset, not found, out of bounds", SceneFieldFlag::ImplicitMapping,
+        {5, 5, 5, 5, 5}, 5, 4, Containers::NullOpt}
+};
+
+const struct {
+    const char* name;
     std::size_t offset;
     std::size_t size;
     std::size_t expectedSize;
@@ -298,6 +354,10 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::fieldTypeSizeAlignmentInvalid,
               &SceneDataTest::debugFieldType,
 
+              &SceneDataTest::debugFieldFlag,
+              &SceneDataTest::debugFieldFlags,
+              &SceneDataTest::debugFieldFlagsSupersets,
+
               &SceneDataTest::constructField,
               &SceneDataTest::constructFieldDefault,
               &SceneDataTest::constructFieldCustom,
@@ -314,6 +374,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructFieldInconsistentViewSize,
               &SceneDataTest::constructFieldTooLargeMappingStride,
               &SceneDataTest::constructFieldTooLargeFieldStride,
+              &SceneDataTest::constructFieldOffsetOnlyNotAllowed,
               &SceneDataTest::constructFieldWrongDataAccess,
               &SceneDataTest::constructField2DWrongSize,
               &SceneDataTest::constructField2DNonContiguous,
@@ -353,12 +414,16 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructCopy,
               &SceneDataTest::constructMove,
 
-              &SceneDataTest::findFieldId,
-              &SceneDataTest::findFieldObjectOffset<UnsignedByte>,
-              &SceneDataTest::findFieldObjectOffset<UnsignedShort>,
-              &SceneDataTest::findFieldObjectOffset<UnsignedInt>,
-              &SceneDataTest::findFieldObjectOffset<UnsignedLong>,
-              &SceneDataTest::findFieldObjectOffsetInvalidOffset,
+              &SceneDataTest::findFieldId});
+
+    addInstancedTests<SceneDataTest>({
+        &SceneDataTest::findFieldObjectOffset<UnsignedByte>,
+        &SceneDataTest::findFieldObjectOffset<UnsignedShort>,
+        &SceneDataTest::findFieldObjectOffset<UnsignedInt>,
+        &SceneDataTest::findFieldObjectOffset<UnsignedLong>
+    }, Containers::arraySize(FindFieldObjectOffsetData));
+
+    addTests({&SceneDataTest::findFieldObjectOffsetInvalidOffset,
               &SceneDataTest::fieldObjectOffsetNotFound,
 
               &SceneDataTest::mappingAsArrayByIndex<UnsignedByte>,
@@ -645,6 +710,30 @@ void SceneDataTest::debugFieldType() {
     CORRADE_COMPARE(out.str(), "Trade::SceneFieldType::Matrix3x4h Trade::SceneFieldType(0xdead)\n");
 }
 
+void SceneDataTest::debugFieldFlag() {
+    std::ostringstream out;
+
+    Debug(&out) << SceneFieldFlag::OffsetOnly << SceneFieldFlag(0xbe);
+    CORRADE_COMPARE(out.str(), "Trade::SceneFieldFlag::OffsetOnly Trade::SceneFieldFlag(0xbe)\n");
+}
+
+void SceneDataTest::debugFieldFlags() {
+    std::ostringstream out;
+
+    Debug{&out} << (SceneFieldFlag::OffsetOnly|SceneFieldFlag(0xe0)) << SceneFieldFlags{};
+    CORRADE_COMPARE(out.str(), "Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag(0xe0) Trade::SceneFieldFlags{}\n");
+}
+
+void SceneDataTest::debugFieldFlagsSupersets() {
+    /* ImplicitMapping is a superset of OrderedMapping, so only one should be
+       printed */
+    {
+        std::ostringstream out;
+        Debug{&out} << (SceneFieldFlag::ImplicitMapping|SceneFieldFlag::OrderedMapping);
+        CORRADE_COMPARE(out.str(), "Trade::SceneFieldFlag::ImplicitMapping\n");
+    }
+}
+
 const UnsignedShort RotationMapping2D[3] {
     17,
     35,
@@ -660,8 +749,8 @@ void SceneDataTest::constructField() {
     const UnsignedShort rotationMappingData[3]{};
     const Complexd rotationFieldData[3];
 
-    SceneFieldData rotations{SceneField::Rotation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData)};
-    CORRADE_VERIFY(!rotations.isOffsetOnly());
+    SceneFieldData rotations{SceneField::Rotation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(rotations.flags(), SceneFieldFlag::OrderedMapping);
     CORRADE_COMPARE(rotations.name(), SceneField::Rotation);
     CORRADE_COMPARE(rotations.size(), 3);
     CORRADE_COMPARE(rotations.mappingType(), SceneMappingType::UnsignedShort);
@@ -685,16 +774,16 @@ void SceneDataTest::constructField() {
     CORRADE_VERIFY(rotations.mappingData(someArray).data() == rotationMappingData);
 
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Won't bother anymore */
-    constexpr SceneFieldData crotations{SceneField::Rotation, Containers::arrayView(RotationMapping2D), Containers::arrayView(RotationField2D)};
-    constexpr bool isOffsetOnly = crotations.isOffsetOnly();
+    constexpr SceneFieldData crotations{SceneField::Rotation, Containers::arrayView(RotationMapping2D), Containers::arrayView(RotationField2D), SceneFieldFlag::ImplicitMapping};
     constexpr SceneField name = crotations.name();
+    constexpr SceneFieldFlags flags = crotations.flags();
     constexpr SceneMappingType mappingType = crotations.mappingType();
     constexpr Containers::StridedArrayView1D<const void> mappingData = crotations.mappingData();
     constexpr SceneFieldType fieldType = crotations.fieldType();
     constexpr UnsignedShort fieldArraySize = crotations.fieldArraySize();
     constexpr Containers::StridedArrayView1D<const void> fieldData = crotations.fieldData();
-    CORRADE_VERIFY(!isOffsetOnly);
     CORRADE_COMPARE(name, SceneField::Rotation);
+    CORRADE_COMPARE(flags, SceneFieldFlag::ImplicitMapping);
     CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(mappingData.size(), 3);
     CORRADE_COMPARE(mappingData.stride(), sizeof(UnsignedShort));
@@ -739,8 +828,8 @@ void SceneDataTest::constructField2D() {
     auto rotationMappingView = Containers::StridedArrayView2D<char>{rotationMappingData, {6, sizeof(UnsignedShort)}}.every(2);
     auto rotationFieldView = Containers::StridedArrayView2D<char>{rotationFieldData, {6, sizeof(Complexd)}}.every(2);
 
-    SceneFieldData rotations{SceneField::Rotation, rotationMappingView, SceneFieldType::Complexd, rotationFieldView};
-    CORRADE_VERIFY(!rotations.isOffsetOnly());
+    SceneFieldData rotations{SceneField::Rotation, rotationMappingView, SceneFieldType::Complexd, rotationFieldView, SceneFieldFlag::ImplicitMapping};
+    CORRADE_COMPARE(rotations.flags(), SceneFieldFlag::ImplicitMapping);
     CORRADE_COMPARE(rotations.name(), SceneField::Rotation);
     CORRADE_COMPARE(rotations.size(), 3);
     CORRADE_COMPARE(rotations.mappingType(), SceneMappingType::UnsignedShort);
@@ -757,8 +846,8 @@ void SceneDataTest::constructField2D() {
 void SceneDataTest::constructFieldTypeErased() {
     const UnsignedLong scalingMappingData[3]{};
     const Vector3 scalingFieldData[3];
-    SceneFieldData scalings{SceneField::Scaling, SceneMappingType::UnsignedLong, Containers::arrayCast<const char>(Containers::stridedArrayView(scalingMappingData)), SceneFieldType::Vector3, Containers::arrayCast<const char>(Containers::stridedArrayView(scalingFieldData))};
-    CORRADE_VERIFY(!scalings.isOffsetOnly());
+    SceneFieldData scalings{SceneField::Scaling, SceneMappingType::UnsignedLong, Containers::arrayCast<const char>(Containers::stridedArrayView(scalingMappingData)), SceneFieldType::Vector3, Containers::arrayCast<const char>(Containers::stridedArrayView(scalingFieldData)), SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(scalings.flags(), SceneFieldFlag::OrderedMapping);
     CORRADE_COMPARE(scalings.name(), SceneField::Scaling);
     CORRADE_COMPARE(scalings.size(), 3);
     CORRADE_COMPARE(scalings.mappingType(), SceneMappingType::UnsignedLong);
@@ -789,8 +878,8 @@ void SceneDataTest::constructFieldOffsetOnly() {
         {0, 15, {67.0f, -1.1f}}
     };
 
-    SceneFieldData a{SceneField::Translation, 2, SceneMappingType::UnsignedShort, offsetof(Data, object), sizeof(Data), SceneFieldType::Vector2, offsetof(Data, translation), sizeof(Data)};
-    CORRADE_VERIFY(a.isOffsetOnly());
+    SceneFieldData a{SceneField::Translation, 2, SceneMappingType::UnsignedShort, offsetof(Data, object), sizeof(Data), SceneFieldType::Vector2, offsetof(Data, translation), sizeof(Data), SceneFieldFlag::ImplicitMapping};
+    CORRADE_COMPARE(a.flags(), SceneFieldFlag::OffsetOnly|SceneFieldFlag::ImplicitMapping);
     CORRADE_COMPARE(a.name(), SceneField::Translation);
     CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.mappingType(), SceneMappingType::UnsignedShort);
@@ -814,8 +903,8 @@ constexpr Int ArrayOffsetFieldData[3*4]{};
 void SceneDataTest::constructFieldArray() {
     UnsignedByte offsetMappingData[3];
     Int offsetFieldData[3*4];
-    SceneFieldData data{sceneFieldCustom(34), Containers::arrayView(offsetMappingData), Containers::StridedArrayView2D<Int>{offsetFieldData, {3, 4}}};
-    CORRADE_VERIFY(!data.isOffsetOnly());
+    SceneFieldData data{sceneFieldCustom(34), Containers::arrayView(offsetMappingData), Containers::StridedArrayView2D<Int>{offsetFieldData, {3, 4}}, SceneFieldFlag::ImplicitMapping};
+    CORRADE_COMPARE(data.flags(), SceneFieldFlag::ImplicitMapping);
     CORRADE_COMPARE(data.name(), sceneFieldCustom(34));
     CORRADE_COMPARE(data.size(), 3);
     CORRADE_COMPARE(data.mappingType(), SceneMappingType::UnsignedByte);
@@ -828,8 +917,8 @@ void SceneDataTest::constructFieldArray() {
     CORRADE_COMPARE(data.fieldData().stride(), 4*sizeof(Int));
     CORRADE_VERIFY(data.fieldData().data() == offsetFieldData);
 
-    constexpr SceneFieldData cdata{sceneFieldCustom(34), Containers::arrayView(ArrayOffsetMappingData), Containers::StridedArrayView2D<const Int>{ArrayOffsetFieldData, {3, 4}}};
-    CORRADE_VERIFY(!cdata.isOffsetOnly());
+    constexpr SceneFieldData cdata{sceneFieldCustom(34), Containers::arrayView(ArrayOffsetMappingData), Containers::StridedArrayView2D<const Int>{ArrayOffsetFieldData, {3, 4}}, SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(cdata.flags(), SceneFieldFlag::OrderedMapping);
     CORRADE_COMPARE(cdata.name(), sceneFieldCustom(34));
     CORRADE_COMPARE(cdata.size(), 3);
     CORRADE_COMPARE(cdata.mappingType(), SceneMappingType::UnsignedByte);
@@ -846,8 +935,8 @@ void SceneDataTest::constructFieldArray() {
 void SceneDataTest::constructFieldArray2D() {
     char offsetMappingData[3*sizeof(UnsignedByte)];
     char offsetFieldData[3*4*sizeof(Int)];
-    SceneFieldData data{sceneFieldCustom(34), Containers::StridedArrayView2D<char>{offsetMappingData, {3, sizeof(UnsignedByte)}}, SceneFieldType::Int, Containers::StridedArrayView2D<char>{offsetFieldData, {3, 4*sizeof(Int)}}, 4};
-    CORRADE_VERIFY(!data.isOffsetOnly());
+    SceneFieldData data{sceneFieldCustom(34), Containers::StridedArrayView2D<char>{offsetMappingData, {3, sizeof(UnsignedByte)}}, SceneFieldType::Int, Containers::StridedArrayView2D<char>{offsetFieldData, {3, 4*sizeof(Int)}}, 4, SceneFieldFlag::ImplicitMapping};
+    CORRADE_COMPARE(data.flags(), SceneFieldFlag::ImplicitMapping);
     CORRADE_COMPARE(data.name(), sceneFieldCustom(34));
     CORRADE_COMPARE(data.size(), 3);
     CORRADE_COMPARE(data.mappingType(), SceneMappingType::UnsignedByte);
@@ -865,8 +954,8 @@ void SceneDataTest::constructFieldArrayTypeErased() {
     UnsignedByte offsetMappingData[3];
     Int offsetFieldData[3*4];
     Containers::StridedArrayView1D<Int> offset{offsetFieldData, 3, 4*sizeof(Int)};
-    SceneFieldData data{sceneFieldCustom(34), SceneMappingType::UnsignedByte, Containers::arrayCast<const char>(Containers::stridedArrayView(offsetMappingData)), SceneFieldType::Int, Containers::arrayCast<const char>(offset), 4};
-    CORRADE_VERIFY(!data.isOffsetOnly());
+    SceneFieldData data{sceneFieldCustom(34), SceneMappingType::UnsignedByte, Containers::arrayCast<const char>(Containers::stridedArrayView(offsetMappingData)), SceneFieldType::Int, Containers::arrayCast<const char>(offset), 4, SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(data.flags(), SceneFieldFlag::OrderedMapping);
     CORRADE_COMPARE(data.name(), sceneFieldCustom(34));
     CORRADE_COMPARE(data.size(), 3);
     CORRADE_COMPARE(data.fieldType(), SceneFieldType::Int);
@@ -887,8 +976,8 @@ void SceneDataTest::constructFieldArrayOffsetOnly() {
         Int offset[4];
     };
 
-    SceneFieldData data{sceneFieldCustom(34), 3, SceneMappingType::UnsignedByte, offsetof(Data, object), sizeof(Data), SceneFieldType::Int, offsetof(Data, offset), sizeof(Data), 4};
-    CORRADE_VERIFY(data.isOffsetOnly());
+    SceneFieldData data{sceneFieldCustom(34), 3, SceneMappingType::UnsignedByte, offsetof(Data, object), sizeof(Data), SceneFieldType::Int, offsetof(Data, offset), sizeof(Data), 4, SceneFieldFlag::ImplicitMapping};
+    CORRADE_COMPARE(data.flags(), SceneFieldFlag::OffsetOnly|SceneFieldFlag::ImplicitMapping);
     CORRADE_COMPARE(data.name(), sceneFieldCustom(34));
     CORRADE_COMPARE(data.size(), 3);
     CORRADE_COMPARE(data.mappingType(), SceneMappingType::UnsignedByte);
@@ -903,8 +992,8 @@ void SceneDataTest::constructFieldArrayOffsetOnly() {
     CORRADE_COMPARE(data.mappingData(actual).stride(), sizeof(Data));
     CORRADE_VERIFY(data.mappingData(actual).data() == &actual[0].object);
 
-    constexpr SceneFieldData cdata{sceneFieldCustom(34), 3, SceneMappingType::UnsignedByte, offsetof(Data, object), sizeof(Data), SceneFieldType::Int, offsetof(Data, offset), sizeof(Data), 4};
-    CORRADE_VERIFY(cdata.isOffsetOnly());
+    constexpr SceneFieldData cdata{sceneFieldCustom(34), 3, SceneMappingType::UnsignedByte, offsetof(Data, object), sizeof(Data), SceneFieldType::Int, offsetof(Data, offset), sizeof(Data), 4, SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(cdata.flags(), SceneFieldFlag::OffsetOnly|SceneFieldFlag::OrderedMapping);
     CORRADE_COMPARE(cdata.name(), sceneFieldCustom(34));
     CORRADE_COMPARE(cdata.size(), 3);
     CORRADE_COMPARE(cdata.mappingType(), SceneMappingType::UnsignedByte);
@@ -997,6 +1086,24 @@ void SceneDataTest::constructFieldTooLargeFieldStride() {
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits, but got -32769\n");
 }
 
+void SceneDataTest::constructFieldOffsetOnlyNotAllowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    const UnsignedShort rotationMappingData[3]{};
+    const Quaternion rotationFieldData[3];
+
+    /* This one is fine */
+    SceneFieldData{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), SceneFieldType::Quaternion, 0, sizeof(Quaternion), SceneFieldFlag::OffsetOnly};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    SceneFieldData{SceneField::Rotation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::OffsetOnly};
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view\n");
+}
+
 void SceneDataTest::constructFieldWrongDataAccess() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1006,8 +1113,8 @@ void SceneDataTest::constructFieldWrongDataAccess() {
     const Quaternion rotationFieldData[3];
     SceneFieldData a{SceneField::Rotation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData)};
     SceneFieldData b{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), SceneFieldType::Quaternion, 0, sizeof(Quaternion)};
-    CORRADE_VERIFY(!a.isOffsetOnly());
-    CORRADE_VERIFY(b.isOffsetOnly());
+    CORRADE_COMPARE(a.flags(), SceneFieldFlags{});
+    CORRADE_COMPARE(b.flags(), SceneFieldFlag::OffsetOnly);
 
     a.mappingData(rotationMappingData); /* This is fine, no asserts */
     a.fieldData(rotationFieldData);
@@ -1229,11 +1336,11 @@ void SceneDataTest::construct() {
         SceneFieldType::Int, offsetof(TransformParent, parent), sizeof(TransformParent)};
     SceneFieldData meshes{SceneField::Mesh,
         materialMeshRadiusMappingData,
-        meshFieldData};
+        meshFieldData, SceneFieldFlag::OrderedMapping};
     /* Custom & array */
     SceneFieldData radiuses{sceneFieldCustom(37),
         materialMeshRadiusMappingData,
-        Containers::arrayCast<2, Float>(radiusFieldData)};
+        Containers::arrayCast<2, Float>(radiusFieldData), SceneFieldFlag::OrderedMapping};
     SceneData scene{SceneMappingType::UnsignedShort, 8, std::move(data), {
         transformations, parents, meshes, radiuses
     }, &importerState};
@@ -1256,6 +1363,10 @@ void SceneDataTest::construct() {
     CORRADE_COMPARE(scene.fieldName(1), SceneField::Parent);
     CORRADE_COMPARE(scene.fieldName(2), SceneField::Mesh);
     CORRADE_COMPARE(scene.fieldName(3), sceneFieldCustom(37));
+    CORRADE_COMPARE(scene.fieldFlags(0), SceneFieldFlags{});
+    CORRADE_COMPARE(scene.fieldFlags(1), SceneFieldFlag::OffsetOnly);
+    CORRADE_COMPARE(scene.fieldFlags(2), SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(scene.fieldFlags(3), SceneFieldFlag::OrderedMapping);
     CORRADE_COMPARE(scene.fieldType(0), SceneFieldType::Matrix4x4);
     CORRADE_COMPARE(scene.fieldType(1), SceneFieldType::Int);
     CORRADE_COMPARE(scene.fieldType(2), SceneFieldType::UnsignedByte);
@@ -1275,14 +1386,14 @@ void SceneDataTest::construct() {
     CORRADE_COMPARE(scene.fieldData(2).mappingType(), SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(Containers::arrayCast<const UnsignedShort>(scene.fieldData(2).mappingData())[1], 6);
     CORRADE_COMPARE(Containers::arrayCast<const UnsignedByte>(scene.fieldData(2).fieldData())[1], 7);
-    CORRADE_VERIFY(!scene.fieldData(2).isOffsetOnly());
+    CORRADE_COMPARE(scene.fieldData(2).flags(), SceneFieldFlag::OrderedMapping);
     CORRADE_COMPARE(scene.fieldData(2).fieldType(), SceneFieldType::UnsignedByte);
     CORRADE_COMPARE(scene.fieldData(2).fieldArraySize(), 0);
     /* Offset-only */
     CORRADE_COMPARE(scene.fieldData(1).name(), SceneField::Parent);
     CORRADE_COMPARE(scene.fieldData(1).size(), 5);
     CORRADE_COMPARE(scene.fieldData(1).mappingType(), SceneMappingType::UnsignedShort);
-    CORRADE_VERIFY(!scene.fieldData(1).isOffsetOnly());
+    CORRADE_COMPARE(scene.fieldData(1).flags(), SceneFieldFlags{});
     CORRADE_COMPARE(scene.fieldData(1).fieldType(), SceneFieldType::Int);
     CORRADE_COMPARE(scene.fieldData(1).fieldArraySize(), 0);
     CORRADE_COMPARE(Containers::arrayCast<const UnsignedShort>(scene.fieldData(1).mappingData())[4], 1);
@@ -1291,7 +1402,7 @@ void SceneDataTest::construct() {
     CORRADE_COMPARE(scene.fieldData(3).name(), sceneFieldCustom(37));
     CORRADE_COMPARE(scene.fieldData(3).size(), 2);
     CORRADE_COMPARE(scene.fieldData(3).mappingType(), SceneMappingType::UnsignedShort);
-    CORRADE_VERIFY(!scene.fieldData(3).isOffsetOnly());
+    CORRADE_COMPARE(scene.fieldData(3).flags(), SceneFieldFlag::OrderedMapping);
     CORRADE_COMPARE(scene.fieldData(3).fieldType(), SceneFieldType::Float);
     CORRADE_COMPARE(scene.fieldData(3).fieldArraySize(), 2);
     CORRADE_COMPARE(Containers::arrayCast<const UnsignedShort>(scene.fieldData(3).mappingData())[0], 2);
@@ -1374,6 +1485,10 @@ void SceneDataTest::construct() {
     CORRADE_COMPARE(scene.mutableField<Float[]>(3)[0][1], 1.5f);
 
     /* Field property access by name */
+    CORRADE_COMPARE(scene.fieldFlags(SceneField::Transformation), SceneFieldFlags{});
+    CORRADE_COMPARE(scene.fieldFlags(SceneField::Parent), SceneFieldFlag::OffsetOnly);
+    CORRADE_COMPARE(scene.fieldFlags(SceneField::Mesh), SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(scene.fieldFlags(sceneFieldCustom(37)), SceneFieldFlag::OrderedMapping);
     CORRADE_COMPARE(scene.fieldType(SceneField::Transformation), SceneFieldType::Matrix4x4);
     CORRADE_COMPARE(scene.fieldType(SceneField::Parent), SceneFieldType::Int);
     CORRADE_COMPARE(scene.fieldType(SceneField::Mesh), SceneFieldType::UnsignedByte);
@@ -1608,6 +1723,7 @@ void SceneDataTest::constructDeprecated() {
     CORRADE_COMPARE(scene.importerState(), &a);
     CORRADE_COMPARE(scene.fieldCount(), 1);
     CORRADE_COMPARE(scene.fieldName(0), SceneField::Parent);
+    CORRADE_COMPARE(scene.fieldFlags(0), SceneFieldFlags{});
     CORRADE_COMPARE(scene.fieldType(0), SceneFieldType::Int);
     if(data.is2D || data.is3D) {
         CORRADE_COMPARE_AS(scene.mapping<UnsignedInt>(0),
@@ -2113,60 +2229,46 @@ void SceneDataTest::findFieldId() {
 template<class T> void SceneDataTest::findFieldObjectOffset() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    /** @todo update once field flags describing object order are present */
+    auto&& data = FindFieldObjectOffsetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
     struct Field {
         T object;
         UnsignedInt mesh;
-    } fields[]{
-        {4, 1},
-        {1, 3},
-        {2, 4},
-        {0, 5},
-        {2, 5}
+    } fields[5]{
+        {T(data.mapping[0]), 0},
+        {T(data.mapping[1]), 0},
+        {T(data.mapping[2]), 0},
+        {T(data.mapping[3]), 0},
+        {T(data.mapping[4]), 0}
     };
     Containers::StridedArrayView1D<Field> view = fields;
 
     SceneData scene{Implementation::sceneMappingTypeFor<T>(), 7, {}, fields, {
         /* Test also with a completely empty field */
         SceneFieldData{SceneField::Parent, Implementation::sceneMappingTypeFor<T>(), nullptr, SceneFieldType::Int, nullptr},
-        SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
+        SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh), data.flags}
     }};
 
-    CORRADE_COMPARE(scene.findFieldObjectOffset(0, 4), Containers::NullOpt);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Parent, 4), Containers::NullOpt);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(1, 4), 0);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(1, 1), 1);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(1, 2), 2);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(1, 2, 3), 4);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(1, 2, 5), Containers::NullOpt);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(1, 3), Containers::NullOpt);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, 4), 0);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, 1), 1);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, 2), 2);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, 2, 3), 4);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, 2, 5), Containers::NullOpt);
-    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, 3), Containers::NullOpt);
+    /* An empty field should not find anything for any query with any flags */
+    if(data.offset == 0) {
+        CORRADE_COMPARE(scene.findFieldObjectOffset(0, data.object), Containers::NullOpt);
+        CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Parent, data.object), Containers::NullOpt);
+        CORRADE_VERIFY(!scene.hasFieldObject(0, data.object));
+        CORRADE_VERIFY(!scene.hasFieldObject(SceneField::Parent, data.object));
+    }
 
-    CORRADE_COMPARE(scene.fieldObjectOffset(1, 4), 0);
-    CORRADE_COMPARE(scene.fieldObjectOffset(1, 1), 1);
-    CORRADE_COMPARE(scene.fieldObjectOffset(1, 2), 2);
-    CORRADE_COMPARE(scene.fieldObjectOffset(1, 2, 3), 4);
-    CORRADE_COMPARE(scene.fieldObjectOffset(SceneField::Mesh, 4), 0);
-    CORRADE_COMPARE(scene.fieldObjectOffset(SceneField::Mesh, 1), 1);
-    CORRADE_COMPARE(scene.fieldObjectOffset(SceneField::Mesh, 2), 2);
-    CORRADE_COMPARE(scene.fieldObjectOffset(SceneField::Mesh, 2, 3), 4);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(1, data.object, data.offset), data.expected);
+    CORRADE_COMPARE(scene.findFieldObjectOffset(SceneField::Mesh, data.object, data.offset), data.expected);
+    if(data.offset == 0) {
+        CORRADE_COMPARE(scene.hasFieldObject(1, data.object), !!data.expected);
+        CORRADE_COMPARE(scene.hasFieldObject(SceneField::Mesh, data.object), !!data.expected);
+    }
 
-    CORRADE_VERIFY(!scene.hasFieldObject(0, 4));
-    CORRADE_VERIFY(!scene.hasFieldObject(SceneField::Parent, 4));
-    CORRADE_VERIFY(scene.hasFieldObject(1, 4));
-    CORRADE_VERIFY(scene.hasFieldObject(1, 1));
-    CORRADE_VERIFY(scene.hasFieldObject(1, 2));
-    CORRADE_VERIFY(!scene.hasFieldObject(1, 3));
-    CORRADE_VERIFY(scene.hasFieldObject(SceneField::Mesh, 4));
-    CORRADE_VERIFY(scene.hasFieldObject(SceneField::Mesh, 1));
-    CORRADE_VERIFY(scene.hasFieldObject(SceneField::Mesh, 2));
-    CORRADE_VERIFY(!scene.hasFieldObject(SceneField::Mesh, 3));
+    if(data.expected) {
+        CORRADE_COMPARE(scene.fieldObjectOffset(1, data.object, data.offset), *data.expected);
+        CORRADE_COMPARE(scene.fieldObjectOffset(SceneField::Mesh, data.object, data.offset), *data.expected);
+    }
 }
 
 void SceneDataTest::findFieldObjectOffsetInvalidOffset() {
@@ -4537,6 +4639,7 @@ void SceneDataTest::fieldNotFound() {
     scene.hasFieldObject(2, 0);
     scene.fieldData(2);
     scene.fieldName(2);
+    scene.fieldFlags(2);
     scene.fieldType(2);
     scene.fieldSize(2);
     scene.fieldArraySize(2);
@@ -4548,6 +4651,7 @@ void SceneDataTest::fieldNotFound() {
     scene.mutableField<UnsignedInt[]>(2);
 
     scene.fieldId(sceneFieldCustom(666));
+    scene.fieldFlags(sceneFieldCustom(666));
     scene.findFieldObjectOffset(sceneFieldCustom(666), 0);
     scene.fieldObjectOffset(sceneFieldCustom(666), 0);
     scene.hasFieldObject(sceneFieldCustom(666), 0);
@@ -4597,6 +4701,7 @@ void SceneDataTest::fieldNotFound() {
         "Trade::SceneData::hasFieldObject(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldData(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldName(): index 2 out of range for 2 fields\n"
+        "Trade::SceneData::fieldFlags(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldType(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldSize(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldArraySize(): index 2 out of range for 2 fields\n"
@@ -4608,6 +4713,7 @@ void SceneDataTest::fieldNotFound() {
         "Trade::SceneData::mutableField(): index 2 out of range for 2 fields\n"
 
         "Trade::SceneData::fieldId(): field Trade::SceneField::Custom(666) not found\n"
+        "Trade::SceneData::fieldFlags(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::findFieldObjectOffset(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::fieldObjectOffset(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::hasFieldObject(): field Trade::SceneField::Custom(666) not found\n"

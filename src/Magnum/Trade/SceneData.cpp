@@ -25,9 +25,12 @@
 
 #include "SceneData.h"
 
+#include <algorithm>
+#include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/StridedArrayViewStl.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Algorithms.h>
 
@@ -473,7 +476,32 @@ UnsignedInt sceneFieldTypeAlignment(const SceneFieldType type) {
     CORRADE_ASSERT_UNREACHABLE("Trade::sceneFieldTypeAlignment(): invalid type" << type, {});
 }
 
-SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, const UnsignedShort fieldArraySize) noexcept: SceneFieldData{name, {}, Containers::StridedArrayView1D<const void>{{mappingData.data(), ~std::size_t{}}, mappingData.size()[0], mappingData.stride()[0]}, fieldType, Containers::StridedArrayView1D<const void>{{fieldData.data(), ~std::size_t{}}, fieldData.size()[0], fieldData.stride()[0]}, fieldArraySize} {
+Debug& operator<<(Debug& debug, const SceneFieldFlag value) {
+    debug << "Trade::SceneFieldFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case SceneFieldFlag::value: return debug << "::" #value;
+        _c(OffsetOnly)
+        _c(ImplicitMapping)
+        _c(OrderedMapping)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const SceneFieldFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::SceneFieldFlags{}", {
+        SceneFieldFlag::OffsetOnly,
+        SceneFieldFlag::ImplicitMapping,
+        /* This one is implied by ImplicitMapping, so has to be after */
+        SceneFieldFlag::OrderedMapping
+    });
+}
+
+SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept: SceneFieldData{name, {}, Containers::StridedArrayView1D<const void>{{mappingData.data(), ~std::size_t{}}, mappingData.size()[0], mappingData.stride()[0]}, fieldType, Containers::StridedArrayView1D<const void>{{fieldData.data(), ~std::size_t{}}, fieldData.size()[0], fieldData.stride()[0]}, fieldArraySize, flags} {
     /* Yes, this calls into a constexpr function defined in the header --
        because I feel that makes more sense than duplicating the full assert
        logic */
@@ -565,7 +593,7 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
         if(field._size) {
             const UnsignedInt fieldTypeSize = sceneFieldTypeSize(field._fieldType)*
                 (field._fieldArraySize ? field._fieldArraySize : 1);
-            if(field._isOffsetOnly) {
+            if(field._flags & SceneFieldFlag::OffsetOnly) {
                 const std::size_t mappingSize = field._mappingData.offset + (field._size - 1)*field._mappingStride + mappingTypeSize;
                 const std::size_t fieldSize = field._fieldData.offset + (field._size - 1)*field._fieldStride + fieldTypeSize;
                 CORRADE_ASSERT(mappingSize <= _data.size(),
@@ -780,7 +808,7 @@ Containers::StridedArrayView1D<const void> SceneData::fieldDataMappingViewIntern
     CORRADE_INTERNAL_ASSERT(offset + size <= field._size);
     return Containers::StridedArrayView1D<const void>{
         /* We're *sure* the view is correct, so faking the view size */
-        {static_cast<const char*>(field._isOffsetOnly ?
+        {static_cast<const char*>(field._flags & SceneFieldFlag::OffsetOnly ?
             _data.data() + field._mappingData.offset : field._mappingData.pointer)
             + field._mappingStride*offset, ~std::size_t{}},
         size, field._mappingStride
@@ -795,7 +823,7 @@ Containers::StridedArrayView1D<const void> SceneData::fieldDataFieldViewInternal
     CORRADE_INTERNAL_ASSERT(offset + size <= field._size);
     return Containers::StridedArrayView1D<const void>{
         /* We're *sure* the view is correct, so faking the view size */
-        {static_cast<const char*>(field._isOffsetOnly ?
+        {static_cast<const char*>(field._flags & SceneFieldFlag::OffsetOnly ?
             _data.data() + field._fieldData.offset : field._fieldData.pointer)
             + field._fieldStride*offset, ~std::size_t{}},
         size, field._fieldStride};
@@ -809,13 +837,19 @@ SceneFieldData SceneData::fieldData(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _fields.size(),
         "Trade::SceneData::fieldData(): index" << id << "out of range for" << _fields.size() << "fields", SceneFieldData{});
     const SceneFieldData& field = _fields[id];
-    return SceneFieldData{field._name, field._mappingType, fieldDataMappingViewInternal(field), field._fieldType, fieldDataFieldViewInternal(field), field._fieldArraySize};
+    return SceneFieldData{field._name, field._mappingType, fieldDataMappingViewInternal(field), field._fieldType, fieldDataFieldViewInternal(field), field._fieldArraySize, field._flags & ~SceneFieldFlag::OffsetOnly};
 }
 
 SceneField SceneData::fieldName(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _fields.size(),
         "Trade::SceneData::fieldName(): index" << id << "out of range for" << _fields.size() << "fields", {});
     return _fields[id]._name;
+}
+
+SceneFieldFlags SceneData::fieldFlags(const UnsignedInt id) const {
+    CORRADE_ASSERT(id < _fields.size(),
+        "Trade::SceneData::fieldFlags(): index" << id << "out of range for" << _fields.size() << "fields", {});
+    return _fields[id]._flags;
 }
 
 SceneFieldType SceneData::fieldType(const UnsignedInt id) const {
@@ -859,11 +893,32 @@ bool SceneData::hasField(const SceneField name) const {
 
 namespace {
 
-template<class T> std::size_t findObject(const Containers::StridedArrayView1D<const void>& mapping, const UnsignedInt object) {
+/* The `objects` view is already adjusted for `offset`, the offset is needed
+   only to return the correct value for ImplicitMapping */
+template<class T> std::size_t findObject(const SceneFieldFlags flags, const Containers::StridedArrayView1D<const void>& mapping, const std::size_t offset, const UnsignedInt object) {
+    const std::size_t max = mapping.size();
+
+    /* Implicit mapping, position equals object ID (if in bounds) and thus an
+       O(1)-complexity search. A superset of OrderedMapping so has to be
+       before. */
+    if(flags >= SceneFieldFlag::ImplicitMapping)
+        return object >= offset && object - offset < mapping.size() ?
+            object - offset : max;
+
     const Containers::StridedArrayView1D<const T> mappingT = Containers::arrayCast<const T>(mapping);
-    const std::size_t max = mappingT.size();
-    /** @todo implement something faster than O(n) when field-specific flags
-        can annotate how the object mapping is done */
+
+    /* Ordered mapping, so an O(log n)-complexity search. It also has to be
+       noted that STL algorithms generally suck (this needs a
+       std::iterator_traits specialization for the StridedArrayView, FFS!),
+       std::binary_search() is useless because it returns just a bool (!!) and
+       std::lower_bound() is error prone beyond any reason. */
+    if(flags >= SceneFieldFlag::OrderedMapping) {
+        const Containers::StridedIterator<1, const T> found = std::lower_bound(mappingT.begin(), mappingT.end(), T(object));
+        if(found == mappingT.end() || *found != object) return max;
+        return found - mappingT.begin();
+    }
+
+    /* Generally unordered container, O(n)-complexity search. */
     for(std::size_t i = 0; i != max; ++i)
         if(mappingT[i] == object) return i;
     return max;
@@ -874,13 +929,13 @@ template<class T> std::size_t findObject(const Containers::StridedArrayView1D<co
 std::size_t SceneData::findFieldObjectOffsetInternal(const SceneFieldData& field, const UnsignedInt object, const std::size_t offset) const {
     const Containers::StridedArrayView1D<const void> mapping = fieldDataMappingViewInternal(field, offset, field._size - offset);
     if(field._mappingType == SceneMappingType::UnsignedInt)
-        return offset + findObject<UnsignedInt>(mapping, object);
+        return offset + findObject<UnsignedInt>(field._flags, mapping, offset, object);
     else if(field._mappingType == SceneMappingType::UnsignedShort)
-        return offset + findObject<UnsignedShort>(mapping, object);
+        return offset + findObject<UnsignedShort>(field._flags, mapping, offset, object);
     else if(field._mappingType == SceneMappingType::UnsignedByte)
-        return offset + findObject<UnsignedByte>(mapping, object);
+        return offset + findObject<UnsignedByte>(field._flags, mapping, offset, object);
     else if(field._mappingType == SceneMappingType::UnsignedLong)
-        return offset + findObject<UnsignedLong>(mapping, object);
+        return offset + findObject<UnsignedLong>(field._flags, mapping, offset, object);
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
@@ -968,6 +1023,12 @@ bool SceneData::hasFieldObject(const SceneField fieldName, const UnsignedInt obj
 
     const SceneFieldData& field = _fields[fieldId];
     return findFieldObjectOffsetInternal(field, object, 0) != field._size;
+}
+
+SceneFieldFlags SceneData::fieldFlags(const SceneField name) const {
+    const UnsignedInt fieldId = findFieldIdInternal(name);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{}, "Trade::SceneData::fieldFlags(): field" << name << "not found", {});
+    return _fields[fieldId]._flags;
 }
 
 SceneFieldType SceneData::fieldType(const SceneField name) const {

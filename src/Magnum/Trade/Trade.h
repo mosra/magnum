@@ -103,6 +103,8 @@ class TextureData;
 enum class SceneMappingType: UnsignedByte;
 enum class SceneField: UnsignedInt;
 enum class SceneFieldType: UnsignedShort;
+enum class SceneFieldFlag: UnsignedByte;
+typedef Containers::EnumSet<SceneFieldFlag> SceneFieldFlags;
 class SceneFieldData;
 class SceneData;
 
