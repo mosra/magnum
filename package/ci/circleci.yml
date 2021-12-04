@@ -406,6 +406,23 @@ jobs:
         script: unix-desktop.sh
     - lcov
 
+  macos-gles3:
+    executor: xcode-11_2
+    environment:
+      CMAKE_CXX_FLAGS: --coverage
+      CONFIGURATION: Debug
+      PLATFORM_GL_API: EGL
+      # STUPID yml interprets unquoted OFF as a boolean
+      TARGET_GLES2: "OFF"
+    steps:
+    - install-base-macos:
+        extra: sdl2 glfw wget
+    - install-swiftshader-gles:
+        build: macos-10.15
+    - build:
+        script: unix-desktop-gles.sh
+    - lcov
+
   macos-vulkan:
     # SwiftShader is built on 10.15 and can't be used on older versions due to
     # dyld: lazy symbol binding failed: Symbol not found: ____chkstk_darwin
@@ -482,6 +499,7 @@ workflows:
     - linux-threadsanitizer
     - macos-gl
     - macos-vulkan
+    - macos-gles3
     - macos-static
     - emscripten-webgl1
     - emscripten-webgl2
