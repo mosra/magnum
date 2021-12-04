@@ -540,6 +540,8 @@ See also:
     @ref opengl-workarounds "OpenGL workaround" could lead to a crash if
     @cpp eglQueryString() @ce would return a @cpp nullptr @ce (see
     [mosra/magnum#535](https://github.com/mosra/magnum/issues/535))
+-   Fixed various wrong assumptions about Mac builds being always desktop GLES
+    (see [mosra/magnum#](https://github.com/mosra/magnum/issues/541))
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
