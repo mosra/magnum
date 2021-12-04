@@ -147,7 +147,7 @@ elseif(CORRADE_TARGET_IOS)
     option(WITH_WINDOWLESSIOSAPPLICATION "Build WindowlessIosApplication library" OFF)
 
 # macOS-specific application libraries
-elseif(CORRADE_TARGET_APPLE)
+elseif(CORRADE_TARGET_APPLE AND NOT TARGET_GLES)
     cmake_dependent_option(WITH_WINDOWLESSCGLAPPLICATION "Build WindowlessCglApplication library" OFF "NOT WITH_GL_INFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
     option(WITH_CGLCONTEXT "Build CglContext library" OFF)
 
@@ -310,7 +310,7 @@ if(WITH_OPENGLTESTER)
     elseif(CORRADE_TARGET_IOS)
         set(WITH_WINDOWLESSIOSAPPLICATION ON)
         set(OPENGLTESTER_APPLICATION MagnumWindowlessIosApplication)
-    elseif(CORRADE_TARGET_APPLE)
+    elseif(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
         set(WITH_WINDOWLESSCGLAPPLICATION ON)
         set(OPENGLTESTER_APPLICATION MagnumWindowlessCglApplication)
     elseif(CORRADE_TARGET_UNIX)

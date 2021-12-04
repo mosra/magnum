@@ -38,7 +38,7 @@ find_package(Magnum REQUIRED
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-if(CORRADE_TARGET_APPLE)
+if(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
     find_package(Magnum REQUIRED WindowlessCglApplication)
 elseif(CORRADE_TARGET_UNIX)
     find_package(Magnum REQUIRED WindowlessGlxApplication)

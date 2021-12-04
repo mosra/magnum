@@ -46,7 +46,7 @@
 #include "Magnum/Platform/WindowlessEglApplication.h"
 #elif defined(CORRADE_TARGET_IOS)
 #include "Magnum/Platform/WindowlessIosApplication.h"
-#elif defined(CORRADE_TARGET_APPLE)
+#elif defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX)
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
