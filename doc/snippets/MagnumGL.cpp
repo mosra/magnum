@@ -1112,6 +1112,7 @@ mesh.setIndexBuffer(indices, 0, type);
 /* [Mesh-indices-tool] */
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 /* The damn thing doesn't understand unnamed bitfields in local structs */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY
 {
@@ -1148,6 +1149,7 @@ mesh.addVertexBuffer(vertices, offsetof(Packed, normal), sizeof(Packed),
                          VertexFormat::Vector3sNormalized});
 /* [Mesh-formats-vertexformat] */
 }
+#endif
 #endif
 
 {
