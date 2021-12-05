@@ -201,6 +201,10 @@ void FunctionsBenchmark::sinCosSeparate() {
     }
 
     CORRADE_COMPARE_AS(a, 10.0f, Corrade::TestSuite::Compare::Greater);
+
+    /* To avoid the whole loop being optimized away */
+    CORRADE_VERIFY(sin == sin);
+    CORRADE_VERIFY(cos == cos);
 }
 
 void FunctionsBenchmark::sinCosCombined() {
@@ -213,6 +217,10 @@ void FunctionsBenchmark::sinCosCombined() {
     }
 
     CORRADE_COMPARE_AS(a, 10.0f, Corrade::TestSuite::Compare::Greater);
+
+    /* To avoid the whole loop being optimized away */
+    CORRADE_VERIFY(sin == sin);
+    CORRADE_VERIFY(cos == cos);
 }
 
 

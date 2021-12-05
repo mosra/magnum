@@ -70,6 +70,9 @@ void InterpolationBenchmark::baseline() {
     }
 
     CORRADE_VERIFY(!c.isNormalized());
+
+    /* To avoid "unused but set" warnings */
+    CORRADE_VERIFY(t == t);
 }
 
 void InterpolationBenchmark::quaternionLerp() {
