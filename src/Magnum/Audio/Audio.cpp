@@ -24,10 +24,14 @@
 */
 
 #include <type_traits>
-#include <al.h>
 
 #include "Corrade/configure.h"
 #include "Magnum/Types.h"
+
+#if defined(CORRADE_TARGET_APPLE) && !defined(OPENAL_DEPRECATED)
+#define OPENAL_DEPRECATED /* Override deprecation warning macro to nothing */
+#endif
+#include <al.h>
 
 namespace Magnum { namespace Audio {
 

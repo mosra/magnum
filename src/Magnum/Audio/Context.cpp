@@ -27,8 +27,6 @@
 
 #include "Context.h"
 
-#include <al.h>
-#include <alc.h>
 #include <cstring>
 #include <algorithm>
 #include <Corrade/Utility/Arguments.h>

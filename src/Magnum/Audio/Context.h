@@ -35,8 +35,6 @@
 #include <string>
 #include <vector>
 #include <bitset>
-#include <al.h>
-#include <alc.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Utility/Debug.h>
 
@@ -44,6 +42,12 @@
 #include "Magnum/Tags.h"
 #include "Magnum/Audio/visibility.h"
 #include "Magnum/Math/BoolVector.h"
+
+#if defined(CORRADE_TARGET_APPLE) && !defined(OPENAL_DEPRECATED)
+#define OPENAL_DEPRECATED /* Override deprecation warning macro to nothing */
+#endif
+#include <al.h>
+#include <alc.h>
 #include "MagnumExternal/OpenAL/extensions.h"
 
 namespace Magnum { namespace Audio {

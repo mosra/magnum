@@ -33,7 +33,6 @@
 #include <functional>
 #include <initializer_list>
 #include <vector>
-#include <al.h>
 
 #include <Corrade/Containers/Containers.h>
 
@@ -41,6 +40,11 @@
 #include "Magnum/Audio/Audio.h"
 #include "Magnum/Audio/visibility.h"
 #include "Magnum/Math/Vector3.h"
+
+#if defined(CORRADE_TARGET_APPLE) && !defined(OPENAL_DEPRECATED)
+#define OPENAL_DEPRECATED /* Override deprecation warning macro to nothing */
+#endif
+#include <al.h>
 
 namespace Magnum { namespace Audio {
 

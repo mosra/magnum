@@ -32,15 +32,19 @@
 
 #include <climits>
 #include <utility>
-#include <al.h>
-#include <alc.h>
-#include "MagnumExternal/OpenAL/extensions.h"
 
 #include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Audio/Audio.h"
 #include "Magnum/Audio/visibility.h"
+
+#if defined(CORRADE_TARGET_APPLE) && !defined(OPENAL_DEPRECATED)
+#define OPENAL_DEPRECATED /* Override deprecation warning macro to nothing */
+#endif
+#include <al.h>
+#include <alc.h>
+#include "MagnumExternal/OpenAL/extensions.h"
 
 namespace Magnum { namespace Audio {
 

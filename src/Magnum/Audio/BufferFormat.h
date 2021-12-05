@@ -29,11 +29,14 @@
  * @brief Enum @ref Magnum::Audio::BufferFormat
  */
 
-#include <al.h>
-#include "MagnumExternal/OpenAL/extensions.h"
-
 #include "Magnum/Magnum.h"
 #include "Magnum/Audio/visibility.h"
+
+#if defined(CORRADE_TARGET_APPLE) && !defined(OPENAL_DEPRECATED)
+#define OPENAL_DEPRECATED /* Override deprecation warning macro to nothing */
+#endif
+#include <al.h>
+#include "MagnumExternal/OpenAL/extensions.h"
 
 namespace Magnum { namespace Audio {
 
