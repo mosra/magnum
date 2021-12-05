@@ -400,61 +400,43 @@ void ContextTest::extensions() {
             CORRADE_ITERATION(version);
             CORRADE_ITERATION(e.string());
 
-            /** @todo convert to CORRADE_ERROR() when that's done */
+            CORRADE_FAIL_IF(!previous.empty() && previous >= e.string(),
+                "Extension not sorted after" << previous);
 
-            if(!previous.empty() && previous >= e.string()) {
-                Error{} << "Extension not sorted after" << previous;
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(e.index() >= GL::Implementation::ExtensionCount,
+                "Index" << e.index() << "larger than" << GL::Implementation::ExtensionCount);
 
-            if(e.index() >= GL::Implementation::ExtensionCount) {
-                Error{} << "Index" << e.index() << "larger than" << GL::Implementation::ExtensionCount;
-                CORRADE_VERIFY(false);
-            }
-
-            if(used[e.index()]) {
-                Error{} << "Index" << e.index() << "already used by" << used[e.index()];
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(used[e.index()],
+                "Index" << e.index() << "already used by" << used[e.index()]);
 
             used[e.index()] = e.string();
-            if(!unique.insert(e.string()).second) {
-                Error{} << "Extension listed more than once";
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(!unique.insert(e.string()).second,
+                "Extension listed more than once");
 
             CORRADE_VERIFY(Int(e.coreVersion()) >= Int(e.requiredVersion()));
-            if(e.coreVersion() != version
+            bool coreVersionMismatch = e.coreVersion() != version
                 #if defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL)
                 /* These two are replaced by EXT_color_buffer_float for 2.0,
                    but aren't core in WebGL 2 */
                 && e.index() != Extensions::EXT::color_buffer_half_float::Index
                 && e.index() != Extensions::WEBGL::color_buffer_float::Index
                 #endif
-            ) {
-                Error{} << "Extension should have core version" << version << "but has" << e.coreVersion();
-                CORRADE_VERIFY(false);
-            }
+                ;
+            CORRADE_FAIL_IF(coreVersionMismatch, "Extension should have core version" << version << "but has" << e.coreVersion());
 
             #ifdef MAGNUM_TARGET_GLES2
-            if(e.requiredVersion() != Version::GLES200) {
-                Error{} << "Extension should have required version" << Version::GLES200 << "but has" << e.requiredVersion();
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(e.requiredVersion() != Version::GLES200,
+                "Extension should have required version" << Version::GLES200 << "but has" << e.requiredVersion());
             #endif
 
             #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
-            if(e.coreVersion() == Version::GLES300 && e.index() != Extensions::MAGNUM::shader_vertex_id::Index) {
-                Error{} << "Extension has core version" << e.coreVersion() << "on a GLES3 build -- it shouldn't be present at all";
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(e.coreVersion() == Version::GLES300 && e.index() != Extensions::MAGNUM::shader_vertex_id::Index,
+                "Extension has core version" << e.coreVersion() << "on a GLES3 build -- it shouldn't be present at all");
             #endif
 
             previous = e.string();
         }
     }
-
-    CORRADE_VERIFY(true);
 }
 
 void ContextTest::debugFlag() {

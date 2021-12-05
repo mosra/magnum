@@ -78,33 +78,21 @@ void ContextTest::extensions() {
     for(const Extension& e: Extension::extensions()) {
         CORRADE_ITERATION(e.string());
 
-        /** @todo convert to CORRADE_ERROR() when that's done */
+        CORRADE_FAIL_IF(!previous.empty() && previous >= e.string(),
+            "Extension not sorted after" << previous);
 
-        if(!previous.empty() && previous >= e.string()) {
-            Error{} << "Extension not sorted after" << previous;
-            CORRADE_VERIFY(false);
-        }
+        CORRADE_FAIL_IF(e.index() >= Implementation::ExtensionCount,
+            "Index" << e.index() << "larger than" << Implementation::ExtensionCount);
 
-        if(e.index() >= Implementation::ExtensionCount) {
-            Error{} << "Index" << e.index() << "larger than" << Implementation::ExtensionCount;
-            CORRADE_VERIFY(false);
-        }
-
-        if(used[e.index()]) {
-            Error{} << "Index" << e.index() << "already used by" << used[e.index()];
-            CORRADE_VERIFY(false);
-        }
+        CORRADE_FAIL_IF(used[e.index()],
+            "Index" << e.index() << "already used by" << used[e.index()]);
 
         used[e.index()] = e.string();
-        if(!unique.insert(e.string()).second) {
-            Error{} << "Extension listed more than once";
-            CORRADE_VERIFY(false);
-        }
+        CORRADE_FAIL_IF(!unique.insert(e.string()).second,
+            "Extension listed more than once");
 
         previous = e.string();
     }
-
-    CORRADE_VERIFY(true);
 }
 
 void ContextTest::debugHrtfStatus() {

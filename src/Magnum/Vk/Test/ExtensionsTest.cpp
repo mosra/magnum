@@ -174,42 +174,28 @@ void ExtensionsTest::instanceExtensions() {
         for(const InstanceExtension& e: InstanceExtension::extensions(version)) {
             CORRADE_ITERATION(e.string());
 
-            /** @todo convert to CORRADE_ERROR() when that's done */
-
             /* Binary search is performed on each list to find known
                extensions, so the exts have to be sorted */
-            if(!previous.isEmpty() && previous >= e.string()) {
-                Error{} << "Extension not sorted after" << previous;
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(!previous.isEmpty() && previous >= e.string(),
+                "Extension not sorted after" << previous);
 
-            if(e.index() >= Implementation::InstanceExtensionCount) {
-                Error{} << "Index" << e.index() << "larger than" << Implementation::InstanceExtensionCount;
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(e.index() >= Implementation::InstanceExtensionCount,
+                "Index" << e.index() << "larger than" << Implementation::InstanceExtensionCount);
 
-            if(used[e.index()] != nullptr) {
-                Error{} << "Index" << e.index() << "already used by" << used[e.index()];
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(used[e.index()] != nullptr,
+                "Index" << e.index() << "already used by" << used[e.index()]);
 
             used[e.index()] = e.string();
-            if(!unique.insert(e.string()).second) {
-                Error{} << "Extension listed more than once";
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(!unique.insert(e.string()).second,
+                "Extension listed more than once");
 
             CORRADE_COMPARE_AS(e.coreVersion(), e.requiredVersion(), TestSuite::Compare::GreaterOrEqual);
-            if(e.coreVersion() != version) {
-                Error{} << "Extension should have core version" << version << "but has" << e.coreVersion();
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(e.coreVersion() != version,
+                "Extension should have core version" << version << "but has" << e.coreVersion());
 
             previous = e.string();
         }
     }
-
-    CORRADE_VERIFY(true);
 }
 
 void ExtensionsTest::extensions() {
@@ -230,42 +216,28 @@ void ExtensionsTest::extensions() {
         for(const Extension& e: Extension::extensions(version)) {
             CORRADE_ITERATION(e.string());
 
-            /** @todo convert to CORRADE_ERROR() when that's done */
-
             /* Binary search is performed on each list to find known
                extensions, so the exts have to be sorted */
-            if(!previous.isEmpty() && previous >= e.string()) {
-                Error{} << "Extension not sorted after" << previous;
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(!previous.isEmpty() && previous >= e.string(),
+                "Extension not sorted after" << previous);
 
-            if(e.index() >= Implementation::ExtensionCount) {
-                Error{} << "Index" << e.index() << "larger than" << Implementation::ExtensionCount;
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(e.index() >= Implementation::ExtensionCount,
+                "Index" << e.index() << "larger than" << Implementation::ExtensionCount);
 
-            if(used[e.index()] != nullptr) {
-                Error{} << "Index" << e.index() << "already used by" << used[e.index()];
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(used[e.index()] != nullptr,
+                "Index" << e.index() << "already used by" << used[e.index()]);
 
             used[e.index()] = e.string();
-            if(!unique.insert(e.string()).second) {
-                Error{} << "Extension listed more than once";
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(!unique.insert(e.string()).second,
+                "Extension listed more than once");
 
             CORRADE_COMPARE_AS(e.coreVersion(), e.requiredVersion(), TestSuite::Compare::GreaterOrEqual);
-            if(e.coreVersion() != version) {
-                Error{} << "Extensio should have core version" << version << "but has" << e.coreVersion();
-                CORRADE_VERIFY(false);
-            }
+            CORRADE_FAIL_IF(e.coreVersion() != version,
+                "Extension should have core version" << version << "but has" << e.coreVersion());
 
             previous = e.string();
         }
     }
-
-    CORRADE_VERIFY(true);
 }
 
 }}}}
