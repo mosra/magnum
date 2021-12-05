@@ -406,8 +406,13 @@ void ContextTest::extensions() {
             CORRADE_FAIL_IF(e.index() >= GL::Implementation::ExtensionCount,
                 "Index" << e.index() << "larger than" << GL::Implementation::ExtensionCount);
 
+            /* Have to use Containers::StringView to avoid passing null char*
+               to std::cout (which crashes on Mac due to strlen being called on
+               it) because the message is actually printed sooner than the
+               condition gets tested! */
+            /** @todo clean up once fixed in Corrade */
             CORRADE_FAIL_IF(used[e.index()],
-                "Index" << e.index() << "already used by" << used[e.index()]);
+                "Index" << e.index() << "already used by" << Containers::StringView{used[e.index()]});
 
             used[e.index()] = e.string();
             CORRADE_FAIL_IF(!unique.insert(e.string()).second,
