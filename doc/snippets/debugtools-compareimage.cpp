@@ -38,7 +38,7 @@
 
 using namespace Magnum;
 
-#define DOXYGEN_IGNORE(...) __VA_ARGS__
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 namespace {
 
@@ -73,7 +73,7 @@ ProcessingTest::ProcessingTest() {
 
     if(false) {
 /* [basic] */
-Image2D actual{DOXYGEN_IGNORE(doProcessing())}, expected{DOXYGEN_IGNORE(loadExpectedImage())};
+Image2D actual{DOXYGEN_ELLIPSIS(doProcessing())}, expected{DOXYGEN_ELLIPSIS(loadExpectedImage())};
 CORRADE_COMPARE_AS(actual, expected, DebugTools::CompareImage);
 /* [basic] */
     }

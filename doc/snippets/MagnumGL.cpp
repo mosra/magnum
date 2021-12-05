@@ -85,7 +85,7 @@
 #include "Magnum/GL/RectangleTexture.h"
 #endif
 
-#define DOXYGEN_IGNORE(...) __VA_ARGS__
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -453,7 +453,7 @@ GL::BufferImage2D image = framebuffer.read(framebuffer.viewport(),
 {
 /* [Buffer-setdata] */
 const Vector3 data[]{
-    DOXYGEN_IGNORE({})
+    DOXYGEN_ELLIPSIS({})
 };
 
 GL::Buffer buffer;
@@ -466,7 +466,7 @@ GL::Buffer buffer2{data}; // or construct & fill in a single step
 {
 GL::Buffer buffer;
 /* [Buffer-setdata-stl] */
-std::vector<Vector3> data = DOXYGEN_IGNORE({});
+std::vector<Vector3> data = DOXYGEN_ELLIPSIS({});
 buffer.setData(data);
 /* [Buffer-setdata-stl] */
 }
@@ -1042,7 +1042,7 @@ framebuffer.mapForDraw({
 {
 /* [Mesh-vertices] */
 const Vector3 positions[]{
-    DOXYGEN_IGNORE({})
+    DOXYGEN_ELLIPSIS({})
 };
 GL::Buffer vertices{positions};
 
@@ -1059,7 +1059,7 @@ struct Vertex {
     Vector3 normal;
 };
 const Vertex vertexData[]{
-    DOXYGEN_IGNORE({})
+    DOXYGEN_ELLIPSIS({})
 };
 GL::Buffer vertices{vertexData};
 
@@ -1075,11 +1075,11 @@ mesh.setCount(Containers::arraySize(vertexData))
 GL::Mesh mesh;
 /* [Mesh-indices] */
 const UnsignedInt indexData[]{
-    DOXYGEN_IGNORE(0)
+    DOXYGEN_ELLIPSIS(0)
 };
 GL::Buffer indices{indexData};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 mesh.setIndexBuffer(indices, 0, MeshIndexType::UnsignedInt);
 /* [Mesh-indices] */
 }
@@ -1087,11 +1087,11 @@ mesh.setIndexBuffer(indices, 0, MeshIndexType::UnsignedInt);
 {
 GL::Mesh mesh;
 /* [Mesh-vertices-interleaved-tool] */
-Containers::ArrayView<const Vector3> positions = DOXYGEN_IGNORE({});
-Containers::ArrayView<const Vector3> normals = DOXYGEN_IGNORE({});
+Containers::ArrayView<const Vector3> positions = DOXYGEN_ELLIPSIS({});
+Containers::ArrayView<const Vector3> normals = DOXYGEN_ELLIPSIS({});
 GL::Buffer vertices{MeshTools::interleave(positions, normals)};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 mesh.addVertexBuffer(vertices, 0,
     Shaders::PhongGL::Position{},
     Shaders::PhongGL::Normal{});
@@ -1107,7 +1107,7 @@ MeshIndexType type;
 std::tie(compressed, type) = MeshTools::compressIndices(indexData);
 GL::Buffer indices{compressed};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 mesh.setIndexBuffer(indices, 0, type);
 /* [Mesh-indices-tool] */
 }
@@ -1125,11 +1125,11 @@ struct Packed {
     Short:16;
 };
 const Packed vertexData[]{
-    DOXYGEN_IGNORE({})
+    DOXYGEN_ELLIPSIS({})
 };
 GL::Buffer vertices{vertexData};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 mesh.addVertexBuffer(vertices, 0,
     Shaders::PhongGL::Position{Shaders::PhongGL::Position::Components::Three,
                                Shaders::PhongGL::Position::DataType::Half},
@@ -1167,7 +1167,7 @@ mesh.addVertexBuffer(colorBuffer, 0, 4, GL::DynamicAttribute{
 GL::Mesh mesh;
 /* [Mesh-buffer-ownership] */
 GL::Buffer vertices, indices;
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 mesh.addVertexBuffer(std::move(vertices), 0,
         Shaders::PhongGL::Position{},
         Shaders::PhongGL::Normal{})
@@ -1183,8 +1183,8 @@ mesh.addVertexBuffer(vertices, 0, Shaders::PhongGL::Position{}, 20)
 {
 GL::Mesh mesh;
 /* [Mesh-draw] */
-Shaders::PhongGL shader{DOXYGEN_IGNORE()};
-DOXYGEN_IGNORE()
+Shaders::PhongGL shader{DOXYGEN_ELLIPSIS()};
+DOXYGEN_ELLIPSIS()
 shader.draw(mesh);
 /* [Mesh-draw] */
 }

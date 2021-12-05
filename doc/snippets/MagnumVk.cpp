@@ -82,7 +82,7 @@
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
-#define DOXYGEN_IGNORE(...) __VA_ARGS__
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 /* [Instance-delayed-creation] */
 class MyApplication {
@@ -96,8 +96,8 @@ class MyApplication {
 MyApplication::MyApplication() {
     // decide on layers, extensions, ...
 
-    _instance.create(Vk::InstanceCreateInfo{DOXYGEN_IGNORE()}
-        DOXYGEN_IGNORE()
+    _instance.create(Vk::InstanceCreateInfo{DOXYGEN_ELLIPSIS()}
+        DOXYGEN_ELLIPSIS()
     );
 }
 /* [Instance-delayed-creation] */
@@ -107,17 +107,17 @@ namespace B {
 /* [Device-delayed-creation] */
 class MyApplication {
     public:
-        explicit MyApplication(DOXYGEN_IGNORE(Vk::Instance& instance));
+        explicit MyApplication(DOXYGEN_ELLIPSIS(Vk::Instance& instance));
 
     private:
         Vk::Device _device{NoCreate};
 };
 
-MyApplication::MyApplication(DOXYGEN_IGNORE(Vk::Instance& instance)) {
+MyApplication::MyApplication(DOXYGEN_ELLIPSIS(Vk::Instance& instance)) {
     // decide on extensions, features, ...
 
-    _device.create(instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(Vk::pickDevice(instance))}
-        DOXYGEN_IGNORE()
+    _device.create(instance, Vk::DeviceCreateInfo{DOXYGEN_ELLIPSIS(Vk::pickDevice(instance))}
+        DOXYGEN_ELLIPSIS()
     );
 }
 /* [Device-delayed-creation] */
@@ -128,7 +128,7 @@ int main() {
 
 {
 /* [wrapping-extending-create-info] */
-Vk::InstanceCreateInfo info{DOXYGEN_IGNORE()};
+Vk::InstanceCreateInfo info{DOXYGEN_ELLIPSIS()};
 
 /* Add a custom validation features setup */
 VkValidationFeaturesEXT validationFeatures{};
@@ -146,8 +146,8 @@ using namespace Containers::Literals;
 int argc{};
 char** argv{};
 /* [wrapping-optimizing-properties-instance] */
-Vk::LayerProperties layers = DOXYGEN_IGNORE(Vk::enumerateLayerProperties());
-Vk::InstanceExtensionProperties extensions = DOXYGEN_IGNORE(Vk::enumerateInstanceExtensionProperties(layers.names()));
+Vk::LayerProperties layers = DOXYGEN_ELLIPSIS(Vk::enumerateLayerProperties());
+Vk::InstanceExtensionProperties extensions = DOXYGEN_ELLIPSIS(Vk::enumerateInstanceExtensionProperties(layers.names()));
 
 /* Pass the layer and extension properties for use by InstanceCreateInfo */
 Vk::InstanceCreateInfo info{argc, argv, &layers, &extensions};
@@ -155,7 +155,7 @@ if(layers.isSupported("VK_LAYER_KHRONOS_validation"_s))
     info.addEnabledLayers({"VK_LAYER_KHRONOS_validation"_s});
 if(extensions.isSupported<Vk::Extensions::EXT::debug_report>())
     info.addEnabledExtensions<Vk::Extensions::EXT::debug_report>();
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Instance instance{info};
 /* [wrapping-optimizing-properties-instance] */
@@ -166,8 +166,8 @@ Vk::Instance instance{NoCreate};
 Vk::Queue queue{NoCreate};
 /* [wrapping-optimizing-properties-device-single-expression] */
 Vk::Device device{instance, Vk::DeviceCreateInfo{Vk::pickDevice(instance)}
-    .addQueues(DOXYGEN_IGNORE(Vk::QueueFlag::Graphics, {0.0f}, {queue}))
-    DOXYGEN_IGNORE()
+    .addQueues(DOXYGEN_ELLIPSIS(Vk::QueueFlag::Graphics, {0.0f}, {queue}))
+    DOXYGEN_ELLIPSIS()
 };
 /* [wrapping-optimizing-properties-device-single-expression] */
 }
@@ -186,7 +186,7 @@ if(extensions.isSupported<Vk::Extensions::EXT::index_type_uint8>())
     info.addEnabledExtensions<Vk::Extensions::EXT::index_type_uint8>();
 if(extensions.isSupported("VK_NV_mesh_shader"_s))
     info.addEnabledExtensions({"VK_NV_mesh_shader"_s});
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 /* Finally, be sure to move the info structure to the device as well */
 Vk::Device device{instance, std::move(info)};
@@ -214,7 +214,7 @@ Vk::Device device{NoCreate};
 /* [Buffer-creation] */
 #include <Magnum/Vk/BufferCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Buffer buffer{device,
     Vk::BufferCreateInfo{Vk::BufferUsage::VertexBuffer, 1024*1024},
@@ -247,10 +247,10 @@ Vk::Device device{NoCreate};
 Vk::CommandBuffer cmd{NoCreate};
 /* [Buffer-usage-fill] */
 Vk::Buffer buffer{device, Vk::BufferCreateInfo{
-    Vk::BufferUsage::TransferDestination|DOXYGEN_IGNORE(Vk::BufferUsage{}), DOXYGEN_IGNORE(0)
-}, DOXYGEN_IGNORE(Vk::MemoryFlag{})};
+    Vk::BufferUsage::TransferDestination|DOXYGEN_ELLIPSIS(Vk::BufferUsage{}), DOXYGEN_ELLIPSIS(0)
+}, DOXYGEN_ELLIPSIS(Vk::MemoryFlag{})};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 cmd.fillBuffer(buffer, 0x00000000);
 /* [Buffer-usage-fill] */
@@ -268,7 +268,7 @@ Vk::Buffer vertices{device, Vk::BufferCreateInfo{
     Vk::BufferUsage::TransferDestination|Vk::BufferUsage::VertexBuffer, size
 }, Vk::MemoryFlag::DeviceLocal};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 cmd.copyBuffer({input, vertices, {
         {0, 0, size} /* Copy the whole buffer */
@@ -285,9 +285,9 @@ cmd.copyBuffer({input, vertices, {
 /* [CommandPool-creation] */
 #include <Magnum/Vk/CommandPoolCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
-Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+Vk::Device device{DOXYGEN_ELLIPSIS(NoCreate)};
 
 Vk::CommandPool commandPool{device, Vk::CommandPoolCreateInfo{
     device.properties().pickQueueFamily(Vk::QueueFlag::Graphics)
@@ -298,19 +298,19 @@ Vk::CommandPool commandPool{device, Vk::CommandPoolCreateInfo{
 {
 Vk::Device device{NoCreate};
 /* [CommandBuffer-allocation] */
-Vk::CommandPool commandPool{device, DOXYGEN_IGNORE(Vk::CommandPoolCreateInfo{0})};
+Vk::CommandPool commandPool{device, DOXYGEN_ELLIPSIS(Vk::CommandPoolCreateInfo{0})};
 
 Vk::CommandBuffer cmd = commandPool.allocate();
 /* [CommandBuffer-allocation] */
 
 /* [CommandBuffer-usage] */
 cmd.begin()
-   DOXYGEN_IGNORE()
+   DOXYGEN_ELLIPSIS()
    .end();
 /* [CommandBuffer-usage] */
 
 /* [CommandBuffer-usage-submit] */
-Vk::Queue queue{DOXYGEN_IGNORE(NoCreate)};
+Vk::Queue queue{DOXYGEN_ELLIPSIS(NoCreate)};
 
 Vk::Fence fence{device};
 queue.submit({Vk::SubmitInfo{}.setCommandBuffers({cmd})}, fence);
@@ -324,7 +324,7 @@ Vk::Device device{NoCreate};
 /* [DescriptorPool-creation] */
 #include <Magnum/Vk/DescriptorPoolCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::DescriptorPool pool{device, Vk::DescriptorPoolCreateInfo{8, {
     {Vk::DescriptorType::UniformBuffer, 24},
@@ -335,8 +335,8 @@ Vk::DescriptorPool pool{device, Vk::DescriptorPoolCreateInfo{8, {
 
 {
 /* [DescriptorSet-allocation] */
-Vk::DescriptorSetLayout layout{DOXYGEN_IGNORE(NoCreate)};
-Vk::DescriptorPool pool{DOXYGEN_IGNORE(NoCreate)};
+Vk::DescriptorSetLayout layout{DOXYGEN_ELLIPSIS(NoCreate)};
+Vk::DescriptorPool pool{DOXYGEN_ELLIPSIS(NoCreate)};
 
 Vk::DescriptorSet set = pool.allocate(layout);
 /* [DescriptorSet-allocation] */
@@ -357,8 +357,8 @@ if(!set) set = overflowPool.allocate(layout);
 Vk::Device device{NoCreate};
 Vk::DescriptorSetLayout layout{NoCreate};
 /* [DescriptorSet-allocation-free] */
-Vk::DescriptorPool pool{device, Vk::DescriptorPoolCreateInfo{DOXYGEN_IGNORE(0), {
-    DOXYGEN_IGNORE()
+Vk::DescriptorPool pool{device, Vk::DescriptorPoolCreateInfo{DOXYGEN_ELLIPSIS(0), {
+    DOXYGEN_ELLIPSIS()
 }, Vk::DescriptorPoolCreateInfo::Flag::FreeDescriptorSet}};
 
 {
@@ -373,20 +373,20 @@ Vk::DescriptorPool pool{device, Vk::DescriptorPoolCreateInfo{DOXYGEN_IGNORE(0), 
 Vk::Instance instance{NoCreate};
 Vk::DescriptorPool pool{NoCreate};
 /* [DescriptorSet-allocation-variable] */
-Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(Vk::pickDevice(instance))}
-    DOXYGEN_IGNORE()
+Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_ELLIPSIS(Vk::pickDevice(instance))}
+    DOXYGEN_ELLIPSIS()
     .addEnabledExtensions<Vk::Extensions::EXT::descriptor_indexing>()
     .setEnabledFeatures(
         Vk::DeviceFeature::DescriptorBindingVariableDescriptorCount|
-        DOXYGEN_IGNORE(Vk::DeviceFeatures{})
+        DOXYGEN_ELLIPSIS(Vk::DeviceFeatures{})
     )
 };
 
 Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
-    {{DOXYGEN_IGNORE(0), Vk::DescriptorType::SampledImage, 8,
+    {{DOXYGEN_ELLIPSIS(0), Vk::DescriptorType::SampledImage, 8,
       Vk::ShaderStage::Fragment,
       Vk::DescriptorSetLayoutBinding::Flag::VariableDescriptorCount}},
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
 }};
 
 Vk::DescriptorSet set = pool.allocate(layout, 4);
@@ -399,7 +399,7 @@ Vk::Device device{NoCreate};
 /* [DescriptorSetLayout-creation] */
 #include <Magnum/Vk/DescriptorSetLayoutCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
     {{0, Vk::DescriptorType::UniformBuffer}},
@@ -412,7 +412,7 @@ Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
 {
 Vk::Device device{NoCreate};
 /* [DescriptorSetLayout-creation-immutable-samplers] */
-Vk::Sampler sampler{DOXYGEN_IGNORE(NoCreate)};
+Vk::Sampler sampler{DOXYGEN_ELLIPSIS(NoCreate)};
 
 Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
     {{0, Vk::DescriptorType::UniformBuffer}},
@@ -425,12 +425,12 @@ Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
 {
 Vk::Instance instance{NoCreate};
 /* [DescriptorSetLayout-creation-binding-flags] */
-Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(Vk::pickDevice(instance))}
-    DOXYGEN_IGNORE()
+Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_ELLIPSIS(Vk::pickDevice(instance))}
+    DOXYGEN_ELLIPSIS()
     .addEnabledExtensions<Vk::Extensions::EXT::descriptor_indexing>()
     .setEnabledFeatures(
         Vk::DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind|
-        DOXYGEN_IGNORE(Vk::DeviceFeatures{})
+        DOXYGEN_ELLIPSIS(Vk::DeviceFeatures{})
     )
 };
 
@@ -438,7 +438,7 @@ Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
     {{0, Vk::DescriptorType::UniformBuffer, 1,
       ~Vk::ShaderStages{},
       Vk::DescriptorSetLayoutBinding::Flag::UpdateAfterBind}},
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
 }};
 /* [DescriptorSetLayout-creation-binding-flags] */
 }
@@ -449,7 +449,7 @@ Vk::Instance instance;
 /* [Device-creation-construct-queue] */
 #include <Magnum/Vk/DeviceCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Queue queue{NoCreate};
 Vk::Device device{instance, Vk::DeviceCreateInfo{Vk::pickDevice(instance)}
@@ -463,8 +463,8 @@ Vk::Instance instance;
 Vk::DeviceProperties properties{NoCreate};
 using namespace Containers::Literals;
 /* [Device-creation-extensions] */
-Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(properties)}
-    DOXYGEN_IGNORE()
+Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_ELLIPSIS(properties)}
+    DOXYGEN_ELLIPSIS()
     .addEnabledExtensions<                         // predefined extensions
         Vk::Extensions::EXT::index_type_uint8,
         Vk::Extensions::KHR::device_group>()
@@ -478,13 +478,13 @@ Vk::Instance instance;
 Vk::DeviceProperties properties{NoCreate};
 using namespace Containers::Literals;
 /* [Device-creation-features] */
-Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(properties)}
-    DOXYGEN_IGNORE()
+Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_ELLIPSIS(properties)}
+    DOXYGEN_ELLIPSIS()
     .setEnabledFeatures(
         Vk::DeviceFeature::IndexTypeUnsignedByte|
         Vk::DeviceFeature::SamplerAnisotropy|
         Vk::DeviceFeature::GeometryShader|
-        DOXYGEN_IGNORE(Vk::DeviceFeature{}))
+        DOXYGEN_ELLIPSIS(Vk::DeviceFeature{}))
 };
 /* [Device-creation-features] */
 }
@@ -501,26 +501,26 @@ if(extensions.isSupported<Vk::Extensions::EXT::index_type_uint8>())
     info.addEnabledExtensions<Vk::Extensions::EXT::index_type_uint8>();
 if(extensions.isSupported("VK_NV_mesh_shader"_s))
     info.addEnabledExtensions({"VK_NV_mesh_shader"_s});
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 info.setEnabledFeatures(properties.features() & // mask away unsupported ones
     (Vk::DeviceFeature::IndexTypeUnsignedByte|
      Vk::DeviceFeature::SamplerAnisotropy|
      Vk::DeviceFeature::GeometryShader|
-     DOXYGEN_IGNORE(Vk::DeviceFeature{})));
+     DOXYGEN_ELLIPSIS(Vk::DeviceFeature{})));
 /* [Device-creation-check-supported] */
 }
 
 {
 Vk::Instance instance;
 /* [Device-creation-portability-subset] */
-Vk::DeviceProperties properties = DOXYGEN_IGNORE(Vk::pickDevice(instance));
+Vk::DeviceProperties properties = DOXYGEN_ELLIPSIS(Vk::pickDevice(instance));
 Vk::Device device{instance, Vk::DeviceCreateInfo{properties}
     /* enable triangle fans only if actually supported */
     .setEnabledFeatures(properties.features() & Vk::DeviceFeature::TriangleFans)
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
 };
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 if(device.enabledFeatures() & Vk::DeviceFeature::TriangleFans) {
     // draw a triangle fan mesh
@@ -534,10 +534,10 @@ if(device.enabledFeatures() & Vk::DeviceFeature::TriangleFans) {
 Vk::Instance instance;
 VkQueryPool pool{};
 /* [Device-function-pointers] */
-Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+Vk::Device device{DOXYGEN_ELLIPSIS(NoCreate)};
 
 // ...
-device->ResetQueryPoolEXT(device, DOXYGEN_IGNORE(pool, 0, 0));
+device->ResetQueryPoolEXT(device, DOXYGEN_ELLIPSIS(pool, 0, 0));
 /* [Device-function-pointers] */
 }
 
@@ -547,13 +547,13 @@ VkQueryPool pool{};
 /* [Device-global-function-pointers] */
 #include <MagnumExternal/Vulkan/flextVkGlobal.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
-Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+Vk::Device device{DOXYGEN_ELLIPSIS(NoCreate)};
 device.populateGlobalFunctionPointers();
 
-DOXYGEN_IGNORE()
-vkResetQueryPoolEXT(device, DOXYGEN_IGNORE(pool, 0, 0));
+DOXYGEN_ELLIPSIS()
+vkResetQueryPoolEXT(device, DOXYGEN_ELLIPSIS(pool, 0, 0));
 /* [Device-global-function-pointers] */
 }
 
@@ -569,41 +569,41 @@ if(device.isExtensionEnabled<Vk::Extensions::EXT::index_type_uint8>()) {
 }
 
 {
-Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+Vk::Device device{DOXYGEN_ELLIPSIS(NoCreate)};
 /* The include should be a no-op here since it was already included above */
 /* [Fence-creation] */
 #include <Magnum/Vk/FenceCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Fence fence{device, Vk::FenceCreateInfo{Vk::FenceCreateInfo::Flag::Signaled}};
 /* [Fence-creation] */
 }
 
 {
-Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+Vk::Device device{DOXYGEN_ELLIPSIS(NoCreate)};
 Vector2i size;
 /* The include should be a no-op here since it was already included above */
 /* [Framebuffer-creation] */
 #include <Magnum/Vk/FramebufferCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Image color{device, Vk::ImageCreateInfo2D{               /* created before */
     Vk::ImageUsage::ColorAttachment,
-    Vk::PixelFormat::RGBA8Unorm, size, 1}, DOXYGEN_IGNORE(NoAllocate)};
+    Vk::PixelFormat::RGBA8Unorm, size, 1}, DOXYGEN_ELLIPSIS(NoAllocate)};
 Vk::Image depth{device, Vk::ImageCreateInfo2D{
     Vk::ImageUsage::DepthStencilAttachment,
-    Vk::PixelFormat::Depth24UnormStencil8UI, size, 1}, DOXYGEN_IGNORE(NoAllocate)};
+    Vk::PixelFormat::Depth24UnormStencil8UI, size, 1}, DOXYGEN_ELLIPSIS(NoAllocate)};
 Vk::ImageView colorView{device, Vk::ImageViewCreateInfo2D{color}};
 Vk::ImageView depthView{device, Vk::ImageViewCreateInfo2D{depth}};
 
 Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{} /* created before */
     .setAttachments({
-        Vk::AttachmentDescription{color.format(), DOXYGEN_IGNORE({}, {}, {}, {})},
-        Vk::AttachmentDescription{depth.format(), DOXYGEN_IGNORE({}, {}, {}, {})},
+        Vk::AttachmentDescription{color.format(), DOXYGEN_ELLIPSIS({}, {}, {}, {})},
+        Vk::AttachmentDescription{depth.format(), DOXYGEN_ELLIPSIS({}, {}, {}, {})},
     })
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
 };
 
 Vk::Framebuffer framebuffer{device, Vk::FramebufferCreateInfo{renderPass, {
@@ -619,7 +619,7 @@ Vk::Device device{NoCreate};
 /* [Image-creation] */
 #include <Magnum/Vk/ImageCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Image image{device, Vk::ImageCreateInfo2D{
     Vk::ImageUsage::Sampled, PixelFormat::RGBA8Srgb, {1024, 1024}, 1
@@ -650,10 +650,10 @@ Vk::Device device{NoCreate};
 Vk::CommandBuffer cmd{NoCreate};
 /* [Image-usage-clear] */
 Vk::Image image{device, Vk::ImageCreateInfo2D{
-    Vk::ImageUsage::TransferDestination|DOXYGEN_IGNORE(Vk::ImageUsage{}), Vk::PixelFormat::RGBA8Srgb, DOXYGEN_IGNORE({}, 1)
-}, DOXYGEN_IGNORE(Vk::MemoryFlag{})};
+    Vk::ImageUsage::TransferDestination|DOXYGEN_ELLIPSIS(Vk::ImageUsage{}), Vk::PixelFormat::RGBA8Srgb, DOXYGEN_ELLIPSIS({}, 1)
+}, DOXYGEN_ELLIPSIS(Vk::MemoryFlag{})};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 cmd.pipelineBarrier(Vk::PipelineStage::TopOfPipe, Vk::PipelineStage::Transfer, {
         /* Transition the image to a layout required by the clear operation */
@@ -669,14 +669,14 @@ Vk::Device device{NoCreate};
 Vk::CommandBuffer cmd{NoCreate};
 /* [Image-usage-copy-from-buffer] */
 Vk::Buffer input{device, Vk::BufferCreateInfo{
-    Vk::BufferUsage::TransferSource, 256*256*4 DOXYGEN_IGNORE()
+    Vk::BufferUsage::TransferSource, 256*256*4 DOXYGEN_ELLIPSIS()
 }, Vk::MemoryFlag::HostVisible};
 Vk::Image texture{device, Vk::ImageCreateInfo2D{
     Vk::ImageUsage::TransferDestination|Vk::ImageUsage::Sampled,
-    Vk::PixelFormat::RGBA8Srgb, {256, 256}, DOXYGEN_IGNORE(1)
+    Vk::PixelFormat::RGBA8Srgb, {256, 256}, DOXYGEN_ELLIPSIS(1)
 }, Vk::MemoryFlag::DeviceLocal};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 cmd.pipelineBarrier(Vk::PipelineStage::TopOfPipe, Vk::PipelineStage::Transfer, {
         /* Transition the image to a layout required by the copy operation */
@@ -701,7 +701,7 @@ cmd.copyBufferToImage(Vk::CopyBufferToImageInfo2D{
         {     0, Vk::ImageAspect::Color, 0, {{}, {256, 256}}},
         {262144, Vk::ImageAspect::Color, 1, {{}, {128, 128}}},
         {327680, Vk::ImageAspect::Color, 2, {{}, { 64,  64}}},
-        DOXYGEN_IGNORE()
+        DOXYGEN_ELLIPSIS()
     }
 });
 /* [Image-usage-copy-from-buffer-multiple] */
@@ -712,19 +712,19 @@ Vk::Device device{NoCreate};
 Vk::CommandBuffer cmd{NoCreate};
 /* [Image-usage-copy-from-image] */
 Vk::Image a{device, Vk::ImageCreateInfo2D{
-    Vk::ImageUsage::TransferSource|DOXYGEN_IGNORE(Vk::ImageUsage{}),
-    Vk::PixelFormat::RGBA8Srgb, {256, 256}, DOXYGEN_IGNORE(1)
-}, DOXYGEN_IGNORE({})};
+    Vk::ImageUsage::TransferSource|DOXYGEN_ELLIPSIS(Vk::ImageUsage{}),
+    Vk::PixelFormat::RGBA8Srgb, {256, 256}, DOXYGEN_ELLIPSIS(1)
+}, DOXYGEN_ELLIPSIS({})};
 Vk::Image b{device, Vk::ImageCreateInfo2D{
-    Vk::ImageUsage::TransferDestination|DOXYGEN_IGNORE(Vk::ImageUsage{}), Vk::PixelFormat::RGBA8Srgb, {256, 256}, DOXYGEN_IGNORE(1)
-}, DOXYGEN_IGNORE({})};
+    Vk::ImageUsage::TransferDestination|DOXYGEN_ELLIPSIS(Vk::ImageUsage{}), Vk::PixelFormat::RGBA8Srgb, {256, 256}, DOXYGEN_ELLIPSIS(1)
+}, DOXYGEN_ELLIPSIS({})};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 cmd.pipelineBarrier(Vk::PipelineStage::TopOfPipe, Vk::PipelineStage::Transfer, {
         /* Transfer both images to a layout required by the copy operation */
         {Vk::Accesses{}, Vk::Access::TransferRead,
-            Vk::ImageLayout::DOXYGEN_IGNORE(Undefined), Vk::ImageLayout::TransferSource, a},
+            Vk::ImageLayout::DOXYGEN_ELLIPSIS(Undefined), Vk::ImageLayout::TransferSource, a},
         {Vk::Accesses{}, Vk::Access::TransferWrite,
             Vk::ImageLayout::Undefined, Vk::ImageLayout::TransferDestination, b}
     })
@@ -742,11 +742,11 @@ Vk::Device device{NoCreate};
 /* [ImageView-creation] */
 #include <Magnum/Vk/ImageViewCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Image image{device, Vk::ImageCreateInfo2DArray{ /* created before */
-    DOXYGEN_IGNORE(Vk::ImageUsage{}, PixelFormat{}, {}, 1)
-}, DOXYGEN_IGNORE(Vk::MemoryFlag{})};
+    DOXYGEN_ELLIPSIS(Vk::ImageUsage{}, PixelFormat{}, {}, 1)
+}, DOXYGEN_ELLIPSIS(Vk::MemoryFlag{})};
 
 Vk::ImageView view{device, Vk::ImageViewCreateInfo2DArray{image}};
 /* [ImageView-creation] */
@@ -759,7 +759,7 @@ const char** argv{};
 /* [Instance-creation-minimal] */
 #include <Magnum/Vk/InstanceCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Instance instance{{argc, argv}};
 /* [Instance-creation-minimal] */
@@ -783,7 +783,7 @@ const char** argv{};
 using namespace Containers::Literals;
 /* [Instance-creation-layers-extensions] */
 Vk::Instance instance{Vk::InstanceCreateInfo{argc, argv}
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
     .addEnabledLayers({"VK_LAYER_KHRONOS_validation"_s})
     .addEnabledExtensions<                          // predefined extensions
         Vk::Extensions::EXT::debug_report,
@@ -810,7 +810,7 @@ if(layers.isSupported("VK_LAYER_KHRONOS_validation"_s))
     info.addEnabledLayers({"VK_LAYER_KHRONOS_validation"_s});
 if(extensions.isSupported<Vk::Extensions::EXT::debug_report>())
     info.addEnabledExtensions<Vk::Extensions::EXT::debug_report>();
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Instance instance{info};
 /* [Instance-creation-check-supported] */
@@ -818,7 +818,7 @@ Vk::Instance instance{info};
 
 {
 /* [Instance-function-pointers] */
-Vk::Instance instance{DOXYGEN_IGNORE()};
+Vk::Instance instance{DOXYGEN_ELLIPSIS()};
 
 VkPhysicalDeviceGroupPropertiesKHR properties[10];
 UnsignedInt count = Containers::arraySize(properties);
@@ -832,7 +832,7 @@ Vk::Instance instance;
 /* [Instance-global-function-pointers] */
 #include <MagnumExternal/Vulkan/flextVkGlobal.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 instance.populateGlobalFunctionPointers();
 
@@ -862,7 +862,7 @@ Containers::ArrayView<const char> vertexData, indexData;
 /* [Memory-allocation] */
 #include <Magnum/Vk/MemoryAllocateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 /* Create buffers without allocating them */
 Vk::Buffer vertices{device,
@@ -937,11 +937,11 @@ meshLayout
     .addAttribute(TextureLocation, Binding, VertexFormat::Vector2, 3*sizeof(Float))
     .addAttribute(NormalLocation, Binding, VertexFormat::Vector3, 5*sizeof(Float));
 
-Vk::Buffer vertices{DOXYGEN_IGNORE(device), Vk::BufferCreateInfo{
+Vk::Buffer vertices{DOXYGEN_ELLIPSIS(device), Vk::BufferCreateInfo{
     Vk::BufferUsage::VertexBuffer, vertexCount*8*sizeof(Float)
-}, DOXYGEN_IGNORE(NoAllocate)};
+}, DOXYGEN_ELLIPSIS(NoAllocate)};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Mesh mesh{meshLayout};
 mesh.addVertexBuffer(Binding, vertices, 0)
@@ -949,11 +949,11 @@ mesh.addVertexBuffer(Binding, vertices, 0)
 /* [Mesh-populating] */
 
 /* [Mesh-populating-indexed] */
-Vk::Buffer indices{DOXYGEN_IGNORE(device), Vk::BufferCreateInfo{
+Vk::Buffer indices{DOXYGEN_ELLIPSIS(device), Vk::BufferCreateInfo{
     Vk::BufferUsage::IndexBuffer, indexCount*sizeof(UnsignedShort)
-}, DOXYGEN_IGNORE(NoAllocate)};
+}, DOXYGEN_ELLIPSIS(NoAllocate)};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 mesh.setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort)
     .setCount(indexCount);
@@ -963,19 +963,19 @@ mesh.setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort)
 {
 Vk::Device device{NoCreate};
 /* [Mesh-populating-owned] */
-Vk::Buffer buffer{DOXYGEN_IGNORE(device), Vk::BufferCreateInfo{
-    Vk::BufferUsage::VertexBuffer|Vk::BufferUsage::IndexBuffer, DOXYGEN_IGNORE(0)
-}, DOXYGEN_IGNORE(NoAllocate)};
+Vk::Buffer buffer{DOXYGEN_ELLIPSIS(device), Vk::BufferCreateInfo{
+    Vk::BufferUsage::VertexBuffer|Vk::BufferUsage::IndexBuffer, DOXYGEN_ELLIPSIS(0)
+}, DOXYGEN_ELLIPSIS(NoAllocate)};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Mesh mesh{Vk::MeshLayout{MeshPrimitive::Triangles}
-    .addBinding(DOXYGEN_IGNORE(0, 0))
-    DOXYGEN_IGNORE()
+    .addBinding(DOXYGEN_ELLIPSIS(0, 0))
+    DOXYGEN_ELLIPSIS()
 };
-mesh.addVertexBuffer(DOXYGEN_IGNORE(0), buffer, DOXYGEN_IGNORE(0))
-    .setIndexBuffer(std::move(buffer), DOXYGEN_IGNORE(0, MeshIndexType{}))
-    .setCount(DOXYGEN_IGNORE(0));
+mesh.addVertexBuffer(DOXYGEN_ELLIPSIS(0), buffer, DOXYGEN_ELLIPSIS(0))
+    .setIndexBuffer(std::move(buffer), DOXYGEN_ELLIPSIS(0, MeshIndexType{}))
+    .setCount(DOXYGEN_ELLIPSIS(0));
 /* [Mesh-populating-owned] */
 }
 
@@ -986,14 +986,14 @@ Vk::ShaderSet shaderSet;
 Vk::PipelineLayout pipelineLayout{NoCreate};
 Vk::RenderPass renderPass{NoCreate};
 /* [Mesh-drawing] */
-Vk::Mesh mesh{DOXYGEN_IGNORE(Vk::MeshLayout{MeshPrimitive{}})};
+Vk::Mesh mesh{DOXYGEN_ELLIPSIS(Vk::MeshLayout{MeshPrimitive{}})};
 
-Vk::Pipeline pipeline{DOXYGEN_IGNORE(device), Vk::RasterizationPipelineCreateInfo{
-        DOXYGEN_IGNORE(shaderSet), mesh.layout(), DOXYGEN_IGNORE(pipelineLayout, renderPass, 0, 1)
-    }DOXYGEN_IGNORE()
+Vk::Pipeline pipeline{DOXYGEN_ELLIPSIS(device), Vk::RasterizationPipelineCreateInfo{
+        DOXYGEN_ELLIPSIS(shaderSet), mesh.layout(), DOXYGEN_ELLIPSIS(pipelineLayout, renderPass, 0, 1)
+    }DOXYGEN_ELLIPSIS()
 };
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 cmd.bindPipeline(pipeline)
    .draw(mesh);
@@ -1021,15 +1021,15 @@ dynamicMeshLayout
     .addAttribute(TextureLocation, 1, VertexFormat::Vector2, 0)
     .addAttribute(NormalLocation, 2, VertexFormat::Vector3, 0);
 
-Vk::Pipeline pipeline{DOXYGEN_IGNORE(device), Vk::RasterizationPipelineCreateInfo{
-        DOXYGEN_IGNORE(shaderSet), dynamicMeshLayout, DOXYGEN_IGNORE(pipelineLayout, renderPass, 0, 1)}
+Vk::Pipeline pipeline{DOXYGEN_ELLIPSIS(device), Vk::RasterizationPipelineCreateInfo{
+        DOXYGEN_ELLIPSIS(shaderSet), dynamicMeshLayout, DOXYGEN_ELLIPSIS(pipelineLayout, renderPass, 0, 1)}
     /* Enable dynamic primitive and stride */
     .setDynamicStates(Vk::DynamicRasterizationState::MeshPrimitive|
                       Vk::DynamicRasterizationState::VertexInputBindingStride)
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
 };
 
-Vk::Buffer vertices{DOXYGEN_IGNORE(NoCreate)};
+Vk::Buffer vertices{DOXYGEN_ELLIPSIS(NoCreate)};
 
 Vk::Mesh mesh{Vk::MeshLayout{MeshPrimitive::Triangles} /* Or TriangleStrip etc */
     /* Concrete stride */
@@ -1046,7 +1046,7 @@ Vk::Mesh mesh{Vk::MeshLayout{MeshPrimitive::Triangles} /* Or TriangleStrip etc *
 mesh.addVertexBuffer(0, vertices, 0)
     .addVertexBuffer(1, vertices, 3*sizeof(Float))
     .addVertexBuffer(2, vertices, 5*sizeof(Float))
-    .setCount(DOXYGEN_IGNORE(0));
+    .setCount(DOXYGEN_ELLIPSIS(0));
 
 cmd.bindPipeline(pipeline)
    /* Updates the dynamic primitive and stride as needed by the mesh */
@@ -1060,12 +1060,12 @@ Vk::Device device{NoCreate};
 /* [Pipeline-creation-rasterization] */
 #include <Magnum/Vk/RasterizationPipelineCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
-Vk::ShaderSet shaderSet{DOXYGEN_IGNORE()};
-Vk::MeshLayout meshLayout{DOXYGEN_IGNORE(MeshPrimitive{})};
-Vk::PipelineLayout pipelineLayout{DOXYGEN_IGNORE(NoCreate)};
-Vk::RenderPass renderPass{DOXYGEN_IGNORE(NoCreate)};
+Vk::ShaderSet shaderSet{DOXYGEN_ELLIPSIS()};
+Vk::MeshLayout meshLayout{DOXYGEN_ELLIPSIS(MeshPrimitive{})};
+Vk::PipelineLayout pipelineLayout{DOXYGEN_ELLIPSIS(NoCreate)};
+Vk::RenderPass renderPass{DOXYGEN_ELLIPSIS(NoCreate)};
 
 Vk::Pipeline pipeline{device, Vk::RasterizationPipelineCreateInfo{
         shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
@@ -1080,10 +1080,10 @@ Vk::Device device{NoCreate};
 /* [Pipeline-creation-compute] */
 #include <Magnum/Vk/ComputePipelineCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
-Vk::ShaderSet shaderSet{DOXYGEN_IGNORE()};
-Vk::PipelineLayout pipelineLayout{DOXYGEN_IGNORE(NoCreate)};
+Vk::ShaderSet shaderSet{DOXYGEN_ELLIPSIS()};
+Vk::PipelineLayout pipelineLayout{DOXYGEN_ELLIPSIS(NoCreate)};
 
 Vk::Pipeline pipeline{device, Vk::ComputePipelineCreateInfo{
     shaderSet, pipelineLayout
@@ -1094,9 +1094,9 @@ Vk::Pipeline pipeline{device, Vk::ComputePipelineCreateInfo{
 {
 Vk::CommandBuffer cmd{NoCreate};
 /* [Pipeline-usage] */
-Vk::Pipeline pipeline{DOXYGEN_IGNORE(NoCreate)};
+Vk::Pipeline pipeline{DOXYGEN_ELLIPSIS(NoCreate)};
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 cmd.bindPipeline(pipeline);
 /* [Pipeline-usage] */
@@ -1108,14 +1108,14 @@ Vk::Device device{NoCreate};
 /* [PipelineLayout-creation] */
 #include <Magnum/Vk/PipelineLayoutCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
-Vk::DescriptorSetLayout layout1{DOXYGEN_IGNORE(NoCreate)};
-Vk::DescriptorSetLayout layout2{DOXYGEN_IGNORE(NoCreate)};
-DOXYGEN_IGNORE()
+Vk::DescriptorSetLayout layout1{DOXYGEN_ELLIPSIS(NoCreate)};
+Vk::DescriptorSetLayout layout2{DOXYGEN_ELLIPSIS(NoCreate)};
+DOXYGEN_ELLIPSIS()
 
 Vk::PipelineLayout{device, Vk::PipelineLayoutCreateInfo{
-    layout1, layout2, DOXYGEN_IGNORE(layout1)
+    layout1, layout2, DOXYGEN_ELLIPSIS(layout1)
 }};
 /* [PipelineLayout-creation] */
 }
@@ -1126,7 +1126,7 @@ Vk::Device device{NoCreate};
 /* [RenderPass-creation] */
 #include <Magnum/Vk/RenderPassCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
     .setAttachments({
@@ -1168,16 +1168,16 @@ Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
 
 Vk::Framebuffer framebuffer{NoCreate};
 /* [RenderPass-usage-begin] */
-Vk::CommandBuffer cmd = DOXYGEN_IGNORE(Vk::CommandBuffer{NoCreate});
+Vk::CommandBuffer cmd = DOXYGEN_ELLIPSIS(Vk::CommandBuffer{NoCreate});
 cmd.begin()
-   DOXYGEN_IGNORE()
+   DOXYGEN_ELLIPSIS()
    .beginRenderPass(Vk::RenderPassBeginInfo{renderPass, framebuffer}
         .clearColor(0, 0x1f1f1f_srgbf)
         .clearDepthStencil(1, 1.0f, 0))
 /* [RenderPass-usage-begin] */
 /* [RenderPass-usage-end] */
    .endRenderPass()
-   DOXYGEN_IGNORE()
+   DOXYGEN_ELLIPSIS()
    .end();
 /* [RenderPass-usage-end] */
 }
@@ -1188,7 +1188,7 @@ Vk::Device device{NoCreate};
 /* [Sampler-creation] */
 #include <Magnum/Vk/SamplerCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Sampler sampler{device, Vk::SamplerCreateInfo{}};
 /* [Sampler-creation] */
@@ -1211,13 +1211,13 @@ Vk::Device device{NoCreate};
 /* [Shader-creation] */
 #include <Magnum/Vk/ShaderCreateInfo.h>
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::ShaderCreateInfo info{
     CORRADE_INTERNAL_ASSERT_EXPRESSION(Utility::Directory::read("shader.spv"))
 };
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Vk::Shader shader{device, info};
 /* [Shader-creation] */
@@ -1225,7 +1225,7 @@ Vk::Shader shader{device, info};
 
 {
 /* [ShaderSet-usage] */
-Vk::Shader vert{DOXYGEN_IGNORE(NoCreate)}, frag{DOXYGEN_IGNORE(NoCreate)};
+Vk::Shader vert{DOXYGEN_ELLIPSIS(NoCreate)}, frag{DOXYGEN_ELLIPSIS(NoCreate)};
 
 using namespace Containers::Literals;
 
@@ -1246,7 +1246,7 @@ set.addShader(Vk::ShaderStage::Fragment, frag, "main"_s, {
 {
 using namespace Containers::Literals;
 /* [ShaderSet-usage-ownership-transfer] */
-Vk::Shader shader{DOXYGEN_IGNORE(NoCreate)};
+Vk::Shader shader{DOXYGEN_ELLIPSIS(NoCreate)};
 
 Vk::ShaderSet set;
 set.addShader(Vk::ShaderStage::Vertex, shader, "vert"_s)

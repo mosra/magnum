@@ -71,7 +71,7 @@
 #include "Magnum/Trade/MeshData3D.h"
 #endif
 
-#define DOXYGEN_IGNORE(...) __VA_ARGS__
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -85,7 +85,7 @@ PluginManager::Manager<Trade::AbstractImageConverter> manager;
 Containers::Pointer<Trade::AbstractImageConverter> converter =
     manager.loadAndInstantiate("AnyImageConverter");
 
-Image2D image{PixelFormat::RGBA8Unorm, size, DOXYGEN_IGNORE({})};
+Image2D image{PixelFormat::RGBA8Unorm, size, DOXYGEN_ELLIPSIS({})};
 if(!converter || !converter->convertToFile(image, "image.png"))
     Fatal{} << "Can't save image.png with AnyImageConverter";
 /* [AbstractImageConverter-usage-file] */
@@ -97,9 +97,9 @@ PluginManager::Manager<Trade::AbstractImageConverter> manager;
 Containers::Pointer<Trade::AbstractImageConverter> converter =
     manager.loadAndInstantiate("AnyImageConverter");
 
-Image2D level0{PixelFormat::RGBA16F, {256, 256}, DOXYGEN_IGNORE({})};
-Image2D level1{PixelFormat::RGBA16F, {128, 128}, DOXYGEN_IGNORE({})};
-Image2D level2{PixelFormat::RGBA16F, {64, 64}, DOXYGEN_IGNORE({})};
+Image2D level0{PixelFormat::RGBA16F, {256, 256}, DOXYGEN_ELLIPSIS({})};
+Image2D level1{PixelFormat::RGBA16F, {128, 128}, DOXYGEN_ELLIPSIS({})};
+Image2D level2{PixelFormat::RGBA16F, {64, 64}, DOXYGEN_ELLIPSIS({})};
 
 if(!converter || !converter->convertToFile({level0, level1, level2}, "image.exr"))
     Fatal{} << "Can't save image.exr with AnyImageConverter";
@@ -236,7 +236,7 @@ void doOpenData(Containers::Array<char>&& data, Trade::DataFlags dataFlags) over
         Utility::copy(data, _in);
     }
 
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
 }
 /* [AbstractImporter-doOpenData-ownership] */
 } importer;
@@ -248,7 +248,7 @@ PluginManager::Manager<Trade::AbstractSceneConverter> manager;
 Containers::Pointer<Trade::AbstractSceneConverter> converter =
     manager.loadAndInstantiate("AnySceneConverter");
 
-Trade::MeshData mesh = DOXYGEN_IGNORE(Trade::MeshData{{}, {}});
+Trade::MeshData mesh = DOXYGEN_ELLIPSIS(Trade::MeshData{{}, {}});
 if(!converter || !converter->convertToFile(mesh, "mesh.ply"))
     Fatal{} << "Can't save mesh.ply with AnySceneConverter";
 /* [AbstractSceneConverter-usage-file] */
@@ -339,7 +339,7 @@ Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
 if(!image) Fatal{} << "Oopsie!";
 
 GL::Texture2D texture;
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 texture.setStorage(1, GL::textureFormat(image->format()), image->size());
 if(!image->isCompressed())
     texture.setSubImage(0, {}, *image);
@@ -397,7 +397,7 @@ Trade::MaterialAttributeData b{"DiffuseColor", 0x3bd267ff_srgbaf};
 
 {
 /* [MaterialData-usage] */
-Trade::MaterialData data = DOXYGEN_IGNORE(Trade::MaterialData{{}, {}});
+Trade::MaterialData data = DOXYGEN_ELLIPSIS(Trade::MaterialData{{}, {}});
 
 // Assumes the attribute exists
 Float roughness = data.attribute<Float>(Trade::MaterialAttribute::Roughness);
@@ -426,7 +426,7 @@ if(data.types() & Trade::MaterialType::PbrSpecularGlossiness) {
     Color4 specular = pbr.specularColor();
     Float glossiness = pbr.glossiness();
 
-    DOXYGEN_IGNORE(static_cast<void>(diffuse), static_cast<void>(specular), static_cast<void>(glossiness);)
+    DOXYGEN_ELLIPSIS(static_cast<void>(diffuse), static_cast<void>(specular), static_cast<void>(glossiness);)
 
 /* Otherwise use metallic/roughness (or defaults if no attributes present) */
 } else {
@@ -436,14 +436,14 @@ if(data.types() & Trade::MaterialType::PbrSpecularGlossiness) {
     Float metalness = pbr.metalness();
     Float roughness = pbr.roughness();
 
-    DOXYGEN_IGNORE(static_cast<void>(base), static_cast<void>(metalness), static_cast<void>(roughness);)
+    DOXYGEN_ELLIPSIS(static_cast<void>(base), static_cast<void>(metalness), static_cast<void>(roughness);)
 }
 /* [MaterialData-usage-types] */
 }
 
 {
 /* [MaterialData-usage-texture-complexity] */
-Trade::PbrSpecularGlossinessMaterialData data = DOXYGEN_IGNORE(Trade::PbrSpecularGlossinessMaterialData{{}, {}});
+Trade::PbrSpecularGlossinessMaterialData data = DOXYGEN_ELLIPSIS(Trade::PbrSpecularGlossinessMaterialData{{}, {}});
 
 /* Simple case for diffuse + packed specular/glossiness texture, the default
    coordinate set and a common coordinate transformation for all textures */
@@ -455,11 +455,11 @@ if(data.hasAttribute(Trade::MaterialAttribute::DiffuseTexture) &&
     UnsignedInt specularGlossiness = data.specularTexture();
     Matrix3 textureMatrix = data.commonTextureMatrix();
 
-    DOXYGEN_IGNORE(static_cast<void>(diffuse), static_cast<void>(specularGlossiness), static_cast<void>(textureMatrix);)
+    DOXYGEN_ELLIPSIS(static_cast<void>(diffuse), static_cast<void>(specularGlossiness), static_cast<void>(textureMatrix);)
 
 /* Extra work needed when using a non-default texture coordinate set */
 } else if(data.hasTextureCoordinates() && data.hasCommonTextureCoordinates()) {
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
 
 /* Etc... */
 } else Fatal{} << "Material too complex, giving up";
@@ -475,7 +475,7 @@ if(data.hasLayer(Trade::MaterialLayer::ClearCoat)) {
     Float clearCoatRoughness = data.attributeOr(Trade::MaterialLayer::ClearCoat,
         Trade::MaterialAttribute::Roughness, 0.0f);
 
-    DOXYGEN_IGNORE(static_cast<void>(clearCoatFactor), static_cast<void>(clearCoatRoughness);)
+    DOXYGEN_ELLIPSIS(static_cast<void>(clearCoatFactor), static_cast<void>(clearCoatRoughness);)
 }
 /* [MaterialData-usage-layers] */
 }
@@ -489,7 +489,7 @@ if(data.types() & Trade::MaterialType::PbrClearCoat) {
     Float clearCoatFactor = clearCoat.layerFactor();
     Float clearCoatRoughness = clearCoat.roughness();
 
-    DOXYGEN_IGNORE(static_cast<void>(clearCoatFactor), static_cast<void>(clearCoatRoughness);)
+    DOXYGEN_ELLIPSIS(static_cast<void>(clearCoatFactor), static_cast<void>(clearCoatRoughness);)
 }
 /* [MaterialData-usage-layers-types] */
 }
@@ -638,7 +638,7 @@ constexpr Trade::MeshAttributeData colors{Trade::MeshAttribute::Color,
 
 /* Actual data populated later */
 Containers::Array<char> vertexData{15*sizeof(Vertex)};
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 Trade::MeshData{MeshPrimitive::Triangles, std::move(vertexData),
     {positions, colors}};
 /* [MeshAttributeData-usage-offset-only] */
@@ -659,7 +659,7 @@ Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
 {
 /* This snippet is also used by GL::Mesh, bear that in mind when updating */
 /* [MeshData-usage-compile] */
-Trade::MeshData data = DOXYGEN_IGNORE(Trade::MeshData{MeshPrimitive::Points, 0});
+Trade::MeshData data = DOXYGEN_ELLIPSIS(Trade::MeshData{MeshPrimitive::Points, 0});
 
 GL::Mesh mesh = MeshTools::compile(data);
 /* [MeshData-usage-compile] */
@@ -747,7 +747,7 @@ struct Vertex {
 
 Containers::Array<char> indexData{indexCount*sizeof(UnsignedShort)};
 Containers::Array<char> vertexData{vertexCount*sizeof(Vertex)};
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 auto vertices = Containers::arrayCast<const Vertex>(vertexData);
 auto indices = Containers::arrayCast<const UnsignedShort>(indexData);
 

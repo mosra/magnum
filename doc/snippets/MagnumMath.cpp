@@ -41,7 +41,7 @@
 #include "Magnum/Math/StrictWeakOrdering.h"
 #include "Magnum/Math/Swizzle.h"
 
-#define DOXYGEN_IGNORE(...) __VA_ARGS__
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -1037,7 +1037,7 @@ static_cast<void>(transformation);
 
 {
 /* [Matrix3-rotation-extract-reflection] */
-Matrix3 transformation = DOXYGEN_IGNORE({});
+Matrix3 transformation = DOXYGEN_ELLIPSIS({});
 Matrix2x2 rotation = transformation.rotation();
 Vector2 scaling = transformation.scaling();
 if(rotation.determinant() < 0.0f) {
@@ -1060,7 +1060,7 @@ static_cast<void>(transformation);
 
 {
 /* [Matrix4-rotation-extract-reflection] */
-Matrix4 transformation = DOXYGEN_IGNORE({});
+Matrix4 transformation = DOXYGEN_ELLIPSIS({});
 Matrix3x3 rotation = transformation.rotation();
 Vector3 scaling = transformation.scaling();
 if(rotation.determinant() < 0.0f) {

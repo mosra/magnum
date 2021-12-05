@@ -65,7 +65,7 @@
 #include "Magnum/Shaders/Vector.h"
 #endif
 
-#define DOXYGEN_IGNORE(...) __VA_ARGS__
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -103,7 +103,7 @@ mesh.addVertexBuffer(vertices, 0,
 {
 GL::Mesh mesh;
 /* [shaders-classic] */
-Matrix4 transformationMatrix{DOXYGEN_IGNORE()}, projectionMatrix{DOXYGEN_IGNORE()};
+Matrix4 transformationMatrix{DOXYGEN_ELLIPSIS()}, projectionMatrix{DOXYGEN_ELLIPSIS()};
 
 Shaders::PhongGL shader;
 shader
@@ -159,10 +159,10 @@ shader
 GL::Buffer projectionUniform, transformationUniform, drawUniform, lightUniform,
     materialUniform;
 /* [shaders-multi] */
-GL::Mesh redCone{DOXYGEN_IGNORE()}, yellowCube{DOXYGEN_IGNORE()}, redSphere{DOXYGEN_IGNORE()};
-Matrix4 redConeTransformation{DOXYGEN_IGNORE()},
-    yellowCubeTransformation{DOXYGEN_IGNORE()},
-    redSphereTransformation{DOXYGEN_IGNORE()};
+GL::Mesh redCone{DOXYGEN_ELLIPSIS()}, yellowCube{DOXYGEN_ELLIPSIS()}, redSphere{DOXYGEN_ELLIPSIS()};
+Matrix4 redConeTransformation{DOXYGEN_ELLIPSIS()},
+    yellowCubeTransformation{DOXYGEN_ELLIPSIS()},
+    redSphereTransformation{DOXYGEN_ELLIPSIS()};
 
 materialUniform.setData({
     Shaders::PhongMaterialUniform{}
@@ -210,13 +210,13 @@ shader
 {
 GL::Mesh mesh;
 /* [shaders-multidraw] */
-GL::MeshView redConeView{DOXYGEN_IGNORE(mesh)}, yellowCubeView{DOXYGEN_IGNORE(mesh)}, redSphereView{DOXYGEN_IGNORE(mesh)};
-DOXYGEN_IGNORE()
+GL::MeshView redConeView{DOXYGEN_ELLIPSIS(mesh)}, yellowCubeView{DOXYGEN_ELLIPSIS(mesh)}, redSphereView{DOXYGEN_ELLIPSIS(mesh)};
+DOXYGEN_ELLIPSIS()
 
 /* One light, two materials, three draws; with multidraw enabled */
 Shaders::PhongGL shader{Shaders::PhongGL::Flag::MultiDraw, 1, 2, 3};
 shader
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
     .draw({redConeView, yellowCubeView, redSphereView});
 /* [shaders-multidraw] */
 }
@@ -225,9 +225,9 @@ shader
 {
 Matrix4 projectionMatrix;
 /* [shaders-instancing] */
-Matrix4 redSphereTransformation{DOXYGEN_IGNORE()},
-    yellowSphereTransformation{DOXYGEN_IGNORE()},
-    greenSphereTransformation{DOXYGEN_IGNORE()};
+Matrix4 redSphereTransformation{DOXYGEN_ELLIPSIS()},
+    yellowSphereTransformation{DOXYGEN_ELLIPSIS()},
+    greenSphereTransformation{DOXYGEN_ELLIPSIS()};
 
 struct {
     Matrix4 transformationMatrix;
@@ -245,7 +245,7 @@ struct {
      0x3bd267_rgbf},
 };
 
-GL::Mesh sphereInstanced{DOXYGEN_IGNORE()};
+GL::Mesh sphereInstanced{DOXYGEN_ELLIPSIS()};
 sphereInstanced.addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
     Shaders::PhongGL::TransformationMatrix{},
     Shaders::PhongGL::NormalMatrix{},
@@ -256,7 +256,7 @@ Shaders::PhongGL shader{Shaders::PhongGL::Flag::InstancedTransformation|
                         Shaders::PhongGL::Flag::VertexColor};
 shader
     .setProjectionMatrix(projectionMatrix)
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
     .draw(sphereInstanced);
 /* [shaders-instancing] */
 }
@@ -265,11 +265,11 @@ shader
 GL::Mesh mesh;
 /* [shaders-textures] */
 GL::Texture2D diffuseTexture;
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Shaders::PhongGL shader{Shaders::PhongGL::Flag::DiffuseTexture};
 shader.bindDiffuseTexture(diffuseTexture)
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
     .draw(mesh);
 /* [shaders-textures] */
 }
@@ -277,13 +277,13 @@ shader.bindDiffuseTexture(diffuseTexture)
 #ifndef MAGNUM_TARGET_GLES2
 {
 GL::Mesh mesh;
-GL::MeshView redConeView{DOXYGEN_IGNORE(mesh)}, yellowCubeView{DOXYGEN_IGNORE(mesh)}, redSphereView{DOXYGEN_IGNORE(mesh)};
+GL::MeshView redConeView{DOXYGEN_ELLIPSIS(mesh)}, yellowCubeView{DOXYGEN_ELLIPSIS(mesh)}, redSphereView{DOXYGEN_ELLIPSIS(mesh)};
 /* [shaders-texture-arrays] */
-ImageView2D coneDiffuse{DOXYGEN_IGNORE({}, {})}, cubeDiffuse{DOXYGEN_IGNORE({}, {})}, sphereDiffuse{DOXYGEN_IGNORE({}, {})};
+ImageView2D coneDiffuse{DOXYGEN_ELLIPSIS({}, {})}, cubeDiffuse{DOXYGEN_ELLIPSIS({}, {})}, sphereDiffuse{DOXYGEN_ELLIPSIS({}, {})};
 
 GL::Texture2DArray diffuseTexture;
 diffuseTexture
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
     /* Assuming all iamges have the same format and size */
     .setStorage(1, GL::textureFormat(coneDiffuse.format()),
         {coneDiffuse.size(), 3})
@@ -307,7 +307,7 @@ Shaders::PhongGL shader{
     Shaders::PhongGL::Flag::TextureArrays,
     1, 2, 3};
 shader
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
     .bindDiffuseTexture(diffuseTexture)
     .bindTextureTransformationBuffer(textureTransformationUniform)
     .draw({redConeView, yellowCubeView, redSphereView});
@@ -885,7 +885,7 @@ shader
     .setLightColors({0xf0f0ff_srgbf*0.1f,
                      0xff8080_srgbf*10.0f,
                      0x80ff80_srgbf*10.0f})
-    .setLightColors(DOXYGEN_IGNORE({0xf0f0ff_srgbf}))
+    .setLightColors(DOXYGEN_ELLIPSIS({0xf0f0ff_srgbf}))
     .setLightRanges({Constants::inf(),
                      2.0f,
                      2.0f});
@@ -896,9 +896,9 @@ shader
 Color3 ambientColor;
 GL::Texture2D diffuseTexture;
 /* [PhongGL-usage-lights-ambient] */
-Trade::LightData ambientLight = DOXYGEN_IGNORE(Trade::LightData{{}, {}, {}});
+Trade::LightData ambientLight = DOXYGEN_ELLIPSIS(Trade::LightData{{}, {}, {}});
 
-Shaders::PhongGL shader{Shaders::PhongGL::Flag::AmbientTexture|DOXYGEN_IGNORE(Shaders::PhongGL::Flag::DiffuseTexture), DOXYGEN_IGNORE(3)};
+Shaders::PhongGL shader{Shaders::PhongGL::Flag::AmbientTexture|DOXYGEN_ELLIPSIS(Shaders::PhongGL::Flag::DiffuseTexture), DOXYGEN_ELLIPSIS(3)};
 shader
     .setAmbientColor(ambientColor + ambientLight.color()*ambientLight.intensity())
     .bindAmbientTexture(diffuseTexture)

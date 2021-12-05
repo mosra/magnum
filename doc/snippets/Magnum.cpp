@@ -38,7 +38,7 @@
 #include "Magnum/GL/Texture.h"
 #endif
 
-#define DOXYGEN_IGNORE(...) __VA_ARGS__
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -87,7 +87,7 @@ namespace Mn = Magnum;
 #include <Magnum/Magnum.h>        /* only a Matrix4 forward declaration */
 #include <Magnum/Math/Matrix4.h>  /* the actual definition */
 
-DOXYGEN_IGNORE()
+DOXYGEN_ELLIPSIS()
 
 Matrix4 a = Matrix4::translation({3.0f, 1.0f, 0.5f});
 /* [features-forward-declaration-use] */
@@ -96,7 +96,7 @@ static_cast<void>(a);
 
 {
 /* [features-debug-output] */
-Image2D image = DOXYGEN_IGNORE(Image2D{{}, {}, {}});
+Image2D image = DOXYGEN_ELLIPSIS(Image2D{{}, {}, {}});
 
 Debug{} << "Image format is" << image.format() << "and size" << image.size();
 Debug{} << "Color of the first pixel is" << image.pixels<Color4ub>()[0][0];

@@ -33,23 +33,23 @@
 
 using namespace Magnum;
 
-#define DOXYGEN_IGNORE(...) __VA_ARGS__
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 /* [opengl-wrapping-nocreate] */
 class MyApplication: public Platform::Application {
-    DOXYGEN_IGNORE(explicit MyApplication(const Arguments& arguments);)
+    DOXYGEN_ELLIPSIS(explicit MyApplication(const Arguments& arguments);)
 
     private:
         /* Placeholders without an underlying GL object */
         GL::Mesh _mesh{NoCreate};
         Shaders::PhongGL _shader{NoCreate};
-        DOXYGEN_IGNORE()
+        DOXYGEN_ELLIPSIS()
 };
 
 MyApplication::MyApplication(const Arguments& arguments):
     Platform::Application{arguments, NoCreate}
 {
-    DOXYGEN_IGNORE()
+    DOXYGEN_ELLIPSIS()
     create();
 
     /* GL context is ready, now it's safe to populate the GL objects */

@@ -38,7 +38,7 @@
 #include <vector>
 #endif
 
-#define DOXYGEN_IGNORE(...) __VA_ARGS__
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 using namespace Magnum;
 
@@ -58,7 +58,7 @@ GL::Mesh mesh = MeshTools::compile(meshData, indices, vertices);
 {
 Trade::MeshData meshData{MeshPrimitive::Lines, 5};
 /* [compile-external-attributes] */
-Trade::MeshAttribute myCustomAttribute = DOXYGEN_IGNORE({});
+Trade::MeshAttribute myCustomAttribute = DOXYGEN_ELLIPSIS({});
 
 GL::Buffer indices, vertices;
 indices.setData(meshData.indexData());
