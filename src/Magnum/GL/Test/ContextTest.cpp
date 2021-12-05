@@ -421,9 +421,8 @@ void ContextTest::extensions() {
             CORRADE_VERIFY(Int(e.coreVersion()) >= Int(e.requiredVersion()));
             bool coreVersionMismatch = e.coreVersion() != version
                 #if defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL)
-                /* These two are replaced by EXT_color_buffer_float for 2.0,
-                   but aren't core in WebGL 2 */
-                && e.index() != Extensions::EXT::color_buffer_half_float::Index
+                /* Replaced by EXT_color_buffer_float for 2.0 but not core in
+                   WebGL 2 */
                 && e.index() != Extensions::WEBGL::color_buffer_float::Index
                 #endif
                 ;

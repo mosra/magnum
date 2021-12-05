@@ -524,7 +524,6 @@ namespace on @ref MAGNUM_TARGET_GLES2 "WebGL 2.0 builds".
 Extension                                   | Status
 ------------------------------------------- | ------
 @webgl_extension{ANGLE,instanced_arrays}    | done
-@webgl_extension{EXT,color_buffer_half_float} | |
 @webgl_extension{EXT,frag_depth}            | done (shading language only)
 @webgl_extension{EXT,sRGB}                  | done
 @webgl_extension{EXT,blend_minmax}          | done
@@ -553,6 +552,7 @@ Extension                                   | Status
 Extension                                   | Status
 ------------------------------------------- | ------
 @webgl_extension{EXT,texture_filter_anisotropic} | done
+@webgl_extension{EXT,color_buffer_half_float} | |
 @webgl_extension{EXT,disjoint_timer_query}  | only time elapsed query
 @webgl_extension{EXT,disjoint_timer_query_webgl2}  | [missing support in Emscripten](https://github.com/emscripten-core/emscripten/pull/9652)
 @webgl_extension{EXT,color_buffer_float}    | |

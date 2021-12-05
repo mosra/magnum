@@ -271,6 +271,7 @@ constexpr Extension ExtensionList[]{
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::EXT::color_buffer_float{},
     #endif
+    Extensions::EXT::color_buffer_half_float{},
     #ifdef MAGNUM_TARGET_GLES2
     Extensions::EXT::disjoint_timer_query{},
     #endif
@@ -311,7 +312,6 @@ constexpr Extension ExtensionListES300[]{
     #ifdef MAGNUM_TARGET_GLES2
     Extensions::ANGLE::instanced_arrays{},
     Extensions::EXT::blend_minmax{},
-    Extensions::EXT::color_buffer_half_float{},
     Extensions::EXT::frag_depth{},
     Extensions::EXT::sRGB{},
     Extensions::EXT::shader_texture_lod{},

@@ -408,9 +408,11 @@ enum class RenderbufferFormat: GLenum {
      * @requires_webgl20 Not defined in WebGL 1.0 builds. Only four-component
      *      half-float formats can be ised as a render target in WebGL 1.0, see
      *      @ref RenderbufferFormat::RGBA16F for more information.
-     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
-     *      in WebGL 2.0. Use @ref RenderbufferFormat::R16UI or
-     *      @ref RenderbufferFormat::R16I instead if not available.
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,color_buffer_half_float} or
+     *      @webgl_extension{EXT,color_buffer_float} in WebGL 2.0. Use
+     *      @ref RenderbufferFormat::R16UI or @ref RenderbufferFormat::R16I
+     *      instead if not available.
      */
     #ifndef MAGNUM_TARGET_GLES2
     R16F = GL_R16F,
@@ -427,9 +429,11 @@ enum class RenderbufferFormat: GLenum {
      * @requires_webgl20 Not defined in WebGL 1.0 builds. Only four-component
      *      half-float formats can be ised as a render target in WebGL 1.0, see
      *      @ref RenderbufferFormat::RGBA16F for more information.
-     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
-     *      in WebGL 2.0. Use @ref RenderbufferFormat::RG16UI or
-     *      @ref RenderbufferFormat::RG16I instead if not available.
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,color_buffer_half_float} or
+     *      @webgl_extension{EXT,color_buffer_float} in WebGL 2.0. Use
+     *      @ref RenderbufferFormat::RG16UI or @ref RenderbufferFormat::RG16I
+     *      instead if not available.
      */
     #ifndef MAGNUM_TARGET_GLES2
     RG16F = GL_RG16F,
@@ -444,10 +448,11 @@ enum class RenderbufferFormat: GLenum {
      * @requires_gles32 Extension @gl_extension{EXT,color_buffer_half_float}. Use
      *      @ref RenderbufferFormat::RGBA16UI or @ref RenderbufferFormat::RGBA16I
      *      instead if not available.
-     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_half_float}
-     *      in WebGL 1.0, @webgl_extension{EXT,color_buffer_half_float} in
-     *      WebGL 2.0. Use @ref RenderbufferFormat::RGBA16UI or
-     *      @ref RenderbufferFormat::RGBA16I instead if not available.
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,color_buffer_half_float} in WebGL 1.0 and 2.0
+     *      or @webgl_extension{EXT,color_buffer_float} in WebGL 2.0. Use
+     *      @ref RenderbufferFormat::RGBA16UI or @ref RenderbufferFormat::RGBA16I
+     *      instead if not available.
      */
     #ifndef MAGNUM_TARGET_GLES2
     RGBA16F = GL_RGBA16F,

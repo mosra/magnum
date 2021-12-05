@@ -433,8 +433,10 @@ enum class PixelType: GLenum {
      *      use for texture reading in WebGL 1.0.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
      *      for filtering the texture using @ref SamplerFilter::Linear.
-     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_half_float}
-     *      to use the texture as a render target.
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,color_buffer_half_float} in WebGL 1.0 and 2.0
+     *      or @webgl_extension{EXT,color_buffer_float} in WebGL 2.0 to use the
+     *      texture as a render target.
      */
     #ifndef MAGNUM_TARGET_GLES2
     Half = GL_HALF_FLOAT,
@@ -462,9 +464,10 @@ enum class PixelType: GLenum {
      *      for texture reading in WebGL 1.0.
      * @requires_webgl_extension Extension @webgl_extension{OES,texture_float_linear}
      *      for filtering the texture using @ref SamplerFilter::Linear.
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,color_buffer_float}
-     *      in WebGL 1.0 or @webgl_extension{EXT,color_buffer_float} in WebGL
-     *      2.0 to use the texture as a render target.
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{WEBGL,color_buffer_float} in WebGL 1.0 or
+     *      @webgl_extension{EXT,color_buffer_float} in WebGL 2.0 to use the
+     *      texture as a render target.
      */
     Float = GL_FLOAT,
 
@@ -593,6 +596,8 @@ enum class PixelType: GLenum {
      * @requires_gles30 Only 8bit and 16bit types are available in OpenGL ES
      *      2.0.
      * @requires_webgl20 Only 8bit and 16bit types are available in WebGL 1.0.
+     * @requires_webgl_extension @webgl_extension{EXT,color_buffer_float} in
+     *      WebGL 2.0 to use the texture as a render target.
      */
     UnsignedInt5999Rev = GL_UNSIGNED_INT_5_9_9_9_REV,
     #endif

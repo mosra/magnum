@@ -275,9 +275,7 @@ namespace ANGLE {
     #endif
 } namespace EXT {
     _extension( 2,EXT,texture_filter_anisotropic,   GLES200,    None) // #11
-    #ifdef MAGNUM_TARGET_GLES2
     _extension( 3,EXT,color_buffer_half_float,      GLES200,    None) // #14
-    #endif
     #ifdef MAGNUM_TARGET_GLES2
     _extension( 4,EXT,frag_depth,                   GLES200, GLES300) // #16
     _extension( 5,EXT,sRGB,                         GLES200, GLES300) // #17

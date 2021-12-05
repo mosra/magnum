@@ -739,9 +739,11 @@ enum class TextureFormat: GLenum {
      *      in WebGL 1.0.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
      *      for filtering using @ref SamplerFilter::Linear in WebGL 1.0.
-     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
-     *      to use as a render target in WebGL 2.0; use @ref TextureFormat::R16UI
-     *      or @ref TextureFormat::R16I instead if not available. Only three-
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,color_buffer_half_float} or
+     *      @webgl_extension{EXT,color_buffer_float} to use as a render target
+     *      in WebGL 2.0; use @ref TextureFormat::R16UI or
+     *      @ref TextureFormat::R16I instead if not available. Only three-
      *      and four-component half-float texture formats can be used as
      *      a render target in WebGL 1.0, see @ref TextureFormat::RGBA16F for
      *      more information.
@@ -767,9 +769,11 @@ enum class TextureFormat: GLenum {
      *      in WebGL 1.0 instead.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
      *      for filtering using @ref SamplerFilter::Linear in WebGL 1.0.
-     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
-     *      to use as a render target in WebGL 2.0; use @ref TextureFormat::RG16UI
-     *      or @ref TextureFormat::RG16I instead if not available. Only three-
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,color_buffer_half_float} or
+     *      @webgl_extension{EXT,color_buffer_float} to use as a render target
+     *      in WebGL 2.0; use @ref TextureFormat::RG16UI or
+     *      @ref TextureFormat::RG16I instead if not available. Only three-
      *      and four-component half-float texture formats can be used as
      *      a render target in WebGL 1.0, see @ref TextureFormat::RGBA16F for
      *      more information.
@@ -813,11 +817,14 @@ enum class TextureFormat: GLenum {
      * @requires_webgl20 Use @ref TextureFormat::RGBA in combination with
      *      @ref PixelType::Half (@webgl_extension{OES,texture_half_float}) in
      *      WebGL 1.0 instead.
-     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
-     *      to use as a render target in WebGL 2.0. Use @ref TextureFormat::RGBA16UI
-     *      or @ref TextureFormat::RGBA16I instead if not available. Use
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,color_buffer_half_float} or
+     *      @webgl_extension{EXT,color_buffer_float} to use as a render target
+     *      in WebGL 2.0. Use @ref TextureFormat::RGBA16UI or
+     *      @ref TextureFormat::RGBA16I instead if not available. Use
      *      @ref TextureFormat::RGBA in combination with @ref PixelType::Half
-     *      (@webgl_extension{EXT,color_buffer_half_float}) in WebGL 1.0 instead.
+     *      (@webgl_extension{EXT,color_buffer_half_float}) in WebGL 1.0
+     *      instead.
      */
     RGBA16F = GL_RGBA16F,
 
@@ -1014,6 +1021,9 @@ enum class TextureFormat: GLenum {
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
      *      WebGL 1.0.
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,color_buffer_float} to use as a render target
+     *      in WebGL 2.0.
      */
     R11FG11FB10F = GL_R11F_G11F_B10F,
 
