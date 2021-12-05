@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
+
 /* [windowed] */
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
@@ -182,14 +184,10 @@ void MyApplication::globalDrawEvent() {
 
 void foo();
 void foo() {
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#endif
 /* [ScreenedApplication-for-range] */
 MyApplication app;
 for(Platform::Screen& screen: app.screens()) {
-    // ...
+    DOXYGEN_ELLIPSIS(static_cast<void>(screen));
 }
 /* [ScreenedApplication-for-range] */
 
@@ -198,9 +196,6 @@ for(Platform::Screen* s = app.screens().first(); s; s = s->nextFartherScreen()) 
     // ...
 }
 /* [ScreenedApplication-for] */
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
 }
 
 }

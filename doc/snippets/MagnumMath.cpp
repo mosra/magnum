@@ -627,7 +627,7 @@ static_cast<void>(radians);
 }
 
 {
-#if defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11
+#if (defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11) || defined(CORRADE_TARGET_CLANG)
 #pragma GCC diagnostic push
 /* Stupid thing. YES I WANT THIS TO BE A FUNCTION, CAN YOU SHUT UP */
 #pragma GCC diagnostic ignored "-Wvexing-parse"
@@ -641,7 +641,7 @@ Radd radians{foo()};
 /* [Deg-usage-convert] */
 static_cast<void>(degrees);
 static_cast<void>(radians);
-#if defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11
+#if (defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11) || defined(CORRADE_TARGET_CLANG)
 #pragma GCC diagnostic pop
 #endif
 }
@@ -656,7 +656,7 @@ static_cast<void>(b);
 }
 
 {
-#if defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11
+#if (defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11) || defined(CORRADE_TARGET_CLANG)
 #pragma GCC diagnostic push
 /* Stupid thing. YES I WANT THIS TO BE A FUNCTION, CAN YOU SHUT UP */
 #pragma GCC diagnostic ignored "-Wvexing-parse"
@@ -669,7 +669,7 @@ Deg x = angle();                // convert to degrees for easier comparison
 if(x < 30.0_degf) foo();
 //if(x > 1.57_radf) bar();      // error, both need to be of the same type
 /* [Deg-usage-comparison] */
-#if defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11
+#if (defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11) || defined(CORRADE_TARGET_CLANG)
 #pragma GCC diagnostic pop
 #endif
 }

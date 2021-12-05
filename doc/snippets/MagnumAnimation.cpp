@@ -33,6 +33,8 @@
 #include "Magnum/Animation/Easing.h"
 #include "Magnum/Animation/Player.h"
 
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
+
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
@@ -55,7 +57,7 @@ static_cast<void>(result2);
 
 {
 /* [unpack] */
-UnsignedShort a, b;
+UnsignedShort a = DOXYGEN_ELLIPSIS(0), b = DOXYGEN_ELLIPSIS(0);
 auto lerpPacked =
     Animation::unpack<UnsignedShort, Float, Math::lerp, Math::unpack<Float>>();
 
@@ -68,7 +70,7 @@ static_cast<void>(result2);
 
 {
 /* [unpackEase] */
-UnsignedShort a, b;
+UnsignedShort a = DOXYGEN_ELLIPSIS(0), b = DOXYGEN_ELLIPSIS(0);
 auto lerpPackedBounceIn = Animation::unpackEase<UnsignedShort, Float,
     Math::lerp, Math::unpack<Float>, Animation::Easing::bounceIn>();
 
@@ -150,8 +152,6 @@ player.add(scaling, objectScaling)
 /* [Player-usage] */
 }
 
-/* WinRT has warnings-as-errors and fails on the unitialized object var */
-#ifndef CORRADE_TARGET_WINDOWS_RT
 {
 const Animation::TrackView<Float, Vector3> translation;
 const Animation::TrackView<Float, Quaternion> rotation;
@@ -161,15 +161,8 @@ struct Object3D {
     Object3D& setRotation(const Quaternion&) { return *this; }
     Object3D& setScaling(const Vector3&) { return *this; }
 };
-#ifdef __clang__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wuninitialized"
-#elif defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
 /* [Player-usage-callback] */
-Object3D* object;
+Object3D* object = DOXYGEN_ELLIPSIS({});
 
 Animation::Player<Float> player;
 player.addWithCallback(scaling,
@@ -185,11 +178,7 @@ player.addWithCallback(translation,
         object.setTranslation(translation);
     }, *object);
 /* [Player-usage-callback] */
-#if defined(__clang__) || defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
 }
-#endif
 
 {
 /* [Player-usage-playback] */

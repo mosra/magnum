@@ -38,6 +38,8 @@
 #include "Magnum/SceneGraph/Object.h"
 #include "Magnum/SceneGraph/Scene.h"
 
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
+
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
@@ -62,6 +64,11 @@ class TransformingFeature: public SceneGraph::AbstractFeature3D {
     public:
         template<class T> explicit TransformingFeature(SceneGraph::Object<T>& object):
             SceneGraph::AbstractFeature3D{object}, _transformation{object} {}
+
+        DOXYGEN_ELLIPSIS(void foo() {
+            /* to avoid warnings about an unused private field */
+            _transformation.translate({});
+        })
 
     private:
         SceneGraph::AbstractTranslationRotation3D& _transformation;
@@ -138,23 +145,21 @@ class CachingObject: public Object3D, SceneGraph::AbstractFeature3D {
 
 namespace {
 
-#ifdef __clang__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-private-field"
-#endif
 /* [transformation] */
 class TransformingFeature: public SceneGraph::AbstractFeature3D {
     public:
         template<class T> explicit TransformingFeature(SceneGraph::Object<T>& object):
             SceneGraph::AbstractFeature3D(object), _transformation(object) {}
 
+        DOXYGEN_ELLIPSIS(void foo() {
+            /* to avoid warnings about an unused private field */
+            _transformation.translate({});
+        })
+
     private:
         SceneGraph::AbstractTranslationRotation3D& _transformation;
 };
 /* [transformation] */
-#ifdef __clang__
-#pragma GCC diagnostic pop
-#endif
 
 }
 
@@ -271,13 +276,9 @@ class MyObject: MyFeature, public Object3D {
 
 {
 SceneGraph::Object<SceneGraph::MatrixTransformation3D> object;
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#endif
 /* [AbstractObject-features-range] */
 for(SceneGraph::AbstractFeature3D& feature: object.features()) {
-    // ...
+    DOXYGEN_ELLIPSIS(static_cast<void>(feature));
 }
 /* [AbstractObject-features-range] */
 
@@ -285,17 +286,14 @@ for(SceneGraph::AbstractFeature3D& feature: object.features()) {
 /* [Object-children-range] */
 Object3D o;
 for(Object3D& child: o.children()) {
-    // ...
+    DOXYGEN_ELLIPSIS(static_cast<void>(child));
 }
 /* [Object-children-range] */
 }
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
 
 /* [AbstractObject-features] */
 for(SceneGraph::AbstractFeature3D* feature = object.features().first(); feature; feature = feature->nextFeature()) {
-    // ...
+    DOXYGEN_ELLIPSIS()
 }
 /* [AbstractObject-features] */
 
@@ -303,7 +301,7 @@ for(SceneGraph::AbstractFeature3D* feature = object.features().first(); feature;
 Object3D o;
 /* [Object-children] */
 for(Object3D* child = o.children().first(); child; child = child->nextSibling()) {
-    // ...
+    DOXYGEN_ELLIPSIS()
 }
 /* [Object-children] */
 }
@@ -315,7 +313,7 @@ SceneGraph::AnimableGroup3D animables;
 
 (new AnimableObject(&scene, &animables))
     ->setState(SceneGraph::AnimationState::Running);
-// ...
+DOXYGEN_ELLIPSIS()
 /* [Animable-usage] */
 }
 
@@ -365,7 +363,7 @@ SceneGraph::DrawableGroup3D drawableGroup;
 struct CullableDrawable3D: SceneGraph::Drawable3D {
     Range3D aabb; /* Relative to world origin */
 
-    // ...
+    DOXYGEN_ELLIPSIS()
 };
 
 /* Camera frustum relative to world origin */
