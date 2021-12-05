@@ -508,6 +508,10 @@ enum class RenderbufferFormat: GLenum {
      *      instead if not available.
      */
     RGBA32F =
+        /* EXT_color_buffer_float, which WEBGL_color_buffer_float is based on,
+           is written against ES 3.0 and thus doesn't define GL_RGBA32F. The
+           only ext defining GL_RGBA32F on ES2 is EXT_texture_storage, but that
+           one has no WebGL equivalent, so we have no way to get the enum. */
         #ifndef MAGNUM_TARGET_WEBGL
         GL_RGBA32F
         #else
