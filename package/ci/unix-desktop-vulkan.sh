@@ -69,7 +69,7 @@ cmake .. \
     -DBUILD_VK_TESTS=ON \
     -DBUILD_DEPRECATED=$BUILD_DEPRECATED \
     -G Ninja
-ninja
+ninja $NINJA_JOBS
 
 export VK_ICD_FILENAMES=$HOME/swiftshader/share/vulkan/icd.d/vk_swiftshader_icd.json
 export CORRADE_TEST_COLOR=ON

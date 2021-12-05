@@ -70,7 +70,7 @@ cmake .. \
     -DBUILD_GL_TESTS=ON \
     -DTARGET_GLES2=$TARGET_GLES2 \
     -G Ninja
-ninja
+ninja $NINJA_JOBS
 
 # Test
 CORRADE_TEST_COLOR=ON ctest -V -E "GLTest|GLBenchmark|ALTest"

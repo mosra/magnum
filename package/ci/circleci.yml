@@ -54,9 +54,9 @@ commands:
     parameters:
       count:
         type: integer
-        # It reports 36 cores and ninja goes with 38 currently, still randomly
-        # dies with 24. RAM fluctuates from 10 to 20 GB.
-        default: 16
+        # It reports 36 cores and ninja goes with 38 currently, RAM fluctuates
+        # from 3 to 70 GB.
+        default: 24
     steps:
     - run:
         name: Query CPU cores, default Ninja parallelism and available RAM, cap jobs
@@ -256,6 +256,11 @@ jobs:
     steps:
     - install-base-linux:
         extra: cmake libsdl2-dev libglfw3-dev libvulkan-dev wget unzip
+    # It crashes with the default setting. Only on GCC, usually when the huge
+    # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
+    # get involved.
+    # TODO: revisit when we get rid of more STL
+    - cap-ninja-jobs
     - install-swiftshader-vulkan:
         build: ubuntu-18.04
     - build:
@@ -466,8 +471,6 @@ jobs:
       TARGET_GLES2: "ON"
     steps:
     - install-base-linux
-    # The build is extremely flaky lately (Mar 2021). Not sure why it wasn't a
-    # problem before.
     - cap-ninja-jobs
     - build:
         script: emscripten.sh
@@ -479,8 +482,6 @@ jobs:
       TARGET_GLES2: "OFF"
     steps:
     - install-base-linux
-    # The build is extremely flaky lately (Mar 2021). Not sure why it wasn't a
-    # problem before.
     - cap-ninja-jobs
     - build:
         script: emscripten.sh
