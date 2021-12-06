@@ -566,7 +566,9 @@ enum class SceneFieldFlag: UnsignedByte {
      * from 0 up to size of the field. A superset of
      * @ref SceneFieldFlag::OrderedMapping. Object IDs in fields marked with
      * this flag can be looked up with an @f$ \mathcal{O}(1) @f$ complexity,
-     * but the field is restricted to exactly one value for each object.
+     * but the field is restricted to exactly one value for each object. If
+     * this flag is set, the object mapping view is allowed to be
+     * @cpp nullptr @ce.
      *
      * Note that validity of the object mapping data isn't checked in any way
      * and if the data doesn't correspond to rules of the flag, queries such
@@ -647,7 +649,18 @@ In some cases the object mapping is even implicit, i.e. the first entry of the
 field specifying data for object @cpp 0 @ce, second entry for object
 @cpp 1 @ce, third for object @cpp 2 @ce and so on. You can annotate such fields
 with @ref SceneFieldFlag::ImplicitMapping, which is a superset of
-@relativeref{SceneFieldFlag,OrderedMapping}.
+@relativeref{SceneFieldFlag,OrderedMapping}. Furthermore, to avoid having to
+generate such mapping data, the mapping view can be @cpp nullptr @ce if this
+flag is present. The view however still needs to have a size matching the field
+data size and the same @ref SceneMappingType as other fields passed to the
+@link SceneData @endlink:
+
+@snippet MagnumTrade.cpp SceneFieldData-usage-implicit-mapping
+
+Fields that are both @ref SceneFieldFlag::OffsetOnly and
+@ref SceneFieldFlag::ImplicitMapping have their object mapping data always
+ignored as it's not possible to know whether the offset points to actual data
+or not.
 */
 class MAGNUM_TRADE_EXPORT SceneFieldData {
     public:
@@ -675,6 +688,14 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * Expects that @p mappingData and @p fieldData have the same size,
          * @p fieldType corresponds to @p name and @p fieldArraySize is zero
          * for builtin fields.
+         *
+         * If @p flags contain @ref SceneFieldFlag::ImplicitMapping, the
+         * @p mappingData can be a @cpp nullptr @ce view (although it still has
+         * to follow other constraints regarding size and type). While
+         * @ref SceneData::mapping() will return it as-is,
+         * @relativeref{SceneData,mappingAsArray()} and
+         * @relativeref{SceneData,mappingInto()} functions will generate its
+         * contents on-the-fly.
          */
         constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, UnsignedShort fieldArraySize = 0, SceneFieldFlags flags = {}) noexcept;
 
@@ -699,6 +720,14 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @p fieldData is contiguous and its size matches @p fieldType and
          * @p fieldArraySize and that @p fieldType corresponds to @p name and
          * @p fieldArraySize is zero for builtin attributes.
+         *
+         * If @p flags contain @ref SceneFieldFlag::ImplicitMapping, the
+         * @p mappingData can be a @cpp nullptr @ce view (although it still has
+         * to follow other constraints regarding size and type). While
+         * @ref SceneData::mapping() will return it as-is,
+         * @relativeref{SceneData,mappingAsArray()} and
+         * @relativeref{SceneData,mappingInto()} functions will generate its
+         * contents on-the-fly.
          */
         explicit SceneFieldData(SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, UnsignedShort fieldArraySize = 0, SceneFieldFlags flags = {}) noexcept;
 
@@ -779,6 +808,15 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @p fieldType / @p fieldArraySize checks against @p fieldStride can
          * be done. You're encouraged to use the @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, SceneFieldType, const Containers::StridedArrayView1D<const void>&, UnsignedShort, SceneFieldFlags)
          * constructor if you want additional safeguards.
+         *
+         * If @p flags contain @ref SceneFieldFlag::ImplicitMapping, the
+         * @p mappingOffset and @p mappingStride fields are ignored and the
+         * object mapping is assumed to not be present (however you still have
+         * to follow constraints regarding its type). The
+         * @ref SceneData::mapping() will then return a @cpp nullptr @ce view,
+         * and the @relativeref{SceneData,mappingAsArray()} and
+         * @relativeref{SceneData,mappingInto()} functions will generate its
+         * contents on-the-fly.
          * @see @ref flags(), @ref fieldArraySize(),
          *      @ref mappingData(Containers::ArrayView<const void>) const,
          *      @ref fieldData(Containers::ArrayView<const void>) const
@@ -1621,6 +1659,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * to @ref SceneMappingType size) and is guaranteed to be contiguous.
          * Use the templated overload below to get the mapping in a concrete
          * type.
+         *
+         * If the field has @ref SceneFieldFlag::ImplicitMapping set and no
+         * data was supplied for it or it's @ref SceneFieldFlag::OffsetOnly,
+         * the returned view will be correctly sized but @cpp nullptr @ce.
          * @see @ref mutableMapping(UnsignedInt),
          *      @ref Corrade::Containers::StridedArrayView::isContiguous(),
          *      @ref sceneMappingTypeSize()
@@ -1643,6 +1685,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *
          * The @p fieldId is expected to be smaller than @ref fieldCount() and
          * @p T is expected to correspond to @ref mappingType().
+         *
+         * If the field has @ref SceneFieldFlag::ImplicitMapping set and either
+         * no data was supplied for it or it's @ref SceneFieldFlag::OffsetOnly,
+         * the returned view will be correctly sized but @cpp nullptr @ce.
          *
          * You can also use the non-templated @ref mappingAsArray() accessor
          * (or the combined @ref parentsAsArray(),
@@ -1677,6 +1723,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref SceneMappingType size) and is guaranteed to be contiguous. Use
          * the templated overload below to get the object mapping in a concrete
          * type.
+         *
+         * If the field has @ref SceneFieldFlag::ImplicitMapping set and either
+         * no data was supplied for it or it's @ref SceneFieldFlag::OffsetOnly,
+         * the returned view will be correctly sized but @cpp nullptr @ce.
          * @see @ref hasField(), @ref mapping(UnsignedInt) const,
          *      @ref mutableMapping(SceneField),
          *      @ref Corrade::Containers::StridedArrayView::isContiguous()
@@ -1699,6 +1749,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *
          * The @p fieldName is expected to exist and @p T is expected to
          * correspond to @ref mappingType().
+         *
+         * If the field has @ref SceneFieldFlag::ImplicitMapping set and either
+         * no data was supplied for it or it's @ref SceneFieldFlag::OffsetOnly,
+         * the returned view will be correctly sized but @cpp nullptr @ce.
          *
          * You can also use the non-templated @ref mappingAsArray() accessor
          * (or the combined @ref parentsAsArray(),
@@ -1895,6 +1949,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref mapping(UnsignedInt) const that converts the field from an
          * arbitrary underlying type and returns it in a newly-allocated array.
          * The @p fieldId is expected to be smaller than @ref fieldCount().
+         *
+         * If the field has @ref SceneFieldFlag::ImplicitMapping set and either
+         * no data was supplied for it or it's @ref SceneFieldFlag::OffsetOnly,
+         * the data will be generated on-the-fly.
          *
          * Note that, for common fields, you can also use the
          * @ref parentsAsArray(), @ref transformations2DAsArray(),

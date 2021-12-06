@@ -594,19 +594,30 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
             const UnsignedInt fieldTypeSize = sceneFieldTypeSize(field._fieldType)*
                 (field._fieldArraySize ? field._fieldArraySize : 1);
             if(field._flags & SceneFieldFlag::OffsetOnly) {
-                const std::size_t mappingSize = field._mappingData.offset + (field._size - 1)*field._mappingStride + mappingTypeSize;
+                /* If an offset-only field has an implicit mapping, we ignore
+                   the offset / size completely */
+                if(!(field._flags >= SceneFieldFlag::ImplicitMapping)) {
+                    const std::size_t mappingSize = field._mappingData.offset + (field._size - 1)*field._mappingStride + mappingTypeSize;
+                    CORRADE_ASSERT(mappingSize <= _data.size(),
+                        "Trade::SceneData: offset-only mapping data of field" << i << "span" << mappingSize << "bytes but passed data array has only" << _data.size(), );
+                }
+
                 const std::size_t fieldSize = field._fieldData.offset + (field._size - 1)*field._fieldStride + fieldTypeSize;
-                CORRADE_ASSERT(mappingSize <= _data.size(),
-                    "Trade::SceneData: offset-only mapping data of field" << i << "span" << mappingSize << "bytes but passed data array has only" << _data.size(), );
                 CORRADE_ASSERT(fieldSize <= _data.size(),
                     "Trade::SceneData: offset-only field data of field" << i << "span" << fieldSize << "bytes but passed data array has only" << _data.size(), );
+
             } else {
-                const void* const mappingBegin = field._mappingData.pointer;
+                /* If a field has an implicit mapping, we allow it to be
+                   nullptr */
+                if(!(field._flags >= SceneFieldFlag::ImplicitMapping && !field._mappingData.pointer)) {
+                    const void* const mappingBegin = field._mappingData.pointer;
+                    const void* const mappingEnd = static_cast<const char*>(field._mappingData.pointer) + (field._size - 1)*field._mappingStride + mappingTypeSize;
+                    CORRADE_ASSERT(mappingBegin >= _data.begin() && mappingEnd <= _data.end(),
+                        "Trade::SceneData: mapping data [" << Debug::nospace << mappingBegin << Debug::nospace << ":" << Debug::nospace << mappingEnd << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
+                }
+
                 const void* const fieldBegin = field._fieldData.pointer;
-                const void* const mappingEnd = static_cast<const char*>(field._mappingData.pointer) + (field._size - 1)*field._mappingStride + mappingTypeSize;
                 const void* const fieldEnd = static_cast<const char*>(field._fieldData.pointer) + (field._size - 1)*field._fieldStride + fieldTypeSize;
-                CORRADE_ASSERT(mappingBegin >= _data.begin() && mappingEnd <= _data.end(),
-                    "Trade::SceneData: mapping data [" << Debug::nospace << mappingBegin << Debug::nospace << ":" << Debug::nospace << mappingEnd << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
                 CORRADE_ASSERT(fieldBegin >= _data.begin() && fieldEnd <= _data.end(),
                     "Trade::SceneData: field data [" << Debug::nospace << fieldBegin << Debug::nospace << ":" << Debug::nospace << fieldEnd << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
             }
@@ -806,6 +817,12 @@ Containers::ArrayView<char> SceneData::mutableData() & {
 
 Containers::StridedArrayView1D<const void> SceneData::fieldDataMappingViewInternal(const SceneFieldData& field, const std::size_t offset, const std::size_t size) const {
     CORRADE_INTERNAL_ASSERT(offset + size <= field._size);
+
+    /* If this is a offset-only field with implicit mapping, ignore the
+       offset/stride and always assume it's not present */
+    if(field._flags >= (SceneFieldFlag::OffsetOnly|SceneFieldFlag::ImplicitMapping))
+        return {{nullptr, ~std::size_t{}}, size, field._mappingStride};
+
     return Containers::StridedArrayView1D<const void>{
         /* We're *sure* the view is correct, so faking the view size */
         {static_cast<const char*>(field._flags & SceneFieldFlag::OffsetOnly ?
@@ -1140,6 +1157,18 @@ void SceneData::mappingIntoInternal(const UnsignedInt fieldId, const std::size_t
        checked by the callers */
 
     const SceneFieldData& field = _fields[fieldId];
+
+    /* If we don't have any data for an implicit mapping or the implicit
+       mapping is offset-only (where we always assume there's no data),
+       generate the sequence */
+    if((field._flags >= SceneFieldFlag::ImplicitMapping && !field._mappingData.pointer) ||
+       (field._flags >= (SceneFieldFlag::ImplicitMapping|SceneFieldFlag::OffsetOnly)))
+    {
+        for(std::size_t i = 0; i != destination.size(); ++i)
+            destination[i] = offset + i;
+        return;
+    }
+
     const Containers::StridedArrayView1D<const void> mappingData = fieldDataMappingViewInternal(field, offset, destination.size());
     const auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
 

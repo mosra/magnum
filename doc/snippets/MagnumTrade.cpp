@@ -916,6 +916,17 @@ Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 120, std::move(data),
 }
 
 {
+/* [SceneFieldData-usage-implicit-mapping] */
+Containers::ArrayView<Matrix4> transformations = DOXYGEN_ELLIPSIS({});
+
+Trade::SceneFieldData field{Trade::SceneField::Transformation,
+    Containers::ArrayView<UnsignedInt>{nullptr, transformations.size()},
+    transformations,
+    Trade::SceneFieldFlag::ImplicitMapping};
+/* [SceneFieldData-usage-implicit-mapping] */
+}
+
+{
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 /* [SceneData-usage1] */

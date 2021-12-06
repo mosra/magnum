@@ -196,6 +196,8 @@ struct SceneDataTest: TestSuite::Tester {
     void fieldForFieldMissing();
     void findFieldObjectOffsetInvalidObject();
 
+    template<class T> void implicitNullMapping();
+
     void releaseFieldData();
     void releaseData();
 };
@@ -561,6 +563,11 @@ SceneDataTest::SceneDataTest() {
 
     addTests({&SceneDataTest::fieldForFieldMissing,
               &SceneDataTest::findFieldObjectOffsetInvalidObject,
+
+              &SceneDataTest::implicitNullMapping<UnsignedByte>,
+              &SceneDataTest::implicitNullMapping<UnsignedShort>,
+              &SceneDataTest::implicitNullMapping<UnsignedInt>,
+              &SceneDataTest::implicitNullMapping<UnsignedLong>,
 
               &SceneDataTest::releaseFieldData,
               &SceneDataTest::releaseData});
@@ -5550,6 +5557,149 @@ void SceneDataTest::findFieldObjectOffsetInvalidObject() {
         "Trade::SceneData::lightsFor(): object 7 out of bounds for 7 objects\n"
         "Trade::SceneData::camerasFor(): object 7 out of bounds for 7 objects\n"
         "Trade::SceneData::skinsFor(): object 7 out of bounds for 7 objects\n");
+}
+
+template<class T> void SceneDataTest::implicitNullMapping() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    struct Field {
+        UnsignedByte id;
+        /* Mapping second so it isn't at offset 0, implying something weird */
+        T mapping;
+    } data[]{
+        {1, 0},
+        {7, 1},
+        {22, 2},
+        {15, 3},
+        {3, 5}, /* this is to know whether we got our or generated data */
+    };
+
+    Containers::StridedArrayView1D<Field> view = data;
+
+    SceneData scene{Implementation::sceneMappingTypeFor<T>(), 6, {}, data, {
+        /* Implicit mapping, with data supplied */
+        SceneFieldData{SceneField::Mesh, view.slice(&Field::mapping), view.slice(&Field::id), SceneFieldFlag::ImplicitMapping},
+        /* Implicit mapping, with no data */
+        SceneFieldData{SceneField::Camera, Containers::ArrayView<T>{nullptr, Containers::arraySize(data)}, view.slice(&Field::id), SceneFieldFlag::ImplicitMapping},
+        /* Implicit mapping offset-only, pointing to the data. This gets
+           ignored because there's no non-shitty non-magic-constants way to
+           know if the offset is valid. */
+        SceneFieldData{SceneField::Light, Containers::arraySize(data), Implementation::sceneMappingTypeFor<T>(), offsetof(Field, mapping), sizeof(Field), SceneFieldType::UnsignedByte, offsetof(Field, id), sizeof(Field), SceneFieldFlag::ImplicitMapping},
+        /* Implicit mapping offset-only, pointing to wherever. Abusing a Parent
+           field and faking it to be signed because Skin needs some
+           transformation field as well */
+        SceneFieldData{SceneField::Parent, Containers::arraySize(data), Implementation::sceneMappingTypeFor<T>(), 666666666, 0, SceneFieldType::Byte, offsetof(Field, id), sizeof(Field), SceneFieldFlag::ImplicitMapping}
+    }};
+
+    /* Only the non-null view will be non-null, the offset-only will all be
+       null also */
+    CORRADE_COMPARE(scene.mapping(0).data(), &data[0].mapping);
+    CORRADE_COMPARE(scene.mapping(1).data(), nullptr);
+    CORRADE_COMPARE(scene.mapping(2).data(), nullptr);
+    CORRADE_COMPARE(scene.mapping(3).data(), nullptr);
+
+    /* If the view is not nullptr, it'll use the data and won't generate */
+    {
+        CORRADE_COMPARE_AS(scene.meshesMaterialsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>>({
+            {0, {1, -1}},
+            {1, {7, -1}},
+            {2, {22, -1}},
+            {3, {15, -1}},
+            {5, {3, -1}}, /* this would be 4 if generated */
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.meshesMaterialsFor(3), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+            {15, -1}
+        })), TestSuite::Compare::Container);
+    } {
+        UnsignedInt mapping[5];
+        scene.meshesMaterialsInto(mapping, nullptr, nullptr);
+        CORRADE_COMPARE_AS(Containers::arrayView(mapping), Containers::arrayView<UnsignedInt>({
+            0, 1, 2, 3, 5 /* this would be 4 if generated */
+        }), TestSuite::Compare::Container);
+    } {
+        UnsignedInt mapping[3];
+        scene.meshesMaterialsInto(2, mapping, nullptr, nullptr);
+        CORRADE_COMPARE_AS(Containers::arrayView(mapping), Containers::arrayView<UnsignedInt>({
+            2, 3, 5 /* this would be 4 if generated */
+        }), TestSuite::Compare::Container);
+    }
+
+    /* If the view is nullptr, it'll generate the data */
+    {
+        CORRADE_COMPARE_AS(scene.camerasAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, UnsignedInt>>({
+            {0, 1},
+            {1, 7},
+            {2, 22},
+            {3, 15},
+            {4, 3},
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.camerasFor(3), Containers::arrayView<UnsignedInt>({
+            15
+        }), TestSuite::Compare::Container);
+    } {
+        UnsignedInt mapping[5];
+        scene.camerasInto(mapping, nullptr);
+        CORRADE_COMPARE_AS(Containers::arrayView(mapping), Containers::arrayView<UnsignedInt>({
+            0, 1, 2, 3, 4
+        }), TestSuite::Compare::Container);
+    } {
+        UnsignedInt mapping[3];
+        scene.camerasInto(2, mapping, nullptr);
+        CORRADE_COMPARE_AS(Containers::arrayView(mapping), Containers::arrayView<UnsignedInt>({
+            2, 3, 4
+        }), TestSuite::Compare::Container);
+    }
+
+    /* For an offset-only implicit mapping it'll generate the data always, even
+       if the mapping is seemingly there */
+    {
+        CORRADE_COMPARE_AS(scene.lightsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, UnsignedInt>>({
+            {0, 1},
+            {1, 7},
+            {2, 22},
+            {3, 15},
+            {4, 3},
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(scene.lightsFor(3), Containers::arrayView<UnsignedInt>({
+            15
+        }), TestSuite::Compare::Container);
+    } {
+        UnsignedInt mapping[5];
+        scene.lightsInto(mapping, nullptr);
+        CORRADE_COMPARE_AS(Containers::arrayView(mapping), Containers::arrayView<UnsignedInt>({
+            0, 1, 2, 3, 4
+        }), TestSuite::Compare::Container);
+    } {
+        UnsignedInt mapping[3];
+        scene.lightsInto(2, mapping, nullptr);
+        CORRADE_COMPARE_AS(Containers::arrayView(mapping), Containers::arrayView<UnsignedInt>({
+            2, 3, 4
+        }), TestSuite::Compare::Container);
+    }
+
+    /* And if the offset is weirdly off it won't blow up on that */
+    {
+        CORRADE_COMPARE_AS(scene.parentsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+            {0, 1},
+            {1, 7},
+            {2, 22},
+            {3, 15},
+            {4, 3},
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE(scene.parentFor(3), 15);
+    } {
+        UnsignedInt mapping[5];
+        scene.parentsInto(mapping, nullptr);
+        CORRADE_COMPARE_AS(Containers::arrayView(mapping), Containers::arrayView<UnsignedInt>({
+            0, 1, 2, 3, 4
+        }), TestSuite::Compare::Container);
+    } {
+        UnsignedInt mapping[3];
+        scene.parentsInto(2, mapping, nullptr);
+        CORRADE_COMPARE_AS(Containers::arrayView(mapping), Containers::arrayView<UnsignedInt>({
+            2, 3, 4
+        }), TestSuite::Compare::Container);
+    }
 }
 
 void SceneDataTest::releaseFieldData() {
