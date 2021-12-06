@@ -379,6 +379,7 @@ used.)")
         struct SceneFieldInfo {
             Trade::SceneField name;
             std::string customName;
+            Trade::SceneFieldFlags flags;
             Trade::SceneFieldType type;
             UnsignedInt arraySize;
             std::size_t size;
@@ -439,6 +440,7 @@ used.)")
                     name,
                     Trade::isSceneFieldCustom(name) ?
                         importer->sceneFieldName(name) : "",
+                    scene->fieldFlags(j),
                     scene->fieldType(j),
                     scene->fieldArraySize(j),
                     scene->fieldSize(j));
@@ -679,6 +681,8 @@ used.)")
                 if(field.arraySize)
                     d << Debug::nospace << Utility::formatString("[{}]", field.arraySize);
                 d << Debug::nospace << "," << field.size << "entries";
+                if(field.flags)
+                    d << Debug::newline << "   " << field.flags;
             }
         }
 
