@@ -185,7 +185,7 @@ inline SceneData sceneCombine(const SceneMappingType mappingType, const Unsigned
     /* Map the fields to the new data */
     Containers::Array<SceneFieldData> outFields{fields.size()};
     for(std::size_t i = 0; i != fields.size(); ++i) {
-        outFields[i] = SceneFieldData{fields[i].name(), itemViews[itemViewMappings[i].first()], fields[i].fieldType(), itemViews[itemViewMappings[i].second()], fields[i].fieldArraySize()};
+        outFields[i] = SceneFieldData{fields[i].name(), itemViews[itemViewMappings[i].first()], fields[i].fieldType(), itemViews[itemViewMappings[i].second()], fields[i].fieldArraySize(), fields[i].flags()};
     }
 
     return SceneData{mappingType, mappingBound, std::move(outData), std::move(outFields)};
@@ -239,14 +239,26 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
     for(std::size_t i = 0; i != scene.fieldCount(); ++i) {
         const SceneFieldData& field = scene.fieldData(i);
 
-        /* If this is a parent, enlarge it for the newly added objects */
+        /* If this is a parent, enlarge it for the newly added objects, and if
+           it was implicit make it ordered */
         if(field.name() == SceneField::Parent) {
             /** @todo some nicer constructor for placeholders once this is in
                 public interest */
-            fields[i] = SceneFieldData{SceneField::Parent, Containers::ArrayView<const UnsignedInt>{nullptr, std::size_t(field.size() + objectsToAdd)}, Containers::ArrayView<const Int>{nullptr, std::size_t(field.size() + objectsToAdd)}};
+            fields[i] = SceneFieldData{SceneField::Parent, Containers::ArrayView<const UnsignedInt>{nullptr, std::size_t(field.size() + objectsToAdd)}, Containers::ArrayView<const Int>{nullptr, std::size_t(field.size() + objectsToAdd)},
+                /* If the field is ordered, we preserve that. But if it's
+                   implicit, we can't. */
+                field.flags() & ~(SceneFieldFlag::ImplicitMapping & ~SceneFieldFlag::OrderedMapping)
+            };
 
-        /* All other fields are copied as-is */
-        } else fields[i] = field;
+        /* All other fields are copied as-is, but lose the implicit/ordered
+           flags */
+        /** @todo the flags could get preserved for
+            -   fields that don't share their object mapping with any fields in
+                the fieldsToConvert list
+            -   fields that don't actually get their object mapping touched
+                during the process (and then all fields that share object
+                mapping with them) */
+        } else fields[i] = SceneFieldData{field.name(), field.mappingType(), field.mappingData(), field.fieldType(), field.fieldData(), field.fieldArraySize(), field.flags() & ~SceneFieldFlag::ImplicitMapping};
     }
 
     /* Combine the fields into a new SceneData */
@@ -292,6 +304,11 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
                     fieldObject = newParentMapping[newParentIndex];
                     /* Move to the next reserved object */
                     ++newParentIndex;
+
+                    /** @todo mark this field as touched here and the restore
+                        the original flags for all fields that didn't have
+                        their object mapping touched */
+
                 } else ++objectAttachmentCount[fieldObject];
             }
         }
