@@ -621,7 +621,7 @@ std::string AbstractImporter::doObject2DName(const UnsignedInt id) {
            _cachedScenes->scenes[i]->mappingBound() <= id)
             continue;
 
-        if(Containers::Optional<Int> parent = _cachedScenes->scenes[i]->parentFor(id))
+        if(Containers::Optional<Long> parent = _cachedScenes->scenes[i]->parentFor(id))
             return doObjectName(*parent);
     }
 
@@ -678,7 +678,7 @@ Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(const UnsignedInt
 
     std::vector<UnsignedInt> children; /* not const so we can move it */
     {
-        Containers::Array<UnsignedInt> childrenArray = scene.childrenFor(id);
+        Containers::Array<UnsignedLong> childrenArray = scene.childrenFor(id);
         children = {childrenArray.begin(), childrenArray.end()};
     }
     const Containers::Array<Containers::Pair<UnsignedInt, Int>> mesh = scene.meshesMaterialsFor(id);
@@ -799,7 +799,7 @@ std::string AbstractImporter::doObject3DName(const UnsignedInt id) {
            _cachedScenes->scenes[i]->mappingBound() <= id)
             continue;
 
-        if(Containers::Optional<Int> parent = _cachedScenes->scenes[i]->parentFor(id))
+        if(Containers::Optional<Long> parent = _cachedScenes->scenes[i]->parentFor(id))
             return doObjectName(*parent);
     }
 
@@ -856,7 +856,7 @@ Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(const UnsignedInt
 
     std::vector<UnsignedInt> children; /* not const so we can move it */
     {
-        Containers::Array<UnsignedInt> childrenArray = scene.childrenFor(id);
+        Containers::Array<UnsignedLong> childrenArray = scene.childrenFor(id);
         children = {childrenArray.begin(), childrenArray.end()};
     }
     const Containers::Array<Containers::Pair<UnsignedInt, Int>> mesh = scene.meshesMaterialsFor(id);

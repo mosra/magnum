@@ -427,7 +427,7 @@ void SceneToolsTest::convertToSingleFunctionObjects() {
 
     /* Object 0 should have new children with "foo", as it has a light */
     CORRADE_COMPARE_AS(scene.childrenFor(0),
-        Containers::arrayView<UnsignedInt>({67}),
+        Containers::arrayView<UnsignedLong>({67}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.lightsFor(0),
         Containers::arrayView<UnsignedInt>({15}),
@@ -435,7 +435,7 @@ void SceneToolsTest::convertToSingleFunctionObjects() {
 
     /* Object 1 should have a new child with "foo", as it has a light */
     CORRADE_COMPARE_AS(scene.childrenFor(1),
-        Containers::arrayView<UnsignedInt>({68}),
+        Containers::arrayView<UnsignedLong>({68}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.lightsFor(1),
         Containers::arrayView<UnsignedInt>({23}),
@@ -444,7 +444,7 @@ void SceneToolsTest::convertToSingleFunctionObjects() {
     /* Object 2 should have a new child with the camera and "foo", as it has a
        mesh */
     CORRADE_COMPARE_AS(scene.childrenFor(2),
-        Containers::arrayView<UnsignedInt>({66, 69}),
+        Containers::arrayView<UnsignedLong>({66, 69}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.meshesMaterialsFor(2),
         (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({{7, 2}})),
@@ -458,7 +458,7 @@ void SceneToolsTest::convertToSingleFunctionObjects() {
 
     /* Object 15 should have a new child that has the second mesh */
     CORRADE_COMPARE_AS(scene.childrenFor(15),
-        Containers::arrayView<UnsignedInt>({65}),
+        Containers::arrayView<UnsignedLong>({65}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.meshesMaterialsFor(15),
         (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({{6, 4}})),
@@ -470,7 +470,7 @@ void SceneToolsTest::convertToSingleFunctionObjects() {
     /* Object 23 should have two new children that have the second and third
        mesh */
     CORRADE_COMPARE_AS(scene.childrenFor(23),
-        Containers::arrayView<UnsignedInt>({63, 64}),
+        Containers::arrayView<UnsignedLong>({63, 64}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.meshesMaterialsFor(23),
         (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({{1, 0}})),

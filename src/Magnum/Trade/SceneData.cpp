@@ -895,7 +895,7 @@ namespace {
 
 /* The `objects` view is already adjusted for `offset`, the offset is needed
    only to return the correct value for ImplicitMapping */
-template<class T> std::size_t findObject(const SceneFieldFlags flags, const Containers::StridedArrayView1D<const void>& mapping, const std::size_t offset, const UnsignedInt object) {
+template<class T> std::size_t findObject(const SceneFieldFlags flags, const Containers::StridedArrayView1D<const void>& mapping, const std::size_t offset, const UnsignedLong object) {
     const std::size_t max = mapping.size();
 
     /* Implicit mapping, position equals object ID (if in bounds) and thus an
@@ -926,7 +926,7 @@ template<class T> std::size_t findObject(const SceneFieldFlags flags, const Cont
 
 }
 
-std::size_t SceneData::findFieldObjectOffsetInternal(const SceneFieldData& field, const UnsignedInt object, const std::size_t offset) const {
+std::size_t SceneData::findFieldObjectOffsetInternal(const SceneFieldData& field, const UnsignedLong object, const std::size_t offset) const {
     const Containers::StridedArrayView1D<const void> mapping = fieldDataMappingViewInternal(field, offset, field._size - offset);
     if(field._mappingType == SceneMappingType::UnsignedInt)
         return offset + findObject<UnsignedInt>(field._flags, mapping, offset, object);
@@ -939,7 +939,7 @@ std::size_t SceneData::findFieldObjectOffsetInternal(const SceneFieldData& field
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-Containers::Optional<std::size_t> SceneData::findFieldObjectOffset(const UnsignedInt fieldId, const UnsignedInt object, const std::size_t offset) const {
+Containers::Optional<std::size_t> SceneData::findFieldObjectOffset(const UnsignedInt fieldId, const UnsignedLong object, const std::size_t offset) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::findFieldObjectOffset(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
     CORRADE_ASSERT(fieldId < _fields.size(),
@@ -953,7 +953,7 @@ Containers::Optional<std::size_t> SceneData::findFieldObjectOffset(const Unsigne
     return found == field._size ? Containers::Optional<std::size_t>{} : found;
 }
 
-Containers::Optional<std::size_t> SceneData::findFieldObjectOffset(const SceneField fieldName, const UnsignedInt object, const std::size_t offset) const {
+Containers::Optional<std::size_t> SceneData::findFieldObjectOffset(const SceneField fieldName, const UnsignedLong object, const std::size_t offset) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::findFieldObjectOffset(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -969,7 +969,7 @@ Containers::Optional<std::size_t> SceneData::findFieldObjectOffset(const SceneFi
     return found == field._size ? Containers::Optional<std::size_t>{} : found;
 }
 
-std::size_t SceneData::fieldObjectOffset(const UnsignedInt fieldId, const UnsignedInt object, const std::size_t offset) const {
+std::size_t SceneData::fieldObjectOffset(const UnsignedInt fieldId, const UnsignedLong object, const std::size_t offset) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::fieldObjectOffset(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
     CORRADE_ASSERT(fieldId < _fields.size(),
@@ -985,7 +985,7 @@ std::size_t SceneData::fieldObjectOffset(const UnsignedInt fieldId, const Unsign
     return found;
 }
 
-std::size_t SceneData::fieldObjectOffset(const SceneField fieldName, const UnsignedInt object, const std::size_t offset) const {
+std::size_t SceneData::fieldObjectOffset(const SceneField fieldName, const UnsignedLong object, const std::size_t offset) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::fieldObjectOffset(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -1003,7 +1003,7 @@ std::size_t SceneData::fieldObjectOffset(const SceneField fieldName, const Unsig
     return found;
 }
 
-bool SceneData::hasFieldObject(const UnsignedInt fieldId, const UnsignedInt object) const {
+bool SceneData::hasFieldObject(const UnsignedInt fieldId, const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::hasFieldObject(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
     CORRADE_ASSERT(fieldId < _fields.size(),
@@ -1013,7 +1013,7 @@ bool SceneData::hasFieldObject(const UnsignedInt fieldId, const UnsignedInt obje
     return findFieldObjectOffsetInternal(field, object, 0) != field._size;
 }
 
-bool SceneData::hasFieldObject(const SceneField fieldName, const UnsignedInt object) const {
+bool SceneData::hasFieldObject(const SceneField fieldName, const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::hasFieldObject(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -2122,7 +2122,7 @@ Containers::Array<Containers::Pair<UnsignedInt, const void*>> SceneData::importe
     return out;
 }
 
-Containers::Optional<Int> SceneData::parentFor(const UnsignedInt object) const {
+Containers::Optional<Long> SceneData::parentFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::parentFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -2138,7 +2138,7 @@ Containers::Optional<Int> SceneData::parentFor(const UnsignedInt object) const {
     return *index;
 }
 
-Containers::Array<UnsignedInt> SceneData::childrenFor(const Int object) const {
+Containers::Array<UnsignedLong> SceneData::childrenFor(const Long object) const {
     CORRADE_ASSERT(object >= -1 && object < Long(_mappingBound),
         "Trade::SceneData::childrenFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -2148,11 +2148,15 @@ Containers::Array<UnsignedInt> SceneData::childrenFor(const Int object) const {
     const SceneFieldData& parentField = _fields[parentFieldId];
 
     /* Collect IDs of all objects that reference this object */
-    Containers::Array<UnsignedInt> out;
+    Containers::Array<UnsignedLong> out;
     for(std::size_t offset = 0; offset != parentField.size(); ++offset) {
         Int parentIndex[1];
         parentsIntoInternal(parentFieldId, offset, parentIndex);
         if(*parentIndex == object) {
+            /** @todo this drops the upper 64 bits, might be a problem
+                eventually (at this point it's more important to have an API
+                that won't change the return types in the future, breaking
+                existing code) */
             UnsignedInt child[1];
             /** @todo bleh slow, use the children <-> parent field proxying
                 when implemented */
@@ -2164,7 +2168,7 @@ Containers::Array<UnsignedInt> SceneData::childrenFor(const Int object) const {
     return out;
 }
 
-Containers::Optional<Matrix3> SceneData::transformation2DFor(const UnsignedInt object) const {
+Containers::Optional<Matrix3> SceneData::transformation2DFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::transformation2DFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -2185,7 +2189,7 @@ Containers::Optional<Matrix3> SceneData::transformation2DFor(const UnsignedInt o
     return *transformation;
 }
 
-Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> SceneData::translationRotationScaling2DFor(const UnsignedInt object) const {
+Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> SceneData::translationRotationScaling2DFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::translationRotationScaling2DFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -2208,7 +2212,7 @@ Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> SceneData::t
     return {InPlaceInit, *translation, *rotation, *scaling};
 }
 
-Containers::Optional<Matrix4> SceneData::transformation3DFor(const UnsignedInt object) const {
+Containers::Optional<Matrix4> SceneData::transformation3DFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::transformation3DFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -2229,7 +2233,7 @@ Containers::Optional<Matrix4> SceneData::transformation3DFor(const UnsignedInt o
     return *transformation;
 }
 
-Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> SceneData::translationRotationScaling3DFor(const UnsignedInt object) const {
+Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> SceneData::translationRotationScaling3DFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::translationRotationScaling3DFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -2252,7 +2256,7 @@ Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> SceneData
     return {InPlaceInit, *translation, *rotation, *scaling};
 }
 
-Containers::Array<Containers::Pair<UnsignedInt, Int>> SceneData::meshesMaterialsFor(const UnsignedInt object) const {
+Containers::Array<Containers::Pair<UnsignedInt, Int>> SceneData::meshesMaterialsFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::meshesMaterialsFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -2276,7 +2280,7 @@ Containers::Array<Containers::Pair<UnsignedInt, Int>> SceneData::meshesMaterials
     return out;
 }
 
-Containers::Array<UnsignedInt> SceneData::lightsFor(const UnsignedInt object) const {
+Containers::Array<UnsignedInt> SceneData::lightsFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::lightsFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -2299,7 +2303,7 @@ Containers::Array<UnsignedInt> SceneData::lightsFor(const UnsignedInt object) co
     return out;
 }
 
-Containers::Array<UnsignedInt> SceneData::camerasFor(const UnsignedInt object) const {
+Containers::Array<UnsignedInt> SceneData::camerasFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::camerasFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -2322,7 +2326,7 @@ Containers::Array<UnsignedInt> SceneData::camerasFor(const UnsignedInt object) c
     return out;
 }
 
-Containers::Array<UnsignedInt> SceneData::skinsFor(const UnsignedInt object) const {
+Containers::Array<UnsignedInt> SceneData::skinsFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::skinsFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -2345,7 +2349,7 @@ Containers::Array<UnsignedInt> SceneData::skinsFor(const UnsignedInt object) con
     return out;
 }
 
-Containers::Optional<const void*> SceneData::importerStateFor(const UnsignedInt object) const {
+Containers::Optional<const void*> SceneData::importerStateFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
         "Trade::SceneData::importerStateFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
@@ -2370,7 +2374,7 @@ std::vector<UnsignedInt> SceneData::children2D() const {
     if(!hasField(SceneField::Parent))
         Warning{} << "Trade::SceneData::children2D(): no parent field present, returned array will be empty";
 
-    const Containers::Array<UnsignedInt> children = childrenFor(-1);
+    const Containers::Array<UnsignedLong> children = childrenFor(-1);
     return {children.begin(), children.end()};
 }
 
@@ -2382,7 +2386,7 @@ std::vector<UnsignedInt> SceneData::children3D() const {
     if(!hasField(SceneField::Parent))
         Warning{} << "Trade::SceneData::children3D(): no parent field present, returned array will be empty";
 
-    const Containers::Array<UnsignedInt> children = childrenFor(-1);
+    const Containers::Array<UnsignedLong> children = childrenFor(-1);
     return {children.begin(), children.end()};
 }
 #endif

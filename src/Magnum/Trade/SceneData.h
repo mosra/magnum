@@ -1510,7 +1510,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref hasFieldObject(UnsignedInt, UnsignedInt) const,
          *      @ref fieldObjectOffset(UnsignedInt, UnsignedInt, std::size_t) const
          */
-        Containers::Optional<std::size_t> findFieldObjectOffset(UnsignedInt fieldId, UnsignedInt object, std::size_t offset = 0) const;
+        Containers::Optional<std::size_t> findFieldObjectOffset(UnsignedInt fieldId, UnsignedLong object, std::size_t offset = 0) const;
 
         /**
          * @brief Find offset of an object in given named field
@@ -1532,7 +1532,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref hasField(), @ref hasFieldObject(SceneField, UnsignedInt) const,
          *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          */
-        Containers::Optional<std::size_t> findFieldObjectOffset(SceneField fieldName, UnsignedInt object, std::size_t offset = 0) const;
+        Containers::Optional<std::size_t> findFieldObjectOffset(SceneField fieldName, UnsignedLong object, std::size_t offset = 0) const;
 
         /**
          * @brief Offset of an object in given field
@@ -1545,7 +1545,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * You can also use @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
          * to directly get offset of an object in given named field.
          */
-        std::size_t fieldObjectOffset(UnsignedInt fieldId, UnsignedInt object, std::size_t offset = 0) const;
+        std::size_t fieldObjectOffset(UnsignedInt fieldId, UnsignedLong object, std::size_t offset = 0) const;
 
         /**
          * @brief Offset of an object in given named field
@@ -1555,7 +1555,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * but @p object is additionally expected to be present in @p fieldName
          * starting at @p offset.
          */
-        std::size_t fieldObjectOffset(SceneField fieldName, UnsignedInt object, std::size_t offset = 0) const;
+        std::size_t fieldObjectOffset(SceneField fieldName, UnsignedLong object, std::size_t offset = 0) const;
 
         /**
          * @brief Whether a scene field has given object
@@ -1564,7 +1564,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * The @p fieldId is expected to be smaller than @ref fieldCount() and
          * @p object smaller than @ref mappingBound().
          */
-        bool hasFieldObject(UnsignedInt fieldId, UnsignedInt object) const;
+        bool hasFieldObject(UnsignedInt fieldId, UnsignedLong object) const;
 
         /**
          * @brief Whether a named scene field has given object
@@ -1574,7 +1574,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * be smaller than @ref mappingBound().
          * @see @ref hasField()
          */
-        bool hasFieldObject(SceneField fieldName, UnsignedInt object) const;
+        bool hasFieldObject(SceneField fieldName, UnsignedLong object) const;
 
         /**
          * @brief Field flags
@@ -2510,7 +2510,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * The @p object is expected to be less than @ref mappingBound().
          * @see @ref childrenFor()
          */
-        Containers::Optional<Int> parentFor(UnsignedInt object) const;
+        Containers::Optional<Long> parentFor(UnsignedLong object) const;
 
         /**
          * @brief Children for given object
@@ -2531,7 +2531,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * The @p object is expected to be less than @ref mappingBound().
          * @see @ref parentFor()
          */
-        Containers::Array<UnsignedInt> childrenFor(Int object) const;
+        Containers::Array<UnsignedLong> childrenFor(Long object) const;
 
         /**
          * @brief 2D transformation for given object
@@ -2557,7 +2557,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * The @p object is expected to be less than @ref mappingBound().
          * @see @ref translationRotationScaling2DFor()
          */
-        Containers::Optional<Matrix3> transformation2DFor(UnsignedInt object) const;
+        Containers::Optional<Matrix3> transformation2DFor(UnsignedLong object) const;
 
         /**
          * @brief 2D translation, rotation and scaling for given object
@@ -2586,7 +2586,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * The @p object is expected to be less than @ref mappingBound().
          * @see @ref transformation2DFor()
          */
-        Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> translationRotationScaling2DFor(UnsignedInt object) const;
+        Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> translationRotationScaling2DFor(UnsignedLong object) const;
 
         /**
          * @brief 3D transformation for given object
@@ -2612,7 +2612,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * The @p object is expected to be less than @ref mappingBound().
          * @see @ref translationRotationScaling3DFor()
          */
-        Containers::Optional<Matrix4> transformation3DFor(UnsignedInt object) const;
+        Containers::Optional<Matrix4> transformation3DFor(UnsignedLong object) const;
 
         /**
          * @brief 3D translation, rotation and scaling for given object
@@ -2641,7 +2641,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * The @p object is expected to be less than @ref mappingBound().
          * @see @ref transformation3DFor()
          */
-        Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> translationRotationScaling3DFor(UnsignedInt object) const;
+        Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> translationRotationScaling3DFor(UnsignedLong object) const;
 
         /**
          * @brief Meshes and materials for given object
@@ -2663,7 +2663,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *
          * The @p object is expected to be less than @ref mappingBound().
          */
-        Containers::Array<Containers::Pair<UnsignedInt, Int>> meshesMaterialsFor(UnsignedInt object) const;
+        Containers::Array<Containers::Pair<UnsignedInt, Int>> meshesMaterialsFor(UnsignedLong object) const;
 
         /**
          * @brief Lights for given object
@@ -2681,7 +2681,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *
          * The @p object is expected to be less than @ref mappingBound().
          */
-        Containers::Array<UnsignedInt> lightsFor(UnsignedInt object) const;
+        Containers::Array<UnsignedInt> lightsFor(UnsignedLong object) const;
 
         /**
          * @brief Cameras for given object
@@ -2700,7 +2700,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *
          * The @p object is expected to be less than @ref mappingBound().
          */
-        Containers::Array<UnsignedInt> camerasFor(UnsignedInt object) const;
+        Containers::Array<UnsignedInt> camerasFor(UnsignedLong object) const;
 
         /**
          * @brief Skins for given object
@@ -2718,7 +2718,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *
          * The @p object is expected to be less than @ref mappingBound().
          */
-        Containers::Array<UnsignedInt> skinsFor(UnsignedInt object) const;
+        Containers::Array<UnsignedInt> skinsFor(UnsignedLong object) const;
 
         /**
          * @brief Importer state for given object
@@ -2738,7 +2738,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *
          * The @p object is expected to be less than @ref mappingBound().
          */
-        Containers::Optional<const void*> importerStateFor(UnsignedInt object) const;
+        Containers::Optional<const void*> importerStateFor(UnsignedLong object) const;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -2815,7 +2815,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         /* Returns the offset at which `object` is for field at index `id`, or
            the end offset if the object is not found. The returned offset can
            be then passed to fieldData{Mapping,Field}ViewInternal(). */
-        MAGNUM_TRADE_LOCAL std::size_t findFieldObjectOffsetInternal(const SceneFieldData& field, UnsignedInt object, std::size_t offset) const;
+        MAGNUM_TRADE_LOCAL std::size_t findFieldObjectOffsetInternal(const SceneFieldData& field, UnsignedLong object, std::size_t offset) const;
 
         /* Like objects() / field(), but returning just a 1D view, sliced from
            offset to offset + size. The parameterless overloads are equal to

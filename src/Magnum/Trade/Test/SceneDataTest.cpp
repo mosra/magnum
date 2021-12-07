@@ -4985,25 +4985,25 @@ void SceneDataTest::childrenFor() {
 
     /* Just one child */
     CORRADE_COMPARE_AS(scene.childrenFor(3),
-        Containers::arrayView<UnsignedInt>({2}),
+        Containers::arrayView<UnsignedLong>({2}),
         TestSuite::Compare::Container);
 
     /* More */
     CORRADE_COMPARE_AS(scene.childrenFor(-1),
-        Containers::arrayView<UnsignedInt>({4, 0}),
+        Containers::arrayView<UnsignedLong>({4, 0}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.childrenFor(4),
-        Containers::arrayView<UnsignedInt>({3, 1, 5}),
+        Containers::arrayView<UnsignedLong>({3, 1, 5}),
         TestSuite::Compare::Container);
 
     /* Object that is present in the parent array but has no children */
     CORRADE_COMPARE_AS(scene.childrenFor(5),
-        Containers::arrayView<UnsignedInt>({}),
+        Containers::arrayView<UnsignedLong>({}),
         TestSuite::Compare::Container);
 
     /* Object that is not in the parent array at all */
     CORRADE_COMPARE_AS(scene.childrenFor(6),
-        Containers::arrayView<UnsignedInt>({}),
+        Containers::arrayView<UnsignedLong>({}),
         TestSuite::Compare::Container);
 }
 
@@ -5024,17 +5024,17 @@ void SceneDataTest::childrenForTrivialParent() {
 
     /* Trivial children */
     CORRADE_COMPARE_AS(scene.childrenFor(-1),
-        Containers::arrayView<UnsignedInt>({3, 4, 2, 4}),
+        Containers::arrayView<UnsignedLong>({3, 4, 2, 4}),
         TestSuite::Compare::Container);
 
     /* Object that is present in the parent array but has no children */
     CORRADE_COMPARE_AS(scene.childrenFor(4),
-        Containers::arrayView<UnsignedInt>({}),
+        Containers::arrayView<UnsignedLong>({}),
         TestSuite::Compare::Container);
 
     /* Object that is not in the parent array */
     CORRADE_COMPARE_AS(scene.childrenFor(5),
-        Containers::arrayView<UnsignedInt>({}),
+        Containers::arrayView<UnsignedLong>({}),
         TestSuite::Compare::Container);
 }
 
@@ -5461,7 +5461,7 @@ void SceneDataTest::fieldForFieldMissing() {
 
     CORRADE_COMPARE(scene.parentFor(6), Containers::NullOpt);
     CORRADE_COMPARE_AS(scene.childrenFor(6),
-        Containers::arrayView<UnsignedInt>({}),
+        Containers::arrayView<UnsignedLong>({}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE(scene.transformation2DFor(6), Containers::NullOpt);
     CORRADE_COMPARE(scene.translationRotationScaling2DFor(6), Containers::NullOpt);
