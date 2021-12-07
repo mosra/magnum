@@ -519,6 +519,8 @@ void AbstractImporter::populateCachedScenes() {
 
     _cachedScenes.emplace();
     _cachedScenes->scenes = Containers::Array<Containers::Optional<SceneData>>{sceneCount()};
+
+    UnsignedLong newObjectOffset = objectCount();
     for(UnsignedInt i = 0; i != _cachedScenes->scenes.size(); ++i) {
         _cachedScenes->scenes[i] = scene(i);
         if(_cachedScenes->scenes[i]) {
@@ -529,7 +531,7 @@ void AbstractImporter::populateCachedScenes() {
                compatibility code path anyway, so just skip the processing
                altogether in that case. */
             if(_cachedScenes->scenes[i]->hasField(SceneField::Parent))
-                _cachedScenes->scenes[i] = Implementation::sceneConvertToSingleFunctionObjects(*_cachedScenes->scenes[i], Containers::arrayView({SceneField::Mesh, SceneField::Camera, SceneField::Light}), objectCount());
+                _cachedScenes->scenes[i] = Implementation::sceneConvertToSingleFunctionObjects(*_cachedScenes->scenes[i], Containers::arrayView({SceneField::Mesh, SceneField::Camera, SceneField::Light}), newObjectOffset);
 
             /* Return the 2D/3D object count based on which scenes are 2D and
                which not. The objectCount() provided by the importer is ignored
@@ -539,6 +541,10 @@ void AbstractImporter::populateCachedScenes() {
                 _cachedScenes->object2DCount = Math::max(_cachedScenes->object2DCount, UnsignedInt(_cachedScenes->scenes[i]->objectCount()));
             if(_cachedScenes->scenes[i]->is3D())
                 _cachedScenes->object3DCount = Math::max(_cachedScenes->object3DCount, UnsignedInt(_cachedScenes->scenes[i]->objectCount()));
+
+            /* Ensure the newly added objects for each scene don't overlap each
+               other */
+            newObjectOffset = Math::max(newObjectOffset, _cachedScenes->scenes[i]->objectCount());
         }
     }
 }

@@ -2708,7 +2708,6 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
         {NoInit, 7, meshes},
         {NoInit, 2, cameras},
     };
-
     Utility::copy({{15, -1}, {21, -1}, {22, 1}, {23, 2}, {1, -1}}, parents);
     Utility::copy({
         {15, 6, 4},
@@ -2721,6 +2720,23 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
     }, meshes);
     Utility::copy({{22, 1}, {1, 5}}, cameras);
 
+    /* Second scene that also has a duplicate, to verify the newly added object
+       IDs don't conflict with each other. A potential downside is that
+       multi-primitive nodes shared by multiple scenes get duplicated, but
+       that's a smaller problem than two unrelated nodes sharing the same ID
+       (and thus having a wrong name, etc). */
+    Containers::StridedArrayView1D<Parent> parentsSecondary;
+    Containers::StridedArrayView1D<Mesh> meshesSecondary;
+    Containers::Array<char> dataDataSecondary = Containers::ArrayTuple{
+        {NoInit, 1, parentsSecondary},
+        {NoInit, 2, meshesSecondary}
+    };
+    Utility::copy({{30, -1}}, parentsSecondary);
+    Utility::copy({
+        {30, 6, 2},
+        {30, 1, -1}
+    }, meshesSecondary);
+
     SceneData data{SceneObjectType::UnsignedInt, 32, std::move(dataData), {
         SceneFieldData{SceneField::Parent, parents.slice(&Parent::object), parents.slice(&Parent::parent)},
         SceneFieldData{SceneField::Mesh, meshes.slice(&Mesh::object), meshes.slice(&Mesh::mesh)},
@@ -2729,20 +2745,28 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
         /* Just to disambiguate this as a 2D scene */
         SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Matrix3x3, nullptr},
     }};
+    SceneData dataSecondary{SceneObjectType::UnsignedInt, 31, std::move(dataDataSecondary), {
+        SceneFieldData{SceneField::Parent, parentsSecondary.slice(&Parent::object), parentsSecondary.slice(&Parent::parent)},
+        SceneFieldData{SceneField::Mesh, meshesSecondary.slice(&Mesh::object), meshesSecondary.slice(&Mesh::mesh)},
+        SceneFieldData{SceneField::MeshMaterial, meshesSecondary.slice(&Mesh::object), meshesSecondary.slice(&Mesh::meshMaterial)},
+        /* Just to disambiguate this as a 2D scene */
+        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Matrix3x3, nullptr},
+    }};
 
     struct Importer: AbstractImporter {
-        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+        explicit Importer(SceneData&& data, SceneData&& dataSecondary): _data{std::move(data)}, _dataSecondary{std::move(dataSecondary)} {}
 
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
-        UnsignedInt doSceneCount() const override { return 3; }
+        UnsignedInt doSceneCount() const override { return 4; }
         UnsignedLong doObjectCount() const override { return 63; }
         std::string doObjectName(UnsignedLong id) override {
             if(id == 1) return "object 1";
             if(id == 15) return "object 15";
             if(id == 23) return "object 23";
+            if(id == 30) return "object 30 from secondary scene";
             if(id == 62) return "last";
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
@@ -2759,14 +2783,33 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
                 }};
             if(id == 2)
                 return SceneData{SceneObjectType::UnsignedInt, 32, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+            /* A secondary scene, which should have non-overlapping IDs for the
+               newly added objects */
+            if(id == 3)
+                return SceneData{SceneObjectType::UnsignedInt, 31, {}, _dataSecondary.data(), sceneFieldDataNonOwningArray(_dataSecondary.fieldData())};
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
 
         private:
-            SceneData _data;
-    } importer{std::move(data)};
+            SceneData _data, _dataSecondary;
+    } importer{std::move(data), std::move(dataSecondary)};
 
-    CORRADE_COMPARE(importer.sceneCount(), 3);
+    CORRADE_COMPARE(importer.sceneCount(), 4);
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* Total object count reported by the importer plus four new added for the
+       first and one for the second scene */
+    CORRADE_COMPARE(importer.object2DCount(), 63 + 4 + 1);
+    CORRADE_COMPARE(importer.object3DCount(), 0);
+
+    /* Object name should return parent names for the additional objects */
+    CORRADE_COMPARE(importer.object2DName(62), "last");
+    CORRADE_COMPARE(importer.object2DName(63), "object 23");
+    CORRADE_COMPARE(importer.object2DName(64), "object 23");
+    CORRADE_COMPARE(importer.object2DName(65), "object 15");
+    CORRADE_COMPARE(importer.object2DName(66), "object 1");
+    CORRADE_COMPARE(importer.object2DName(67), "object 30 from secondary scene");
+    CORRADE_IGNORE_DEPRECATED_POP
 
     Containers::Optional<SceneData> scene = importer.scene(2);
     CORRADE_VERIFY(scene);
@@ -2778,17 +2821,6 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
     CORRADE_COMPARE_AS(scene->children3D(),
         std::vector<UnsignedInt>{},
         TestSuite::Compare::Container);
-
-    /* Total object count reported by the importer plus four new added */
-    CORRADE_COMPARE(importer.object2DCount(), 63 + 4);
-    CORRADE_COMPARE(importer.object3DCount(), 0);
-
-    /* Object name should return parent names for the additional objects */
-    CORRADE_COMPARE(importer.object2DName(62), "last");
-    CORRADE_COMPARE(importer.object2DName(63), "object 23");
-    CORRADE_COMPARE(importer.object2DName(64), "object 23");
-    CORRADE_COMPARE(importer.object2DName(65), "object 15");
-    CORRADE_COMPARE(importer.object2DName(66), "object 1");
 
     /* Only 9 objects should exist in total, go in order. Usually the object
        IDs will be contiguous so no such mess as this happens. */
@@ -2880,6 +2912,41 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
             TestSuite::Compare::Container);
     }
     CORRADE_IGNORE_DEPRECATED_POP
+
+    Containers::Optional<SceneData> sceneSecondary = importer.scene(3);
+    CORRADE_VERIFY(sceneSecondary);
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE_AS(sceneSecondary->children2D(),
+        std::vector<UnsignedInt>{30},
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(sceneSecondary->children3D(),
+        (std::vector<UnsignedInt>{}),
+        TestSuite::Compare::Container);
+
+    /* One additional duplicated object here */
+    {
+        Containers::Pointer<ObjectData2D> o = importer.object2D(30);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Mesh);
+        CORRADE_COMPARE(o->instance(), 6);
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{67},
+            TestSuite::Compare::Container);
+        MeshObjectData2D& mo = static_cast<MeshObjectData2D&>(*o);
+        CORRADE_COMPARE(mo.material(), 2);
+    } {
+        Containers::Pointer<ObjectData2D> o = importer.object2D(67);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType2D::Mesh);
+        CORRADE_COMPARE(o->instance(), 1);
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+        MeshObjectData2D& mo = static_cast<MeshObjectData2D&>(*o);
+        CORRADE_COMPARE(mo.material(), -1);
+    }
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
@@ -2908,7 +2975,6 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
         {NoInit, 7, meshes},
         {NoInit, 2, cameras},
     };
-
     Utility::copy({{15, -1}, {21, -1}, {22, 1}, {23, 2}, {1, -1}}, parents);
     Utility::copy({
         {15, 6, 4},
@@ -2921,6 +2987,23 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
     }, meshes);
     Utility::copy({{22, 1}, {1, 5}}, cameras);
 
+    /* Second scene that also has a duplicate, to verify the newly added object
+       IDs don't conflict with each other. A potential downside is that
+       multi-primitive nodes shared by multiple scenes get duplicated, but
+       that's a smaller problem than two unrelated nodes sharing the same ID
+       (and thus having a wrong name, etc). */
+    Containers::StridedArrayView1D<Parent> parentsSecondary;
+    Containers::StridedArrayView1D<Mesh> meshesSecondary;
+    Containers::Array<char> dataDataSecondary = Containers::ArrayTuple{
+        {NoInit, 1, parentsSecondary},
+        {NoInit, 2, meshesSecondary}
+    };
+    Utility::copy({{30, -1}}, parentsSecondary);
+    Utility::copy({
+        {30, 6, 2},
+        {30, 1, -1}
+    }, meshesSecondary);
+
     SceneData data{SceneObjectType::UnsignedInt, 32, std::move(dataData), {
         SceneFieldData{SceneField::Parent, parents.slice(&Parent::object), parents.slice(&Parent::parent)},
         SceneFieldData{SceneField::Mesh, meshes.slice(&Mesh::object), meshes.slice(&Mesh::mesh)},
@@ -2929,20 +3012,28 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
         /* Just to disambiguate this as a 3D scene */
         SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Matrix4x4, nullptr},
     }};
+    SceneData dataSecondary{SceneObjectType::UnsignedInt, 31, std::move(dataDataSecondary), {
+        SceneFieldData{SceneField::Parent, parentsSecondary.slice(&Parent::object), parentsSecondary.slice(&Parent::parent)},
+        SceneFieldData{SceneField::Mesh, meshesSecondary.slice(&Mesh::object), meshesSecondary.slice(&Mesh::mesh)},
+        SceneFieldData{SceneField::MeshMaterial, meshesSecondary.slice(&Mesh::object), meshesSecondary.slice(&Mesh::meshMaterial)},
+        /* Just to disambiguate this as a 3D scene */
+        SceneFieldData{SceneField::Transformation, SceneObjectType::UnsignedInt, nullptr, SceneFieldType::Matrix4x4, nullptr},
+    }};
 
     struct Importer: AbstractImporter {
-        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+        explicit Importer(SceneData&& data, SceneData&& dataSecondary): _data{std::move(data)}, _dataSecondary{std::move(dataSecondary)} {}
 
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
-        UnsignedInt doSceneCount() const override { return 3; }
+        UnsignedInt doSceneCount() const override { return 4; }
         UnsignedLong doObjectCount() const override { return 63; }
         std::string doObjectName(UnsignedLong id) override {
             if(id == 1) return "object 1";
             if(id == 15) return "object 15";
             if(id == 23) return "object 23";
+            if(id == 30) return "object 30 from secondary scene";
             if(id == 62) return "last";
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
@@ -2959,14 +3050,33 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
                 }};
             if(id == 2)
                 return SceneData{SceneObjectType::UnsignedInt, 32, {}, _data.data(), sceneFieldDataNonOwningArray(_data.fieldData())};
+            /* A secondary scene, which should have non-overlapping IDs for the
+               newly added objects */
+            if(id == 3)
+                return SceneData{SceneObjectType::UnsignedInt, 31, {}, _dataSecondary.data(), sceneFieldDataNonOwningArray(_dataSecondary.fieldData())};
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
 
         private:
-            SceneData _data;
-    } importer{std::move(data)};
+            SceneData _data, _dataSecondary;
+    } importer{std::move(data), std::move(dataSecondary)};
 
-    CORRADE_COMPARE(importer.sceneCount(), 3);
+    CORRADE_COMPARE(importer.sceneCount(), 4);
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* Total object count reported by the importer plus four new added for the
+       first and one for the second scene */
+    CORRADE_COMPARE(importer.object2DCount(), 0);
+    CORRADE_COMPARE(importer.object3DCount(), 63 + 4 + 1);
+
+    /* Object name should return parent names for the additional objects */
+    CORRADE_COMPARE(importer.object3DName(62), "last");
+    CORRADE_COMPARE(importer.object3DName(63), "object 23");
+    CORRADE_COMPARE(importer.object3DName(64), "object 23");
+    CORRADE_COMPARE(importer.object3DName(65), "object 15");
+    CORRADE_COMPARE(importer.object3DName(66), "object 1");
+    CORRADE_COMPARE(importer.object3DName(67), "object 30 from secondary scene");
+    CORRADE_IGNORE_DEPRECATED_POP
 
     Containers::Optional<SceneData> scene = importer.scene(2);
     CORRADE_VERIFY(scene);
@@ -2978,17 +3088,6 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
     CORRADE_COMPARE_AS(scene->children3D(),
         (std::vector<UnsignedInt>{15, 21, 1}),
         TestSuite::Compare::Container);
-
-    /* Total object count reported by the importer plus four new added */
-    CORRADE_COMPARE(importer.object2DCount(), 0);
-    CORRADE_COMPARE(importer.object3DCount(), 63 + 4);
-
-    /* Object name should return parent names for the additional objects */
-    CORRADE_COMPARE(importer.object3DName(62), "last");
-    CORRADE_COMPARE(importer.object3DName(63), "object 23");
-    CORRADE_COMPARE(importer.object3DName(64), "object 23");
-    CORRADE_COMPARE(importer.object3DName(65), "object 15");
-    CORRADE_COMPARE(importer.object3DName(66), "object 1");
 
     /* Only 9 objects should exist in total, go in order. Usually the object
        IDs will be contiguous so no such mess as this happens. */
@@ -3078,6 +3177,41 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
         CORRADE_COMPARE_AS(o->children(),
             std::vector<UnsignedInt>{},
             TestSuite::Compare::Container);
+    }
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    Containers::Optional<SceneData> sceneSecondary = importer.scene(3);
+    CORRADE_VERIFY(sceneSecondary);
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE_AS(sceneSecondary->children2D(),
+        std::vector<UnsignedInt>{},
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(sceneSecondary->children3D(),
+        (std::vector<UnsignedInt>{30}),
+        TestSuite::Compare::Container);
+
+    /* One additional duplicated object here */
+    {
+        Containers::Pointer<ObjectData3D> o = importer.object3D(30);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Mesh);
+        CORRADE_COMPARE(o->instance(), 6);
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{67},
+            TestSuite::Compare::Container);
+        MeshObjectData3D& mo = static_cast<MeshObjectData3D&>(*o);
+        CORRADE_COMPARE(mo.material(), 2);
+    } {
+        Containers::Pointer<ObjectData3D> o = importer.object3D(67);
+        CORRADE_VERIFY(o);
+        CORRADE_COMPARE(o->instanceType(), ObjectInstanceType3D::Mesh);
+        CORRADE_COMPARE(o->instance(), 1);
+        CORRADE_COMPARE_AS(o->children(),
+            std::vector<UnsignedInt>{},
+            TestSuite::Compare::Container);
+        MeshObjectData3D& mo = static_cast<MeshObjectData3D&>(*o);
+        CORRADE_COMPARE(mo.material(), -1);
     }
     CORRADE_IGNORE_DEPRECATED_POP
 }
