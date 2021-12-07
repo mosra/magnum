@@ -154,6 +154,8 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
             -   fields that don't actually get their object mapping touched
                 during the process (and then all fields that share object
                 mapping with them) */
+#warning removing implicit mapping from here will mean the null will get treated as a placeholder by copy(), not wanted
+#warning it needs to restore the field instead
         } else fields[i] = Trade::SceneFieldData{field.name(), field.mappingType(), field.mappingData(), field.fieldType(), field.fieldData(), field.fieldArraySize(), field.flags() & ~Trade::SceneFieldFlag::ImplicitMapping};
     }
 
