@@ -191,20 +191,28 @@ inline SceneData sceneCombine(const SceneMappingType mappingType, const Unsigned
     return SceneData{mappingType, mappingBound, std::move(outData), std::move(outFields)};
 }
 
+inline Containers::Optional<std::size_t> findField(Containers::ArrayView<const SceneField> fields, SceneField field) {
+    for(std::size_t i = 0; i != fields.size(); ++i)
+        if(fields[i] == field) return i;
+    return {};
+}
+
 /* Creates a SceneData copy where each object has at most one of the fields
-   listed in the passed array. This is done by enlarging the parents array
-   and moving extraneous features to new objects that are marked as a child of
-   the original. No transformations or other fields are added for the new
-   objects. Fields that are connected together (such as meshes and materials)
-   are assumed to share the same object mapping with only one of them passed in
-   the fieldsToConvert array, which will result for all fields from the same
-   set being reassociated to the new object.
+   listed in the passed `fieldsToConvert` array. This is done by enlarging the
+   parents array and moving extraneous features to new objects that are marked
+   as a child of the original. Fields that are connected together (such as
+   meshes and materials) are assumed to share the same object mapping with only
+   one of them passed in the fieldsToConvert array, which will result for all
+   fields from the same set being reassociated to the new object.
+
+   Fields listed in `fieldsToCopy` are copied from the original object. This
+   is useful for e.g. skins, to preserve them for the separated meshes.
 
    Requies a SceneField::Parent to be present -- otherwise it wouldn't be
    possible to know where to attach the new objects. */
 /** @todo when published, (again) add an initializer_list overload and turn all
     internal asserts into (tested!) message asserts */
-inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Containers::ArrayView<const SceneField> fieldsToConvert, const UnsignedInt newObjectOffset) {
+inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Containers::ArrayView<const SceneField> fieldsToConvert, Containers::ArrayView<const SceneField> fieldsToCopy, const UnsignedInt newObjectOffset) {
     /** @todo assert for really high object counts (where this cast would fail) */
     Containers::Array<UnsignedInt> objectAttachmentCount{ValueInit, std::size_t(scene.mappingBound())};
     for(const SceneField field: fieldsToConvert) {
@@ -224,6 +232,28 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
         }
     }
 
+    /* entriesToAddToFieldsToCopy[i] specifies how many fields to add for the
+       fieldsToCopy[i] field */
+    Containers::Array<UnsignedInt> fieldsToCopyAdditionCount{ValueInit, fieldsToCopy.size()};
+    for(std::size_t i = 0; i != fieldsToCopy.size(); ++i) {
+        const SceneField field = fieldsToCopy[i];
+        CORRADE_INTERNAL_ASSERT(field != SceneField::Parent);
+        CORRADE_INTERNAL_ASSERT(!findField(fieldsToConvert, field));
+
+        /* Skip fields that are not present */
+        const Containers::Optional<UnsignedInt> fieldId = scene.findFieldId(field);
+        if(!fieldId) continue;
+
+        /** @todo use a statically-allocated array & Into() in a loop instead
+            once this is more than a private backwards-compatibility utility
+            where PERF WHATEVER WHO CARES */
+        for(const UnsignedInt object: scene.mappingAsArray(*fieldId)) {
+            CORRADE_INTERNAL_ASSERT(object < objectAttachmentCount.size());
+            if(objectAttachmentCount[object])
+                fieldsToCopyAdditionCount[i] += objectAttachmentCount[object] - 1;
+        }
+    }
+
     UnsignedInt objectsToAdd = 0;
     for(const UnsignedInt count: objectAttachmentCount)
         if(count > 1) objectsToAdd += count - 1;
@@ -239,9 +269,26 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
     for(std::size_t i = 0; i != scene.fieldCount(); ++i) {
         const SceneFieldData& field = scene.fieldData(i);
 
+        /* If this field is among the fields we want to copy, enlarge it for
+           the new entries */
+        if(Containers::Optional<std::size_t> fieldToCopy = findField(fieldsToCopy, field.name())) {
+            /** @todo wow this placeholder construction is HIDEOUS */
+            fields[i] = SceneFieldData{field.name(),
+                field.mappingType(),
+                Containers::ArrayView<const UnsignedInt>{nullptr, std::size_t(field.size() + fieldsToCopyAdditionCount[*fieldToCopy])},
+                field.fieldType(),
+                Containers::StridedArrayView1D<const void>{
+                    {nullptr, ~std::size_t{}},
+                    std::size_t(field.size() + fieldsToCopyAdditionCount[*fieldToCopy]),
+                    std::ptrdiff_t((field.fieldArraySize() ? field.fieldArraySize() : 1)*sceneFieldTypeSize(field.fieldType()))
+                },
+                field.fieldArraySize(),
+                field.flags() & ~SceneFieldFlag::ImplicitMapping
+            };
+
         /* If this is a parent, enlarge it for the newly added objects, and if
            it was implicit make it ordered */
-        if(field.name() == SceneField::Parent) {
+        } else if(field.name() == SceneField::Parent) {
             /** @todo some nicer constructor for placeholders once this is in
                 public interest */
             fields[i] = SceneFieldData{SceneField::Parent, Containers::ArrayView<const UnsignedInt>{nullptr, std::size_t(field.size() + objectsToAdd)}, Containers::ArrayView<const Int>{nullptr, std::size_t(field.size() + objectsToAdd)},
@@ -269,6 +316,19 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
     const Containers::StridedArrayView1D<Int> outParents = out.mutableField<Int>(parentFieldId);
     CORRADE_INTERNAL_ASSERT_OUTPUT(scene.parentsInto(0, outParentMapping, outParents) == scene.fieldSize(parentFieldId));
 
+    /* Copy existing field-to-copy data to a prefix of the output */
+    for(std::size_t i = 0; i != fieldsToCopy.size(); ++i) {
+        const SceneField field = fieldsToCopy[i];
+
+        const Containers::Optional<UnsignedInt> fieldId = scene.findFieldId(field);
+        if(!fieldId) continue;
+
+        const Containers::StridedArrayView1D<UnsignedInt> outMapping = out.mutableMapping<UnsignedInt>(*fieldId);
+        const Containers::StridedArrayView2D<char> outField = out.mutableField(*fieldId);
+        CORRADE_INTERNAL_ASSERT_OUTPUT(scene.mappingInto(*fieldId, 0, outMapping) == scene.fieldSize(*fieldId));
+        Utility::copy(scene.field(*fieldId), outField.prefix(scene.fieldSize(*fieldId)));
+    }
+
     /* List new objects at the end of the extended parent field */
     const Containers::StridedArrayView1D<UnsignedInt> newParentMapping = outParentMapping.suffix(scene.fieldSize(parentFieldId));
     const Containers::StridedArrayView1D<Int> newParents = outParents.suffix(scene.fieldSize(parentFieldId));
@@ -281,6 +341,9 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
     /** @todo use a BitArray instead once it exists? */
     constexpr UnsignedInt zero[1]{};
     Utility::copy(Containers::stridedArrayView(zero).broadcasted<0>(scene.mappingBound()), objectAttachmentCount);
+
+    /* Clear the fieldsToCopyAdditionCount array to reuse it below */
+    Utility::copy(Containers::stridedArrayView(zero).broadcasted<0>(fieldsToCopy.size()), fieldsToCopyAdditionCount);
 
     /* For objects with multiple fields move the extra fields to newly added
        children */
@@ -298,6 +361,35 @@ inline SceneData sceneConvertToSingleFunctionObjects(const SceneData& scene, Con
                    attached, then attach the field to a new object and make
                    that new object a child of the previous one. */
                 if(fieldObject < objectAttachmentCount.size() && objectAttachmentCount[fieldObject]) {
+                    /* Go through all fields to copy and copy each entry that
+                       was assigned to the original object */
+                    for(std::size_t i = 0; i != fieldsToCopy.size(); ++i) {
+                        const Containers::Optional<UnsignedInt> fieldToCopyId = scene.findFieldId(fieldsToCopy[i]);
+                        if(!fieldToCopyId) continue;
+
+                        /* View to copy the data from */
+                        const Containers::StridedArrayView2D<const char> fieldToCopyDataSrc = scene.field(*fieldToCopyId);
+
+                        /* Views to put the mapping to and copy the data to */
+                        const std::size_t newFieldToCopyOffset = scene.fieldSize(*fieldToCopyId);
+                        const Containers::StridedArrayView1D<UnsignedInt> newFieldToCopyMapping = out.mutableMapping<UnsignedInt>(*fieldToCopyId).suffix(newFieldToCopyOffset);
+                        const Containers::StridedArrayView2D<char> newFieldToCopy = out.mutableField(*fieldToCopyId).suffix(newFieldToCopyOffset);
+
+                        /* As long as there are entries attached to the
+                           original objects, copy them */
+                        std::size_t offset = 0;
+                        while(Containers::Optional<std::size_t> found = scene.findFieldObjectOffset(*fieldToCopyId, fieldObject, offset)) {
+                            /* Assgn a new field entry to the new object */
+                            newFieldToCopyMapping[fieldsToCopyAdditionCount[i]] = newParentMapping[newParentIndex];
+
+                            /* Copy the data from the old entry to it */
+                            Utility::copy(fieldToCopyDataSrc[*found], newFieldToCopy[fieldsToCopyAdditionCount[i]]);
+
+                            ++fieldsToCopyAdditionCount[i];
+                            offset = *found + 1;
+                        }
+                    }
+
                     /* Use the old object as a parent of the new object */
                     newParents[newParentIndex] = fieldObject;
                     /* Assign the field to the new object */

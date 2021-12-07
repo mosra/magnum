@@ -2710,13 +2710,19 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
         UnsignedInt object;
         UnsignedInt camera;
     };
+    struct Skin {
+        UnsignedInt object;
+        UnsignedInt skin;
+    };
     Containers::StridedArrayView1D<Parent> parents;
     Containers::StridedArrayView1D<Mesh> meshes;
     Containers::StridedArrayView1D<Camera> cameras;
+    Containers::StridedArrayView1D<Skin> skins;
     Containers::Array<char> dataData = Containers::ArrayTuple{
         {NoInit, 5, parents},
         {NoInit, 7, meshes},
         {NoInit, 2, cameras},
+        {NoInit, 2, skins},
     };
     Utility::copy({{15, -1}, {21, -1}, {22, 21}, {23, 22}, {1, -1}}, parents);
     Utility::copy({
@@ -2729,6 +2735,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
         {21, 5, -1}
     }, meshes);
     Utility::copy({{22, 1}, {1, 5}}, cameras);
+    Utility::copy({{15, 9}, {21, 10}}, skins);
 
     /* Second scene that also has a duplicate, to verify the newly added object
        IDs don't conflict with each other. A potential downside is that
@@ -2752,6 +2759,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
         SceneFieldData{SceneField::Mesh, meshes.slice(&Mesh::object), meshes.slice(&Mesh::mesh)},
         SceneFieldData{SceneField::MeshMaterial, meshes.slice(&Mesh::object), meshes.slice(&Mesh::meshMaterial)},
         SceneFieldData{SceneField::Camera, cameras.slice(&Camera::object), cameras.slice(&Camera::camera)},
+        SceneFieldData{SceneField::Skin, skins.slice(&Skin::object), skins.slice(&Skin::skin)},
         /* Just to disambiguate this as a 2D scene */
         SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Matrix3x3, nullptr},
     }};
@@ -2844,6 +2852,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
             TestSuite::Compare::Container);
         MeshObjectData2D& mo = static_cast<MeshObjectData2D&>(*o);
         CORRADE_COMPARE(mo.material(), 2);
+        CORRADE_COMPARE(mo.skin(), -1);
     } {
         Containers::Pointer<ObjectData2D> o = importer.object2D(15);
         CORRADE_VERIFY(o);
@@ -2854,6 +2863,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
             TestSuite::Compare::Container);
         MeshObjectData2D& mo = static_cast<MeshObjectData2D&>(*o);
         CORRADE_COMPARE(mo.material(), 4);
+        CORRADE_COMPARE(mo.skin(), 9);
     } {
         Containers::Pointer<ObjectData2D> o = importer.object2D(21);
         CORRADE_VERIFY(o);
@@ -2864,6 +2874,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
             TestSuite::Compare::Container);
         MeshObjectData2D& mo = static_cast<MeshObjectData2D&>(*o);
         CORRADE_COMPARE(mo.material(), -1);
+        CORRADE_COMPARE(mo.skin(), 10);
     } {
         Containers::Pointer<ObjectData2D> o = importer.object2D(22);
         CORRADE_VERIFY(o);
@@ -2882,6 +2893,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
             TestSuite::Compare::Container);
         MeshObjectData2D& mo = static_cast<MeshObjectData2D&>(*o);
         CORRADE_COMPARE(mo.material(), 0);
+        CORRADE_COMPARE(mo.skin(), -1);
     } {
         Containers::Pointer<ObjectData2D> o = importer.object2D(63);
         CORRADE_VERIFY(o);
@@ -2892,6 +2904,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
             TestSuite::Compare::Container);
         MeshObjectData2D& mo = static_cast<MeshObjectData2D&>(*o);
         CORRADE_COMPARE(mo.material(), 3);
+        CORRADE_COMPARE(mo.skin(), -1);
     } {
         Containers::Pointer<ObjectData2D> o = importer.object2D(64);
         CORRADE_VERIFY(o);
@@ -2902,6 +2915,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
             TestSuite::Compare::Container);
         MeshObjectData2D& mo = static_cast<MeshObjectData2D&>(*o);
         CORRADE_COMPARE(mo.material(), 2);
+        CORRADE_COMPARE(mo.skin(), -1);
     } {
         Containers::Pointer<ObjectData2D> o = importer.object2D(65);
         CORRADE_VERIFY(o);
@@ -2912,6 +2926,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
             TestSuite::Compare::Container);
         MeshObjectData2D& mo = static_cast<MeshObjectData2D&>(*o);
         CORRADE_COMPARE(mo.material(), 1);
+        CORRADE_COMPARE(mo.skin(), 9);
     } {
         Containers::Pointer<ObjectData2D> o = importer.object2D(66);
         CORRADE_VERIFY(o);
@@ -2977,13 +2992,19 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
         UnsignedInt object;
         UnsignedInt camera;
     };
+    struct Skin {
+        UnsignedInt object;
+        UnsignedInt skin;
+    };
     Containers::StridedArrayView1D<Parent> parents;
     Containers::StridedArrayView1D<Mesh> meshes;
     Containers::StridedArrayView1D<Camera> cameras;
+    Containers::StridedArrayView1D<Skin> skins;
     Containers::Array<char> dataData = Containers::ArrayTuple{
         {NoInit, 5, parents},
         {NoInit, 7, meshes},
         {NoInit, 2, cameras},
+        {NoInit, 2, skins},
     };
     Utility::copy({{15, -1}, {21, -1}, {22, 21}, {23, 22}, {1, -1}}, parents);
     Utility::copy({
@@ -2996,6 +3017,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
         {21, 5, -1}
     }, meshes);
     Utility::copy({{22, 1}, {1, 5}}, cameras);
+    Utility::copy({{15, 9}, {21, 10}}, skins);
 
     /* Second scene that also has a duplicate, to verify the newly added object
        IDs don't conflict with each other. A potential downside is that
@@ -3019,6 +3041,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
         SceneFieldData{SceneField::Mesh, meshes.slice(&Mesh::object), meshes.slice(&Mesh::mesh)},
         SceneFieldData{SceneField::MeshMaterial, meshes.slice(&Mesh::object), meshes.slice(&Mesh::meshMaterial)},
         SceneFieldData{SceneField::Camera, cameras.slice(&Camera::object), cameras.slice(&Camera::camera)},
+        SceneFieldData{SceneField::Skin, skins.slice(&Skin::object), skins.slice(&Skin::skin)},
         /* Just to disambiguate this as a 3D scene */
         SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Matrix4x4, nullptr},
     }};
@@ -3111,6 +3134,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
             TestSuite::Compare::Container);
         MeshObjectData3D& mo = static_cast<MeshObjectData3D&>(*o);
         CORRADE_COMPARE(mo.material(), 2);
+        CORRADE_COMPARE(mo.skin(), -1);
     } {
         Containers::Pointer<ObjectData3D> o = importer.object3D(15);
         CORRADE_VERIFY(o);
@@ -3121,6 +3145,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
             TestSuite::Compare::Container);
         MeshObjectData3D& mo = static_cast<MeshObjectData3D&>(*o);
         CORRADE_COMPARE(mo.material(), 4);
+        CORRADE_COMPARE(mo.skin(), 9);
     } {
         Containers::Pointer<ObjectData3D> o = importer.object3D(21);
         CORRADE_VERIFY(o);
@@ -3131,6 +3156,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
             TestSuite::Compare::Container);
         MeshObjectData3D& mo = static_cast<MeshObjectData3D&>(*o);
         CORRADE_COMPARE(mo.material(), -1);
+        CORRADE_COMPARE(mo.skin(), 10);
     } {
         Containers::Pointer<ObjectData3D> o = importer.object3D(22);
         CORRADE_VERIFY(o);
@@ -3149,6 +3175,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
             TestSuite::Compare::Container);
         MeshObjectData3D& mo = static_cast<MeshObjectData3D&>(*o);
         CORRADE_COMPARE(mo.material(), 0);
+        CORRADE_COMPARE(mo.skin(), -1);
     } {
         Containers::Pointer<ObjectData3D> o = importer.object3D(63);
         CORRADE_VERIFY(o);
@@ -3159,6 +3186,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
             TestSuite::Compare::Container);
         MeshObjectData3D& mo = static_cast<MeshObjectData3D&>(*o);
         CORRADE_COMPARE(mo.material(), 3);
+        CORRADE_COMPARE(mo.skin(), -1);
     } {
         Containers::Pointer<ObjectData3D> o = importer.object3D(64);
         CORRADE_VERIFY(o);
@@ -3169,6 +3197,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
             TestSuite::Compare::Container);
         MeshObjectData3D& mo = static_cast<MeshObjectData3D&>(*o);
         CORRADE_COMPARE(mo.material(), 2);
+        CORRADE_COMPARE(mo.skin(), -1);
     } {
         Containers::Pointer<ObjectData3D> o = importer.object3D(65);
         CORRADE_VERIFY(o);
@@ -3179,6 +3208,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
             TestSuite::Compare::Container);
         MeshObjectData3D& mo = static_cast<MeshObjectData3D&>(*o);
         CORRADE_COMPARE(mo.material(), 1);
+        CORRADE_COMPARE(mo.skin(), 9);
     } {
         Containers::Pointer<ObjectData3D> o = importer.object3D(66);
         CORRADE_VERIFY(o);

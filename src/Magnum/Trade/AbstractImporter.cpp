@@ -531,7 +531,7 @@ void AbstractImporter::populateCachedScenes() {
                compatibility code path anyway, so just skip the processing
                altogether in that case. */
             if(_cachedScenes->scenes[i]->hasField(SceneField::Parent))
-                _cachedScenes->scenes[i] = Implementation::sceneConvertToSingleFunctionObjects(*_cachedScenes->scenes[i], Containers::arrayView({SceneField::Mesh, SceneField::Camera, SceneField::Light}), newObjectOffset);
+                _cachedScenes->scenes[i] = Implementation::sceneConvertToSingleFunctionObjects(*_cachedScenes->scenes[i], Containers::arrayView({SceneField::Mesh, SceneField::Camera, SceneField::Light}), Containers::arrayView({SceneField::Skin}), newObjectOffset);
 
             /* Return the 2D/3D object count based on which scenes are 2D and
                which not. The objectCount() provided by the importer is ignored

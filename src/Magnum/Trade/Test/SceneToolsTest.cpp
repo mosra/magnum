@@ -43,6 +43,7 @@ struct SceneToolsTest: TestSuite::Tester {
     void combineObjectSharedFieldPlaceholder();
 
     void convertToSingleFunctionObjects();
+    void convertToSingleFunctionObjectsFieldsToCopy();
 };
 
 struct {
@@ -83,6 +84,8 @@ SceneToolsTest::SceneToolsTest() {
 
     addInstancedTests({&SceneToolsTest::convertToSingleFunctionObjects},
         Containers::arraySize(ConvertToSingleFunctionObjectsData));
+
+    addTests({&SceneToolsTest::convertToSingleFunctionObjectsFieldsToCopy});
 }
 
 using namespace Math::Literals;
@@ -419,7 +422,7 @@ void SceneToolsTest::convertToSingleFunctionObjects() {
         sceneFieldCustom(15),
         /* Include also a field that's not present -- it should get skipped */
         SceneField::ImporterState
-    }), 63);
+    }), {}, 63);
 
     /* There should be three more objects, or the original count preserved if
        it's large enough */
@@ -571,7 +574,91 @@ void SceneToolsTest::convertToSingleFunctionObjects() {
         Containers::arrayView(foo3FieldData),
         TestSuite::Compare::Container);
     CORRADE_COMPARE(scene.fieldFlags(sceneFieldCustom(17)), SceneFieldFlags{});
+}
 
+void SceneToolsTest::convertToSingleFunctionObjectsFieldsToCopy() {
+    const UnsignedShort parentMappingData[]{2, 15, 21, 22};
+    const Byte parentFieldData[]{-1, -1, -1, 21};
+
+    const UnsignedShort meshMappingData[]{15, 21, 21, 21, 22, 15};
+    const UnsignedInt meshFieldData[]{6, 1, 2, 4, 7, 3};
+
+    const UnsignedShort skinMappingData[]{22, 21};
+    const UnsignedInt skinFieldData[]{5, 13};
+
+    const UnsignedLong fooMappingData[]{15, 23, 15, 21};
+    const Int fooFieldData[]{0, 1, 2, 3, 4, 5, 6, 7};
+
+    SceneData original = Implementation::sceneCombine(SceneMappingType::UnsignedShort, 50, Containers::arrayView({
+        SceneFieldData{SceneField::Parent, Containers::arrayView(parentMappingData), Containers::arrayView(parentFieldData)},
+        SceneFieldData{SceneField::Mesh, Containers::arrayView(meshMappingData), Containers::arrayView(meshFieldData)},
+        SceneFieldData{SceneField::Skin, Containers::arrayView(skinMappingData), Containers::arrayView(skinFieldData)},
+        /* Array field */
+        SceneFieldData{sceneFieldCustom(15), Containers::arrayView(fooMappingData), Containers::StridedArrayView2D<const Int>{fooFieldData, {4, 2}}},
+        /* Just to disambiguate between 2D and 3D */
+        SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedShort, nullptr, SceneFieldType::Matrix4x4, nullptr}
+    }));
+
+    SceneData scene = Implementation::sceneConvertToSingleFunctionObjects(original,
+        Containers::arrayView({
+            /* Include also a field that's not present -- it should get skipped */
+            SceneField::ImporterState,
+            /* Three additional mesh assignments that go to new objects */
+            SceneField::Mesh
+        }),
+        Containers::arrayView({
+            /* One assignment is to an object that has just one mesh, it should
+               not be copied anywhere, the other should be duplicated two
+               times */
+            SceneField::Skin,
+            /* Array field with multiple assignments per object -- all should
+               be copied */
+            sceneFieldCustom(15),
+            /* Include also a field that's not present -- it should get skipped */
+            SceneField::Camera
+        }), 60);
+
+    CORRADE_COMPARE_AS(scene.parentsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+        {2, -1},
+        {15, -1},
+        {21, -1},
+        {22, 21},
+        {60, 21}, /* duplicated mesh assignment to object 21 */
+        {61, 21}, /* duplicated mesh assignment to object 21 */
+        {62, 15}  /* duplicated mesh assignment to object 15 */
+    })), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(scene.meshesMaterialsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>>({
+        {15, {6, -1}},
+        {21, {1, -1}},
+        {60, {2, -1}}, /* duplicated mesh assignment to object 21 */
+        {61, {4, -1}}, /* duplicated mesh assignment to object 21 */
+        {22, {7, -1}},
+        {62, {3, -1}}  /* duplicated mesh assignment to object 15 */
+    })), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(scene.skinsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, UnsignedInt>>({
+        {22, 5},
+        {21, 13},
+        {60, 13}, /* duplicated from object 21 */
+        {61, 13}, /* duplicated from object 21 */
+    })), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedInt>(sceneFieldCustom(15)), Containers::arrayView<UnsignedInt>({
+        15, 23, 15, 21,
+        60, 61, /* duplicated from object 21 (two duplicates of one object) */
+        62, 62, /* duplicated from object 15 (two entries for one object) */
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((scene.field<Int[]>(sceneFieldCustom(15)).transposed<0, 1>()[0]), Containers::arrayView<Int>({
+        0, 2, 4, 6,
+        6, 6, /* duplicated from object 21 (two duplicates of one object) */
+        0, 4, /* duplicated from object 15 (two entries for one object) */
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((scene.field<Int[]>(sceneFieldCustom(15)).transposed<0, 1>()[1]), Containers::arrayView<Int>({
+        1, 3, 5, 7,
+        7, 7, /* duplicated from object 21 (two duplicates of one object) */
+        1, 5, /* duplicated from object 15 (two entries for one object) */
+    }), TestSuite::Compare::Container);
 }
 
 }}}}
