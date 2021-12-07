@@ -92,7 +92,7 @@ AnimationTrackTargetType AnimationData::trackTargetType(UnsignedInt id) const {
     return _tracks[id]._targetType;
 }
 
-UnsignedInt AnimationData::trackTarget(UnsignedInt id) const {
+UnsignedLong AnimationData::trackTarget(UnsignedInt id) const {
     CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::trackTarget(): index out of range", {});
     return _tracks[id]._target;
 }

@@ -238,14 +238,14 @@ class AnimationTrackData {
          * @param target        Track target
          * @param view          Type-erased @ref Animation::TrackView instance
          */
-        explicit AnimationTrackData(AnimationTrackType type, AnimationTrackType resultType, AnimationTrackTargetType targetType, UnsignedInt target, Animation::TrackViewStorage<const Float> view) noexcept: _type{type}, _resultType{resultType}, _targetType{targetType}, _target{target}, _view{view} {}
+        explicit AnimationTrackData(AnimationTrackType type, AnimationTrackType resultType, AnimationTrackTargetType targetType, UnsignedLong target, Animation::TrackViewStorage<const Float> view) noexcept: _type{type}, _resultType{resultType}, _targetType{targetType}, _target{target}, _view{view} {}
 
         /** @overload
          *
          * Equivalent to the above with @p type used as both value type and
          * result type.
          */
-        explicit AnimationTrackData(AnimationTrackType type, AnimationTrackTargetType targetType, UnsignedInt target, Animation::TrackViewStorage<const Float> view) noexcept: _type{type}, _resultType{type}, _targetType{targetType}, _target{target}, _view{view} {}
+        explicit AnimationTrackData(AnimationTrackType type, AnimationTrackTargetType targetType, UnsignedLong target, Animation::TrackViewStorage<const Float> view) noexcept: _type{type}, _resultType{type}, _targetType{targetType}, _target{target}, _view{view} {}
 
         /**
          * @brief Constructor
@@ -257,14 +257,14 @@ class AnimationTrackData {
          * Detects @ref AnimationTrackType from @p view type and delegates to
          * @ref AnimationTrackData(AnimationTrackType, AnimationTrackType, AnimationTrackTargetType, UnsignedInt, Animation::TrackViewStorage<const Float>).
          */
-        template<class V, class R> explicit AnimationTrackData(AnimationTrackTargetType targetType, UnsignedInt target, Animation::TrackView<const Float, const V, R> view) noexcept;
+        template<class V, class R> explicit AnimationTrackData(AnimationTrackTargetType targetType, UnsignedLong target, Animation::TrackView<const Float, const V, R> view) noexcept;
 
     private:
         friend AnimationData;
 
         AnimationTrackType _type, _resultType;
         AnimationTrackTargetType _targetType;
-        UnsignedInt _target;
+        UnsignedLong _target;
         Animation::TrackViewStorage<const Float> _view;
 };
 
@@ -512,7 +512,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * @see @ref trackCount(), @ref AbstractImporter::object2D(),
          *      @ref AbstractImporter::object3D()
          */
-        UnsignedInt trackTarget(UnsignedInt id) const;
+        UnsignedLong trackTarget(UnsignedInt id) const;
 
         /**
          * @brief Track data storage
@@ -649,7 +649,7 @@ namespace Implementation {
     /* LCOV_EXCL_STOP */
 }
 
-template<class V, class R> inline AnimationTrackData::AnimationTrackData(AnimationTrackTargetType targetType, UnsignedInt target, Animation::TrackView<const Float, const V, R> view) noexcept: AnimationTrackData{Implementation::animationTypeFor<V>(), Implementation::animationTypeFor<R>(), targetType, target, view} {}
+template<class V, class R> inline AnimationTrackData::AnimationTrackData(AnimationTrackTargetType targetType, UnsignedLong target, Animation::TrackView<const Float, const V, R> view) noexcept: AnimationTrackData{Implementation::animationTypeFor<V>(), Implementation::animationTypeFor<R>(), targetType, target, view} {}
 
 template<class V, class R> const Animation::TrackView<const Float, const V, R>& AnimationData::track(UnsignedInt id) const {
     const Animation::TrackViewStorage<const Float>& storage = track(id);
