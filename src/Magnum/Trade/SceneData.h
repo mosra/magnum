@@ -1375,7 +1375,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * The @p id is expected to be smaller than @ref fieldCount().
-         * @see @ref findFieldObjectOffset(UnsignedInt, UnsignedInt, std::size_t) const
+         * @see @ref findFieldObjectOffset(UnsignedInt, UnsignedLong, std::size_t) const
          */
         SceneFieldFlags fieldFlags(UnsignedInt id) const;
 
@@ -1505,10 +1505,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * size of the field. Otherwise, the lookup is done in an
          * @f$ \mathcal{O}(n) @f$ complexity.
          *
-         * You can also use @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * You can also use @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          * to directly find offset of an object in given named field.
-         * @see @ref hasFieldObject(UnsignedInt, UnsignedInt) const,
-         *      @ref fieldObjectOffset(UnsignedInt, UnsignedInt, std::size_t) const
+         * @see @ref hasFieldObject(UnsignedInt, UnsignedLong) const,
+         *      @ref fieldObjectOffset(UnsignedInt, UnsignedLong, std::size_t) const
          */
         Containers::Optional<std::size_t> findFieldObjectOffset(UnsignedInt fieldId, UnsignedLong object, std::size_t offset = 0) const;
 
@@ -1529,8 +1529,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * the field count and @f$ n @f$ the size of the field. Otherwise, the
          * lookup is done in an @f$ \mathcal{O}(m + n) @f$ complexity.
          *
-         * @see @ref hasField(), @ref hasFieldObject(SceneField, UnsignedInt) const,
-         *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * @see @ref hasField(), @ref hasFieldObject(SceneField, UnsignedLong) const,
+         *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         Containers::Optional<std::size_t> findFieldObjectOffset(SceneField fieldName, UnsignedLong object, std::size_t offset = 0) const;
 
@@ -1538,11 +1538,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Offset of an object in given field
          * @m_since_latest
          *
-         * Like @ref findFieldObjectOffset(UnsignedInt, UnsignedInt, std::size_t) const,
+         * Like @ref findFieldObjectOffset(UnsignedInt, UnsignedLong, std::size_t) const,
          * but @p object is additionally expected to be present in @p fieldId
          * starting at @p offset.
          *
-         * You can also use @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * You can also use @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          * to directly get offset of an object in given named field.
          */
         std::size_t fieldObjectOffset(UnsignedInt fieldId, UnsignedLong object, std::size_t offset = 0) const;
@@ -1551,7 +1551,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Offset of an object in given named field
          * @m_since_latest
          *
-         * Like @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const,
+         * Like @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const,
          * but @p object is additionally expected to be present in @p fieldName
          * starting at @p offset.
          */
@@ -1581,7 +1581,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * The @p name is expected to exist.
-         * @see @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * @see @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         SceneFieldFlags fieldFlags(SceneField name) const;
 
@@ -1950,7 +1950,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * out the object mapping together with the field data.
          *
          * @see @ref fieldSize(UnsignedInt) const,
-         *      @ref fieldObjectOffset(UnsignedInt, UnsignedInt, std::size_t) const
+         *      @ref fieldObjectOffset(UnsignedInt, UnsignedLong, std::size_t) const
          */
         std::size_t mappingInto(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
 
@@ -2018,7 +2018,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * out the object mapping together with the field data.
          *
          * @see @ref fieldSize(SceneField) const,
-         *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t mappingInto(SceneField fieldName, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
 
@@ -2060,7 +2060,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
-         *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t parentsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Int>& fieldDestination) const;
 
@@ -2111,7 +2111,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
-         *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t transformations2DInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix3>& fieldDestination) const;
 
@@ -2167,7 +2167,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
-         *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t translationsRotationsScalings2DInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const;
 
@@ -2218,7 +2218,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
-         *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t transformations3DInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix4>& destination) const;
 
@@ -2274,7 +2274,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
-         *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t translationsRotationsScalings3DInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const;
 
@@ -2320,7 +2320,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
-         *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t meshesMaterialsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<UnsignedInt>& meshDestination, const Containers::StridedArrayView1D<Int>& meshMaterialsDestination) const;
 
@@ -2361,7 +2361,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
-         *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t lightsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const;
 
@@ -2402,7 +2402,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
-         *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t camerasInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const;
 
@@ -2443,7 +2443,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
-         *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t skinsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<UnsignedInt>& fieldDestination) const;
 
@@ -2487,7 +2487,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
          * @see @ref fieldSize(SceneField) const,
-         *      @ref fieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t importerStateInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<const void*>& fieldDestination) const;
 
@@ -2496,7 +2496,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * Looks up the @ref SceneField::Parent field for @p object
-         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          * and then converts the field from an arbitrary underlying type the
          * same way as @ref parentsAsArray(). See the lookup function
          * documentation for operation complexity --- for retrieving parent
@@ -2517,7 +2517,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * Looks up @p object in the object mapping array for
-         * @ref SceneField::Parent equivalently to @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const,
+         * @ref SceneField::Parent equivalently to @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const,
          * converts the fields from an arbitrary underlying type the same way
          * as @ref parentsAsArray(), returning a list of all object IDs that
          * have it listed as the parent. See the lookup function documentation
@@ -2538,7 +2538,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * Looks up the @ref SceneField::Transformation field for @p object
-         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          * or combines it from a @ref SceneField::Translation,
          * @relativeref{SceneField,Rotation} and
          * @relativeref{SceneField,Scaling}, converting the fields from
@@ -2566,7 +2566,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * Looks up the @ref SceneField::Translation,
          * @relativeref{SceneField,Rotation} and
          * @relativeref{SceneField,Scaling} fields for @p object equivalently
-         * to @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * to @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          * and then converts the fields from arbitrary underlying types the
          * same way as @ref translationsRotationsScalings2DAsArray(). See the
          * lookup function documentation for operation complexity --- for
@@ -2593,7 +2593,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * Looks up the @ref SceneField::Transformation field for @p object
-         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          * or combines it from a @ref SceneField::Translation,
          * @relativeref{SceneField,Rotation} and
          * @relativeref{SceneField,Scaling}, converting the fields from
@@ -2621,7 +2621,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * Looks up the @ref SceneField::Translation,
          * @relativeref{SceneField,Rotation} and
          * @relativeref{SceneField,Scaling} fields for @p object equivalently
-         * to @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * to @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          * and then converts the fields from arbitrary underlying types the
          * same way as @ref translationsRotationsScalings2DAsArray(). See the
          * lookup function documentation for operation complexity --- for
@@ -2649,7 +2649,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *
          * Looks up all @ref SceneField::Mesh and @ref SceneField::MeshMaterial
          * @relativeref{SceneField,Scaling} fields for @p object
-         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          * and then converts the field from an arbitrary underlying type the
          * same way as @ref meshesMaterialsAsArray(). See the lookup function
          * documentation for operation complexity --- for retrieving mesh and
@@ -2670,7 +2670,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * Looks up all @ref SceneField::Light fields for @p object
-         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          * and then converts the field from an arbitrary underlying type the
          * same way as @ref lightsAsArray(). See the lookup function
          * documentation for operation complexity --- for retrieving light info
@@ -2688,7 +2688,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * Looks up all @ref SceneField::Camera fields for @p object
-         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          * and then converts the field from an arbitrary underlying type the
          * same way as @ref camerasAsArray(). See the lookup function
          * documentation for operation complexity --- for retrieving camera
@@ -2707,7 +2707,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * Looks up all @ref SceneField::Skin fields for @p object
-         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          * and then converts the field from an arbitrary underlying type the
          * same way as @ref skinsAsArray(). See the lookup function
          * documentation for operation complexity --- for retrieving skin info
@@ -2725,7 +2725,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * Looks up the @ref SceneField::ImporterState field for @p object
-         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedInt, std::size_t) const
+         * equivalently to @ref findFieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          * and then converts the field from an arbitrary underlying type the
          * same way as @ref importerStateAsArray(). See the lookup function
          * documentation for operation complexity --- for retrieving importer

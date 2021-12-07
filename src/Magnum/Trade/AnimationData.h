@@ -255,7 +255,7 @@ class AnimationTrackData {
          * @m_since{2020,06}
          *
          * Detects @ref AnimationTrackType from @p view type and delegates to
-         * @ref AnimationTrackData(AnimationTrackType, AnimationTrackType, AnimationTrackTargetType, UnsignedInt, Animation::TrackViewStorage<const Float>).
+         * @ref AnimationTrackData(AnimationTrackType, AnimationTrackType, AnimationTrackTargetType, UnsignedLong, Animation::TrackViewStorage<const Float>).
          */
         template<class V, class R> explicit AnimationTrackData(AnimationTrackTargetType targetType, UnsignedLong target, Animation::TrackView<const Float, const V, R> view) noexcept;
 
