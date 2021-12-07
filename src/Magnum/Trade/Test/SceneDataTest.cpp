@@ -84,6 +84,7 @@ struct SceneDataTest: TestSuite::Tester {
     void constructFieldTooLargeMappingStride();
     void constructFieldTooLargeFieldStride();
     void constructFieldOffsetOnlyNotAllowed();
+    void constructFieldTrivialNotAllowed();
     void constructFieldWrongDataAccess();
     void constructField2DWrongSize();
     void constructField2DNonContiguous();
@@ -197,6 +198,7 @@ struct SceneDataTest: TestSuite::Tester {
     void findFieldObjectOffsetInvalidObject();
 
     template<class T> void implicitNullMapping();
+    template<class T> void trivialNullParent();
 
     void releaseFieldData();
     void releaseData();
@@ -377,6 +379,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructFieldTooLargeMappingStride,
               &SceneDataTest::constructFieldTooLargeFieldStride,
               &SceneDataTest::constructFieldOffsetOnlyNotAllowed,
+              &SceneDataTest::constructFieldTrivialNotAllowed,
               &SceneDataTest::constructFieldWrongDataAccess,
               &SceneDataTest::constructField2DWrongSize,
               &SceneDataTest::constructField2DNonContiguous,
@@ -568,6 +571,11 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::implicitNullMapping<UnsignedShort>,
               &SceneDataTest::implicitNullMapping<UnsignedInt>,
               &SceneDataTest::implicitNullMapping<UnsignedLong>,
+
+              &SceneDataTest::trivialNullParent<Byte>,
+              &SceneDataTest::trivialNullParent<Short>,
+              &SceneDataTest::trivialNullParent<Int>,
+              &SceneDataTest::trivialNullParent<Long>,
 
               &SceneDataTest::releaseFieldData,
               &SceneDataTest::releaseData});
@@ -1109,6 +1117,23 @@ void SceneDataTest::constructFieldOffsetOnlyNotAllowed() {
     SceneFieldData{SceneField::Rotation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::OffsetOnly};
     CORRADE_COMPARE(out.str(),
         "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view\n");
+}
+
+void SceneDataTest::constructFieldTrivialNotAllowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    const UnsignedShort rotationMappingData[3]{};
+    const Quaternion rotationFieldData[3];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    SceneFieldData{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), SceneFieldType::Quaternion, 0, sizeof(Quaternion), SceneFieldFlag::TrivialField};
+    SceneFieldData{sceneFieldCustom(666), Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::TrivialField};
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::TrivialField for Trade::SceneField::Rotation\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::TrivialField for Trade::SceneField::Custom(666)\n");
 }
 
 void SceneDataTest::constructFieldWrongDataAccess() {
@@ -5698,6 +5723,141 @@ template<class T> void SceneDataTest::implicitNullMapping() {
         scene.parentsInto(2, mapping, nullptr);
         CORRADE_COMPARE_AS(Containers::arrayView(mapping), Containers::arrayView<UnsignedInt>({
             2, 3, 4
+        }), TestSuite::Compare::Container);
+    }
+}
+
+template<class T> void SceneDataTest::trivialNullParent() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    struct Field {
+        UnsignedInt mapping;
+        T parent;
+    } data[]{
+        {0, -1},
+        {1, -1},
+        {2, -1},
+        {3, -2}, /* this is to know whether we got our or generated data */
+        {5, -1}, /* this is to know whether we got our or generated data */
+    };
+
+    Containers::StridedArrayView1D<Field> view = data;
+
+    /* If the view is not nullptr, it'll use the data and won't generate */
+    {
+        SceneData scene{SceneMappingType::UnsignedInt, 6, {}, data, {
+            SceneFieldData{SceneField::Parent, view.slice(&Field::mapping), view.slice(&Field::parent), SceneFieldFlag::TrivialField},
+        }};
+        CORRADE_COMPARE(scene.field(0).data(), &data[0].parent);
+        CORRADE_COMPARE_AS(scene.parentsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+            {0, -1},
+            {1, -1},
+            {2, -1},
+            {3, -2}, /* this would be -1 if generated */
+            {5, -1}, /* this would be 4 if generated */
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE(scene.parentFor(3), -2);
+
+        Int parents[5];
+        scene.parentsInto(nullptr, parents);
+        CORRADE_COMPARE_AS(Containers::arrayView(parents), Containers::arrayView<Int>({
+            -1, -1, -1, -2, /* this would be 4 if generated */ -1
+        }), TestSuite::Compare::Container);
+    }
+
+    /* If the view is nullptr, it'll generate the data */
+    {
+        SceneData scene{SceneMappingType::UnsignedInt, 6, {}, data, {
+            SceneFieldData{SceneField::Parent, view.slice(&Field::mapping), Containers::ArrayView<T>{nullptr, view.size()}, SceneFieldFlag::TrivialField},
+        }};
+        CORRADE_COMPARE(scene.field(0).data(), nullptr);
+        CORRADE_COMPARE_AS(scene.parentsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+            {0, -1},
+            {1, -1},
+            {2, -1},
+            {3, -1},
+            {5, -1}, /* this would be 4 if generated */
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE(scene.parentFor(3), -1);
+
+        Int parents[5];
+        scene.parentsInto(nullptr, parents);
+        CORRADE_COMPARE_AS(Containers::arrayView(parents), Containers::arrayView<Int>({
+            -1, -1, -1, -1, -1
+        }), TestSuite::Compare::Container);
+    }
+
+    /* For an offset-only trivial field it'll generate the data always, even
+       if the field is seemingly there */
+    {
+        SceneData scene{SceneMappingType::UnsignedInt, 6, {}, data, {
+            SceneFieldData{SceneField::Parent, view.size(), SceneMappingType::UnsignedInt, offsetof(Field, mapping), sizeof(Field), Implementation::SceneFieldTypeFor<T>::type(), offsetof(Field, parent), sizeof(Field), SceneFieldFlag::TrivialField},
+        }};
+        CORRADE_COMPARE(scene.field(0).data(), nullptr);
+        CORRADE_COMPARE_AS(scene.parentsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+            {0, -1},
+            {1, -1},
+            {2, -1},
+            {3, -1},
+            {5, -1}, /* this would be 4 if generated */
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE(scene.parentFor(3), -1);
+
+        Int parents[5];
+        scene.parentsInto(nullptr, parents);
+        CORRADE_COMPARE_AS(Containers::arrayView(parents), Containers::arrayView<Int>({
+            -1, -1, -1, -1, -1
+        }), TestSuite::Compare::Container);
+    }
+
+    /* And if the offset is weirdly off it won't blow up on that */
+    {
+        SceneData scene{SceneMappingType::UnsignedInt, 6, {}, data, {
+            SceneFieldData{SceneField::Parent, view.size(), SceneMappingType::UnsignedInt, offsetof(Field, mapping), sizeof(Field), Implementation::SceneFieldTypeFor<T>::type(), 666666666, 0, SceneFieldFlag::TrivialField},
+        }};
+        CORRADE_COMPARE(scene.field(0).data(), nullptr);
+        CORRADE_COMPARE_AS(scene.parentsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+            {0, -1},
+            {1, -1},
+            {2, -1},
+            {3, -1},
+            {5, -1}, /* this would be 4 if generated */
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE(scene.parentFor(3), -1);
+
+        Int parents[5];
+        scene.parentsInto(nullptr, parents);
+        CORRADE_COMPARE_AS(Containers::arrayView(parents), Containers::arrayView<Int>({
+            -1, -1, -1, -1, -1
+        }), TestSuite::Compare::Container);
+    }
+
+    /* Finally, neither the mapping nor the field is specified */
+    {
+        SceneData scene{SceneMappingType::UnsignedInt, 6, {}, data, {
+            SceneFieldData{SceneField::Parent,
+                Containers::ArrayView<UnsignedInt>{nullptr, view.size()},
+                Containers::ArrayView<T>{nullptr, view.size()},
+                SceneFieldFlag::ImplicitMapping|SceneFieldFlag::TrivialField},
+        }};
+        CORRADE_COMPARE(scene.field(0).data(), nullptr);
+        CORRADE_COMPARE_AS(scene.parentsAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+            {0, -1},
+            {1, -1},
+            {2, -1},
+            {3, -1},
+            {4, -1},
+        })), TestSuite::Compare::Container);
+        CORRADE_COMPARE(scene.parentFor(3), -1);
+
+        UnsignedInt mapping[5];
+        Int parents[5];
+        scene.parentsInto(mapping, parents);
+        CORRADE_COMPARE_AS(Containers::arrayView(mapping), Containers::arrayView<UnsignedInt>({
+            0, 1, 2, 3, 4
+        }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayView(parents), Containers::arrayView<Int>({
+            -1, -1, -1, -1, -1
         }), TestSuite::Compare::Container);
     }
 }

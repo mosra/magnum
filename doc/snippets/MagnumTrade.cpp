@@ -927,6 +927,16 @@ Trade::SceneFieldData field{Trade::SceneField::Transformation,
 }
 
 {
+std::size_t objectCount{};
+/* [SceneFieldData-usage-trivial-parent] */
+Trade::SceneFieldData field{Trade::SceneField::Parent,
+    Containers::ArrayView<UnsignedInt>{nullptr, objectCount},
+    Containers::ArrayView<Int>{nullptr, objectCount},
+    Trade::SceneFieldFlag::ImplicitMapping|Trade::SceneFieldFlag::TrivialField};
+/* [SceneFieldData-usage-trivial-parent] */
+}
+
+{
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 /* [SceneData-usage1] */

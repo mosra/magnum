@@ -105,6 +105,9 @@ enum class SceneField: UnsignedInt {
      * no parent. An object should have only one parent, altough this isn't
      * enforced in any way, and which of the duplicate fields gets used is not
      * defined.
+     *
+     * This field is allowed to have @ref SceneFieldFlag::TrivialField set,
+     * which implies it has @cpp -1 @ce for all values.
      * @see @ref SceneData::parentsAsArray(), @ref SceneData::parentFor(),
      *      @ref SceneData::childrenFor()
      */
@@ -579,6 +582,13 @@ enum class SceneFieldFlag: UnsignedByte {
      * @f$ \mathcal{O}(n) @f$ lookup complexity.
      */
     ImplicitMapping = (1 << 2)|OrderedMapping,
+
+    /**
+     * The field has a trivial content. Currently allowed only for
+     * @ref SceneField::Parent, indicating all entries are @cpp -1 @ce. If this
+     * flag is set, the field view is allowed to be @cpp nullptr @ce.
+     */
+    TrivialField = 1 << 3
 };
 
 /**
@@ -661,6 +671,18 @@ Fields that are both @ref SceneFieldFlag::OffsetOnly and
 @ref SceneFieldFlag::ImplicitMapping have their object mapping data always
 ignored as it's not possible to know whether the offset points to actual data
 or not.
+
+@subsection Trade-SceneFieldData-usage-trivial-field Trivial fields
+
+The @ref SceneField::Parent can be annotated with
+@ref SceneFieldFlag::TrivialField, which implies that all nodes are in scene
+root. While similar effect could be achieved by repeating a @cpp -1 @ce using
+zero stride, the main purpose of this flag is in combination with
+@ref SceneFieldFlag::ImplicitMapping --- that way you can indicate that all
+objects in the scene are top-level without having to explicitly supply any
+field data:
+
+@snippet MagnumTrade.cpp SceneFieldData-usage-trivial-parent
 */
 class MAGNUM_TRADE_EXPORT SceneFieldData {
     public:
@@ -3113,6 +3135,10 @@ namespace Implementation {
     constexpr bool isSceneFieldArrayAllowed(SceneField name) {
         return isSceneFieldCustom(name);
     }
+
+    constexpr bool isSceneFieldAllowedTrivial(SceneField name) {
+        return name == SceneField::Parent;
+    }
 }
 
 constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept:
@@ -3121,7 +3147,10 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappi
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
         "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
     _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & SceneFieldFlag::OffsetOnly),
-        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view"), flags)},
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view"),
+        CORRADE_CONSTEXPR_ASSERT(!(flags & SceneFieldFlag::TrivialField) || Implementation::isSceneFieldAllowedTrivial(name),
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::TrivialField for" << name),
+        flags)},
     _mappingType{mappingType},
     _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingData.stride() >= -32768 && mappingData.stride() <= 32767,
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits, but got" << mappingData.stride()), Short(mappingData.stride()))},
@@ -3150,7 +3179,10 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_
     _size{size},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
         "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
-    _flags{flags|SceneFieldFlag::OffsetOnly},
+    _flags{(
+        CORRADE_CONSTEXPR_ASSERT(!(flags & SceneFieldFlag::TrivialField) || Implementation::isSceneFieldAllowedTrivial(name),
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::TrivialField for" << name),
+        flags|SceneFieldFlag::OffsetOnly)},
     _mappingType{mappingType},
     _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingStride >= -32768 && mappingStride <= 32767,
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits, but got" << mappingStride), Short(mappingStride))},

@@ -485,6 +485,7 @@ Debug& operator<<(Debug& debug, const SceneFieldFlag value) {
         _c(OffsetOnly)
         _c(ImplicitMapping)
         _c(OrderedMapping)
+        _c(TrivialField)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -497,7 +498,8 @@ Debug& operator<<(Debug& debug, const SceneFieldFlags value) {
         SceneFieldFlag::OffsetOnly,
         SceneFieldFlag::ImplicitMapping,
         /* This one is implied by ImplicitMapping, so has to be after */
-        SceneFieldFlag::OrderedMapping
+        SceneFieldFlag::OrderedMapping,
+        SceneFieldFlag::TrivialField
     });
 }
 
@@ -602,9 +604,14 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
                         "Trade::SceneData: offset-only mapping data of field" << i << "span" << mappingSize << "bytes but passed data array has only" << _data.size(), );
                 }
 
-                const std::size_t fieldSize = field._fieldData.offset + (field._size - 1)*field._fieldStride + fieldTypeSize;
-                CORRADE_ASSERT(fieldSize <= _data.size(),
-                    "Trade::SceneData: offset-only field data of field" << i << "span" << fieldSize << "bytes but passed data array has only" << _data.size(), );
+                /* If an offset-only field is trivial, we ignore the offset /
+                   size completely. Trivial fields are whitelisted, which was
+                   already checked in SceneFieldData constructor. */
+                if(!(field._flags >= SceneFieldFlag::TrivialField)) {
+                    const std::size_t fieldSize = field._fieldData.offset + (field._size - 1)*field._fieldStride + fieldTypeSize;
+                    CORRADE_ASSERT(fieldSize <= _data.size(),
+                        "Trade::SceneData: offset-only field data of field" << i << "span" << fieldSize << "bytes but passed data array has only" << _data.size(), );
+                }
 
             } else {
                 /* If a field has an implicit mapping, we allow it to be
@@ -616,10 +623,15 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
                         "Trade::SceneData: mapping data [" << Debug::nospace << mappingBegin << Debug::nospace << ":" << Debug::nospace << mappingEnd << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
                 }
 
-                const void* const fieldBegin = field._fieldData.pointer;
-                const void* const fieldEnd = static_cast<const char*>(field._fieldData.pointer) + (field._size - 1)*field._fieldStride + fieldTypeSize;
-                CORRADE_ASSERT(fieldBegin >= _data.begin() && fieldEnd <= _data.end(),
-                    "Trade::SceneData: field data [" << Debug::nospace << fieldBegin << Debug::nospace << ":" << Debug::nospace << fieldEnd << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
+                /* Trivial fields are allowed to be nullptr. Trivial fields are
+                   whitelisted, which was already checked in SceneFieldData
+                   constructor. */
+                if(!(field._flags >= SceneFieldFlag::TrivialField && !field._fieldData.pointer)) {
+                    const void* const fieldBegin = field._fieldData.pointer;
+                    const void* const fieldEnd = static_cast<const char*>(field._fieldData.pointer) + (field._size - 1)*field._fieldStride + fieldTypeSize;
+                    CORRADE_ASSERT(fieldBegin >= _data.begin() && fieldEnd <= _data.end(),
+                        "Trade::SceneData: field data [" << Debug::nospace << fieldBegin << Debug::nospace << ":" << Debug::nospace << fieldEnd << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
+                }
             }
         }
         #endif
@@ -838,6 +850,12 @@ Containers::StridedArrayView1D<const void> SceneData::fieldDataMappingViewIntern
 
 Containers::StridedArrayView1D<const void> SceneData::fieldDataFieldViewInternal(const SceneFieldData& field, const std::size_t offset, const std::size_t size) const {
     CORRADE_INTERNAL_ASSERT(offset + size <= field._size);
+
+    /* If this is a offset-only field that's trivial, ignore the offset/stride
+       and always assume it's not present */
+    if(field._flags >= (SceneFieldFlag::OffsetOnly|SceneFieldFlag::TrivialField))
+        return {{nullptr, ~std::size_t{}}, size, field._fieldStride};
+
     return Containers::StridedArrayView1D<const void>{
         /* We're *sure* the view is correct, so faking the view size */
         {static_cast<const char*>(field._flags & SceneFieldFlag::OffsetOnly ?
@@ -1239,6 +1257,17 @@ void SceneData::parentsIntoInternal(const UnsignedInt fieldId, const std::size_t
        checked by the callers */
 
     const SceneFieldData& field = _fields[fieldId];
+
+    /* If we don't have any data for a trivial parent or the trivial parent is
+       offset-only (where we always assume there's no data), generate the data */
+    if((field._flags >= SceneFieldFlag::TrivialField && !field._fieldData.pointer) ||
+       (field._flags >= (SceneFieldFlag::TrivialField|SceneFieldFlag::OffsetOnly)))
+    {
+        for(std::size_t i = 0; i != destination.size(); ++i)
+            destination[i] = -1;
+        return;
+    }
+
     const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
     const auto destination1i = Containers::arrayCast<2, Int>(destination);
 
