@@ -45,7 +45,8 @@ constexpr MeshPrimitive MeshPrimitiveMapping[]{
     MeshPrimitive::TriangleFan,
     MeshPrimitive(~Int{}), /* Instances */
     MeshPrimitive(~Int{}), /* Faces */
-    MeshPrimitive(~Int{})  /* Edges */
+    MeshPrimitive(~Int{}), /* Edges */
+    MeshPrimitive(~Int{})  /* Meshlets */
 };
 
 }

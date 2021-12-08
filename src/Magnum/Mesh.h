@@ -183,7 +183,17 @@ enum class MeshPrimitive: UnsignedInt {
      * half-edge mesh representation.
      * @see @ref Trade::meshAttributeCustom()
      */
-    Edges
+    Edges,
+
+    /**
+     * Meshlet data.
+     * @m_since_latest
+     *
+     * Can be used to annotate @ref Trade::MeshData containing meshlet chunks,
+     * i.e. groups of vertex references together with per-meshlet culling
+     * information such as a bounding sphere or visibility cone.
+     */
+    Meshlets
 };
 
 /** @debugoperatorenum{MeshPrimitive} */

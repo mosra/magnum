@@ -35,4 +35,5 @@ _c(TriangleFan)
 _c(Instances)
 _c(Faces)
 _c(Edges)
+_c(Meshlets)
 #endif

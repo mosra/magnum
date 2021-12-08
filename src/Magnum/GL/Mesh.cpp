@@ -62,7 +62,8 @@ constexpr MeshPrimitive PrimitiveMapping[]{
     MeshPrimitive::TriangleFan,
     MeshPrimitive(~UnsignedInt{}), /* Instances */
     MeshPrimitive(~UnsignedInt{}), /* Faces */
-    MeshPrimitive(~UnsignedInt{})  /* Edges */
+    MeshPrimitive(~UnsignedInt{}), /* Edges */
+    MeshPrimitive(~UnsignedInt{})  /* Meshlets */
 };
 
 constexpr MeshIndexType IndexTypeMapping[]{

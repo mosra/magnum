@@ -265,6 +265,9 @@ See also:
 
 @subsection changelog-latest-changes Changes and improvements
 
+-   Added @ref MeshPrimitive::Meshlets as a placeholder for future meshlet
+    support in @ref Trade::MeshData
+
 @subsubsection changelog-latest-changes-debugtools DebugTools library
 
 -   @ref DebugTools::CompareImage now supports comparing half-float pixel
