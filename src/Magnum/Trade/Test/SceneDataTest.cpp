@@ -1012,7 +1012,7 @@ void SceneDataTest::constructFieldInconsistentViewSize() {
     std::ostringstream out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Rotation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData)};
-    CORRADE_COMPARE(out.str(), "Trade::SceneFieldData: expected mapping and field view to have the same size but got 3 and 2\n");
+    CORRADE_COMPARE(out.str(), "Trade::SceneFieldData: expected Trade::SceneField::Rotation mapping and field view to have the same size but got 3 and 2\n");
 }
 
 void SceneDataTest::constructFieldWrongType() {

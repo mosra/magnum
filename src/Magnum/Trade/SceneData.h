@@ -3047,7 +3047,7 @@ namespace Implementation {
 
 constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept:
     _size{(CORRADE_CONSTEXPR_ASSERT(mappingData.size() == fieldData.size(),
-        "Trade::SceneFieldData: expected mapping and field view to have the same size but got" << mappingData.size() << "and" << fieldData.size()), mappingData.size())},
+        "Trade::SceneFieldData: expected" << name << "mapping and field view to have the same size but got" << mappingData.size() << "and" << fieldData.size()), mappingData.size())},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
         "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
     _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & SceneFieldFlag::OffsetOnly),
