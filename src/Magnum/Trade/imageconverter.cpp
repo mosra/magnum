@@ -69,7 +69,7 @@ information.
 
 @code{.sh}
 magnum-imageconverter [-h|--help] [-I|--importer PLUGIN]
-    [-C|--converter PLUGIN] [--plugin-dir DIR]
+    [-C|--converter PLUGIN] [--plugin-dir DIR] [--map]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…] [-D|--dimensions N]
     [--image N] [--level N] [--layer N] [--layers] [--levels] [--in-place]
@@ -87,6 +87,8 @@ Arguments:
 -   `-C`, `--converter PLUGIN` --- image converter plugin (default:
     @ref Trade::AnyImageConverter "AnyImageConverter")
 -   `--plugin-dir DIR` --- override base plugin dir
+-   `--map` --- memory-map the input for zero-copy import (works only for
+    standalone files)
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
@@ -272,6 +274,9 @@ int main(int argc, char** argv) {
         .addOption('I', "importer", "AnyImageImporter").setHelp("importer", "image importer plugin", "PLUGIN")
         .addOption('C', "converter", "AnyImageConverter").setHelp("converter", "image converter plugin", "PLUGIN")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
+        #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
+        .addBooleanOption("map").setHelp("map", "memory-map the input for zero-copy import (works only for standalone files)")
+        #endif
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
         .addOption('D', "dimensions", "2").setHelp("dimensions", "import and convert image of given dimensions", "N")
@@ -365,6 +370,9 @@ key=true; configuration subgroups are delimited with /.)")
     const UnsignedInt image = args.value<UnsignedInt>("image");
     Containers::Optional<UnsignedInt> level;
     if(!args.value("level").empty()) level = args.value<UnsignedInt>("level");
+    #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
+    Containers::Array<Containers::Array<const char, Utility::Directory::MapDeleter>> mapped;
+    #endif
     Containers::Array<Trade::ImageData1D> images1D;
     Containers::Array<Trade::ImageData2D> images2D;
     Containers::Array<Trade::ImageData3D> images3D;
@@ -398,11 +406,30 @@ key=true; configuration subgroups are delimited with /.)")
                 Error{} << "Cannot open file" << input;
                 return 3;
             }
+
+            /* Read the file or map it if requested */
             Containers::Array<char> data;
+            #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
+            if(args.isSet("map")) {
+                arrayAppend(mapped, InPlaceInit);
+
+                Trade::Implementation::Duration d{importTime};
+                if(!(mapped.back() = Utility::Directory::mapRead(input))) {
+                    Error() << "Cannot memory-map file" << input;
+                    return 3;
+                }
+
+                /* Fake a mutable array with a non-owning deleter to have the
+                   same type as from Directory::read(). The actual memory is
+                   owned by the `mapped` array. */
+                data = Containers::Array<char>{const_cast<char*>(mapped.back().data()), mapped.back().size(), [](char*, std::size_t){}};
+            } else
+            #endif
             {
                 Trade::Implementation::Duration d{importTime};
                 data = Utility::Directory::read(input);
             }
+
             auto side = Int(std::sqrt(data.size()/pixelSize));
             if(data.size() % pixelSize || side*side*pixelSize != data.size()) {
                 Error{} << "File of size" << data.size() << "is not a tightly-packed square of" << format;
@@ -434,7 +461,18 @@ key=true; configuration subgroups are delimited with /.)")
             if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
             Implementation::setOptions(*importer, "AnyImageImporter", args.value("importer-options"));
 
-            /* Open input file */
+            /* Open the file or map it if requested */
+            #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
+            if(args.isSet("map")) {
+                arrayAppend(mapped, InPlaceInit);
+
+                Trade::Implementation::Duration d{importTime};
+                if(!(mapped.back() = Utility::Directory::mapRead(input)) || !importer->openMemory(mapped.back())) {
+                    Error() << "Cannot memory-map file" << input;
+                    return 3;
+                }
+            } else
+            #endif
             {
                 Trade::Implementation::Duration d{importTime};
                 if(!importer->openFile(input)) {
