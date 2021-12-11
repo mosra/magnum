@@ -894,9 +894,9 @@ used.)")
                 else d << "1D image";
                 d << info.image << Debug::nospace << ":";
                 if(!info.name.empty()) d << info.name;
-                if(compactImages) d << Debug::newline;
+                if(!compactImages) d << Debug::newline;
             }
-            if(compactImages) d << "  Level" << info.level << Debug::nospace << ":";
+            if(!compactImages) d << "  Level" << info.level << Debug::nospace << ":";
             if(info.compressed) d << info.compressedFormat;
             else d << info.format;
             if(info.size.z()) d << info.size;
