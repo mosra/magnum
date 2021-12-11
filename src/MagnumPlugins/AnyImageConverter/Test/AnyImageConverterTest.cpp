@@ -510,7 +510,6 @@ void AnyImageConverterTest::detectLevels2D() {
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(!converter->convertToFile({Image2D}, data.filename));
-    /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
@@ -535,7 +534,6 @@ void AnyImageConverterTest::detectLevels3D() {
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(!converter->convertToFile({Image3D}, data.filename));
-    /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
