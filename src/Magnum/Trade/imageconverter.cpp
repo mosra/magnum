@@ -73,7 +73,7 @@ magnum-imageconverter [-h|--help] [-I|--importer PLUGIN]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…] [-D|--dimensions N]
     [--image N] [--level N] [--layer N] [--layers] [--levels] [--in-place]
-    [--info] [-v|--verbose] [--] input output
+    [--info] [-v|--verbose] [--profile] [--] input output
 @endcode
 
 Arguments:
@@ -102,6 +102,7 @@ Arguments:
 -   `--in-place` --- overwrite the input image with the output
 -   `--info` --- print info about the input file and exit
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
+-   `--profile` --- measure import and conversion time
 
 Specifying `--importer raw:&lt;format&gt;` will treat the input as a raw
 tightly-packed square of pixels in given @ref PixelFormat. Specifying `-C` /
@@ -282,6 +283,7 @@ int main(int argc, char** argv) {
         .addBooleanOption("in-place").setHelp("in-place", "overwrite the input image with the output")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
+        .addBooleanOption("profile").setHelp("profile", "measure import and conversion time")
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
             /* If --in-place or --info is passed, we don't need the output
                argument */
@@ -367,6 +369,8 @@ key=true; configuration subgroups are delimited with /.)")
     Containers::Array<Trade::ImageData2D> images2D;
     Containers::Array<Trade::ImageData3D> images3D;
 
+    std::chrono::high_resolution_clock::duration importTime;
+
     for(std::size_t i = 0, max = args.arrayValueCount("input"); i != max; ++i) {
         const std::string input = args.arrayValue("input", i);
 
@@ -393,7 +397,11 @@ key=true; configuration subgroups are delimited with /.)")
                 Error{} << "Cannot open file" << input;
                 return 3;
             }
-            Containers::Array<char> data = Utility::Directory::read(input);
+            Containers::Array<char> data;
+            {
+                Trade::Implementation::Duration d{importTime};
+                data = Utility::Directory::read(input);
+            }
             auto side = Int(std::sqrt(data.size()/pixelSize));
             if(data.size() % pixelSize || side*side*pixelSize != data.size()) {
                 Error{} << "File of size" << data.size() << "is not a tightly-packed square of" << format;
@@ -403,6 +411,11 @@ key=true; configuration subgroups are delimited with /.)")
             /* Print image info, if requested */
             if(args.isSet("info")) {
                 Debug{} << "Image 0:\n  Mip 0:" << format << Vector2i{side};
+
+                if(args.isSet("profile")) {
+                    Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds";
+                }
+
                 return 0;
             }
 
@@ -421,9 +434,12 @@ key=true; configuration subgroups are delimited with /.)")
             Implementation::setOptions(*importer, "AnyImageImporter", args.value("importer-options"));
 
             /* Open input file */
-            if(!importer->openFile(input)) {
-                Error{} << "Cannot open file" << input;
-                return 3;
+            {
+                Trade::Implementation::Duration d{importTime};
+                if(!importer->openFile(input)) {
+                    Error{} << "Cannot open file" << input;
+                    return 3;
+                }
             }
 
             /* Print image info, if requested. This is always done for just one
@@ -442,7 +458,7 @@ key=true; configuration subgroups are delimited with /.)")
                    levels. */
                 bool error = false, compact = true;
                 Containers::Array<Trade::Implementation::ImageInfo> infos =
-                    Trade::Implementation::imageInfo(*importer, error, compact);
+                    Trade::Implementation::imageInfo(*importer, error, compact, importTime);
 
                 for(const Trade::Implementation::ImageInfo& info: infos) {
                     Debug d;
@@ -460,6 +476,10 @@ key=true; configuration subgroups are delimited with /.)")
                     if(info.size.z()) d << info.size;
                     else if(info.size.y()) d << info.size.xy();
                     else d << Math::Vector<1, Int>(info.size.x());
+                }
+
+                if(args.isSet("profile")) {
+                    Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds";
                 }
 
                 return error ? 1 : 0;
@@ -604,6 +624,8 @@ key=true; configuration subgroups are delimited with /.)")
         }
     }
 
+    std::chrono::high_resolution_clock::duration conversionTime;
+
     std::string output;
     if(args.isSet("in-place")) {
         /* Should have been checked in a graceful way above */
@@ -618,6 +640,9 @@ key=true; configuration subgroups are delimited with /.)")
 
     /* Combine multiple layers into an image of one dimension more */
     if(args.isSet("layers")) {
+        /* To include allocation + copy costs in the output */
+        Trade::Implementation::Duration d{conversionTime};
+
         if(dimensions == 1) {
             if(!checkCommonFormatAndSize(args, images1D)) return 1;
 
@@ -814,7 +839,18 @@ key=true; configuration subgroups are delimited with /.)")
             CORRADE_INTERNAL_ASSERT(outputImages3D.size() == 1);
             data = outputImages3D.front().data();
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-        return Utility::Directory::write(output, data) ? 0 : 1;
+
+        {
+            Trade::Implementation::Duration d{conversionTime};
+            if(!Utility::Directory::write(output, data)) return 1;
+        }
+
+        if(args.isSet("profile")) {
+            Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds, conversion"
+                << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(conversionTime).count())/1.0e3f << "seconds";
+        }
+
+        return 0;
     }
 
     /* Load converter plugin */
@@ -833,15 +869,23 @@ key=true; configuration subgroups are delimited with /.)")
 
     /* Save output file */
     bool converted;
-    if(outputDimensions == 1)
-        converted = convertOneOrMoreImages(*converter, outputImages1D, output);
-    else if(outputDimensions == 2)
-        converted = convertOneOrMoreImages(*converter, outputImages2D, output);
-    else if(outputDimensions == 3)
-        converted = convertOneOrMoreImages(*converter, outputImages3D, output);
-    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+    {
+        Trade::Implementation::Duration d{conversionTime};
+        if(outputDimensions == 1)
+            converted = convertOneOrMoreImages(*converter, outputImages1D, output);
+        else if(outputDimensions == 2)
+            converted = convertOneOrMoreImages(*converter, outputImages2D, output);
+        else if(outputDimensions == 3)
+            converted = convertOneOrMoreImages(*converter, outputImages3D, output);
+        else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+    }
     if(!converted) {
         Error{} << "Cannot save file" << output;
         return 5;
+    }
+
+    if(args.isSet("profile")) {
+        Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds, conversion"
+            << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(conversionTime).count())/1.0e3f << "seconds";
     }
 }

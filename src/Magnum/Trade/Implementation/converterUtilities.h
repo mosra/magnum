@@ -25,6 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <chrono>
 #include <Corrade/Containers/GrowableArray.h>
 
 #include "Magnum/Trade/AbstractImporter.h"
@@ -35,6 +36,18 @@ namespace Magnum { namespace Trade { namespace Implementation {
 /* Used only in executables where we don't want it to be exported */
 namespace {
 
+struct Duration {
+    explicit Duration(std::chrono::high_resolution_clock::duration& output): _output(output), _t{std::chrono::high_resolution_clock::now()} {}
+
+    ~Duration() {
+        _output += std::chrono::high_resolution_clock::now() - _t;
+    }
+
+    private:
+        std::chrono::high_resolution_clock::duration& _output;
+        std::chrono::high_resolution_clock::time_point _t;
+};
+
 struct ImageInfo {
     UnsignedInt image, level;
     bool compressed;
@@ -44,7 +57,7 @@ struct ImageInfo {
     std::string name;
 };
 
-Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, bool& compact) {
+Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, bool& compact, std::chrono::high_resolution_clock::duration& importTime) {
     Containers::Array<ImageInfo> infos;
     for(UnsignedInt i = 0; i != importer.image1DCount(); ++i) {
         const std::string name = importer.image1DName(i);
@@ -52,10 +65,13 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
         if(!name.empty() || levelCount != 1) compact = false;
 
         for(UnsignedInt j = 0; j != levelCount; ++j) {
-            Containers::Optional<Trade::ImageData1D> image = importer.image1D(i, j);
-            if(!image) {
-                error = true;
-                continue;
+            Containers::Optional<Trade::ImageData1D> image;
+            {
+                Duration d{importTime};
+                if(!(image = importer.image1D(i, j))) {
+                    error = true;
+                    continue;
+                }
             }
             arrayAppend(infos, InPlaceInit, i, j,
                 image->isCompressed(),
@@ -73,10 +89,13 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
         if(!name.empty() || levelCount != 1) compact = false;
 
         for(UnsignedInt j = 0; j != levelCount; ++j) {
-            Containers::Optional<Trade::ImageData2D> image = importer.image2D(i, j);
-            if(!image) {
-                error = true;
-                continue;
+            Containers::Optional<Trade::ImageData2D> image;
+            {
+                Duration d{importTime};
+                if(!(image = importer.image2D(i, j))) {
+                    error = true;
+                    continue;
+                }
             }
             arrayAppend(infos, InPlaceInit, i, j,
                 image->isCompressed(),
@@ -94,10 +113,13 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
         if(!name.empty() || levelCount != 1) compact = false;
 
         for(UnsignedInt j = 0; j != levelCount; ++j) {
-            Containers::Optional<Trade::ImageData3D> image = importer.image3D(i, j);
-            if(!image) {
-                error = true;
-                continue;
+            Containers::Optional<Trade::ImageData3D> image;
+            {
+                Duration d{importTime};
+                if(!(image = importer.image3D(i, j))) {
+                    error = true;
+                    continue;
+                }
             }
             arrayAppend(infos, InPlaceInit, i, j,
                 image->isCompressed(),

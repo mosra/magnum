@@ -24,7 +24,6 @@
 */
 
 #include <algorithm>
-#include <chrono>
 #include <set>
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
@@ -187,18 +186,6 @@ using namespace Magnum;
 
 namespace {
 
-struct Duration {
-    explicit Duration(std::chrono::high_resolution_clock::duration& output): _output(output), _t{std::chrono::high_resolution_clock::now()} {}
-
-    ~Duration() {
-        _output += std::chrono::high_resolution_clock::now() - _t;
-    }
-
-    private:
-        std::chrono::high_resolution_clock::duration& _output;
-        std::chrono::high_resolution_clock::time_point _t;
-};
-
 /** @todo const Array& doesn't work, minmax() would fail to match */
 template<class T> std::string calculateBounds(Containers::Array<T>&& attribute) {
     /** @todo clean up when Debug::toString() exists */
@@ -319,7 +306,7 @@ used.)")
     #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
     Containers::Array<const char, Utility::Directory::MapDeleter> mapped;
     if(args.isSet("map")) {
-        Duration d{importTime};
+        Trade::Implementation::Duration d{importTime};
         if(!(mapped = Utility::Directory::mapRead(args.value("input"))) || !importer->openMemory(mapped)) {
             Error() << "Cannot memory-map file" << args.value("input");
             return 3;
@@ -327,7 +314,7 @@ used.)")
     } else
     #endif
     {
-        Duration d{importTime};
+        Trade::Implementation::Duration d{importTime};
         if(!importer->openFile(args.value("input"))) {
             Error() << "Cannot open file" << args.value("input");
             return 3;
@@ -472,7 +459,7 @@ used.)")
         if(args.isSet("info") || args.isSet("info-animations")) for(UnsignedInt i = 0; i != importer->animationCount(); ++i) {
             Containers::Optional<Trade::AnimationData> animation;
             {
-                Duration d{importTime};
+                Trade::Implementation::Duration d{importTime};
                 if(!(animation = importer->animation(i))) {
                     error = true;
                     continue;
@@ -492,7 +479,7 @@ used.)")
         if(args.isSet("info") || args.isSet("info-skins")) for(UnsignedInt i = 0; i != importer->skin3DCount(); ++i) {
             Containers::Optional<Trade::SkinData3D> skin;
             {
-                Duration d{importTime};
+                Trade::Implementation::Duration d{importTime};
                 if(!(skin = importer->skin3D(i))) {
                     error = true;
                     continue;
@@ -512,7 +499,7 @@ used.)")
         if(args.isSet("info") || args.isSet("info-lights")) for(UnsignedInt i = 0; i != importer->lightCount(); ++i) {
             Containers::Optional<Trade::LightData> light;
             {
-                Duration d{importTime};
+                Trade::Implementation::Duration d{importTime};
                 if(!(light = importer->light(i))) {
                     error = true;
                     continue;
@@ -538,7 +525,7 @@ used.)")
             for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
                 Containers::Optional<Trade::MaterialData> material;
                 {
-                    Duration d{importTime};
+                    Trade::Implementation::Duration d{importTime};
                     if(!(material = importer->material(i))) {
                         error = true;
                         continue;
@@ -576,7 +563,7 @@ used.)")
             for(UnsignedInt j = 0; j != importer->meshLevelCount(i); ++j) {
                 Containers::Optional<Trade::MeshData> mesh;
                 {
-                    Duration d{importTime};
+                    Trade::Implementation::Duration d{importTime};
                     if(!(mesh = importer->mesh(i, j))) {
                         error = true;
                         continue;
@@ -667,7 +654,7 @@ used.)")
             for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
                 Containers::Optional<Trade::TextureData> texture;
                 {
-                    Duration d{importTime};
+                    Trade::Implementation::Duration d{importTime};
                     if(!(texture = importer->texture(i))) {
                         error = true;
                         continue;
@@ -707,7 +694,7 @@ used.)")
         bool compactImages = false;
         Containers::Array<Trade::Implementation::ImageInfo> imageInfos;
         if(args.isSet("info") || args.isSet("info-images")) {
-            imageInfos = Trade::Implementation::imageInfo(*importer, error, compactImages);
+            imageInfos = Trade::Implementation::imageInfo(*importer, error, compactImages, importTime);
         }
 
         for(const SceneInfo& info: sceneInfos) {
@@ -982,7 +969,7 @@ used.)")
 
     Containers::Optional<Trade::MeshData> mesh;
     {
-        Duration d{importTime};
+        Trade::Implementation::Duration d{importTime};
         if(!importer->meshCount() || !(mesh = importer->mesh(args.value<UnsignedInt>("mesh"), args.value<UnsignedInt>("level")))) {
             Error{} << "Cannot import the mesh";
             return 4;
@@ -1015,7 +1002,7 @@ used.)")
     if(args.isSet("remove-duplicates")) {
         const UnsignedInt beforeVertexCount = mesh->vertexCount();
         {
-            Duration d{conversionTime};
+            Trade::Implementation::Duration d{conversionTime};
             mesh = MeshTools::removeDuplicates(*std::move(mesh));
         }
         if(args.isSet("verbose"))
@@ -1027,7 +1014,7 @@ used.)")
     if(!args.value("remove-duplicates-fuzzy").empty()) {
         const UnsignedInt beforeVertexCount = mesh->vertexCount();
         {
-            Duration d{conversionTime};
+            Trade::Implementation::Duration d{conversionTime};
             mesh = MeshTools::removeDuplicatesFuzzy(*std::move(mesh), args.value<Float>("remove-duplicates-fuzzy"));
         }
         if(args.isSet("verbose"))
@@ -1065,7 +1052,7 @@ used.)")
             if(converterCount > 1 && args.isSet("verbose"))
                 Debug{} << "Saving output with" << converterName << Debug::nospace << "...";
 
-            Duration d{conversionTime};
+            Trade::Implementation::Duration d{conversionTime};
             if(!converter->convertToFile(*mesh, args.value("output"))) {
                 Error{} << "Cannot save file" << args.value("output");
                 return 5;
@@ -1085,7 +1072,7 @@ used.)")
                 return 6;
             }
 
-            Duration d{conversionTime};
+            Trade::Implementation::Duration d{conversionTime};
             if(!(mesh = converter->convert(*mesh))) {
                 Error{} << converterName << "cannot convert the mesh";
                 return 7;
