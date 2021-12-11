@@ -369,7 +369,8 @@ key=true; configuration subgroups are delimited with /.)")
     Containers::Array<Trade::ImageData2D> images2D;
     Containers::Array<Trade::ImageData3D> images3D;
 
-    std::chrono::high_resolution_clock::duration importTime;
+    /* Wow, C++, you suck. This implicitly initializes to random shit?! */
+    std::chrono::high_resolution_clock::duration importTime{};
 
     for(std::size_t i = 0, max = args.arrayValueCount("input"); i != max; ++i) {
         const std::string input = args.arrayValue("input", i);
@@ -624,7 +625,8 @@ key=true; configuration subgroups are delimited with /.)")
         }
     }
 
-    std::chrono::high_resolution_clock::duration conversionTime;
+    /* Wow, C++, you suck. This implicitly initializes to random shit?! */
+    std::chrono::high_resolution_clock::duration conversionTime{};
 
     std::string output;
     if(args.isSet("in-place")) {

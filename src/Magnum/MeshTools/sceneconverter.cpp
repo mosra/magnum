@@ -300,7 +300,8 @@ used.)")
     if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
     Implementation::setOptions(*importer, "AnySceneImporter", args.value("importer-options"));
 
-    std::chrono::high_resolution_clock::duration importTime;
+    /* Wow, C++, you suck. This implicitly initializes to random shit?! */
+    std::chrono::high_resolution_clock::duration importTime{};
 
     /* Open the file or map it if requested */
     #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
@@ -976,7 +977,8 @@ used.)")
         }
     }
 
-    std::chrono::high_resolution_clock::duration conversionTime;
+    /* Wow, C++, you suck. This implicitly initializes to random shit?! */
+    std::chrono::high_resolution_clock::duration conversionTime{};
 
     /* Filter attributes, if requested */
     if(!args.value("only-attributes").empty()) {
