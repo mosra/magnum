@@ -653,32 +653,62 @@ used.)")
             }
         }
 
-        /* Texture properties */
+        /* Texture properties, together with how much is each image shared
+           (which gets used only if both --info-textures and --info-images is
+           passed). */
         Containers::Array<TextureInfo> textureInfos;
-        if(args.isSet("info") || args.isSet("info-textures")) for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
-            Containers::Optional<Trade::TextureData> texture;
-            {
-                Duration d{importTime};
-                if(!(texture = importer->texture(i))) {
-                    error = true;
-                    continue;
+        Containers::Array<UnsignedInt> image1DReferenceCount;
+        Containers::Array<UnsignedInt> image2DReferenceCount;
+        Containers::Array<UnsignedInt> image3DReferenceCount;
+        if(args.isSet("info") || args.isSet("info-textures")) {
+            image1DReferenceCount = Containers::Array<UnsignedInt>{importer->image1DCount()};
+            image2DReferenceCount = Containers::Array<UnsignedInt>{importer->image2DCount()};
+            image3DReferenceCount = Containers::Array<UnsignedInt>{importer->image3DCount()};
+            for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
+                Containers::Optional<Trade::TextureData> texture;
+                {
+                    Duration d{importTime};
+                    if(!(texture = importer->texture(i))) {
+                        error = true;
+                        continue;
+                    }
                 }
+
+                switch(texture->type()) {
+                    case Trade::TextureType::Texture1D:
+                        if(texture->image() < image1DReferenceCount.size())
+                            ++image1DReferenceCount[texture->image()];
+                        break;
+                    case Trade::TextureType::Texture1DArray:
+                    case Trade::TextureType::Texture2D:
+                        if(texture->image() < image2DReferenceCount.size())
+                            ++image2DReferenceCount[texture->image()];
+                        break;
+                    case Trade::TextureType::CubeMap:
+                    case Trade::TextureType::CubeMapArray:
+                    case Trade::TextureType::Texture2DArray:
+                    case Trade::TextureType::Texture3D:
+                        if(texture->image() < image3DReferenceCount.size())
+                            ++image3DReferenceCount[texture->image()];
+                        break;
+                }
+
+                TextureInfo info{};
+                info.texture = i;
+                info.name = importer->textureName(i);
+                info.data = *std::move(texture);
+
+                arrayAppend(textureInfos, std::move(info));
             }
-
-            TextureInfo info{};
-            info.texture = i;
-            info.name = importer->textureName(i);
-            info.data = *std::move(texture);
-
-            arrayAppend(textureInfos, std::move(info));
         }
 
         /* In case the images have all just a single level and no names, write
            them in a compact way without listing levels. */
         bool compactImages = false;
         Containers::Array<Trade::Implementation::ImageInfo> imageInfos;
-        if(args.isSet("info") || args.isSet("info-images")) imageInfos =
-            Trade::Implementation::imageInfo(*importer, error, compactImages);
+        if(args.isSet("info") || args.isSet("info-images")) {
+            imageInfos = Trade::Implementation::imageInfo(*importer, error, compactImages);
+        }
 
         for(const SceneInfo& info: sceneInfos) {
             Debug d;
@@ -919,7 +949,19 @@ used.)")
                 if(info.size.z()) d << "3D image";
                 else if(info.size.y()) d << "2D image";
                 else d << "1D image";
-                d << info.image << Debug::nospace << ":";
+                d << info.image;
+
+                /* Print reference count only if there actually are textures
+                   and they were parsed otherwise this information is
+                   useless */
+                if(info.size.z() && image3DReferenceCount)
+                    d << Utility::formatString("(referenced by {} textures)", image3DReferenceCount[info.image]);
+                else if(info.size.y() && image2DReferenceCount)
+                    d << Utility::formatString("(referenced by {} textures)", image2DReferenceCount[info.image]);
+                else if(image1DReferenceCount)
+                    d << Utility::formatString("(referenced by {} textures)", image1DReferenceCount[info.image]);
+
+                d << Debug::nospace << ":";
                 if(!info.name.empty()) d << info.name;
                 if(!compactImages) d << Debug::newline;
             }
