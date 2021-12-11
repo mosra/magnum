@@ -420,16 +420,17 @@ key=true; configuration subgroups are delimited with /.)")
             if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
             Implementation::setOptions(*importer, "AnyImageImporter", args.value("importer-options"));
 
+            /* Open input file */
+            if(!importer->openFile(input)) {
+                Error{} << "Cannot open file" << input;
+                return 3;
+            }
+
             /* Print image info, if requested. This is always done for just one
                file, checked above. */
             if(args.isSet("info")) {
-                /* Open the file, but don't fail when an image can't be
-                   opened */
-                if(!importer->openFile(input)) {
-                    Error() << "Cannot open file" << input;
-                    return 3;
-                }
-
+                /* Don't fail when there's no image -- we could be asking for
+                   info on a scene file without images, after all */
                 if(!importer->image1DCount() && !importer->image2DCount() && !importer->image3DCount()) {
                     Debug{} << "No images found in" << input;
                     return 0;
@@ -462,12 +463,6 @@ key=true; configuration subgroups are delimited with /.)")
                 }
 
                 return error ? 1 : 0;
-            }
-
-            /* Open input file */
-            if(!importer->openFile(input)) {
-                Error{} << "Cannot open file" << input;
-                return 3;
             }
 
             /* Bail early if there's no image whatsoever. More detailed errors
