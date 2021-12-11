@@ -410,7 +410,7 @@ key=true; configuration subgroups are delimited with /.)")
 
             /* Print image info, if requested */
             if(args.isSet("info")) {
-                Debug{} << "Image 0:\n  Mip 0:" << format << Vector2i{side};
+                Debug{} << "Image 0:" << format << Vector2i{side};
 
                 if(args.isSet("profile")) {
                     Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds";
