@@ -469,7 +469,7 @@ void AnyImageConverterTest::detect3D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile(Image2D, data.filename));
+    CORRADE_VERIFY(!converter->convertToFile(Image3D, data.filename));
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
