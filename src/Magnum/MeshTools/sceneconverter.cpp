@@ -537,6 +537,9 @@ used.)")
                         continue;
 
                     const UnsignedInt texture = material->attribute<UnsignedInt>(j, k);
+                    /** @todo once StridedBitArrayView2D exists, fix this to
+                        count each material only once by having one bit for
+                        every material and texture */
                     if(texture < textureReferenceCount.size())
                         ++textureReferenceCount[texture];
                 }
@@ -875,7 +878,7 @@ used.)")
             /* Print reference count only if there actually are some
                 materials, otherwise this information is useless */
             if(importer->materialCount())
-                d << Utility::formatString("(referenced by {} materials)", info.references);
+                d << Utility::formatString("(referenced by {} material attributes)", info.references);
             d << Debug::nospace << ":";
             if(!info.name.empty()) d << info.name;
             d << Debug::newline;
