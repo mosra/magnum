@@ -516,18 +516,18 @@ void ComplexTest::matrixNotRotation() {
     /* Shear, using rotation() instead of rotationScaling() as that isn't
        supposed to "fix" the shear */
     Complex::fromMatrix((Matrix3::scaling({2.0f, 1.0f})*
-                         Matrix3::rotation(37.0_degf)).rotation());
+                         Matrix3::rotation(45.0_degf)).rotation());
     /* Reflection, using rotation() instead of rotationScaling() as that isn't
        supposed to "fix" the reflection either */
     Complex::fromMatrix((Matrix3::scaling({-1.0f, 1.0f})*
-                         Matrix3::rotation(37.0_degf)).rotation());
+                         Matrix3::rotation(45.0_degf)).rotation());
     CORRADE_COMPARE(out.str(),
         "Math::Complex::fromMatrix(): the matrix is not a rotation:\n"
-        "Matrix(0.935781, -0.833258,\n"
-        "       0.352581, 0.552885)\n"
+        "Matrix(0.894427, -0.894427,\n"
+        "       0.447214, 0.447214)\n"
         "Math::Complex::fromMatrix(): the matrix is not a rotation:\n"
-        "Matrix(-0.798635, 0.601815,\n"
-        "       0.601815, 0.798635)\n");
+        "Matrix(-0.707107, 0.707107,\n"
+        "       0.707107, 0.707107)\n");
 }
 
 void ComplexTest::lerp() {

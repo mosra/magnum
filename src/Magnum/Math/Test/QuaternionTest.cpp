@@ -618,19 +618,19 @@ void QuaternionTest::matrixNotRotation() {
     /* Shear, using rotation() instead of rotationScaling() as that isn't
        supposed to "fix" the shear */
     Quaternion::fromMatrix((Matrix4::scaling({2.0f, 1.0f, 1.0f})*
-                            Matrix4::rotationZ(37.0_degf)).rotation());
+                            Matrix4::rotationZ(45.0_degf)).rotation());
     /* Reflection, using rotation() instead of rotationScaling() as that isn't
        supposed to "fix" the reflection either */
     Quaternion::fromMatrix((Matrix4::scaling({-1.0f, 1.0f, 1.0f})*
-                            Matrix4::rotationZ(37.0_degf)).rotation());
+                            Matrix4::rotationZ(45.0_degf)).rotation());
     CORRADE_COMPARE(out.str(),
         "Math::Quaternion::fromMatrix(): the matrix is not a rotation:\n"
-        "Matrix(0.935781, -0.833258, 0,\n"
-        "       0.352581, 0.552885, 0,\n"
+        "Matrix(0.894427, -0.894427, 0,\n"
+        "       0.447214, 0.447214, 0,\n"
         "       0, 0, 1)\n"
         "Math::Quaternion::fromMatrix(): the matrix is not a rotation:\n"
-        "Matrix(-0.798635, 0.601815, 0,\n"
-        "       0.601815, 0.798635, 0,\n"
+        "Matrix(-0.707107, 0.707107, 0,\n"
+        "       0.707107, 0.707107, 0,\n"
         "       0, 0, 1)\n");
 }
 
