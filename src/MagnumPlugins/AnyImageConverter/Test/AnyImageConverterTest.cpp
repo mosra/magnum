@@ -146,6 +146,7 @@ constexpr struct {
     {"HDR", "file.hdr", "HdrImageConverter"},
     {"JPEG", "file.jpg", "JpegImageConverter"},
     {"JPEG weird extension", "file.jpe", "JpegImageConverter"},
+    /* Have at least one test case with uppercase */
     {"JPEG uppercase", "output.JPG", "JpegImageConverter"},
     {"KTX2", "foo.ktx2", "KtxImageConverter"},
     {"PNG", "file.png", "PngImageConverter"}
@@ -333,7 +334,7 @@ void AnyImageConverterTest::convert2D() {
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.tga");
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "2d.tga");
 
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
@@ -905,13 +906,12 @@ void AnyImageConverterTest::propagateConfigurationUnknown2D() {
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
-    /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(converter->convertToFile(Image2D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.tga")));
+    CORRADE_VERIFY(converter->convertToFile(Image2D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "2d.tga")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by TgaImageConverter\n");
 }
 
@@ -924,7 +924,6 @@ void AnyImageConverterTest::propagateConfigurationUnknown3D() {
     if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
 
