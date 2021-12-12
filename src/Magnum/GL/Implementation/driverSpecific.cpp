@@ -448,6 +448,9 @@ auto Context::detectedDriver() -> DetectedDrivers {
         #endif
         ;
     #endif
+    #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
+    const Containers::StringView version = versionString();
+    #endif
 
     /* In some cases we can have a combination of drivers (e.g. ANGLE running
        on top of Mesa, Mesa Zink running on top of NVidia drivers...) so the
@@ -466,10 +469,22 @@ auto Context::detectedDriver() -> DetectedDrivers {
         *_detectedDrivers |= DetectedDriver::IntelWindows;
     #endif
 
-    /* Mesa drivers. On desktop GL and GLES the version string contains Mesa
-       as well, but not on WebGL. Renderer contains it on all three, except
-       for Firefox for some reason. */
-    if(renderer.contains("Mesa"_s)) {
+    /* Mesa drivers.
+        -   Intel GL/GLES drivers contain Mesa both in renderer and version
+            string
+        -   AMD GL/GLES drivers have Mesa only in the version string
+        -   On WebGL the version string is useless, always saying just
+            "WebGL X.Y (Chromium)" or "WebGL X.Y"
+        -   Mesa is in renderer string in Chromium and nowhere in Firefox for
+            some reason
+
+       To avoid misdetecting the driver, simply test both where it makes
+       sense. */
+    if(renderer.contains("Mesa"_s)
+        #ifndef MAGNUM_TARGET_WEBGL
+        || version.contains("Mesa"_s)
+        #endif
+    ) {
         *_detectedDrivers |= DetectedDriver::Mesa;
 
         if(renderer.contains("SVGA3D"_s))
