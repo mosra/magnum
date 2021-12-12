@@ -86,8 +86,8 @@ constexpr struct {
     Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
     const char* messageFunctionName;
 } Load3DData[]{
-    {"EXR", EXR_CUBE_FILE, nullptr, "OpenExrImporter"},
-    {"EXR data", EXR_CUBE_FILE, fileCallback, "OpenExrImporter"},
+    {"KTX2", KTX_3D_FILE, nullptr, "KtxImporter"},
+    {"KTX2 data", KTX_3D_FILE, fileCallback, "KtxImporter"},
 };
 
 constexpr struct {
@@ -224,8 +224,8 @@ void AnyImageImporterTest::load3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImporter") < PluginManager::LoadState::Loaded)
-        CORRADE_SKIP("OpenExrImporter plugin can't be loaded.");
+    if(manager.loadState("KtxImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
 
@@ -238,7 +238,7 @@ void AnyImageImporterTest::load3D() {
     /* Check only size, as it is good enough proof that it is working */
     Containers::Optional<ImageData3D> image = importer->image3D(0);
     CORRADE_VERIFY(image);
-    CORRADE_COMPARE(image->size(), (Vector3i{1, 1, 6}));
+    CORRADE_COMPARE(image->size(), (Vector3i{2, 3, 2}));
 }
 
 void AnyImageImporterTest::detect() {

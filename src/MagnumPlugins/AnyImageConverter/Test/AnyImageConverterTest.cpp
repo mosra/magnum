@@ -157,6 +157,7 @@ constexpr struct {
     const char* plugin;
 } Detect3DData[]{
     {"EXR", "file.exr", "OpenExrImageConverter"},
+    {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"EXR uppercase", "FIL~1.EXR", "OpenExrImageConverter"}
 };
@@ -167,6 +168,7 @@ constexpr struct {
     const char* plugin;
 } DetectLevels2DData[]{
     {"EXR", "file.exr", "OpenExrImageConverter"},
+    {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"EXR uppercase", "FIL~1.EXR", "OpenExrImageConverter"}
 };
@@ -177,6 +179,7 @@ constexpr struct {
     const char* plugin;
 } DetectLevels3DData[]{
     {"EXR", "file.exr", "OpenExrImageConverter"},
+    {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"EXR uppercase", "FIL~1.EXR", "OpenExrImageConverter"}
 };
@@ -346,20 +349,20 @@ void AnyImageConverterTest::convert3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
-        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2");
 
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    /* Well, this is in fact the same as propagateConfiguration3D() but we
-       can't really do much else. */
-    converter->configuration().setValue("envmap", "cube");
-    CORRADE_VERIFY(converter->convertToFile(ImageCube, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(converter->convertToFile(Image3D, filename));
+    /* Compare to an expected output to ensure we actually saved the file
+       including the metadata. This also doubles as a generator for the
+       3d.exr file that AnyImageImporterTest uses. */
+    CORRADE_COMPARE_AS(filename, KTX_3D_FILE, TestSuite::Compare::File);
 }
 
 void AnyImageConverterTest::convertCompressed1D() {
@@ -384,10 +387,10 @@ void AnyImageConverterTest::convertLevels2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
-        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.exr");
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "levels-2d.ktx2");
 
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
@@ -396,7 +399,7 @@ void AnyImageConverterTest::convertLevels2D() {
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
-    CORRADE_VERIFY(converter->convertToFile({Image2DFloat}, filename));
+    CORRADE_VERIFY(converter->convertToFile({Image2D}, filename));
     CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
@@ -406,21 +409,19 @@ void AnyImageConverterTest::convertLevels3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
-        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "levels-3d.ktx2");
 
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
 
+    /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    /* Well, this is in fact the same as propagateConfigurationLevels3D() but
-       we can't really do much else. */
-    converter->configuration().setValue("envmap", "cube");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
-    CORRADE_VERIFY(converter->convertToFile({ImageCube}, filename));
+    CORRADE_VERIFY(converter->convertToFile({Image3D}, filename));
     CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
@@ -582,8 +583,8 @@ void AnyImageConverterTest::unknown3D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile(Image3D, "image.ktx2"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a 3D image\n");
+    CORRADE_VERIFY(!converter->convertToFile(Image3D, "image.dds"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.dds for a 3D image\n");
 }
 
 void AnyImageConverterTest::unknownCompressed1D() {
@@ -627,8 +628,8 @@ void AnyImageConverterTest::unknownLevels2D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile({Image2D}, "image.ktx2"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a multi-level 2D image\n");
+    CORRADE_VERIFY(!converter->convertToFile({Image2D}, "image.dds"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.dds for a multi-level 2D image\n");
 }
 
 void AnyImageConverterTest::unknownLevels3D() {
@@ -636,8 +637,8 @@ void AnyImageConverterTest::unknownLevels3D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile({Image3D}, "image.ktx2"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a multi-level 3D image\n");
+    CORRADE_VERIFY(!converter->convertToFile({Image3D}, "image.dds"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.dds for a multi-level 3D image\n");
 }
 
 void AnyImageConverterTest::unknownCompressedLevels1D() {
@@ -868,7 +869,8 @@ void AnyImageConverterTest::propagateConfiguration2D() {
     converter->configuration().setValue("depth", "height");
     CORRADE_VERIFY(converter->convertToFile(Image2DFloat, filename));
     /* Compare to an expected output to ensure the custom channels names were
-       used */
+       used. This also doubles as a generator for the
+       depth32f-custom-channels.exr file that AnyImageImporterTest uses. */
     CORRADE_COMPARE_AS(filename, EXR_FILE, TestSuite::Compare::File);
 }
 
@@ -878,23 +880,20 @@ void AnyImageConverterTest::propagateConfiguration3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
-        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-3d.ktx2");
 
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    /* This should be enough to test -- 3D images can be saved only if this
-       option is set */
-    converter->configuration().setValue("envmap", "cube");
-    CORRADE_VERIFY(converter->convertToFile(ImageCube, filename));
-    /* Compare to an expected output to ensure we actually saved the file
-       including the metadata. This also doubles as a generator for the
-       cube.exr file that AnyImageImporterTest uses. */
-    CORRADE_COMPARE_AS(filename, EXR_CUBE_FILE, TestSuite::Compare::File);
+    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    CORRADE_VERIFY(converter->convertToFile(Image3D, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    /** @todo clean up once Directory::readString() returns our String */
+    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknown1D() {
@@ -921,18 +920,17 @@ void AnyImageConverterTest::propagateConfigurationUnknown3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
-        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("envmap", "cube");
     converter->configuration().setValue("noSuchOption", "isHere");
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(converter->convertToFile(ImageCube, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.exr")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by OpenExrImageConverter\n");
+    CORRADE_VERIFY(converter->convertToFile(Image3D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressed1D() {
@@ -969,25 +967,22 @@ void AnyImageConverterTest::propagateConfigurationLevels2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
-        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "depth32f-custom-channels.exr");
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-2d.ktx2");
 
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("layer", "left");
-    converter->configuration().setValue("depth", "height");
+    converter->configuration().setValue("writerName", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
-       still trigger the correct code path for AnyImageConverter. For
-       OpenExrImageConverter both single and list are the same code path so we
-       can reuse the same expected file. */
-    CORRADE_VERIFY(converter->convertToFile({Image2DFloat}, filename));
-    /* Compare to an expected output to ensure the custom channels names were
-       used */
-    CORRADE_COMPARE_AS(filename, EXR_FILE, TestSuite::Compare::File);
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({Image2D}, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    /** @todo clean up once Directory::readString() returns our String */
+    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
 }
 
 void AnyImageConverterTest::propagateConfigurationLevels3D() {
@@ -996,25 +991,22 @@ void AnyImageConverterTest::propagateConfigurationLevels3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
-        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-3d.ktx2");
 
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    /* This should be enough to test -- 3D images can be saved only if this
-       option is set */
-    converter->configuration().setValue("envmap", "cube");
+    converter->configuration().setValue("writerName", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
-       still trigger the correct code path for AnyImageConverter. For
-       OpenExrImageConverter both single and list are the same code path so we
-       can reuse the same expected file. */
-    CORRADE_VERIFY(converter->convertToFile({ImageCube}, filename));
-    /* Compare to an expected output to ensure we actually saved the file */
-    CORRADE_COMPARE_AS(filename, EXR_CUBE_FILE, TestSuite::Compare::File);
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({Image3D}, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    /** @todo clean up once Directory::readString() returns our String */
+    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknownLevels1D() {
@@ -1027,13 +1019,8 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
-        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
-
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "depth32f-custom-channels.exr");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
@@ -1042,8 +1029,8 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels2D() {
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
-    CORRADE_VERIFY(converter->convertToFile({Image2DFloat}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.exr")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by OpenExrImageConverter\n");
+    CORRADE_VERIFY(converter->convertToFile({Image2D}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "2d.ktx2")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknownLevels3D() {
@@ -1052,20 +1039,18 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
-        CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("envmap", "cube");
     converter->configuration().setValue("noSuchOption", "isHere");
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
-    CORRADE_VERIFY(converter->convertToFile({ImageCube}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.exr")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by OpenExrImageConverter\n");
+    CORRADE_VERIFY(converter->convertToFile({Image3D}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedLevels1D() {

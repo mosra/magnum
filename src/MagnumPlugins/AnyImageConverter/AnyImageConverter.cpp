@@ -144,6 +144,8 @@ bool AnyImageConverter::doConvertToFile(const ImageView3D& image, const Containe
     Containers::StringView plugin;
     if(normalized.hasSuffix(".exr"_s))
         plugin = "OpenExrImageConverter"_s;
+    else if(normalized.hasSuffix(".ktx2"_s))
+        plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a 3D image";
         return false;
@@ -223,6 +225,8 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
     Containers::StringView plugin;
     if(normalized.hasSuffix(".exr"_s))
         plugin = "OpenExrImageConverter"_s;
+    else if(normalized.hasSuffix(".ktx2"_s))
+        plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 2D image";
         return false;
@@ -266,6 +270,8 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
     Containers::StringView plugin;
     if(normalized.hasSuffix(".exr"_s))
         plugin = "OpenExrImageConverter"_s;
+    else if(normalized.hasSuffix(".ktx2"_s))
+        plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 3D image";
         return false;
