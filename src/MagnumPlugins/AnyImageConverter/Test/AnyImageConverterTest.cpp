@@ -167,6 +167,7 @@ constexpr struct {
     const char* filename;
     const char* plugin;
 } DetectLevels2DData[]{
+    {"Basis Universal", "file.basis", "BasisImageConverter"},
     {"EXR", "file.exr", "OpenExrImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
