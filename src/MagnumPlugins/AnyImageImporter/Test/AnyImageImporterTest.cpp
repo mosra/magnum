@@ -75,6 +75,16 @@ constexpr struct {
     const char* filename;
     Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
     const char* messageFunctionName;
+} Load1DData[]{
+    {"KTX2", KTX_1D_FILE, nullptr, "KtxImporter"},
+    {"KTX2 data", KTX_1D_FILE, fileCallback, "KtxImporter"},
+};
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
+    const char* messageFunctionName;
 } Load2DData[]{
     {"TGA", TGA_FILE, nullptr, "openFile"},
     {"TGA data", TGA_FILE, fileCallback, "openData"}
@@ -149,7 +159,8 @@ constexpr struct {
 };
 
 AnyImageImporterTest::AnyImageImporterTest() {
-    addTests({&AnyImageImporterTest::load1D});
+    addInstancedTests({&AnyImageImporterTest::load1D},
+        Containers::arraySize(Load1DData));
 
     addInstancedTests({&AnyImageImporterTest::load2D},
         Containers::arraySize(Load2DData));
@@ -188,7 +199,29 @@ AnyImageImporterTest::AnyImageImporterTest() {
 }
 
 void AnyImageImporterTest::load1D() {
-    CORRADE_SKIP("No file formats supporting 1D images yet.");
+    auto&& data = Load1DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
+
+    Containers::Array<char> storage;
+    importer->setFileCallback(data.callback, storage);
+
+    CORRADE_VERIFY(importer->openFile(data.filename));
+    CORRADE_COMPARE(importer->image1DCount(), 1);
+
+    /* Check only size, as it is good enough proof that it is working */
+    Containers::Optional<ImageData1D> image = importer->image1D(0);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), 2);
 }
 
 void AnyImageImporterTest::load2D() {

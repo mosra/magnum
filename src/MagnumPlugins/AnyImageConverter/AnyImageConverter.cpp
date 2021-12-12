@@ -62,13 +62,47 @@ ImageConverterFeatures AnyImageConverter::doFeatures() const {
         ImageConverterFeature::ConvertCompressedLevels3DToFile;
 }
 
-bool AnyImageConverter::doConvertToFile(const ImageView1D&, const Containers::StringView filename) {
+bool AnyImageConverter::doConvertToFile(const ImageView1D& image, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /* No file formats to store 1D data yet */
+    /** @todo once Directory is std::string-free, use splitExtension(), but
+        only if we don't detect more than one extension yet */
+    const Containers::String normalized = Utility::String::lowercase(filename);
 
-    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a 1D image";
-    return false;
+    /* Detect the plugin from extension */
+    Containers::StringView plugin;
+    if(normalized.hasSuffix(".ktx2"_s))
+        plugin = "KtxImageConverter"_s;
+    else {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a 1D image";
+        return false;
+    }
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot load the" << plugin << "plugin";
+        return false;
+    }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
+    if(flags() & ImageConverterFlag::Verbose) {
+        Debug d;
+        d << "Trade::AnyImageConverter::convertToFile(): using" << plugin;
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
+
+    /* Instantiate the plugin, propagate flags */
+    Containers::Pointer<AbstractImageConverter> converter = static_cast<PluginManager::Manager<AbstractImageConverter>*>(manager())->instantiate(plugin);
+    converter->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+
+    /* Try to convert the file (error output should be printed by the plugin
+       itself) */
+    return converter->convertToFile(image, filename);
 }
 
 bool AnyImageConverter::doConvertToFile(const ImageView2D& image, const Containers::StringView filename) {
@@ -178,40 +212,176 @@ bool AnyImageConverter::doConvertToFile(const ImageView3D& image, const Containe
     return converter->convertToFile(image, filename);
 }
 
-bool AnyImageConverter::doConvertToFile(const CompressedImageView1D&, const Containers::StringView filename) {
+bool AnyImageConverter::doConvertToFile(const CompressedImageView1D& image, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /* No file formats to store compressed 1D data yet */
+    /** @todo once Directory is std::string-free, use splitExtension(), but
+        only if we don't detect more than one extension yet */
+    const Containers::String normalized = Utility::String::lowercase(filename);
 
-    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 1D image";
-    return false;
+    /* Detect the plugin from extension */
+    Containers::StringView plugin;
+    if(normalized.hasSuffix(".ktx2"_s))
+        plugin = "KtxImageConverter"_s;
+    else {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 1D image";
+        return false;
+    }
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot load the" << plugin << "plugin";
+        return false;
+    }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
+    if(flags() & ImageConverterFlag::Verbose) {
+        Debug d;
+        d << "Trade::AnyImageConverter::convertToFile(): using" << plugin;
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
+
+    /* Instantiate the plugin, propagate flags */
+    Containers::Pointer<AbstractImageConverter> converter = static_cast<PluginManager::Manager<AbstractImageConverter>*>(manager())->instantiate(plugin);
+    converter->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+
+    /* Try to convert the file (error output should be printed by the plugin
+       itself) */
+    return converter->convertToFile(image, filename);
 }
 
-bool AnyImageConverter::doConvertToFile(const CompressedImageView2D&, const Containers::StringView filename) {
+bool AnyImageConverter::doConvertToFile(const CompressedImageView2D& image, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /* No file formats to store compressed 2D data yet */
+    /** @todo once Directory is std::string-free, use splitExtension(), but
+        only if we don't detect more than one extension yet */
+    const Containers::String normalized = Utility::String::lowercase(filename);
 
-    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 2D image";
-    return false;
+    /* Detect the plugin from extension */
+    Containers::StringView plugin;
+    if(normalized.hasSuffix(".ktx2"_s))
+        plugin = "KtxImageConverter"_s;
+    else {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 2D image";
+        return false;
+    }
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot load the" << plugin << "plugin";
+        return false;
+    }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
+    if(flags() & ImageConverterFlag::Verbose) {
+        Debug d;
+        d << "Trade::AnyImageConverter::convertToFile(): using" << plugin;
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
+
+    /* Instantiate the plugin, propagate flags */
+    Containers::Pointer<AbstractImageConverter> converter = static_cast<PluginManager::Manager<AbstractImageConverter>*>(manager())->instantiate(plugin);
+    converter->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+
+    /* Try to convert the file (error output should be printed by the plugin
+       itself) */
+    return converter->convertToFile(image, filename);
 }
 
-bool AnyImageConverter::doConvertToFile(const CompressedImageView3D&, const Containers::StringView filename) {
+bool AnyImageConverter::doConvertToFile(const CompressedImageView3D& image, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /* No file formats to store compressed 3D data yet */
+    /** @todo once Directory is std::string-free, use splitExtension(), but
+        only if we don't detect more than one extension yet */
+    const Containers::String normalized = Utility::String::lowercase(filename);
 
-    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 3D image";
-    return false;
+    /* Detect the plugin from extension */
+    Containers::StringView plugin;
+    if(normalized.hasSuffix(".ktx2"_s))
+        plugin = "KtxImageConverter"_s;
+    else {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 3D image";
+        return false;
+    }
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot load the" << plugin << "plugin";
+        return false;
+    }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
+    if(flags() & ImageConverterFlag::Verbose) {
+        Debug d;
+        d << "Trade::AnyImageConverter::convertToFile(): using" << plugin;
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
+
+    /* Instantiate the plugin, propagate flags */
+    Containers::Pointer<AbstractImageConverter> converter = static_cast<PluginManager::Manager<AbstractImageConverter>*>(manager())->instantiate(plugin);
+    converter->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+
+    /* Try to convert the file (error output should be printed by the plugin
+       itself) */
+    return converter->convertToFile(image, filename);
 }
 
-bool AnyImageConverter::doConvertToFile(Containers::ArrayView<const ImageView1D>, const Containers::StringView filename) {
+bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageView1D> imageLevels, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /* No file formats to store multi-level 1D data yet */
+    /** @todo once Directory is std::string-free, use splitExtension(), but
+        only if we don't detect more than one extension yet */
+    const Containers::String normalized = Utility::String::lowercase(filename);
 
-    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 1D image";
-    return false;
+    /* Detect the plugin from extension */
+    Containers::StringView plugin;
+    if(normalized.hasSuffix(".ktx2"_s))
+        plugin = "KtxImageConverter"_s;
+    else {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 1D image";
+        return false;
+    }
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot load the" << plugin << "plugin";
+        return false;
+    }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
+    if(flags() & ImageConverterFlag::Verbose) {
+        Debug d;
+        d << "Trade::AnyImageConverter::convertToFile(): using" << plugin;
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
+
+    /* Instantiate the plugin, propagate flags */
+    Containers::Pointer<AbstractImageConverter> converter = static_cast<PluginManager::Manager<AbstractImageConverter>*>(manager())->instantiate(plugin);
+    converter->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+
+    /* Try to convert the file (error output should be printed by the plugin
+       itself) */
+    return converter->convertToFile(imageLevels, filename);
 }
 
 bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageView2D> imageLevels, const Containers::StringView filename) {
@@ -306,31 +476,133 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
     return converter->convertToFile(imageLevels, filename);
 }
 
-bool AnyImageConverter::doConvertToFile(Containers::ArrayView<const CompressedImageView1D>, const Containers::StringView filename) {
+bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const CompressedImageView1D> imageLevels, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /* No file formats to store multi-level compressed 1D data yet */
+    /** @todo once Directory is std::string-free, use splitExtension(), but
+        only if we don't detect more than one extension yet */
+    const Containers::String normalized = Utility::String::lowercase(filename);
 
-    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 1D image";
-    return false;
+    /* Detect the plugin from extension */
+    Containers::StringView plugin;
+    if(normalized.hasSuffix(".ktx2"_s))
+        plugin = "KtxImageConverter"_s;
+    else {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 1D image";
+        return false;
+    }
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot load the" << plugin << "plugin";
+        return false;
+    }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
+    if(flags() & ImageConverterFlag::Verbose) {
+        Debug d;
+        d << "Trade::AnyImageConverter::convertToFile(): using" << plugin;
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
+
+    /* Instantiate the plugin, propagate flags */
+    Containers::Pointer<AbstractImageConverter> converter = static_cast<PluginManager::Manager<AbstractImageConverter>*>(manager())->instantiate(plugin);
+    converter->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+
+    /* Try to convert the file (error output should be printed by the plugin
+       itself) */
+    return converter->convertToFile(imageLevels, filename);
 }
 
-bool AnyImageConverter::doConvertToFile(Containers::ArrayView<const CompressedImageView2D>, const Containers::StringView filename) {
+bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const CompressedImageView2D> imageLevels, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /* No file formats to store multi-level compressed 2D data yet */
+    /** @todo once Directory is std::string-free, use splitExtension(), but
+        only if we don't detect more than one extension yet */
+    const Containers::String normalized = Utility::String::lowercase(filename);
 
-    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 2D image";
-    return false;
+    /* Detect the plugin from extension */
+    Containers::StringView plugin;
+    if(normalized.hasSuffix(".ktx2"_s))
+        plugin = "KtxImageConverter"_s;
+    else {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 2D image";
+        return false;
+    }
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot load the" << plugin << "plugin";
+        return false;
+    }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
+    if(flags() & ImageConverterFlag::Verbose) {
+        Debug d;
+        d << "Trade::AnyImageConverter::convertToFile(): using" << plugin;
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
+
+    /* Instantiate the plugin, propagate flags */
+    Containers::Pointer<AbstractImageConverter> converter = static_cast<PluginManager::Manager<AbstractImageConverter>*>(manager())->instantiate(plugin);
+    converter->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+
+    /* Try to convert the file (error output should be printed by the plugin
+       itself) */
+    return converter->convertToFile(imageLevels, filename);
 }
 
-bool AnyImageConverter::doConvertToFile(Containers::ArrayView<const CompressedImageView3D>, const Containers::StringView filename) {
+bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const CompressedImageView3D> imageLevels, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /* No file formats to store multi-level compressed 3D data yet */
+    /** @todo once Directory is std::string-free, use splitExtension(), but
+        only if we don't detect more than one extension yet */
+    const Containers::String normalized = Utility::String::lowercase(filename);
 
-    Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 3D image";
-    return false;
+    /* Detect the plugin from extension */
+    Containers::StringView plugin;
+    if(normalized.hasSuffix(".ktx2"_s))
+        plugin = "KtxImageConverter"_s;
+    else {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 3D image";
+        return false;
+    }
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error{} << "Trade::AnyImageConverter::convertToFile(): cannot load the" << plugin << "plugin";
+        return false;
+    }
+
+    const PluginManager::PluginMetadata* const metadata = manager()->metadata(plugin);
+    CORRADE_INTERNAL_ASSERT(metadata);
+    if(flags() & ImageConverterFlag::Verbose) {
+        Debug d;
+        d << "Trade::AnyImageConverter::convertToFile(): using" << plugin;
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
+
+    /* Instantiate the plugin, propagate flags */
+    Containers::Pointer<AbstractImageConverter> converter = static_cast<PluginManager::Manager<AbstractImageConverter>*>(manager())->instantiate(plugin);
+    converter->setFlags(flags());
+
+    /* Propagate configuration */
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+
+    /* Try to convert the file (error output should be printed by the plugin
+       itself) */
+    return converter->convertToFile(imageLevels, filename);
 }
 
 }}

@@ -57,24 +57,28 @@ Detects file type based on file extension, loads corresponding plugin and then
 tries to convert the file with it. Supported formats for uncompressed data:
 
 -   Basis Universal (`*.basis`), converted with @ref BasisImageConverter or any
-    other plugin that provides it
+    other plugin that provides it. Only uncompressed 2D and multi-level 2D
+    images.
 -   Windows Bitmap (`*.bmp`), converted with any plugin that provides
-    `BmpImageConverter`
+    `BmpImageConverter`. Only uncompressed 2D images.
 -   OpenEXR (`*.exr`), converted with any plugin that provides
-    `OpenExrImageConverter`
+    `OpenExrImageConverter`. Only uncompressed 2D/3D and multi-level 2D/3D
+    images.
 -   Radiance HDR (`*.hdr`), converted with any plugin that provides
-    `HdrImageConverter`
+    `HdrImageConverter`. Only uncompressed 2D images.
 -   JPEG (`*.jpg`, `*.jpe`, `*.jpeg`), converted with @ref JpegImageConverter
-    or any other plugin that provides it
+    or any other plugin that provides it. Only uncompressed 2D images.
 -   KTX2 (`*.ktx2`), converted with @ref KtxImageConverter or any other plugin
-    that provides it
+    that provides it. Uncompressed, compressed, 1D/2D/3D and multi-level
+    1D/2D/3D images.
 -   Portable Network Graphics (`*.png`), converted with @ref PngImageConverter
-    or any other plugin that provides it
+    or any other plugin that provides it. Only uncompressed 2D images.
 -   Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`), converted with
-    @ref TgaImageConverter or any other plugin that provides it
+    @ref TgaImageConverter or any other plugin that provides it. Only
+    uncompressed 2D images.
 
-No supported formats for compressed data yet. Only exporting to files is
-supported.
+As the converter plugin is picked based on file extension, only saving to files
+is supported.
 
 @section Trade-AnyImageConverter-usage Usage
 

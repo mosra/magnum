@@ -139,6 +139,16 @@ constexpr struct {
     const char* name;
     const char* filename;
     const char* plugin;
+} Detect1DData[]{
+    {"KTX2", "file.ktx2", "KtxImageConverter"},
+    /* Have at least one test case with uppercase */
+    {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
+};
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
 } Detect2DData[]{
     {"BMP", "file.bmp", "BmpImageConverter"},
     {"Basis Universal", "file.basis", "BasisImageConverter"},
@@ -167,6 +177,16 @@ constexpr struct {
     const char* name;
     const char* filename;
     const char* plugin;
+} DetectLevels1DData[]{
+    {"KTX2", "file.ktx2", "KtxImageConverter"},
+    /* Have at least one test case with uppercase */
+    {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
+};
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
 } DetectLevels2DData[]{
     {"Basis Universal", "file.basis", "BasisImageConverter"},
     {"EXR", "file.exr", "OpenExrImageConverter"},
@@ -186,6 +206,69 @@ constexpr struct {
     {"EXR uppercase", "FIL~1.EXR", "OpenExrImageConverter"}
 };
 
+/* It's all duplicated, yes, but I expect at least the 2D compressed cases to
+   grow a bit */
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} DetectCompressed1DData[]{
+    {"KTX2", "file.ktx2", "KtxImageConverter"},
+    /* Have at least one test case with uppercase */
+    {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
+};
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} DetectCompressed2DData[]{
+    {"KTX2", "file.ktx2", "KtxImageConverter"},
+    /* Have at least one test case with uppercase */
+    {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
+};
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} DetectCompressed3DData[]{
+    {"KTX2", "file.ktx2", "KtxImageConverter"},
+    /* Have at least one test case with uppercase */
+    {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
+};
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} DetectCompressedLevels1DData[]{
+    {"KTX2", "file.ktx2", "KtxImageConverter"},
+    /* Have at least one test case with uppercase */
+    {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
+};
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} DetectCompressedLevels2DData[]{
+    {"KTX2", "file.ktx2", "KtxImageConverter"},
+    /* Have at least one test case with uppercase */
+    {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
+};
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} DetectCompressedLevels3DData[]{
+    {"KTX2", "file.ktx2", "KtxImageConverter"},
+    /* Have at least one test case with uppercase */
+    {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
+};
+
 AnyImageConverterTest::AnyImageConverterTest() {
     addTests({&AnyImageConverterTest::convert1D,
               &AnyImageConverterTest::convert2D,
@@ -199,9 +282,10 @@ AnyImageConverterTest::AnyImageConverterTest() {
               &AnyImageConverterTest::convertLevels3D,
               &AnyImageConverterTest::convertCompressedLevels1D,
               &AnyImageConverterTest::convertCompressedLevels2D,
-              &AnyImageConverterTest::convertCompressedLevels3D,
+              &AnyImageConverterTest::convertCompressedLevels3D});
 
-              &AnyImageConverterTest::detect1D});
+    addInstancedTests({&AnyImageConverterTest::detect1D},
+        Containers::arraySize(Detect1DData));
 
     addInstancedTests({&AnyImageConverterTest::detect2D},
         Containers::arraySize(Detect2DData));
@@ -209,11 +293,17 @@ AnyImageConverterTest::AnyImageConverterTest() {
     addInstancedTests({&AnyImageConverterTest::detect3D},
         Containers::arraySize(Detect3DData));
 
-    addTests({&AnyImageConverterTest::detectCompressed1D,
-              &AnyImageConverterTest::detectCompressed2D,
-              &AnyImageConverterTest::detectCompressed3D,
+    addInstancedTests({&AnyImageConverterTest::detectCompressed1D},
+        Containers::arraySize(DetectCompressed1DData));
 
-              &AnyImageConverterTest::detectLevels1D});
+    addInstancedTests({&AnyImageConverterTest::detectCompressed2D},
+        Containers::arraySize(DetectCompressed2DData));
+
+    addInstancedTests({&AnyImageConverterTest::detectCompressed3D},
+        Containers::arraySize(DetectCompressed3DData));
+
+    addInstancedTests({&AnyImageConverterTest::detectLevels1D},
+        Containers::arraySize(DetectLevels1DData));
 
     addInstancedTests({&AnyImageConverterTest::detectLevels2D},
         Containers::arraySize(DetectLevels2DData));
@@ -221,11 +311,16 @@ AnyImageConverterTest::AnyImageConverterTest() {
     addInstancedTests({&AnyImageConverterTest::detectLevels3D},
         Containers::arraySize(DetectLevels3DData));
 
-    addTests({&AnyImageConverterTest::detectCompressedLevels1D,
-              &AnyImageConverterTest::detectCompressedLevels2D,
-              &AnyImageConverterTest::detectCompressedLevels3D,
+    addInstancedTests({&AnyImageConverterTest::detectCompressedLevels1D},
+        Containers::arraySize(DetectCompressedLevels1DData));
 
-              &AnyImageConverterTest::unknown1D,
+    addInstancedTests({&AnyImageConverterTest::detectCompressedLevels2D},
+        Containers::arraySize(DetectCompressedLevels2DData));
+
+    addInstancedTests({&AnyImageConverterTest::detectCompressedLevels3D},
+        Containers::arraySize(DetectCompressedLevels3DData));
+
+    addTests({&AnyImageConverterTest::unknown1D,
               &AnyImageConverterTest::unknown2D,
               &AnyImageConverterTest::unknown3D,
               &AnyImageConverterTest::unknownCompressed1D,
@@ -327,7 +422,25 @@ const CompressedImageView2D CompressedImage2D{CompressedPixelFormat::Bc1RGBAUnor
 const CompressedImageView3D CompressedImage3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 3}, Data};
 
 void AnyImageConverterTest::convert1D() {
-    CORRADE_SKIP("No file formats to store 1D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    CORRADE_VERIFY(converter->convertToFile(Image1D, filename));
+    /* Compare to an expected output to ensure we actually saved the file
+       including the metadata. This also doubles as a generator for the 1d.ktx2
+       file that AnyImageImporterTest uses. */
+    CORRADE_COMPARE_AS(filename, KTX_1D_FILE, TestSuite::Compare::File);
 }
 
 void AnyImageConverterTest::convert2D() {
@@ -368,19 +481,85 @@ void AnyImageConverterTest::convert3D() {
 }
 
 void AnyImageConverterTest::convertCompressed1D() {
-    CORRADE_SKIP("No file formats to store compressed 1D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-1d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    CORRADE_VERIFY(converter->convertToFile(CompressedImage1D, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
 void AnyImageConverterTest::convertCompressed2D() {
-    CORRADE_SKIP("No file formats to store compressed 2D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-2d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    CORRADE_VERIFY(converter->convertToFile(CompressedImage2D, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
 void AnyImageConverterTest::convertCompressed3D() {
-    CORRADE_SKIP("No file formats to store compressed 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-3d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    CORRADE_VERIFY(converter->convertToFile(CompressedImage3D, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
 void AnyImageConverterTest::convertLevels1D() {
-    CORRADE_SKIP("No file formats to store multi-level 1D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "levels-1d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({Image1D}, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
 void AnyImageConverterTest::convertLevels2D() {
@@ -428,19 +607,90 @@ void AnyImageConverterTest::convertLevels3D() {
 }
 
 void AnyImageConverterTest::convertCompressedLevels1D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 1D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-levels-1d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({CompressedImage1D}, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
 void AnyImageConverterTest::convertCompressedLevels2D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 2D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-levels-2d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({CompressedImage2D}, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
 void AnyImageConverterTest::convertCompressedLevels3D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-levels-3d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({CompressedImage3D}, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
 void AnyImageConverterTest::detect1D() {
-    CORRADE_SKIP("No file formats to store 1D data yet.");
+    auto&& data = Detect1DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(Image1D, data.filename));
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n", data.plugin));
+    #endif
 }
 
 void AnyImageConverterTest::detect2D() {
@@ -487,19 +737,87 @@ void AnyImageConverterTest::detect3D() {
 }
 
 void AnyImageConverterTest::detectCompressed1D() {
-    CORRADE_SKIP("No file formats to store compressed 1D data yet.");
+    auto&& data = DetectCompressed1DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(CompressedImage1D, data.filename));
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n", data.plugin));
+    #endif
 }
 
 void AnyImageConverterTest::detectCompressed2D() {
-    CORRADE_SKIP("No file formats to store compressed 2D data yet.");
+    auto&& data = DetectCompressed1DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(CompressedImage2D, data.filename));
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n", data.plugin));
+    #endif
 }
 
 void AnyImageConverterTest::detectCompressed3D() {
-    CORRADE_SKIP("No file formats to store compressed 3D data yet.");
+    auto&& data = DetectCompressed1DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(CompressedImage3D, data.filename));
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n", data.plugin));
+    #endif
 }
 
 void AnyImageConverterTest::detectLevels1D() {
-    CORRADE_SKIP("No file formats to store multi-level 1D data yet.");
+    auto&& data = DetectCompressed1DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(CompressedImage1D, data.filename));
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n", data.plugin));
+    #endif
 }
 
 void AnyImageConverterTest::detectLevels2D() {
@@ -551,15 +869,75 @@ void AnyImageConverterTest::detectLevels3D() {
 }
 
 void AnyImageConverterTest::detectCompressedLevels1D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 1D data yet.");
+    auto&& data = DetectCompressedLevels1DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(!converter->convertToFile({CompressedImage1D}, data.filename));
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #endif
 }
 
 void AnyImageConverterTest::detectCompressedLevels2D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 2D data yet.");
+    auto&& data = DetectCompressedLevels2DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(!converter->convertToFile({CompressedImage2D}, data.filename));
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #endif
 }
 
 void AnyImageConverterTest::detectCompressedLevels3D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 3D data yet.");
+    auto&& data = DetectCompressedLevels3DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(!converter->convertToFile({CompressedImage3D}, data.filename));
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnyImageConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #endif
 }
 
 void AnyImageConverterTest::unknown1D() {
@@ -567,8 +945,8 @@ void AnyImageConverterTest::unknown1D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile(Image1D, "image.ktx2"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a 1D image\n");
+    CORRADE_VERIFY(!converter->convertToFile(Image1D, "image.jpg"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.jpg for a 1D image\n");
 }
 
 void AnyImageConverterTest::unknown2D() {
@@ -594,8 +972,8 @@ void AnyImageConverterTest::unknownCompressed1D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile(CompressedImage1D, "image.ktx2"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a compressed 1D image\n");
+    CORRADE_VERIFY(!converter->convertToFile(CompressedImage1D, "image.exr"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.exr for a compressed 1D image\n");
 }
 
 void AnyImageConverterTest::unknownCompressed2D() {
@@ -603,8 +981,8 @@ void AnyImageConverterTest::unknownCompressed2D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile(CompressedImage2D, "image.ktx2"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a compressed 2D image\n");
+    CORRADE_VERIFY(!converter->convertToFile(CompressedImage2D, "image.png"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.png for a compressed 2D image\n");
 }
 
 void AnyImageConverterTest::unknownCompressed3D() {
@@ -612,8 +990,8 @@ void AnyImageConverterTest::unknownCompressed3D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile(CompressedImage3D, "image.ktx2"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a compressed 3D image\n");
+    CORRADE_VERIFY(!converter->convertToFile(CompressedImage3D, "image.exr"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.exr for a compressed 3D image\n");
 }
 
 void AnyImageConverterTest::unknownLevels1D() {
@@ -621,8 +999,8 @@ void AnyImageConverterTest::unknownLevels1D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile({Image1D}, "image.ktx2"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a multi-level 1D image\n");
+    CORRADE_VERIFY(!converter->convertToFile({Image1D}, "image.tga"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.tga for a multi-level 1D image\n");
 }
 
 void AnyImageConverterTest::unknownLevels2D() {
@@ -630,8 +1008,8 @@ void AnyImageConverterTest::unknownLevels2D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile({Image2D}, "image.dds"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.dds for a multi-level 2D image\n");
+    CORRADE_VERIFY(!converter->convertToFile({Image2D}, "image.png"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.png for a multi-level 2D image\n");
 }
 
 void AnyImageConverterTest::unknownLevels3D() {
@@ -639,8 +1017,8 @@ void AnyImageConverterTest::unknownLevels3D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile({Image3D}, "image.dds"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.dds for a multi-level 3D image\n");
+    CORRADE_VERIFY(!converter->convertToFile({Image3D}, "image.jpg"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.jpg for a multi-level 3D image\n");
 }
 
 void AnyImageConverterTest::unknownCompressedLevels1D() {
@@ -648,8 +1026,8 @@ void AnyImageConverterTest::unknownCompressedLevels1D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile({CompressedImage1D}, "image.ktx2"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a multi-level compressed 1D image\n");
+    CORRADE_VERIFY(!converter->convertToFile({CompressedImage1D}, "image.bmp"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.bmp for a multi-level compressed 1D image\n");
 }
 
 void AnyImageConverterTest::unknownCompressedLevels2D() {
@@ -657,8 +1035,8 @@ void AnyImageConverterTest::unknownCompressedLevels2D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile({CompressedImage2D}, "image.ktx2"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a multi-level compressed 2D image\n");
+    CORRADE_VERIFY(!converter->convertToFile({CompressedImage2D}, "image.exr"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.exr for a multi-level compressed 2D image\n");
 }
 
 void AnyImageConverterTest::unknownCompressedLevels3D() {
@@ -666,12 +1044,12 @@ void AnyImageConverterTest::unknownCompressedLevels3D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile({CompressedImage3D}, "image.ktx2"));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.ktx2 for a multi-level compressed 3D image\n");
+    CORRADE_VERIFY(!converter->convertToFile({CompressedImage3D}, "image.exr"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.exr for a multi-level compressed 3D image\n");
 }
 
 void AnyImageConverterTest::propagateFlags1D() {
-    CORRADE_SKIP("No file formats to store 1D data yet.");
+    CORRADE_SKIP("No plugins with flag-dependent behavior for 1D data yet.");
 }
 
 void AnyImageConverterTest::propagateFlags2D() {
@@ -738,19 +1116,19 @@ void AnyImageConverterTest::propagateFlags3D() {
 }
 
 void AnyImageConverterTest::propagateFlagsCompressed1D() {
-    CORRADE_SKIP("No file formats to store compressed 1D data yet.");
+    CORRADE_SKIP("No plugins with flag-dependent behavior for compressed 1D data yet.");
 }
 
 void AnyImageConverterTest::propagateFlagsCompressed2D() {
-    CORRADE_SKIP("No file formats to store compressed 2D data yet.");
+    CORRADE_SKIP("No plugins with flag-dependent behavior for compressed 2D data yet.");
 }
 
 void AnyImageConverterTest::propagateFlagsCompressed3D() {
-    CORRADE_SKIP("No file formats to store compressed 3D data yet.");
+    CORRADE_SKIP("No plugins with flag-dependent behavior for compressed 3D data yet.");
 }
 
 void AnyImageConverterTest::propagateFlagsLevels1D() {
-    CORRADE_SKIP("No file formats to store multi-level 1D data yet.");
+    CORRADE_SKIP("No plugins with flag-dependent behavior for multi-level 1D data yet.");
 }
 
 void AnyImageConverterTest::propagateFlagsLevels2D() {
@@ -837,19 +1215,37 @@ void AnyImageConverterTest::propagateFlagsLevels3D() {
 }
 
 void AnyImageConverterTest::propagateFlagsCompressedLevels1D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 1D data yet.");
+    CORRADE_SKIP("No plugins with flag-dependent behavior for multi-level compressed 1D data yet.");
 }
 
 void AnyImageConverterTest::propagateFlagsCompressedLevels2D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 2D data yet.");
+    CORRADE_SKIP("No plugins with flag-dependent behavior for multi-level compressed 2D data yet.");
 }
 
 void AnyImageConverterTest::propagateFlagsCompressedLevels3D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 3D data yet.");
+    CORRADE_SKIP("No plugins with flag-dependent behavior for multi-level compressed 3D data yet.");
 }
 
 void AnyImageConverterTest::propagateConfiguration1D() {
-    CORRADE_SKIP("No file formats to store 1D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-1d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    CORRADE_VERIFY(converter->convertToFile(Image1D, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    /** @todo clean up once Directory::readString() returns our String */
+    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
 }
 
 void AnyImageConverterTest::propagateConfiguration2D() {
@@ -899,7 +1295,21 @@ void AnyImageConverterTest::propagateConfiguration3D() {
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknown1D() {
-    CORRADE_SKIP("No file formats to store 1D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter->convertToFile(Image1D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknown2D() {
@@ -934,31 +1344,147 @@ void AnyImageConverterTest::propagateConfigurationUnknown3D() {
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressed1D() {
-    CORRADE_SKIP("No file formats to store compressed 1D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-1d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    CORRADE_VERIFY(converter->convertToFile(CompressedImage1D, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    /** @todo clean up once Directory::readString() returns our String */
+    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressed2D() {
-    CORRADE_SKIP("No file formats to store compressed 2D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-2d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    CORRADE_VERIFY(converter->convertToFile(CompressedImage2D, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    /** @todo clean up once Directory::readString() returns our String */
+    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressed3D() {
-    CORRADE_SKIP("No file formats to store compressed 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-3d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    CORRADE_VERIFY(converter->convertToFile(CompressedImage3D, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    /** @todo clean up once Directory::readString() returns our String */
+    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknown1D() {
-    CORRADE_SKIP("No file formats to store compressed 1D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter->convertToFile(CompressedImage1D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-1d.ktx2")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknown2D() {
-    CORRADE_SKIP("No file formats to store compressed 2D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter->convertToFile(CompressedImage2D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-2d.ktx2")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknown3D() {
-    CORRADE_SKIP("No file formats to store compressed 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter->convertToFile(CompressedImage3D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-3d.ktx2")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationLevels1D() {
-    CORRADE_SKIP("No file formats to store multi-level 1D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-1d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({Image1D}, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    /** @todo clean up once Directory::readString() returns our String */
+    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
 }
 
 void AnyImageConverterTest::propagateConfigurationLevels2D() {
@@ -1010,7 +1536,23 @@ void AnyImageConverterTest::propagateConfigurationLevels3D() {
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknownLevels1D() {
-    CORRADE_SKIP("No file formats to store multi-level 1D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({Image1D}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknownLevels2D() {
@@ -1054,27 +1596,135 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels3D() {
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedLevels1D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 1D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-1d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({CompressedImage1D}, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    /** @todo clean up once Directory::readString() returns our String */
+    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedLevels2D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 2D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-2d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({CompressedImage2D}, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    /** @todo clean up once Directory::readString() returns our String */
+    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedLevels3D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compresed-custom-writer-3d.ktx2");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({CompressedImage3D}, filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    /** @todo clean up once Directory::readString() returns our String */
+    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels1D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 1D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({CompressedImage1D}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-1d.ktx2")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels2D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 2D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({CompressedImage2D}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-2d.ktx2")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels3D() {
-    CORRADE_SKIP("No file formats to store multi-level compressed 3D data yet.");
+    PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(converter->convertToFile({CompressedImage3D}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-3d.ktx2")));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 }}}}
