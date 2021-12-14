@@ -452,9 +452,11 @@ if(MAGNUM_TARGET_GL)
     # GL not required by Primitives themselves, but transitively by MeshTools
     list(APPEND _MAGNUM_Primitives_DEPENDENCIES GL)
 endif()
+
 set(_MAGNUM_SceneGraph_DEPENDENCIES )
 set(_MAGNUM_SceneTools_DEPENDENCIES Trade)
 set(_MAGNUM_Shaders_DEPENDENCIES GL)
+
 set(_MAGNUM_Text_DEPENDENCIES TextureTools)
 if(MAGNUM_TARGET_GL)
     list(APPEND _MAGNUM_Text_DEPENDENCIES GL)
@@ -468,6 +470,7 @@ endif()
 set(_MAGNUM_Trade_DEPENDENCIES )
 set(_MAGNUM_VulkanTester_DEPENDENCIES Vk)
 set(_MAGNUM_AndroidApplication_DEPENDENCIES GL)
+
 set(_MAGNUM_EmscriptenApplication_DEPENDENCIES)
 if(MAGNUM_TARGET_GL)
     list(APPEND _MAGNUM_EmscriptenApplication_DEPENDENCIES GL)

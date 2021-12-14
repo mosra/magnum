@@ -51,8 +51,8 @@ endif()
 # # Objects shared between main and test library
 # add_library(MagnumShaderToolsObjects OBJECT
 #     ${MagnumShaderTools_SRCS}
-# #     ${MagnumShaderTools_HEADERS}
-# #     ${MagnumShaderTools_PRIVATE_HEADERS})
+#     ${MagnumShaderTools_HEADERS}
+#     ${MagnumShaderTools_PRIVATE_HEADERS})
 # target_include_directories(MagnumShaderToolsObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 # if(NOT BUILD_STATIC)
 #     target_compile_definitions(MagnumShaderToolsObjects PRIVATE "MagnumShaderToolsObjects_EXPORTS")
