@@ -43,10 +43,10 @@ namespace Magnum {
 @m_footernavigation
 @m_keywords{magnum-vk-info vk-info}
 
-This utility is built if both `WITH_VK` and `WITH_VK_INFO` is enabled when
-building Magnum. To use this utility with CMake, you need to request the
-`vk-info` component of the `Magnum` package and use the `Magnum::vk-info`
-target for example in a custom command:
+This utility is built if `WITH_VK_INFO` is enabled when building Magnum. To use
+this utility with CMake, you need to request the `vk-info` component of the
+`Magnum` package and use the `Magnum::vk-info` target for example in a custom
+command:
 
 @code{.cmake}
 find_package(Magnum REQUIRED vk-info)

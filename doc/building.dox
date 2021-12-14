@@ -610,26 +610,27 @@ There are also a few command-line utilities, also all disabled by default:
 
 -   `WITH_GL_INFO` --- Build the @ref magnum-gl-info "magnum-gl-info"
     executable, which provides information about the engine OpenGL
-    capabilities. Requires `TARGET_GL` to be enabled; enables building of one
-    of the windowless application libraries based on the target platform.
+    capabilities. Requires `TARGET_GL` to be enabled; enables also building of
+    the @ref GL library and one of the windowless application libraries based
+    on the target platform.
 -   `WITH_VK_INFO` --- Build the @ref magnum-vk-info "magnum-vk-info"
     executable, which provides information about the engine Vulkan
-    capabilities. Requires `TARGET_VK` to be enabled; enables building of the
-    @ref Vk library.
+    capabilities. Requires `TARGET_VK` to be enabled; enables also building of
+    the @ref Vk library.
 -   `WITH_AL_INFO` --- Build the @ref magnum-al-info "magnum-al-info"
     executable, which provides information about the engine OpenAL
-    capabilities.
+    capabilities. Enables also building of the @ref Audio library.
 -   `WITH_DISTANCEFIELDCONVERTER` --- Build the
     @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
     executable for converting black&white images to distance field textures.
-    Enables also building of the @ref TextureTools library. Available only on
-    desktop GL. Requires `TARGET_GL` to be enabled; enables building of one of
-    the windowless application libraries based on the target platform.
+    Available only on desktop GL. Requires `TARGET_GL` to be enabled; enables
+    also building of the @ref TextureTools and @ref GL libraries and one of the
+    windowless application libraries based on the target platform.
 -   `WITH_FONTCONVERTER` --- Build the @ref magnum-fontconverter "magnum-fontconverter"
-    executable for converting fonts of different formats. Enables also building
-    of the @ref Text library. Available only on desktop GL. Requires
-    `TARGET_GL` to be enabled; enables building of one of the windowless
-    application libraries based on the target platform.
+    executable for converting fonts of different formats. Available only on
+    desktop GL. Requires `TARGET_GL` to be enabled; enables also building of
+    the @ref Text and @ref GL libraries and one of the windowless application
+    libraries based on the target platform.
 -   `WITH_IMAGECONVERTER` --- Build the @ref magnum-imageconverter "magnum-imageconverter"
     executable for converting images of different formats. Enables also
     building of the @ref Trade library.

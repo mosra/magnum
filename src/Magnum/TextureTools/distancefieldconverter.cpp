@@ -72,11 +72,10 @@ namespace Magnum {
 @m_footernavigation
 @m_keywords{magnum-distancefieldconverter distancefieldconverter}
 
-This utility is built if both `WITH_TEXTURETOOLS` and
-`WITH_DISTANCEFIELDCONVERTER` is enabled when building Magnum. To use this
-utility with CMake, you need to request the `distancefieldconverter` component
-of the `Magnum` package and use the `Magnum::distancefieldconverter` target for
-example in a custom command:
+This utility is built if `WITH_DISTANCEFIELDCONVERTER` is enabled when building
+Magnum. To use this utility with CMake, you need to request the
+`distancefieldconverter` component of the `Magnum` package and use the
+`Magnum::distancefieldconverter` target for example in a custom command:
 
 @code{.cmake}
 find_package(Magnum REQUIRED distancefieldconverter)

@@ -39,11 +39,10 @@ namespace Magnum {
 
 @m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/al-info/">@m_div{m-big}Live web version @m_enddiv @m_div{m-small} uses WebAssembly & WebAudio @m_enddiv </a> @m_enddiv
 
-This utility depends on the [OpenAL](https://www.openal.org/) library. It is
-built if both `WITH_AUDIO` and `WITH_AL_INFO` is enabled when building Magnum.
-To use this utility with CMake, you need to request the `al-info` component of
-the `Magnum` package and use the `Magnum::al-info` target for example in a
-custom command:
+This utility is built if `WITH_AL_INFO` is enabled when building Magnum. To use
+this utility with CMake, you need to request the `al-info` component of the
+`Magnum` package and use the `Magnum::al-info` target for example in a custom
+command:
 
 @code{.cmake}
 find_package(Magnum REQUIRED al-info)
