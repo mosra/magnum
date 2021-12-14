@@ -1580,7 +1580,8 @@ void SceneDataTest::construct() {
 }
 
 void SceneDataTest::constructZeroFields() {
-    int importerState;
+    /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+    int importerState{};
     SceneData scene{SceneMappingType::UnsignedShort, 37563, nullptr, {}, &importerState};
     CORRADE_COMPARE(scene.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(scene.fieldData().empty());
@@ -1595,7 +1596,8 @@ void SceneDataTest::constructZeroFields() {
 }
 
 void SceneDataTest::constructZeroObjects() {
-    int importerState;
+    /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+    int importerState{};
     SceneFieldData meshes{SceneField::Mesh, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::UnsignedShort, nullptr};
     SceneFieldData materials{SceneField::MeshMaterial, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr};
     SceneData scene{SceneMappingType::UnsignedInt, 0, nullptr, {meshes, materials}, &importerState};
