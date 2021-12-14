@@ -93,12 +93,12 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialLayer value);
 Convenience aliases to actual attribute name strings. In most cases the alias
 is in the same form and capitalization --- so for example
 @ref MaterialAttribute::DoubleSided is an alias for @cpp "DoubleSided" @ce, the
-only exception is @ref MaterialAttribute::LayerName which is @cpp " LayerName" @ce (with a space at the front).
+only exception is @ref MaterialAttribute::LayerName which is
+@cpp " LayerName" @ce (with a space at the front).
 
-When this enum si used in
-@ref MaterialAttributeData constructors, the data are additionally checked for
-type compatibility. Other than that, there is no difference to the string
-variants.
+When this enum is used in @ref MaterialAttributeData constructors, the data are
+additionally checked for type compatibility. Other than that, there is no
+difference to the string variants.
 @see @ref MaterialAttributeData, @ref MaterialData
 */
 enum class MaterialAttribute: UnsignedInt {
