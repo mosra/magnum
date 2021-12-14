@@ -48,7 +48,9 @@
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Triple.h>
 
-#include "Magnum/Trade/Implementation/sceneTools.h"
+/* This is a header-only tool, meaning no link-time dependency on SceneTools */
+/** @todo once this compat is dropped, drop the header-only implementation */
+#include "Magnum/SceneTools/Implementation/convertToSingleFunctionObjects.h"
 
 #define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
 #define _MAGNUM_NO_DEPRECATED_OBJECTDATA /* So it doesn't yell here */
@@ -531,7 +533,7 @@ void AbstractImporter::populateCachedScenes() {
                compatibility code path anyway, so just skip the processing
                altogether in that case. */
             if(_cachedScenes->scenes[i]->hasField(SceneField::Parent))
-                _cachedScenes->scenes[i] = Implementation::sceneConvertToSingleFunctionObjects(*_cachedScenes->scenes[i], Containers::arrayView({SceneField::Mesh, SceneField::Camera, SceneField::Light}), Containers::arrayView({SceneField::Skin}), newObjectOffset);
+                _cachedScenes->scenes[i] = SceneTools::Implementation::convertToSingleFunctionObjects(*_cachedScenes->scenes[i], Containers::arrayView({SceneField::Mesh, SceneField::Camera, SceneField::Light}), Containers::arrayView({SceneField::Skin}), newObjectOffset);
 
             /* Return the 2D/3D object count based on which scenes are 2D and
                which not. The objectCount() provided by the importer is ignored

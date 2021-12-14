@@ -76,8 +76,7 @@ set(MagnumTrade_HEADERS
 set(MagnumTrade_PRIVATE_HEADERS
     Implementation/arrayUtilities.h
     Implementation/converterUtilities.h
-    Implementation/materialAttributeProperties.hpp
-    Implementation/sceneTools.h)
+    Implementation/materialAttributeProperties.hpp)
 
 if(MAGNUM_BUILD_DEPRECATED)
     list(APPEND MagnumTrade_SRCS

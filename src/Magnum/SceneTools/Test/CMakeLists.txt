@@ -22,3 +22,11 @@
 #   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #   DEALINGS IN THE SOFTWARE.
 #
+
+corrade_add_test(SceneToolsCombineTest CombineTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(SceneToolsConvertToSingleFunctionObjectsTest ConvertToSingleFunctionObjectsTest.cpp LIBRARIES MagnumTrade)
+
+set_target_properties(
+    SceneToolsCombineTest
+    SceneToolsConvertToSingleFunctionObjectsTest
+    PROPERTIES FOLDER "Magnum/SceneTools/Test")

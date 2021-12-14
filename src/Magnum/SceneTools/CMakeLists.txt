@@ -28,9 +28,14 @@ set(MagnumSceneTools_HEADERS
 
     visibility.h)
 
+set(MagnumSceneTools_PRIVATE_HEADERS
+    Implementation/combine.h
+    Implementation/convertToSingleFunctionObjects.h)
+
 # Main SceneTools library
 add_library(MagnumSceneTools INTERFACE
-    ${MagnumSceneTools_HEADERS})
+    ${MagnumSceneTools_HEADERS}
+    ${MagnumSceneTools_PRIVATE_HEADERS})
 set_target_properties(MagnumSceneTools PROPERTIES
     DEBUG_POSTFIX "-d"
     FOLDER "Magnum/SceneTools")
