@@ -24,9 +24,9 @@
 #
 
 corrade_add_test(SceneToolsCombineTest CombineTest.cpp LIBRARIES MagnumTrade)
-corrade_add_test(SceneToolsConvertToSingleFunctionObjectsTest ConvertToSingleFunctionObjectsTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(SceneToolsConvertToSingleFun___Test ConvertToSingleFunctionObjectsTest.cpp LIBRARIES MagnumTrade)
 
 set_target_properties(
     SceneToolsCombineTest
-    SceneToolsConvertToSingleFunctionObjectsTest
+    SceneToolsConvertToSingleFun___Test
     PROPERTIES FOLDER "Magnum/SceneTools/Test")
