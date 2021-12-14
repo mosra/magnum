@@ -1,0 +1,71 @@
+#
+#   This file is part of Magnum.
+#
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+#               2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
+#
+#   Permission is hereby granted, free of charge, to any person obtaining a
+#   copy of this software and associated documentation files (the "Software"),
+#   to deal in the Software without restriction, including without limitation
+#   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#   and/or sell copies of the Software, and to permit persons to whom the
+#   Software is furnished to do so, subject to the following conditions:
+#
+#   The above copyright notice and this permission notice shall be included
+#   in all copies or substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#   DEALINGS IN THE SOFTWARE.
+#
+
+set(MagnumSceneTools_HEADERS
+    SceneTools.h
+
+    visibility.h)
+
+# Main SceneTools library
+add_library(MagnumSceneTools INTERFACE
+    ${MagnumSceneTools_HEADERS})
+set_target_properties(MagnumSceneTools PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum/SceneTools")
+if(NOT BUILD_STATIC)
+    set_target_properties(MagnumSceneTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
+elseif(BUILD_STATIC_PIC)
+    set_target_properties(MagnumSceneTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+#target_link_libraries(MagnumSceneTools PUBLIC
+    #Magnum
+    #MagnumTrade)
+
+install(TARGETS MagnumSceneTools
+    RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+    LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+    ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+install(FILES ${MagnumSceneTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/SceneTools)
+
+if(BUILD_TESTS)
+    # Library with graceful assert for testing
+    add_library(MagnumSceneToolsTestLib INTERFACE )
+    #set_target_properties(MagnumSceneToolsTestLib PROPERTIES
+        #DEBUG_POSTFIX "-d"
+        #FOLDER "Magnum/SceneTools")
+    #target_compile_definitions(MagnumSceneToolsTestLib PRIVATE
+        #"CORRADE_GRACEFUL_ASSERT" "MagnumSceneTools_EXPORTS")
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumSceneToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+    #target_link_libraries(MagnumSceneToolsTestLib PUBLIC
+        #Magnum
+        #MagnumTrade)
+
+    add_subdirectory(Test)
+endif()
+
+# Magnum SceneTools target alias for superprojects
+add_library(Magnum::SceneTools ALIAS MagnumSceneTools)

@@ -196,6 +196,7 @@ the components. The optional components are:
 -   `MeshTools` --- @ref MeshTools library
 -   `Primitives` --- @ref Primitives library
 -   `SceneGraph` --- @ref SceneGraph library
+-   `SceneTools` --- @ref SceneTools library
 -   `Shaders` --- @ref Shaders library
 -   `ShaderTools` --- @ref ShaderTools library
 -   `Text` --- @ref Text library

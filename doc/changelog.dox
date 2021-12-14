@@ -177,6 +177,12 @@ See also:
 
 -   Added @ref SceneGraph::Object::move()
 
+@subsubsection changelog-latest-new-scenetools SceneTools library
+
+-   New @ref SceneTools library that'll be a home for various whole-scene
+    optimization algorithms such as hierarchy flattening, redundant node
+    removal and such
+
 @subsubsection changelog-latest-new-shaders Shaders library
 
 -   All builtin shaders now have opt-in support for uniform buffers on desktop,

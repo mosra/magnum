@@ -44,6 +44,7 @@ digraph "Magnum library dependency order" {
     MagnumOpenGLTester [label="Magnum\nOpenGLTester" class="m-info"]
     MagnumPrimitives [label="Magnum\nPrimitives" class="m-info"]
     MagnumSceneGraph [label="Magnum\nSceneGraph" class="m-info"]
+    MagnumSceneTools [label="Magnum\nSceneTools" class="m-info"]
     MagnumShaders [label="Magnum\nShaders" class="m-info"]
     MagnumShaderTools [label="Magnum\nShaderTools" class="m-info"]
     MagnumText [label="Magnum\nText" class="m-info"]
@@ -82,6 +83,8 @@ digraph "Magnum library dependency order" {
 
     MagnumPrimitives -> MagnumMeshTools
     MagnumPrimitives -> MagnumTrade
+
+    MagnumSceneTools -> MagnumTrade
 
     MagnumSceneGraph -> Magnum
 

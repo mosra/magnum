@@ -419,6 +419,32 @@ target_link_libraries(your-app PRIVATE Magnum::SceneGraph)
 See @ref building, @ref cmake and @ref scenegraph for more information.
 */
 
+/** @dir Magnum/SceneTools
+ * @brief Namespace @ref Magnum::SceneTools
+ * @m_since_latest
+ */
+/** @namespace Magnum::SceneTools
+@brief Scene tools
+@m_since_latest
+
+Scene manipulation and optimization tools.
+
+This library is built if `WITH_SCENETOOLS` is enabled when building Magnum. To
+use this library with CMake, request the `SceneTools` component of the
+`Magnum` package and link to the `Magnum::SceneTools` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED SceneTools)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::SceneTools)
+@endcode
+
+Additional utilities are built separately. See the
+@ref magnum-sceneconverter "magnum-sceneconverter" utility documentation,
+@ref building and @ref cmake for more information.
+*/
+
 /** @dir Magnum/Shaders
  * @brief Namespace @ref Magnum::Shaders
  */

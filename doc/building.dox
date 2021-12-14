@@ -488,6 +488,8 @@ specify which parts will be built and which not:
 -   `WITH_PRIMITIVES` --- Build the @ref Primitives library. Enables also
     building of the Trade library.
 -   `WITH_SCENEGRAPH` --- Build the @ref SceneGraph library
+-   `WITH_SCENETOOLS` --- Build the @ref SceneTools library. Enables also
+    building of the Trade library.
 -   `WITH_SHADERS` --- Build the @ref Shaders library. Enables also building of
     the GL library.
 -   `WITH_SHADERTOOLS` --- Build the @ref ShaderTools library

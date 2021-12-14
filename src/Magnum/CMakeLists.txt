@@ -214,6 +214,10 @@ if(WITH_SCENEGRAPH)
     add_subdirectory(SceneGraph)
 endif()
 
+if(WITH_SCENETOOLS)
+    add_subdirectory(SceneTools)
+endif()
+
 if(WITH_SHADERS)
     add_subdirectory(Shaders)
 endif()

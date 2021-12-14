@@ -60,6 +60,7 @@
 #  MeshTools                    - MeshTools library
 #  Primitives                   - Primitives library
 #  SceneGraph                   - SceneGraph library
+#  SceneTools                   - SceneTools library
 #  Shaders                      - Shaders library
 #  ShaderTools                  - ShaderTools library
 #  Text                         - Text library
@@ -229,7 +230,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
     # Unrolling the transitive dependencies here so this doesn't need to be
     # after resolving inter-component dependencies. Listing also all plugins.
-    if(_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|ShaderTools|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+Font|.+ShaderConverter)$")
+    if(_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|SceneTools|ShaderTools|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+Font|.+ShaderConverter)$")
         set(_MAGNUM_${_COMPONENT}_CORRADE_DEPENDENCIES PluginManager)
     endif()
 
@@ -354,8 +355,8 @@ endif()
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
 set(_MAGNUM_LIBRARY_COMPONENTS
-    Audio DebugTools GL MeshTools Primitives SceneGraph Shaders ShaderTools
-    Text TextureTools Trade
+    Audio DebugTools GL MeshTools Primitives SceneGraph SceneTools Shaders
+    ShaderTools Text TextureTools Trade
     WindowlessEglApplication EglContext OpenGLTester)
 set(_MAGNUM_PLUGIN_COMPONENTS
     AnyAudioImporter AnyImageConverter AnyImageImporter AnySceneConverter
@@ -452,6 +453,7 @@ if(MAGNUM_TARGET_GL)
     list(APPEND _MAGNUM_Primitives_DEPENDENCIES GL)
 endif()
 set(_MAGNUM_SceneGraph_DEPENDENCIES )
+set(_MAGNUM_SceneTools_DEPENDENCIES Trade)
 set(_MAGNUM_Shaders_DEPENDENCIES GL)
 set(_MAGNUM_Text_DEPENDENCIES TextureTools)
 if(MAGNUM_TARGET_GL)
