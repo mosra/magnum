@@ -173,6 +173,10 @@ See also:
     @ref Platform::WindowlessWindowsEglApplication and
     @ref Platform::Sdl2Application
 
+@subsubsection changelog-latest-new-scenegraph SceneGraph library
+
+-   Added @ref SceneGraph::Object::move()
+
 @subsubsection changelog-latest-new-shaders Shaders library
 
 -   All builtin shaders now have opt-in support for uniform buffers on desktop,
@@ -200,10 +204,6 @@ See also:
     conversion, compilation and optimization; together with a
     @ref ShaderTools::AnyConverter "AnyShaderConverter" plugin and a
     @ref magnum-shaderconverter "magnum-shaderconverter" utility
-
-@subsubsection changelog-latest-new-scenegraph SceneGraph library
-
--   Added @ref SceneGraph::Object::move()
 
 @subsubsection changelog-latest-new-trade Trade library
 
