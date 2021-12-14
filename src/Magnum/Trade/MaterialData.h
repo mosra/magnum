@@ -2906,20 +2906,26 @@ template<class T
     , class
     #endif
 > constexpr MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, const T& value) noexcept:
-    _data{Implementation::MaterialAttributeTypeFor<T>::type(),
+    _data{Implementation::MaterialAttributeTypeFor<T>::type(), (
+        /* It would sort before " LayerName" and that's not desirable */
+        CORRADE_CONSTEXPR_ASSERT(!name.isEmpty(), "Trade::MaterialAttributeData: name is not allowed to be empty"),
         /* MSVC 2015 complains about "error C2065: 'T': undeclared identifier"
            in the lambda inside this macro. Sorry, the assert will be less
            useful on that stupid thing. */
         #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        (CORRADE_CONSTEXPR_ASSERT(name.size() + sizeof(T) + 2 <= Implementation::MaterialAttributeDataSize, "Trade::MaterialAttributeData: name" << name << "too long, expected at most" << Implementation::MaterialAttributeDataSize - sizeof(T) - 2 << "bytes for" << Implementation::MaterialAttributeTypeFor<T>::type() << "but got" << name.size()), name)
+        CORRADE_CONSTEXPR_ASSERT(name.size() + sizeof(T) + 2 <= Implementation::MaterialAttributeDataSize, "Trade::MaterialAttributeData: name" << name << "too long, expected at most" << Implementation::MaterialAttributeDataSize - sizeof(T) - 2 << "bytes for" << Implementation::MaterialAttributeTypeFor<T>::type() << "but got" << name.size()),
         #else
-        (CORRADE_CONSTEXPR_ASSERT(name.size() + sizeof(T) + 2 <= Implementation::MaterialAttributeDataSize, "Trade::MaterialAttributeData: name" << name << "too long, got" << name.size() << "bytes"), name)
+        CORRADE_CONSTEXPR_ASSERT(name.size() + sizeof(T) + 2 <= Implementation::MaterialAttributeDataSize, "Trade::MaterialAttributeData: name" << name << "too long, got" << name.size() << "bytes"),
         #endif
-    , value} {}
+    name), value} {}
 
 /* The 4 extra bytes are for a null byte after both the name and value, a type
    and a string size */
-constexpr MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, const Containers::StringView value) noexcept: _data{(CORRADE_CONSTEXPR_ASSERT(name.size() + value.size() + 4 <= Implementation::MaterialAttributeDataSize, "Trade::MaterialAttributeData: name" << name << "and value" << value << "too long, expected at most" << Implementation::MaterialAttributeDataSize - 4 << "bytes in total but got" << name.size() + value.size()), name), value} {}
+constexpr MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, const Containers::StringView value) noexcept: _data{(
+        /* It would sort before " LayerName" and that's not desirable */
+        CORRADE_CONSTEXPR_ASSERT(!name.isEmpty(), "Trade::MaterialAttributeData: name is not allowed to be empty"),
+        CORRADE_CONSTEXPR_ASSERT(name.size() + value.size() + 4 <= Implementation::MaterialAttributeDataSize, "Trade::MaterialAttributeData: name" << name << "and value" << value << "too long, expected at most" << Implementation::MaterialAttributeDataSize - 4 << "bytes in total but got" << name.size() + value.size()),
+    name), value} {}
 
 template<class T> T MaterialAttributeData::value() const {
     CORRADE_ASSERT(Implementation::MaterialAttributeTypeFor<T>::type() == _data.type,

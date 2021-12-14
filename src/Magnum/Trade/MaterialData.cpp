@@ -130,6 +130,9 @@ std::size_t materialAttributeTypeSize(const MaterialAttributeType type) {
 }
 
 MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, const MaterialAttributeType type, const std::size_t size, const void* const value) noexcept: _data{} /* zero-initialized */ {
+    /* It would sort before " LayerName" and that's not desirable */
+    CORRADE_ASSERT(!name.isEmpty(), "Trade::MaterialAttributeData: name is not allowed to be empty", );
+
     /* Special handling for strings */
     if(type == MaterialAttributeType::String) {
         const auto& stringValue = *static_cast<const Containers::StringView*>(value);

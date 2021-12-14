@@ -73,6 +73,8 @@ class MaterialDataTest: public TestSuite::Tester {
         void constructAttributeInvalidLayerName();
         void constructAttributeWrongTypeForName();
         void constructAttributeInvalidType();
+        void constructAttributeEmptyName();
+        void constructAttributeEmptyNameString();
         void constructAttributeTooLarge();
         void constructAttributeTooLargeString();
         void constructAttributeTooLargeNameString();
@@ -214,6 +216,8 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructAttributeInvalidLayerName,
               &MaterialDataTest::constructAttributeWrongTypeForName,
               &MaterialDataTest::constructAttributeInvalidType,
+              &MaterialDataTest::constructAttributeEmptyName,
+              &MaterialDataTest::constructAttributeEmptyNameString,
               &MaterialDataTest::constructAttributeTooLarge,
               &MaterialDataTest::constructAttributeTooLargeString,
               &MaterialDataTest::constructAttributeTooLargeNameString,
@@ -705,6 +709,42 @@ void MaterialDataTest::constructAttributeInvalidType() {
     CORRADE_COMPARE(out.str(),
         "Trade::materialAttributeTypeSize(): invalid type Trade::MaterialAttributeType(0x0)\n"
         "Trade::materialAttributeTypeSize(): invalid type Trade::MaterialAttributeType(0xfe)\n");
+}
+
+void MaterialDataTest::constructAttributeEmptyName() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialAttributeData{"", Int{}};
+    /* Constexpr variant has the same assert, but in the header. It should have
+       the same output. */
+    /*constexpr*/ MaterialAttributeData{""_s, Int{}};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialAttributeData: name is not allowed to be empty\n"
+        "Trade::MaterialAttributeData: name is not allowed to be empty\n");
+}
+
+void MaterialDataTest::constructAttributeEmptyNameString() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    /* This has no reason to not be allowed */
+    MaterialAttributeData{"hello this string is empty", ""};
+    MaterialAttributeData{"hello this string is empty"_s, ""_s};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialAttributeData{"", "hello"};
+    /* Constexpr variant has the same assert, but in the header. It should have
+       the same output. */
+    /*constexpr*/ MaterialAttributeData{""_s, "hello"_s};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialAttributeData: name is not allowed to be empty\n"
+        "Trade::MaterialAttributeData: name is not allowed to be empty\n");
 }
 
 void MaterialDataTest::constructAttributeTooLarge() {
