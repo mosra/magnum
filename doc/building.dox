@@ -635,7 +635,7 @@ There are also a few command-line utilities, also all disabled by default:
     building of the @ref Trade library.
 -   `WITH_SCENECONVERTER` --- Build the @ref magnum-sceneconverter "magnum-sceneconverter"
     executable for converting scenes of different formats. Enables also
-    building of the @ref MeshTools library.
+    building of the @ref MeshTools and @ref SceneTools library.
 -   `WITH_SHADERCONVERTER` --- Build the @ref magnum-shaderconverter "magnum-shaderconverter"
     executable for converting scenes of different formats. Enables also
     building of the @ref ShaderTools library.

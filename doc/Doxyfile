@@ -925,8 +925,8 @@ WARN_LOGFILE           =
 INPUT                  = ../src/Magnum \
                          ../src/MagnumPlugins \
                          ../src/Magnum/Audio/al-info.cpp \
-                         ../src/Magnum/MeshTools/sceneconverter.cpp \
                          ../src/Magnum/Platform/gl-info.cpp \
+                         ../src/Magnum/SceneTools/sceneconverter.cpp \
                          ../src/Magnum/ShaderTools/shaderconverter.cpp \
                          ../src/Magnum/Text/fontconverter.cpp \
                          ../src/Magnum/TextureTools/distancefieldconverter.cpp \

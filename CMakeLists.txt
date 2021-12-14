@@ -113,7 +113,7 @@ cmake_dependent_option(WITH_AUDIO "Build Audio library" OFF "NOT WITH_AL_INFO;NO
 option(WITH_DEBUGTOOLS "Build DebugTools library" ON)
 cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" ON "NOT WITH_OBJIMPORTER;NOT WITH_SCENECONVERTER" ON)
 option(WITH_SCENEGRAPH "Build SceneGraph library" ON)
-option(WITH_SCENETOOLS "Build SceneTools library" ON)
+cmake_dependent_option(WITH_SCENETOOLS "Build SceneTools library" ON "NOT WITH_SCENECONVERTER" ON)
 option(WITH_SHADERS "Build Shaders library" ON)
 cmake_dependent_option(WITH_SHADERTOOLS "Build ShaderTools library" ON "NOT WITH_SHADERCONVERTER" ON)
 cmake_dependent_option(WITH_TEXT "Build Text library" ON "NOT WITH_FONTCONVERTER;NOT WITH_MAGNUMFONT;NOT WITH_MAGNUMFONTCONVERTER" ON)

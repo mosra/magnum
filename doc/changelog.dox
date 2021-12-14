@@ -334,16 +334,6 @@ See also:
     zero-fill while @ref Math::Matrix stays with the identity for consistency
     with other constructors.
 
-@subsubsection changelog-latest-changes-meshtools MeshTools library
-
--   Added a `--bounds` option to @ref magnum-sceneconverter "magnum-sceneconverter",
-    showing data ranges of known attributes
--   @ref magnum-sceneconverter "magnum-sceneconverter" now has separate
-    `--info-animations`, `--info-images`, `--info-lights`, `--info-materials`,
-    `--info-meshes`, `--info-skins` and `--info-textures` for printing
-    information just about particular data type, with `--info` being a shortcut
-    for all specified together
-
 @subsubsection changelog-latest-changes-platform Platform libraries
 
 -   Added a @ref Platform::GlfwApplication::setWindowIcon() overload taking a
@@ -379,6 +369,16 @@ See also:
 -   @ref SceneGraph trees are now destructed in a way that preserves
     @ref SceneGraph::Object::parent() links up to the root as well as
     @ref SceneGraph::AbstractFeature::object() references
+
+@subsubsection changelog-latest-changes-scenetools SceneTools library
+
+-   Added a `--bounds` option to @ref magnum-sceneconverter "magnum-sceneconverter",
+    showing data ranges of known attributes
+-   @ref magnum-sceneconverter "magnum-sceneconverter" now has separate
+    `--info-animations`, `--info-images`, `--info-lights`, `--info-materials`,
+    `--info-meshes`, `--info-skins` and `--info-textures` for printing
+    information just about particular data type, with `--info` being a shortcut
+    for all specified together
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
