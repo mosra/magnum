@@ -188,6 +188,14 @@ if(WITH_SCENEGRAPH)
     endif()
 endif()
 
+if(WITH_SCENETOOLS)
+    add_library(snippets-MagnumSceneTools STATIC
+        MagnumSceneTools.cpp)
+    target_link_libraries(snippets-MagnumSceneTools PRIVATE MagnumSceneTools)
+    set_target_properties(snippets-MagnumSceneTools
+        PROPERTIES FOLDER "Magnum/doc/snippets")
+endif()
+
 if(WITH_VK)
     add_library(snippets-MagnumVk STATIC MagnumVk.cpp)
     target_link_libraries(snippets-MagnumVk PRIVATE MagnumVk)
