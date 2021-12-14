@@ -36,8 +36,8 @@ namespace Magnum { namespace ShaderTools {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractConverter;
-#endif
 enum class Stage: UnsignedInt;
+#endif
 
 }}
 
