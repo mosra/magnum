@@ -24,11 +24,19 @@
 */
 
 #include <array>
+#include <sstream>
+#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/Algorithms.h>
+#include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/Transform.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
@@ -40,6 +48,212 @@ struct TransformTest: TestSuite::Tester {
 
     void transformPoints2D();
     void transformPoints3D();
+
+    template<class T> void meshData2D();
+    void meshData2DNoPosition();
+    void meshData2DNot2D();
+    void meshData2DRvaluePassthrough();
+    void meshData2DRvaluePassthroughIndexDataNotOwned();
+    void meshData2DRvaluePassthroughVertexDataNotOwned();
+    void meshData2DRvaluePassthroughNoPosition();
+    void meshData2DRvaluePassthroughWrongFormat();
+    /* in-place variant called from the others and as such tested sufficiently,
+       except for the asserts below */
+    void meshData2DInPlaceNotMutable();
+    void meshData2DInPlaceNoPosition();
+    void meshData2DInPlaceWrongFormat();
+
+    template<class T, class U, class V, class W> void meshData3D();
+    void meshData3DNoPosition();
+    void meshData3DNot3D();
+    void meshData3DRvaluePassthrough();
+    void meshData3DRvaluePassthroughIndexDataNotOwned();
+    void meshData3DRvaluePassthroughVertexDataNotOwned();
+    void meshData3DRvaluePassthroughNoPosition();
+    void meshData3DRvaluePassthroughWrongFormat();
+    /* in-place variant called from the others and as such tested sufficiently,
+       except for the asserts below */
+    void meshData3DInPlaceNotMutable();
+    void meshData3DInPlaceNoPosition();
+    void meshData3DInPlaceWrongFormat();
+
+    template<class T> void meshDataTextureCoordinates2D();
+    void meshDataTextureCoordinates2DNoCoordinates();
+    void meshDataTextureCoordinates2DRvaluePassthrough();
+    void meshDataTextureCoordinates2DRvaluePassthroughIndexDataNotOwned();
+    void meshDataTextureCoordinates2DRvaluePassthroughVertexDataNotOwned();
+    void meshDataTextureCoordinates2DRvaluePassthroughNoCoordinates();
+    void meshDataTextureCoordinates2DRvaluePassthroughWrongFormat();
+    /* in-place variant called from the others and as such tested sufficiently,
+       except for the asserts below */
+    void meshDataTextureCoordinates2DInPlaceNotMutable();
+    void meshDataTextureCoordinates2DInPlaceNoCoordinates();
+    void meshDataTextureCoordinates2DInPlaceWrongFormat();
+};
+
+using namespace Math::Literals;
+
+const struct {
+    const char* name;
+    bool indexed;
+    UnsignedInt id;
+    Matrix3 transformation;
+} MeshData2DData[]{
+    {"", false, 0,
+        Matrix3::translation({1.5f, 3.0f})*
+        Matrix3::rotation(35.0_degf)},
+    {"indexed", true, 0,
+        Matrix3::translation({1.5f, 3.0f})*
+        Matrix3::rotation(35.0_degf)},
+    {"second set", false, 1,
+        Matrix3::translation({1.5f, 3.0f})*
+        Matrix3::rotation(35.0_degf)}
+    /** @todo negative scaling that flips face winding */
+};
+
+const struct {
+    const char* name;
+    bool indexed;
+    UnsignedInt id;
+} MeshData2DRvaluePassthroughData[]{
+    {"", false, 0},
+    {"indexed", true, 0},
+    {"second set", false, 1}
+};
+
+const struct {
+    const char* name;
+    bool indexed;
+    bool tangents, tangents4, bitangents, normals;
+    UnsignedInt id;
+    Matrix4 transformation;
+    Matrix3x3 expectedNormalTransformation;
+} MeshData3DData[]{
+    {"", false, false, false, false, false, 0,
+        Matrix4::translation({1.5f, 3.0f, -0.5f})*
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"indexed", true, false, false, false, false, 0,
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"normals", false, false, false, false, true, 0,
+        Matrix4::translation({1.5f, 3.0f, -0.5f})*
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"tangents", false, true, false, false, false, 0,
+        Matrix4::translation({1.5f, 3.0f, -0.5f})*
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"four-component tangents", false, true, true, false, false, 0,
+        Matrix4::translation({1.5f, 3.0f, -0.5f})*
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"bitangents", false, false, false, true, false, 0,
+        Matrix4::translation({1.5f, 3.0f, -0.5f})*
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"all + indexed", true, true, true, true, true, 0,
+        Matrix4::translation({1.5f, 3.0f, -0.5f})*
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"second set ", false, false, false, false, false, 1,
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"second set + normals", false, false, false, false, true, 1,
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"second set + tangents", false, true, false, false, false, 1,
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"second set + four-component tangents", false, true, true, false, false, 1,
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"second set + bitangents", false, false, false, true, false, 1,
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"second set + all + indexed", true, true, true, true, true, 1,
+        Matrix4::rotationX(35.0_degf),
+        Matrix4::rotationX(35.0_degf).rotationScaling()},
+    {"non-uniform scaling", false, true, true, true, true, 0,
+        Matrix4::translation({1.5f, 3.0f, -0.5f})*
+        Matrix4::rotationX(35.0_degf)*
+        Matrix4::scaling({2.0f, 1.0f, 0.5f}),
+       (Matrix4::rotationX(35.0_degf)*
+        Matrix4::scaling({2.0f, 1.0f, 0.5f})).normalMatrix()},
+    /** @todo negative scaling that flips face winding */
+};
+
+const struct {
+    const char* name;
+    bool indexed;
+    bool tangents, tangents4, bitangents, normals;
+    UnsignedInt id;
+} MeshData3DRvaluePassthroughData[]{
+    {"", false, false, false, false, false, 0},
+    {"indexed", true, false, false, false, false, 0},
+    {"normals", false, false, false, false, true, 0},
+    {"tangents", false, true, false, false, false, 0},
+    {"four-component tangents", false, true, true, false, false, 0},
+    {"bitangents", false, false, false, true, false, 0},
+    {"all + indexed", true, true, true, true, true, 0},
+    {"second set ", false, false, false, false, false, 1},
+    {"second set + normals", false, false, false, false, true, 1},
+    {"second set + tangents", false, true, false, false, false, 1},
+    {"second set + four-component tangents", false, true, true, false, false, 1},
+    {"second set + bitangents", false, false, false, true, false, 1},
+    {"second set + all + indexed", true, true, true, true, true, 1},
+};
+
+const struct {
+    const char* name;
+    VertexFormat positionFormat;
+    VertexFormat tangentFormat;
+    VertexFormat bitangentFormat;
+    VertexFormat normalFormat;
+    const char* message;
+} MeshData3DWrongFormatData[]{
+    {"packed positions", VertexFormat::Vector3b,
+        VertexFormat{}, VertexFormat{}, VertexFormat{},
+        "MeshTools::transform3DInPlace(): expected VertexFormat::Vector3 positions but got VertexFormat::Vector3b\n"},
+    {"packed normals", VertexFormat::Vector3,
+        VertexFormat{}, VertexFormat{}, VertexFormat::Vector3sNormalized,
+        "MeshTools::transform3DInPlace(): expected VertexFormat::Vector3 normals but got VertexFormat::Vector3sNormalized\n"},
+    {"packed tangents", VertexFormat::Vector3,
+        VertexFormat::Vector3bNormalized, VertexFormat{}, VertexFormat{},
+        "MeshTools::transform3DInPlace(): expected VertexFormat::Vector3 or VertexFormat::Vector4 tangents but got VertexFormat::Vector3bNormalized\n"},
+    {"packed four-component tangents", VertexFormat::Vector3,
+        VertexFormat::Vector4bNormalized, VertexFormat{}, VertexFormat{},
+        "MeshTools::transform3DInPlace(): expected VertexFormat::Vector3 or VertexFormat::Vector4 tangents but got VertexFormat::Vector4bNormalized\n"},
+    {"packed bitangents", VertexFormat::Vector3,
+        VertexFormat{}, VertexFormat::Vector3h, VertexFormat{},
+        "MeshTools::transform3DInPlace(): expected VertexFormat::Vector3 bitangents but got VertexFormat::Vector3h\n"}
+};
+
+const struct {
+    const char* name;
+    bool indexed;
+    UnsignedInt id;
+    Matrix3 transformation;
+} MeshDataTextureCoordinatesData[]{
+    {"", false, 0,
+        Matrix3::translation({1.5f, 3.0f})*
+        Matrix3::rotation(35.0_degf)},
+    {"indexed", true, 0,
+        Matrix3::translation({1.5f, 3.0f})*
+        Matrix3::rotation(35.0_degf)},
+    {"second set", false, 1,
+        Matrix3::translation({1.5f, 3.0f})*
+        Matrix3::rotation(35.0_degf)}
+};
+
+const struct {
+    const char* name;
+    bool indexed;
+    UnsignedInt id;
+} MeshDataTextureCoordinatesRvaluePassthroughData[]{
+    {"", false, 0},
+    {"indexed", true, 0},
+    {"second set", false, 1}
 };
 
 TransformTest::TransformTest() {
@@ -48,6 +262,70 @@ TransformTest::TransformTest() {
 
               &TransformTest::transformPoints2D,
               &TransformTest::transformPoints3D});
+
+    addInstancedTests<TransformTest>({
+        &TransformTest::meshData2D<Float>,
+        &TransformTest::meshData2D<Half>
+    }, Containers::arraySize(MeshData2DData));
+
+    addTests({&TransformTest::meshData2DNoPosition,
+              &TransformTest::meshData2DNot2D});
+
+    addInstancedTests({&TransformTest::meshData2DRvaluePassthrough},
+        Containers::arraySize(MeshData2DRvaluePassthroughData));
+
+    addTests({&TransformTest::meshData2DRvaluePassthroughIndexDataNotOwned,
+              &TransformTest::meshData2DRvaluePassthroughVertexDataNotOwned,
+              &TransformTest::meshData2DRvaluePassthroughNoPosition,
+              &TransformTest::meshData2DRvaluePassthroughWrongFormat});
+
+    addTests({&TransformTest::meshData2DInPlaceNotMutable,
+              &TransformTest::meshData2DInPlaceNoPosition,
+              &TransformTest::meshData2DInPlaceWrongFormat});
+
+    addInstancedTests<TransformTest>({
+        &TransformTest::meshData3D<Float, Float, Float, Float>,
+        &TransformTest::meshData3D<Half, Float, Half, Float>,
+        &TransformTest::meshData3D<Float, Half, Float, Half>,
+    }, Containers::arraySize(MeshData3DData));
+
+    addTests({&TransformTest::meshData3DNoPosition,
+              &TransformTest::meshData3DNot3D});
+
+    addInstancedTests({&TransformTest::meshData3DRvaluePassthrough},
+        Containers::arraySize(MeshData3DRvaluePassthroughData));
+
+    addTests({&TransformTest::meshData3DRvaluePassthroughIndexDataNotOwned,
+              &TransformTest::meshData3DRvaluePassthroughVertexDataNotOwned,
+              &TransformTest::meshData3DRvaluePassthroughNoPosition});
+
+    addInstancedTests({&TransformTest::meshData3DRvaluePassthroughWrongFormat},
+        Containers::arraySize(MeshData3DWrongFormatData));
+
+    addTests({&TransformTest::meshData3DInPlaceNotMutable,
+              &TransformTest::meshData3DInPlaceNoPosition});
+
+    addInstancedTests({&TransformTest::meshData3DInPlaceWrongFormat},
+        Containers::arraySize(MeshData3DWrongFormatData));
+
+    addInstancedTests<TransformTest>({
+        &TransformTest::meshDataTextureCoordinates2D<Float>,
+        &TransformTest::meshDataTextureCoordinates2D<Half>
+    }, Containers::arraySize(MeshDataTextureCoordinatesData));
+
+    addTests({&TransformTest::meshDataTextureCoordinates2DNoCoordinates});
+
+    addInstancedTests({&TransformTest::meshDataTextureCoordinates2DRvaluePassthrough},
+        Containers::arraySize(MeshDataTextureCoordinatesRvaluePassthroughData));
+
+    addTests({&TransformTest::meshDataTextureCoordinates2DRvaluePassthroughIndexDataNotOwned,
+              &TransformTest::meshDataTextureCoordinates2DRvaluePassthroughVertexDataNotOwned,
+              &TransformTest::meshDataTextureCoordinates2DRvaluePassthroughNoCoordinates,
+              &TransformTest::meshDataTextureCoordinates2DRvaluePassthroughWrongFormat});
+
+    addTests({&TransformTest::meshDataTextureCoordinates2DInPlaceNotMutable,
+              &TransformTest::meshDataTextureCoordinates2DInPlaceNoCoordinates,
+              &TransformTest::meshDataTextureCoordinates2DInPlaceWrongFormat});
 }
 
 constexpr static std::array<Vector2, 2> points2D{{
@@ -114,6 +392,1180 @@ void TransformTest::transformPoints3D() {
 
     CORRADE_COMPARE(matrix, points3DRotatedTranslated);
     CORRADE_COMPARE(quaternion, points3DRotatedTranslated);
+}
+
+template<class T> void TransformTest::meshData2D() {
+    auto&& data = MeshData2DData[testCaseInstanceId()];
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+    setTestCaseDescription(data.name);
+
+    const UnsignedShort indices[]{
+        1, 2, 0
+    };
+    const struct Vertex {
+        Vector2b secondaryPosition;
+        Math::Vector2<T> position;
+        Float somethingElse;
+    } vertices[]{
+        {{15, -34}, {T(0.0), T(0.0)}, 7.0f},
+        {{11, -25}, {T(1.0), T(0.0)}, 5.5f},
+        {{16, -27}, {T(0.0), T(2.0)}, 3.0f}
+    };
+    Containers::StridedArrayView1D<const Vertex> view = vertices;
+
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    if(data.id == 1)
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Position, view.slice(&Vertex::secondaryPosition)});
+    else CORRADE_COMPARE(data.id, 0);
+    arrayAppend(attributes, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, view.slice(&Vertex::position)},
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(0), view.slice(&Vertex::somethingElse)}
+    });
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        {}, data.indexed ? Containers::arrayView(indices) : nullptr,
+        data.indexed ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
+        {}, vertices, std::move(attributes)};
+    CORRADE_COMPARE(mesh.isIndexed(), data.indexed);
+
+    Trade::MeshData out = transform2D(mesh, data.transformation, data.id);
+
+    /* Indices should be preserved */
+    if(data.indexed) {
+        CORRADE_VERIFY(out.isIndexed());
+        CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+            Containers::arrayView(indices),
+            TestSuite::Compare::Container);
+    }
+
+    /* The extra attribute should be preserved */
+    CORRADE_COMPARE(out.attributeCount(), mesh.attributeCount());
+    CORRADE_COMPARE_AS(out.attribute<Float>(Trade::meshAttributeCustom(0)),
+        view.slice(&Vertex::somethingElse),
+        TestSuite::Compare::Container);
+
+    /* The vertices should be expanded to floats and transformed */
+    CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::Position, data.id), VertexFormat::Vector2);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position, data.id), Containers::arrayView({
+        data.transformation.transformPoint({0.0f, 0.0f}),
+        data.transformation.transformPoint({1.0f, 0.0f}),
+        data.transformation.transformPoint({0.0f, 2.0f})
+    }), TestSuite::Compare::Container);
+}
+
+void TransformTest::meshData2DNoPosition() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform2D(mesh, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transform2D(): the mesh has no positions with index 1\n");
+}
+
+void TransformTest::meshData2DNot2D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform2D(mesh, {});
+    CORRADE_COMPARE(out.str(), "MeshTools::transform2D(): expected 2D positions but got VertexFormat::Vector3\n");
+}
+
+void TransformTest::meshData2DRvaluePassthrough() {
+    auto&& data = MeshData2DRvaluePassthroughData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    /* Not using copy({...}) as we'd have no way to compare against the
+       original unchanged data */
+    const UnsignedShort indicesExpected[]{1, 2, 0};
+    Utility::copy(indicesExpected, indices);
+
+    struct Vertex {
+        Vector2b secondaryPosition;
+        Vector2 position;
+    };
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
+    auto vertices = stridedArrayView(Containers::arrayCast<Vertex>(vertexData));
+    Utility::copy({
+        {{15, -34}, {0.0f, 0.0f}},
+        {{11, -25}, {1.0f, 0.0f}},
+        {{16, -27}, {0.0f, 2.0f}}
+    }, vertices);
+
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    if(data.id == 1)
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::secondaryPosition)});
+    else CORRADE_COMPARE(data.id, 0);
+    arrayAppend(attributes, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)}
+    });
+    const void* originalAttributeData = attributes;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        data.indexed ? std::move(indexData) : nullptr,
+        data.indexed ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
+        std::move(vertexData), std::move(attributes)};
+
+    const Matrix3 transformation = Matrix3::rotation(35.0_degf);
+    Trade::MeshData out = transform2D(std::move(mesh), transformation, data.id);
+
+    /* Indices should be passed through unchanged */
+    if(data.indexed) {
+        CORRADE_VERIFY(out.isIndexed());
+        CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+            Containers::arrayView(indicesExpected),
+            TestSuite::Compare::Container);
+    }
+
+    /* The vertices should be expanded to floats and transformed */
+    CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::Position, data.id), VertexFormat::Vector2);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position, data.id), Containers::arrayView({
+        transformation.transformPoint({0.0f, 0.0f}),
+        transformation.transformPoint({1.0f, 0.0f}),
+        transformation.transformPoint({0.0f, 2.0f})
+    }), TestSuite::Compare::Container);
+
+    /* The memory should point to the original data */
+    if(data.indexed)
+        CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
+    CORRADE_COMPARE(out.vertexData().data(), static_cast<void*>(vertices.data()));
+    CORRADE_COMPARE(out.attributeData().data(), originalAttributeData);
+}
+
+void TransformTest::meshData2DRvaluePassthroughIndexDataNotOwned() {
+    const UnsignedShort indices[]{
+        1, 2, 0
+    };
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vector2)};
+    auto vertices = Containers::arrayCast<Vector2>(vertexData);
+    Utility::copy({
+        {0.0f, 0.0f},
+        {1.0f, 0.0f},
+        {0.0f, 2.0f}
+    }, vertices);
+
+    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices}
+    }};
+    const void* originalAttributeData = attributes;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        {}, indices, Trade::MeshIndexData{indices},
+        std::move(vertexData), std::move(attributes)};
+
+    const Matrix3 transformation = Matrix3::rotation(35.0_degf);
+    Trade::MeshData out = transform2D(std::move(mesh), transformation);
+
+    /* Indices should be passed through unchanged */
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+        Containers::arrayView(indices),
+        TestSuite::Compare::Container);
+
+    /* The vertices should be transformed */
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position), Containers::arrayView({
+        transformation.transformPoint({0.0f, 0.0f}),
+        transformation.transformPoint({1.0f, 0.0f}),
+        transformation.transformPoint({0.0f, 2.0f})
+    }), TestSuite::Compare::Container);
+
+    /* The memory should not point to the original data */
+    CORRADE_VERIFY(out.indexData().data() != static_cast<const void*>(indices));
+    CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
+    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
+}
+
+void TransformTest::meshData2DRvaluePassthroughVertexDataNotOwned() {
+    Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    /* Not using copy({...}) as we'd have no way to compare against the
+       original unchanged data */
+    const UnsignedShort indicesExpected[]{1, 2, 0};
+    Utility::copy(indicesExpected, indices);
+    const Vector2 vertices[]{
+        {0.0f, 0.0f},
+        {1.0f, 0.0f},
+        {0.0f, 2.0f}
+    };
+
+    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertices)}
+    }};
+    const void* originalAttributeData = attributes;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        std::move(indexData), Trade::MeshIndexData{indices},
+        {}, vertices, std::move(attributes)};
+
+    const Matrix3 transformation = Matrix3::rotation(35.0_degf);
+    Trade::MeshData out = transform2D(std::move(mesh), transformation);
+
+    /* Indices should be passed through unchanged */
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+        Containers::arrayView(indices),
+        TestSuite::Compare::Container);
+
+    /* The vertices should be transformed */
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position), Containers::arrayView({
+        transformation.transformPoint({0.0f, 0.0f}),
+        transformation.transformPoint({1.0f, 0.0f}),
+        transformation.transformPoint({0.0f, 2.0f})
+    }), TestSuite::Compare::Container);
+
+    /* The memory should not point to the original data */
+    CORRADE_VERIFY(out.indexData().data() != static_cast<void*>(indices.data()));
+    CORRADE_VERIFY(out.vertexData().data() != static_cast<const void*>(vertices));
+    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
+}
+
+void TransformTest::meshData2DRvaluePassthroughNoPosition() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    /* Mainly to verify there's no other accidental assertion from checking
+       vertex format, this message comes from the l-value overload */
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform2D(Trade::MeshData{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
+    }}, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transform2D(): the mesh has no positions with index 1\n");
+}
+
+void TransformTest::meshData2DRvaluePassthroughWrongFormat() {
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vector2ub)};
+    auto vertices = Containers::arrayCast<Vector2ub>(vertexData);
+    Utility::copy({
+        {0, 0},
+        {1, 0},
+        {0, 2}
+    }, vertices);
+
+    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices}
+    }};
+    const void* originalAttributeData = attributes;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        std::move(vertexData), std::move(attributes)};
+
+    const Matrix3 transformation = Matrix3::rotation(35.0_degf);
+    Trade::MeshData out = transform2D(std::move(mesh), transformation);
+
+    /* The vertices should be expanded to floats and transformed */
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position), Containers::arrayView({
+        transformation.transformPoint({0.0f, 0.0f}),
+        transformation.transformPoint({1.0f, 0.0f}),
+        transformation.transformPoint({0.0f, 2.0f})
+    }), TestSuite::Compare::Container);
+
+    /* The memory should not point to the original data */
+    CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
+    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
+}
+
+void TransformTest::meshData2DInPlaceNotMutable() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, Trade::DataFlags{}, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform2DInPlace(mesh, {});
+    CORRADE_COMPARE(out.str(), "MeshTools::transform2DInPlace(): vertex data not mutable\n");
+}
+
+void TransformTest::meshData2DInPlaceNoPosition() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform2DInPlace(mesh, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transform2DInPlace(): the mesh has no positions with index 1\n");
+}
+
+void TransformTest::meshData2DInPlaceWrongFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2us, nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform2DInPlace(mesh, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transform2DInPlace(): expected VertexFormat::Vector2 positions but got VertexFormat::Vector2us\n");
+}
+
+template<class T, class U, class V, class W> void TransformTest::meshData3D() {
+    auto&& data = MeshData3DData[testCaseInstanceId()];
+    setTestCaseTemplateName({Math::TypeTraits<T>::name(),
+                             Math::TypeTraits<U>::name(),
+                             Math::TypeTraits<V>::name(),
+                             Math::TypeTraits<W>::name()});
+    setTestCaseDescription(data.name);
+
+    const UnsignedShort indices[]{
+        1, 2, 0
+    };
+    const struct Vertex {
+        Vector3b secondaryPositionTangentBitangentNormal;
+        Math::Vector3<T> position;
+        Math::Vector4<U> tangent;
+        Math::Vector3<V> bitangent;
+        Math::Vector3<W> normal;
+        Float somethingElse;
+    } vertices[]{
+        /** @todo use some *real* values here to verify the handedness change
+            also */
+        {{15, -34, 6}, {T(0.0), T(0.0), T(-1.0)},
+                       {U(0.0), U(1.0), U(0.0), U(1.0)},
+                       {V(-1.0), V(0.0), V(0.0)},
+                       {W(0.0), W(0.0), W(1.0)}, 7.0f},
+        {{11, -25, 3}, {T(1.0), T(0.0), T(-2.0)},
+                       {U(1.0), U(0.0), U(0.0), U(1.0)},
+                       {V(0.0), V(-1.0), V(0.0)},
+                       {W(0.0), W(0.0), W(1.0)}, 5.5f},
+        {{16, -27, 0}, {T(0.0), T(2.0), T(-1.0)},
+                       {U(0.0), U(1.0), U(0.0), U(-1.0)},
+                       {V(0.0), V(0.0), V(-1.0)},
+                       {W(1.0), W(0.0), W(0.0)}, 3.0f}
+    };
+    Containers::StridedArrayView1D<const Vertex> view = vertices;
+
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    if(data.id == 1) {
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Position, view.slice(&Vertex::secondaryPositionTangentBitangentNormal)});
+        if(data.tangents)
+            arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, VertexFormat::Vector3bNormalized, view.slice(&Vertex::secondaryPositionTangentBitangentNormal)});
+        if(data.bitangents)
+            arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, VertexFormat::Vector3bNormalized, view.slice(&Vertex::secondaryPositionTangentBitangentNormal)});
+        if(data.normals)
+            arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3bNormalized, view.slice(&Vertex::secondaryPositionTangentBitangentNormal)});
+    } else CORRADE_COMPARE(data.id, 0);
+    arrayAppend(attributes, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, view.slice(&Vertex::position)},
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(0), view.slice(&Vertex::somethingElse)}
+    });
+    if(data.tangents)
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, data.tangents4 ? Trade::Implementation::vertexFormatFor<Math::Vector4<U>>() : Trade::Implementation::vertexFormatFor<Math::Vector3<U>>(), view.slice(&Vertex::tangent)});
+    if(data.bitangents)
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, view.slice(&Vertex::bitangent)});
+    if(data.normals)
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, view.slice(&Vertex::normal)});
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        {}, data.indexed ? Containers::arrayView(indices) : nullptr,
+        data.indexed ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
+        {}, vertices, std::move(attributes)};
+    CORRADE_COMPARE(mesh.isIndexed(), data.indexed);
+
+    Trade::MeshData out = transform3D(mesh, data.transformation, data.id);
+
+    /* Indices should be preserved */
+    if(data.indexed) {
+        CORRADE_VERIFY(out.isIndexed());
+        CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+            Containers::arrayView(indices),
+            TestSuite::Compare::Container);
+    }
+
+    /* The extra attribute should be preserved */
+    CORRADE_COMPARE(out.attributeCount(), mesh.attributeCount());
+    CORRADE_COMPARE_AS(out.attribute<Float>(Trade::meshAttributeCustom(0)),
+        view.slice(&Vertex::somethingElse),
+        TestSuite::Compare::Container);
+
+    /* The vertices should be expanded to floats and transformed */
+    CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::Position, data.id), VertexFormat::Vector3);
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position, data.id), Containers::arrayView({
+        data.transformation.transformPoint({0.0f, 0.0f, -1.0f}),
+        data.transformation.transformPoint({1.0f, 0.0f, -2.0f}),
+        data.transformation.transformPoint({0.0f, 2.0f, -1.0f})
+    }), TestSuite::Compare::Container);
+
+    /** @todo verify it stays orthogonal */
+    const Matrix3x3 normalMatrix = data.transformation.normalMatrix();
+
+    if(data.tangents) {
+        CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::Tangent, data.id), data.tangents4 ? VertexFormat::Vector4 : VertexFormat::Vector3);
+        if(data.tangents4)
+            CORRADE_COMPARE_AS(out.attribute<Vector4>(Trade::MeshAttribute::Tangent, data.id), Containers::arrayView<Vector4>({
+                {normalMatrix*Vector3{0.0f, 1.0f, 0.0f}, 1.0f},
+                {normalMatrix*Vector3{1.0f, 0.0f, 0.0f}, 1.0f},
+                {normalMatrix*Vector3{0.0f, 1.0f, 0.0f}, -1.0f}
+            }), TestSuite::Compare::Container);
+        else
+            CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Tangent, data.id), Containers::arrayView<Vector3>({
+                normalMatrix*Vector3{0.0f, 1.0f, 0.0f},
+                normalMatrix*Vector3{1.0f, 0.0f, 0.0f},
+                normalMatrix*Vector3{0.0f, 1.0f, 0.0f}
+            }), TestSuite::Compare::Container);
+    }
+
+    if(data.bitangents) {
+        CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::Bitangent, data.id), VertexFormat::Vector3);
+        CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Bitangent, data.id), Containers::arrayView<Vector3>({
+            normalMatrix*Vector3{-1.0f, 0.0f, 0.0f},
+            normalMatrix*Vector3{0.0f, -1.0f, 0.0f},
+            normalMatrix*Vector3{0.0f, 0.0f, -1.0f}
+        }), TestSuite::Compare::Container);
+    }
+
+    if(data.normals) {
+        CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::Normal, data.id), VertexFormat::Vector3);
+        CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Normal, data.id), Containers::arrayView<Vector3>({
+            normalMatrix*Vector3{0.0f, 0.0f, 1.0f},
+            normalMatrix*Vector3{0.0f, 0.0f, 1.0f},
+            normalMatrix*Vector3{1.0f, 0.0f, 0.0f}
+        }), TestSuite::Compare::Container);
+    }
+}
+
+void TransformTest::meshData3DNoPosition() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform3D(mesh, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transform3D(): the mesh has no positions with index 1\n");
+}
+
+void TransformTest::meshData3DNot3D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform3D(mesh, {});
+    CORRADE_COMPARE(out.str(), "MeshTools::transform3D(): expected 3D positions but got VertexFormat::Vector2\n");
+}
+
+void TransformTest::meshData3DRvaluePassthrough() {
+    auto&& data = MeshData3DRvaluePassthroughData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    /* Not using copy({...}) as we'd have no way to compare against the
+       original unchanged data */
+    const UnsignedShort indicesExpected[]{1, 2, 0};
+    Utility::copy(indicesExpected, indices);
+
+    struct Vertex {
+        Vector3b secondaryPositionTangentBitangentNormal;
+        Vector3 position;
+        Vector4 tangent;
+        Vector3 bitangent;
+        Vector3 normal;
+    };
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
+    auto vertices = stridedArrayView(Containers::arrayCast<Vertex>(vertexData));
+    Utility::copy({
+        {{15, -34, 6}, {0.0f, 0.0f, -1.0f},
+                       {0.0f, 1.0f, 0.0f, 1.0f},
+                       {-1.0f, 0.0f, 0.0f},
+                       {0.0f, 0.0f, 1.0f}},
+        {{11, -25, 3}, {1.0f, 0.0f, -2.0f},
+                       {1.0f, 0.0f, 0.0f, 1.0f},
+                       {0.0f, -1.0f, 0.0f},
+                       {0.0f, 0.0f, 1.0f}},
+        {{16, -27, 0}, {0.0f, 2.0f, -1.0f},
+                       {0.0f, 1.0f, 0.0f, -1.0f},
+                       {0.0f, 0.0f, -1.0f},
+                       {1.0f, 0.0f, 0.0f}}
+    }, vertices);
+
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    if(data.id == 1) {
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::secondaryPositionTangentBitangentNormal)});
+        if(data.tangents)
+            arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, VertexFormat::Vector3bNormalized, vertices.slice(&Vertex::secondaryPositionTangentBitangentNormal)});
+        if(data.bitangents)
+            arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, VertexFormat::Vector3bNormalized, vertices.slice(&Vertex::secondaryPositionTangentBitangentNormal)});
+        if(data.normals)
+            arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3bNormalized, vertices.slice(&Vertex::secondaryPositionTangentBitangentNormal)});
+    } else CORRADE_COMPARE(data.id, 0);
+    arrayAppend(attributes, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)}
+    });
+    if(data.tangents)
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, data.tangents4 ? VertexFormat::Vector4 : VertexFormat::Vector3, vertices.slice(&Vertex::tangent)});
+    if(data.bitangents)
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, vertices.slice(&Vertex::bitangent)});
+    if(data.normals)
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertices.slice(&Vertex::normal)});
+    const void* originalAttributeData = attributes;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        data.indexed ? std::move(indexData) : nullptr,
+        data.indexed ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
+        std::move(vertexData), std::move(attributes)};
+
+    const Matrix4 transformation = Matrix4::rotationX(35.0_degf);
+    Trade::MeshData out = transform3D(std::move(mesh), transformation, data.id);
+
+    /* Indices should be passed through unchanged */
+    if(data.indexed) {
+        CORRADE_VERIFY(out.isIndexed());
+        CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+            Containers::arrayView(indicesExpected),
+            TestSuite::Compare::Container);
+    }
+
+    /* The vertices should be expanded to floats and transformed */
+    CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::Position, data.id), VertexFormat::Vector3);
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position, data.id), Containers::arrayView({
+        transformation.transformPoint({0.0f, 0.0f, -1.0f}),
+        transformation.transformPoint({1.0f, 0.0f, -2.0f}),
+        transformation.transformPoint({0.0f, 2.0f, -1.0f})
+    }), TestSuite::Compare::Container);
+
+    if(data.tangents) {
+        CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::Tangent, data.id), data.tangents4 ? VertexFormat::Vector4 : VertexFormat::Vector3);
+        if(data.tangents4)
+            CORRADE_COMPARE_AS(out.attribute<Vector4>(Trade::MeshAttribute::Tangent, data.id), Containers::arrayView<Vector4>({
+                {transformation.transformVector({0.0f, 1.0f, 0.0f}), 1.0f},
+                {transformation.transformVector({1.0f, 0.0f, 0.0f}), 1.0f},
+                {transformation.transformVector({0.0f, 1.0f, 0.0f}), -1.0f}
+            }), TestSuite::Compare::Container);
+        else
+            CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Tangent, data.id), Containers::arrayView({
+                transformation.transformVector({0.0f, 1.0f, 0.0f}),
+                transformation.transformVector({1.0f, 0.0f, 0.0f}),
+                transformation.transformVector({0.0f, 1.0f, 0.0f})
+            }), TestSuite::Compare::Container);
+    }
+
+    if(data.bitangents) {
+        CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::Bitangent, data.id), VertexFormat::Vector3);
+        CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Bitangent, data.id), Containers::arrayView({
+            transformation.transformVector({-1.0f, 0.0f, 0.0f}),
+            transformation.transformVector({0.0f, -1.0f, 0.0f}),
+            transformation.transformVector({0.0f, 0.0f, -1.0f})
+        }), TestSuite::Compare::Container);
+    }
+
+    if(data.normals) {
+        CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::Normal, data.id), VertexFormat::Vector3);
+        CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Normal, data.id), Containers::arrayView({
+            transformation.transformVector({0.0f, 0.0f, 1.0f}),
+            transformation.transformVector({0.0f, 0.0f, 1.0f}),
+            transformation.transformVector({1.0f, 0.0f, 0.0f})
+        }), TestSuite::Compare::Container);
+    }
+
+    /* The memory should point to the original data */
+    if(data.indexed)
+        CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
+    CORRADE_COMPARE(out.vertexData().data(), static_cast<void*>(vertices.data()));
+    CORRADE_COMPARE(out.attributeData().data(), originalAttributeData);
+}
+
+void TransformTest::meshData3DRvaluePassthroughIndexDataNotOwned() {
+    const UnsignedShort indices[]{
+        1, 2, 0
+    };
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vector3)};
+    auto vertices = Containers::arrayCast<Vector3>(vertexData);
+    Utility::copy({
+        {0.0f, 0.0f, -1.0f},
+        {1.0f, 0.0f, -2.0f},
+        {0.0f, 2.0f, -1.0f}
+    }, vertices);
+
+    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices}
+    }};
+    const void* originalAttributeData = attributes;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        {}, indices, Trade::MeshIndexData{indices},
+        std::move(vertexData), std::move(attributes)};
+
+    const Matrix4 transformation = Matrix4::rotationX(35.0_degf);
+    Trade::MeshData out = transform3D(std::move(mesh), transformation);
+
+    /* Indices should be passed through unchanged */
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+        Containers::arrayView(indices),
+        TestSuite::Compare::Container);
+
+    /* The vertices should be transformed */
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView({
+        transformation.transformPoint({0.0f, 0.0f, -1.0f}),
+        transformation.transformPoint({1.0f, 0.0f, -2.0f}),
+        transformation.transformPoint({0.0f, 2.0f, -1.0f})
+    }), TestSuite::Compare::Container);
+
+    /* The memory should not point to the original data */
+    CORRADE_VERIFY(out.indexData().data() != static_cast<const void*>(indices));
+    CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
+    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
+}
+
+void TransformTest::meshData3DRvaluePassthroughVertexDataNotOwned() {
+    Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    /* Not using copy({...}) as we'd have no way to compare against the
+       original unchanged data */
+    const UnsignedShort indicesExpected[]{1, 2, 0};
+    Utility::copy(indicesExpected, indices);
+    const Vector3 vertices[]{
+        {0.0f, 0.0f, -1.0f},
+        {1.0f, 0.0f, -2.0f},
+        {0.0f, 2.0f, -1.0f}
+    };
+
+    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertices)}
+    }};
+    const void* originalAttributeData = attributes;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        std::move(indexData), Trade::MeshIndexData{indices},
+        {}, vertices, std::move(attributes)};
+
+    const Matrix4 transformation = Matrix4::rotationX(35.0_degf);
+    Trade::MeshData out = transform3D(std::move(mesh), transformation);
+
+    /* Indices should be passed through unchanged */
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+        Containers::arrayView(indices),
+        TestSuite::Compare::Container);
+
+    /* The vertices should be transformed */
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView({
+        transformation.transformPoint({0.0f, 0.0f, -1.0f}),
+        transformation.transformPoint({1.0f, 0.0f, -2.0f}),
+        transformation.transformPoint({0.0f, 2.0f, -1.0f})
+    }), TestSuite::Compare::Container);
+
+    /* The memory should not point to the original data */
+    CORRADE_VERIFY(out.indexData().data() != static_cast<void*>(indices.data()));
+    CORRADE_VERIFY(out.vertexData().data() != static_cast<const void*>(vertices));
+    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
+}
+
+void TransformTest::meshData3DRvaluePassthroughNoPosition() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    /* Mainly to verify there's no other accidental assertion from checking
+       vertex format, this message comes from the l-value overload */
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform3D(Trade::MeshData{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+    }}, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transform3D(): the mesh has no positions with index 1\n");
+}
+
+void TransformTest::meshData3DRvaluePassthroughWrongFormat() {
+    auto&& data = MeshData3DWrongFormatData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct Vertex {
+        Vector3b position;
+        Vector4b tangent;
+        Vector3h bitangent;
+        Vector3s normal;
+    };
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
+    auto vertices = stridedArrayView(Containers::arrayCast<Vertex>(vertexData));
+    Utility::copy({
+        {{0, 0, -1},
+         {0, 127, 0, 127},
+         {-1.0_h, 0.0_h, 0.0_h},
+         {0, 0, 32767}},
+        {{1, 0, -2},
+         {127, 0, 0, 127},
+         {0.0_h, -1.0_h, 0.0_h},
+         {0, 0, 32767}},
+        {{0, 2, -1},
+         {0, 127, 0, -127},
+         {0.0_h, 0.0_h, -1.0_h},
+         {32767, 0, 0}}
+    }, vertices);
+
+    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)}
+    }};
+    if(data.tangentFormat != VertexFormat{})
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, vertexFormatComponentCount(data.tangentFormat) == 4 ? VertexFormat::Vector4bNormalized : VertexFormat::Vector3bNormalized, vertices.slice(&Vertex::tangent)});
+    if(data.bitangentFormat != VertexFormat{})
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, vertices.slice(&Vertex::bitangent)});
+    if(data.normalFormat != VertexFormat{})
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3sNormalized, vertices.slice(&Vertex::normal)});
+    const void* originalAttributeData = attributes;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        std::move(vertexData), std::move(attributes)};
+
+    const Matrix4 transformation = Matrix4::rotationX(35.0_degf);
+    Trade::MeshData out = transform3D(std::move(mesh), transformation);
+
+    /* The vertices should be expanded to floats and transformed */
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView({
+        transformation.transformPoint({0.0f, 0.0f, -1.0f}),
+        transformation.transformPoint({1.0f, 0.0f, -2.0f}),
+        transformation.transformPoint({0.0f, 2.0f, -1.0f})
+    }), TestSuite::Compare::Container);
+
+    if(data.tangentFormat != VertexFormat{}) {
+        if(vertexFormatComponentCount(data.tangentFormat) == 4)
+            CORRADE_COMPARE_AS(out.attribute<Vector4>(Trade::MeshAttribute::Tangent), Containers::arrayView<Vector4>({
+                {transformation.transformVector({0.0f, 1.0f, 0.0f}), 1.0f},
+                {transformation.transformVector({1.0f, 0.0f, 0.0f}), 1.0f},
+                {transformation.transformVector({0.0f, 1.0f, 0.0f}), -1.0f}
+            }), TestSuite::Compare::Container);
+        else
+            CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Tangent), Containers::arrayView({
+                transformation.transformVector({0.0f, 1.0f, 0.0f}),
+                transformation.transformVector({1.0f, 0.0f, 0.0f}),
+                transformation.transformVector({0.0f, 1.0f, 0.0f})
+            }), TestSuite::Compare::Container);
+    }
+
+    if(data.bitangentFormat != VertexFormat{}) {
+        CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Bitangent), Containers::arrayView({
+            transformation.transformVector({-1.0f, 0.0f, 0.0f}),
+            transformation.transformVector({0.0f, -1.0f, 0.0f}),
+            transformation.transformVector({0.0f, 0.0f, -1.0f})
+        }), TestSuite::Compare::Container);
+    }
+
+    if(data.normalFormat != VertexFormat{}) {
+        CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Normal), Containers::arrayView({
+            transformation.transformVector({0.0f, 0.0f, 1.0f}),
+            transformation.transformVector({0.0f, 0.0f, 1.0f}),
+            transformation.transformVector({1.0f, 0.0f, 0.0f})
+        }), TestSuite::Compare::Container);
+    }
+
+    /* The memory should not point to the original data */
+    CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
+    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
+}
+
+void TransformTest::meshData3DInPlaceNotMutable() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, Trade::DataFlags{}, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform3DInPlace(mesh, {});
+    CORRADE_COMPARE(out.str(), "MeshTools::transform3DInPlace(): vertex data not mutable\n");
+}
+
+void TransformTest::meshData3DInPlaceNoPosition() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform3DInPlace(mesh, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transform3DInPlace(): the mesh has no positions with index 1\n");
+}
+
+void TransformTest::meshData3DInPlaceWrongFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    auto&& data = MeshData3DWrongFormatData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, data.positionFormat, nullptr},
+    }};
+    if(data.tangentFormat != VertexFormat{})
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, data.tangentFormat, nullptr});
+    if(data.bitangentFormat != VertexFormat{})
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, data.bitangentFormat, nullptr});
+    if(data.normalFormat != VertexFormat{})
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, data.normalFormat, nullptr});
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, std::move(attributes)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform3DInPlace(mesh, {}, 1);
+    CORRADE_COMPARE(out.str(), data.message);
+}
+
+template<class T> void TransformTest::meshDataTextureCoordinates2D() {
+    auto&& data = MeshDataTextureCoordinatesData[testCaseInstanceId()];
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+    setTestCaseDescription(data.name);
+
+    const UnsignedShort indices[]{
+        1, 2, 0
+    };
+    const struct Vertex {
+        Vector2us secondaryTextureCoordinates;
+        Math::Vector2<T> textureCoordinates;
+        Float somethingElse;
+    } vertices[]{
+        {{15, 34}, {T(0.0), T(0.0)}, 7.0f},
+        {{11, 25}, {T(1.0), T(0.0)}, 5.5f},
+        {{16, 27}, {T(0.0), T(2.0)}, 3.0f}
+    };
+    Containers::StridedArrayView1D<const Vertex> view = vertices;
+
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    if(data.id == 1)
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, view.slice(&Vertex::secondaryTextureCoordinates)});
+    else CORRADE_COMPARE(data.id, 0);
+    arrayAppend(attributes, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, view.slice(&Vertex::textureCoordinates)},
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(0), view.slice(&Vertex::somethingElse)}
+    });
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        {}, data.indexed ? Containers::arrayView(indices) : nullptr,
+        data.indexed ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
+        {}, vertices, std::move(attributes)};
+    CORRADE_COMPARE(mesh.isIndexed(), data.indexed);
+
+    Trade::MeshData out = transformTextureCoordinates2D(mesh, data.transformation, data.id);
+
+    /* Indices should be preserved */
+    if(data.indexed) {
+        CORRADE_VERIFY(out.isIndexed());
+        CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+            Containers::arrayView(indices),
+            TestSuite::Compare::Container);
+    }
+
+    /* The extra attribute should be preserved */
+    CORRADE_COMPARE(out.attributeCount(), mesh.attributeCount());
+    CORRADE_COMPARE_AS(out.attribute<Float>(Trade::meshAttributeCustom(0)),
+        view.slice(&Vertex::somethingElse),
+        TestSuite::Compare::Container);
+
+    /* The vertices should be expanded to floats and transformed */
+    CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::TextureCoordinates, data.id), VertexFormat::Vector2);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates, data.id), Containers::arrayView({
+        data.transformation.transformPoint({0.0f, 0.0f}),
+        data.transformation.transformPoint({1.0f, 0.0f}),
+        data.transformation.transformPoint({0.0f, 2.0f})
+    }), TestSuite::Compare::Container);
+}
+
+void TransformTest::meshDataTextureCoordinates2DNoCoordinates() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transformTextureCoordinates2D(mesh, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index 1\n");
+}
+
+void TransformTest::meshDataTextureCoordinates2DRvaluePassthrough() {
+    auto&& data = MeshDataTextureCoordinatesRvaluePassthroughData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    /* Not using copy({...}) as we'd have no way to compare against the
+       original unchanged data */
+    const UnsignedShort indicesExpected[]{1, 2, 0};
+    Utility::copy(indicesExpected, indices);
+
+    struct Vertex {
+        Vector2ub secondaryTextureCoordinates;
+        Vector2 textureCoordinates;
+    };
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
+    auto vertices = stridedArrayView(Containers::arrayCast<Vertex>(vertexData));
+    Utility::copy({
+        {{15, 34}, {0.0f, 0.0f}},
+        {{11, 25}, {1.0f, 0.0f}},
+        {{16, 27}, {0.0f, 2.0f}}
+    }, vertices);
+
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    if(data.id == 1)
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::secondaryTextureCoordinates)});
+    else CORRADE_COMPARE(data.id, 0);
+    arrayAppend(attributes, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates)}
+    });
+    const void* originalAttributeData = attributes;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        data.indexed ? std::move(indexData) : nullptr,
+        data.indexed ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
+        std::move(vertexData), std::move(attributes)};
+
+    const Matrix3 transformation = Matrix3::rotation(35.0_degf);
+    Trade::MeshData out = transformTextureCoordinates2D(std::move(mesh), transformation, data.id);
+
+    /* Indices should be passed through unchanged */
+    if(data.indexed) {
+        CORRADE_VERIFY(out.isIndexed());
+        CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+            Containers::arrayView(indicesExpected),
+            TestSuite::Compare::Container);
+    }
+
+    /* The vertices should be expanded to floats and transformed */
+    CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::TextureCoordinates, data.id), VertexFormat::Vector2);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates, data.id), Containers::arrayView({
+        transformation.transformPoint({0.0f, 0.0f}),
+        transformation.transformPoint({1.0f, 0.0f}),
+        transformation.transformPoint({0.0f, 2.0f})
+    }), TestSuite::Compare::Container);
+
+    /* The memory should point to the original data */
+    if(data.indexed)
+        CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
+    CORRADE_COMPARE(out.vertexData().data(), static_cast<void*>(vertices.data()));
+    CORRADE_COMPARE(out.attributeData().data(), originalAttributeData);
+}
+
+void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughIndexDataNotOwned() {
+    const UnsignedShort indices[]{
+        1, 2, 0
+    };
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vector2)};
+    auto vertices = Containers::arrayCast<Vector2>(vertexData);
+    Utility::copy({
+        {0.0f, 0.0f},
+        {1.0f, 0.0f},
+        {0.0f, 2.0f}
+    }, vertices);
+
+    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices}
+    }};
+    const void* originalAttributeData = attributes;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        {}, indices, Trade::MeshIndexData{indices},
+        std::move(vertexData), std::move(attributes)};
+
+    const Matrix3 transformation = Matrix3::rotation(35.0_degf);
+    Trade::MeshData out = transformTextureCoordinates2D(std::move(mesh), transformation);
+
+    /* Indices should be passed through unchanged */
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+        Containers::arrayView(indices),
+        TestSuite::Compare::Container);
+
+    /* The vertices should be transformed */
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates), Containers::arrayView({
+        transformation.transformPoint({0.0f, 0.0f}),
+        transformation.transformPoint({1.0f, 0.0f}),
+        transformation.transformPoint({0.0f, 2.0f})
+    }), TestSuite::Compare::Container);
+
+    /* The memory should not point to the original data */
+    CORRADE_VERIFY(out.indexData().data() != static_cast<const void*>(indices));
+    CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
+    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
+}
+
+void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughVertexDataNotOwned() {
+    Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    /* Not using copy({...}) as we'd have no way to compare against the
+       original unchanged data */
+    const UnsignedShort indicesExpected[]{1, 2, 0};
+    Utility::copy(indicesExpected, indices);
+    const Vector2 vertices[]{
+        {0.0f, 0.0f},
+        {1.0f, 0.0f},
+        {0.0f, 2.0f}
+    };
+
+    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, Containers::arrayView(vertices)}
+    }};
+    const void* originalAttributeData = attributes;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        std::move(indexData), Trade::MeshIndexData{indices},
+        {}, vertices, std::move(attributes)};
+
+    const Matrix3 transformation = Matrix3::rotation(35.0_degf);
+    Trade::MeshData out = transformTextureCoordinates2D(std::move(mesh), transformation);
+
+    /* Indices should be passed through unchanged */
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+        Containers::arrayView(indices),
+        TestSuite::Compare::Container);
+
+    /* The vertices should be transformed */
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates), Containers::arrayView({
+        transformation.transformPoint({0.0f, 0.0f}),
+        transformation.transformPoint({1.0f, 0.0f}),
+        transformation.transformPoint({0.0f, 2.0f})
+    }), TestSuite::Compare::Container);
+
+    /* The memory should not point to the original data */
+    CORRADE_VERIFY(out.indexData().data() != static_cast<void*>(indices.data()));
+    CORRADE_VERIFY(out.vertexData().data() != static_cast<const void*>(vertices));
+    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
+}
+
+void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughNoCoordinates() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    /* Mainly to verify there's no other accidental assertion from checking
+       vertex format, this message comes from the l-value overload */
+    std::ostringstream out;
+    Error redirectError{&out};
+    transformTextureCoordinates2D(Trade::MeshData{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+    }}, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index 1\n");
+}
+
+void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughWrongFormat() {
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vector2ub)};
+    auto vertices = Containers::arrayCast<Vector2ub>(vertexData);
+    Utility::copy({
+        {0, 0},
+        {1, 0},
+        {0, 2}
+    }, vertices);
+
+    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices}
+    }};
+    const void* originalAttributeData = attributes;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        std::move(vertexData), std::move(attributes)};
+
+    const Matrix3 transformation = Matrix3::rotation(35.0_degf);
+    Trade::MeshData out = transformTextureCoordinates2D(std::move(mesh), transformation);
+
+    /* The vertices should be expanded to floats and transformed */
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates), Containers::arrayView({
+        transformation.transformPoint({0.0f, 0.0f}),
+        transformation.transformPoint({1.0f, 0.0f}),
+        transformation.transformPoint({0.0f, 2.0f})
+    }), TestSuite::Compare::Container);
+
+    /* The memory should not point to the original data */
+    CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
+    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
+}
+
+void TransformTest::meshDataTextureCoordinates2DInPlaceNotMutable() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, Trade::DataFlags{}, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transformTextureCoordinates2DInPlace(mesh, {});
+    CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2DInPlace(): vertex data not mutable\n");
+}
+
+void TransformTest::meshDataTextureCoordinates2DInPlaceNoCoordinates() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transformTextureCoordinates2DInPlace(mesh, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2DInPlace(): the mesh has no texture coordinates with index 1\n");
+}
+
+void TransformTest::meshDataTextureCoordinates2DInPlaceWrongFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2us, nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transformTextureCoordinates2DInPlace(mesh, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2DInPlace(): expected VertexFormat::Vector2 texture coordinates but got VertexFormat::Vector2us\n");
 }
 
 }}}}

@@ -26,11 +26,13 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::transformVectorsInPlace(), @ref Magnum::MeshTools::transformVectors(), @ref Magnum::MeshTools::transformPointsInPlace(), @ref Magnum::MeshTools::transformPoints()
+ * @brief Function @ref Magnum::MeshTools::transformVectorsInPlace(), @ref Magnum::MeshTools::transformVectors(), @ref Magnum::MeshTools::transformPointsInPlace(), @ref Magnum::MeshTools::transformPoints(), @ref Magnum::MeshTools::transform2D(), @ref Magnum::MeshTools::transform2DInPlace(), @ref Magnum::MeshTools::transform3D(), @ref Magnum::MeshTools::transform3DInPlace(), @ref Magnum::MeshTools::transformTextureCoordinates2D(), @ref Magnum::MeshTools::transformTextureCoordinates2DInPlace()
  */
 
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/DualComplex.h"
+#include "Magnum/MeshTools/visibility.h"
+#include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -136,6 +138,162 @@ template<class T, class U> U transformPoints(const T& transformation, U vectors)
     transformPointsInPlace(transformation, result);
     return result;
 }
+
+/**
+@brief Transform 2D positions in a mesh data
+@m_since_latest
+
+Expects that the mesh contains a two-dimensional
+@ref Trade::MeshAttribute::Position with index @p id. To avoid data loss with
+packed types, the positions are always converted to @ref VertexFormat::Vector2.
+Other attributes, position attributes other than @p id, and indices (if any)
+are passed through untouched.
+
+See also @ref transform2D(Trade::MeshData&&, const Matrix3&, UnsignedInt) for a
+potentially more efficient operation instead of always performing a full copy,
+you can also do an in-place transformation using @ref transform2DInPlace().
+@see @ref transform3D(), @ref transformTextureCoordinates2D(),
+    @ref Trade::MeshData::attributeCount(MeshAttribute) const,
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(const Trade::MeshData& data, const Matrix3& transformation, UnsignedInt id = 0);
+
+/**
+@brief Transform 2D positions in a mesh data
+@m_since_latest
+
+Compared to @ref transform2D(const Trade::MeshData&, const Matrix3&, UnsignedInt)
+this function can can perform the transformation in-place, transferring the
+data ownership to the returned instance, if both vertex and index data is
+owned, vertex data is mutable and the positions with index @p id are
+@ref VertexFormat::Vector2.
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(Trade::MeshData&& data, const Matrix3& transformation, UnsignedInt id = 0);
+
+/**
+@brief Transform 2D positions in a mesh data in-place
+@m_since_latest
+
+Expects that the mesh has mutable vertex data and contains a two-dimensional
+@ref Trade::MeshAttribute::Position with index @p id. To avoid data loss with
+packed types, the in-place operation requires the position type to be
+@ref VertexFormat::Vector2 --- if you can't guarantee that, use
+@ref transform2D() instead. Other attributes, position attributes other than
+@p id, and indices (if any) are left untouched.
+@see @ref transform3DInPlace(), @ref transformTextureCoordinates2DInPlace(),
+    @ref Trade::MeshData::vertexDataFlags(),
+    @ref Trade::MeshData::attributeCount(MeshAttribute) const,
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
+*/
+MAGNUM_MESHTOOLS_EXPORT void transform2DInPlace(Trade::MeshData& data, const Matrix3& transformation, UnsignedInt id = 0);
+
+/**
+@brief Transform 3D positions, normals, tangents and bitangents in a mesh data
+@m_since_latest
+
+Expects that the mesh contains a three-dimensional
+@ref Trade::MeshAttribute::Position with index @p id. If
+@ref Trade::MeshAttribute::Normal, @ref Trade::MeshAttribute::Tangent or
+@ref Trade::MeshAttribute::Bitangent with index @p id are present as well,
+those get transformed with @ref Matrix4::normalMatrix() extracted out of
+@p transformation. To avoid data loss with packed types, the positions, normals
+and bitangents are always converted to @ref VertexFormat::Vector3, tangents to
+either @ref VertexFormat::Vector3 or @ref VertexFormat::Vector4. Other
+attributes, additional position/TBN attributes other than @p id, and indices
+(if any) are passed through untouched.
+
+See also @ref transform3D(Trade::MeshData&&, const Matrix4&, UnsignedInt) for a
+potentially more efficient operation instead of always performing a full copy,
+you can also do an in-place transformation using @ref transform3DInPlace().
+@see @ref transform2D(), @ref transformTextureCoordinates2D(),
+    @ref Trade::MeshData::attributeCount(MeshAttribute) const,
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(const Trade::MeshData& data, const Matrix4& transformation, UnsignedInt id = 0);
+
+/**
+@brief Transform 3D positions, normals, tangenta and bitangents in a mesh data
+@m_since_latest
+
+Compared to @ref transform3D(const Trade::MeshData&, const Matrix4&, UnsignedInt)
+this function can can perform the transformation in-place, transferring the
+data ownership to the returned instance, if both vertex and index data is
+owned, vertex data is mutable, positions, normals and bitangents (if present)
+are @ref VertexFormat::Vector3 and tangents (if present) either
+@ref VertexFormat::Vector3 or @ref VertexFormat::Vector4.
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(Trade::MeshData&& data, const Matrix4& transformation, UnsignedInt id = 0);
+
+/**
+@brief Transform 3D positions, normals, tangents and bitangents in a mesh data in-place
+@m_since_latest
+
+Expects that the mesh has mutable vertex data and contains at least a
+three-dimensional @ref Trade::MeshAttribute::Position with index @p id;
+optionally also @ref Trade::MeshAttribute::Normal,
+@ref Trade::MeshAttribute::Tangent or @ref Trade::MeshAttribute::Bitangent with
+index @p id, those get transformed with @ref Matrix4::normalMatrix() extracted
+out of @p transformation. To avoid data loss with packed types, the in-place
+operation requires the position, normal and bitangent types to be
+@ref VertexFormat::Vector3 and tangent either @ref VertexFormat::Vector3 or
+@ref VertexFormat::Vector4 --- if you can't guarantee that, use
+@ref transform3D() instead. Other attributes, position/TBN attributes other
+than @p id, and indices (if any) are left untouched.
+@see @ref transform2DInPlace(), @ref transformTextureCoordinates2DInPlace(),
+    @ref Trade::MeshData::vertexDataFlags(),
+    @ref Trade::MeshData::attributeCount(MeshAttribute) const,
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
+*/
+MAGNUM_MESHTOOLS_EXPORT void transform3DInPlace(Trade::MeshData& data, const Matrix4& transformation, UnsignedInt id = 0);
+
+/**
+@brief Transform 2D texture coordinates in a mesh data
+@m_since_latest
+
+Expects that the mesh contains a @ref Trade::MeshAttribute::TextureCoordinates
+with index id. To avoid data loss with packed types, the coordinattes are
+always converted to @ref VertexFormat::Vector2. Other attributes, texture
+coordinate attributes other than @p id, and indices (if any) are passed through
+untouched.
+
+See also @ref transformTextureCoordinates2D(Trade::MeshData&&, const Matrix3&, UnsignedInt)
+for a potentially more efficient operation instead of always performing a full
+copy, you can also do an in-place transformation using
+@ref transformTextureCoordinates2DInPlace().
+@see @ref transform2D(), @ref transform3D(),
+    @ref Trade::MeshData::attributeCount(MeshAttribute) const
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& data, const Matrix3& transformation, UnsignedInt id = 0);
+
+/**
+@brief Transform 2D texture coordinates in a mesh data
+@m_since_latest
+
+Compared to @ref transformTextureCoordinates2D(const Trade::MeshData&, const Matrix3&, UnsignedInt)
+this function can can perform the transformation in-place, transferring the
+data ownership to the returned instance, if both vertex and index data is
+owned, vertex data is mutable and the coordinates with index @p id are
+@ref VertexFormat::Vector2.
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& data, const Matrix3& transformation, UnsignedInt id = 0);
+
+/**
+@brief Transform 2D texture coordinates in a mesh data in-place
+@m_since_latest
+
+Expects that the mesh has mutable vertex data and contains a
+@ref Trade::MeshAttribute::TextureCoordinates with index @p id. To avoid data
+loss with packed types, the in-place operation requires the coordinate type to
+be @ref VertexFormat::Vector2 --- if you can't guarantee that, use
+@ref transformTextureCoordinates2D() instead. Other attributes, texture
+coordinate attributes other than @p id, and indices (if any) are passed through
+untouched.
+@see @ref transform2DInPlace(), @ref transform3DInPlace(),
+    @ref Trade::MeshData::vertexDataFlags(),
+    @ref Trade::MeshData::attributeCount(MeshAttribute) const,
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
+*/
+MAGNUM_MESHTOOLS_EXPORT void transformTextureCoordinates2DInPlace(Trade::MeshData& data, const Matrix3& transformation, UnsignedInt id = 0);
 
 }}
 

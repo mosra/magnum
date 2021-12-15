@@ -35,7 +35,7 @@ corrade_add_test(MeshToolsReferenceTest ReferenceTest.cpp LIBRARIES MagnumMeshTo
 corrade_add_test(MeshToolsRemoveDuplicatesTest RemoveDuplicatesTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsSubdivideTest SubdivideTest.cpp LIBRARIES Magnum MagnumPrimitives)
 corrade_add_test(MeshToolsTipsifyTest TipsifyTest.cpp LIBRARIES MagnumMeshTools)
-corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshTools)
+corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 
 # Graceful assert for testing
 set_property(TARGET

@@ -38,7 +38,8 @@ set(MagnumMeshTools_GracefulAssert_SRCS
     GenerateNormals.cpp
     Interleave.cpp
     Reference.cpp
-    RemoveDuplicates.cpp)
+    RemoveDuplicates.cpp
+    Transform.cpp)
 
 set(MagnumMeshTools_HEADERS
     Combine.h

@@ -155,6 +155,10 @@ See also:
 
 -   Added @ref MeshTools::generateQuadIndices() for quad triangulation
     including non-convex and non-planar quads
+-   New family of @ref MeshTools::transform2D(), @ref MeshTools::transform3D()
+    and @ref MeshTools::transformTextureCoordinates2D() APIs for converting
+    positions, normals, tangents, bitangents and texture coordinates directly
+    in @ref Trade::MeshData instances
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
