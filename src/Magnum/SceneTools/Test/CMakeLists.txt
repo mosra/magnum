@@ -25,10 +25,12 @@
 
 corrade_add_test(SceneToolsCombineTest CombineTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(SceneToolsConvertToSingleFun___Test ConvertToSingleFunctionObjectsTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(SceneToolsFlattenMeshHierarchyTest FlattenMeshHierarchyTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 corrade_add_test(SceneToolsOrderClusterParentsTest OrderClusterParentsTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 
 set_target_properties(
     SceneToolsCombineTest
     SceneToolsConvertToSingleFun___Test
+    SceneToolsFlattenMeshHierarchyTest
     SceneToolsOrderClusterParentsTest
     PROPERTIES FOLDER "Magnum/SceneTools/Test")
