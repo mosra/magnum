@@ -26,7 +26,9 @@
 #include "FlattenMeshHierarchy.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Triple.h>
 
@@ -45,16 +47,16 @@ template<> struct SceneDataDimensionTraits<2> {
     static bool isDimensions(const Trade::SceneData& scene) {
         return scene.is2D();
     }
-    static Containers::Array<Containers::Pair<UnsignedInt, Matrix3>> transformationsAsArray(const Trade::SceneData& scene) {
-        return scene.transformations2DAsArray();
+    static void transformationsInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix3>& transformationDestination) {
+        return scene.transformations2DInto(mappingDestination, transformationDestination);
     }
 };
 template<> struct SceneDataDimensionTraits<3> {
     static bool isDimensions(const Trade::SceneData& scene) {
         return scene.is3D();
     }
-    static Containers::Array<Containers::Pair<UnsignedInt, Matrix4>> transformationsAsArray(const Trade::SceneData& scene) {
-        return scene.transformations3DAsArray();
+    static void transformationsInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix4>& transformationDestination) {
+        return scene.transformations3DInto(mappingDestination, transformationDestination);
     }
 };
 
@@ -62,7 +64,8 @@ template<UnsignedInt dimensions>
 Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions, Float>>> flattenMeshHierarchyImplementation(const Trade::SceneData& scene, const MatrixTypeFor<dimensions, Float>& globalTransformation) {
     CORRADE_ASSERT(SceneDataDimensionTraits<dimensions>::isDimensions(scene),
         "SceneTools::flattenMeshHierarchy(): the scene is not" << dimensions << Debug::nospace << "D", {});
-    CORRADE_ASSERT(scene.hasField(Trade::SceneField::Parent),
+    const Containers::Optional<UnsignedInt> parentFieldId = scene.findFieldId(Trade::SceneField::Parent);
+    CORRADE_ASSERT(parentFieldId,
         "SceneTools::flattenMeshHierarchy(): the scene has no hierarchy", {});
 
     /* If there's no mesh field in the file, nothing to do. Another case is
@@ -70,16 +73,32 @@ Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions,
        go through everything. */
     if(!scene.hasField(Trade::SceneField::Mesh)) return {};
 
-    Containers::Array<Containers::Pair<UnsignedInt, Int>> orderedClusteredParents = orderClusterParents(scene);
+    /* Allocate a single storage for all temporary data */
+    Containers::ArrayView<Containers::Pair<UnsignedInt, Int>> orderedClusteredParents;
+    Containers::ArrayView<Containers::Pair<UnsignedInt, MatrixTypeFor<dimensions, Float>>> transformations;
+    Containers::ArrayView<MatrixTypeFor<dimensions, Float>> absoluteTransformations;
+    Containers::ArrayTuple storage{
+        /* Output of orderClusterParentsInto() */
+        {NoInit, scene.fieldSize(*parentFieldId), orderedClusteredParents},
+        /* Output of scene.transformationsXDInto() */
+        {NoInit, scene.transformationFieldSize(), transformations},
+        /* Above transformations but indexed by object ID */
+        {ValueInit, std::size_t(scene.mappingBound() + 1), absoluteTransformations}
+    };
+    /* Explicit slice() template parameters needed by GCC 4.8 and MSVC 2015 */
+    orderClusterParentsInto(scene,
+        stridedArrayView(orderedClusteredParents).slice<UnsignedInt>(&Containers::Pair<UnsignedInt, Int>::first),
+        stridedArrayView(orderedClusteredParents).slice<Int>(&Containers::Pair<UnsignedInt, Int>::second));
+    SceneDataDimensionTraits<dimensions>::transformationsInto(scene,
+        stridedArrayView(transformations).template slice<UnsignedInt>(&Containers::Pair<UnsignedInt, MatrixTypeFor<dimensions, Float>>::first),
+        stridedArrayView(transformations).template slice<MatrixTypeFor<dimensions, Float>>(&Containers::Pair<UnsignedInt, MatrixTypeFor<dimensions, Float>>::second));
 
     /* Retrieve transformations of all objects, indexed by object ID. Since not
-       all nodes in the hierarchy may have a transformation assigned,
-       initialize the whole array to identity first. */
+       all nodes in the hierarchy may have a transformation assigned, the whole
+       array got initialized to identity first. */
     /** @todo switch to a hashmap eventually? */
-    Containers::Array<MatrixTypeFor<dimensions, Float>> absoluteTransformations{DefaultInit, scene.mappingBound() + 1};
     absoluteTransformations[0] = globalTransformation;
-    /** @todo switch to *Into() in a loop to avoid temp allocations */
-    for(const Containers::Pair<UnsignedInt, MatrixTypeFor<dimensions, Float>>& transformation: SceneDataDimensionTraits<dimensions>::transformationsAsArray(scene)) {
+    for(const Containers::Pair<UnsignedInt, MatrixTypeFor<dimensions, Float>>& transformation: transformations) {
         CORRADE_INTERNAL_ASSERT(transformation.first() < scene.mappingBound());
         absoluteTransformations[transformation.first() + 1] = transformation.second();
     }
