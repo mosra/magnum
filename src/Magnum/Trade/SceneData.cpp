@@ -1258,9 +1258,9 @@ Containers::Array<Containers::Pair<UnsignedInt, Int>> SceneData::parentsAsArray(
            strings in the binary */
         "Trade::SceneData::parentsInto(): field not found", {});
     Containers::Array<Containers::Pair<UnsignedInt, Int>> out{NoInit, std::size_t(_fields[fieldId]._size)};
-    /** @todo use slicing once Pair exposes members somehow */
-    mappingIntoInternal(fieldId, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
-    parentsIntoInternal(fieldId, 0, {out, reinterpret_cast<Int*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)});
+    /* Explicit slice() template parameters needed by GCC 4.8 and MSVC 2015 */
+    mappingIntoInternal(fieldId, 0, stridedArrayView(out).slice<UnsignedInt>(&decltype(out)::Type::first));
+    parentsIntoInternal(fieldId, 0, stridedArrayView(out).slice<Int>(&decltype(out)::Type::second));
     return out;
 }
 
@@ -1467,9 +1467,9 @@ Containers::Array<Containers::Pair<UnsignedInt, Matrix3>> SceneData::transformat
            strings in the binary */
         "Trade::SceneData::transformations2DInto(): no transformation-related field found", {});
     Containers::Array<Containers::Pair<UnsignedInt, Matrix3>> out{NoInit, std::size_t(_fields[fieldWithObjectMapping]._size)};
-    /** @todo use slicing once Pair exposes members somehow */
-    mappingIntoInternal(fieldWithObjectMapping, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
-    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, {out, reinterpret_cast<Matrix3*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)});
+    /* Explicit slice() template parameters needed by GCC 4.8 and MSVC 2015 */
+    mappingIntoInternal(fieldWithObjectMapping, 0, stridedArrayView(out).slice<UnsignedInt>(&decltype(out)::Type::first));
+    transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, stridedArrayView(out).slice<Matrix3>(&decltype(out)::Type::second));
     return out;
 }
 
@@ -1590,12 +1590,13 @@ Containers::Array<Containers::Pair<UnsignedInt, Containers::Triple<Vector2, Comp
            strings in the binary */
         "Trade::SceneData::translationsRotationsScalings2DInto(): no transformation-related field found", {});
     Containers::Array<Containers::Pair<UnsignedInt, Containers::Triple<Vector2, Complex, Vector2>>> out{NoInit, std::size_t(_fields[fieldWithObjectMapping]._size)};
-    /** @todo use slicing once Triple exposes members somehow */
-    mappingIntoInternal(fieldWithObjectMapping, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
-    const Containers::StridedArrayView1D<Vector2> translationsOut{out, reinterpret_cast<Vector2*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)};
-    const Containers::StridedArrayView1D<Complex> rotationsOut{out, reinterpret_cast<Complex*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt) + sizeof(Vector2)), out.size(), sizeof(decltype(out)::Type)};
-    const Containers::StridedArrayView1D<Vector2> scalingsOut{out, reinterpret_cast<Vector2*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt) + sizeof(Vector2) + sizeof(Complex)), out.size(), sizeof(decltype(out)::Type)};
-    translationsRotationsScalings2DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, 0, translationsOut, rotationsOut, scalingsOut);
+    /* Explicit slice() template parameters needed by GCC 4.8 and MSVC 2015 */
+    mappingIntoInternal(fieldWithObjectMapping, 0, stridedArrayView(out).slice<UnsignedInt>(&decltype(out)::Type::first));
+    const auto outSecond = stridedArrayView(out).slice<Containers::Triple<Vector2, Complex, Vector2>>(&decltype(out)::Type::second);
+    translationsRotationsScalings2DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, 0,
+        outSecond.slice<Vector2>(&decltype(outSecond)::Type::first),
+        outSecond.slice<Complex>(&decltype(outSecond)::Type::second),
+        outSecond.slice<Vector2>(&decltype(outSecond)::Type::third));
     return out;
 }
 
@@ -1712,9 +1713,9 @@ Containers::Array<Containers::Pair<UnsignedInt, Matrix4>> SceneData::transformat
            strings in the binary */
         "Trade::SceneData::transformations3DInto(): no transformation-related field found", {});
     Containers::Array<Containers::Pair<UnsignedInt, Matrix4>> out{NoInit, std::size_t(_fields[fieldWithObjectMapping]._size)};
-    /** @todo use slicing once Pair exposes members somehow */
-    mappingIntoInternal(fieldWithObjectMapping, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
-    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, {out, reinterpret_cast<Matrix4*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)});
+    /* Explicit slice() template parameters needed by GCC 4.8 and MSVC 2015 */
+    mappingIntoInternal(fieldWithObjectMapping, 0, stridedArrayView(out).slice<UnsignedInt>(&decltype(out)::Type::first));
+    transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, 0, stridedArrayView(out).slice<Matrix4>(&decltype(out)::Type::second));
     return out;
 }
 
@@ -1835,12 +1836,13 @@ Containers::Array<Containers::Pair<UnsignedInt, Containers::Triple<Vector3, Quat
            strings in the binary */
         "Trade::SceneData::translationsRotationsScalings3DInto(): no transformation-related field found", {});
     Containers::Array<Containers::Pair<UnsignedInt, Containers::Triple<Vector3, Quaternion, Vector3>>> out{NoInit, std::size_t(_fields[fieldWithObjectMapping]._size)};
-    /** @todo use slicing once Triple exposes members somehow */
-    mappingIntoInternal(fieldWithObjectMapping, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
-    const Containers::StridedArrayView1D<Vector3> translationsOut{out, reinterpret_cast<Vector3*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)};
-    const Containers::StridedArrayView1D<Quaternion> rotationsOut{out, reinterpret_cast<Quaternion*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt) + sizeof(Vector3)), out.size(), sizeof(decltype(out)::Type)};
-    const Containers::StridedArrayView1D<Vector3> scalingsOut{out, reinterpret_cast<Vector3*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt) + sizeof(Vector3) + sizeof(Quaternion)), out.size(), sizeof(decltype(out)::Type)};
-    translationsRotationsScalings3DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, 0, translationsOut, rotationsOut, scalingsOut);
+    /* Explicit slice() template parameters needed by GCC 4.8 and MSVC 2015 */
+    mappingIntoInternal(fieldWithObjectMapping, 0, stridedArrayView(out).slice<UnsignedInt>(&decltype(out)::Type::first));
+    const auto outSecond = stridedArrayView(out).slice<Containers::Triple<Vector3, Quaternion, Vector3>>(&decltype(out)::Type::second);
+    translationsRotationsScalings3DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, 0,
+        outSecond.slice<Vector3>(&decltype(outSecond)::Type::first),
+        outSecond.slice<Quaternion>(&decltype(outSecond)::Type::second),
+        outSecond.slice<Vector3>(&decltype(outSecond)::Type::third));
     return out;
 }
 
@@ -1880,9 +1882,9 @@ void SceneData::indexFieldIntoInternal(const UnsignedInt fieldId, const std::siz
 
 Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> SceneData::unsignedIndexFieldAsArrayInternal(const UnsignedInt fieldId) const {
     Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> out{NoInit, std::size_t(_fields[fieldId]._size)};
-    /** @todo use slicing once Pair exposes members somehow */
-    mappingIntoInternal(fieldId, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
-    unsignedIndexFieldIntoInternal(fieldId, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)});
+    /* Explicit slice() template parameters needed by GCC 4.8 and MSVC 2015 */
+    mappingIntoInternal(fieldId, 0, stridedArrayView(out).slice<UnsignedInt>(&decltype(out)::Type::first));
+    unsignedIndexFieldIntoInternal(fieldId, 0, stridedArrayView(out).slice<UnsignedInt>(&decltype(out)::Type::second));
     return out;
 }
 
@@ -1947,11 +1949,12 @@ Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, In
            strings in the binary */
         "Trade::SceneData::meshesMaterialsInto(): field" << SceneField::Mesh << "not found", {});
     Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>> out{NoInit, std::size_t(_fields[fieldId]._size)};
-    /** @todo use slicing once Pair exposes members somehow */
-    mappingIntoInternal(fieldId, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
-    const Containers::StridedArrayView1D<UnsignedInt> meshesOut{out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)};
-    const Containers::StridedArrayView1D<Int> meshMaterialsOut{out, reinterpret_cast<Int*>(reinterpret_cast<char*>(out.data()) + sizeof(UnsignedInt) + sizeof(UnsignedInt)), out.size(), sizeof(decltype(out)::Type)};
-    meshesMaterialsIntoInternal(fieldId, 0, meshesOut, meshMaterialsOut);
+    /* Explicit slice() template parameters needed by GCC 4.8 and MSVC 2015 */
+    mappingIntoInternal(fieldId, 0, stridedArrayView(out).slice<UnsignedInt>(&decltype(out)::Type::first));
+    const auto outSecond = stridedArrayView(out).slice<Containers::Pair<UnsignedInt, Int>>(&decltype(out)::Type::second);
+    meshesMaterialsIntoInternal(fieldId, 0,
+        outSecond.slice<UnsignedInt>(&decltype(outSecond)::Type::first),
+        outSecond.slice<Int>(&decltype(outSecond)::Type::second));
     return out;
 }
 
@@ -2115,10 +2118,9 @@ Containers::Array<Containers::Pair<UnsignedInt, const void*>> SceneData::importe
         ValueInit
         #endif
     , std::size_t(_fields[fieldId]._size)};
-    /** @todo use slicing once Pair exposes members somehow, especially because
-        this is EXTREMELY prone to bugs due to the padding before the pointer */
-    mappingIntoInternal(fieldId, 0, {out, reinterpret_cast<UnsignedInt*>(reinterpret_cast<char*>(out.data())), out.size(), sizeof(decltype(out)::Type)});
-    importerStateIntoInternal(fieldId, 0, {out, reinterpret_cast<const void**>(reinterpret_cast<char*>(out.data()) + sizeof(const void*)), out.size(), sizeof(decltype(out)::Type)});
+    /* Explicit slice() template parameters needed by GCC 4.8 and MSVC 2015 */
+    mappingIntoInternal(fieldId, 0, stridedArrayView(out).slice<UnsignedInt>(&decltype(out)::Type::first));
+    importerStateIntoInternal(fieldId, 0, stridedArrayView(out).slice<const void*>(&decltype(out)::Type::second));
     return out;
 }
 
