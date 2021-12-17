@@ -1312,7 +1312,7 @@ template<class Source, class Destination> void applyScaling(const Containers::St
 
 }
 
-UnsignedInt SceneData::findTransformFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const {
+UnsignedInt SceneData::findTransformationFields(UnsignedInt& transformationFieldId, UnsignedInt& translationFieldId, UnsignedInt& rotationFieldId, UnsignedInt& scalingFieldId) const {
     UnsignedInt fieldWithObjectMapping = ~UnsignedInt{};
     transformationFieldId = ~UnsignedInt{};
     translationFieldId = ~UnsignedInt{};
@@ -1432,7 +1432,7 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
 
 void SceneData::transformations2DInto(const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix3>& fieldDestination) const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    const UnsignedInt fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
     CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         "Trade::SceneData::transformations2DInto(): no transformation-related field found", );
     CORRADE_ASSERT(!mappingDestination || mappingDestination.size() == _fields[fieldWithObjectMapping]._size,
@@ -1445,7 +1445,7 @@ void SceneData::transformations2DInto(const Containers::StridedArrayView1D<Unsig
 
 std::size_t SceneData::transformations2DInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix3>& fieldDestination) const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    const UnsignedInt fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
     CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         "Trade::SceneData::transformations2DInto(): no transformation-related field found", {});
     const std::size_t fieldSize = _fields[fieldWithObjectMapping]._size;
@@ -1461,7 +1461,7 @@ std::size_t SceneData::transformations2DInto(const std::size_t offset, const Con
 
 Containers::Array<Containers::Pair<UnsignedInt, Matrix3>> SceneData::transformations2DAsArray() const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    const UnsignedInt fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
     CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
@@ -1678,7 +1678,7 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
 
 void SceneData::transformations3DInto(const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix4>& fieldDestination) const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    const std::size_t fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    const std::size_t fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
     CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         "Trade::SceneData::transformations3DInto(): no transformation-related field found", );
     CORRADE_ASSERT(!mappingDestination || mappingDestination.size() == _fields[fieldWithObjectMapping]._size,
@@ -1691,7 +1691,7 @@ void SceneData::transformations3DInto(const Containers::StridedArrayView1D<Unsig
 
 std::size_t SceneData::transformations3DInto(const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix4>& fieldDestination) const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    const UnsignedInt fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
     CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         "Trade::SceneData::transformations3DInto(): no transformation-related field found", {});
     const std::size_t fieldSize = _fields[fieldWithObjectMapping]._size;
@@ -1707,7 +1707,7 @@ std::size_t SceneData::transformations3DInto(const std::size_t offset, const Con
 
 Containers::Array<Containers::Pair<UnsignedInt, Matrix4>> SceneData::transformations3DAsArray() const {
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    const UnsignedInt fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
     CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
         /* Using the same message as in Into() to avoid too many redundant
            strings in the binary */
@@ -2175,7 +2175,7 @@ Containers::Optional<Matrix3> SceneData::transformation2DFor(const UnsignedLong 
         "Trade::SceneData::transformation2DFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    const UnsignedInt fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
     if(fieldWithObjectMapping == ~UnsignedInt{}) return {};
 
     /* If is2D() returned false as well, all *FieldId would be invalid, which
@@ -2219,7 +2219,7 @@ Containers::Optional<Matrix4> SceneData::transformation3DFor(const UnsignedLong 
         "Trade::SceneData::transformation3DFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
 
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
-    const UnsignedInt fieldWithObjectMapping = findTransformFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    const UnsignedInt fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
     if(fieldWithObjectMapping == ~UnsignedInt{}) return {};
 
     /* If is3D() returned false as well, all *FieldId would be invalid, which
