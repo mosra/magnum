@@ -2065,6 +2065,18 @@ class MAGNUM_TRADE_EXPORT SceneData {
         std::size_t parentsInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Int>& fieldDestination) const;
 
         /**
+         * @brief Transformation field size
+         * @m_since_latest
+         *
+         * Returns the size of the @ref SceneField::Transformation field, or,
+         * if not present, of any of the @ref SceneField::Translation,
+         * @ref SceneField::Rotation and @ref SceneField::Scaling fields that's
+         * present. Expects that at least one transformation field is present.
+         * @see @ref is2D(), @ref is3D(), @ref fieldSize(SceneField) const
+         */
+        std::size_t transformationFieldSize() const;
+
+        /**
          * @brief 2D transformations as 3x3 float matrices
          * @m_since_latest
          *
@@ -2097,7 +2109,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref SceneField::Transformation, @ref SceneField::Translation,
          * @ref SceneField::Rotation and @ref SceneField::Scaling fields that's
          * present.
-         * @see @ref fieldSize(SceneField) const
+         * @see @ref transformationFieldSize()
          */
         void transformations2DInto(const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix3>& fieldDestination) const;
 
@@ -2110,7 +2122,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * of the views, returning the count of items actually extracted. The
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
-         * @see @ref fieldSize(SceneField) const,
+         * @see @ref transformationFieldSize(),
          *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t transformations2DInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix3>& fieldDestination) const;
@@ -2153,7 +2165,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * same as calling @ref mappingInto() with one of the
          * @ref SceneField::Translation, @ref SceneField::Rotation and
          * @ref SceneField::Scaling fields that's present.
-         * @see @ref fieldSize(SceneField) const
+         * @see @ref transformationFieldSize()
          */
         void translationsRotationsScalings2DInto(const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const;
 
@@ -2166,7 +2178,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * of the views, returning the count of items actually extracted. The
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
-         * @see @ref fieldSize(SceneField) const,
+         * @see @ref transformationFieldSize(),
          *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t translationsRotationsScalings2DInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Vector2>& translationDestination, const Containers::StridedArrayView1D<Complex>& rotationDestination, const Containers::StridedArrayView1D<Vector2>& scalingDestination) const;
@@ -2204,7 +2216,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref SceneField::Transformation, @ref SceneField::Translation,
          * @ref SceneField::Rotation and @ref SceneField::Scaling fields that's
          * present.
-         * @see @ref fieldSize(SceneField) const
+         * @see @ref transformationFieldSize()
          */
         void transformations3DInto(const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix4>& destination) const;
 
@@ -2217,7 +2229,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * of the views, returning the count of items actually extracted. The
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
-         * @see @ref fieldSize(SceneField) const,
+         * @see @ref transformationFieldSize(),
          *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t transformations3DInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix4>& destination) const;
@@ -2260,7 +2272,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * same as calling @ref mappingInto() with one of the
          * @ref SceneField::Translation, @ref SceneField::Rotation and
          * @ref SceneField::Scaling fields that's present.
-         * @see @ref fieldSize(SceneField) const
+         * @see @ref transformationFieldSize()
          */
         void translationsRotationsScalings3DInto(const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const;
 
@@ -2273,7 +2285,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * of the views, returning the count of items actually extracted. The
          * @p offset is expected to not be larger than the field size, views
          * that are not @cpp nullptr @ce are expected to have the same size.
-         * @see @ref fieldSize(SceneField) const,
+         * @see @ref transformationFieldSize(),
          *      @ref fieldObjectOffset(SceneField, UnsignedLong, std::size_t) const
          */
         std::size_t translationsRotationsScalings3DInto(std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Vector3>& translationDestination, const Containers::StridedArrayView1D<Quaternion>& rotationDestination, const Containers::StridedArrayView1D<Vector3>& scalingDestination) const;

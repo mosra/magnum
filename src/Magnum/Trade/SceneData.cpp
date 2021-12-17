@@ -1354,6 +1354,14 @@ UnsignedInt SceneData::findTranslationRotationScalingFields(UnsignedInt& transla
     return fieldWithObjectMapping;
 }
 
+std::size_t SceneData::transformationFieldSize() const {
+    UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
+    const UnsignedInt fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
+    CORRADE_ASSERT(fieldWithObjectMapping != ~UnsignedInt{},
+        "Trade::SceneData::transformationFieldSize(): no transformation-related field found", {});
+    return _fields[fieldWithObjectMapping]._size;
+}
+
 void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFieldId, const UnsignedInt translationFieldId, const UnsignedInt rotationFieldId, const UnsignedInt scalingFieldId, std::size_t offset, const Containers::StridedArrayView1D<Matrix3>& destination) const {
     /* *FieldId, offset and destination.size() is assumed to be in bounds (or
        an invalid field ID), checked by the callers */

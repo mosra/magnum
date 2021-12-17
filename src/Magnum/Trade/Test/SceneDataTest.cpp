@@ -1358,6 +1358,9 @@ void SceneDataTest::construct() {
     /* is2D() / is3D() exhaustively tested in transformations*DAsArray[TRS]()
        and constructZeroFields() */
 
+    /* transformationFieldSize() exhaustively tested in
+       transformations*DAsArray[TRS]() */
+
     /* Field property access by ID */
     CORRADE_COMPARE(scene.fieldName(0), SceneField::Transformation);
     CORRADE_COMPARE(scene.fieldName(1), SceneField::Parent);
@@ -2702,6 +2705,7 @@ template<class T> void SceneDataTest::transformations2DAsArray() {
 
     CORRADE_VERIFY(scene.is2D());
     CORRADE_VERIFY(!scene.is3D());
+    CORRADE_COMPARE(scene.transformationFieldSize(), 4);
     CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
         {1, Matrix3::translation({3.0f, 2.0f})},
         {0, Matrix3::rotation(35.0_degf)},
@@ -2755,6 +2759,7 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
             {1, Matrix3::translation({3.0f, 2.0f})},
             {0, Matrix3{Math::IdentityInit}},
@@ -2775,6 +2780,7 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
             {1, Matrix3{Math::IdentityInit}},
             {0, Matrix3::rotation(35.0_degf)},
@@ -2795,6 +2801,7 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
             {1, Matrix3{Math::IdentityInit}},
             {0, Matrix3{Math::IdentityInit}},
@@ -2819,6 +2826,7 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
             {1, Matrix3::translation({3.0f, 2.0f})},
             {0, Matrix3::rotation(35.0_degf)},
@@ -2840,6 +2848,7 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
             {1, Matrix3::translation({3.0f, 2.0f})},
             {0, Matrix3{Math::IdentityInit}},
@@ -2861,6 +2870,7 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
             {1, Matrix3{Math::IdentityInit}},
             {0, Matrix3::rotation(35.0_degf)},
@@ -2886,6 +2896,7 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
         }};
         CORRADE_VERIFY(scene.is2D());
         CORRADE_VERIFY(!scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations2DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix3>>({
             {1, Matrix3::translation({3.0f, 2.0f})},
             {0, Matrix3::rotation(35.0_degf)},
@@ -3296,6 +3307,7 @@ template<class T> void SceneDataTest::transformations3DAsArray() {
 
     CORRADE_VERIFY(!scene.is2D());
     CORRADE_VERIFY(scene.is3D());
+    CORRADE_COMPARE(scene.transformationFieldSize(), 4);
     CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
         {1, Matrix4::translation({3.0f, 2.0f, -0.5f})},
         {0, Matrix4::rotationY(35.0_degf)},
@@ -3349,6 +3361,7 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
             {1, Matrix4::translation({3.0f, 2.0, 1.0f})},
             {0, Matrix4{Math::IdentityInit}},
@@ -3369,6 +3382,7 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
             {1, Matrix4{Math::IdentityInit}},
             {0, Matrix4::rotationY(35.0_degf)},
@@ -3389,6 +3403,7 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
             {1, Matrix4{Math::IdentityInit}},
             {0, Matrix4{Math::IdentityInit}},
@@ -3413,6 +3428,7 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
             {1, Matrix4::translation({3.0f, 2.0, 1.0f})},
             {0, Matrix4::rotationY(35.0_degf)},
@@ -3434,6 +3450,7 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
             {1, Matrix4::translation({3.0f, 2.0, 1.0f})},
             {0, Matrix4{Math::IdentityInit}},
@@ -3455,6 +3472,7 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
             {1, Matrix4{Math::IdentityInit}},
             {0, Matrix4::rotationY(35.0_degf)},
@@ -3480,6 +3498,7 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
         }};
         CORRADE_VERIFY(!scene.is2D());
         CORRADE_VERIFY(scene.is3D());
+        CORRADE_COMPARE(scene.transformationFieldSize(), 5);
         CORRADE_COMPARE_AS(scene.transformations3DAsArray(), (Containers::arrayView<Containers::Pair<UnsignedInt, Matrix4>>({
             {1, Matrix4::translation({3.0f, 2.0, 1.0f})},
             {0, Matrix4::rotationY(35.0_degf)},
@@ -4670,6 +4689,7 @@ void SceneDataTest::fieldNotFound() {
     scene.parentsAsArray();
     scene.parentsInto(nullptr, nullptr);
     scene.parentsInto(0, nullptr, nullptr);
+    scene.transformationFieldSize();
     scene.transformations2DAsArray();
     scene.transformations2DInto(nullptr, nullptr);
     scene.transformations2DInto(0, nullptr, nullptr);
@@ -4735,6 +4755,7 @@ void SceneDataTest::fieldNotFound() {
         "Trade::SceneData::parentsInto(): field not found\n"
         "Trade::SceneData::parentsInto(): field not found\n"
         "Trade::SceneData::parentsInto(): field not found\n"
+        "Trade::SceneData::transformationFieldSize(): no transformation-related field found\n"
         "Trade::SceneData::transformations2DInto(): no transformation-related field found\n"
         "Trade::SceneData::transformations2DInto(): no transformation-related field found\n"
         "Trade::SceneData::transformations2DInto(): no transformation-related field found\n"
