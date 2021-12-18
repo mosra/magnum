@@ -26,7 +26,6 @@
 #include "OrderClusterParents.h"
 
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 
@@ -94,9 +93,9 @@ void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::St
        other) and build a list of (id, parent id) where a parent is always
        before its children */
     std::size_t outputOffset = 0;
-    Containers::Array<Int> parentsToProcess;
-    arrayAppend(parentsToProcess, -1);
-    for(std::size_t i = 0; i != parentsToProcess.size(); ++i) {
+    Containers::Array<Int> parentsToProcess{NoInit, parents.size() + 1};
+    parentsToProcess[0] = -1;
+    for(std::size_t i = 0; i != outputOffset + 1; ++i) {
         const Int objectId = parentsToProcess[i];
         for(std::size_t j = childrenOffsets[objectId + 1], jMax = childrenOffsets[objectId + 2]; j != jMax; ++j) {
             /** @todo better diagnostic once we can use a BitArray to detect
@@ -105,7 +104,7 @@ void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::St
                 should be instead in a dedicated cycle/sparse checker utility?) */
             CORRADE_ASSERT_OUTPUT(outputOffset < parents.size(),
                 "SceneTools::orderClusterParents(): hierarchy is cyclic", );
-            arrayAppend(parentsToProcess, children[j]);
+            parentsToProcess[outputOffset + 1] = children[j];
             mappingDestination[outputOffset] = children[j];
             parentDestination[outputOffset] = objectId;
             ++outputOffset;
