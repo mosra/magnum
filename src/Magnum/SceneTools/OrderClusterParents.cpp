@@ -60,15 +60,16 @@ void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::St
     const Containers::Array<Containers::Pair<UnsignedInt, Int>> parents = scene.parentsAsArray();
 
     /* Children offset for each node including root. First calculate the count
-       of children for each ... */
-    Containers::Array<UnsignedInt> childrenOffsets{DirectInit, scene.mappingBound() + 2, 0u};
+       of children for each, skipping the first element (parent.second() can be
+       -1, accounting for that as well)... */
+    Containers::Array<UnsignedInt> childrenOffsets{DirectInit, scene.mappingBound() + 3, 0u};
     for(const Containers::Pair<UnsignedInt, Int>& parent: parents) {
         CORRADE_INTERNAL_ASSERT(parent.first() < scene.mappingBound() && (parent.second() == -1 || UnsignedInt(parent.second()) < scene.mappingBound()));
-        ++childrenOffsets[parent.second() + 1];
+        ++childrenOffsets[parent.second() + 2];
     }
 
     /* ... then convert the counts to a running offset. Now
-       `[childrenOffsets[i + 1], childrenOffsets[i + 2])` contains a range in
+       `[childrenOffsets[i + 2], childrenOffsets[i + 3])` contains a range in
        which the `children` array below contains a list of children for `i`. */
     UnsignedInt offset = 0;
     for(UnsignedInt& i: childrenOffsets) {
@@ -78,16 +79,14 @@ void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::St
     }
     CORRADE_INTERNAL_ASSERT(offset == parents.size());
 
-    /* Go through the parent list again, convert that to child ranges */
+    /* Go through the parent list again, convert that to child ranges. The
+       childrenOffsets array gets shifted by one element by the process, thus
+       now `[childrenOffsets[i + 1], childrenOffsets[i + 2])` contains a range
+       in which the `children` array below contains a list of children for
+       `i`. */
     Containers::Array<UnsignedInt> children{NoInit, parents.size()};
-    {
-        Containers::Array<UnsignedInt> currentChildrenOffsets{DirectInit, scene.mappingBound() + 1, 0u};
-        for(const Containers::Pair<UnsignedInt, Int>& parent: parents) {
-            UnsignedInt& currentChildrenOffset = currentChildrenOffsets[parent.second() + 1];
-            children[childrenOffsets[parent.second() + 1] + currentChildrenOffset] = parent.first();
-            ++currentChildrenOffset;
-        }
-    }
+    for(const Containers::Pair<UnsignedInt, Int>& parent: parents)
+        children[childrenOffsets[parent.second() + 2]++] = parent.first();
 
     /* Go breadth-first (so we have nodes sharing the same parent next to each
        other) and build a list of (id, parent id) where a parent is always
