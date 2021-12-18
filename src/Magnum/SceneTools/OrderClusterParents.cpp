@@ -26,6 +26,7 @@
 #include "OrderClusterParents.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 
@@ -45,7 +46,6 @@ Containers::Array<Containers::Pair<UnsignedInt, Int>> orderClusterParents(const 
 }
 
 void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Int>& parentDestination) {
-    #ifndef CORRADE_NO_ASSERT
     const Containers::Optional<UnsignedInt> parentFieldId = scene.findFieldId(Trade::SceneField::Parent);
     CORRADE_ASSERT(parentFieldId,
         "SceneTools::orderClusterParentsInto(): the scene has no hierarchy", );
@@ -54,15 +54,34 @@ void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::St
         "SceneTools::orderClusterParentsInto(): expected mapping destination view with" << parentFieldSize << "elements but got" << mappingDestination.size(), );
     CORRADE_ASSERT(parentDestination.size() == scene.fieldSize(*parentFieldId),
         "SceneTools::orderClusterParentsInto(): expected parent destination view with" << parentFieldSize << "elements but got" << parentDestination.size(), );
-    #endif
 
-    /* Convert the parent list to a child list to sort them toplogically */
-    const Containers::Array<Containers::Pair<UnsignedInt, Int>> parents = scene.parentsAsArray();
+    /* Allocate a single storage for all temporary data */
+    Containers::ArrayView<Containers::Pair<UnsignedInt, Int>> parents;
+    Containers::ArrayView<UnsignedInt> childrenOffsets;
+    Containers::ArrayView<UnsignedInt> children;
+    Containers::ArrayView<Int> parentsToProcess;
+    Containers::ArrayTuple storage{
+        /* Output of scene.parentsInto() */
+        {NoInit, parentFieldSize, parents},
+        /* Running children offset (+1) for each node including root (+1), plus
+           one more element when we shift the array by one below */
+        {ValueInit, std::size_t(scene.mappingBound() + 3), childrenOffsets},
+        {NoInit, parentFieldSize, children},
+        /* List of parents to process. Can't reuse mappingDestination because
+           this includes one more element for root objects. */
+        {NoInit, parentFieldSize + 1, parentsToProcess}
+    };
+
+    /* Convert the parent list to a child list to sort them toplogically.
+       Explicit slice() template parameters needed by GCC 4.8 and MSVC 2015 */
+    scene.parentsInto(
+        stridedArrayView(parents).slice<UnsignedInt>(&Containers::Pair<UnsignedInt, Int>::first),
+        stridedArrayView(parents).slice<Int>(&Containers::Pair<UnsignedInt, Int>::second)
+    );
 
     /* Children offset for each node including root. First calculate the count
        of children for each, skipping the first element (parent.second() can be
        -1, accounting for that as well)... */
-    Containers::Array<UnsignedInt> childrenOffsets{DirectInit, scene.mappingBound() + 3, 0u};
     for(const Containers::Pair<UnsignedInt, Int>& parent: parents) {
         CORRADE_INTERNAL_ASSERT(parent.first() < scene.mappingBound() && (parent.second() == -1 || UnsignedInt(parent.second()) < scene.mappingBound()));
         ++childrenOffsets[parent.second() + 2];
@@ -84,7 +103,6 @@ void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::St
        now `[childrenOffsets[i + 1], childrenOffsets[i + 2])` contains a range
        in which the `children` array below contains a list of children for
        `i`. */
-    Containers::Array<UnsignedInt> children{NoInit, parents.size()};
     for(const Containers::Pair<UnsignedInt, Int>& parent: parents)
         children[childrenOffsets[parent.second() + 2]++] = parent.first();
 
@@ -92,7 +110,6 @@ void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::St
        other) and build a list of (id, parent id) where a parent is always
        before its children */
     std::size_t outputOffset = 0;
-    Containers::Array<Int> parentsToProcess{NoInit, parents.size() + 1};
     parentsToProcess[0] = -1;
     for(std::size_t i = 0; i != outputOffset + 1; ++i) {
         const Int objectId = parentsToProcess[i];
