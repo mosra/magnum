@@ -24,17 +24,53 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/Triple.h>
 
+#include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/MeshTools/Transform.h"
+#include "Magnum/SceneTools/FlattenMeshHierarchy.h"
 #include "Magnum/SceneTools/OrderClusterParents.h"
 #include "Magnum/Trade/SceneData.h"
+#include "Magnum/Trade/MeshData.h"
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 using namespace Magnum;
 
 int main() {
+{
+/* [flattenMeshHierarchy2D-transformations] */
+Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
+Containers::Array<Trade::MeshData> meshes = DOXYGEN_ELLIPSIS({});
+
+/* Since a mesh can be referenced multiple times, we can't operate in-place */
+Containers::Array<Trade::MeshData> flattenedMeshes;
+for(const Containers::Triple<UnsignedInt, Int, Matrix3>& meshTransformation:
+    SceneTools::flattenMeshHierarchy2D(scene))
+{
+    arrayAppend(flattenedMeshes, MeshTools::transform2D(
+        meshes[meshTransformation.first()], meshTransformation.third()));
+}
+/* [flattenMeshHierarchy2D-transformations] */
+} {
+/* [flattenMeshHierarchy3D-transformations] */
+Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
+Containers::Array<Trade::MeshData> meshes = DOXYGEN_ELLIPSIS({});
+
+/* Since a mesh can be referenced multiple times, we can't operate in-place */
+Containers::Array<Trade::MeshData> flattenedMeshes;
+for(const Containers::Triple<UnsignedInt, Int, Matrix4>& meshTransformation:
+    SceneTools::flattenMeshHierarchy3D(scene))
+{
+    arrayAppend(flattenedMeshes, MeshTools::transform3D(
+        meshes[meshTransformation.first()], meshTransformation.third()));
+}
+/* [flattenMeshHierarchy3D-transformations] */
+}
+
 {
 /* [orderClusterParents-transformations] */
 Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});

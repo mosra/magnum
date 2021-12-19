@@ -46,13 +46,17 @@ absolute transformation in the scene with @p globalTransformation prepended.
 The @ref Trade::SceneField::Parent field is expected to be contained in the
 scene, having no cycles or duplicates, and the scene is expected to be 2D. If
 @ref Trade::SceneField::Mesh is not present or is empty, returns an empty
-array.
+array. You can then use @ref MeshTools::transform2D() to apply the
+transformations to actual meshes:
+
+@snippet MagnumSceneTools.cpp flattenMeshHierarchy2D-transformations
 
 The operation is done in an @f$ \mathcal{O}(m + n) @f$ execution time and
 memory complexity, with @f$ m @f$ being size of the @ref Trade::SceneField::Mesh
 field and @f$ n @f$ being @ref Trade::SceneData::mappingBound(). The function
 calls @ref orderClusterParents() internally.
-@see @ref Trade::SceneData::hasField(), @ref Trade::SceneData::is2D()
+@see @ref Trade::SceneData::hasField(), @ref Trade::SceneData::is2D(),
+    @ref MeshTools::concatenate()
 */
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene, const Matrix3& globalTransformation);
 
@@ -73,13 +77,17 @@ absolute transformation in the scene with @p globalTransformation prepended.
 The @ref Trade::SceneField::Parent field is expected to be contained in the
 scene, having no cycles or duplicates, and the scene is expected to be 3D. If
 @ref Trade::SceneField::Mesh is not present or is empty, returns an empty
-array.
+array. You can then use @ref MeshTools::transform3D() to apply the
+transformations to actual meshes:
+
+@snippet MagnumSceneTools.cpp flattenMeshHierarchy3D-transformations
 
 The operation is done in an @f$ \mathcal{O}(m + n) @f$ execution time and
 memory complexity, with @f$ m @f$ being size of the @ref Trade::SceneField::Mesh
 field and @f$ n @f$ being @ref Trade::SceneData::mappingBound(). The function
 calls @ref orderClusterParents() internally.
-@see @ref Trade::SceneData::hasField(), @ref Trade::SceneData::is3D()
+@see @ref Trade::SceneData::hasField(), @ref Trade::SceneData::is3D(),
+    @ref MeshTools::concatenate()
 */
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene, const Matrix4& globalTransformation);
 

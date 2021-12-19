@@ -70,7 +70,8 @@ applying transformations.
 If an index buffer is needed, @ref MeshIndexType::UnsignedInt is always used.
 Call @ref compressIndices(const Trade::MeshData&, MeshIndexType) on the result
 to compress it to a smaller type, if desired.
-@see @ref concatenateInto()
+@see @ref concatenateInto(), @ref SceneTools::flattenMeshHierarchy2D(),
+    @ref SceneTools::flattenMeshHierarchy3D()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes);
 
