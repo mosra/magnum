@@ -396,14 +396,15 @@ used.)")
 
         /* Scene properties, together with counting how much is each mesh /
            light / material / skin shared (which gets used only if both
-           --info-scenes and --info-{lights,materials,skins} is passed).
-           Texture reference count is calculated when parsing materials. */
+           --info-scenes and --info-{lights,materials,skins} is passed and
+           the file has at least one scene). Texture reference count is
+           calculated when parsing materials. */
         Containers::Array<SceneInfo> sceneInfos;
         Containers::Array<UnsignedInt> materialReferenceCount;
         Containers::Array<UnsignedInt> lightReferenceCount;
         Containers::Array<UnsignedInt> meshReferenceCount;
         Containers::Array<UnsignedInt> skinReferenceCount;
-        if(args.isSet("info") || args.isSet("info-scenes")) {
+        if((args.isSet("info") || args.isSet("info-scenes")) && importer->sceneCount()) {
             materialReferenceCount = Containers::Array<UnsignedInt>{importer->materialCount()};
             lightReferenceCount = Containers::Array<UnsignedInt>{importer->lightCount()};
             meshReferenceCount = Containers::Array<UnsignedInt>{importer->meshCount()};
@@ -517,10 +518,10 @@ used.)")
 
         /* Material properties, together with how much is each texture shared
            (which gets used only if both --info-materials and --info-textures
-           is passed). */
+           is passed and the file has at least one material). */
         Containers::Array<MaterialInfo> materialInfos;
         Containers::Array<UnsignedInt> textureReferenceCount;
-        if(args.isSet("info") || args.isSet("info-materials")) {
+        if((args.isSet("info") || args.isSet("info-materials")) && importer->materialCount()) {
             textureReferenceCount = Containers::Array<UnsignedInt>{importer->textureCount()};
 
             for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
@@ -643,12 +644,12 @@ used.)")
 
         /* Texture properties, together with how much is each image shared
            (which gets used only if both --info-textures and --info-images is
-           passed). */
+           passed and the file has at least one texture). */
         Containers::Array<TextureInfo> textureInfos;
         Containers::Array<UnsignedInt> image1DReferenceCount;
         Containers::Array<UnsignedInt> image2DReferenceCount;
         Containers::Array<UnsignedInt> image3DReferenceCount;
-        if(args.isSet("info") || args.isSet("info-textures")) {
+        if((args.isSet("info") || args.isSet("info-textures")) && importer->textureCount()) {
             image1DReferenceCount = Containers::Array<UnsignedInt>{importer->image1DCount()};
             image2DReferenceCount = Containers::Array<UnsignedInt>{importer->image2DCount()};
             image3DReferenceCount = Containers::Array<UnsignedInt>{importer->image3DCount()};
