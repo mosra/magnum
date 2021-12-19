@@ -800,14 +800,16 @@ void AnyImageConverterTest::detectCompressed3D() {
 }
 
 void AnyImageConverterTest::detectLevels1D() {
-    auto&& data = DetectCompressed1DData[testCaseInstanceId()];
+    auto&& data = DetectLevels1DData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertToFile(CompressedImage1D, data.filename));
+    /* Using the list API even though there's just one image, which should
+       still trigger the correct code path for AnyImageConverter. */
+    CORRADE_VERIFY(!converter->convertToFile({Image1D}, data.filename));
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
