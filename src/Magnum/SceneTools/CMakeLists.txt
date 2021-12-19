@@ -85,6 +85,7 @@ if(WITH_SCENECONVERTER)
     target_link_libraries(magnum-sceneconverter PRIVATE
         Magnum
         MagnumMeshTools
+        MagnumSceneTools
         MagnumTrade)
     set_target_properties(magnum-sceneconverter PROPERTIES FOLDER "Magnum/MeshTools")
 

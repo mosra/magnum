@@ -28,6 +28,8 @@
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
@@ -39,7 +41,10 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
+#include "Magnum/MeshTools/Transform.h"
+#include "Magnum/SceneTools/FlattenMeshHierarchy.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/LightData.h"
@@ -82,9 +87,9 @@ magnum-sceneconverter [-h|--help] [-I|--importer IMPORTER]
     [--remove-duplicates] [--remove-duplicates-fuzzy EPSILON]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]... [--mesh MESH]
-    [--level LEVEL] [--info-animations] [--info-images] [--info-lights]
-    [--info-materials] [--info-meshes] [--info-skins] [--info-textures]
-    [--info] [--bounds] [-v|--verbose] [--profile]
+    [--level LEVEL] [--concatenate-meshes] [--info-animations] [--info-images]
+    [--info-lights] [--info-materials] [--info-meshes] [--info-skins]
+    [--info-textures] [--info] [--bounds] [-v|--verbose] [--profile]
     [--] input output
 @endcode
 
@@ -110,8 +115,12 @@ Arguments:
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter(s)
--   `--mesh MESH` --- mesh to import (default: `0`)
--   `--level LEVEL` --- mesh level to import (default: `0`)
+-   `--mesh MESH` --- mesh to import (default: `0`), ignored if
+    `--concatenate-meshes` is specified
+-   `--level LEVEL` --- mesh level to import (default: `0`), ignored if
+    `--concatenate-meshes` is specified
+-   `--concatenate-meshes` -- flatten mesh hierarchy and concatenate them all
+    together @m_class{m-label m-warning} **experimental**
 -   `--info-animations` --- print into about animations in the input file and
     exit
 -   `--info-images` --- print into about images in the input file and exit
@@ -232,8 +241,9 @@ int main(int argc, char** argv) {
         .addOption("remove-duplicates-fuzzy").setHelp("remove-duplicates-fuzzy", "remove duplicate vertices with fuzzy comparison in the mesh after import", "EPSILON")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
-        .addOption("mesh", "0").setHelp("mesh", "mesh to import")
-        .addOption("level", "0").setHelp("level", "mesh level to import")
+        .addOption("mesh", "0").setHelp("mesh", "mesh to import, ignored if --concatenate-meshes is specified")
+        .addOption("level", "0").setHelp("level", "mesh level to import, ignored if --concatenate-meshes is specified")
+        .addBooleanOption("concatenate-meshes").setHelp("concatenate-meshes", "flatten mesh hierarchy and concatenate them all together")
         .addBooleanOption("info-animations").setHelp("info-animations", "print info about animations in the input file and exit")
         .addBooleanOption("info-images").setHelp("info-images", "print info about images in the input file and exit")
         .addBooleanOption("info-lights").setHelp("info-lights", "print info about images in the input file and exit")
@@ -969,10 +979,53 @@ used.)")
         return error ? 1 : 0;
     }
 
+    if(!importer->meshCount()) {
+        Error{} << "No meshes found in" << args.value("input");
+        return 1;
+    }
+
     Containers::Optional<Trade::MeshData> mesh;
-    {
+
+    /* Concatenate input meshes, if requested */
+    if(args.isSet("concatenate-meshes")) {
+        Containers::Array<Containers::Optional<Trade::MeshData>> meshes{importer->meshCount()};
+        for(std::size_t i = 0; i != meshes.size(); ++i) if(!(meshes[i] = importer->mesh(i))) {
+            Error{} << "Cannot import mesh" << i;
+            return 1;
+        }
+
+        /* If there's a scene, use it to flatten mesh hierarchy. If not, assume
+           all meshes are in the root. */
+        /** @todo make it possible to choose the scene */
+        if(importer->defaultScene() != -1) {
+            Containers::Optional<Trade::SceneData> scene;
+            if(!(scene = importer->scene(importer->defaultScene()))) {
+                Error{} << "Cannot import scene" << importer->defaultScene() << "for mesh concatenation";
+                return 1;
+            }
+
+            /** @todo once there are 2D scenes, check the scene is 3D */
+            Containers::Array<Containers::Optional<Trade::MeshData>> flattenedMeshes;
+            for(const Containers::Triple<UnsignedInt, Int, Matrix4>& meshTransformation: SceneTools::flattenMeshHierarchy3D(*scene))
+                arrayAppend(flattenedMeshes, MeshTools::transform3D(*meshes[meshTransformation.first()], meshTransformation.third()));
+            meshes = std::move(flattenedMeshes);
+        }
+
+        /* Concatenate all meshes together */
+        /** @todo some better way than having to create a whole new array of
+            references with the nasty NoInit, yet keeping the flexibility? */
+        Containers::Array<Containers::Reference<const Trade::MeshData>> meshReferences{NoInit, meshes.size()};
+        for(std::size_t i = 0; i != meshes.size(); ++i)
+            meshReferences[i] = *meshes[i];
+        /** @todo this will assert if the meshes have incompatible primitives
+            (such as some triangles, some lines), or if they have
+            loops/strips/fans -- handle that explicitly */
+        mesh = MeshTools::concatenate(meshReferences);
+
+    /* Otherwise import just one */
+    } else {
         Trade::Implementation::Duration d{importTime};
-        if(!importer->meshCount() || !(mesh = importer->mesh(args.value<UnsignedInt>("mesh"), args.value<UnsignedInt>("level")))) {
+        if(!(mesh = importer->mesh(args.value<UnsignedInt>("mesh"), args.value<UnsignedInt>("level")))) {
             Error{} << "Cannot import the mesh";
             return 4;
         }

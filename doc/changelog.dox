@@ -186,6 +186,10 @@ See also:
 -   New @ref SceneTools library that'll be a home for various whole-scene
     optimization algorithms such as hierarchy flattening, redundant node
     removal and such
+-   The @ref magnum-sceneconverter "magnum-sceneconverter" utility gained an
+    experimental `--concatenate-meshes` option, which will flatten the mesh
+    hierarchy and concatenate all meshes together. Note that it doesn't
+    correctly handle all corner cases yet and may assert on certain inputs.
 
 @subsubsection changelog-latest-new-shaders Shaders library
 
