@@ -278,7 +278,8 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
 
     /* Otherwise do it the hard way */
     } else {
-        /* Calculate the layout */
+        /* Calculate the layout. Can't std::move() the data in to avoid copying
+           the attribute array as we need the original attributes below. */
         Trade::MeshData layout = interleavedLayout(data, vertexCount, extra);
 
         /* Copy existing attributes to new locations */
