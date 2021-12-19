@@ -1277,10 +1277,23 @@ class MAGNUM_TRADE_EXPORT MeshData {
         UnsignedInt attributeCount(MeshAttribute name) const;
 
         /**
+         * @brief Find an absolute ID of a named attribute
+         * @m_since_latest
+         *
+         * If @p name isn't present or @p id is not smaller than
+         * @ref attributeCount(MeshAttribute) const, returns
+         * @ref Containers::NullOpt. The lookup is done in an
+         * @f$ \mathcal{O}(n) @f$ complexity with @f$ n @f$ being the attribute
+         * count.
+         * @see @ref hasAttribute(), @ref attributeId()
+         */
+        Containers::Optional<UnsignedInt> findAttributeId(MeshAttribute name, UnsignedInt id = 0) const;
+
+        /**
          * @brief Absolute ID of a named attribute
          *
-         * The @p id is expected to be smaller than
-         * @ref attributeCount(MeshAttribute) const.
+         * Like @ref findAttributeId(), but the @p id is expected to be smaller
+         * than @ref attributeCount(MeshAttribute) const.
          */
         UnsignedInt attributeId(MeshAttribute name, UnsignedInt id = 0) const;
 
@@ -1580,7 +1593,8 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * Like @ref tangentsAsArray(), but puts the result into @p destination
          * instead of allocating a new array. Expects that @p destination is
-         * sized to contain exactly all data.
+         * sized to contain exactly all data. Use @ref bitangentSignsInto() to
+         * extract the fourth component wit bitangent direction, if present.
          * @see @ref vertexCount()
          */
         void tangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0) const;
@@ -1803,8 +1817,9 @@ class MAGNUM_TRADE_EXPORT MeshData {
         friend AbstractImporter;
         friend AbstractSceneConverter;
 
-        /* Internal helper that doesn't assert, unlike attributeId() */
-        UnsignedInt attributeFor(MeshAttribute name, UnsignedInt id) const;
+        /* Internal helper without the extra overhead from Optional, returns
+           ~UnsignedInt{} on failure */
+        UnsignedInt findAttributeIdInternal(MeshAttribute name, UnsignedInt id) const;
 
         /* Like attribute(), but returning just a 1D view */
         MAGNUM_TRADE_LOCAL Containers::StridedArrayView1D<const void> attributeDataViewInternal(const MeshAttributeData& attribute) const;
@@ -2222,7 +2237,7 @@ template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attri
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[attributeFor(name, id)], "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[findAttributeIdInternal(name, id)], "Trade::MeshData::attribute():")) return {};
     #endif
     return Containers::arrayCast<1, const T>(data);
 }
@@ -2233,7 +2248,7 @@ template<class T, class> Containers::StridedArrayView2D<const typename std::remo
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[attributeFor(name, id)], "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[findAttributeIdInternal(name, id)], "Trade::MeshData::attribute():")) return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
@@ -2244,7 +2259,7 @@ template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttr
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[attributeFor(name, id)], "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[findAttributeIdInternal(name, id)], "Trade::MeshData::mutableAttribute():")) return {};
     #endif
     return Containers::arrayCast<1, T>(data);
 }
@@ -2255,7 +2270,7 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[attributeFor(name, id)], "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[findAttributeIdInternal(name, id)], "Trade::MeshData::mutableAttribute():")) return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }

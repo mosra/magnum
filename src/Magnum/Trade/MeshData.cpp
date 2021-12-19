@@ -25,6 +25,7 @@
 
 #include "MeshData.h"
 
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Algorithms.h>
 #ifndef CORRADE_NO_ASSERT
 #include <Corrade/Utility/Format.h>
@@ -327,46 +328,46 @@ UnsignedInt MeshData::attributeCount(const MeshAttribute name) const {
     return count;
 }
 
-UnsignedInt MeshData::attributeFor(const MeshAttribute name, UnsignedInt id) const {
+UnsignedInt MeshData::findAttributeIdInternal(const MeshAttribute name, UnsignedInt id) const {
     for(std::size_t i = 0; i != _attributes.size(); ++i) {
         if(_attributes[i]._name != name) continue;
         if(id-- == 0) return i;
     }
-
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #else
     return ~UnsignedInt{};
-    #endif
+}
+
+Containers::Optional<UnsignedInt> MeshData::findAttributeId(const MeshAttribute name, UnsignedInt id) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
+    return attributeId == ~UnsignedInt{} ? Containers::Optional<UnsignedInt>{} : attributeId;
 }
 
 UnsignedInt MeshData::attributeId(const MeshAttribute name, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(name, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeId(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return attributeId;
 }
 
 VertexFormat MeshData::attributeFormat(const MeshAttribute name, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(name, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeFormat(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return _attributes[attributeId]._format;
 }
 
 std::size_t MeshData::attributeOffset(const MeshAttribute name, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(name, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeOffset(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     /* Calculation is non-trivial, delegating */
     return attributeOffset(attributeId);
 }
 
 UnsignedInt MeshData::attributeStride(const MeshAttribute name, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(name, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeStride(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return _attributes[attributeId]._stride;
 }
 
 UnsignedShort MeshData::attributeArraySize(const MeshAttribute name, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(name, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeArraySize(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return _attributes[attributeId]._arraySize;
 }
@@ -404,7 +405,7 @@ Containers::StridedArrayView2D<char> MeshData::mutableAttribute(const UnsignedIn
 }
 
 Containers::StridedArrayView2D<const char> MeshData::attribute(const MeshAttribute name, UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(name, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return attribute(attributeId);
 }
@@ -412,7 +413,7 @@ Containers::StridedArrayView2D<const char> MeshData::attribute(const MeshAttribu
 Containers::StridedArrayView2D<char> MeshData::mutableAttribute(const MeshAttribute name, UnsignedInt id) {
     CORRADE_ASSERT(_vertexDataFlags & DataFlag::Mutable,
         "Trade::MeshData::mutableAttribute(): vertex data not mutable", {});
-    const UnsignedInt attributeId = attributeFor(name, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return mutableAttribute(attributeId);
 }
@@ -442,7 +443,7 @@ Containers::Array<UnsignedInt> MeshData::indicesAsArray() const {
 }
 
 void MeshData::positions2DInto(const Containers::StridedArrayView1D<Vector2>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(MeshAttribute::Position, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Position, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::positions2DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Position) << "position attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::positions2DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
@@ -492,7 +493,7 @@ Containers::Array<Vector2> MeshData::positions2DAsArray(const UnsignedInt id) co
 }
 
 void MeshData::positions3DInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(MeshAttribute::Position, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Position, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::positions3DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Position) << "position attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::positions3DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
@@ -591,7 +592,7 @@ void tangentsOrNormalsInto(const Containers::StridedArrayView1D<const void>& att
 }
 
 void MeshData::tangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(MeshAttribute::Tangent, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Tangent, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::tangentsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Tangent) << "tangent attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::tangentsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
@@ -620,7 +621,7 @@ Containers::Array<Vector3> MeshData::tangentsAsArray(const UnsignedInt id) const
 }
 
 void MeshData::bitangentSignsInto(const Containers::StridedArrayView1D<Float>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(MeshAttribute::Tangent, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Tangent, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::bitangentSignsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Tangent) << "tangent attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::bitangentSignsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
@@ -647,7 +648,7 @@ Containers::Array<Float> MeshData::bitangentSignsAsArray(const UnsignedInt id) c
 }
 
 void MeshData::bitangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(MeshAttribute::Bitangent, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Bitangent, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::bitangentsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Bitangent) << "bitangent attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::bitangentsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
@@ -663,7 +664,7 @@ Containers::Array<Vector3> MeshData::bitangentsAsArray(const UnsignedInt id) con
 }
 
 void MeshData::normalsInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(MeshAttribute::Normal, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Normal, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::normalsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Normal) << "normal attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::normalsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
@@ -679,7 +680,7 @@ Containers::Array<Vector3> MeshData::normalsAsArray(const UnsignedInt id) const 
 }
 
 void MeshData::textureCoordinates2DInto(const Containers::StridedArrayView1D<Vector2>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(MeshAttribute::TextureCoordinates, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::TextureCoordinates, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::textureCoordinates2DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::TextureCoordinates) << "texture coordinate attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::textureCoordinates2DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
@@ -718,7 +719,7 @@ Containers::Array<Vector2> MeshData::textureCoordinates2DAsArray(const UnsignedI
 }
 
 void MeshData::colorsInto(const Containers::StridedArrayView1D<Color4>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(MeshAttribute::Color, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Color, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::colorsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Color) << "color attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::colorsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
@@ -771,7 +772,7 @@ Containers::Array<Color4> MeshData::colorsAsArray(const UnsignedInt id) const {
 }
 
 void MeshData::objectIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = attributeFor(MeshAttribute::ObjectId, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::ObjectId, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::objectIdsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::ObjectId) << "object ID attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::objectIdsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];

@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -1169,11 +1170,18 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.attributeCount(meshAttributeCustom(13)), 1);
     CORRADE_COMPARE(data.attributeCount(MeshAttribute::Color), 0);
     CORRADE_COMPARE(data.attributeCount(meshAttributeCustom(23)), 0);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Position), 0);
     CORRADE_COMPARE(data.attributeId(MeshAttribute::Position), 0);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Normal), 2);
     CORRADE_COMPARE(data.attributeId(MeshAttribute::Normal), 2);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::TextureCoordinates), 1);
     CORRADE_COMPARE(data.attributeId(MeshAttribute::TextureCoordinates), 1);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::TextureCoordinates, 1), 3);
     CORRADE_COMPARE(data.attributeId(MeshAttribute::TextureCoordinates, 1), 3);
+    CORRADE_COMPARE(data.findAttributeId(meshAttributeCustom(13)), 4);
     CORRADE_COMPARE(data.attributeId(meshAttributeCustom(13)), 4);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Color), Containers::NullOpt);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::TextureCoordinates, 2), Containers::NullOpt);
     CORRADE_COMPARE(data.attributeFormat(MeshAttribute::Position),
         VertexFormat::Vector3);
     CORRADE_COMPARE(data.attributeFormat(MeshAttribute::Normal),
@@ -2855,6 +2863,11 @@ void MeshDataTest::attributeNotFound() {
     MeshAttributeData colors1{MeshAttribute::Color, VertexFormat::Vector3, nullptr};
     MeshAttributeData colors2{MeshAttribute::Color, VertexFormat::Vector4, nullptr};
     MeshData data{MeshPrimitive::Points, nullptr, {colors1, colors2}};
+
+    /* This is fine */
+    CORRADE_COMPARE(data.attributeCount(MeshAttribute::Position), 0);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Position), Containers::NullOpt);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Color, 2), Containers::NullOpt);
 
     std::ostringstream out;
     Error redirectError{&out};
