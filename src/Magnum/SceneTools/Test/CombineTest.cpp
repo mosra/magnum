@@ -41,6 +41,9 @@ struct CombineTest: TestSuite::Tester {
     void objectsShared();
     void objectsPlaceholderFieldPlaceholder();
     void objectSharedFieldPlaceholder();
+
+    void implicitNullMapping();
+    void trivialNullParent();
 };
 
 struct {
@@ -60,7 +63,10 @@ CombineTest::CombineTest() {
     addTests({&CombineTest::alignment,
               &CombineTest::objectsShared,
               &CombineTest::objectsPlaceholderFieldPlaceholder,
-              &CombineTest::objectSharedFieldPlaceholder});
+              &CombineTest::objectSharedFieldPlaceholder,
+
+              &CombineTest::implicitNullMapping,
+              &CombineTest::trivialNullParent});
 }
 
 using namespace Math::Literals;
@@ -322,6 +328,47 @@ void CombineTest::objectSharedFieldPlaceholder() {
         TestSuite::Compare::Container);
     CORRADE_COMPARE(scene.field(Trade::SceneField::MeshMaterial).data(), scene.data() + 3*4 + 3 + 1);
     CORRADE_COMPARE(scene.field(Trade::SceneField::MeshMaterial).stride()[0], 4);
+}
+
+void CombineTest::implicitNullMapping() {
+    const Short parentFieldData[]{-1, 0, 0};
+    const UnsignedByte meshFieldData[]{3, 5};
+
+    Trade::SceneData scene = Implementation::combine(Trade::SceneMappingType::UnsignedShort, 167, Containers::arrayView({
+        /* If the field has any flags, it shouldn't be treated as a
+           placeholder */
+#warning or maybe it should be preserved? yeah
+        Trade::SceneFieldData{Trade::SceneField::Mesh, Containers::ArrayView<UnsignedByte>{nullptr, Containers::arraySize(meshFieldData)}, Containers::arrayView(meshFieldData), Trade::SceneFieldFlag::ImplicitMapping},
+        Trade::SceneFieldData{Trade::SceneField::Parent, Containers::ArrayView<UnsignedShort>{nullptr, Containers::arraySize(parentFieldData)}, Containers::arrayView(parentFieldData), Trade::SceneFieldFlag::ImplicitMapping}
+    }));
+
+    CORRADE_COMPARE(scene.mappingBound(), 167);
+    CORRADE_COMPARE(scene.fieldCount(), 2);
+
+    CORRADE_COMPARE(scene.fieldName(0), Trade::SceneField::Mesh);
+    CORRADE_COMPARE(scene.fieldFlags(0), Trade::SceneFieldFlag::ImplicitMapping);
+    CORRADE_COMPARE(scene.fieldType(0), Trade::SceneFieldType::UnsignedByte);
+    CORRADE_COMPARE(scene.fieldArraySize(0), 0);
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(0), Containers::arrayView<UnsignedShort>({
+        0, 1, 2
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.field<UnsignedByte>(0),
+        Containers::arrayView(meshFieldData),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(scene.fieldName(1), Trade::SceneField::Parent);
+    CORRADE_COMPARE(scene.fieldFlags(1), Trade::SceneFieldFlag::ImplicitMapping);
+    CORRADE_COMPARE(scene.fieldType(1), Trade::SceneFieldType::Short);
+    CORRADE_COMPARE(scene.fieldArraySize(1), 0);
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(1), Containers::arrayView<UnsignedShort>({
+        0, 1
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.field<UnsignedByte>(1),
+        Containers::arrayView(meshFieldData),
+        TestSuite::Compare::Container);
+}
+
+void CombineTest::trivialNullParent() {
 }
 
 }}}}
