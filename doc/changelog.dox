@@ -88,6 +88,9 @@ See also:
     @webgl_extension{EXT,texture_norm16} ES and WebGL extensions, making
     normalized 16-bit texture and renderbuffer formats available on all
     platforms
+-   The @gl_extension{EXT,texture_sRGB_RG8} extension is now available on
+    desktop OpenGL as well, exposing a two-component sRGB format in addition to
+    the already present one-, three- and four-component formats
 -   Implemented @webgl_extension{WEBGL,blend_equation_advanced_coherent}
     extension, making advanced @ref GL::Renderer::BlendEquation values
     available on all platforms

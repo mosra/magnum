@@ -1716,6 +1716,10 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 
 #define GL_SR8_EXT 0x8FBD
 
+/* GL_EXT_texture_sRGB_RG8 */
+
+#define GL_SRG8_EXT 0x8FBE
+
 /* GL_KHR_texture_compression_astc_ldr */
 
 #define GL_COMPRESSED_RGBA_ASTC_4x4_KHR 0x93B0

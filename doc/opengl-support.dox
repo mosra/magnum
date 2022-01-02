@@ -323,6 +323,7 @@ Extension                                   | Status
 @gl_extension{EXT,debug_label}              | missing pipeline and sampler label
 @gl_extension{EXT,debug_marker}             | done
 @gl_extension{EXT,texture_sRGB_R8}          | done
+@gl_extension{EXT,texture_sRGB_RG8}         | done
 @gl_extension{GREMEDY,string_marker}        | done
 @gl_extension{NV,sample_locations}          | |
 @gl_extension{NV,fragment_shader_barycentric} | done (shading language only)

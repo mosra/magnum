@@ -242,8 +242,9 @@ namespace AMD {
     _extension(154,EXT,debug_label,                     GL210,  None) // #439
     _extension(155,EXT,debug_marker,                    GL210,  None) // #440
     _extension(156,EXT,texture_sRGB_R8,                 GL210,  None) // #534
+    _extension(157,EXT,texture_sRGB_RG8,                GL210,  None) // #555
 } namespace GREMEDY {
-    _extension(157,GREMEDY,string_marker,               GL210,  None) // #311
+    _extension(158,GREMEDY,string_marker,               GL210,  None) // #311
 } namespace KHR {
     _extension(160,KHR,texture_compression_astc_ldr,    GL210,  None) // #118
     _extension(161,KHR,texture_compression_astc_hdr,    GL210,  None) // #118

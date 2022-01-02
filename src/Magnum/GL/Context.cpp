@@ -98,6 +98,7 @@ constexpr Extension ExtensionList[]{
     Extensions::EXT::texture_filter_anisotropic{},
     Extensions::EXT::texture_mirror_clamp{},
     Extensions::EXT::texture_sRGB_R8{},
+    Extensions::EXT::texture_sRGB_RG8{},
     Extensions::EXT::texture_sRGB_decode{},
     Extensions::GREMEDY::string_marker{},
     Extensions::KHR::blend_equation_advanced{},

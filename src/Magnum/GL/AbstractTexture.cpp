@@ -610,7 +610,7 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RG8Snorm:
         #endif
-        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::SRG8:
         #endif
         #ifndef MAGNUM_TARGET_GLES2
@@ -917,13 +917,9 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::Luminance:
         case TextureFormat::LuminanceAlpha:
         #endif
-        #ifndef MAGNUM_TARGET_WEBGL
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         case TextureFormat::SR8:
-        #endif
-        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
         case TextureFormat::SRG8:
-        #endif
         #endif
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         case TextureFormat::SRGB:

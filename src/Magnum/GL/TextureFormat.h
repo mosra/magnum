@@ -195,8 +195,7 @@ enum class TextureFormat: GLenum {
     #endif
     #endif
 
-    #ifndef MAGNUM_TARGET_WEBGL
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
     /**
      * sRGB-encoded red component, normalized unsigned byte.
      * @requires_extension Extension @gl_extension{EXT,texture_sRGB_R8}
@@ -208,22 +207,18 @@ enum class TextureFormat: GLenum {
      * @m_since{2019,10}
      */
     SR8 = GL_SR8_EXT,
-    #endif
 
-    #if (defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)) || defined(DOXYGEN_GENERATING_OUTPUT)
     /**
      * sRGB-encoded red and green component, normalized unsigned byte.
+     * @requires_extension Extension @gl_extension{EXT,texture_sRGB_RG8}
      * @requires_es_extension OpenGL ES 3.0 and extension
      *      @gl_extension{EXT,texture_sRGB_RG8}
      * @requires_gles One- and two-component sRGB texture formats are not
      *      available in WebGL, use @ref TextureFormat::SRGB8 or
-     *      @ref TextureFormat::SRGB8Alpha8 instead. Only
-     *      @ref TextureFormat::SR8, @ref TextureFormat::SRGB8 or
-     *      @ref TextureFormat::SRGB8Alpha8 is available in desktop OpenGL.
+     *      @ref TextureFormat::SRGB8Alpha8 instead.
      * @m_since{2019,10}
      */
     SRG8 = GL_SRG8_EXT,
-    #endif
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)

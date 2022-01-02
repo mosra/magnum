@@ -311,8 +311,8 @@ void PixelFormatTest::mapTextureFormatUnsupported() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    textureFormat(Magnum::PixelFormat::RG8Srgb);
-    CORRADE_COMPARE(out.str(), "GL::textureFormat(): format PixelFormat::RG8Srgb is not supported on this target\n");
+    textureFormat(Magnum::PixelFormat::Depth16UnormStencil8UI);
+    CORRADE_COMPARE(out.str(), "GL::textureFormat(): format PixelFormat::Depth16UnormStencil8UI is not supported on this target\n");
     #endif
 }
 

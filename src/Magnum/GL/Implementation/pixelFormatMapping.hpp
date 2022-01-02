@@ -59,11 +59,7 @@ _s(RGBA8Snorm)
 #ifndef MAGNUM_TARGET_GLES2
 #ifndef MAGNUM_TARGET_WEBGL
 _c(R8Srgb, Red, UnsignedByte, SR8)
-#ifdef MAGNUM_TARGET_GLES
 _c(RG8Srgb, RG, UnsignedByte, SRG8)
-#else
-_n(RG8Srgb, RG, UnsignedByte)
-#endif
 #else
 _n(R8Srgb, Red, UnsignedByte)
 _n(RG8Srgb, RG, UnsignedByte)
