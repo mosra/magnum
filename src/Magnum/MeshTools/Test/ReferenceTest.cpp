@@ -51,6 +51,7 @@ struct ReferenceTest: TestSuite::Tester {
     void ownedNoIndexData();
     void ownedNoAttributeVertexData();
     void ownedArrayAttribute();
+    void ownedImplementationSpecificVertexFormat();
     void ownedRvaluePassthrough();
     void ownedRvaluePartialPassthrough();
 };
@@ -67,6 +68,7 @@ ReferenceTest::ReferenceTest() {
               &ReferenceTest::ownedNoIndexData,
               &ReferenceTest::ownedNoAttributeVertexData,
               &ReferenceTest::ownedArrayAttribute,
+              &ReferenceTest::ownedImplementationSpecificVertexFormat,
               &ReferenceTest::ownedRvaluePassthrough,
               &ReferenceTest::ownedRvaluePartialPassthrough});
 }
@@ -214,6 +216,23 @@ void ReferenceTest::ownedArrayAttribute() {
     CORRADE_COMPARE(owned.vertexCount(), 13);
     CORRADE_COMPARE(owned.attributeCount(), 1);
     CORRADE_COMPARE(owned.attributeArraySize(0), 3);
+}
+
+void ReferenceTest::ownedImplementationSpecificVertexFormat() {
+    const Int vertexData[13]{};
+    /* Verify that custom vertex formats are propagated without a problem */
+    Trade::MeshData weirdThing{MeshPrimitive::Faces,
+        {}, vertexData,
+        {Trade::MeshAttributeData{Trade::meshAttributeCustom(42), vertexFormatWrap(0xcaca), Containers::arrayView(vertexData)}}};
+
+    Trade::MeshData owned = MeshTools::owned(weirdThing);
+    CORRADE_COMPARE(owned.vertexCount(), 13);
+    CORRADE_COMPARE(owned.attributeCount(), 1);
+    CORRADE_COMPARE(owned.attributeArraySize(0), 0);
+    CORRADE_COMPARE(owned.attributeFormat(0), vertexFormatWrap(0xcaca));
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Int>(owned.attribute(0))),
+        Containers::arrayView(vertexData),
+        TestSuite::Compare::Container);
 }
 
 void ReferenceTest::ownedRvaluePassthrough() {
