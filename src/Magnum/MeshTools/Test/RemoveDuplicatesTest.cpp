@@ -72,11 +72,12 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
 
     void removeDuplicatesMeshData();
     void removeDuplicatesMeshDataAttributeless();
+    void removeDuplicatesMeshDataImplementationSpecificVertexFormat();
 
     void removeDuplicatesMeshDataFuzzy();
     void removeDuplicatesMeshDataFuzzyDouble();
     void removeDuplicatesMeshDataFuzzyAttributeless();
-    void removeDuplicatesMeshDataFuzzyImplementationSpecific();
+    void removeDuplicatesMeshDataFuzzyImplementationSpecificVertexFormat();
 
     void soakTest();
     void soakTestFuzzy();
@@ -208,7 +209,8 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
     addInstancedTests({&RemoveDuplicatesTest::removeDuplicatesMeshData},
         Containers::arraySize(RemoveDuplicatesMeshDataData));
 
-    addTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless});
+    addTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless,
+              &RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificVertexFormat});
 
     addInstancedTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzy},
         Containers::arraySize(RemoveDuplicatesMeshDataFuzzyData));
@@ -216,7 +218,7 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
     addTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyDouble,
 
               &RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyAttributeless,
-              &RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecific});
+              &RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecificVertexFormat});
 
     addRepeatedTests({&RemoveDuplicatesTest::soakTest,
                       &RemoveDuplicatesTest::soakTestFuzzy}, 10);
@@ -726,6 +728,22 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless() {
         "MeshTools::removeDuplicates(): can't remove duplicates in an attributeless mesh\n");
 }
 
+void RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificVertexFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::removeDuplicates(Trade::MeshData{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertexFormatWrap(0xcaca), nullptr}
+    }});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::removeDuplicates(): attribute 1 has an implementation-specific format 0xcaca\n");
+}
+
 void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzy() {
     auto&& data = RemoveDuplicatesMeshDataFuzzyData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -1044,19 +1062,20 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyAttributeless() {
         "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an attributeless mesh\n");
 }
 
-void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecific() {
+void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecificVertexFormat() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
     std::ostringstream out;
     Error redirectError{&out};
-
-    MeshTools::removeDuplicatesFuzzy(Trade::MeshData{MeshPrimitive::Points,
-        nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-            vertexFormatWrap(0x1234), nullptr}}});
+    MeshTools::removeDuplicatesFuzzy(Trade::MeshData{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertexFormatWrap(0xcaca), nullptr}
+    }});
     CORRADE_COMPARE(out.str(),
-        "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an implementation-specific format 0x1234\n");
+        "MeshTools::removeDuplicatesFuzzy(): attribute 1 has an implementation-specific format 0xcaca\n");
 }
 
 void RemoveDuplicatesTest::soakTest() {

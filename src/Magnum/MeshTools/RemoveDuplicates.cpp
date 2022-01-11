@@ -407,6 +407,14 @@ Trade::MeshData removeDuplicates(Trade::MeshData&& data) {
     CORRADE_ASSERT(data.attributeCount(),
         "MeshTools::removeDuplicates(): can't remove duplicates in an attributeless mesh",
         (Trade::MeshData{MeshPrimitive::Points, 0}));
+    #ifndef CORRADE_NO_ASSERT
+    for(std::size_t i = 0; i != data.attributeCount(); ++i) {
+        const VertexFormat format = data.attributeFormat(i);
+        CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+            "MeshTools::removeDuplicates(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
+            (Trade::MeshData{MeshPrimitive::Points, 0}));
+    }
+    #endif
 
     /* Turn the passed data into an interleaved owned mutable instance we can
        operate on -- owned() alone only makes the data owned, interleave()
@@ -487,7 +495,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
     for(UnsignedInt i = 0; i != owned.attributeCount(); ++i) {
         const VertexFormat format = owned.attributeFormat(i);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
-            "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
+            "MeshTools::removeDuplicatesFuzzy(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
 
         const Containers::StridedArrayView1D<UnsignedInt> outputIndices = perAttributeIndices[i];

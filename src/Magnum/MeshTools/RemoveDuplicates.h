@@ -299,12 +299,14 @@ newly generated index buffer into a new @ref Trade::MeshData instance. If the
 mesh is indexed, the original index type is preserved, otherwise the mesh gets
 @ref MeshIndexType::UnsignedInt indices. The resulting mesh is always
 interleaved and owned, if the input is already interleaved attribute offsets
-and paddings are preserved.
+and paddings are preserved. All attributes are expected to not have an
+implementation-specific format.
 
 This function unconditionally copies and interleaves passed vertex and index
 data in order to operate on them in-place. If your data is interleaved and
 owned by the instance and you don't need the original data after the process,
 call @ref removeDuplicates(Trade::MeshData&&) instead to avoid the extra copy.
+@see @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(const Trade::MeshData& data);
 
