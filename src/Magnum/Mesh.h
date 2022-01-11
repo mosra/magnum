@@ -253,6 +253,10 @@ information about the mapping.
 In case of Vulkan, corresponds to @ref Vk::MeshIndexType and is convertible to
 it using @ref Vk::meshIndexType(). See documentation of each value for more
 information about the mapping.
+
+For D3D, corresponds to @m_class{m-doc-external} [DXGI_FORMAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format);
+for Metal, corresponds to @m_class{m-doc-external} [MTLIndexType](https://developer.apple.com/documentation/metal/mtlindextype?language=objc).
+See documentation of each value for more information about the mapping.
 @see @ref meshIndexTypeSize()
 */
 enum class MeshIndexType: UnsignedByte {
@@ -261,11 +265,11 @@ enum class MeshIndexType: UnsignedByte {
     /**
      * @relativeref{Magnum,UnsignedByte}.
      *
-     * Corresponds to @ref GL::MeshIndexType::UnsignedByte /
-     * @ref Vk::MeshIndexType::UnsignedByte. Even though OpenGL supports this
-     * type and Vulkan can as well via an extension, using this type is
-     * discouraged on contemporary GPU architectures. Prefer using 16-bit
-     * indices instead.
+     * Corresponds to @ref GL::MeshIndexType::UnsignedByte or
+     * @ref Vk::MeshIndexType::UnsignedByte. No D3D or Metal equivalent. Even
+     * though OpenGL supports this type and Vulkan can as well via an
+     * extension, using this type is discouraged on contemporary GPU
+     * architectures. Prefer using 16-bit indices instead.
      */
     UnsignedByte = 1,
 
@@ -273,7 +277,10 @@ enum class MeshIndexType: UnsignedByte {
      * @relativeref{Magnum,UnsignedShort}.
      *
      * Corresponds to @ref GL::MeshIndexType::UnsignedShort /
-     * @ref Vk::MeshIndexType::UnsignedShort.
+     * @ref Vk::MeshIndexType::UnsignedShort;
+     * @m_class{m-doc-external} [DXGI_FORMAT_R16_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
+     * or @m_class{m-doc-external} [MTLIndexTypeUInt16](https://developer.apple.com/documentation/metal/mtlindextype/mtlindextypeuint16?language=objc).
+     * @m_keywords{DXGI_FORMAT_R16_UINT MTLIndexTypeUInt16}
      */
     UnsignedShort,
 
@@ -281,7 +288,10 @@ enum class MeshIndexType: UnsignedByte {
      * @relativeref{Magnum,UnsignedInt}.
      *
      * Corresponds to @ref GL::MeshIndexType::UnsignedInt /
-     * @ref Vk::MeshIndexType::UnsignedInt.
+     * @ref Vk::MeshIndexType::UnsignedInt;
+     * @m_class{m-doc-external} [DXGI_FORMAT_R32_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
+     * or @m_class{m-doc-external} [MTLIndexTypeUInt32](https://developer.apple.com/documentation/metal/mtlindextype/mtlindextypeuint32?language=objc).
+     * @m_keywords{DXGI_FORMAT_R32_UINT MTLIndexTypeUInt32}
      */
     UnsignedInt
 };
