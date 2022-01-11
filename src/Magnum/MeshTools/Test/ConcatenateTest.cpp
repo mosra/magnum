@@ -48,7 +48,7 @@ struct ConcatenateTest: TestSuite::Tester {
 
     void concatenateUnsupportedPrimitive();
     void concatenateInconsistentPrimitive();
-    void concatenateInconsistentAttributeType();
+    void concatenateInconsistentAttributeFormat();
     void concatenateInconsistentAttributeArraySize();
     void concatenateIntoNoMeshes();
 };
@@ -66,7 +66,7 @@ ConcatenateTest::ConcatenateTest() {
 
               &ConcatenateTest::concatenateUnsupportedPrimitive,
               &ConcatenateTest::concatenateInconsistentPrimitive,
-              &ConcatenateTest::concatenateInconsistentAttributeType,
+              &ConcatenateTest::concatenateInconsistentAttributeFormat,
               &ConcatenateTest::concatenateInconsistentAttributeArraySize,
               &ConcatenateTest::concatenateIntoNoMeshes});
 }
@@ -577,7 +577,7 @@ void ConcatenateTest::concatenateInconsistentPrimitive() {
         "MeshTools::concatenateInto(): expected MeshPrimitive::Triangles but got MeshPrimitive::Lines in mesh 1\n");
 }
 
-void ConcatenateTest::concatenateInconsistentAttributeType() {
+void ConcatenateTest::concatenateInconsistentAttributeFormat() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
