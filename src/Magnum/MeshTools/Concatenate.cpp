@@ -189,6 +189,14 @@ Trade::MeshData concatenate(const Containers::ArrayView<const Containers::Refere
     CORRADE_ASSERT(!meshes.empty(),
         "MeshTools::concatenate(): expected at least one mesh",
         (Trade::MeshData{MeshPrimitive::Points, 0}));
+    #ifndef CORRADE_NO_ASSERT
+    for(std::size_t i = 0; i != meshes.front()->attributeCount(); ++i) {
+        const VertexFormat format = meshes.front()->attributeFormat(i);
+        CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+            "MeshTools::concatenate(): attribute" << i << "of the first mesh has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
+            (Trade::MeshData{MeshPrimitive::Points, 0}));
+    }
+    #endif
 
     /* Calculate final attribute stride and offsets. Make a non-owning copy of
        the attribute data to avoid interleavedLayout() stealing the original

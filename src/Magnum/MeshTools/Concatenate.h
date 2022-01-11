@@ -57,20 +57,21 @@ concatenated --- use @ref generateIndices() to turn them into
 @ref MeshPrimitive::Lines or @ref MeshPrimitive::Triangles first. The @p meshes
 array is expected to have at least one item.
 
-All attributes from the first mesh are taken; for each following mesh
-attributes present in the first are copied, superfluous attributes ignored and
-missing attributes zeroed out. Matching attributes are expected to have the
-same type, all meshes are expected to have the same primitive. The vertex data
-are concatenated in the same order as passed, with no duplicate removal.
-Returned instance vertex and index data flags always have both
-@ref Trade::DataFlag::Owned and @ref Trade::DataFlag::Mutable to guarante
-mutable access to particular parts of the concatenated mesh --- for example for
-applying transformations.
+All attributes from the first mesh are taken, expected to not have an
+implementation-specific format. For each following mesh attributes present in
+the first are copied, superfluous attributes ignored and missing attributes
+zeroed out. Matching attributes are expected to have the same type, all meshes
+are expected to have the same primitive. The vertex data are concatenated in
+the same order as passed, with no duplicate removal. Returned instance vertex
+and index data flags always have both @ref Trade::DataFlag::Owned and
+@ref Trade::DataFlag::Mutable to guarante mutable access to particular parts of
+the concatenated mesh --- for example for applying transformations.
 
 If an index buffer is needed, @ref MeshIndexType::UnsignedInt is always used.
 Call @ref compressIndices(const Trade::MeshData&, MeshIndexType) on the result
 to compress it to a smaller type, if desired.
-@see @ref concatenateInto(), @ref SceneTools::flattenMeshHierarchy2D(),
+@see @ref concatenateInto(), @ref isVertexFormatImplementationSpecific(),
+    @ref SceneTools::flattenMeshHierarchy2D(),
     @ref SceneTools::flattenMeshHierarchy3D()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes);
@@ -99,6 +100,13 @@ layout from @p destination is used, all vertex/index data are taken from
 template<template<class> class Allocator = Containers::ArrayAllocator> void concatenateInto(Trade::MeshData& destination, const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes) {
     CORRADE_ASSERT(!meshes.empty(),
         "MeshTools::concatenateInto(): no meshes passed", );
+    #ifndef CORRADE_NO_ASSERT
+    for(std::size_t i = 0; i != destination.attributeCount(); ++i) {
+        const VertexFormat format = destination.attributeFormat(i);
+        CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+            "MeshTools::concatenateInto(): attribute" << i << "of the destination mesh has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), );
+    }
+    #endif
 
     std::pair<UnsignedInt, UnsignedInt> indexVertexCount = Implementation::concatenateIndexVertexCount(meshes);
 

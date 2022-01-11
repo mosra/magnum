@@ -50,6 +50,7 @@ struct ConcatenateTest: TestSuite::Tester {
     void concatenateInconsistentPrimitive();
     void concatenateInconsistentAttributeFormat();
     void concatenateInconsistentAttributeArraySize();
+    void concatenateImplementationSpecificVertexFormat();
     void concatenateIntoNoMeshes();
 };
 
@@ -68,6 +69,7 @@ ConcatenateTest::ConcatenateTest() {
               &ConcatenateTest::concatenateInconsistentPrimitive,
               &ConcatenateTest::concatenateInconsistentAttributeFormat,
               &ConcatenateTest::concatenateInconsistentAttributeArraySize,
+              &ConcatenateTest::concatenateImplementationSpecificVertexFormat,
               &ConcatenateTest::concatenateIntoNoMeshes});
 }
 
@@ -635,6 +637,36 @@ void ConcatenateTest::concatenateInconsistentAttributeArraySize() {
     CORRADE_COMPARE(out.str(),
         "MeshTools::concatenate(): expected array size 5 for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 4 in mesh 4 attribute 1\n"
         "MeshTools::concatenateInto(): expected array size 5 for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 4 in mesh 3 attribute 1\n");
+}
+
+void ConcatenateTest::concatenateImplementationSpecificVertexFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    /* Things are a bit duplicated to test correct numbering */
+    Trade::MeshData a{MeshPrimitive::Lines, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+            vertexFormatWrap(0xcaca), nullptr}
+    }};
+    Trade::MeshData b{MeshPrimitive::Lines, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            VertexFormat::Vector3, nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::concatenate({a, b});
+    MeshTools::concatenateInto(a, {b});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::concatenate(): attribute 2 of the first mesh has an implementation-specific format 0xcaca\n"
+        "MeshTools::concatenateInto(): attribute 2 of the destination mesh has an implementation-specific format 0xcaca\n");
 }
 
 void ConcatenateTest::concatenateIntoNoMeshes() {
