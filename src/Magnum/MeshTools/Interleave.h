@@ -255,6 +255,11 @@ instance with attribute and vertex data transferred from the returned instance:
 This function will unconditionally allocate a new array to store all
 @ref Trade::MeshAttributeData, use @ref interleavedLayout(Trade::MeshData&&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>)
 to avoid that allocation.
+
+All attributes in both @p data and @p extra are expected to not have an
+implementation-specific format, except for @p data attributes in case @p data
+is already interleaved, then the layout is untouched.
+@see @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData& data, UnsignedInt vertexCount, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});
 
@@ -299,7 +304,12 @@ as @p data vertex count or has none. This function will unconditionally make a
 copy of all data even if @p data is already interleaved and needs no change,
 use @ref interleave(Trade::MeshData&&, Containers::ArrayView<const Trade::MeshAttributeData>)
 to avoid that copy.
-@see @ref isInterleaved(), @ref Trade::MeshData::attributeData()
+
+All attributes in both @p data and @p extra are expected to not have an
+implementation-specific format, except for @p data attributes in case @p data
+is already interleaved, then the layout is untouched.
+@see @ref isInterleaved(), @ref isVertexFormatImplementationSpecific(),
+    @ref Trade::MeshData::attributeData()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});
 

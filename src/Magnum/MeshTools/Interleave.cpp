@@ -128,11 +128,12 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
     } else {
         stride = 0;
         minOffset = 0;
-        /** @todo explitily assert on impl-specific vertex formats here --
-            however it should work when the original is already interleaved and
-            nothing in extras is impl-specific */
-        for(UnsignedInt i = 0, max = data.attributeCount(); i != max; ++i)
+        for(UnsignedInt i = 0, max = data.attributeCount(); i != max; ++i) {
+            const VertexFormat format = data.attributeFormat(i);
+            CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+                "MeshTools::interleavedLayout(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), {});
             stride += attributeSize(data, i);
+        }
     }
 
     /* Add the extra attributes and explicit padding */
@@ -143,7 +144,9 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
                 "MeshTools::interleavedLayout(): negative padding" << extra[i].stride() << "in extra attribute" << i << "too large for stride" << stride, {});
             stride += extra[i].stride();
         } else {
-            /** @todo explitily assert on impl-specific vertex formats here */
+            const VertexFormat format = extra[i].format();
+            CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+                "MeshTools::interleavedLayout(): extra attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), {});
             stride += attributeSize(extra[i]);
             ++extraAttributeCount;
         }
@@ -281,6 +284,13 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
         /* Calculate the layout. Can't std::move() the data in to avoid copying
            the attribute array as we need the original attributes below. */
         Trade::MeshData layout = interleavedLayout(data, vertexCount, extra);
+        #ifdef CORRADE_GRACEFUL_ASSERT
+        /* If interleavedLayout() gracefully asserted and returned no
+           attributes (but the original had some), exit right away to not blow
+           up on something else later. Sorry, yes, this is shitty. */
+        if(!layout.attributeCount() && (data.attributeCount() || extra.size()))
+            return Trade::MeshData{MeshPrimitive::Points, 0};
+        #endif
 
         /* Copy existing attributes to new locations */
         for(UnsignedInt i = 0; i != data.attributeCount(); ++i)
