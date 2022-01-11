@@ -112,10 +112,14 @@ possibly also an index buffer, if the mesh is indexed.
 -   If the mesh contains colors, these are bound to
     @ref Shaders::GenericGL::Color3 / @ref Shaders::GenericGL::Color4 based on
     their type.
--   Custom attributes and known attributes of implementation-specific types
-    are ignored with a warning. See the @ref compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
+-   Custom attributes and known attributes of implementation-specific vertex
+    formats are ignored with a warning. See
+    @ref compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
     for an example showing how to bind them manually, and
     @ref CompileFlag::NoWarnOnCustomAttributes to suppress the warning.
+-   Implementation-specific @ref Magnum::MeshPrimitive values are passed
+    as-is with @ref meshPrimitiveUnwrap(). It's the user responsibility to
+    ensure an implementation-specific value is valid in this context.
 
 If normal generation is not requested, @ref Trade::MeshData::indexData() and
 @ref Trade::MeshData::vertexData() are uploaded as-is without any further
