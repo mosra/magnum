@@ -31,6 +31,7 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Matrix3.h"
@@ -52,6 +53,7 @@ struct TransformTest: TestSuite::Tester {
     template<class T> void meshData2D();
     void meshData2DNoPosition();
     void meshData2DNot2D();
+    void meshData2DImplementationSpecificVertexFormat();
     void meshData2DRvaluePassthrough();
     void meshData2DRvaluePassthroughIndexDataNotOwned();
     void meshData2DRvaluePassthroughVertexDataNotOwned();
@@ -66,6 +68,7 @@ struct TransformTest: TestSuite::Tester {
     template<class T, class U, class V, class W> void meshData3D();
     void meshData3DNoPosition();
     void meshData3DNot3D();
+    void meshData3DImplementationSpecificVertexFormat();
     void meshData3DRvaluePassthrough();
     void meshData3DRvaluePassthroughIndexDataNotOwned();
     void meshData3DRvaluePassthroughVertexDataNotOwned();
@@ -79,6 +82,7 @@ struct TransformTest: TestSuite::Tester {
 
     template<class T> void meshDataTextureCoordinates2D();
     void meshDataTextureCoordinates2DNoCoordinates();
+    void meshDataTextureCoordinates2DImplementationSpecificVertexFormat();
     void meshDataTextureCoordinates2DRvaluePassthrough();
     void meshDataTextureCoordinates2DRvaluePassthroughIndexDataNotOwned();
     void meshDataTextureCoordinates2DRvaluePassthroughVertexDataNotOwned();
@@ -185,6 +189,18 @@ const struct {
 
 const struct {
     const char* name;
+    VertexFormat positionFormat;
+    Trade::MeshAttribute otherAttribute;
+    VertexFormat otherAttributeFormat;
+} MeshData3DIMplementationSpecificVertexFormatData[]{
+    {"positions", vertexFormatWrap(0xcaca), Trade::MeshAttribute::Position, VertexFormat::Vector3},
+    {"normals", VertexFormat::Vector3, Trade::MeshAttribute::Normal, vertexFormatWrap(0xcaca)},
+    {"tangents", VertexFormat::Vector3, Trade::MeshAttribute::Tangent, vertexFormatWrap(0xcaca)},
+    {"bitangents", VertexFormat::Vector3, Trade::MeshAttribute::Bitangent, vertexFormatWrap(0xcaca)},
+};
+
+const struct {
+    const char* name;
     bool indexed;
     bool tangents, tangents4, bitangents, normals;
     UnsignedInt id;
@@ -269,7 +285,8 @@ TransformTest::TransformTest() {
     }, Containers::arraySize(MeshData2DData));
 
     addTests({&TransformTest::meshData2DNoPosition,
-              &TransformTest::meshData2DNot2D});
+              &TransformTest::meshData2DNot2D,
+              &TransformTest::meshData2DImplementationSpecificVertexFormat});
 
     addInstancedTests({&TransformTest::meshData2DRvaluePassthrough},
         Containers::arraySize(MeshData2DRvaluePassthroughData));
@@ -292,6 +309,9 @@ TransformTest::TransformTest() {
     addTests({&TransformTest::meshData3DNoPosition,
               &TransformTest::meshData3DNot3D});
 
+    addInstancedTests({&TransformTest::meshData3DImplementationSpecificVertexFormat},
+        Containers::arraySize(MeshData3DIMplementationSpecificVertexFormatData));
+
     addInstancedTests({&TransformTest::meshData3DRvaluePassthrough},
         Containers::arraySize(MeshData3DRvaluePassthroughData));
 
@@ -313,7 +333,8 @@ TransformTest::TransformTest() {
         &TransformTest::meshDataTextureCoordinates2D<Half>
     }, Containers::arraySize(MeshDataTextureCoordinatesData));
 
-    addTests({&TransformTest::meshDataTextureCoordinates2DNoCoordinates});
+    addTests({&TransformTest::meshDataTextureCoordinates2DNoCoordinates,
+              &TransformTest::meshDataTextureCoordinates2DImplementationSpecificVertexFormat});
 
     addInstancedTests({&TransformTest::meshDataTextureCoordinates2DRvaluePassthrough},
         Containers::arraySize(MeshDataTextureCoordinatesRvaluePassthroughData));
@@ -481,6 +502,22 @@ void TransformTest::meshData2DNot2D() {
     Error redirectError{&out};
     transform2D(mesh, {});
     CORRADE_COMPARE(out.str(), "MeshTools::transform2D(): expected 2D positions but got VertexFormat::Vector3\n");
+}
+
+void TransformTest::meshData2DImplementationSpecificVertexFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertexFormatWrap(0xcaca), nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform2D(mesh, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transform2D(): positions have an implementation-specific format 0xcaca\n");
 }
 
 void TransformTest::meshData2DRvaluePassthrough() {
@@ -879,6 +916,27 @@ void TransformTest::meshData3DNot3D() {
     Error redirectError{&out};
     transform3D(mesh, {});
     CORRADE_COMPARE(out.str(), "MeshTools::transform3D(): expected 3D positions but got VertexFormat::Vector2\n");
+}
+
+void TransformTest::meshData3DImplementationSpecificVertexFormat() {
+    auto&& data = MeshData3DIMplementationSpecificVertexFormatData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, data.positionFormat, nullptr},
+        Trade::MeshAttributeData{data.otherAttribute, VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{data.otherAttribute, data.otherAttributeFormat, nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transform3D(mesh, {}, 1);
+    CORRADE_COMPARE(out.str(), Utility::formatString("MeshTools::transform3D(): {} have an implementation-specific format 0xcaca\n", data.name));
 }
 
 void TransformTest::meshData3DRvaluePassthrough() {
@@ -1323,6 +1381,22 @@ void TransformTest::meshDataTextureCoordinates2DNoCoordinates() {
     Error redirectError{&out};
     transformTextureCoordinates2D(mesh, {}, 1);
     CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index 1\n");
+}
+
+void TransformTest::meshDataTextureCoordinates2DImplementationSpecificVertexFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertexFormatWrap(0xcaca), nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    transformTextureCoordinates2D(mesh, {}, 1);
+    CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2D(): texture coordinates have an implementation-specific format 0xcaca\n");
 }
 
 void TransformTest::meshDataTextureCoordinates2DRvaluePassthrough() {

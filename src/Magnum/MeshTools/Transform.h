@@ -144,17 +144,19 @@ template<class T, class U> U transformPoints(const T& transformation, U vectors)
 @m_since_latest
 
 Expects that the mesh contains a two-dimensional
-@ref Trade::MeshAttribute::Position with index @p id. To avoid data loss with
-packed types, the positions are always converted to @ref VertexFormat::Vector2.
-Other attributes, position attributes other than @p id, and indices (if any)
-are passed through untouched.
+@ref Trade::MeshAttribute::Position with index @p id and that the attribute
+does not have an implementation-specific format. To avoid data loss with packed
+types, the positions are always converted to @ref VertexFormat::Vector2. Other
+attributes, position attributes other than @p id, and indices (if any) are
+passed through untouched.
 
 See also @ref transform2D(Trade::MeshData&&, const Matrix3&, UnsignedInt) for a
 potentially more efficient operation instead of always performing a full copy,
 you can also do an in-place transformation using @ref transform2DInPlace().
 @see @ref transform3D(), @ref transformTextureCoordinates2D(),
     @ref Trade::MeshData::attributeCount(MeshAttribute) const,
-    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const,
+    @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(const Trade::MeshData& data, const Matrix3& transformation, UnsignedInt id = 0);
 
@@ -196,18 +198,21 @@ Expects that the mesh contains a three-dimensional
 @ref Trade::MeshAttribute::Normal, @ref Trade::MeshAttribute::Tangent or
 @ref Trade::MeshAttribute::Bitangent with index @p id are present as well,
 those get transformed with @ref Matrix4::normalMatrix() extracted out of
-@p transformation. To avoid data loss with packed types, the positions, normals
-and bitangents are always converted to @ref VertexFormat::Vector3, tangents to
-either @ref VertexFormat::Vector3 or @ref VertexFormat::Vector4. Other
-attributes, additional position/TBN attributes other than @p id, and indices
-(if any) are passed through untouched.
+@p transformation. All these attributes are expected to not have an
+implementation-specific format. To avoid data loss with packed types, the
+positions, normals and bitangents are always converted to
+@ref VertexFormat::Vector3, tangents to either @ref VertexFormat::Vector3 or
+@ref VertexFormat::Vector4. Other attributes, additional
+position/TBN attributes other than @p id, and indices (if any) are passed
+through untouched.
 
 See also @ref transform3D(Trade::MeshData&&, const Matrix4&, UnsignedInt) for a
 potentially more efficient operation instead of always performing a full copy,
 you can also do an in-place transformation using @ref transform3DInPlace().
 @see @ref transform2D(), @ref transformTextureCoordinates2D(),
     @ref Trade::MeshData::attributeCount(MeshAttribute) const,
-    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const,
+    @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(const Trade::MeshData& data, const Matrix4& transformation, UnsignedInt id = 0);
 
@@ -261,7 +266,8 @@ for a potentially more efficient operation instead of always performing a full
 copy, you can also do an in-place transformation using
 @ref transformTextureCoordinates2DInPlace().
 @see @ref transform2D(), @ref transform3D(),
-    @ref Trade::MeshData::attributeCount(MeshAttribute) const
+    @ref Trade::MeshData::attributeCount(MeshAttribute) const,
+    @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& data, const Matrix3& transformation, UnsignedInt id = 0);
 
@@ -282,9 +288,10 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(Trade::Mes
 @m_since_latest
 
 Expects that the mesh has mutable vertex data and contains a
-@ref Trade::MeshAttribute::TextureCoordinates with index @p id. To avoid data
-loss with packed types, the in-place operation requires the coordinate type to
-be @ref VertexFormat::Vector2 --- if you can't guarantee that, use
+@ref Trade::MeshAttribute::TextureCoordinates with index @p id and that the
+attribute does not have an implementation-specific format. To avoid data loss
+with packed types, the in-place operation requires the coordinate type to be
+@ref VertexFormat::Vector2 --- if you can't guarantee that, use
 @ref transformTextureCoordinates2D() instead. Other attributes, texture
 coordinate attributes other than @p id, and indices (if any) are passed through
 untouched.
