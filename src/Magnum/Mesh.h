@@ -216,9 +216,9 @@ constexpr bool isMeshPrimitiveImplementationSpecific(MeshPrimitive primitive) {
 @brief Wrap an implementation-specific mesh primitive identifier in @ref MeshPrimitive
 @m_since{2020,06}
 
-Sets the highest bit on @p primitive to mark it as implementation-specific.
-Expects that @p primitive fits into the remaining bits. Use
-@ref meshPrimitiveUnwrap() for the inverse operation.
+Sets the highest bit on @p implementationSpecific to mark it as
+implementation-specific. Expects that @p implementationSpecific fits into the
+remaining 31 bits. Use @ref meshPrimitiveUnwrap() for the inverse operation.
 @see @ref isMeshPrimitiveImplementationSpecific()
 */
 template<class T> constexpr MeshPrimitive meshPrimitiveWrap(T implementationSpecific) {

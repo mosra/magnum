@@ -793,9 +793,9 @@ constexpr bool isPixelFormatImplementationSpecific(PixelFormat format) {
 /**
 @brief Wrap an implementation-specific pixel format identifier in @ref PixelFormat
 
-Sets the highest bit on @p format to mark it as implementation-specific.
-Expects that @p format fits into the remaining bits. Use @ref pixelFormatUnwrap()
-for the inverse operation.
+Sets the highest bit on @p implementationSpecific to mark it as
+implementation-specific. Expects that @p implementationSpecific fits into the
+remaining 31 bits. Use @ref pixelFormatUnwrap() for the inverse operation.
 @see @ref isPixelFormatImplementationSpecific(), @ref compressedPixelFormatWrap()
 */
 template<class T> constexpr PixelFormat pixelFormatWrap(T implementationSpecific) {
@@ -2361,9 +2361,10 @@ constexpr bool isCompressedPixelFormatImplementationSpecific(CompressedPixelForm
 /**
 @brief Wrap an implementation-specific pixel format identifier in a @ref CompressedPixelFormat
 
-Sets the highest bit on @p format to mark it as implementation-specific.
-Expects that @p format fits into the remaining bits. Use @ref compressedPixelFormatUnwrap()
-for the inverse operation.
+Sets the highest bit on @p implementationSpecific to mark it as
+implementation-specific. Expects that @p implementationSpecific fits into the
+remaining 31 bits. Use @ref compressedPixelFormatUnwrap() for the inverse
+operation.
 @see @ref isCompressedPixelFormatImplementationSpecific(), @ref pixelFormatWrap()
 */
 template<class T> constexpr CompressedPixelFormat compressedPixelFormatWrap(T implementationSpecific) {

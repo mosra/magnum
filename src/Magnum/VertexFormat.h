@@ -42,10 +42,9 @@ namespace Magnum {
 @m_since{2020,06}
 
 Like @ref PixelFormat, but for mesh attributes --- including double-precision
-types and matrices. Can act also as a wrapper for implementation-specific mesh
-attribute type values using @ref vertexFormatWrap() and
-@ref vertexFormatUnwrap(). Distinction between generic and
-implementation-specific types can be done using
+types and matrices. Can act also as a wrapper for implementation-specific
+vertex format values using @ref vertexFormatWrap() and @ref vertexFormatUnwrap().
+Distinction between generic and implementation-specific types can be done using
 @ref isVertexFormatImplementationSpecific().
 
 In case of OpenGL, corresponds to a tuple of @ref GL::DynamicAttribute::Kind,
@@ -1334,9 +1333,9 @@ constexpr bool isVertexFormatImplementationSpecific(VertexFormat format) {
 @brief Wrap an implementation-specific vertex format identifier in @ref VertexFormat
 @m_since{2020,06}
 
-Sets the highest bit on @p type to mark it as implementation-specific. Expects
-that @p type fits into the remaining bits. Use @ref vertexFormatUnwrap()
-for the inverse operation.
+Sets the highest bit on @p implementationSpecific to mark it as
+implementation-specific. Expects that @p implementationSpecific fits into the
+remaining 31 bits. Use @ref vertexFormatUnwrap() for the inverse operation.
 @see @ref isVertexFormatImplementationSpecific()
 */
 template<class T> constexpr VertexFormat vertexFormatWrap(T implementationSpecific) {
@@ -1350,8 +1349,8 @@ template<class T> constexpr VertexFormat vertexFormatWrap(T implementationSpecif
 @brief Unwrap an implementation-specific vertex format identifier from @ref VertexFormat
 @m_since{2020,06}
 
-Unsets the highest bit from @p type to extract the implementation-specific
-value. Expects that @p type has it set. Use @ref vertexFormatWrap() for
+Unsets the highest bit from @p format to extract the implementation-specific
+value. Expects that @p format has it set. Use @ref vertexFormatWrap() for
 the inverse operation.
 @see @ref isVertexFormatImplementationSpecific()
 */
