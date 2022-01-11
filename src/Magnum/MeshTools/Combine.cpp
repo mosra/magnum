@@ -40,14 +40,25 @@ namespace Magnum { namespace MeshTools {
 
 namespace {
 
-Trade::MeshData combineIndexedImplementation(const MeshPrimitive primitive, Containers::Array<char>& combinedIndices, const UnsignedInt indexCount, const UnsignedInt indexStride, const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> data) {
+Trade::MeshData combineIndexedImplementation(
+    #ifndef CORRADE_NO_ASSERT
+    const char* assertPrefix,
+    #endif
+    const MeshPrimitive primitive, Containers::Array<char>& combinedIndices, const UnsignedInt indexCount, const UnsignedInt indexStride, const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> data)
+{
     /* Calculate attribute count and vertex stride */
     UnsignedInt attributeCount = 0;
     UnsignedInt vertexStride = 0;
     for(std::size_t i = 0; i != data.size(); ++i) {
         attributeCount += data[i]->attributeCount();
-        for(UnsignedInt j = 0; j != data[i]->attributeCount(); ++j)
-            vertexStride += vertexFormatSize(data[i]->attributeFormat(j))*Math::max(data[i]->attributeArraySize(j), UnsignedShort{1});
+        for(UnsignedInt j = 0; j != data[i]->attributeCount(); ++j) {
+            const VertexFormat format = data[i]->attributeFormat(j);
+            CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+                assertPrefix << "attribute" << j << "of mesh" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
+                (Trade::MeshData{MeshPrimitive::Points, 0}));
+
+            vertexStride += vertexFormatSize(format)*Math::max(data[i]->attributeArraySize(j), UnsignedShort{1});
+        }
     }
 
     /* Make the combined index array unique */
@@ -149,7 +160,11 @@ Trade::MeshData combineIndexedAttributes(const Containers::ArrayView<const Conta
         CORRADE_INTERNAL_ASSERT(indexOffset == indexStride);
     }
 
-    return combineIndexedImplementation(primitive, combinedIndices, indexCount, indexStride, data);
+    return combineIndexedImplementation(
+        #ifndef CORRADE_NO_ASSERT
+        "MeshTools::combineIndexedAttributes():",
+        #endif
+        primitive, combinedIndices, indexCount, indexStride, data);
 }
 
 Trade::MeshData combineIndexedAttributes(std::initializer_list<Containers::Reference<const Trade::MeshData>> data) {
@@ -203,8 +218,11 @@ Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::
     Utility::copy(combinedFaceIndices[0], combinedFaceIndices[2]);
 
     /* Then combine the two into a single buffer */
-    return combineIndexedImplementation(mesh.primitive(), combinedIndices,
-        meshIndexCount, indexStride,
+    return combineIndexedImplementation(
+        #ifndef CORRADE_NO_ASSERT
+        "MeshTools::combineFaceAttributes():",
+        #endif
+        mesh.primitive(), combinedIndices, meshIndexCount, indexStride,
         Containers::arrayView<const Containers::Reference<const Trade::MeshData>>({
             mesh, faceAttributes
         }));

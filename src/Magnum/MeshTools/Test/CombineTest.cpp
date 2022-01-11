@@ -47,6 +47,7 @@ struct CombineTest: TestSuite::Tester {
     void combineIndexedAttributesNotIndexed();
     void combineIndexedAttributesDifferentPrimitive();
     void combineIndexedAttributesDifferentIndexCount();
+    void combineIndexedAttributesImplementationSpecificVertexFormat();
 
     void combineFaceAttributes();
     void combineFaceAttributesMeshNotIndexed();
@@ -54,6 +55,7 @@ struct CombineTest: TestSuite::Tester {
     void combineFaceAttributesUnexpectedFaceCount();
     void combineFaceAttributesFacesNotInterleaved();
     void combineFaceAttributesFaceAttributeOffsetOnly();
+    void combineFaceAttributesImplementationSpecificVertexFormat();
 };
 
 constexpr struct {
@@ -72,7 +74,8 @@ CombineTest::CombineTest() {
               &CombineTest::combineIndexedAttributesNoMeshes,
               &CombineTest::combineIndexedAttributesNotIndexed,
               &CombineTest::combineIndexedAttributesDifferentPrimitive,
-              &CombineTest::combineIndexedAttributesDifferentIndexCount});
+              &CombineTest::combineIndexedAttributesDifferentIndexCount,
+              &CombineTest::combineIndexedAttributesImplementationSpecificVertexFormat});
 
     addInstancedTests({&CombineTest::combineFaceAttributes},
         Containers::arraySize(CombineFaceAttributesData));
@@ -81,7 +84,8 @@ CombineTest::CombineTest() {
               &CombineTest::combineFaceAttributesUnexpectedPrimitive,
               &CombineTest::combineFaceAttributesUnexpectedFaceCount,
               &CombineTest::combineFaceAttributesFacesNotInterleaved,
-              &CombineTest::combineFaceAttributesFaceAttributeOffsetOnly});
+              &CombineTest::combineFaceAttributesFaceAttributeOffsetOnly,
+              &CombineTest::combineFaceAttributesImplementationSpecificVertexFormat});
 }
 
 void CombineTest::combineIndexedAttributes() {
@@ -241,6 +245,31 @@ void CombineTest::combineIndexedAttributesDifferentIndexCount() {
     Error redirectError{&out};
     MeshTools::combineIndexedAttributes({a, b, c});
     CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): data 2 has 4 indices but expected 5\n");
+}
+
+void CombineTest::combineIndexedAttributesImplementationSpecificVertexFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData a{MeshPrimitive::Points,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+        }};
+    Trade::MeshData b{MeshPrimitive::Points,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(3), vertexFormatWrap(0xcaca), nullptr}
+        }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::combineIndexedAttributes({a, b});
+    CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): attribute 2 of mesh 1 has an implementation-specific format 0xcaca\n");
 }
 
 void CombineTest::combineFaceAttributes() {
@@ -416,6 +445,48 @@ void CombineTest::combineFaceAttributesUnexpectedFaceCount() {
     MeshTools::combineFaceAttributes(mesh, faceAttributes);
     CORRADE_COMPARE(out.str(),
         "MeshTools::combineFaceAttributes(): expected 1 face entries for 3 indices but got 2\n");
+}
+
+void CombineTest::combineFaceAttributesImplementationSpecificVertexFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData triangles{MeshPrimitive::Triangles,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+        }};
+    Trade::MeshData trianglesImplementationSpecific{MeshPrimitive::Triangles,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Color, VertexFormat::Vector4, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, vertexFormatWrap(0xcaca), nullptr}
+        }};
+
+    Trade::MeshData faces{MeshPrimitive::Faces,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+        }};
+    Trade::MeshData facesImplementationSpecific{MeshPrimitive::Faces,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Color, VertexFormat::Vector4, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, vertexFormatWrap(0xcaca), nullptr}
+        }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::combineFaceAttributes(triangles, facesImplementationSpecific);
+    MeshTools::combineFaceAttributes(trianglesImplementationSpecific, faces);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::combineFaceAttributes(): attribute 2 of mesh 1 has an implementation-specific format 0xcaca\n"
+        "MeshTools::combineFaceAttributes(): attribute 2 of mesh 0 has an implementation-specific format 0xcaca\n");
 }
 
 void CombineTest::combineFaceAttributesFacesNotInterleaved() {

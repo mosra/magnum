@@ -83,7 +83,9 @@ index count. All inputs have to be indexed, although the particular
 @ref MeshIndexType doesn't matter. For non-indexed attributes combining can be
 done much more efficiently using @ref duplicate(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>),
 alternatively you can turn a non-indexed attribute to an indexed one first
-using @ref removeDuplicatesInPlace() and then call this function.
+using @ref removeDuplicatesInPlace() and then call this function. Attributes in
+all meshes are expected to not have an implementation-specific format.
+@see @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> data);
 
@@ -107,8 +109,9 @@ Expects that @p mesh is indexed @ref MeshPrimitive::Triangles and
 latter corresponding to triangle count of the former. If @p faceAttributes is
 indexed, it's assumed to have the data unique; if it's not indexed, it's first
 made unique using @ref removeDuplicates() and in that case it's expected to
-be interleaved.
-@see @ref isInterleaved()
+be interleaved. Attributes in both meshes are expected to not have an
+implementation-specific format.
+@see @ref isInterleaved(), @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::MeshData& faceAttributes);
 
