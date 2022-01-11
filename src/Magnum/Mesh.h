@@ -286,11 +286,11 @@ enum class MeshIndexType: UnsignedByte {
     UnsignedInt
 };
 
-/** @brief Size of given mesh index type */
-MAGNUM_EXPORT UnsignedInt meshIndexTypeSize(MeshIndexType type);
-
 /** @debugoperatorenum{MeshIndexType} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, MeshIndexType value);
+
+/** @brief Size of given mesh index type */
+MAGNUM_EXPORT UnsignedInt meshIndexTypeSize(MeshIndexType type);
 
 }
 

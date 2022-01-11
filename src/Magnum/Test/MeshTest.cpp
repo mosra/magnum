@@ -37,14 +37,13 @@ struct MeshTest: TestSuite::Tester {
     explicit MeshTest();
 
     void primitiveMapping();
-    void indexTypeMapping();
-
     void primitiveIsImplementationSpecific();
     void primitiveWrap();
     void primitiveWrapInvalid();
     void primitiveUnwrap();
     void primitiveUnwrapInvalid();
 
+    void indexTypeMapping();
     void indexTypeSize();
     void indexTypeSizeInvalid();
 
@@ -58,14 +57,13 @@ struct MeshTest: TestSuite::Tester {
 
 MeshTest::MeshTest() {
     addTests({&MeshTest::primitiveMapping,
-              &MeshTest::indexTypeMapping,
-
               &MeshTest::primitiveIsImplementationSpecific,
               &MeshTest::primitiveWrap,
               &MeshTest::primitiveWrapInvalid,
               &MeshTest::primitiveUnwrap,
               &MeshTest::primitiveUnwrapInvalid,
 
+              &MeshTest::indexTypeMapping,
               &MeshTest::indexTypeSize,
               &MeshTest::indexTypeSizeInvalid,
 
@@ -100,44 +98,6 @@ void MeshTest::primitiveMapping() {
                     ++nextHandled; \
                     continue;
             #include "Magnum/Implementation/meshPrimitiveMapping.hpp"
-            #undef _c
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #endif
-
-        /* Not handled by any value, remember -- we might either be at the end
-           of the enum range (which is okay) or some value might be unhandled
-           here */
-        firstUnhandled = i;
-    }
-
-    CORRADE_COMPARE(firstUnhandled, 0xff);
-}
-
-void MeshTest::indexTypeMapping() {
-    /* This goes through the first 8 bits, which should be enough. */
-    UnsignedInt firstUnhandled = 0xff;
-    UnsignedInt nextHandled = 1; /* 0 is an invalid type */
-    for(UnsignedInt i = 1; i <= 0xff; ++i) {
-        const auto type = MeshIndexType(i);
-        /* Each case verifies:
-           - that the entries are ordered by number by comparing a function to
-             expected result (so insertion here is done in proper place)
-           - that there was no gap (unhandled value inside the range) */
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic error "-Wswitch"
-        #endif
-        switch(type) {
-            #define _c(type) \
-                case MeshIndexType::type: \
-                    CORRADE_COMPARE(Utility::ConfigurationValue<MeshIndexType>::toString(MeshIndexType::type, {}), #type); \
-                    CORRADE_COMPARE(nextHandled, i); \
-                    CORRADE_COMPARE(firstUnhandled, 0xff); \
-                    ++nextHandled; \
-                    continue;
-            #include "Magnum/Implementation/meshIndexTypeMapping.hpp"
             #undef _c
         }
         #ifdef __GNUC__
@@ -194,6 +154,44 @@ void MeshTest::primitiveUnwrapInvalid() {
     meshPrimitiveUnwrap(MeshPrimitive::Triangles);
 
     CORRADE_COMPARE(out.str(), "meshPrimitiveUnwrap(): MeshPrimitive::Triangles isn't a wrapped implementation-specific value\n");
+}
+
+void MeshTest::indexTypeMapping() {
+    /* This goes through the first 8 bits, which should be enough. */
+    UnsignedInt firstUnhandled = 0xff;
+    UnsignedInt nextHandled = 1; /* 0 is an invalid type */
+    for(UnsignedInt i = 1; i <= 0xff; ++i) {
+        const auto type = MeshIndexType(i);
+        /* Each case verifies:
+           - that the entries are ordered by number by comparing a function to
+             expected result (so insertion here is done in proper place)
+           - that there was no gap (unhandled value inside the range) */
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic error "-Wswitch"
+        #endif
+        switch(type) {
+            #define _c(type) \
+                case MeshIndexType::type: \
+                    CORRADE_COMPARE(Utility::ConfigurationValue<MeshIndexType>::toString(MeshIndexType::type, {}), #type); \
+                    CORRADE_COMPARE(nextHandled, i); \
+                    CORRADE_COMPARE(firstUnhandled, 0xff); \
+                    ++nextHandled; \
+                    continue;
+            #include "Magnum/Implementation/meshIndexTypeMapping.hpp"
+            #undef _c
+        }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
+
+        /* Not handled by any value, remember -- we might either be at the end
+           of the enum range (which is okay) or some value might be unhandled
+           here */
+        firstUnhandled = i;
+    }
+
+    CORRADE_COMPARE(firstUnhandled, 0xff);
 }
 
 void MeshTest::indexTypeSize() {

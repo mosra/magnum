@@ -32,16 +32,6 @@
 
 namespace Magnum {
 
-UnsignedInt meshIndexTypeSize(MeshIndexType type) {
-    switch(type) {
-        case MeshIndexType::UnsignedByte: return 1;
-        case MeshIndexType::UnsignedShort: return 2;
-        case MeshIndexType::UnsignedInt: return 4;
-    }
-
-    CORRADE_ASSERT_UNREACHABLE("meshIndexTypeSize(): invalid type" << type, {});
-}
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace {
 
@@ -87,6 +77,16 @@ Debug& operator<<(Debug& debug, const MeshIndexType value) {
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }
 #endif
+
+UnsignedInt meshIndexTypeSize(MeshIndexType type) {
+    switch(type) {
+        case MeshIndexType::UnsignedByte: return 1;
+        case MeshIndexType::UnsignedShort: return 2;
+        case MeshIndexType::UnsignedInt: return 4;
+    }
+
+    CORRADE_ASSERT_UNREACHABLE("meshIndexTypeSize(): invalid type" << type, {});
+}
 
 }
 
