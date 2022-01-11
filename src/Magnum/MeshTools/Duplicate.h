@@ -146,8 +146,10 @@ instances are not supported in the @p extra array.
 
 Expects that @p data is indexed and each attribute in @p extra has either the
 same amount of elements as @p data vertex count (*not* index count) or has
-none.
-@see @ref Trade::MeshData::attributeData()
+none. All attributes are expected to not have an implementation-specific
+format.
+@see @ref isVertexFormatImplementationSpecific(),
+    @ref Trade::MeshData::attributeData()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData duplicate(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});
 

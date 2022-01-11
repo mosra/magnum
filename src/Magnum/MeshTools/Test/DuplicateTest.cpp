@@ -59,10 +59,12 @@ struct DuplicateTest: TestSuite::Tester {
 
     template<class T> void duplicateMeshData();
     void duplicateMeshDataNotIndexed();
+    void duplicateMeshDataImplementationSpecificVertexFormat();
     void duplicateMeshDataExtra();
     void duplicateMeshDataExtraEmpty();
     void duplicateMeshDataExtraWrongCount();
     void duplicateMeshDataExtraOffsetOnly();
+    void duplicateMeshDataExtraImplementationSpecificVertexFormat();
     void duplicateMeshDataNoAttributes();
 };
 
@@ -92,10 +94,12 @@ DuplicateTest::DuplicateTest() {
               &DuplicateTest::duplicateMeshData<UnsignedShort>,
               &DuplicateTest::duplicateMeshData<UnsignedInt>,
               &DuplicateTest::duplicateMeshDataNotIndexed,
+              &DuplicateTest::duplicateMeshDataImplementationSpecificVertexFormat,
               &DuplicateTest::duplicateMeshDataExtra,
               &DuplicateTest::duplicateMeshDataExtraEmpty,
               &DuplicateTest::duplicateMeshDataExtraWrongCount,
               &DuplicateTest::duplicateMeshDataExtraOffsetOnly,
+              &DuplicateTest::duplicateMeshDataExtraImplementationSpecificVertexFormat,
               &DuplicateTest::duplicateMeshDataNoAttributes});
 }
 
@@ -326,6 +330,28 @@ void DuplicateTest::duplicateMeshDataNotIndexed() {
     CORRADE_COMPARE(out.str(), "MeshTools::duplicate(): mesh data not indexed\n");
 }
 
+void DuplicateTest::duplicateMeshDataImplementationSpecificVertexFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData a{MeshPrimitive::Lines,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
+        nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+            vertexFormatWrap(0xcaca), nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::duplicate(a);
+    CORRADE_COMPARE(out.str(), "MeshTools::duplicate(): attribute 2 has an implementation-specific format 0xcaca\n");
+}
+
 void DuplicateTest::duplicateMeshDataExtra() {
     UnsignedByte indices[]{0, 1, 2, 2, 1, 0};
     Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
@@ -429,6 +455,29 @@ void DuplicateTest::duplicateMeshDataExtraOffsetOnly() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, 3, 5, 14}
     });
     CORRADE_COMPARE(out.str(), "MeshTools::duplicate(): extra attribute 1 is offset-only, which is not supported\n");
+}
+
+void DuplicateTest::duplicateMeshDataExtraImplementationSpecificVertexFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData a{MeshPrimitive::Lines,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
+        nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::duplicate(a, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+            vertexFormatWrap(0xcaca), nullptr}
+    });
+    CORRADE_COMPARE(out.str(), "MeshTools::duplicate(): extra attribute 1 has an implementation-specific format 0xcaca\n");
 }
 
 void DuplicateTest::duplicateMeshDataNoAttributes() {
