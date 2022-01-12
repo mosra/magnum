@@ -12,7 +12,7 @@ rem currently disabled -- https://github.com/catchorg/Catch2/issues/1113
 if "%COMPILER%" == "msvc-clang" set COMPILER_EXTRA=-DCMAKE_CXX_COMPILER="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/Llvm/bin/clang-cl.exe" -DCMAKE_LINKER="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/Llvm/bin/lld-link.exe" -DCMAKE_CXX_FLAGS="-m64 /EHsc"
 
 rem Build Corrade
-git clone --depth 1 git://github.com/mosra/corrade.git || exit /b
+git clone --depth 1 https://github.com/mosra/corrade.git || exit /b
 cd corrade || exit /b
 mkdir build && cd build || exit /b
 cmake .. ^

@@ -10,7 +10,7 @@ cd SDL/VisualC-WinRT/UWP_VS2015 || exit/b
 msbuild /p:Configuration=Release || exit /b
 cd ..\..\..
 
-git clone --depth 1 git://github.com/mosra/corrade.git || exit /b
+git clone --depth 1 https://github.com/mosra/corrade.git || exit /b
 cd corrade || exit /b
 
 rem Build native corrade-rc

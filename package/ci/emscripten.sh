@@ -4,7 +4,7 @@ set -ev
 git submodule update --init
 
 # Corrade
-git clone --depth 1 git://github.com/mosra/corrade.git
+git clone --depth 1 https://github.com/mosra/corrade.git
 cd corrade
 
 # Build native corrade-rc
