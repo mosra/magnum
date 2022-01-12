@@ -511,7 +511,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          */
         explicit Mesh(MeshPrimitive primitive = MeshPrimitive::Triangles);
 
-        /** @overload */
+        /** @overload
+         * @brief Construct with a generic primitive type
+         *
+         * Note that implementation-specific values are passed as-is with
+         * @ref meshPrimitiveUnwrap(). It's the user responsibility to ensure
+         * an implementation-specific value actually represents a valid OpenGL
+         * primitive type.
+         */
         explicit Mesh(Magnum::MeshPrimitive primitive): Mesh{meshPrimitive(primitive)} {}
 
         /**
@@ -654,7 +661,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             return *this;
         }
 
-        /** @overload */
+        /** @overload
+         * @brief Set a generic primitive type
+         *
+         * Note that implementation-specific values are passed as-is with
+         * @ref meshPrimitiveUnwrap(). It's the user responsibility to ensure
+         * an implementation-specific value actually represents a valid OpenGL
+         * primitive type.
+         */
         Mesh& setPrimitive(Magnum::MeshPrimitive primitive) {
             return setPrimitive(meshPrimitive(primitive));
         }

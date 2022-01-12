@@ -227,7 +227,15 @@ class MAGNUM_VK_EXPORT MeshLayout {
          *      @ref vkPipelineInputAssemblyStateCreateInfo()
          */
         explicit MeshLayout(MeshPrimitive primitive);
-        /** @overload */
+
+        /** @overload
+         * @brief Construct with a generic primitive type
+         *
+         * Note that implementation-specific values are passed as-is with
+         * @ref meshPrimitiveUnwrap(). It's the user responsibility to ensure
+         * an implementation-specific value actually represents a valid Vulkan
+         * primitive type.
+         */
         explicit MeshLayout(Magnum::MeshPrimitive primitive);
 
         /**
@@ -376,7 +384,15 @@ class MAGNUM_VK_EXPORT MeshLayout {
         MeshLayout& addAttribute(UnsignedInt location, UnsignedInt binding, VertexFormat format, UnsignedInt offset) &;
         /** @overload */
         MeshLayout&& addAttribute(UnsignedInt location, UnsignedInt binding, VertexFormat format, UnsignedInt offset) &&;
-        /** @overload */
+
+        /** @overload
+         * @brief Add an attribute with a generic primitive type
+         *
+         * Note that implementation-specific values are passed as-is with
+         * @ref vertexFormatUnwrap(). It's the user responsibility to ensure an
+         * implementation-specific value actually represents a valid Vulkan
+         * vertex format.
+         */
         MeshLayout& addAttribute(UnsignedInt location, UnsignedInt binding, Magnum::VertexFormat format, UnsignedInt offset) &;
         /** @overload */
         MeshLayout&& addAttribute(UnsignedInt location, UnsignedInt binding, Magnum::VertexFormat format, UnsignedInt offset) &&;

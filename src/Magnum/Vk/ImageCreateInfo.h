@@ -226,9 +226,25 @@ class MAGNUM_VK_EXPORT ImageCreateInfo {
          * this constructor.
          */
         explicit ImageCreateInfo(VkImageType type, ImageUsages usages, PixelFormat format, const Vector3i& size, Int layers, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {});
-        /** @overload */
+
+        /** @overload
+         * @brief Construct with a generic pixel format
+         *
+         * Note that implementation-specific values are passed as-is with
+         * @ref pixelFormatUnwrap(). It's the user responsibility to ensure
+         * an implementation-specific value actually represents a valid Vulkan
+         * pixel format.
+         */
         explicit ImageCreateInfo(VkImageType type, ImageUsages usages, Magnum::PixelFormat format, const Vector3i& size, Int layers, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {});
-        /** @overload */
+
+        /** @overload
+         * @brief Constructor with a generic compressed pixel format
+         *
+         * Note that implementation-specific values are passed as-is with
+         * @ref compressedPixelFormatUnwrap(). It's the user responsibility to
+         * ensure an implementation-specific actually represents a valid Vulkan
+         * pixel format.
+         */
         explicit ImageCreateInfo(VkImageType type, ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector3i& size, Int layers, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {});
 
         /* No overload w/o initialLayout here as the general public is expected
