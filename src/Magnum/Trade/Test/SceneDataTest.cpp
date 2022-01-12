@@ -1642,8 +1642,11 @@ void SceneDataTest::constructSpecialStrides() {
         nonBroadcastedData, broadcastedData.broadcasted<0>(4)};
     SceneFieldData flippedField{sceneFieldCustom(40),
         nonBroadcastedData.flipped<0>(), nonBroadcastedData.flipped<0>()};
+    SceneFieldData flippedFieldOffsetOnly{sceneFieldCustom(41),
+        4, SceneMappingType::UnsignedShort, std::size_t(static_cast<char*>(nonBroadcastedData.flipped<0>().data()) - data.data()), -2,
+        SceneFieldType::UnsignedShort, std::size_t(static_cast<char*>(nonBroadcastedData.flipped<0>().data()) - data.data()), -2};
     SceneData scene{SceneMappingType::UnsignedShort, 8, std::move(data), {
-        broadcastedMapping, broadcastedField, flippedField
+        broadcastedMapping, broadcastedField, flippedField, flippedFieldOffsetOnly
     }};
 
     CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(0),
@@ -1664,6 +1667,13 @@ void SceneDataTest::constructSpecialStrides() {
         Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.field<UnsignedShort>(2),
+        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(3),
+        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.field<UnsignedShort>(3),
         Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
         TestSuite::Compare::Container);
 }
