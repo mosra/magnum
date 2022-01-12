@@ -593,22 +593,32 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
         if(field._size) {
             const UnsignedInt fieldTypeSize = sceneFieldTypeSize(field._fieldType)*
                 (field._fieldArraySize ? field._fieldArraySize : 1);
+
+            /* Both pointer and offset-only rely on basically same calculation,
+               do it with offsets in a single place and only interpret as
+               pointers in the non-offset-only check. Yes, yes, this may read
+               the `pointer` union member through `offset`. */
+            std::size_t mappingBegin = field._mappingData.offset;
+            std::size_t fieldBegin = field._fieldData.offset;
+            std::size_t mappingEnd = mappingBegin + (field._size - 1)*field._mappingStride;
+            std::size_t fieldEnd = fieldBegin + (field._size - 1)*field._fieldStride;
+            /* Flip for negative strides */
+            if(mappingBegin > mappingEnd) std::swap(mappingBegin, mappingEnd);
+            if(fieldBegin > fieldEnd) std::swap(fieldBegin, fieldEnd);
+            /* Add the last element size to the higher address */
+            mappingEnd += mappingTypeSize;
+            fieldEnd += fieldTypeSize;
+
             if(field._flags & SceneFieldFlag::OffsetOnly) {
-                const std::size_t mappingSize = field._mappingData.offset + (field._size - 1)*field._mappingStride + mappingTypeSize;
-                const std::size_t fieldSize = field._fieldData.offset + (field._size - 1)*field._fieldStride + fieldTypeSize;
-                CORRADE_ASSERT(mappingSize <= _data.size(),
-                    "Trade::SceneData: offset-only mapping data of field" << i << "span" << mappingSize << "bytes but passed data array has only" << _data.size(), );
-                CORRADE_ASSERT(fieldSize <= _data.size(),
-                    "Trade::SceneData: offset-only field data of field" << i << "span" << fieldSize << "bytes but passed data array has only" << _data.size(), );
+                CORRADE_ASSERT(mappingEnd <= _data.size(),
+                    "Trade::SceneData: offset-only mapping data of field" << i << "span" << mappingEnd << "bytes but passed data array has only" << _data.size(), );
+                CORRADE_ASSERT(fieldEnd <= _data.size(),
+                    "Trade::SceneData: offset-only field data of field" << i << "span" << fieldEnd << "bytes but passed data array has only" << _data.size(), );
             } else {
-                const void* const mappingBegin = field._mappingData.pointer;
-                const void* const fieldBegin = field._fieldData.pointer;
-                const void* const mappingEnd = static_cast<const char*>(field._mappingData.pointer) + (field._size - 1)*field._mappingStride + mappingTypeSize;
-                const void* const fieldEnd = static_cast<const char*>(field._fieldData.pointer) + (field._size - 1)*field._fieldStride + fieldTypeSize;
-                CORRADE_ASSERT(mappingBegin >= _data.begin() && mappingEnd <= _data.end(),
-                    "Trade::SceneData: mapping data [" << Debug::nospace << mappingBegin << Debug::nospace << ":" << Debug::nospace << mappingEnd << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
-                CORRADE_ASSERT(fieldBegin >= _data.begin() && fieldEnd <= _data.end(),
-                    "Trade::SceneData: field data [" << Debug::nospace << fieldBegin << Debug::nospace << ":" << Debug::nospace << fieldEnd << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
+                CORRADE_ASSERT(reinterpret_cast<const void*>(mappingBegin) >= _data.begin() && reinterpret_cast<const void*>(mappingEnd) <= _data.end(),
+                    "Trade::SceneData: mapping data [" << Debug::nospace << reinterpret_cast<const void*>(mappingBegin) << Debug::nospace << ":" << Debug::nospace << reinterpret_cast<const void*>(mappingEnd) << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
+                CORRADE_ASSERT(reinterpret_cast<const void*>(fieldBegin) >= _data.begin() && reinterpret_cast<const void*>(fieldEnd) <= _data.end(),
+                    "Trade::SceneData: field data [" << Debug::nospace << reinterpret_cast<const void*>(fieldBegin) << Debug::nospace << ":" << Debug::nospace << reinterpret_cast<const void*>(fieldEnd) << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
             }
         }
         #endif

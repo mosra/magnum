@@ -1826,7 +1826,8 @@ void SceneDataTest::constructMappingDataNotContained() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    Containers::Array<char> data{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
+    const Containers::Array<char> data{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
+    Containers::Array<char> sameDataButMovable{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
     Containers::ArrayView<UnsignedShort> dataIn{reinterpret_cast<UnsignedShort*>(0xbadda9), 5};
     Containers::ArrayView<UnsignedShort> dataSlightlyOut{reinterpret_cast<UnsignedShort*>(0xbaddaa), 5};
     Containers::ArrayView<UnsignedShort> dataOut{reinterpret_cast<UnsignedShort*>(0xdead), 5};
@@ -1843,7 +1844,7 @@ void SceneDataTest::constructMappingDataNotContained() {
         SceneFieldData{SceneField::Mesh, dataOut, dataIn}
     }};
     /* Verify the owning constructor does the checks as well */
-    SceneData{SceneMappingType::UnsignedShort, 5, std::move(data), {
+    SceneData{SceneMappingType::UnsignedShort, 5, std::move(sameDataButMovable), {
         SceneFieldData{SceneField::Light, dataIn, dataIn},
         SceneFieldData{SceneField::Mesh, dataOut, dataIn}
     }};
@@ -1852,9 +1853,17 @@ void SceneDataTest::constructMappingDataNotContained() {
     SceneData{SceneMappingType::UnsignedShort, 5, nullptr, {
         SceneFieldData{SceneField::Mesh, dataOut, dataIn}
     }};
-    /* Finally, offset-only fields with a different message */
+    /* Offset-only fields with a different message */
     SceneData{SceneMappingType::UnsignedByte, 6, Containers::Array<char>{24}, {
         SceneFieldData{SceneField::Mesh, 6, SceneMappingType::UnsignedByte, 4, 4, SceneFieldType::UnsignedByte, 0, 4}
+    }};
+    /* And the final boss, negative strides. Both only caught if the element
+       size gets properly added to the larger offset, not just the "end". */
+    SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
+        SceneFieldData{SceneField::Mesh, stridedArrayView(dataSlightlyOut).flipped<0>(), dataIn}
+    }};
+    SceneData{SceneMappingType::UnsignedByte, 6, Containers::Array<char>{24}, {
+        SceneFieldData{SceneField::Mesh, 6, SceneMappingType::UnsignedByte, 24, -4, SceneFieldType::UnsignedByte, 0, 4}
     }};
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData: mapping data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
@@ -1862,6 +1871,9 @@ void SceneDataTest::constructMappingDataNotContained() {
         "Trade::SceneData: mapping data [0xdead:0xdeb7] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: mapping data [0xdead:0xdeb7] of field 0 are not contained in passed data array [0x0:0x0]\n"
 
+        "Trade::SceneData: offset-only mapping data of field 0 span 25 bytes but passed data array has only 24\n"
+
+        "Trade::SceneData: mapping data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: offset-only mapping data of field 0 span 25 bytes but passed data array has only 24\n");
 }
 
@@ -1873,7 +1885,8 @@ void SceneDataTest::constructFieldDataNotContained() {
     /* Mostly the same as constructMappingDataNotContained() with mapping and
        field views swapped, and added checks for array fields */
 
-    Containers::Array<char> data{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
+    const Containers::Array<char> data{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
+    Containers::Array<char> sameDataButMovable{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
     Containers::ArrayView<UnsignedShort> dataIn{reinterpret_cast<UnsignedShort*>(0xbadda9), 5};
     Containers::ArrayView<UnsignedShort> dataSlightlyOut{reinterpret_cast<UnsignedShort*>(0xbaddaa), 5};
     Containers::ArrayView<UnsignedShort> dataOut{reinterpret_cast<UnsignedShort*>(0xdead), 5};
@@ -1895,13 +1908,13 @@ void SceneDataTest::constructFieldDataNotContained() {
         SceneFieldData{sceneFieldCustom(37), dataIn.prefix(2), Containers::StridedArrayView2D<UnsignedByte>{Containers::ArrayView<UnsignedByte>{reinterpret_cast<UnsignedByte*>(0xbadda9), 12}, {2, 6}}}
     }};
     /* Verify the owning constructor does the checks as well */
-    SceneData{SceneMappingType::UnsignedShort, 5, std::move(data), {
+    SceneData{SceneMappingType::UnsignedShort, 5, std::move(sameDataButMovable), {
         SceneFieldData{SceneField::Light, dataIn, dataIn},
         SceneFieldData{SceneField::Mesh, dataIn, dataOut}
     }};
     /* Not checking for nullptr data, since that got checked for mapping view
        already and there's no way to trigger it for fields */
-    /* Finally, offset-only fields with a different message */
+    /* Offset-only fields with a different message */
     SceneData{SceneMappingType::UnsignedShort, 6, Containers::Array<char>{24}, {
         SceneFieldData{SceneField::Mesh, 6, SceneMappingType::UnsignedShort, 0, 4, SceneFieldType::UnsignedByte, 4, 4}
     }};
@@ -1910,6 +1923,14 @@ void SceneDataTest::constructFieldDataNotContained() {
     SceneData{SceneMappingType::UnsignedShort, 5, Containers::Array<char>{24}, {
         SceneFieldData{sceneFieldCustom(37), 5, SceneMappingType::UnsignedShort, 0, 5, SceneFieldType::UnsignedByte, 0, 5, 5}
     }};
+    /* And the final boss, negative strides. Both only caught if the element
+       size gets properly added to the larger offset, not just the "end". */
+    SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
+        SceneFieldData{SceneField::Mesh, dataIn, stridedArrayView(dataSlightlyOut).flipped<0>()}
+    }};
+    SceneData{SceneMappingType::UnsignedByte, 6, Containers::Array<char>{24}, {
+        SceneFieldData{SceneField::Mesh, 6, SceneMappingType::UnsignedByte, 0, 4, SceneFieldType::UnsignedByte, 24, -4}
+    }};
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData: field data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: field data [0xdead:0xdeb7] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
@@ -1917,6 +1938,9 @@ void SceneDataTest::constructFieldDataNotContained() {
         "Trade::SceneData: field data [0xdead:0xdeb7] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
 
         "Trade::SceneData: offset-only field data of field 0 span 25 bytes but passed data array has only 24\n"
+        "Trade::SceneData: offset-only field data of field 0 span 25 bytes but passed data array has only 24\n"
+
+        "Trade::SceneData: field data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: offset-only field data of field 0 span 25 bytes but passed data array has only 24\n");
 }
 
