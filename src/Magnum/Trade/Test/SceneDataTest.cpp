@@ -1053,10 +1053,10 @@ void SceneDataTest::constructFieldTooLargeMappingStride() {
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 32768, SceneFieldType::UnsignedInt, 0, 4};
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 65538, -32769, SceneFieldType::UnsignedInt, 0, 4};
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits, but got 32768\n"
-        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits, but got -32769\n"
-        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits, but got 32768\n"
-        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits, but got -32769\n");
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got 32768\n"
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got -32769\n"
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got 32768\n"
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got -32769\n");
 }
 
 void SceneDataTest::constructFieldTooLargeFieldStride() {
@@ -1080,10 +1080,10 @@ void SceneDataTest::constructFieldTooLargeFieldStride() {
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 0, 32768};
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 65538, -32769};
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneFieldData: expected field view stride to fit into 16 bits, but got 32768\n"
-        "Trade::SceneFieldData: expected field view stride to fit into 16 bits, but got -32769\n"
-        "Trade::SceneFieldData: expected field view stride to fit into 16 bits, but got 32768\n"
-        "Trade::SceneFieldData: expected field view stride to fit into 16 bits, but got -32769\n");
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got 32768\n"
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got -32769\n"
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got 32768\n"
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got -32769\n");
 }
 
 void SceneDataTest::constructFieldOffsetOnlyNotAllowed() {
