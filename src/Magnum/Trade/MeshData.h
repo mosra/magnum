@@ -645,7 +645,7 @@ which you can directly upload, and then use provided metadata to let the GPU
 know of the format and layout. There's a lot of possible types of each
 attribute (floats, packed integers, ...), so @ref GL::DynamicAttribute accepts
 also a pair of @ref GL::Attribute defined by the shader and the actual
-@ref VertexFormat, figuring out gthe GL-specific properties such as component
+@ref VertexFormat, figuring out the GL-specific properties such as component
 count or element data type for you:
 
 @snippet MagnumTrade.cpp MeshData-usage-advanced
@@ -1457,9 +1457,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * to use the overload below by using @cpp T[] @ce instead of
          * @cpp T @ce. You can also use the non-templated
          * @ref positions2DAsArray(), @ref positions3DAsArray(),
-         * @ref normalsAsArray(), @ref textureCoordinates2DAsArray() and
-         * @ref colorsAsArray() accessors to get common attributes converted to
-         * usual types, but note that these operations involve extra data
+         * @ref tangentsAsArray(), @ref bitangentSignsAsArray(),
+         * @ref bitangentsAsArray(), @ref normalsAsArray(),
+         * @ref textureCoordinates2DAsArray(), @ref colorsAsArray() and
+         * @ref objectIdsAsArray() accessors to get common attributes converted
+         * to usual types, but note that these operations involve extra data
          * conversion and an allocation.
          * @see @ref attribute(UnsignedInt) const,
          *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
