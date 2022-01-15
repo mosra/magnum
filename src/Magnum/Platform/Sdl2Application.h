@@ -2408,6 +2408,41 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
             Y = SDLK_y,                 /**< Letter Y */
             Z = SDLK_z,                 /**< Letter Z */
 
+            /**
+             * Caps lock
+             * @m_since_latest
+             */
+            CapsLock = SDLK_CAPSLOCK,
+
+            /**
+             * Scroll lock
+             * @m_since_latest
+             */
+            ScrollLock = SDLK_SCROLLLOCK,
+
+            /**
+             * Num lock
+             * @m_since_latest
+             */
+            NumLock = SDLK_NUMLOCKCLEAR,
+            /**
+             * Print screen
+             * @m_since_latest
+             */
+            PrintScreen = SDLK_PRINTSCREEN,
+
+            /**
+             * Pause
+             * @m_since_latest
+             */
+            Pause = SDLK_PAUSE,
+
+            /**
+             * Menu
+             * @m_since_latest
+             */
+            Menu = SDLK_APPLICATION,
+
             NumZero = SDLK_KP_0,            /**< Numpad zero */
             NumOne = SDLK_KP_1,             /**< Numpad one */
             NumTwo = SDLK_KP_2,             /**< Numpad two */
