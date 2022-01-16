@@ -48,6 +48,9 @@ constexpr MeshIndexType IndexTypeMapping[]{
 }
 
 MeshIndexType meshIndexType(const Magnum::MeshIndexType type) {
+    if(isMeshIndexTypeImplementationSpecific(type))
+        return meshIndexTypeUnwrap<MeshIndexType>(type);
+
     CORRADE_ASSERT(UnsignedInt(type) - 1 < Containers::arraySize(IndexTypeMapping),
         "Vk::meshIndexType(): invalid type" << type, {});
     return IndexTypeMapping[UnsignedInt(type) - 1];

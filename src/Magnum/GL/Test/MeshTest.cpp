@@ -55,6 +55,7 @@ struct MeshTest: TestSuite::Tester {
     void mapPrimitiveInvalid();
 
     void mapIndexType();
+    void mapIndexTypeImplementationSpecific();
     void mapIndexTypeInvalid();
 
     void debugPrimitive();
@@ -77,6 +78,7 @@ MeshTest::MeshTest() {
               &MeshTest::mapPrimitiveInvalid,
 
               &MeshTest::mapIndexType,
+              &MeshTest::mapIndexTypeImplementationSpecific,
               &MeshTest::mapIndexTypeInvalid,
 
               &MeshTest::debugPrimitive,
@@ -250,6 +252,11 @@ void MeshTest::mapIndexType() {
         #pragma GCC diagnostic pop
         #endif
     }
+}
+
+void MeshTest::mapIndexTypeImplementationSpecific() {
+    CORRADE_COMPARE(meshIndexType(meshIndexTypeWrap(GL_UNSIGNED_BYTE)),
+        MeshIndexType::UnsignedByte);
 }
 
 void MeshTest::mapIndexTypeInvalid() {

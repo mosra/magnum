@@ -197,6 +197,11 @@ enum class MeshIndexType: GLenum {
 /**
 @brief Convert generic mesh index type to OpenGL mesh index type
 
+In case @ref isMeshIndexTypeImplementationSpecific() returns @cpp false @ce for
+@p type, maps it to a corresponding OpenGL type. In case
+@ref isMeshIndexTypeImplementationSpecific() returns @cpp true @ce, assumes
+@p type stores a Vulkan-specific format and returns @ref meshIndexTypeUnwrap()
+cast to @ref MeshIndexType.
 @see @ref meshPrimitive(), @ref meshIndexTypeSize()
 */
 MAGNUM_GL_EXPORT MeshIndexType meshIndexType(Magnum::MeshIndexType type);
@@ -1029,7 +1034,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             return setIndexBuffer(buffer, offset, type, 0, 0);
         }
 
-        /** @overload */
+        /** @overload
+         * @brief Set index buffer with a generic index type
+         *
+         * Note that implementation-specific values are passed as-is with
+         * @ref meshIndexTypeUnwrap(). It's the user responsibility to ensure
+         * an implementation-specific value actually represents a valid OpenGL
+         * index type.
+         */
         Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, Magnum::MeshIndexType type) {
             return setIndexBuffer(buffer, offset, meshIndexType(type), 0, 0);
         }
@@ -1043,7 +1055,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          */
         Mesh& setIndexBuffer(Buffer&& buffer, GLintptr offset, MeshIndexType type, UnsignedInt start, UnsignedInt end);
 
-        /** @overload */
+        /** @overload
+         * @brief Set index buffer with a generic index type and ownership transfer
+         *
+         * Note that implementation-specific values are passed as-is with
+         * @ref meshIndexTypeUnwrap(). It's the user responsibility to ensure
+         * an implementation-specific value actually represents a valid OpenGL
+         * index type.
+         */
         Mesh& setIndexBuffer(Buffer&& buffer, GLintptr offset, Magnum::MeshIndexType type, UnsignedInt start, UnsignedInt end) {
             return setIndexBuffer(std::move(buffer), offset, meshIndexType(type), start, end);
         }
@@ -1058,9 +1077,18 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         Mesh& setIndexBuffer(Buffer&& buffer, GLintptr offset, MeshIndexType type) {
             return setIndexBuffer(std::move(buffer), offset, type, 0, 0);
         }
+
+        /** @overload
+         * @brief Set index buffer with a generic index type and ownership transfer
+         *
+         * Note that implementation-specific values are passed as-is with
+         * @ref meshIndexTypeUnwrap(). It's the user responsibility to ensure
+         * an implementation-specific value actually represents a valid OpenGL
+         * index type.
+         */
         Mesh& setIndexBuffer(Buffer&& buffer, GLintptr offset, Magnum::MeshIndexType type) {
             return setIndexBuffer(std::move(buffer), offset, meshIndexType(type), 0, 0);
-        } /**< @overload */
+        }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**

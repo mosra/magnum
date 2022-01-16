@@ -246,6 +246,12 @@ template<class T = UnsignedInt> constexpr T meshPrimitiveUnwrap(MeshPrimitive pr
 /**
 @brief Mesh index type
 
+A counterpart to @ref VertexFormat describing a mesh index type. Can act also
+as a wrapper for implementation-specific mesh index type valueus uing
+@ref meshIndexTypeWrap() and @ref meshIndexTypeUnwrap(). Distinction between
+generic and implementation-specific types can be done using
+@ref isMeshIndexTypeImplementationSpecific().
+
 In case of OpenGL, corresponds to @ref GL::MeshIndexType and is convertible to
 it using @ref GL::meshIndexType(). See documentation of each value for more
 information about the mapping.
@@ -259,7 +265,7 @@ for Metal, corresponds to @m_class{m-doc-external} [MTLIndexType](https://develo
 See documentation of each value for more information about the mapping.
 @see @ref meshIndexTypeSize()
 */
-enum class MeshIndexType: UnsignedByte {
+enum class MeshIndexType: UnsignedInt {
     /* Zero reserved for an invalid type (but not being a named value) */
 
     /**
@@ -298,6 +304,50 @@ enum class MeshIndexType: UnsignedByte {
 
 /** @debugoperatorenum{MeshIndexType} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, MeshIndexType value);
+
+/**
+@brief Whether a @ref MeshIndexType value wraps an implementation-specific identifier
+@m_since_latest
+
+Returns @cpp true @ce if value of @p type has its highest bit set,
+@cpp false @ce otherwise. Use @ref meshIndexTypeWrap() and
+@ref meshIndexTypeUnwrap() to wrap/unwrap an implementation-specific
+indentifier to/from @ref MeshIndexType.
+*/
+constexpr bool isMeshIndexTypeImplementationSpecific(MeshIndexType type) {
+    return UnsignedInt(type) & (1u << 31);
+}
+
+/**
+@brief Wrap an implementation-specific mesh index type identifier in @ref MeshIndexType
+@m_since_latest
+
+Sets the highest bit on @p implementationSpecific to mark it as
+implementation-specific. Expects that @p implementationSpecific fits into the
+remaining 31 bits. Use @ref meshIndexTypeUnwrap() for the inverse operation.
+@see @ref isMeshIndexTypeImplementationSpecific()
+*/
+template<class T> constexpr MeshIndexType meshIndexTypeWrap(T implementationSpecific) {
+    static_assert(sizeof(T) <= 4, "types larger than 32bits are not supported");
+    return CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(implementationSpecific) & (1u << 31)),
+        "meshIndexTypeWrap(): implementation-specific value" << reinterpret_cast<void*>(implementationSpecific) << "already wrapped or too large"),
+        MeshIndexType((1u << 31)|UnsignedInt(implementationSpecific));
+}
+
+/**
+@brief Unwrap an implementation-specific mesh index type identifier from @ref MeshIndexType
+@m_since_latest
+
+Unsets the highest bit from @p type to extract the implementation-specific
+value. Expects that @p type has it set. Use @ref meshIndexTypeWrap() for
+the inverse operation.
+@see @ref isMeshIndexTypeImplementationSpecific()
+*/
+template<class T = UnsignedInt> constexpr T meshIndexTypeUnwrap(MeshIndexType type) {
+    return CORRADE_CONSTEXPR_ASSERT(UnsignedInt(type) & (1u << 31),
+        "meshIndexTypeUnwrap():" << type << "isn't a wrapped implementation-specific value"),
+        T(UnsignedInt(type) & ~(1u << 31));
+}
 
 /** @brief Size of given mesh index type */
 MAGNUM_EXPORT UnsignedInt meshIndexTypeSize(MeshIndexType type);

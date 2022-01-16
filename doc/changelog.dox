@@ -285,6 +285,9 @@ See also:
 
 -   Added @ref MeshPrimitive::Meshlets as a placeholder for future meshlet
     support in @ref Trade::MeshData
+-   @ref MeshIndexType was enlarged to 32 bits and can now wrap
+    implementation-specific values similar to @ref PixelFormat,
+    @ref CompressedPixelFormat, @ref VertexFormat and @ref MeshPrimitive
 
 @subsubsection changelog-latest-changes-debugtools DebugTools library
 

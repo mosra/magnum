@@ -39,6 +39,7 @@ struct MeshTest: TestSuite::Tester {
     explicit MeshTest();
 
     void mapIndexType();
+    void mapIndexTypeImplementationSpecific();
     void mapIndexTypeInvalid();
 
     void construct();
@@ -60,6 +61,7 @@ struct MeshTest: TestSuite::Tester {
 
 MeshTest::MeshTest() {
     addTests({&MeshTest::mapIndexType,
+              &MeshTest::mapIndexTypeImplementationSpecific,
               &MeshTest::mapIndexTypeInvalid,
 
               &MeshTest::construct,
@@ -93,6 +95,11 @@ void MeshTest::mapIndexType() {
     CORRADE_COMPARE(meshIndexType(Magnum::MeshIndexType::UnsignedByte), MeshIndexType::UnsignedByte);
     CORRADE_COMPARE(meshIndexType(Magnum::MeshIndexType::UnsignedShort), MeshIndexType::UnsignedShort);
     CORRADE_COMPARE(meshIndexType(Magnum::MeshIndexType::UnsignedInt), MeshIndexType::UnsignedInt);
+}
+
+void MeshTest::mapIndexTypeImplementationSpecific() {
+    CORRADE_COMPARE(meshIndexType(meshIndexTypeWrap(VK_INDEX_TYPE_UINT32)),
+        MeshIndexType::UnsignedInt);
 }
 
 void MeshTest::mapIndexTypeInvalid() {

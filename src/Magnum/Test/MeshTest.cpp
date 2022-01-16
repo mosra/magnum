@@ -44,12 +44,19 @@ struct MeshTest: TestSuite::Tester {
     void primitiveUnwrapInvalid();
 
     void indexTypeMapping();
+    void indexTypeIsImplementationSpecific();
+    void indexTypeWrap();
+    void indexTypeWrapInvalid();
+    void indexTypeUnwrap();
+    void indexTypeUnwrapInvalid();
     void indexTypeSize();
     void indexTypeSizeInvalid();
+    void indexTypeSizeImplementationSpecific();
 
     void debugPrimitive();
     void debugPrimitiveImplementationSpecific();
     void debugIndexType();
+    void debugIndexTypeImplementationSpecific();
 
     void configurationPrimitive();
     void configurationIndexType();
@@ -64,12 +71,19 @@ MeshTest::MeshTest() {
               &MeshTest::primitiveUnwrapInvalid,
 
               &MeshTest::indexTypeMapping,
+              &MeshTest::indexTypeIsImplementationSpecific,
+              &MeshTest::indexTypeWrap,
+              &MeshTest::indexTypeWrapInvalid,
+              &MeshTest::indexTypeUnwrap,
+              &MeshTest::indexTypeUnwrapInvalid,
               &MeshTest::indexTypeSize,
               &MeshTest::indexTypeSizeInvalid,
+              &MeshTest::indexTypeSizeImplementationSpecific,
 
               &MeshTest::debugPrimitive,
               &MeshTest::debugPrimitiveImplementationSpecific,
               &MeshTest::debugIndexType,
+              &MeshTest::debugIndexTypeImplementationSpecific,
 
               &MeshTest::configurationPrimitive,
               &MeshTest::configurationIndexType});
@@ -194,6 +208,47 @@ void MeshTest::indexTypeMapping() {
     CORRADE_COMPARE(firstUnhandled, 0xff);
 }
 
+void MeshTest::indexTypeIsImplementationSpecific() {
+    constexpr bool a = isMeshIndexTypeImplementationSpecific(MeshIndexType::UnsignedShort);
+    constexpr bool b = isMeshIndexTypeImplementationSpecific(MeshIndexType(0x8000dead));
+    CORRADE_VERIFY(!a);
+    CORRADE_VERIFY(b);
+}
+
+void MeshTest::indexTypeWrap() {
+    constexpr MeshIndexType a = meshIndexTypeWrap(0xdead);
+    CORRADE_COMPARE(UnsignedInt(a), 0x8000dead);
+}
+
+void MeshTest::indexTypeWrapInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    meshIndexTypeWrap(0xdeadbeef);
+    CORRADE_COMPARE(out.str(), "meshIndexTypeWrap(): implementation-specific value 0xdeadbeef already wrapped or too large\n");
+}
+
+void MeshTest::indexTypeUnwrap() {
+    constexpr UnsignedInt a = meshIndexTypeUnwrap(MeshIndexType(0x8000dead));
+    CORRADE_COMPARE(a, 0xdead);
+}
+
+void MeshTest::indexTypeUnwrapInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    meshIndexTypeUnwrap(MeshIndexType::UnsignedInt);
+
+    CORRADE_COMPARE(out.str(), "meshIndexTypeUnwrap(): MeshIndexType::UnsignedInt isn't a wrapped implementation-specific value\n");
+}
+
 void MeshTest::indexTypeSize() {
     CORRADE_COMPARE(meshIndexTypeSize(MeshIndexType::UnsignedByte), 1);
     CORRADE_COMPARE(meshIndexTypeSize(MeshIndexType::UnsignedShort), 2);
@@ -209,11 +264,22 @@ void MeshTest::indexTypeSizeInvalid() {
     Error redirectError{&out};
 
     meshIndexTypeSize(MeshIndexType{});
-    meshIndexTypeSize(MeshIndexType(0xfe));
+    meshIndexTypeSize(MeshIndexType(0xbadcafe));
 
     CORRADE_COMPARE(out.str(),
         "meshIndexTypeSize(): invalid type MeshIndexType(0x0)\n"
-        "meshIndexTypeSize(): invalid type MeshIndexType(0xfe)\n");
+        "meshIndexTypeSize(): invalid type MeshIndexType(0xbadcafe)\n");
+}
+
+void MeshTest::indexTypeSizeImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    meshIndexTypeSize(meshIndexTypeWrap(0xdead));
+    CORRADE_COMPARE(out.str(), "meshIndexTypeSize(): can't determine size of an implementation-specific type 0xdead\n");
 }
 
 void MeshTest::debugPrimitive() {
@@ -233,6 +299,13 @@ void MeshTest::debugIndexType() {
     std::ostringstream o;
     Debug(&o) << MeshIndexType::UnsignedShort << MeshIndexType(0xfe);
     CORRADE_COMPARE(o.str(), "MeshIndexType::UnsignedShort MeshIndexType(0xfe)\n");
+}
+
+void MeshTest::debugIndexTypeImplementationSpecific() {
+    std::ostringstream out;
+    Debug{&out} << meshIndexTypeWrap(0xdead);
+
+    CORRADE_COMPARE(out.str(), "MeshIndexType::ImplementationSpecific(0xdead)\n");
 }
 
 void MeshTest::configurationPrimitive() {

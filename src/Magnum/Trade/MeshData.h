@@ -1932,7 +1932,6 @@ class MAGNUM_TRADE_EXPORT MeshData {
         UnsignedInt _indexCount, _vertexCount;
         MeshPrimitive _primitive;
         MeshIndexType _indexType;
-        /* 3 byte padding, reserved for 4-byte MeshIndexType */
         Short _indexStride;
         DataFlags _indexDataFlags, _vertexDataFlags;
         /* 4 byte padding on 64bit */

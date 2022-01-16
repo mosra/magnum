@@ -81,6 +81,12 @@ MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, MeshIndexType value);
 @brief Convert a generic index type to Vulkan index type
 @m_since_latest
 
+In case @ref isMeshIndexTypeImplementationSpecific() returns @cpp false @ce for
+@p type, maps it to a corresponding Vulkan type. In case
+@ref isMeshIndexTypeImplementationSpecific() returns @cpp true @ce, assumes
+@p type stores a Vulkan-specific format and returns @ref meshIndexTypeUnwrap()
+cast to @ref MeshIndexType.
+
 @see @ref meshPrimitive(), @ref vertexFormat()
 */
 MAGNUM_VK_EXPORT MeshIndexType meshIndexType(Magnum::MeshIndexType type);
@@ -310,7 +316,15 @@ class MAGNUM_VK_EXPORT Mesh {
          * @see @ref setCount(), @ref setIndexOffset()
          */
         Mesh& setIndexBuffer(VkBuffer buffer, UnsignedLong offset, MeshIndexType indexType);
-        /** @overload */
+
+        /** @overload
+         * @brief Set an index buffer with a generic index type
+         *
+         * Note that implementation-specific values are passed as-is with
+         * @ref meshIndexTypeUnwrap(). It's the user responsibility to ensure
+         * an implementation-specific actually represents a valid Vulkan index
+         * type.
+         */
         Mesh& setIndexBuffer(VkBuffer buffer, UnsignedLong offset, Magnum::MeshIndexType indexType);
 
         /**
@@ -322,7 +336,15 @@ class MAGNUM_VK_EXPORT Mesh {
          * thus doesn't have to be managed separately.
          */
         Mesh& setIndexBuffer(Buffer&& buffer, UnsignedLong offset, MeshIndexType indexType);
-        /** @overload */
+
+        /** @overload
+         * @brief Set an index buffer with a generic index type and take over its ownership
+         *
+         * Note that implementation-specific values are passed as-is with
+         * @ref meshIndexTypeUnwrap(). It's the user responsibility to ensure
+         * an implementation-specific actually represents a valid Vulkan index
+         * type.
+         */
         Mesh& setIndexBuffer(Buffer&& buffer, UnsignedLong offset, Magnum::MeshIndexType indexType);
 
         /** @brief Layout of this mesh */

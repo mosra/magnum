@@ -70,6 +70,10 @@ constexpr const char* MeshIndexTypeNames[] {
 Debug& operator<<(Debug& debug, const MeshIndexType value) {
     debug << "MeshIndexType" << Debug::nospace;
 
+    if(isMeshIndexTypeImplementationSpecific(value)) {
+        return debug << "::ImplementationSpecific(" << Debug::nospace << reinterpret_cast<void*>(meshIndexTypeUnwrap(value)) << Debug::nospace << ")";
+    }
+
     if(UnsignedInt(value) - 1 < Containers::arraySize(MeshIndexTypeNames)) {
         return debug << "::" << Debug::nospace << MeshIndexTypeNames[UnsignedInt(value) - 1];
     }
@@ -78,7 +82,10 @@ Debug& operator<<(Debug& debug, const MeshIndexType value) {
 }
 #endif
 
-UnsignedInt meshIndexTypeSize(MeshIndexType type) {
+UnsignedInt meshIndexTypeSize(const MeshIndexType type) {
+    CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(type),
+        "meshIndexTypeSize(): can't determine size of an implementation-specific type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(type)), {});
+
     switch(type) {
         case MeshIndexType::UnsignedByte: return 1;
         case MeshIndexType::UnsignedShort: return 2;

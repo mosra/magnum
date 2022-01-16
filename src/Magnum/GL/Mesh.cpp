@@ -96,6 +96,9 @@ MeshPrimitive meshPrimitive(const Magnum::MeshPrimitive primitive) {
 }
 
 MeshIndexType meshIndexType(const Magnum::MeshIndexType type) {
+    if(isMeshIndexTypeImplementationSpecific(type))
+        return meshIndexTypeUnwrap<GL::MeshIndexType>(type);
+
     CORRADE_ASSERT(UnsignedInt(type) - 1 < Containers::arraySize(IndexTypeMapping),
         "GL::meshIndexType(): invalid type" << type, {});
     return IndexTypeMapping[UnsignedInt(type) - 1];
