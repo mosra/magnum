@@ -322,10 +322,10 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
-    # It crashes with the default setting. Only on GCC, usually when the huge
-    # TradeAbstractImporterTest / TradeMaterialDataTest get involved.
+    # 24 is not enough, unlike the other GCC-based builds
     # TODO: revisit when we get rid of more STL
-    - cap-ninja-jobs
+    - cap-ninja-jobs:
+        count: 20
     - install-gcc-4_8
     - install-cmake-3_4
     - setup-null-openal-driver
