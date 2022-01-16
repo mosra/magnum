@@ -38,9 +38,6 @@
 namespace Magnum { namespace Trade {
 
 MeshIndexData::MeshIndexData(const MeshIndexType type, const Containers::ArrayView<const void> data) noexcept: _type{type}, _data{data} {
-    /* Yes, this calls into a constexpr function defined in the header --
-       because I feel that makes more sense than duplicating the full assert
-       logic */
     CORRADE_ASSERT(data.size()%meshIndexTypeSize(type) == 0,
         "Trade::MeshIndexData: view size" << data.size() << "does not correspond to" << type, );
 }
