@@ -378,6 +378,8 @@ used.)")
             UnsignedInt mesh, level;
             MeshPrimitive primitive;
             UnsignedInt indexCount, vertexCount;
+            std::size_t indexOffset;
+            Int indexStride;
             MeshIndexType indexType;
             Containers::Array<MeshAttributeInfo> attributes;
             std::size_t indexDataSize, vertexDataSize;
@@ -595,6 +597,8 @@ used.)")
                 if(mesh->isIndexed()) {
                     info.indexCount = mesh->indexCount();
                     info.indexType = mesh->indexType();
+                    info.indexOffset = mesh->indexOffset();
+                    info.indexStride = mesh->indexStride();
                     info.indexDataSize = mesh->indexData().size();
                 }
                 for(UnsignedInt k = 0; k != mesh->attributeCount(); ++k) {
@@ -901,8 +905,8 @@ used.)")
                 << Utility::formatString("{:.1f}", info.vertexDataSize/1024.0f)
                 << "kB)";
             if(info.indexType != MeshIndexType{}) {
-                d << Debug::newline << "   " << info.indexCount << "indices @"
-                    << info.indexType << "(" << Debug::nospace
+                d << Debug::newline << "   " << info.indexCount << "indices, offset" << info.indexOffset << "@"
+                    << info.indexType << Debug::nospace << ", stride" << info.indexStride << "(" << Debug::nospace
                     << Utility::formatString("{:.1f}", info.indexDataSize/1024.0f)
                     << "kB)";
             }
