@@ -258,14 +258,6 @@ matrix:
       - android-22
       - sys-img-armeabi-v7a-android-22
 
-notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/00ec7a9066bb0fec98f3
-    on_success: change
-    on_failure: always
-    on_start: never
-
 cache:
   directories:
   - $HOME/sdl2

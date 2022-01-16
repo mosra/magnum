@@ -3,12 +3,6 @@ version: 2.1
 orbs:
   codecov: codecov/codecov@1.1.1
 
-notify:
-  webhooks:
-    # Unfortunately Gitter messages are too verbose (one five-line message per
-    # each job in the build matrix) and thus not wanted
-    #- url: https://webhooks.gitter.im/e/cfbadbd34d28708a57c6
-
 executors:
   ubuntu-16_04:
     docker:

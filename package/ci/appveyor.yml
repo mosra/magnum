@@ -77,13 +77,6 @@ environment:
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: windows-rt-gles3-msvc2017
 
-notifications:
-- provider: Webhook
-  url: https://webhooks.gitter.im/e/415ae90928ba0dbd3df4
-  on_build_success: false
-  on_build_failure: true
-  on_build_status_changed: true
-
 install:
 # Ninja. `cinst ninja` started 503ing in late November 2019 and wasn't really
 # reliable before either. So install by hand, as that's reliable always.
