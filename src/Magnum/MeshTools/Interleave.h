@@ -235,7 +235,8 @@ interleaved together. No data is actually copied, only an interleaved layout is
 created. If @p data is already interleaved, keeps the attributes in the same
 layout, potentially extending them with @p extra. The @p extra attributes, if
 any, are interleaved together with existing attributes. Returned instance
-vertex data flags have both @ref Trade::DataFlag::Mutable and @ref Trade::DataFlag::Owned, so mutable attribute access is guaranteed.
+vertex data flags have both @ref Trade::DataFlag::Mutable and
+@ref Trade::DataFlag::Owned, so mutable attribute access is guaranteed.
 
 For greater control you can also pass an empty @ref Trade::MeshData instance
 and fill @p extra with attributes cherry-picked using
