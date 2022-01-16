@@ -380,6 +380,7 @@ used.)")
             UnsignedInt indexCount, vertexCount;
             std::size_t indexOffset;
             Int indexStride;
+            std::string indexBounds;
             MeshIndexType indexType;
             Containers::Array<MeshAttributeInfo> attributes;
             std::size_t indexDataSize, vertexDataSize;
@@ -600,6 +601,8 @@ used.)")
                     info.indexOffset = mesh->indexOffset();
                     info.indexStride = mesh->indexStride();
                     info.indexDataSize = mesh->indexData().size();
+                    if(args.isSet("bounds"))
+                        info.indexBounds = calculateBounds(mesh->indicesAsArray());
                 }
                 for(UnsignedInt k = 0; k != mesh->attributeCount(); ++k) {
                     const Trade::MeshAttribute name = mesh->attributeName(k);
@@ -909,6 +912,8 @@ used.)")
                     << info.indexType << Debug::nospace << ", stride" << info.indexStride << "(" << Debug::nospace
                     << Utility::formatString("{:.1f}", info.indexDataSize/1024.0f)
                     << "kB)";
+                if(!info.indexBounds.empty())
+                    d << Debug::newline << "      bounds:" << info.indexBounds;
             }
 
             for(const MeshAttributeInfo& attribute: info.attributes) {
