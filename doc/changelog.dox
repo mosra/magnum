@@ -452,9 +452,10 @@ See also:
     @ref Trade::PhongMaterialData::commonTextureCoordinates() exposing a
     common texture coordinate set as a complement to a per-texture property
     added in 2020.06
--   @ref Trade::MeshData now allows zero and negative strides for better
-    data layout flexibility. This is however not commonly supported by GPU APIs
-    and tools like @ref MeshTools::compile() assert in that case.
+-   @ref Trade::MeshData now allows strided index buffers and zero and negative
+    attribute strides for better data layout flexibility. This is however not
+    commonly supported by GPU APIs and tools like @ref MeshTools::compile()
+    assert in that case.
 -   Added @ref Trade::MeshData::findAttributeId() for an ability to check that
     an attribute exists and retrieve its ID in a single step, avoiding a double
     lookup compared to @relativeref{Trade::MeshData,hasAttribute()} +
@@ -878,10 +879,16 @@ See also:
     @cpp Trade::AbstractMaterialData @ce aliases to, doesn't have a
     @cpp virtual @ce destructor as subclasses with extra data members aren't a
     desired use case anymore.
--   @ref Trade::MeshData now allows zero and negative strides for better
-    data layout flexibility, however as this is not commonly supported by GPU
-    APIs, it implies the user is now expected to validate this value when
-    passing it there.
+-   @ref Trade::MeshData now allows strided index buffers and zero and negative
+    attribute strides for better data layout flexibility, however as this is
+    not commonly supported by GPU APIs, it implies the user is now expected to
+    validate the data layout when passing it there. Due to this change, the
+    @ref Trade::MeshData::indices() and
+    @relativeref{Trade::MeshData,mutableIndices()} accessors now return a
+    @relativeref{Corrade,Containers::StridedArrayView} instead of an
+    @relativeref{Corrade,Containers::ArrayView} --- either change your code to
+    accept a strided view instead or use @relativeref{Corrade,Containers::StridedArrayView::asContiguous()} to get a
+    contiguous @relativeref{Corrade,Containers::ArrayView} again.
 -   @ref Trade::SceneData constructor taking a @ref std::vector of 2D and 3D
     children that got deprecated in favor of
     @ref Trade::SceneData::SceneData(SceneMappingType, UnsignedLong, Containers::Array<char>&&, Containers::Array<SceneFieldData>&&, const void*)

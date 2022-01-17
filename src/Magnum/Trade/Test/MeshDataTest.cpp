@@ -44,12 +44,17 @@ struct MeshDataTest: TestSuite::Tester {
     void customAttributeNameNotCustom();
     void debugAttributeName();
 
-    void constructIndex();
-    void constructIndexTypeErased();
-    void constructIndexTypeErasedWrongSize();
+    void constructIndexContiguous();
+    void constructIndexStrided();
+    void constructIndexStridedWrongStride();
+    void constructIndexTypeErasedContiguous();
+    void constructIndexTypeErasedContiguousWrongSize();
+    void constructIndexTypeErasedStrided();
+    void constructIndexTypeErasedStridedWrongStride();
     void constructIndex2D();
     void constructIndex2DNotIndexed();
     void constructIndex2DWrongSize();
+    void constructIndex2DWrongStride();
     void constructIndex2DNonContiguous();
     void constructIndexNullptr();
 
@@ -90,6 +95,7 @@ struct MeshDataTest: TestSuite::Tester {
     void constructIndexlessAttributeless();
     void constructIndexlessAttributelessZeroVertices();
 
+    void constructSpecialIndexStrides();
     void constructSpecialAttributeStrides();
     void constructSpecialAttributeStridesImplementationSpecificVertexFormat();
 
@@ -206,12 +212,17 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::customAttributeNameNotCustom,
               &MeshDataTest::debugAttributeName,
 
-              &MeshDataTest::constructIndex,
-              &MeshDataTest::constructIndexTypeErased,
-              &MeshDataTest::constructIndexTypeErasedWrongSize,
+              &MeshDataTest::constructIndexContiguous,
+              &MeshDataTest::constructIndexStrided,
+              &MeshDataTest::constructIndexStridedWrongStride,
+              &MeshDataTest::constructIndexTypeErasedContiguous,
+              &MeshDataTest::constructIndexTypeErasedContiguousWrongSize,
+              &MeshDataTest::constructIndexTypeErasedStrided,
+              &MeshDataTest::constructIndexTypeErasedStridedWrongStride,
               &MeshDataTest::constructIndex2D,
               &MeshDataTest::constructIndex2DNotIndexed,
               &MeshDataTest::constructIndex2DWrongSize,
+              &MeshDataTest::constructIndex2DWrongStride,
               &MeshDataTest::constructIndex2DNonContiguous,
               &MeshDataTest::constructIndexNullptr,
 
@@ -253,6 +264,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructIndexlessAttributeless,
               &MeshDataTest::constructIndexlessAttributelessZeroVertices,
 
+              &MeshDataTest::constructSpecialIndexStrides,
               &MeshDataTest::constructSpecialAttributeStrides,
               &MeshDataTest::constructSpecialAttributeStridesImplementationSpecificVertexFormat});
 
@@ -450,51 +462,148 @@ constexpr UnsignedByte IndexBytes[]{25, 132, 3};
 constexpr UnsignedShort IndexShorts[]{2575, 13224, 3};
 constexpr UnsignedInt IndexInts[]{2110122, 132257, 3};
 
-void MeshDataTest::constructIndex() {
+void MeshDataTest::constructIndexContiguous() {
     {
         const UnsignedByte indexData[]{25, 132, 3};
         MeshIndexData indices{indexData};
         CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedByte);
         CORRADE_COMPARE(indices.data().data(), indexData);
+        CORRADE_COMPARE(indices.data().size(), 3);
+        CORRADE_COMPARE(indices.data().stride(), 1);
 
         constexpr MeshIndexData cindices{IndexBytes};
         constexpr MeshIndexType type = cindices.type();
-        constexpr Containers::ArrayView<const void> data = cindices.data();
+        constexpr Containers::StridedArrayView1D<const void> data = cindices.data();
         CORRADE_COMPARE(type, MeshIndexType::UnsignedByte);
         CORRADE_COMPARE(data.data(), IndexBytes);
+        CORRADE_COMPARE(data.size(), 3);
+        CORRADE_COMPARE(data.stride(), 1);
     } {
         const UnsignedShort indexData[]{2575, 13224, 3};
         MeshIndexData indices{indexData};
         CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedShort);
         CORRADE_COMPARE(indices.data().data(), indexData);
+        CORRADE_COMPARE(indices.data().size(), 3);
+        CORRADE_COMPARE(indices.data().stride(), 2);
 
         constexpr MeshIndexData cindices{IndexShorts};
         constexpr MeshIndexType type = cindices.type();
-        constexpr Containers::ArrayView<const void> data = cindices.data();
+        constexpr Containers::StridedArrayView1D<const void> data = cindices.data();
         CORRADE_COMPARE(type, MeshIndexType::UnsignedShort);
         CORRADE_COMPARE(data.data(), IndexShorts);
+        CORRADE_COMPARE(data.size(), 3);
+        CORRADE_COMPARE(data.stride(), 2);
     } {
         const UnsignedInt indexData[]{2110122, 132257, 3};
         MeshIndexData indices{indexData};
         CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedInt);
         CORRADE_COMPARE(indices.data().data(), indexData);
+        CORRADE_COMPARE(indices.data().size(), 3);
+        CORRADE_COMPARE(indices.data().stride(), 4);
 
         constexpr MeshIndexData cindices{IndexInts};
         constexpr MeshIndexType type = cindices.type();
-        constexpr Containers::ArrayView<const void> data = cindices.data();
+        constexpr Containers::StridedArrayView1D<const void> data = cindices.data();
         CORRADE_COMPARE(type, MeshIndexType::UnsignedInt);
         CORRADE_COMPARE(data.data(), IndexInts);
+        CORRADE_COMPARE(data.size(), 3);
+        CORRADE_COMPARE(data.stride(), 4);
     }
 }
 
-void MeshDataTest::constructIndexTypeErased() {
+constexpr struct IndexStruct {
+    UnsignedByte byteIndex;
+    UnsignedShort shortIndex;
+    UnsignedInt intIndex;
+} IndexStructData[3]{
+    {25, 2575, 2110122},
+    {132, 13224, 132257},
+    {3, 3, 3}
+};
+
+void MeshDataTest::constructIndexStrided() {
+    const IndexStruct data[3]{
+        {25, 2575, 2110122},
+        {132, 13224, 132257},
+        {3, 3, 3}
+    };
+    Containers::StridedArrayView1D<const IndexStruct> view = data;
+
+    {
+        MeshIndexData indices{view.slice(&IndexStruct::byteIndex)};
+        CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedByte);
+        CORRADE_COMPARE(indices.data().data(), &data[0].byteIndex);
+        CORRADE_COMPARE(indices.data().size(), 3);
+        CORRADE_COMPARE(indices.data().stride(), sizeof(IndexStruct));
+
+        constexpr MeshIndexData cindices{Containers::stridedArrayView(IndexStructData, &IndexStructData[0].byteIndex, 3, sizeof(IndexStruct))};
+        constexpr MeshIndexType type = cindices.type();
+        constexpr Containers::StridedArrayView1D<const void> data = cindices.data();
+        CORRADE_COMPARE(type, MeshIndexType::UnsignedByte);
+        CORRADE_COMPARE(data.data(), &IndexStructData[0].byteIndex);
+        CORRADE_COMPARE(data.size(), 3);
+        CORRADE_COMPARE(data.stride(), sizeof(IndexStruct));
+    } {
+        MeshIndexData indices{view.slice(&IndexStruct::shortIndex)};
+        CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedShort);
+        CORRADE_COMPARE(indices.data().data(), &data[0].shortIndex);
+        CORRADE_COMPARE(indices.data().size(), 3);
+        CORRADE_COMPARE(indices.data().stride(), sizeof(IndexStruct));
+
+        constexpr MeshIndexData cindices{Containers::stridedArrayView(IndexStructData, &IndexStructData[0].shortIndex, 3, sizeof(IndexStruct))};
+        constexpr MeshIndexType type = cindices.type();
+        constexpr Containers::StridedArrayView1D<const void> data = cindices.data();
+        CORRADE_COMPARE(type, MeshIndexType::UnsignedShort);
+        CORRADE_COMPARE(data.data(), &IndexStructData[0].shortIndex);
+        CORRADE_COMPARE(data.size(), 3);
+        CORRADE_COMPARE(data.stride(), sizeof(IndexStruct));
+    } {
+        MeshIndexData indices{view.slice(&IndexStruct::intIndex)};
+        CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedInt);
+        CORRADE_COMPARE(indices.data().data(), &data[0].intIndex);
+        CORRADE_COMPARE(indices.data().size(), 3);
+        CORRADE_COMPARE(indices.data().stride(), sizeof(IndexStruct));
+
+        constexpr MeshIndexData cindices{Containers::stridedArrayView(IndexStructData, &IndexStructData[0].intIndex, 3, sizeof(IndexStruct))};
+        constexpr MeshIndexType type = cindices.type();
+        constexpr Containers::StridedArrayView1D<const void> data = cindices.data();
+        CORRADE_COMPARE(type, MeshIndexType::UnsignedInt);
+        CORRADE_COMPARE(data.data(), &IndexStructData[0].intIndex);
+        CORRADE_COMPARE(data.size(), 3);
+        CORRADE_COMPARE(data.stride(), sizeof(IndexStruct));
+    }
+}
+
+void MeshDataTest::constructIndexStridedWrongStride() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    char toomuch[2*(32768 + 1)];
+
+    /* These should be fine */
+    MeshIndexData{Containers::StridedArrayView1D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(toomuch), 2, 32767}};
+    MeshIndexData{Containers::StridedArrayView1D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(toomuch), 2, 32768}.flipped<0>()};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshIndexData{Containers::StridedArrayView1D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(toomuch), 2, 32768}};
+    MeshIndexData{Containers::StridedArrayView1D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(toomuch), 2, 32769}.flipped<0>()};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshIndexData: expected stride to fit into 16 bits but got 32768\n"
+        "Trade::MeshIndexData: expected stride to fit into 16 bits but got -32769\n");
+}
+
+void MeshDataTest::constructIndexTypeErasedContiguous() {
     const char indexData[3*2]{};
     MeshIndexData indices{MeshIndexType::UnsignedShort, indexData};
     CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedShort);
-    CORRADE_VERIFY(indices.data().data() == indexData);
+    CORRADE_COMPARE(indices.data().data(), indexData);
+    CORRADE_COMPARE(indices.data().size(), 3);
+    CORRADE_COMPARE(indices.data().stride(), 2);
 }
 
-void MeshDataTest::constructIndexTypeErasedWrongSize() {
+void MeshDataTest::constructIndexTypeErasedContiguousWrongSize() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -507,22 +616,71 @@ void MeshDataTest::constructIndexTypeErasedWrongSize() {
     CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: view size 6 does not correspond to MeshIndexType::UnsignedInt\n");
 }
 
+constexpr const char IndexData[3*4]{};
+
+void MeshDataTest::constructIndexTypeErasedStrided() {
+    const char indexData[3*4]{};
+    MeshIndexData indices{MeshIndexType::UnsignedShort, {indexData, 3, 4}};
+    CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedShort);
+    CORRADE_VERIFY(indices.data().data() == indexData);
+    CORRADE_COMPARE(indices.data().size(), 3);
+    CORRADE_COMPARE(indices.data().stride(), 4);
+
+    constexpr MeshIndexData cindices{MeshIndexType::UnsignedShort, {IndexData, 3, 4}};
+    constexpr MeshIndexType type = cindices.type();
+    constexpr Containers::StridedArrayView1D<const void> data = cindices.data();
+    CORRADE_COMPARE(type, MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE(data.data(), IndexData);
+    CORRADE_COMPARE(data.size(), 3);
+    CORRADE_COMPARE(data.stride(), 4);
+}
+
+void MeshDataTest::constructIndexTypeErasedStridedWrongStride() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    char toomuch[2*(32768 + 1)]{};
+
+    /* These should be fine */
+    MeshIndexData{MeshIndexType::UnsignedByte, Containers::StridedArrayView1D<const void>{toomuch, 2, 32767}};
+    MeshIndexData{MeshIndexType::UnsignedByte, Containers::StridedArrayView1D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(toomuch), 2, 32768}.flipped<0>()};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshIndexData{MeshIndexType::UnsignedByte, Containers::StridedArrayView1D<const void>{toomuch, 2, 32768}};
+    MeshIndexData{MeshIndexType::UnsignedByte, Containers::StridedArrayView1D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(toomuch), 2, 32769}.flipped<0>()};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshIndexData: expected stride to fit into 16 bits but got 32768\n"
+        "Trade::MeshIndexData: expected stride to fit into 16 bits but got -32769\n");
+}
+
 void MeshDataTest::constructIndex2D() {
+    const IndexStruct data[3]{
+        {25, 2575, 2110122},
+        {132, 13224, 132257},
+        {3, 3, 3}
+    };
+    Containers::StridedArrayView1D<const IndexStruct> view = data;
+
     {
-        const UnsignedByte indexData[]{25, 132, 3};
-        MeshIndexData indices{Containers::arrayCast<2, const char>(Containers::stridedArrayView(indexData))};
+        MeshIndexData indices{Containers::arrayCast<2, const char>(view.slice(&IndexStruct::byteIndex))};
         CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedByte);
-        CORRADE_COMPARE(indices.data().data(), indexData);
+        CORRADE_COMPARE(indices.data().data(), &data[0].byteIndex);
+        CORRADE_COMPARE(indices.data().size(), 3);
+        CORRADE_COMPARE(indices.data().stride(), sizeof(IndexStruct));
     } {
-        const UnsignedShort indexData[]{2575, 13224, 3};
-        MeshIndexData indices{Containers::arrayCast<2, const char>(Containers::stridedArrayView(indexData))};
+        MeshIndexData indices{Containers::arrayCast<2, const char>(view.slice(&IndexStruct::shortIndex))};
         CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedShort);
-        CORRADE_COMPARE(indices.data().data(), indexData);
+        CORRADE_COMPARE(indices.data().data(), &data[0].shortIndex);
+        CORRADE_COMPARE(indices.data().size(), 3);
+        CORRADE_COMPARE(indices.data().stride(), sizeof(IndexStruct));
     } {
-        const UnsignedInt indexData[]{2110122, 132257, 3};
-        MeshIndexData indices{Containers::arrayCast<2, const char>(Containers::stridedArrayView(indexData))};
+        MeshIndexData indices{Containers::arrayCast<2, const char>(view.slice(&IndexStruct::intIndex))};
         CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedInt);
-        CORRADE_COMPARE(indices.data().data(), indexData);
+        CORRADE_COMPARE(indices.data().data(), &data[0].intIndex);
+        CORRADE_COMPARE(indices.data().size(), 3);
+        CORRADE_COMPARE(indices.data().stride(), sizeof(IndexStruct));
     }
 }
 
@@ -545,6 +703,26 @@ void MeshDataTest::constructIndex2DWrongSize() {
     CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: expected index type size 1, 2 or 4 but got 3\n");
 }
 
+void MeshDataTest::constructIndex2DWrongStride() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    char toomuch[2*(32768 + 1)];
+
+    /* These should be fine */
+    MeshIndexData{Containers::StridedArrayView2D<char>{toomuch, {2, 1}, {32767, 1}}};
+    MeshIndexData{Containers::StridedArrayView2D<char>{toomuch, {2, 1}, {32768, 1}}.flipped<0>()};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshIndexData{Containers::StridedArrayView2D<char>{toomuch, {2, 1}, {32768, 1}}};
+    MeshIndexData{Containers::StridedArrayView2D<char>{toomuch, {2, 1}, {32769, 1}}.flipped<0>()};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshIndexData: expected stride to fit into 16 bits but got 32768\n"
+        "Trade::MeshIndexData: expected stride to fit into 16 bits but got -32769\n");
+}
+
 void MeshDataTest::constructIndex2DNonContiguous() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -552,10 +730,13 @@ void MeshDataTest::constructIndex2DNonContiguous() {
 
     const char data[3*4]{};
 
+    /* This should be fine */
+    MeshIndexData{Containers::StridedArrayView2D<const char>{data, {3, 2}, {4, 1}}};
+
     std::ostringstream out;
     Error redirectError{&out};
     MeshIndexData{Containers::StridedArrayView2D<const char>{data, {3, 2}, {4, 2}}};
-    CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: view is not contiguous\n");
+    CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: second view dimension is not contiguous\n");
 }
 
 void MeshDataTest::constructIndexNullptr() {
@@ -1649,6 +1830,102 @@ void MeshDataTest::constructIndexlessAttributelessZeroVertices() {
     CORRADE_COMPARE(data.attributeCount(), 0);
 }
 
+void MeshDataTest::constructSpecialIndexStrides() {
+    /* Every second index */
+    {
+        Containers::Array<char> indexData{sizeof(UnsignedShort)*8};
+        Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
+        Utility::copy({1, 0, 2, 0, 3, 0, 4, 0}, indices);
+        MeshData mesh{MeshPrimitive::Points, std::move(indexData), MeshIndexData{indices.every(2)}, 1};
+
+        CORRADE_COMPARE(mesh.indexStride(), 4);
+
+        /* Type-erased access with a cast later */
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(mesh.indices())),
+            Containers::arrayView<UnsignedShort>({1, 2, 3, 4}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, UnsignedShort>(mesh.mutableIndices())),
+            Containers::stridedArrayView<UnsignedShort>({1, 2, 3, 4}),
+            TestSuite::Compare::Container);
+
+        /* Typed access */
+        CORRADE_COMPARE_AS(mesh.indices<UnsignedShort>(),
+            Containers::arrayView<UnsignedShort>({1, 2, 3, 4}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(mesh.mutableIndices<UnsignedShort>(),
+            Containers::stridedArrayView<UnsignedShort>({1, 2, 3, 4}),
+            TestSuite::Compare::Container);
+
+        /* Convenience accessor. This uses the indicesInto() internally so it
+           verifies both. */
+        CORRADE_COMPARE_AS(mesh.indicesAsArray(),
+            Containers::arrayView<UnsignedInt>({1, 2, 3, 4}),
+            TestSuite::Compare::Container);
+
+    /* Zero stride. Not sure how useful like this. */
+    } {
+        Containers::Array<char> indexData{sizeof(UnsignedShort)};
+        Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
+        indices[0] = 15;
+        MeshData mesh{MeshPrimitive::Points, std::move(indexData), MeshIndexData{indices.broadcasted<0>(4)}, 1};
+
+        CORRADE_COMPARE(mesh.indexStride(), 0);
+
+        /* Type-erased access with a cast later */
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(mesh.indices())),
+            Containers::arrayView<UnsignedShort>({15, 15, 15, 15}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, UnsignedShort>(mesh.mutableIndices())),
+            Containers::stridedArrayView<UnsignedShort>({15, 15, 15, 15}),
+            TestSuite::Compare::Container);
+
+        /* Typed access */
+        CORRADE_COMPARE_AS(mesh.indices<UnsignedShort>(),
+            Containers::arrayView<UnsignedShort>({15, 15, 15, 15}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(mesh.mutableIndices<UnsignedShort>(),
+            Containers::stridedArrayView<UnsignedShort>({15, 15, 15, 15}),
+            TestSuite::Compare::Container);
+
+        /* The convenience accessor should work as well, as it consumes output
+           of the type-erased one */
+        CORRADE_COMPARE_AS(mesh.indicesAsArray(),
+            Containers::arrayView<UnsignedInt>({15, 15, 15, 15}),
+            TestSuite::Compare::Container);
+
+    /* Negative stride */
+    } {
+        Containers::Array<char> indexData{sizeof(UnsignedShort)*4};
+        Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
+        Utility::copy({1, 2, 3, 4}, indices);
+        MeshData mesh{MeshPrimitive::Points, std::move(indexData), MeshIndexData{indices.flipped<0>()}, 1};
+
+        CORRADE_COMPARE(mesh.indexStride(), -2);
+
+        /* Type-erased access with a cast later */
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(mesh.indices())),
+            Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, UnsignedShort>(mesh.mutableIndices())),
+            Containers::stridedArrayView<UnsignedShort>({4, 3, 2, 1}),
+            TestSuite::Compare::Container);
+
+        /* Typed access */
+        CORRADE_COMPARE_AS(mesh.indices<UnsignedShort>(),
+            Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(mesh.mutableIndices<UnsignedShort>(),
+            Containers::stridedArrayView<UnsignedShort>({4, 3, 2, 1}),
+            TestSuite::Compare::Container);
+
+        /* The convenience accessor should work as well, as it consumes output
+           of the type-erased one */
+        CORRADE_COMPARE_AS(mesh.indicesAsArray(),
+            Containers::arrayView<UnsignedInt>({4, 3, 2, 1}),
+            TestSuite::Compare::Container);
+    }
+}
+
 void MeshDataTest::constructSpecialAttributeStrides() {
     Containers::Array<char> vertexData{sizeof(UnsignedShort)*5};
     Containers::StridedArrayView1D<UnsignedShort> vertices = Containers::arrayCast<UnsignedShort>(vertexData);
@@ -1769,9 +2046,11 @@ void MeshDataTest::constructIndicesNotContained() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    Containers::Array<char> indexData{reinterpret_cast<char*>(0xbadda9), 6, [](char*, std::size_t){}};
+    const Containers::Array<char> indexData{reinterpret_cast<char*>(0xbadda9), 6, [](char*, std::size_t){}};
+    Containers::Array<char> sameIndexDataButMovable{reinterpret_cast<char*>(0xbadda9), 6, [](char*, std::size_t){}};
     Containers::ArrayView<UnsignedShort> indexDataSlightlyOut{reinterpret_cast<UnsignedShort*>(0xbaddaa), 3};
     Containers::ArrayView<UnsignedShort> indexDataOut{reinterpret_cast<UnsignedShort*>(0xdead), 3};
+    Containers::StridedArrayView1D<UnsignedShort> indexDataStridedOut{{reinterpret_cast<UnsignedShort*>(0xbadda9), 6}, 3, 4};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1779,20 +2058,29 @@ void MeshDataTest::constructIndicesNotContained() {
     MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{indexDataSlightlyOut}, 1};
     /* Second a view that's in a completely different location */
     MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{indexDataOut}, 1};
+    /* A strided index array which would pass if stride wasn't taken into
+       account */
+    MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{indexDataStridedOut}, 1};
     /* Empty view which however begins outside */
     MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{indexDataSlightlyOut.slice(3, 3)}, 1};
     /* Verify the owning constructor does the checks as well */
-    MeshData{MeshPrimitive::Triangles, std::move(indexData), MeshIndexData{indexDataOut}, 1};
+    MeshData{MeshPrimitive::Triangles, std::move(sameIndexDataButMovable), MeshIndexData{indexDataOut}, 1};
     /* If we have no data at all, it doesn't try to dereference them but still
        checks properly */
     MeshData{MeshPrimitive::Triangles, nullptr, MeshIndexData{indexDataOut}, 1};
+    /* And the final boss, negative strides. Only caught if the element size
+       gets properly added to the larger offset, not just the "end". */
+    MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{stridedArrayView(indexDataSlightlyOut).flipped<0>()}, 1};
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData: indices [0xbaddaa:0xbaddb0] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
         "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
+        "Trade::MeshData: indices [0xbadda9:0xbaddb3] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
         /* This scenario is invalid, just have it here for the record */
         "Trade::MeshData: indexData passed for a non-indexed mesh\n"
         "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
-        "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0x0:0x0]\n");
+        "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0x0:0x0]\n"
+
+        "Trade::MeshData: indices [0xbaddaa:0xbaddb0] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n");
 }
 
 void MeshDataTest::constructAttributeNotContained() {
@@ -2936,6 +3224,7 @@ void MeshDataTest::indicesNotIndexed() {
     data.indexCount();
     data.indexType();
     data.indexOffset();
+    data.indexStride();
     data.indices<UnsignedInt>();
     data.mutableIndices<UnsignedShort>();
     data.indicesAsArray();
@@ -2945,6 +3234,7 @@ void MeshDataTest::indicesNotIndexed() {
         "Trade::MeshData::indexCount(): the mesh is not indexed\n"
         "Trade::MeshData::indexType(): the mesh is not indexed\n"
         "Trade::MeshData::indexOffset(): the mesh is not indexed\n"
+        "Trade::MeshData::indexStride(): the mesh is not indexed\n"
         "Trade::MeshData::indices(): the mesh is not indexed\n"
         "Trade::MeshData::mutableIndices(): the mesh is not indexed\n"
         "Trade::MeshData::indicesAsArray(): the mesh is not indexed\n"

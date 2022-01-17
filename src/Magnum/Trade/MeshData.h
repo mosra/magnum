@@ -233,54 +233,108 @@ class MAGNUM_TRADE_EXPORT MeshIndexData {
         explicit MeshIndexData(std::nullptr_t = nullptr) noexcept: _type{} {}
 
         /**
-         * @brief Construct with a runtime-specified index type
+         * @brief Construct a contiguous index array with a runtime-specified index type
          * @param type      Index type
          * @param data      Index data
          *
-         * The @p data size is expected to correspond to given @p type (e.g.,
-         * for @ref MeshIndexType::UnsignedInt the @p data array size should
-         * be divisible by 4). If you know the @p type at compile time, you can
-         * use one of the @ref MeshIndexData(Containers::ArrayView<const UnsignedByte>),
-         * @ref MeshIndexData(Containers::ArrayView<const UnsignedShort>) or
-         * @ref MeshIndexData(Containers::ArrayView<const UnsignedInt>)
+         * This overload is picked over @ref MeshIndexData(MeshIndexType, Containers::StridedArrayView1D<const void>)
+         * if @p data is convertible to a contiguous view. The @p data size is
+         * then expected to correspond to given @p type (e.g., for
+         * @ref MeshIndexType::UnsignedInt the @p data array size should be
+         * divisible by 4). If you know the @p type at compile time, you can
+         * use one of the @ref MeshIndexData(Containers::StridedArrayView1D<const UnsignedByte>),
+         * @ref MeshIndexData(Containers::StridedArrayView1D<const UnsignedShort>) or
+         * @ref MeshIndexData(Containers::StridedArrayView1D<const UnsignedInt>)
          * constructors, which infer the index type automatically.
          *
          * If @p data is empty, the mesh will be treated as indexed but with
          * zero indices. To create a non-indexed mesh, use the
          * @ref MeshIndexData(std::nullptr_t) constructor.
          */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class T, class = typename std::enable_if<std::is_convertible<T, Containers::ArrayView<const void>>::value>::type> explicit MeshIndexData(MeshIndexType type, T&& data) noexcept;
+        #else
         explicit MeshIndexData(MeshIndexType type, Containers::ArrayView<const void> data) noexcept;
+        #endif
 
-        /** @brief Construct with unsigned byte indices */
-        constexpr explicit MeshIndexData(Containers::ArrayView<const UnsignedByte> data) noexcept: _type{MeshIndexType::UnsignedByte}, _data{data} {}
+        /**
+         * @brief Construct a strided index array with a runtime-specified index type
+         * @param type      Index type
+         * @param data      Index data
+         * @m_since_latest
+         *
+         * If you know the @p type at compile time, you can use one of the
+         * @ref MeshIndexData(Containers::StridedArrayView1D<const UnsignedByte>),
+         * @ref MeshIndexData(Containers::StridedArrayView1D<const UnsignedShort>) or
+         * @ref MeshIndexData(Containers::StridedArrayView1D<const UnsignedInt>)
+         * constructors, which infer the index type automatically. The view
+         * doesn't need to be contiguous and the stride can be even zero or
+         * negative, but note that such data layout is not commonly supported
+         * by GPU APIs.
+         *
+         * If @p data is empty, the mesh will be treated as indexed but with
+         * zero indices. To create a non-indexed mesh, use the
+         * @ref MeshIndexData(std::nullptr_t) constructor.
+         */
+        constexpr explicit MeshIndexData(MeshIndexType type, Containers::StridedArrayView1D<const void> data) noexcept;
 
-        /** @brief Construct with unsigned short indices */
-        constexpr explicit MeshIndexData(Containers::ArrayView<const UnsignedShort> data) noexcept: _type{MeshIndexType::UnsignedShort}, _data{data} {}
+        /**
+         * @brief Construct with unsigned byte indices
+         *
+         * The view doesn't need to be contiguous and the stride can be even
+         * zero or negative, but note that such data layout is not commonly
+         * supported by GPU APIs.
+         */
+        constexpr explicit MeshIndexData(Containers::StridedArrayView1D<const UnsignedByte> data) noexcept: MeshIndexData{MeshIndexType::UnsignedByte, data} {}
 
-        /** @brief Construct with unsigned int indices */
-        constexpr explicit MeshIndexData(Containers::ArrayView<const UnsignedInt> data) noexcept: _type{MeshIndexType::UnsignedInt}, _data{data} {}
+        /**
+         * @brief Construct with unsigned short indices
+         *
+         * The view doesn't need to be contiguous and the stride can be even
+         * zero or negative, but note that such data layout is not commonly
+         * supported by GPU APIs.
+         */
+        constexpr explicit MeshIndexData(Containers::StridedArrayView1D<const UnsignedShort> data) noexcept: MeshIndexData{MeshIndexType::UnsignedShort, data} {}
+
+        /**
+         * @brief Construct with unsigned int indices
+         *
+         * The view doesn't need to be contiguous and the stride can be even
+         * zero or negative, but note that such data layout is not commonly
+         * supported by GPU APIs.
+         */
+        constexpr explicit MeshIndexData(Containers::StridedArrayView1D<const UnsignedInt> data) noexcept: MeshIndexData{MeshIndexType::UnsignedInt, data} {}
 
         /**
          * @brief Constructor
          *
-         * Expects that @p data is contiguous and size of the second dimension
-         * is either 1, 2 or 4, corresponding to one of the @ref MeshIndexType
-         * values. As a special case, if second dimension size is 0, the
-         * constructor is equivalent to @ref MeshIndexData(std::nullptr_t).
+         * Expects that the second dimension of @p data is contiguous and its
+         * size is either 1, 2 or 4, corresponding to one of the
+         * @ref MeshIndexType values. The first dimension doesn't need to be
+         * contiguous and its stride can be even zero or negative, but note
+         * that such data layout is not commonly supported by GPU APIs. As a
+         * special case, if second dimension size is 0, the constructor is
+         * equivalent to @ref MeshIndexData(std::nullptr_t).
          */
         explicit MeshIndexData(const Containers::StridedArrayView2D<const char>& data) noexcept;
 
         /** @brief Index type */
         constexpr MeshIndexType type() const { return _type; }
 
-        /** @brief Type-erased index data */
-        constexpr Containers::ArrayView<const void> data() const { return _data; }
+        /**
+         * @brief Type-erased index data
+         *
+         * In rare cases the stride may be different from the index type size
+         * and even be zero or negative, such data layouts are however not
+         * commonly supported by GPU APIs.
+         */
+        constexpr Containers::StridedArrayView1D<const void> data() const { return _data; }
 
     private:
         friend MeshData;
         MeshIndexType _type;
         /* Void so the constructors can be constexpr */
-        Containers::ArrayView<const void> _data;
+        Containers::StridedArrayView1D<const void> _data;
 };
 
 /**
@@ -1112,12 +1166,27 @@ class MAGNUM_TRADE_EXPORT MeshData {
         std::size_t indexOffset() const;
 
         /**
+         * @brief Index stride
+         * @m_since_latest
+         *
+         * Stride between consecutive elements in the @ref indexData() array.
+         * In rare cases the stride may be different from the index type size
+         * and even be zero or negative, such data layouts are however not
+         * commonly supported by GPU APIs.
+         * @see @ref MeshTools::isInterleaved()
+         */
+        Short indexStride() const;
+
+        /**
          * @brief Mesh indices
          *
-         * For an indexed mesh, the view is guaranteed to be contiguous and its
-         * second dimension represents the actual data type (its size is equal
-         * to type size, even in case there's zero indices). For a non-indexed
-         * mesh, the returned view has a zero size in both dimensions.
+         * For an indexed mesh, the second dimension of the view is guaranteed
+         * to be contiguous and its size is equal to type size, even in case
+         * there's zero indices. For a non-indexed mesh, the returned view has
+         * a zero size in both dimensions. In rare cases the first dimension
+         * stride may be different from the index type size and even be zero or
+         * negative, such data layouts are however not commonly supported by
+         * GPU APIs.
          *
          * Use the templated overload below to get the indices in a concrete
          * type.
@@ -1138,13 +1207,16 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @brief Mesh indices in a concrete type
          *
          * Expects that the mesh is indexed and that @p T corresponds to
-         * @ref indexType(). You can also use the non-templated
-         * @ref indicesAsArray() accessor to get indices converted to 32-bit,
-         * but note that such operation involves extra allocation and data
-         * conversion.
-         * @see @ref isIndexed(), @ref attribute(), @ref mutableIndices()
+         * @ref indexType(). In rare cases the first dimension stride may be
+         * different from the index type size and even be zero or negative,
+         * such data layouts are however not commonly supported by GPU APIs.
+         * You can also use the non-templated @ref indicesAsArray() accessor to
+         * get indices converted to a contiguous 32-bit array, but note that
+         * such operation involves extra allocation and data conversion.
+         * @see @ref isIndexed(), @ref attribute(), @ref mutableIndices(),
+         *      @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
          */
-        template<class T> Containers::ArrayView<const T> indices() const;
+        template<class T> Containers::StridedArrayView1D<const T> indices() const;
 
         /**
          * @brief Mutable mesh indices in a concrete type
@@ -1153,7 +1225,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * the mesh is mutable.
          * @see @ref indexDataFlags()
          */
-        template<class T> Containers::ArrayView<T> mutableIndices();
+        template<class T> Containers::StridedArrayView1D<T> mutableIndices();
 
         /**
          * @brief Mesh vertex count
@@ -1860,7 +1932,10 @@ class MAGNUM_TRADE_EXPORT MeshData {
         UnsignedInt _indexCount, _vertexCount;
         MeshPrimitive _primitive;
         MeshIndexType _indexType;
+        /* 3 byte padding, reserved for 4-byte MeshIndexType */
+        Short _indexStride;
         DataFlags _indexDataFlags, _vertexDataFlags;
+        /* 4 byte padding on 64bit */
         const void* _importerState;
         const char* _indices;
         Containers::Array<MeshAttributeData> _attributes;
@@ -1877,7 +1952,27 @@ namespace Implementation {
     template<> constexpr MeshIndexType meshIndexTypeFor<UnsignedByte>() { return MeshIndexType::UnsignedByte; }
     template<> constexpr MeshIndexType meshIndexTypeFor<UnsignedShort>() { return MeshIndexType::UnsignedShort; }
     template<> constexpr MeshIndexType meshIndexTypeFor<UnsignedInt>() { return MeshIndexType::UnsignedInt; }
+}
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T, class> MeshIndexData::MeshIndexData(const MeshIndexType type, T&& data) noexcept: _type{type} {
+    const Containers::ArrayView<const void> erased = data;
+    const std::size_t typeSize = meshIndexTypeSize(type);
+    CORRADE_ASSERT(erased.size()%typeSize == 0,
+        "Trade::MeshIndexData: view size" << erased.size() << "does not correspond to" << type, );
+    _data = Containers::StridedArrayView1D<const void>{erased, erased.size()/typeSize, std::ptrdiff_t(typeSize)};
+}
+#endif
+
+constexpr MeshIndexData::MeshIndexData(const MeshIndexType type, const Containers::StridedArrayView1D<const void> data) noexcept:
+    _type{type},
+    /* The actual limitation is in MeshData, but better to have it caught here
+       already */
+    _data{(CORRADE_CONSTEXPR_ASSERT(data.stride() >= -32768 && data.stride() <= 32767,
+        "Trade::MeshIndexData: expected stride to fit into 16 bits but got" << data.stride()), data)}
+    {}
+
+namespace Implementation {
     /* Implicit mapping from a format to enum (1:1) */
     template<class T> constexpr VertexFormat vertexFormatFor() {
         /* C++ why there isn't an obvious way to do such a thing?! */
@@ -2173,7 +2268,7 @@ template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute n
     UnsignedShort(data.size()[1])
 } {}
 
-template<class T> Containers::ArrayView<const T> MeshData::indices() const {
+template<class T> Containers::StridedArrayView1D<const T> MeshData::indices() const {
     CORRADE_ASSERT(isIndexed(),
         "Trade::MeshData::indices(): the mesh is not indexed", {});
     Containers::StridedArrayView2D<const char> data = indices();
@@ -2182,10 +2277,10 @@ template<class T> Containers::ArrayView<const T> MeshData::indices() const {
     #endif
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
         "Trade::MeshData::indices(): indices are" << _indexType << "but requested" << Implementation::meshIndexTypeFor<T>(), {});
-    return Containers::arrayCast<1, const T>(data).asContiguous();
+    return Containers::arrayCast<1, const T>(data);
 }
 
-template<class T> Containers::ArrayView<T> MeshData::mutableIndices() {
+template<class T> Containers::StridedArrayView1D<T> MeshData::mutableIndices() {
     CORRADE_ASSERT(isIndexed(),
         "Trade::MeshData::mutableIndices(): the mesh is not indexed", {});
     Containers::StridedArrayView2D<char> data = mutableIndices();
@@ -2194,7 +2289,7 @@ template<class T> Containers::ArrayView<T> MeshData::mutableIndices() {
     #endif
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
         "Trade::MeshData::mutableIndices(): indices are" << _indexType << "but requested" << Implementation::meshIndexTypeFor<T>(), {});
-    return Containers::arrayCast<1, T>(data).asContiguous();
+    return Containers::arrayCast<1, T>(data);
 }
 
 #ifndef CORRADE_NO_ASSERT

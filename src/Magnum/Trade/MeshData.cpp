@@ -37,12 +37,12 @@
 
 namespace Magnum { namespace Trade {
 
-MeshIndexData::MeshIndexData(const MeshIndexType type, const Containers::ArrayView<const void> data) noexcept: _type{type}, _data{data} {
-    CORRADE_ASSERT(data.size()%meshIndexTypeSize(type) == 0,
-        "Trade::MeshIndexData: view size" << data.size() << "does not correspond to" << type, );
-}
-
-MeshIndexData::MeshIndexData(const Containers::StridedArrayView2D<const char>& data) noexcept {
+MeshIndexData::MeshIndexData(const Containers::StridedArrayView2D<const char>& data) noexcept:
+    /* Delegating to the constexpr function in order to reuse the stride size
+       assert. The index type is not checked there so we can set it to nothing
+       and then overwrite below. */
+    MeshIndexData{MeshIndexType{}, {{nullptr, ~std::size_t{}}, data.data(), data.size()[0], data.stride()[0]}}
+{
     /* Second dimension being zero indicates a non-indexed mesh */
     if(data.size()[1] == 0) {
         _type = MeshIndexType{};
@@ -54,8 +54,8 @@ MeshIndexData::MeshIndexData(const Containers::StridedArrayView2D<const char>& d
     else if(data.size()[1] == 1) _type = MeshIndexType::UnsignedByte;
     else CORRADE_ASSERT_UNREACHABLE("Trade::MeshIndexData: expected index type size 1, 2 or 4 but got" << data.size()[1], );
 
-    CORRADE_ASSERT(data.isContiguous(), "Trade::MeshIndexData: view is not contiguous", );
-    _data = data.asContiguous();
+    CORRADE_ASSERT(data.isContiguous<1>(),
+        "Trade::MeshIndexData: second view dimension is not contiguous", );
 }
 
 MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data, UnsignedShort arraySize) noexcept: MeshAttributeData{nullptr, name, format, data, arraySize} {
@@ -83,10 +83,22 @@ Containers::Array<MeshAttributeData> meshAttributeDataNonOwningArray(const Conta
     return Containers::Array<MeshAttributeData>{const_cast<MeshAttributeData*>(view.data()), view.size(), reinterpret_cast<void(*)(MeshAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)};
 }
 
-MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const UnsignedInt vertexCount, const void* const importerState) noexcept: _primitive{primitive}, _indexType{indices._type}, _indexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _vertexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _importerState{importerState}, _indices{static_cast<const char*>(indices._data.data())}, _attributes{std::move(attributes)}, _indexData{std::move(indexData)}, _vertexData{std::move(vertexData)} {
+MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const UnsignedInt vertexCount, const void* const importerState) noexcept:
+    _primitive{primitive}, _indexType{indices._type},
+    /* Bounds of index stride are checked in MeshIndexData already, so the
+       cast alone is fine */
+    _indexStride{Short(indices._data.stride())},
+    _indexDataFlags{DataFlag::Owned|DataFlag::Mutable},
+    _vertexDataFlags{DataFlag::Owned|DataFlag::Mutable},
+    _importerState{importerState},
+    _indices{static_cast<const char*>(indices._data.data())},
+    _attributes{std::move(attributes)},
+    _indexData{std::move(indexData)},
+    _vertexData{std::move(vertexData)}
+{
     /* Save index count, only if the indices are actually specified */
     if(_indexType != MeshIndexType{})
-        _indexCount = UnsignedInt(indices._data.size()/meshIndexTypeSize(indices._type));
+        _indexCount = indices._data.size();
     else _indexCount = 0;
 
     /* Save vertex count. If it's passed explicitly, use that (but still check
@@ -112,12 +124,23 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
         #endif
     }
 
+    #ifndef CORRADE_NO_ASSERT
     CORRADE_ASSERT(_indexCount || _indexData.empty(),
         "Trade::MeshData: indexData passed for a non-indexed mesh", );
-    CORRADE_ASSERT(!_indices || (_indices >= _indexData.begin() && _indices + indices._data.size() <= _indexData.end()),
-        "Trade::MeshData: indices [" << Debug::nospace << static_cast<const void*>(_indices) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_indices + indices._data.size()) << Debug::nospace << "] are not contained in passed indexData array [" << Debug::nospace << static_cast<const void*>(_indexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_indexData.end()) << Debug::nospace << "]", );
+    if(_indexCount) {
+        const void* begin = _indices;
+        /* C integer promotion rules are weird, without the Int the result is
+           an unsigned 32-bit value that messes things up on 64bit */
+        const void* end = _indices + Int(_indexCount - 1)*_indexStride;
+        /* Flip for negative stride */
+        if(begin > end) std::swap(begin, end);
+        /* Add the last element size to the higher address */
+        end = static_cast<const char*>(end) + meshIndexTypeSize(_indexType);
 
-    #ifndef CORRADE_NO_ASSERT
+        CORRADE_ASSERT(begin >= _indexData.begin() && end <= _indexData.end(),
+            "Trade::MeshData: indices [" << Debug::nospace << begin << Debug::nospace << ":" << Debug::nospace << end << Debug::nospace << "] are not contained in passed indexData array [" << Debug::nospace << static_cast<const void*>(_indexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_indexData.end()) << Debug::nospace << "]", );
+    }
+
     /* Not checking what's already checked in MeshIndexData / MeshAttributeData
        constructors */
     for(std::size_t i = 0; i != _attributes.size(); ++i) {
@@ -250,13 +273,20 @@ std::size_t MeshData::indexOffset() const {
     return _indices - _indexData.data();
 }
 
+Short MeshData::indexStride() const {
+    CORRADE_ASSERT(isIndexed(),
+        "Trade::MeshData::indexStride(): the mesh is not indexed", {});
+    return _indexStride;
+}
+
 Containers::StridedArrayView2D<const char> MeshData::indices() const {
     /* For a non-indexed mesh returning zero size in both dimensions, indexed
        mesh with zero indices still has the second dimension non-zero */
     if(!isIndexed()) return {};
     const std::size_t indexTypeSize = meshIndexTypeSize(_indexType);
-    /* Build a 2D view using information about attribute type size */
-    return {{_indices, _indexCount*indexTypeSize}, {_indexCount, indexTypeSize}};
+    /* Build a 2D view using information about index type size and stride.
+       We're *sure* the view is correct, so faking the view size */
+    return {{_indices, ~std::size_t{}}, {_indexCount, indexTypeSize}, {_indexStride, 1}};
 }
 
 Containers::StridedArrayView2D<char> MeshData::mutableIndices() {
@@ -266,8 +296,9 @@ Containers::StridedArrayView2D<char> MeshData::mutableIndices() {
        mesh with zero indices still has the second dimension non-zero */
     if(!isIndexed()) return {};
     const std::size_t indexTypeSize = meshIndexTypeSize(_indexType);
-    /* Build a 2D view using information about index type size */
-    Containers::StridedArrayView2D<const char> out{{_indices, _indexCount*indexTypeSize}, {_indexCount, indexTypeSize}};
+    /* Build a 2D view using information about index type size and stride.
+       We're *sure* the view is correct, so faking the view size */
+    Containers::StridedArrayView2D<const char> out{{_indices, ~std::size_t{}}, {_indexCount, indexTypeSize}, {_indexStride, 1}};
     /** @todo some arrayConstCast? UGH */
     return Containers::StridedArrayView2D<char>{
         /* The view size is there only for a size assert, we're pretty sure the
@@ -429,12 +460,14 @@ void MeshData::indicesInto(const Containers::StridedArrayView1D<UnsignedInt>& de
     CORRADE_ASSERT(destination.size() == indexCount(), "Trade::MeshData::indicesInto(): expected a view with" << indexCount() << "elements but got" << destination.size(), );
     const auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
 
+    const Containers::StridedArrayView2D<const char> indexData = indices();
+
     if(_indexType == MeshIndexType::UnsignedInt)
-        return Utility::copy(Containers::arrayView(reinterpret_cast<const UnsignedInt*>(_indices), _indexCount), destination);
+        return Utility::copy(Containers::arrayCast<1, const UnsignedInt>(indexData), destination);
     else if(_indexType == MeshIndexType::UnsignedShort)
-        return Math::castInto(Containers::arrayCast<2, const UnsignedShort>(Containers::arrayView(reinterpret_cast<const UnsignedShort*>(_indices), _indexCount)), destination1ui);
+        return Math::castInto(Containers::arrayCast<2, const UnsignedShort>(indexData), destination1ui);
     else if(_indexType == MeshIndexType::UnsignedByte)
-        return Math::castInto(Containers::arrayCast<2, const UnsignedByte>(Containers::arrayView(reinterpret_cast<const UnsignedByte*>(_indices), _indexCount)), destination1ui);
+        return Math::castInto(Containers::arrayCast<2, const UnsignedByte>(indexData), destination1ui);
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
