@@ -423,7 +423,7 @@ Trade::MeshData removeDuplicates(const Trade::MeshData& data) {
        should span the whole stride -- this is relied on in the attribute
        rerouting loop below */
     const Containers::StridedArrayView2D<char> vertexData = MeshTools::interleavedMutableData(ownedInterleaved);
-    CORRADE_INTERNAL_ASSERT(vertexData.size()[1] == ownedInterleaved.attributeStride(0));
+    CORRADE_INTERNAL_ASSERT(vertexData.size()[1] == std::size_t(ownedInterleaved.attributeStride(0)));
 
     UnsignedInt uniqueVertexCount;
     Containers::Array<char> indexData;

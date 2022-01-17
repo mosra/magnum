@@ -366,7 +366,8 @@ used.)")
 
         struct MeshAttributeInfo {
             std::size_t offset;
-            UnsignedInt stride, arraySize;
+            Int stride;
+            UnsignedInt arraySize;
             Trade::MeshAttribute name;
             std::string customName;
             VertexFormat format;

@@ -350,9 +350,10 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * @param arraySize Array size. Use @cpp 0 @ce for non-array
          *      attributes.
          *
-         * Expects that @p data stride is large enough to fit all @p arraySize
-         * items of @p format, @p format corresponds to @p name and
-         * @p arraySize is zero for builtin attributes.
+         * Expects that @p data stride fits into a signed 16-bit value,
+         * @p format corresponds to @p name and @p arraySize is zero for
+         * builtin attributes. The stride can be zero or negative, but note
+         * that such data layouts are not commonly supported by GPU APIs.
          */
         explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, UnsignedShort arraySize = 0) noexcept;
 
@@ -366,7 +367,10 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          *
          * Expects that the second dimension of @p data is contiguous and its
          * size matches @p format and @p arraySize, that @p format corresponds
-         * to @p name and @p arraySize is zero for builtin attributes.
+         * to @p name and @p arraySize is zero for builtin attributes. The
+         * stride is expected to fit into a signed 16-bit value. It can be zero
+         * or negative, but note that such data layouts are not commonly
+         * supported by GPU APIs.
          */
         explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView2D<const char>& data, UnsignedShort arraySize = 0) noexcept;
 
@@ -443,18 +447,18 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * Instances created this way refer to an offset in unspecified
          * external vertex data instead of containing the data view directly.
          * Useful when the location of the vertex data array is not known at
-         * attribute construction time. Expects that @p arraySize is zero for
-         * builtin attributes. Note that instances created this way can't be
-         * used in most @ref MeshTools algorithms.
+         * attribute construction time. Note that instances created this way
+         * can't be used in most @ref MeshTools algorithms.
+         *
+         * Expects that @p arraySize is zero for builtin attributes and
+         * @p stride fits into a signed 16-bit value. The stride can be zero or
+         * negative, but note that such data layouts are not commonly supported
+         * by GPU APIs.
          *
          * Additionally, for even more flexibility, the @p vertexCount can be
          * overridden at @ref MeshData construction time, however all attributes
          * are still required to have the same vertex count to catch accidents.
          *
-         * Note that due to the @cpp constexpr @ce nature of this constructor,
-         * no @p format / @p arraySize checks against @p stride can be done.
-         * You're encouraged to use the @ref MeshAttributeData(MeshAttribute, VertexFormat, const Containers::StridedArrayView1D<const void>&, UnsignedShort)
-         * constructor if you want additional safeguards.
          * @see @ref isOffsetOnly(), @ref arraySize(),
          *      @ref data(Containers::ArrayView<const void>) const
          */
@@ -471,7 +475,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          */
         constexpr explicit MeshAttributeData(Int padding): _format{}, _name{}, _isOffsetOnly{false}, _vertexCount{0}, _stride{
             (CORRADE_CONSTEXPR_ASSERT(padding >= -32768 && padding <= 32767,
-                "Trade::MeshAttributeData: at most 32k padding supported, got" << padding), Short(padding))
+                "Trade::MeshAttributeData: expected padding to fit into 16 bits but got" << padding), Short(padding))
         }, _arraySize{}, _data{nullptr} {}
 
         /**
@@ -504,7 +508,8 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         /**
          * @brief Attribute stride
          *
-         * Can be negative for pad values, never negative for real attributes.
+         * In rare cases the stride may be zero or negative, such data layouts
+         * are however not commonly supported by GPU APIs.
          * @see @ref MeshAttributeData(Int)
          */
         constexpr Short stride() const { return _stride; }
@@ -517,6 +522,9 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          *
          * Expects that the attribute is not offset-only, in that case use the
          * @ref data(Containers::ArrayView<const void>) const overload instead.
+         * In rare cases the stride of the returned view may be zero or
+         * negative, such data layouts are however not commonly supported by
+         * GPU APIs.
          * @see @ref isOffsetOnly()
          */
         constexpr Containers::StridedArrayView1D<const void> data() const {
@@ -531,7 +539,9 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * @brief Type-erased attribute data for an offset-only attribute
          *
          * If the attribute is not offset-only, the @p vertexData parameter is
-         * ignored.
+         * ignored. In rare cases the stride of the returned view may be zero
+         * or negative, such data layouts are however not commonly supported by
+         * GPU APIs.
          * @see @ref isOffsetOnly(), @ref data() const
          */
         Containers::StridedArrayView1D<const void> data(Containers::ArrayView<const void> vertexData) const {
@@ -1229,13 +1239,15 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @brief Attribute stride
          *
          * Stride between consecutive elements of given attribute in the
-         * @ref vertexData() array. The @p id is expected to be smaller
-         * than @ref attributeCount() const. You can also use
-         * @ref attributeStride(MeshAttribute, UnsignedInt) const to
-         * directly get a stride of given named attribute.
+         * @ref vertexData() array. In rare cases the stride may be zero or
+         * negative, such data layouts are however not commonly supported by
+         * GPU APIs. The @p id is expected to be smaller than
+         * @ref attributeCount() const. You can also use
+         * @ref attributeStride(MeshAttribute, UnsignedInt) const to directly
+         * get a stride of given named attribute.
          * @see @ref MeshTools::isInterleaved()
          */
-        UnsignedInt attributeStride(UnsignedInt id) const;
+        Short attributeStride(UnsignedInt id) const;
 
         /**
          * @brief Attribute array size
@@ -1320,11 +1332,13 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @brief Stride of a named attribute
          *
          * Stride between consecutive elements of given named attribute in the
-         * @ref vertexData() array. The @p id is expected to be smaller than
+         * @ref vertexData() array. In rare cases the stride may be zero or
+         * negative, such data layouts are however not commonly supported by
+         * GPU APIs. The @p id is expected to be smaller than
          * @ref attributeCount(MeshAttribute) const.
          * @see @ref attributeStride(UnsignedInt) const
          */
-        UnsignedInt attributeStride(MeshAttribute name, UnsignedInt id = 0) const;
+        Short attributeStride(MeshAttribute name, UnsignedInt id = 0) const;
 
         /**
          * @brief Array size of a named attribute
@@ -1343,8 +1357,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * The @p id is expected to be smaller than @ref attributeCount() const.
          * The second dimension represents the actual data type (its size is
          * equal to format size for known @ref VertexFormat values, possibly
-         * multiplied by array size, and to attribute stride for
+         * multiplied by array size, and to *absolute* attribute stride for
          * implementation-specific values) and is guaranteed to be contiguous.
+         * In rare cases the first dimension stride may be zero or negative,
+         * such data layouts are however not commonly supported by GPU APIs.
+         *
          * Use the templated overload below to get the attribute in a concrete
          * type.
          * @see @relativeref{Corrade,Containers::StridedArrayView::isContiguous()},
@@ -1372,14 +1389,16 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * access the attribute via the typeless @ref attribute(UnsignedInt) const
          * above. The attribute is also expected to not be an array, in that
          * case you need to use the overload below by using @cpp T[] @ce
-         * instead of @cpp T @ce. You can also use the non-templated
+         * instead of @cpp T @ce. In rare cases the stride of the returned view
+         * may be zero or negative, such data layouts are however not commonly
+         * supported by GPU APIs. You can also use the non-templated
          * @ref positions2DAsArray(), @ref positions3DAsArray(),
          * @ref tangentsAsArray(), @ref bitangentSignsAsArray(),
          * @ref bitangentsAsArray(), @ref normalsAsArray(),
          * @ref textureCoordinates2DAsArray(), @ref colorsAsArray() and
          * @ref objectIdsAsArray() accessors to get common attributes converted
-         * to usual types, but note that these operations involve extra
-         * allocation and data conversion.
+         * to usual types in contiguous arrays, but note that these operations
+         * involve extra allocation and data conversion.
          * @see @ref attribute(MeshAttribute, UnsignedInt) const,
          *      @ref mutableAttribute(UnsignedInt),
          *      @ref isVertexFormatImplementationSpecific(),
@@ -1426,6 +1445,9 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * represents the actual data type (its size is equal to format size
          * for known @ref VertexFormat values and to attribute stride for
          * implementation-specific values) and is guaranteed to be contiguous.
+         * In rare cases the first dimension stride may be zero or negative,
+         * such data layouts are however not commonly supported by GPU APIs.
+         *
          * Use the templated overload below to get the attribute in a concrete
          * type.
          * @see @ref attribute(UnsignedInt) const,
@@ -1455,14 +1477,16 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref attribute(MeshAttribute, UnsignedInt) const above. The
          * attribute is also expected to not be an array, in that case you need
          * to use the overload below by using @cpp T[] @ce instead of
-         * @cpp T @ce. You can also use the non-templated
+         * @cpp T @ce. In rare cases the stride of the returned view may be
+         * zero or negative, such data layouts are however not commonly
+         * supported by GPU APIs. You can also use the non-templated
          * @ref positions2DAsArray(), @ref positions3DAsArray(),
          * @ref tangentsAsArray(), @ref bitangentSignsAsArray(),
          * @ref bitangentsAsArray(), @ref normalsAsArray(),
          * @ref textureCoordinates2DAsArray(), @ref colorsAsArray() and
          * @ref objectIdsAsArray() accessors to get common attributes converted
-         * to usual types, but note that these operations involve extra data
-         * conversion and an allocation.
+         * to usual types in contiguous arrays, but note that these operations
+         * involve extra data conversion and an allocation.
          * @see @ref attribute(UnsignedInt) const,
          *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
          *      @ref isVertexFormatImplementationSpecific()
@@ -2118,9 +2142,8 @@ constexpr MeshAttributeData::MeshAttributeData(std::nullptr_t, const MeshAttribu
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
         "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)},
     _isOffsetOnly{false}, _vertexCount{UnsignedInt(data.size())},
-    /** @todo support zero / negative stride? would be hard to transfer to GL */
-    _stride{(CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(data.stride()) & 0xffff8000),
-        "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got" << data.stride()),
+    _stride{(CORRADE_CONSTEXPR_ASSERT(data.stride() >= -32768 && data.stride() <= 32767,
+        "Trade::MeshAttributeData: expected stride to fit into 16 bits but got" << data.stride()),
         Short(data.stride()))},
     _arraySize{(CORRADE_CONSTEXPR_ASSERT(!arraySize || Implementation::isAttributeArrayAllowed(name),
         "Trade::MeshAttributeData:" << name << "can't be an array attribute"), arraySize)},
@@ -2132,9 +2155,8 @@ constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const V
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
         "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)},
     _isOffsetOnly{true}, _vertexCount{vertexCount},
-    /** @todo support zero / negative stride? would be hard to transfer to GL */
-    _stride{(CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(stride) & 0xffff8000),
-        "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got" << stride),
+    _stride{(CORRADE_CONSTEXPR_ASSERT(stride >= -32768 && stride <= 32767,
+        "Trade::MeshAttributeData: expected stride to fit into 16 bits but got" << stride),
         Short(stride))},
     _arraySize{(CORRADE_CONSTEXPR_ASSERT(!arraySize || Implementation::isAttributeArrayAllowed(name),
         "Trade::MeshAttributeData:" << name << "can't be an array attribute"), arraySize)},

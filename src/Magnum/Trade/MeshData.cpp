@@ -62,9 +62,6 @@ MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexForma
     /* Yes, this calls into a constexpr function defined in the header --
        because I feel that makes more sense than duplicating the full assert
        logic */
-    /** @todo support zero / negative stride? would be hard to transfer to GL */
-    CORRADE_ASSERT(data.empty() || isVertexFormatImplementationSpecific(format) || std::ptrdiff_t(vertexFormatSize(format))*(arraySize ? arraySize : 1) <= data.stride(),
-        "Trade::MeshAttributeData: expected stride to be positive and enough to fit" << format << Debug::nospace << (arraySize ? Utility::format("[{}]", arraySize).data() : "") << Debug::nospace << ", got" << data.stride(), );
 }
 
 MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView2D<const char>& data, UnsignedShort arraySize) noexcept: MeshAttributeData{nullptr, name, format, Containers::StridedArrayView1D<const void>{{data.data(), ~std::size_t{}}, data.size()[0], data.stride()[0]}, arraySize} {
@@ -140,15 +137,26 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
                 isVertexFormatImplementationSpecific(attribute._format) ? 0 :
                 (vertexFormatSize(attribute._format)*
                 (attribute._arraySize ? attribute._arraySize : 1));
+
+            /* Both pointer and offset-only rely on basically same calculation,
+               do it with offsets in a single place and only interpret as
+               pointers in the non-offset-only check. Yes, yes, this may read
+               the `pointer` union member through `offset`. */
+            std::size_t begin = attribute._data.offset;
+            /* C integer promotion rules are weird, without the Int the result
+               is an unsigned 32-bit value that messes things up on 64bit */
+            std::size_t end = begin + Int(_vertexCount - 1)*attribute._stride;
+            /* Flip for negative stride */
+            if(begin > end) std::swap(begin, end);
+            /* Add the last element size to the higher address */
+            end += typeSize;
+
             if(attribute._isOffsetOnly) {
-                const std::size_t size = attribute._data.offset + (_vertexCount - 1)*attribute._stride + typeSize;
-                CORRADE_ASSERT(size <= _vertexData.size(),
-                    "Trade::MeshData: offset-only attribute" << i << "spans" << size << "bytes but passed vertexData array has only" << _vertexData.size(), );
+                CORRADE_ASSERT(end <= _vertexData.size(),
+                    "Trade::MeshData: offset-only attribute" << i << "spans" << end << "bytes but passed vertexData array has only" << _vertexData.size(), );
             } else {
-                const void* const begin = static_cast<const char*>(attribute._data.pointer);
-                const void* const end = static_cast<const char*>(attribute._data.pointer) + (_vertexCount - 1)*attribute._stride + typeSize;
-                CORRADE_ASSERT(begin >= _vertexData.begin() && end <= _vertexData.end(),
-                    "Trade::MeshData: attribute" << i << "[" << Debug::nospace << begin << Debug::nospace << ":" << Debug::nospace << end << Debug::nospace << "] is not contained in passed vertexData array [" << Debug::nospace << static_cast<const void*>(_vertexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_vertexData.end()) << Debug::nospace << "]", );
+                CORRADE_ASSERT(reinterpret_cast<const void*>(begin) >= _vertexData.begin() && reinterpret_cast<const void*>(end) <= _vertexData.end(),
+                    "Trade::MeshData: attribute" << i << "[" << Debug::nospace << reinterpret_cast<const void*>(begin) << Debug::nospace << ":" << Debug::nospace << reinterpret_cast<const void*>(end) << Debug::nospace << "] is not contained in passed vertexData array [" << Debug::nospace << static_cast<const void*>(_vertexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_vertexData.end()) << Debug::nospace << "]", );
             }
         }
     }
@@ -306,7 +314,7 @@ std::size_t MeshData::attributeOffset(const UnsignedInt id) const {
         static_cast<const char*>(_attributes[id]._data.pointer) - _vertexData.data();
 }
 
-UnsignedInt MeshData::attributeStride(const UnsignedInt id) const {
+Short MeshData::attributeStride(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeStride(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
     return _attributes[id]._stride;
@@ -357,7 +365,7 @@ std::size_t MeshData::attributeOffset(const MeshAttribute name, const UnsignedIn
     return attributeOffset(attributeId);
 }
 
-UnsignedInt MeshData::attributeStride(const MeshAttribute name, const UnsignedInt id) const {
+Short MeshData::attributeStride(const MeshAttribute name, const UnsignedInt id) const {
     const UnsignedInt attributeId = findAttributeIdInternal(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeStride(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return _attributes[attributeId]._stride;
@@ -377,7 +385,7 @@ Containers::StridedArrayView2D<const char> MeshData::attribute(const UnsignedInt
     return Containers::arrayCast<2, const char>(
         attributeDataViewInternal(attribute),
         isVertexFormatImplementationSpecific(attribute._format) ?
-            attribute._stride : vertexFormatSize(attribute._format)*
+            Math::abs(attribute._stride) : vertexFormatSize(attribute._format)*
                 (attribute._arraySize ? attribute._arraySize : 1));
 }
 
@@ -391,7 +399,7 @@ Containers::StridedArrayView2D<char> MeshData::mutableAttribute(const UnsignedIn
     const auto out = Containers::arrayCast<2, const char>(
         attributeDataViewInternal(attribute),
         isVertexFormatImplementationSpecific(attribute._format) ?
-            attribute._stride : vertexFormatSize(attribute._format)*
+            Math::abs(attribute._stride) : vertexFormatSize(attribute._format)*
                 (attribute._arraySize ? attribute._arraySize : 1));
     /** @todo some arrayConstCast? UGH */
     return Containers::StridedArrayView2D<char>{

@@ -733,6 +733,17 @@ MeshTools::transformPointsInPlace(Matrix4::scaling(Vector3{2.0f}),
 }
 
 {
+Trade::MeshData data{MeshPrimitive::Points, 0};
+/* [MeshData-usage-special-layouts] */
+if(data.attributeStride(Trade::MeshAttribute::Position) <= 0 ||
+   data.attributeStride(Trade::MeshAttribute::Normal) <= 0)
+    Fatal{} << "Uh oh";
+
+// Now it's safe to use the Position and Normal attributes in a GPU mesh
+/* [MeshData-usage-special-layouts] */
+}
+
+{
 std::size_t vertexCount{}, indexCount{};
 /* [MeshData-populating] */
 struct Vertex {

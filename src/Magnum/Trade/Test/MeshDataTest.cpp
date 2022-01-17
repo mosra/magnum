@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Color.h"
@@ -88,6 +89,9 @@ struct MeshDataTest: TestSuite::Tester {
     void constructAttributeless();
     void constructIndexlessAttributeless();
     void constructIndexlessAttributelessZeroVertices();
+
+    void constructSpecialAttributeStrides();
+    void constructSpecialAttributeStridesImplementationSpecificVertexFormat();
 
     void constructNotOwned();
     void constructIndicesNotOwned();
@@ -247,7 +251,10 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructIndexlessZeroVertices,
               &MeshDataTest::constructAttributeless,
               &MeshDataTest::constructIndexlessAttributeless,
-              &MeshDataTest::constructIndexlessAttributelessZeroVertices});
+              &MeshDataTest::constructIndexlessAttributelessZeroVertices,
+
+              &MeshDataTest::constructSpecialAttributeStrides,
+              &MeshDataTest::constructSpecialAttributeStridesImplementationSpecificVertexFormat});
 
     addInstancedTests({&MeshDataTest::constructNotOwned},
         Containers::arraySize(NotOwnedData));
@@ -760,25 +767,31 @@ void MeshDataTest::constructAttributeWrongStride() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    char positionData[3*sizeof(Vector3)]{};
+    char toomuch[2*(32768 + sizeof(Vector2))];
+
+    /* These should be fine */
+    MeshAttributeData{MeshAttribute::Position, Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32767}};
+    MeshAttributeData{MeshAttribute::Position, Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32768}.flipped<0>()};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 1, 32767};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 65536, 1, -32768};
+    MeshAttributeData{32767};
+    MeshAttributeData{-32768};
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, Containers::arrayCast<const char>(positionData)};
-    MeshAttributeData{meshAttributeCustom(1), VertexFormat::Float, Containers::arrayCast<const Vector3>(positionData), 4};
-    /* We need this one to be constexpr, which means there can't be a warning
-       about stride not matching the size */
-    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, 0, 3*sizeof(Vector3), 1};
-    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, Containers::StridedArrayView1D<const void>{positionData, 0, -16}};
-    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, Containers::StridedArrayView1D<const void>{positionData, 0, 65000}};
-    MeshAttributeData{65000};
+    MeshAttributeData{MeshAttribute::Position, Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32768}};
+    MeshAttributeData{MeshAttribute::Position, Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32769}.flipped<0>()};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 1, 32768};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 65536, 1, -32769};
+    MeshAttributeData{32768};
+    MeshAttributeData{-32769};
     CORRADE_COMPARE(out.str(),
-        "Trade::MeshAttributeData: expected stride to be positive and enough to fit VertexFormat::Vector3, got 1\n"
-        "Trade::MeshAttributeData: expected stride to be positive and enough to fit VertexFormat::Float[4], got 12\n"
-        "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got -16\n"
-        "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got 65000\n"
-        "Trade::MeshAttributeData: at most 32k padding supported, got 65000\n"
-    );
+        "Trade::MeshAttributeData: expected stride to fit into 16 bits but got 32768\n"
+        "Trade::MeshAttributeData: expected stride to fit into 16 bits but got -32769\n"
+        "Trade::MeshAttributeData: expected stride to fit into 16 bits but got 32768\n"
+        "Trade::MeshAttributeData: expected stride to fit into 16 bits but got -32769\n"
+        "Trade::MeshAttributeData: expected padding to fit into 16 bits but got 32768\n"
+        "Trade::MeshAttributeData: expected padding to fit into 16 bits but got -32769\n");
 }
 
 void MeshDataTest::constructAttributeWrongDataAccess() {
@@ -1636,6 +1649,96 @@ void MeshDataTest::constructIndexlessAttributelessZeroVertices() {
     CORRADE_COMPARE(data.attributeCount(), 0);
 }
 
+void MeshDataTest::constructSpecialAttributeStrides() {
+    Containers::Array<char> vertexData{sizeof(UnsignedShort)*5};
+    Containers::StridedArrayView1D<UnsignedShort> vertices = Containers::arrayCast<UnsignedShort>(vertexData);
+    Utility::copy({15, 1, 2, 3, 4}, vertices);
+
+    MeshData mesh{MeshPrimitive::Points, std::move(vertexData), {
+        MeshAttributeData{MeshAttribute::ObjectId, vertices.prefix(1).broadcasted<0>(4)},
+        MeshAttributeData{MeshAttribute::ObjectId, vertices.suffix(1).flipped<0>()},
+    }};
+
+    CORRADE_COMPARE(mesh.attributeStride(0), 0);
+    CORRADE_COMPARE(mesh.attributeStride(1), -2);
+
+    /* Type-erased access with a cast later */
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(mesh.attribute(0))),
+        Containers::arrayView<UnsignedShort>({15, 15, 15, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, UnsignedShort>(mesh.mutableAttribute(0))),
+        Containers::stridedArrayView<UnsignedShort>({15, 15, 15, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(mesh.attribute(1))),
+        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, UnsignedShort>(mesh.mutableAttribute(1))),
+        Containers::stridedArrayView<UnsignedShort>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
+
+    /* Typed access */
+    CORRADE_COMPARE_AS(mesh.attribute<UnsignedShort>(0),
+        Containers::arrayView<UnsignedShort>({15, 15, 15, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(mesh.mutableAttribute<UnsignedShort>(0),
+        Containers::stridedArrayView<UnsignedShort>({15, 15, 15, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(mesh.attribute<UnsignedShort>(1),
+        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(mesh.mutableAttribute<UnsignedShort>(1),
+        Containers::stridedArrayView<UnsignedShort>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
+
+    /* All convenience accessors should work well also as they consume the
+       output of the type-erased one. But just to be sure, test at least
+       one. */
+    CORRADE_COMPARE_AS(mesh.objectIdsAsArray(0),
+        Containers::arrayView<UnsignedInt>({15, 15, 15, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(mesh.objectIdsAsArray(1),
+        Containers::arrayView<UnsignedInt>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
+}
+
+void MeshDataTest::constructSpecialAttributeStridesImplementationSpecificVertexFormat() {
+    /* Same as constructSpecialAttributeStrides() except for custom vertex
+       formats, which causes the attribute() to return the full stride in
+       second dimension */
+
+    Containers::Array<char> vertexData{sizeof(UnsignedShort)*5};
+    Containers::StridedArrayView1D<UnsignedShort> vertices = Containers::arrayCast<UnsignedShort>(vertexData);
+    Utility::copy({15, 1, 2, 3, 4}, vertices);
+
+    MeshData mesh{MeshPrimitive::Points, std::move(vertexData), {
+        MeshAttributeData{MeshAttribute::ObjectId, vertexFormatWrap(0xdead), vertices.prefix(1).broadcasted<0>(4)},
+        MeshAttributeData{MeshAttribute::ObjectId, vertexFormatWrap(0xdead), vertices.suffix(1).flipped<0>()}
+    }};
+
+    CORRADE_COMPARE(mesh.attributeStride(0), 0);
+    CORRADE_COMPARE(mesh.attributeStride(1), -2);
+
+    /* Type-erased access with a cast later. For the zero-stride attribute the
+       element size is zero as well, meaning there's no way to access anything
+       except for directly interpreting the data pointer. Which is actually as
+       desired for implementation-specific vertex formats. */
+    CORRADE_COMPARE(mesh.attribute(0).size(), (Containers::StridedDimensions<2, std::size_t>{4, 0}));
+    CORRADE_COMPARE(mesh.mutableAttribute(0).size(), (Containers::StridedDimensions<2, std::size_t>{4, 0}));
+    CORRADE_COMPARE(mesh.attribute(0).stride(), (Containers::StridedDimensions<2, std::ptrdiff_t>{0, 1}));
+    CORRADE_COMPARE(mesh.mutableAttribute(0).stride(), (Containers::StridedDimensions<2, std::ptrdiff_t>{0, 1}));
+    CORRADE_COMPARE(*reinterpret_cast<const UnsignedShort*>(mesh.attribute(0).data()), 15);
+    CORRADE_COMPARE(*reinterpret_cast<UnsignedShort*>(mesh.mutableAttribute(0).data()), 15);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(mesh.attribute(1))),
+        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, UnsignedShort>(mesh.mutableAttribute(1))),
+        Containers::stridedArrayView<UnsignedShort>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
+
+    /* Typed access and convenience accessors won't work here due to the
+       implementation-specific format */
+}
+
 void MeshDataTest::constructIndexDataButNotIndexed() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1700,8 +1803,10 @@ void MeshDataTest::constructAttributeNotContained() {
     /* See implementationSpecificVertexFormatNotContained() below for
        implementation-specific formats */
 
-    Containers::Array<char> vertexData{reinterpret_cast<char*>(0xbadda9), 24, [](char*, std::size_t){}};
+    const Containers::Array<char> vertexData{reinterpret_cast<char*>(0xbadda9), 24, [](char*, std::size_t){}};
+    Containers::Array<char> sameVertexDataButMovable{reinterpret_cast<char*>(0xbadda9), 24, [](char*, std::size_t){}};
     Containers::ArrayView<Vector2> vertexDataIn{reinterpret_cast<Vector2*>(0xbadda9), 3};
+    Containers::ArrayView<Vector2> vertexDataSlightlyOut{reinterpret_cast<Vector2*>(0xbaddaa), 3};
     Containers::ArrayView<Vector2> vertexDataOut{reinterpret_cast<Vector2*>(0xdead), 3};
     MeshAttributeData{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData)};
 
@@ -1724,10 +1829,10 @@ void MeshDataTest::constructAttributeNotContained() {
        array size wouldn't be taken into account, it would span only 16 / 21,
        which  fits into the vertex data size and thus wouldn't fail */
     MeshData{MeshPrimitive::Triangles, {}, vertexData, {
-        MeshAttributeData{meshAttributeCustom(37), Containers::StridedArrayView2D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(vertexData), {4, 5}, {5, 1}}}
+        MeshAttributeData{meshAttributeCustom(37), Containers::StridedArrayView2D<const UnsignedByte>{Containers::arrayCast<const UnsignedByte>(vertexData), {4, 5}, {5, 1}}}
     }, 5};
     /* Verify the owning constructor does the same check */
-    MeshData{MeshPrimitive::Triangles, std::move(vertexData), {
+    MeshData{MeshPrimitive::Triangles, std::move(sameVertexDataButMovable), {
         MeshAttributeData{MeshAttribute::Position, vertexDataIn},
         MeshAttributeData{MeshAttribute::Position, Containers::arrayView(vertexDataOut)}
     }};
@@ -1736,7 +1841,7 @@ void MeshDataTest::constructAttributeNotContained() {
     MeshData{MeshPrimitive::Triangles, nullptr, {
         MeshAttributeData{MeshAttribute::Position, vertexDataIn}
     }};
-    /* Finally, offset-only attributes with a different message */
+    /* Offset-only attributes with a different message */
     MeshData{MeshPrimitive::Triangles, Containers::Array<char>{24}, {
         MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 1, 3, 8}
     }};
@@ -1745,13 +1850,26 @@ void MeshDataTest::constructAttributeNotContained() {
     MeshData{MeshPrimitive::Triangles, Containers::Array<char>{24}, {
         MeshAttributeData{meshAttributeCustom(37), VertexFormat::UnsignedByte, 0, 5, 5, 5}
     }};
+    /* And the final boss, negative strides. Both only caught if the element
+       size gets properly added to the larger offset, not just the "end". */
+    MeshData{MeshPrimitive::Triangles, {}, vertexData, {
+        MeshAttributeData{MeshAttribute::Position, stridedArrayView(vertexDataSlightlyOut).flipped<0>()}
+    }};
+    MeshData{MeshPrimitive::Triangles, Containers::Array<char>{24}, {
+        MeshAttributeData{meshAttributeCustom(37), VertexFormat::UnsignedByte, 24, 3, -8}
+    }};
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc9] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc2] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: attribute 1 [0xdead:0xdec5] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc1] is not contained in passed vertexData array [0x0:0x0]\n"
+
         "Trade::MeshData: offset-only attribute 0 spans 25 bytes but passed vertexData array has only 24\n"
-        "Trade::MeshData: offset-only attribute 0 spans 25 bytes but passed vertexData array has only 24\n");
+        "Trade::MeshData: offset-only attribute 0 spans 25 bytes but passed vertexData array has only 24\n"
+
+        "Trade::MeshData: attribute 0 [0xbaddaa:0xbaddc2] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
+        "Trade::MeshData: offset-only attribute 0 spans 25 bytes but passed vertexData array has only 24\n"
+    );
 }
 
 void MeshDataTest::constructInconsitentVertexCount() {

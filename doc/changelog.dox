@@ -452,6 +452,9 @@ See also:
     @ref Trade::PhongMaterialData::commonTextureCoordinates() exposing a
     common texture coordinate set as a complement to a per-texture property
     added in 2020.06
+-   @ref Trade::MeshData now allows zero and negative strides for better
+    data layout flexibility. This is however not commonly supported in GPU
+    APIs.
 -   Added @ref Trade::MeshData::findAttributeId() for an ability to check that
     an attribute exists and retrieve its ID in a single step, avoiding a double
     lookup compared to @relativeref{Trade::MeshData,hasAttribute()} +
@@ -875,6 +878,10 @@ See also:
     @cpp Trade::AbstractMaterialData @ce aliases to, doesn't have a
     @cpp virtual @ce destructor as subclasses with extra data members aren't a
     desired use case anymore.
+-   @ref Trade::MeshData now allows zero and negative strides for better
+    data layout flexibility, however as this is not commonly supported by GPU
+    APIs, it implies the user is now expected to validate this value when
+    passing it there.
 -   @ref Trade::SceneData constructor taking a @ref std::vector of 2D and 3D
     children that got deprecated in favor of
     @ref Trade::SceneData::SceneData(SceneMappingType, UnsignedLong, Containers::Array<char>&&, Containers::Array<SceneFieldData>&&, const void*)
