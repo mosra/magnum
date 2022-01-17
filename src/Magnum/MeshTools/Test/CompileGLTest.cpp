@@ -104,6 +104,8 @@ struct CompileGLTest: GL::OpenGLTester {
         void multipleAttributes();
         void packedAttributes();
 
+        void unsupportedIndexStride();
+
         void customAttribute();
         void unsupportedAttribute();
         void unsupportedAttributeStride();
@@ -255,6 +257,8 @@ CompileGLTest::CompileGLTest() {
               &CompileGLTest::packedAttributes},
         &CompileGLTest::renderSetup,
         &CompileGLTest::renderTeardown);
+
+    addTests({&CompileGLTest::unsupportedIndexStride});
 
     addInstancedTests({&CompileGLTest::customAttribute,
                        &CompileGLTest::unsupportedAttribute},
@@ -1151,6 +1155,23 @@ void CompileGLTest::packedAttributes() {
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[19][15], 26234);
     }
     #endif
+}
+
+void CompileGLTest::unsupportedIndexStride() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    UnsignedShort indices[2]{};
+    Trade::MeshData data{MeshPrimitive::Points,
+        {}, indices, Trade::MeshIndexData{Containers::stridedArrayView(indices).every(2)},
+        1};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    compile(data);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compile(): MeshIndexType::UnsignedShort with stride of 4 bytes isn't supported by OpenGL\n");
 }
 
 void CompileGLTest::customAttribute() {
