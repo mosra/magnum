@@ -2046,25 +2046,26 @@ void MeshDataTest::constructIndicesNotContained() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    const Containers::Array<char> indexData{reinterpret_cast<char*>(0xbadda9), 6, [](char*, std::size_t){}};
-    Containers::Array<char> sameIndexDataButMovable{reinterpret_cast<char*>(0xbadda9), 6, [](char*, std::size_t){}};
+    const Containers::Array<char> indexData{reinterpret_cast<char*>(0xbadda9), 3*sizeof(UnsignedShort), [](char*, std::size_t){}};
+    Containers::Array<char> sameIndexDataButMovable{reinterpret_cast<char*>(0xbadda9), 3*sizeof(UnsignedShort), [](char*, std::size_t){}};
     Containers::ArrayView<UnsignedShort> indexDataSlightlyOut{reinterpret_cast<UnsignedShort*>(0xbaddaa), 3};
     Containers::ArrayView<UnsignedShort> indexDataOut{reinterpret_cast<UnsignedShort*>(0xdead), 3};
     Containers::StridedArrayView1D<UnsignedShort> indexDataStridedOut{{reinterpret_cast<UnsignedShort*>(0xbadda9), 6}, 3, 4};
 
+    /* "Obviously good" case */
+    MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{Containers::arrayCast<UnsignedShort>(indexData)}, 1};
+
     std::ostringstream out;
     Error redirectError{&out};
-    /* First a "slightly off" view that exceeds the original by one byte */
+    /* Basic "obviously wrong" case with owned index data */
+    MeshData{MeshPrimitive::Triangles, std::move(sameIndexDataButMovable), MeshIndexData{indexDataOut}, 1};
+    /* A "slightly off" view that exceeds the original by one byte */
     MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{indexDataSlightlyOut}, 1};
-    /* Second a view that's in a completely different location */
-    MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{indexDataOut}, 1};
     /* A strided index array which would pass if stride wasn't taken into
        account */
     MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{indexDataStridedOut}, 1};
     /* Empty view which however begins outside */
     MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{indexDataSlightlyOut.slice(3, 3)}, 1};
-    /* Verify the owning constructor does the checks as well */
-    MeshData{MeshPrimitive::Triangles, std::move(sameIndexDataButMovable), MeshIndexData{indexDataOut}, 1};
     /* If we have no data at all, it doesn't try to dereference them but still
        checks properly */
     MeshData{MeshPrimitive::Triangles, nullptr, MeshIndexData{indexDataOut}, 1};
@@ -2072,12 +2073,11 @@ void MeshDataTest::constructIndicesNotContained() {
        gets properly added to the larger offset, not just the "end". */
     MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{stridedArrayView(indexDataSlightlyOut).flipped<0>()}, 1};
     CORRADE_COMPARE(out.str(),
-        "Trade::MeshData: indices [0xbaddaa:0xbaddb0] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
         "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
+        "Trade::MeshData: indices [0xbaddaa:0xbaddb0] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
         "Trade::MeshData: indices [0xbadda9:0xbaddb3] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
         /* This scenario is invalid, just have it here for the record */
         "Trade::MeshData: indexData passed for a non-indexed mesh\n"
-        "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
         "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0x0:0x0]\n"
 
         "Trade::MeshData: indices [0xbaddaa:0xbaddb0] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n");
@@ -2091,22 +2091,37 @@ void MeshDataTest::constructAttributeNotContained() {
     /* See implementationSpecificVertexFormatNotContained() below for
        implementation-specific formats */
 
-    const Containers::Array<char> vertexData{reinterpret_cast<char*>(0xbadda9), 24, [](char*, std::size_t){}};
-    Containers::Array<char> sameVertexDataButMovable{reinterpret_cast<char*>(0xbadda9), 24, [](char*, std::size_t){}};
+    const Containers::Array<char> vertexData{reinterpret_cast<char*>(0xbadda9), 3*sizeof(Vector2), [](char*, std::size_t){}};
+    Containers::Array<char> sameVertexDataButMovable{reinterpret_cast<char*>(0xbadda9), 3*sizeof(Vector2), [](char*, std::size_t){}};
     Containers::ArrayView<Vector2> vertexDataIn{reinterpret_cast<Vector2*>(0xbadda9), 3};
     Containers::ArrayView<Vector2> vertexDataSlightlyOut{reinterpret_cast<Vector2*>(0xbaddaa), 3};
     Containers::ArrayView<Vector2> vertexDataOut{reinterpret_cast<Vector2*>(0xdead), 3};
     MeshAttributeData{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData)};
 
+    /* "Obviously good" case */
+    MeshData{MeshPrimitive::Triangles, {}, vertexData, {
+        MeshAttributeData{MeshAttribute::Position, vertexDataIn}
+    }};
     /* Here the original positions array is shrunk from 3 items to 2 and the
        vertex data too, which should work without asserting -- comparing just
        the original view would not pass, which is wrong */
     MeshData{MeshPrimitive::Triangles, {}, vertexData.prefix(16), {
-        MeshAttributeData{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData)}
+        MeshAttributeData{MeshAttribute::Position, vertexDataIn}
     }, 2};
 
     std::ostringstream out;
     Error redirectError{&out};
+    /* Basic "obviously wrong" case with owned vertex data */
+    MeshData{MeshPrimitive::Triangles, std::move(sameVertexDataButMovable), {
+        /* This is here to test that not just the first attribute gets checked
+           and that the message shows proper ID */
+        MeshAttributeData{MeshAttribute::Position, vertexDataIn},
+        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(vertexDataOut)}
+    }};
+    /* A "slightly off" view that exceeds the original by one byte */
+    MeshData{MeshPrimitive::Triangles, {}, vertexData, {
+        MeshAttributeData{MeshAttribute::Position, vertexDataSlightlyOut}
+    }};
     /* Here the original positions array is extended from 3 items to 4, which
        makes it not fit anymore, and thus an assert should hit -- comparing
        just the original view would pass, which is wrong */
@@ -2119,11 +2134,6 @@ void MeshDataTest::constructAttributeNotContained() {
     MeshData{MeshPrimitive::Triangles, {}, vertexData, {
         MeshAttributeData{meshAttributeCustom(37), Containers::StridedArrayView2D<const UnsignedByte>{Containers::arrayCast<const UnsignedByte>(vertexData), {4, 5}, {5, 1}}}
     }, 5};
-    /* Verify the owning constructor does the same check */
-    MeshData{MeshPrimitive::Triangles, std::move(sameVertexDataButMovable), {
-        MeshAttributeData{MeshAttribute::Position, vertexDataIn},
-        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(vertexDataOut)}
-    }};
     /* And if we have no data at all, it doesn't try to dereference them but
        still checks properly */
     MeshData{MeshPrimitive::Triangles, nullptr, {
@@ -2147,9 +2157,10 @@ void MeshDataTest::constructAttributeNotContained() {
         MeshAttributeData{meshAttributeCustom(37), VertexFormat::UnsignedByte, 24, 3, -8}
     }};
     CORRADE_COMPARE(out.str(),
+        "Trade::MeshData: attribute 1 [0xdead:0xdec5] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
+        "Trade::MeshData: attribute 0 [0xbaddaa:0xbaddc2] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc9] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc2] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
-        "Trade::MeshData: attribute 1 [0xdead:0xdec5] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc1] is not contained in passed vertexData array [0x0:0x0]\n"
 
         "Trade::MeshData: offset-only attribute 0 spans 25 bytes but passed vertexData array has only 24\n"

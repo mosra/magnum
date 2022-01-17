@@ -1826,27 +1826,24 @@ void SceneDataTest::constructMappingDataNotContained() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    const Containers::Array<char> data{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
-    Containers::Array<char> sameDataButMovable{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
+    const Containers::Array<char> data{reinterpret_cast<char*>(0xbadda9), 5*sizeof(UnsignedShort), [](char*, std::size_t){}};
+    Containers::Array<char> sameDataButMovable{reinterpret_cast<char*>(0xbadda9), 5*sizeof(UnsignedShort), [](char*, std::size_t){}};
     Containers::ArrayView<UnsignedShort> dataIn{reinterpret_cast<UnsignedShort*>(0xbadda9), 5};
     Containers::ArrayView<UnsignedShort> dataSlightlyOut{reinterpret_cast<UnsignedShort*>(0xbaddaa), 5};
     Containers::ArrayView<UnsignedShort> dataOut{reinterpret_cast<UnsignedShort*>(0xdead), 5};
 
     std::ostringstream out;
     Error redirectError{&out};
-    /* First a "slightly off" view that exceeds the original by one byte */
+    /* Basic "obviously wrong" case with owned data */
+    SceneData{SceneMappingType::UnsignedShort, 5, std::move(sameDataButMovable), {
+        /* This is here to test that not just the first field gets checked and
+           that the message shows proper ID */
+        SceneFieldData{SceneField::Light, dataIn, dataIn},
+        SceneFieldData{SceneField::Mesh, dataOut, dataIn}
+    }};
+    /* A "slightly off" view that exceeds the original by one byte */
     SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
         SceneFieldData{SceneField::Mesh, dataSlightlyOut, dataIn}
-    }};
-    /* Second a view that's in a completely different location */
-    SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
-        SceneFieldData{SceneField::Light, dataIn, dataIn},
-        SceneFieldData{SceneField::Mesh, dataOut, dataIn}
-    }};
-    /* Verify the owning constructor does the checks as well */
-    SceneData{SceneMappingType::UnsignedShort, 5, std::move(sameDataButMovable), {
-        SceneFieldData{SceneField::Light, dataIn, dataIn},
-        SceneFieldData{SceneField::Mesh, dataOut, dataIn}
     }};
     /* And if we have no data at all, it doesn't try to dereference them but
        still checks properly */
@@ -1866,9 +1863,8 @@ void SceneDataTest::constructMappingDataNotContained() {
         SceneFieldData{SceneField::Mesh, 6, SceneMappingType::UnsignedByte, 24, -4, SceneFieldType::UnsignedByte, 0, 4}
     }};
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneData: mapping data [0xdead:0xdeb7] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: mapping data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
-        "Trade::SceneData: mapping data [0xdead:0xdeb7] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
-        "Trade::SceneData: mapping data [0xdead:0xdeb7] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: mapping data [0xdead:0xdeb7] of field 0 are not contained in passed data array [0x0:0x0]\n"
 
         "Trade::SceneData: offset-only mapping data of field 0 span 25 bytes but passed data array has only 24\n"
@@ -1893,24 +1889,21 @@ void SceneDataTest::constructFieldDataNotContained() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    /* First a "slightly off" view that exceeds the original by one byte */
-    SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
-        SceneFieldData{SceneField::Mesh, dataIn, dataSlightlyOut}
-    }};
-    /* Second a view that's in a completely different location */
-    SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
+    /* Basic "obviously wrong" case with owned data */
+    SceneData{SceneMappingType::UnsignedShort, 5, std::move(sameDataButMovable), {
+        /* This is here to test that not just the first attribute gets checked
+           and that the message shows proper ID */
         SceneFieldData{SceneField::Light, dataIn, dataIn},
         SceneFieldData{SceneField::Mesh, dataIn, dataOut}
+    }};
+    /* A "slightly off" view that exceeds the original by one byte */
+    SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
+        SceneFieldData{SceneField::Mesh, dataIn, dataSlightlyOut}
     }};
     /* Verify array size is taken into account as well. If not, the data would
        span only 7 bytes out of 10 (instead of 12), which is fine. */
     SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
         SceneFieldData{sceneFieldCustom(37), dataIn.prefix(2), Containers::StridedArrayView2D<UnsignedByte>{Containers::ArrayView<UnsignedByte>{reinterpret_cast<UnsignedByte*>(0xbadda9), 12}, {2, 6}}}
-    }};
-    /* Verify the owning constructor does the checks as well */
-    SceneData{SceneMappingType::UnsignedShort, 5, std::move(sameDataButMovable), {
-        SceneFieldData{SceneField::Light, dataIn, dataIn},
-        SceneFieldData{SceneField::Mesh, dataIn, dataOut}
     }};
     /* Not checking for nullptr data, since that got checked for mapping view
        already and there's no way to trigger it for fields */
@@ -1932,10 +1925,9 @@ void SceneDataTest::constructFieldDataNotContained() {
         SceneFieldData{SceneField::Mesh, 6, SceneMappingType::UnsignedByte, 0, 4, SceneFieldType::UnsignedByte, 24, -4}
     }};
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneData: field data [0xdead:0xdeb7] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: field data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
-        "Trade::SceneData: field data [0xdead:0xdeb7] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: field data [0xbadda9:0xbaddb5] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
-        "Trade::SceneData: field data [0xdead:0xdeb7] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
 
         "Trade::SceneData: offset-only field data of field 0 span 25 bytes but passed data array has only 24\n"
         "Trade::SceneData: offset-only field data of field 0 span 25 bytes but passed data array has only 24\n"
