@@ -153,6 +153,7 @@ void ReferenceTest::owned() {
     CORRADE_VERIFY(owned.isIndexed());
     CORRADE_COMPARE(owned.indexCount(), cube.indexCount());
     CORRADE_COMPARE(owned.indexType(), cube.indexType());
+    CORRADE_COMPARE(owned.indexOffset(), cube.indexOffset());
     CORRADE_COMPARE(owned.vertexCount(), cube.vertexCount());
     CORRADE_COMPARE(owned.attributeCount(), cube.attributeCount());
 
@@ -197,6 +198,7 @@ void ReferenceTest::ownedNoAttributeVertexData() {
     CORRADE_VERIFY(owned.isIndexed());
     CORRADE_COMPARE(owned.indexCount(), 3);
     CORRADE_COMPARE(owned.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE(owned.indexOffset(), 0);
     CORRADE_COMPARE(owned.vertexCount(), 42);
     CORRADE_COMPARE(owned.attributeCount(), 0);
 
