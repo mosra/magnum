@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Endianness.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -93,6 +94,7 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void interleaveMeshDataExtraOffsetOnly();
     void interleaveMeshDataExtraImplementationSpecificVertexFormat();
     void interleaveMeshDataAlreadyInterleavedMove();
+    void interleaveMeshDataAlreadyInterleavedMoveIndices();
     void interleaveMeshDataAlreadyInterleavedMoveNonOwned();
     void interleaveMeshDataNothing();
 };
@@ -106,6 +108,17 @@ const struct {
     {"", VertexFormat::Vector3, {}, true},
     {"implementation-specific vertex format", vertexFormatWrap(0xcaca), {}, true},
     {"don't preserve layout", VertexFormat::Vector3, InterleaveFlags{}, false}
+};
+
+const struct {
+    const char* name;
+    Containers::Optional<InterleaveFlags> flags;
+    bool flip;
+    bool shouldPreserveLayoutInCopy, shouldPreserveLayoutInMove;
+} StridedIndicesData[]{
+    {"", {}, false, false, true},
+    {"strided indices", {}, true, false, false},
+    {"strided indices, preserved", InterleaveFlag::PreserveInterleavedAttributes|InterleaveFlag::PreserveStridedIndices, true, true, true}
 };
 
 InterleaveTest::InterleaveTest() {
@@ -153,9 +166,12 @@ InterleaveTest::InterleaveTest() {
     addTests({&InterleaveTest::interleavedLayoutNothing,
               &InterleaveTest::interleavedLayoutRvalue,
 
-              &InterleaveTest::interleaveMeshData,
-              &InterleaveTest::interleaveMeshDataIndexed,
-              &InterleaveTest::interleaveMeshDataImplementationSpecificVertexFormat,
+              &InterleaveTest::interleaveMeshData});
+
+    addInstancedTests({&InterleaveTest::interleaveMeshDataIndexed},
+        Containers::arraySize(StridedIndicesData));
+
+    addTests({&InterleaveTest::interleaveMeshDataImplementationSpecificVertexFormat,
               &InterleaveTest::interleaveMeshDataExtra,
               &InterleaveTest::interleaveMeshDataExtraEmpty,
               &InterleaveTest::interleaveMeshDataExtraOriginalEmpty,
@@ -165,6 +181,9 @@ InterleaveTest::InterleaveTest() {
 
     addInstancedTests({&InterleaveTest::interleaveMeshDataAlreadyInterleavedMove},
         Containers::arraySize(AlreadyInterleavedData));
+
+    addInstancedTests({&InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveIndices},
+        Containers::arraySize(StridedIndicesData));
 
     addTests({&InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveNonOwned,
               &InterleaveTest::interleaveMeshDataNothing});
@@ -1162,27 +1181,46 @@ void InterleaveTest::interleaveMeshData() {
 }
 
 void InterleaveTest::interleaveMeshDataIndexed() {
+    auto&& data = StridedIndicesData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     /* Testing also offset */
     UnsignedShort indexData[50 + 3];
-    indexData[50] = 0;
-    indexData[51] = 2;
-    indexData[52] = 1;
+    Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayView(indexData).suffix(50);
+    if(data.flip) indices = indices.flipped<0>();
+    Utility::copy({0, 2, 1}, indices);
+
     Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
-    Trade::MeshData data{MeshPrimitive::TriangleFan,
-        {}, Containers::arrayView(indexData), Trade::MeshIndexData{Containers::arrayView(indexData).suffix(50)},
+    Trade::MeshData mesh{MeshPrimitive::TriangleFan,
+        {}, Containers::arrayView(indexData), Trade::MeshIndexData{indices},
         {}, Containers::arrayView(positions), {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)}
         }};
 
-    Trade::MeshData interleaved = MeshTools::interleave(data);
+    Trade::MeshData interleaved = data.flags ?
+        MeshTools::interleave(mesh, {}, *data.flags) :
+        MeshTools::interleave(mesh);
     CORRADE_VERIFY(MeshTools::isInterleaved(interleaved));
     CORRADE_COMPARE(interleaved.primitive(), MeshPrimitive::TriangleFan);
+
     CORRADE_VERIFY(interleaved.isIndexed());
     CORRADE_COMPARE(interleaved.indexType(), MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE(interleaved.indexData().size(), 106);
     CORRADE_COMPARE_AS(interleaved.indices<UnsignedShort>(),
-        Containers::arrayView(indexData).suffix(50),
+        Containers::arrayView<UnsignedShort>({0, 2, 1}),
         TestSuite::Compare::Container);
+
+    if(data.shouldPreserveLayoutInCopy) {
+        CORRADE_COMPARE(interleaved.indexData().size(), sizeof(indexData));
+        CORRADE_COMPARE(interleaved.indexOffset(), static_cast<const char*>(indices.data()) - reinterpret_cast<const char*>(indexData));
+        CORRADE_COMPARE(interleaved.indexStride(), indices.stride());
+    } else {
+        /* Only the actually used part of the index buffer gets transferred and
+           is tightly packed */
+        CORRADE_COMPARE(interleaved.indexData().size(), 3*sizeof(UnsignedShort));
+        CORRADE_COMPARE(interleaved.indexOffset(), 0);
+        CORRADE_COMPARE(interleaved.indexStride(), sizeof(UnsignedShort));
+    }
+
     CORRADE_COMPARE(interleaved.attributeCount(), 1);
     CORRADE_COMPARE_AS(interleaved.attribute<Vector2>(Trade::MeshAttribute::Position),
         Containers::stridedArrayView(positions),
@@ -1379,6 +1417,64 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMove() {
         CORRADE_VERIFY(interleaved.attributeData().data() != attributePointer);
         CORRADE_VERIFY(interleaved.vertexData().data() != positionView.data());
     }
+}
+
+void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveIndices() {
+    auto&& data = StridedIndicesData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Testing also offset */
+    Containers::Array<char> indexData{(50 + 3)*sizeof(UnsignedShort)};
+    Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData).suffix(50);
+    if(data.flip) indices = indices.flipped<0>();
+    Utility::copy({0, 2, 1}, indices);
+
+    Containers::Array<char> vertexData{3*8};
+    Containers::StridedArrayView1D<Vector2> positionView = Containers::arrayCast<Vector2>(vertexData);
+    auto attributeData = Containers::array({
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, positionView},
+    });
+    const void* indexPointer = indexData;
+    const Trade::MeshAttributeData* attributePointer = attributeData;
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleFan,
+        std::move(indexData), Trade::MeshIndexData{indices},
+        std::move(vertexData), std::move(attributeData)};
+    CORRADE_VERIFY(MeshTools::isInterleaved(mesh));
+
+    /* To catch when the default argument becomes different */
+    Trade::MeshData interleaved = data.flags ?
+        MeshTools::interleave(std::move(mesh), {}, *data.flags) :
+        MeshTools::interleave(std::move(mesh));
+
+    CORRADE_VERIFY(MeshTools::isInterleaved(interleaved));
+    CORRADE_COMPARE(interleaved.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(interleaved.indices<UnsignedShort>(),
+        Containers::arrayView<UnsignedShort>({0, 2, 1}),
+        TestSuite::Compare::Container);
+
+    if(data.shouldPreserveLayoutInMove) {
+        /* Indices got just moved without copying, with all metadata
+           preserved */
+        CORRADE_VERIFY(interleaved.indexData().data() == indexPointer);
+        CORRADE_COMPARE(interleaved.indexData().size(), (50 + 3)*sizeof(UnsignedShort));
+        CORRADE_COMPARE(interleaved.indexOffset(), static_cast<const char*>(indices.data()) - reinterpret_cast<const char*>(indexPointer));
+        CORRADE_COMPARE(interleaved.indexStride(), indices.stride());
+    } else {
+        /* Only the actually used part of the index buffer gets transferred and
+           is tightly packed */
+        CORRADE_VERIFY(interleaved.indexData().data() != indexData);
+        CORRADE_COMPARE(interleaved.indexData().size(), 3*sizeof(UnsignedShort));
+        CORRADE_COMPARE(interleaved.indexOffset(), 0);
+        CORRADE_COMPARE(interleaved.indexStride(), sizeof(UnsignedShort));
+    }
+
+    CORRADE_COMPARE(interleaved.attributeCount(), 1);
+    CORRADE_COMPARE(interleaved.attributeStride(0), 8);
+    CORRADE_VERIFY(interleaved.attributeData().data() == attributePointer);
+
+    CORRADE_COMPARE(interleaved.vertexCount(), 3);
+    CORRADE_VERIFY(interleaved.vertexData().data() == positionView.data());
 }
 
 void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveNonOwned() {

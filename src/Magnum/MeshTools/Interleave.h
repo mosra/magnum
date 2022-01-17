@@ -209,7 +209,24 @@ enum class InterleaveFlag: UnsignedInt {
      * removing all padding. In that case an implementation-specific
      * @ref VertexFormat can't be used for any attribute.
      */
-    PreserveInterleavedAttributes = 1 << 0
+    PreserveInterleavedAttributes = 1 << 0,
+
+    /**
+     * If a mesh is indexed, makes @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags)
+     * preserve the index buffer even if it's not tightly packed. Since such
+     * data layouts are not commonly supported by GPU APIs, this flag is not
+     * set by default.
+     *
+     * If not set and the index buffer is strided, a tightly packed copy with
+     * the same index type is allocated for the output, dropping also any
+     * padding before or after the original index view.
+     *
+     * Has no effect when passed to @ref interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "interleavedLayout()"
+     * as that function doesn't preserve the index buffer. Has no effect when
+     * passed to @ref concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>>, InterleaveFlags) "concatenate()"
+     * as that function allocates a new combined index buffer anyway.
+     */
+    PreserveStridedIndices = 1 << 1
 };
 
 /**
@@ -335,14 +352,17 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(Trade::MeshData&& data
 @brief Interleave mesh data
 @m_since{2020,06}
 
-Returns a copy of @p data with all attributes interleaved. Indices (if any) are
-kept as-is. The @p extra attributes, if any, are interleaved together with
-existing attributes (or, in case the attribute view is empty, only the
-corresponding space for given attribute type is reserved, with memory left
-uninitialized). The data layouting is done by @ref interleavedLayout() with the
-@p flags parameter propagated to it, see its documentation for detailed
-behavior description. Note that offset-only @ref Trade::MeshAttributeData
-instances are not supported in the @p extra array.
+Returns a copy of @p data with all attributes interleaved. The @p extra
+attributes, if any, are interleaved together with existing attributes (or, in
+case the attribute view is empty, only the corresponding space for given
+attribute type is reserved, with memory left uninitialized). The data layouting
+is done by @ref interleavedLayout() with the @p flags parameter propagated to
+it, see its documentation for detailed behavior description. Note that
+offset-only @ref Trade::MeshAttributeData instances are not supported in the
+@p extra array.
+
+Indices (if any) are kept as-is only if they're tightly packed. Otherwise the
+behavior depends on presence of @ref InterleaveFlag::PreserveStridedIndices.
 
 Expects that each attribute in @p extra has either the same amount of elements
 as @p data vertex count or has none. This function will unconditionally make a
