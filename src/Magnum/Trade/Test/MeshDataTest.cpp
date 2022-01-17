@@ -2689,10 +2689,7 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    VertexWithImplementationSpecificData vertexData[] {
-        {456.0l},
-        {456.0l}
-    };
+    VertexWithImplementationSpecificData vertexData[2];
 
     Containers::StridedArrayView1D<long double> attribute{vertexData,
         &vertexData[0].thing, 2, sizeof(VertexWithImplementationSpecificData)};
@@ -2775,8 +2772,8 @@ void MeshDataTest::mutableAccessNotAllowed() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    const UnsignedShort indexData[]{0, 1, 0};
-    const Vector2 vertexData[]{{0.1f, 0.2f}, {0.4f, 0.5f}};
+    const UnsignedShort indexData[3]{};
+    const Vector2 vertexData[2]{};
 
     MeshIndexData indices{indexData};
     MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(vertexData)};
