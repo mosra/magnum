@@ -95,6 +95,7 @@ struct MeshDataTest: TestSuite::Tester {
     void constructIndexlessAttributeless();
     void constructIndexlessAttributelessZeroVertices();
 
+    void constructImplementationSpecificVertexFormat();
     void constructSpecialIndexStrides();
     void constructSpecialAttributeStrides();
     void constructSpecialAttributeStridesImplementationSpecificVertexFormat();
@@ -160,9 +161,7 @@ struct MeshDataTest: TestSuite::Tester {
     template<class T> void objectIdsAsArray();
     void objectIdsIntoArrayInvalidSize();
 
-    void implementationSpecificVertexFormat();
     void implementationSpecificVertexFormatWrongAccess();
-    void implementationSpecificVertexFormatNotContained();
 
     void mutableAccessNotAllowed();
 
@@ -264,6 +263,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructIndexlessAttributeless,
               &MeshDataTest::constructIndexlessAttributelessZeroVertices,
 
+              &MeshDataTest::constructImplementationSpecificVertexFormat,
               &MeshDataTest::constructSpecialIndexStrides,
               &MeshDataTest::constructSpecialAttributeStrides,
               &MeshDataTest::constructSpecialAttributeStridesImplementationSpecificVertexFormat});
@@ -388,9 +388,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::objectIdsAsArray<UnsignedInt>,
               &MeshDataTest::objectIdsIntoArrayInvalidSize,
 
-              &MeshDataTest::implementationSpecificVertexFormat,
               &MeshDataTest::implementationSpecificVertexFormatWrongAccess,
-              &MeshDataTest::implementationSpecificVertexFormatNotContained,
 
               &MeshDataTest::mutableAccessNotAllowed,
 
@@ -1830,6 +1828,53 @@ void MeshDataTest::constructIndexlessAttributelessZeroVertices() {
     CORRADE_COMPARE(data.attributeCount(), 0);
 }
 
+/* MSVC 2015 doesn't like anonymous bitfields in inline structs, so putting the
+   declaration outside */
+struct VertexWithImplementationSpecificData {
+    Long:64;
+    long double thing;
+};
+
+void MeshDataTest::constructImplementationSpecificVertexFormat() {
+    VertexWithImplementationSpecificData vertexData[] {
+        {456.0l},
+        {456.0l}
+    };
+
+    /* Constructing should work w/o asserts */
+    Containers::StridedArrayView1D<long double> attribute{vertexData,
+        &vertexData[0].thing, 2, sizeof(VertexWithImplementationSpecificData)};
+    MeshData data{MeshPrimitive::TriangleFan, DataFlag::Mutable, vertexData, {
+        MeshAttributeData{MeshAttribute::Position,
+            vertexFormatWrap(0xdead1), attribute},
+        MeshAttributeData{MeshAttribute::Normal,
+            vertexFormatWrap(0xdead2), attribute},
+        MeshAttributeData{MeshAttribute::TextureCoordinates,
+            vertexFormatWrap(0xdead3), attribute},
+        MeshAttributeData{MeshAttribute::Color,
+            vertexFormatWrap(0xdead4), attribute}}};
+
+    /* Getting typeless attribute should work also */
+    UnsignedInt format = 0xdead1;
+    for(MeshAttribute name: {MeshAttribute::Position,
+                             MeshAttribute::Normal,
+                             MeshAttribute::TextureCoordinates,
+                             MeshAttribute::Color}) {
+        CORRADE_ITERATION(name);
+        CORRADE_COMPARE(data.attributeFormat(name), vertexFormatWrap(format++));
+
+        /* The actual type size is unknown, so this will use the full stride */
+        CORRADE_COMPARE(data.attribute(name).size()[1], sizeof(VertexWithImplementationSpecificData));
+
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const long double>(
+            data.attribute(name).prefix({2, sizeof(long double)}))),
+            attribute, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const long double>(
+            data.mutableAttribute(name).prefix({2, sizeof(long double)}))),
+            attribute, TestSuite::Compare::Container);
+    }
+}
+
 void MeshDataTest::constructSpecialIndexStrides() {
     /* Every second index */
     {
@@ -2108,6 +2153,16 @@ void MeshDataTest::constructAttributeNotContained() {
     MeshData{MeshPrimitive::Triangles, {}, vertexData.prefix(16), {
         MeshAttributeData{MeshAttribute::Position, vertexDataIn}
     }, 2};
+    /* An implementation-specific vertex format has a size assumed to be 0, so
+       even though the last element starts at 0xbaddc1 it's fine */
+    MeshData{MeshPrimitive::Triangles, {}, vertexData, {
+        MeshAttributeData{MeshAttribute::Position, vertexFormatWrap(0xcaca), Containers::ArrayView<Vector2>{reinterpret_cast<Vector2*>(0xbadda9 + sizeof(Vector2)), 3}}
+    }};
+    /* This has both stride and size zero, so it's treated as both starting and
+       ending at 0xbaddc1 */
+    MeshData{MeshPrimitive::Triangles, {}, vertexData, {
+        MeshAttributeData{MeshAttribute::Position, vertexFormatWrap(0xcaca), Containers::StridedArrayView1D<Vector2>{{reinterpret_cast<Vector2*>(0xbaddc1), 1}, 1}.broadcasted<0>(3)}
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2148,6 +2203,11 @@ void MeshDataTest::constructAttributeNotContained() {
     MeshData{MeshPrimitive::Triangles, Containers::Array<char>{24}, {
         MeshAttributeData{meshAttributeCustom(37), VertexFormat::UnsignedByte, 0, 5, 5, 5}
     }};
+    /* An implementation-specific vertex format has a size assumed to be 0, but
+       even then this exceeds the data by one byte */
+    MeshData{MeshPrimitive::Triangles, {}, vertexData, {
+        MeshAttributeData{MeshAttribute::Position, vertexFormatWrap(0xcaca), Containers::ArrayView<Vector2>{reinterpret_cast<Vector2*>(0xbadda9 + sizeof(Vector2) + 1), 3}}
+    }};
     /* And the final boss, negative strides. Both only caught if the element
        size gets properly added to the larger offset, not just the "end". */
     MeshData{MeshPrimitive::Triangles, {}, vertexData, {
@@ -2155,6 +2215,12 @@ void MeshDataTest::constructAttributeNotContained() {
     }};
     MeshData{MeshPrimitive::Triangles, Containers::Array<char>{24}, {
         MeshAttributeData{meshAttributeCustom(37), VertexFormat::UnsignedByte, 24, 3, -8}
+    }};
+    /* In this case the implementation-specific format is treated as having a
+       zero size, and the stride is zero as well, but since it starts one byte
+       after, it's wrong */
+    MeshData{MeshPrimitive::Triangles, {}, vertexData, {
+        MeshAttributeData{MeshAttribute::Position, vertexFormatWrap(0xcaca), Containers::StridedArrayView1D<Vector2>{{reinterpret_cast<Vector2*>(0xbaddc1 + 1), 1}, 1}.broadcasted<0>(3)}
     }};
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData: attribute 1 [0xdead:0xdec5] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
@@ -2166,8 +2232,11 @@ void MeshDataTest::constructAttributeNotContained() {
         "Trade::MeshData: offset-only attribute 0 spans 25 bytes but passed vertexData array has only 24\n"
         "Trade::MeshData: offset-only attribute 0 spans 25 bytes but passed vertexData array has only 24\n"
 
+        "Trade::MeshData: attribute 0 [0xbaddb2:0xbaddc2] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
+
         "Trade::MeshData: attribute 0 [0xbaddaa:0xbaddc2] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: offset-only attribute 0 spans 25 bytes but passed vertexData array has only 24\n"
+        "Trade::MeshData: attribute 0 [0xbaddc2:0xbaddc2] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
     );
 }
 
@@ -3054,53 +3123,6 @@ void MeshDataTest::objectIdsIntoArrayInvalidSize() {
         "Trade::MeshData::objectIdsInto(): expected a view with 3 elements but got 2\n");
 }
 
-/* MSVC 2015 doesn't like anonymous bitfields in inline structs, so putting the
-   declaration outside */
-struct VertexWithImplementationSpecificData {
-    Long:64;
-    long double thing;
-};
-
-void MeshDataTest::implementationSpecificVertexFormat() {
-    VertexWithImplementationSpecificData vertexData[] {
-        {456.0l},
-        {456.0l}
-    };
-
-    /* Constructing should work w/o asserts */
-    Containers::StridedArrayView1D<long double> attribute{vertexData,
-        &vertexData[0].thing, 2, sizeof(VertexWithImplementationSpecificData)};
-    MeshData data{MeshPrimitive::TriangleFan, DataFlag::Mutable, vertexData, {
-        MeshAttributeData{MeshAttribute::Position,
-            vertexFormatWrap(0xdead1), attribute},
-        MeshAttributeData{MeshAttribute::Normal,
-            vertexFormatWrap(0xdead2), attribute},
-        MeshAttributeData{MeshAttribute::TextureCoordinates,
-            vertexFormatWrap(0xdead3), attribute},
-        MeshAttributeData{MeshAttribute::Color,
-            vertexFormatWrap(0xdead4), attribute}}};
-
-    /* Getting typeless attribute should work also */
-    UnsignedInt format = 0xdead1;
-    for(MeshAttribute name: {MeshAttribute::Position,
-                             MeshAttribute::Normal,
-                             MeshAttribute::TextureCoordinates,
-                             MeshAttribute::Color}) {
-        CORRADE_ITERATION(name);
-        CORRADE_COMPARE(data.attributeFormat(name), vertexFormatWrap(format++));
-
-        /* The actual type size is unknown, so this will use the full stride */
-        CORRADE_COMPARE(data.attribute(name).size()[1], sizeof(VertexWithImplementationSpecificData));
-
-        CORRADE_COMPARE_AS((Containers::arrayCast<1, const long double>(
-            data.attribute(name).prefix({2, sizeof(long double)}))),
-            attribute, TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS((Containers::arrayCast<1, const long double>(
-            data.mutableAttribute(name).prefix({2, sizeof(long double)}))),
-            attribute, TestSuite::Compare::Container);
-    }
-}
-
 void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -3163,25 +3185,6 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
         "Trade::MeshData::textureCoordinatesInto(): can't extract data out of an implementation-specific vertex format 0xdead3\n"
         "Trade::MeshData::colorsInto(): can't extract data out of an implementation-specific vertex format 0xdead4\n"
         "Trade::MeshData::objectIdsInto(): can't extract data out of an implementation-specific vertex format 0xdead4\n");
-}
-
-void MeshDataTest::implementationSpecificVertexFormatNotContained() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    Containers::Array<char> vertexData{reinterpret_cast<char*>(0xbadda9), 3, [](char*, std::size_t){}};
-    Containers::ArrayView<char> vertexData2{reinterpret_cast<char*>(0xdead), 3};
-    MeshAttributeData positions{MeshAttribute::Position, vertexFormatWrap(0x3a), vertexData};
-    MeshAttributeData positions2{MeshAttribute::Position, vertexFormatWrap(0x3a), vertexData2};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    MeshData{MeshPrimitive::Triangles, std::move(vertexData), {positions, positions2}};
-    CORRADE_COMPARE(out.str(),
-        /* Assumes size of the type is 0, so the diagnostic is different from
-           constructAttributeNotContained() */
-        "Trade::MeshData: attribute 1 [0xdead:0xdeaf] is not contained in passed vertexData array [0xbadda9:0xbaddac]\n");
 }
 
 void MeshDataTest::mutableAccessNotAllowed() {
