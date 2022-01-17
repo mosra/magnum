@@ -48,8 +48,10 @@ struct MeshDataTest: TestSuite::Tester {
     void constructIndexStrided();
     void constructIndexStridedWrongStride();
     void constructIndexTypeErasedContiguous();
+    void constructIndexTypeErasedContiguousImplementationSpecificFormat();
     void constructIndexTypeErasedContiguousWrongSize();
     void constructIndexTypeErasedStrided();
+    void constructIndexTypeErasedStridedImplementationSpecificFormat();
     void constructIndexTypeErasedStridedWrongStride();
     void constructIndex2D();
     void constructIndex2DNotIndexed();
@@ -95,8 +97,10 @@ struct MeshDataTest: TestSuite::Tester {
     void constructIndexlessAttributeless();
     void constructIndexlessAttributelessZeroVertices();
 
+    void constructImplementationSpecificIndexType();
     void constructImplementationSpecificVertexFormat();
     void constructSpecialIndexStrides();
+    void constructSpecialIndexStridesImplementationSpecificIndexType();
     void constructSpecialAttributeStrides();
     void constructSpecialAttributeStridesImplementationSpecificVertexFormat();
 
@@ -161,6 +165,7 @@ struct MeshDataTest: TestSuite::Tester {
     template<class T> void objectIdsAsArray();
     void objectIdsIntoArrayInvalidSize();
 
+    void implementationSpecificIndexTypeWrongAccess();
     void implementationSpecificVertexFormatWrongAccess();
 
     void mutableAccessNotAllowed();
@@ -215,8 +220,10 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructIndexStrided,
               &MeshDataTest::constructIndexStridedWrongStride,
               &MeshDataTest::constructIndexTypeErasedContiguous,
+              &MeshDataTest::constructIndexTypeErasedContiguousImplementationSpecificFormat,
               &MeshDataTest::constructIndexTypeErasedContiguousWrongSize,
               &MeshDataTest::constructIndexTypeErasedStrided,
+              &MeshDataTest::constructIndexTypeErasedStridedImplementationSpecificFormat,
               &MeshDataTest::constructIndexTypeErasedStridedWrongStride,
               &MeshDataTest::constructIndex2D,
               &MeshDataTest::constructIndex2DNotIndexed,
@@ -263,8 +270,10 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructIndexlessAttributeless,
               &MeshDataTest::constructIndexlessAttributelessZeroVertices,
 
+              &MeshDataTest::constructImplementationSpecificIndexType,
               &MeshDataTest::constructImplementationSpecificVertexFormat,
               &MeshDataTest::constructSpecialIndexStrides,
+              &MeshDataTest::constructSpecialIndexStridesImplementationSpecificIndexType,
               &MeshDataTest::constructSpecialAttributeStrides,
               &MeshDataTest::constructSpecialAttributeStridesImplementationSpecificVertexFormat});
 
@@ -388,6 +397,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::objectIdsAsArray<UnsignedInt>,
               &MeshDataTest::objectIdsIntoArrayInvalidSize,
 
+              &MeshDataTest::implementationSpecificIndexTypeWrongAccess,
               &MeshDataTest::implementationSpecificVertexFormatWrongAccess,
 
               &MeshDataTest::mutableAccessNotAllowed,
@@ -601,6 +611,19 @@ void MeshDataTest::constructIndexTypeErasedContiguous() {
     CORRADE_COMPARE(indices.data().stride(), 2);
 }
 
+void MeshDataTest::constructIndexTypeErasedContiguousImplementationSpecificFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    const char indexData[3*2]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshIndexData{meshIndexTypeWrap(0xcaca), indexData};
+    CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: can't create index data from a contiguous view and an implementation-specific type 0xcaca, pass a strided view instead\n");
+}
+
 void MeshDataTest::constructIndexTypeErasedContiguousWrongSize() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -631,6 +654,16 @@ void MeshDataTest::constructIndexTypeErasedStrided() {
     CORRADE_COMPARE(data.data(), IndexData);
     CORRADE_COMPARE(data.size(), 3);
     CORRADE_COMPARE(data.stride(), 4);
+}
+
+void MeshDataTest::constructIndexTypeErasedStridedImplementationSpecificFormat() {
+    const char indexData[3*2]{};
+
+    MeshIndexData indices{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const char>{indexData, 3, 2}};
+    CORRADE_COMPARE(indices.type(), meshIndexTypeWrap(0xcaca));
+    CORRADE_COMPARE(indices.data().data(), indexData);
+    CORRADE_COMPARE(indices.data().size(), 3);
+    CORRADE_COMPARE(indices.data().stride(), 2);
 }
 
 void MeshDataTest::constructIndexTypeErasedStridedWrongStride() {
@@ -1832,8 +1865,40 @@ void MeshDataTest::constructIndexlessAttributelessZeroVertices() {
    declaration outside */
 struct VertexWithImplementationSpecificData {
     Long:64;
+    /* Using some definitely not a vertex format to test there's no weird
+       compile-time assertion preventing this */
     long double thing;
 };
+
+void MeshDataTest::constructImplementationSpecificIndexType() {
+    /* Using some definitely not an index type to test there's no weird
+       compile-time assertion preventing this. Also using a strided view to
+       have the same case as with implementation-specific vertex formats
+       below -- for an implementation-specific type it's always strided,
+       anyway. */
+    VertexWithImplementationSpecificData indexData[]{{12.3l}, {34.5l}, {45.6l}};
+
+    /* Constructing should work w/o asserts */
+    Containers::StridedArrayView1D<long double> indices{indexData,
+        &indexData[0].thing, 3, sizeof(VertexWithImplementationSpecificData)};
+    MeshData data{MeshPrimitive::Triangles, DataFlag::Mutable, indexData,
+        MeshIndexData{meshIndexTypeWrap(0xcaca), indices}, 1};
+
+    /* Getting typeless indices should work also */
+    CORRADE_COMPARE(data.indexType(), meshIndexTypeWrap(0xcaca));
+    CORRADE_COMPARE(data.indexCount(), 3);
+    CORRADE_COMPARE(data.indexStride(), sizeof(VertexWithImplementationSpecificData));
+
+    /* The actual type size is unknown, so this will use the full stride */
+    CORRADE_COMPARE(data.indices().size()[1], sizeof(VertexWithImplementationSpecificData));
+
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const long double>(
+        data.indices().prefix({3, sizeof(long double)}))),
+        indices, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const long double>(
+        data.mutableIndices().prefix({3, sizeof(long double)}))),
+        indices, TestSuite::Compare::Container);
+}
 
 void MeshDataTest::constructImplementationSpecificVertexFormat() {
     VertexWithImplementationSpecificData vertexData[] {
@@ -1971,6 +2036,75 @@ void MeshDataTest::constructSpecialIndexStrides() {
     }
 }
 
+void MeshDataTest::constructSpecialIndexStridesImplementationSpecificIndexType() {
+    /* Same as constructSpecialIndexStrides() except for custom index types,
+       which causes the indices() to return the full stride in second
+       dimension */
+
+    /* Every second index */
+    {
+        Containers::Array<char> indexData{sizeof(UnsignedShort)*8};
+        Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
+        Utility::copy({1, 0, 2, 0, 3, 0, 4, 0}, indices);
+        MeshData mesh{MeshPrimitive::Points, std::move(indexData), MeshIndexData{meshIndexTypeWrap(0xcaca), indices.every(2)}, 1};
+
+        CORRADE_COMPARE(mesh.indexStride(), 4);
+
+        /* Type-erased access with a cast later. The size is the whole stride,
+           so we need to take just the prefix we want. */
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(mesh.indices().prefix({mesh.indexCount(), 2}))),
+            Containers::arrayView<UnsignedShort>({1, 2, 3, 4}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, UnsignedShort>(mesh.mutableIndices().prefix({mesh.indexCount(), 2}))),
+            Containers::stridedArrayView<UnsignedShort>({1, 2, 3, 4}),
+            TestSuite::Compare::Container);
+
+        /* Typed access and convenience accessors won't work here due to the
+           implementation-specific format */
+
+    /* Zero stride. The element size is zero as well, meaning there's no way to
+       access anything except for directly interpreting the data pointer. Which
+       is actually as desired for implementation-specific index types. */
+    } {
+        Containers::Array<char> indexData{sizeof(UnsignedShort)};
+        Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
+        indices[0] = 15;
+        MeshData mesh{MeshPrimitive::Points, std::move(indexData), MeshIndexData{meshIndexTypeWrap(0xcaca), indices.broadcasted<0>(4)}, 1};
+
+        CORRADE_COMPARE(mesh.indexStride(), 0);
+
+        CORRADE_COMPARE(mesh.indices().size(), (Containers::StridedDimensions<2, std::size_t>{4, 0}));
+        CORRADE_COMPARE(mesh.mutableIndices().size(), (Containers::StridedDimensions<2, std::size_t>{4, 0}));
+        CORRADE_COMPARE(mesh.indices().stride(), (Containers::StridedDimensions<2, std::ptrdiff_t>{0, 1}));
+        CORRADE_COMPARE(mesh.mutableIndices().stride(), (Containers::StridedDimensions<2, std::ptrdiff_t>{0, 1}));
+        CORRADE_COMPARE(*reinterpret_cast<const UnsignedShort*>(mesh.indices().data()), 15);
+        CORRADE_COMPARE(*reinterpret_cast<UnsignedShort*>(mesh.mutableIndices().data()), 15);
+
+        /* Typed access and convenience accessors won't work here due to the
+           implementation-specific format */
+
+    /* Negative stride */
+    } {
+        Containers::Array<char> indexData{sizeof(UnsignedShort)*4};
+        Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
+        Utility::copy({1, 2, 3, 4}, indices);
+        MeshData mesh{MeshPrimitive::Points, std::move(indexData), MeshIndexData{meshIndexTypeWrap(0xcaca), indices.flipped<0>()}, 1};
+
+        CORRADE_COMPARE(mesh.indexStride(), -2);
+
+        /* Type-erased access with a cast later */
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(mesh.indices())),
+            Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, UnsignedShort>(mesh.mutableIndices())),
+            Containers::stridedArrayView<UnsignedShort>({4, 3, 2, 1}),
+            TestSuite::Compare::Container);
+
+        /* Typed access and convenience accessors won't work here due to the
+           implementation-specific format */
+    }
+}
+
 void MeshDataTest::constructSpecialAttributeStrides() {
     Containers::Array<char> vertexData{sizeof(UnsignedShort)*5};
     Containers::StridedArrayView1D<UnsignedShort> vertices = Containers::arrayCast<UnsignedShort>(vertexData);
@@ -2099,6 +2233,12 @@ void MeshDataTest::constructIndicesNotContained() {
 
     /* "Obviously good" case */
     MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{Containers::arrayCast<UnsignedShort>(indexData)}, 1};
+    /* An implementation-specific index type has a size assumed to be 0, so
+       even though the last element starts at 0xbaddaf it's fine */
+    MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<UnsignedShort>{reinterpret_cast<UnsignedShort*>(0xbadda9 + sizeof(UnsignedShort)), 3}}, 1};
+    /* This has both stride and size zero, so it's treated as both starting and
+       ending at 0xbaddaf */
+    MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<UnsignedShort>{{reinterpret_cast<UnsignedShort*>(0xbaddaf), 1}, 1}.broadcasted<0>(3)}, 1};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2114,9 +2254,16 @@ void MeshDataTest::constructIndicesNotContained() {
     /* If we have no data at all, it doesn't try to dereference them but still
        checks properly */
     MeshData{MeshPrimitive::Triangles, nullptr, MeshIndexData{indexDataOut}, 1};
+    /* An implementation-specific index type has a size assumed to be 0, but
+       even then this exceeds the data by one byte */
+    MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<UnsignedShort>{reinterpret_cast<UnsignedShort*>(0xbadda9 + sizeof(UnsignedShort) + 1), 3}}, 1};
     /* And the final boss, negative strides. Only caught if the element size
        gets properly added to the larger offset, not just the "end". */
     MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{stridedArrayView(indexDataSlightlyOut).flipped<0>()}, 1};
+    /* In this case the implementation-specific type is treated as having a
+       zero size, and the stride is zero as well, but since it starts one byte
+       after, it's wrong */
+    MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<UnsignedShort>{{reinterpret_cast<UnsignedShort*>(0xbaddaf + 1), 1}, 1}.broadcasted<0>(3)}, 1};
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
         "Trade::MeshData: indices [0xbaddaa:0xbaddb0] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
@@ -2125,7 +2272,10 @@ void MeshDataTest::constructIndicesNotContained() {
         "Trade::MeshData: indexData passed for a non-indexed mesh\n"
         "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0x0:0x0]\n"
 
-        "Trade::MeshData: indices [0xbaddaa:0xbaddb0] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n");
+        "Trade::MeshData: indices [0xbaddac:0xbaddb0] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
+
+        "Trade::MeshData: indices [0xbaddaa:0xbaddb0] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
+        "Trade::MeshData: indices [0xbaddb0:0xbaddb0] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n");
 }
 
 void MeshDataTest::constructAttributeNotContained() {
@@ -3121,6 +3271,29 @@ void MeshDataTest::objectIdsIntoArrayInvalidSize() {
     data.objectIdsInto(destination);
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData::objectIdsInto(): expected a view with 3 elements but got 2\n");
+}
+
+void MeshDataTest::implementationSpecificIndexTypeWrongAccess() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    VertexWithImplementationSpecificData indexData[3];
+
+    Containers::StridedArrayView1D<long double> indices{indexData,
+        &indexData[0].thing, 3, sizeof(VertexWithImplementationSpecificData)};
+    MeshData data{MeshPrimitive::Triangles, DataFlag::Mutable, indexData,
+        MeshIndexData{meshIndexTypeWrap(0xcaca), indices}, 1};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.indices<UnsignedInt>();
+    data.mutableIndices<UnsignedInt>();
+    data.indicesAsArray();
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::indices(): can't cast data from an implementation-specific index type 0xcaca\n"
+        "Trade::MeshData::mutableIndices(): can't cast data from an implementation-specific index type 0xcaca\n"
+        "Trade::MeshData::indicesInto(): can't extract data out of an implementation-specific index type 0xcaca\n");
 }
 
 void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {

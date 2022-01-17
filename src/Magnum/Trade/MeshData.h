@@ -1180,13 +1180,15 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Mesh indices
          *
-         * For an indexed mesh, the second dimension of the view is guaranteed
-         * to be contiguous and its size is equal to type size, even in case
-         * there's zero indices. For a non-indexed mesh, the returned view has
-         * a zero size in both dimensions. In rare cases the first dimension
-         * stride may be different from the index type size and even be zero or
-         * negative, such data layouts are however not commonly supported by
-         * GPU APIs.
+         * For an indexed mesh, the second dimension represent the actual data
+         * type (its size is equal to type size for known @ref MeshIndexType
+         * values, and to *absolute* @ref indexStride() for
+         * implementation-specific values), even in case there's zero indices,
+         * and is guaranteed to be contiguous. For a non-indexed mesh, the
+         * returned view has a zero size in both dimensions. In rare cases the
+         * first dimension stride may be different from the index type size and
+         * even be zero or negative, such data layouts are however not commonly
+         * supported by GPU APIs.
          *
          * Use the templated overload below to get the indices in a concrete
          * type.
@@ -1956,6 +1958,8 @@ namespace Implementation {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T, class> MeshIndexData::MeshIndexData(const MeshIndexType type, T&& data) noexcept: _type{type} {
     const Containers::ArrayView<const void> erased = data;
+    CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(type),
+        "Trade::MeshIndexData: can't create index data from a contiguous view and an implementation-specific type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(type)) << Debug::nospace << ", pass a strided view instead", );
     const std::size_t typeSize = meshIndexTypeSize(type);
     CORRADE_ASSERT(erased.size()%typeSize == 0,
         "Trade::MeshIndexData: view size" << erased.size() << "does not correspond to" << type, );
@@ -2274,6 +2278,8 @@ template<class T> Containers::StridedArrayView1D<const T> MeshData::indices() co
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
+    CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(_indexType),
+        "Trade::MeshData::indices(): can't cast data from an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(_indexType)), {});
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
         "Trade::MeshData::indices(): indices are" << _indexType << "but requested" << Implementation::meshIndexTypeFor<T>(), {});
     return Containers::arrayCast<1, const T>(data);
@@ -2286,6 +2292,8 @@ template<class T> Containers::StridedArrayView1D<T> MeshData::mutableIndices() {
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
+    CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(_indexType),
+        "Trade::MeshData::mutableIndices(): can't cast data from an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(_indexType)), {});
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
         "Trade::MeshData::mutableIndices(): indices are" << _indexType << "but requested" << Implementation::meshIndexTypeFor<T>(), {});
     return Containers::arrayCast<1, T>(data);

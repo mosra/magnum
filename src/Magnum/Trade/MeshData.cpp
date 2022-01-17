@@ -128,6 +128,10 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
     CORRADE_ASSERT(_indexCount || _indexData.empty(),
         "Trade::MeshData: indexData passed for a non-indexed mesh", );
     if(_indexCount) {
+        const UnsignedInt typeSize =
+            isMeshIndexTypeImplementationSpecific(_indexType) ? 0 :
+                meshIndexTypeSize(_indexType);
+
         const void* begin = _indices;
         /* C integer promotion rules are weird, without the Int the result is
            an unsigned 32-bit value that messes things up on 64bit */
@@ -135,7 +139,7 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
         /* Flip for negative stride */
         if(begin > end) std::swap(begin, end);
         /* Add the last element size to the higher address */
-        end = static_cast<const char*>(end) + meshIndexTypeSize(_indexType);
+        end = static_cast<const char*>(end) + typeSize;
 
         CORRADE_ASSERT(begin >= _indexData.begin() && end <= _indexData.end(),
             "Trade::MeshData: indices [" << Debug::nospace << begin << Debug::nospace << ":" << Debug::nospace << end << Debug::nospace << "] are not contained in passed indexData array [" << Debug::nospace << static_cast<const void*>(_indexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_indexData.end()) << Debug::nospace << "]", );
@@ -283,7 +287,9 @@ Containers::StridedArrayView2D<const char> MeshData::indices() const {
     /* For a non-indexed mesh returning zero size in both dimensions, indexed
        mesh with zero indices still has the second dimension non-zero */
     if(!isIndexed()) return {};
-    const std::size_t indexTypeSize = meshIndexTypeSize(_indexType);
+    const std::size_t indexTypeSize =
+        isMeshIndexTypeImplementationSpecific(_indexType) ?
+            Math::abs(_indexStride) : meshIndexTypeSize(_indexType);
     /* Build a 2D view using information about index type size and stride.
        We're *sure* the view is correct, so faking the view size */
     return {{_indices, ~std::size_t{}}, {_indexCount, indexTypeSize}, {_indexStride, 1}};
@@ -295,7 +301,9 @@ Containers::StridedArrayView2D<char> MeshData::mutableIndices() {
     /* For a non-indexed mesh returning zero size in both dimensions, indexed
        mesh with zero indices still has the second dimension non-zero */
     if(!isIndexed()) return {};
-    const std::size_t indexTypeSize = meshIndexTypeSize(_indexType);
+    const std::size_t indexTypeSize =
+        isMeshIndexTypeImplementationSpecific(_indexType) ?
+            Math::abs(_indexStride) : meshIndexTypeSize(_indexType);
     /* Build a 2D view using information about index type size and stride.
        We're *sure* the view is correct, so faking the view size */
     Containers::StridedArrayView2D<const char> out{{_indices, ~std::size_t{}}, {_indexCount, indexTypeSize}, {_indexStride, 1}};
@@ -458,6 +466,8 @@ void MeshData::indicesInto(const Containers::StridedArrayView1D<UnsignedInt>& de
     CORRADE_ASSERT(isIndexed(),
         "Trade::MeshData::indicesInto(): the mesh is not indexed", );
     CORRADE_ASSERT(destination.size() == indexCount(), "Trade::MeshData::indicesInto(): expected a view with" << indexCount() << "elements but got" << destination.size(), );
+    CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(_indexType),
+        "Trade::MeshData::indicesInto(): can't extract data out of an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(_indexType)), );
     const auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
 
     const Containers::StridedArrayView2D<const char> indexData = indices();
