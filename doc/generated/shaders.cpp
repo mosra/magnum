@@ -275,28 +275,22 @@ std::string ShaderVisualizer::flat() {
 std::string ShaderVisualizer::vertexColor() {
     Trade::MeshData sphere = Primitives::uvSphereSolid(32, 64);
 
+    /* Add a color attribute */
+    Trade::MeshData sphereWithColors = MeshTools::interleave(std::move(sphere), {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color, VertexFormat::Vector3, nullptr}
+    });
+
     /* Color vertices nearest to given position */
     auto target = Vector3{2.0f, 2.0f, 7.0f}.normalized();
-    std::vector<Color3> colors;
-    colors.reserve(sphere.vertexCount());
-    for(Vector3 position: sphere.attribute<Vector3>(Trade::MeshAttribute::Position))
-        colors.push_back(Color3::fromHsv({Math::lerp(240.0_degf, 420.0_degf, Math::max(1.0f - (position - target).length(), 0.0f)), 0.85f, 0.666f}));
-
-    GL::Buffer vertices, indices;
-    vertices.setData(MeshTools::interleave(sphere.attribute<Vector3>(Trade::MeshAttribute::Position), colors), GL::BufferUsage::StaticDraw);
-    indices.setData(sphere.indices<UnsignedInt>(), GL::BufferUsage::StaticDraw);
-
-    GL::Mesh mesh;
-    mesh.setPrimitive(GL::MeshPrimitive::Triangles)
-        .setCount(sphere.indexCount())
-        .addVertexBuffer(vertices, 0,
-            Shaders::VertexColorGL3D::Position{},
-            Shaders::VertexColorGL3D::Color3{})
-        .setIndexBuffer(indices, 0, GL::MeshIndexType::UnsignedInt);
+    Containers::StridedArrayView1D<const Vector3> positions = sphereWithColors.attribute<Vector3>(Trade::MeshAttribute::Position);
+    Containers::StridedArrayView1D<Vector3> colors = sphereWithColors.mutableAttribute<Vector3>(Trade::MeshAttribute::Color);
+    for(std::size_t i = 0; i != sphereWithColors.vertexCount(); ++i) {
+        colors[i] = Color3::fromHsv({Math::lerp(240.0_degf, 420.0_degf, Math::max(1.0f - (positions[i] - target).length(), 0.0f)), 0.85f, 0.666f});
+    }
 
     Shaders::VertexColorGL3D shader;
     shader.setTransformationProjectionMatrix(Projection*Transformation)
-        .draw(mesh);
+        .draw(MeshTools::compile(sphereWithColors));
 
     return "vertexcolor.png";
 }
