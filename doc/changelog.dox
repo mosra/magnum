@@ -453,8 +453,8 @@ See also:
     common texture coordinate set as a complement to a per-texture property
     added in 2020.06
 -   @ref Trade::MeshData now allows zero and negative strides for better
-    data layout flexibility. This is however not commonly supported in GPU
-    APIs.
+    data layout flexibility. This is however not commonly supported by GPU APIs
+    and tools like @ref MeshTools::compile() assert in that case.
 -   Added @ref Trade::MeshData::findAttributeId() for an ability to check that
     an attribute exists and retrieve its ID in a single step, avoiding a double
     lookup compared to @relativeref{Trade::MeshData,hasAttribute()} +

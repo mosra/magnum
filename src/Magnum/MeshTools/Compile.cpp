@@ -144,13 +144,19 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
             continue;
         boundAttributes.set(attribute->location(), true);
 
+        /* Negative strides are not supported by GL, zero strides are
+           understood as tightly packed instead of all attributes having the
+           same value */
+        const Int stride = meshData.attributeStride(i);
+        CORRADE_ASSERT(stride > 0,
+            "MeshTools::compile():" << meshData.attributeName(i) << "stride of" << stride << "bytes isn't supported by OpenGL", GL::Mesh{});
+
         /* For the first attribute move the buffer in, for all others use the
            reference */
         if(vertices.id()) mesh.addVertexBuffer(std::move(vertices),
-            meshData.attributeOffset(i), meshData.attributeStride(i),
-            *attribute);
+            meshData.attributeOffset(i), stride, *attribute);
         else mesh.addVertexBuffer(verticesRef, meshData.attributeOffset(i),
-            meshData.attributeStride(i), *attribute);
+            stride, *attribute);
     }
 
     if(meshData.isIndexed()) {

@@ -106,6 +106,7 @@ struct CompileGLTest: GL::OpenGLTester {
 
         void customAttribute();
         void unsupportedAttribute();
+        void unsupportedAttributeStride();
         void implementationSpecificAttributeFormat();
 
         void generateNormalsNoPosition();
@@ -256,8 +257,12 @@ CompileGLTest::CompileGLTest() {
         &CompileGLTest::renderTeardown);
 
     addInstancedTests({&CompileGLTest::customAttribute,
-                       &CompileGLTest::unsupportedAttribute,
-                       &CompileGLTest::implementationSpecificAttributeFormat},
+                       &CompileGLTest::unsupportedAttribute},
+        Containers::arraySize(CustomAttributeWarningData));
+
+    addTests({&CompileGLTest::unsupportedAttributeStride});
+
+    addInstancedTests({&CompileGLTest::implementationSpecificAttributeFormat},
         Containers::arraySize(CustomAttributeWarningData));
 
     addTests({&CompileGLTest::generateNormalsNoPosition,
@@ -1186,6 +1191,28 @@ void CompileGLTest::unsupportedAttribute() {
     /* Warns always, regardless of the flag */
     CORRADE_COMPARE(out.str(), "MeshTools::compile(): ignoring unknown/unsupported attribute Trade::MeshAttribute::ObjectId\n");
     #endif
+}
+
+void CompileGLTest::unsupportedAttributeStride() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Vector3 data[2]{};
+    Trade::MeshData zero{MeshPrimitive::Points, {}, data, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(data, 1).broadcasted<0>(2)}
+    }};
+    Trade::MeshData negative{MeshPrimitive::Points, {}, data, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::stridedArrayView(data).flipped<0>()}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    compile(zero);
+    compile(negative);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compile(): Trade::MeshAttribute::Position stride of 0 bytes isn't supported by OpenGL\n"
+        "MeshTools::compile(): Trade::MeshAttribute::Normal stride of -12 bytes isn't supported by OpenGL\n");
 }
 
 void CompileGLTest::implementationSpecificAttributeFormat() {

@@ -120,6 +120,8 @@ possibly also an index buffer, if the mesh is indexed.
 -   Implementation-specific @ref Magnum::MeshPrimitive values are passed
     as-is with @ref meshPrimitiveUnwrap(). It's the user responsibility to
     ensure an implementation-specific value is valid in this context.
+-   Stride of all attributes is expected to be positive. OpenGL doesn't support
+    zero and negative strides.
 
 If normal generation is not requested, @ref Trade::MeshData::indexData() and
 @ref Trade::MeshData::vertexData() are uploaded as-is without any further
