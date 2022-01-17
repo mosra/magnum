@@ -68,7 +68,13 @@ Trade::MeshData owned(Trade::MeshData&& data) {
        default-constructed instances are fine. */
     } else if(data.isIndexed()) {
         indexData = Containers::Array<char>{NoInit, data.indexData().size()};
-        indices = Trade::MeshIndexData{data.indexType(), indexData.slice(data.indexOffset(), data.indexOffset() + data.indexCount()*meshIndexTypeSize(data.indexType()))};
+        indices = Trade::MeshIndexData{
+            data.indexType(),
+            Containers::StridedArrayView1D<const void>{
+                indexData,
+                indexData.data() + data.indexOffset(),
+                data.indexCount(),
+                data.indexStride()}};
         Utility::copy(data.indexData(), indexData);
     }
 

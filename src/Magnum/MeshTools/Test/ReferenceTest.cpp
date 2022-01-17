@@ -50,6 +50,7 @@ struct ReferenceTest: TestSuite::Tester {
     void owned();
     void ownedNoIndexData();
     void ownedNoAttributeVertexData();
+    void ownedStridedIndices();
     void ownedArrayAttribute();
     void ownedImplementationSpecificVertexFormat();
     void ownedRvaluePassthrough();
@@ -67,6 +68,7 @@ ReferenceTest::ReferenceTest() {
               &ReferenceTest::owned,
               &ReferenceTest::ownedNoIndexData,
               &ReferenceTest::ownedNoAttributeVertexData,
+              &ReferenceTest::ownedStridedIndices,
               &ReferenceTest::ownedArrayAttribute,
               &ReferenceTest::ownedImplementationSpecificVertexFormat,
               &ReferenceTest::ownedRvaluePassthrough,
@@ -205,6 +207,31 @@ void ReferenceTest::ownedNoAttributeVertexData() {
     CORRADE_COMPARE_AS(owned.indexData(), indexedFourtytwo.indexData(), TestSuite::Compare::Container);
     CORRADE_VERIFY(!static_cast<const void*>(owned.vertexData().data()));
     CORRADE_VERIFY(!static_cast<const void*>(owned.attributeData().data()));
+}
+
+void ReferenceTest::ownedStridedIndices() {
+    const UnsignedShort indices[7]{0, 3, 0, 7, 0, 15, 0};
+    Trade::MeshData stuff{MeshPrimitive::Points,
+        {}, indices, Trade::MeshIndexData{Containers::stridedArrayView(indices).suffix(1).every(2)},
+        16};
+
+    Trade::MeshData owned = MeshTools::owned(stuff);
+    CORRADE_COMPARE(owned.primitive(), MeshPrimitive::Points);
+    CORRADE_COMPARE(owned.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    CORRADE_COMPARE(owned.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    CORRADE_VERIFY(owned.isIndexed());
+    CORRADE_COMPARE(owned.indexCount(), 3);
+    CORRADE_COMPARE(owned.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE(owned.indexOffset(), 2);
+    CORRADE_COMPARE(owned.indexStride(), 4);
+    CORRADE_COMPARE(owned.vertexCount(), 16);
+    CORRADE_COMPARE(owned.attributeCount(), 0);
+
+    CORRADE_COMPARE_AS(owned.indices<UnsignedShort>(),
+        Containers::arrayView<UnsignedShort>({3, 7, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(owned.indexData(), stuff.indexData(),
+        TestSuite::Compare::Container);
 }
 
 void ReferenceTest::ownedArrayAttribute() {
