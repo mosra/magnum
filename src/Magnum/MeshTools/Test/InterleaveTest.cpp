@@ -161,9 +161,12 @@ InterleaveTest::InterleaveTest() {
               &InterleaveTest::interleaveMeshDataExtraOriginalEmpty,
               &InterleaveTest::interleaveMeshDataExtraWrongCount,
               &InterleaveTest::interleaveMeshDataExtraOffsetOnly,
-              &InterleaveTest::interleaveMeshDataExtraImplementationSpecificVertexFormat,
-              &InterleaveTest::interleaveMeshDataAlreadyInterleavedMove,
-              &InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveNonOwned,
+              &InterleaveTest::interleaveMeshDataExtraImplementationSpecificVertexFormat});
+
+    addInstancedTests({&InterleaveTest::interleaveMeshDataAlreadyInterleavedMove},
+        Containers::arraySize(AlreadyInterleavedData));
+
+    addTests({&InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveNonOwned,
               &InterleaveTest::interleaveMeshDataNothing});
 }
 
@@ -1233,6 +1236,9 @@ void InterleaveTest::interleaveMeshDataExtraImplementationSpecificVertexFormat()
 }
 
 void InterleaveTest::interleaveMeshDataAlreadyInterleavedMove() {
+    auto&& data = AlreadyInterleavedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Containers::Array<char> indexData{4};
     auto indexView = Containers::arrayCast<UnsignedShort>(indexData);
     Containers::Array<char> vertexData{3*24};
@@ -1242,17 +1248,17 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMove() {
         reinterpret_cast<Vector3*>(vertexData.data() + 10), 3, 24};
     auto attributeData = Containers::array({
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, positionView},
-        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normalView}
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, data.vertexFormat, normalView}
     });
     const Trade::MeshAttributeData* attributePointer = attributeData;
 
-    Trade::MeshData data{MeshPrimitive::TriangleFan,
+    Trade::MeshData mesh{MeshPrimitive::TriangleFan,
         std::move(indexData), Trade::MeshIndexData{indexView},
         std::move(vertexData), std::move(attributeData)};
-    CORRADE_VERIFY(MeshTools::isInterleaved(data));
+    CORRADE_VERIFY(MeshTools::isInterleaved(mesh));
 
     /* {} just to cover the initializer_list overload :P */
-    Trade::MeshData interleaved = MeshTools::interleave(std::move(data), {});
+    Trade::MeshData interleaved = MeshTools::interleave(std::move(mesh), {});
     CORRADE_VERIFY(MeshTools::isInterleaved(interleaved));
     CORRADE_COMPARE(interleaved.indexCount(), 2);
     CORRADE_COMPARE(interleaved.attributeCount(), 2);
