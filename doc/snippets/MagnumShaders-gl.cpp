@@ -392,7 +392,7 @@ GL::Texture2D texture;
 GL::Buffer projectionTransformationUniform, materialUniform, drawUniform;
 projectionTransformationUniform.setData({
     Shaders::TransformationProjectionUniform2D{}
-        .setTransformationProjectionMatrix(transformationMatrix*projectionMatrix)
+        .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
 });
 materialUniform.setData({
     Shaders::DistanceFieldVectorMaterialUniform{}
@@ -548,7 +548,7 @@ Matrix4 transformationMatrix, projectionMatrix;
 GL::Buffer projectionTransformationUniform, materialUniform, drawUniform;
 projectionTransformationUniform.setData({
     Shaders::TransformationProjectionUniform3D{}
-        .setTransformationProjectionMatrix(transformationMatrix*projectionMatrix)
+        .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
 });
 materialUniform.setData({
     Shaders::FlatMaterialUniform{}
@@ -1003,7 +1003,7 @@ GL::Texture2D texture;
 GL::Buffer projectionTransformationUniform, materialUniform, drawUniform;
 projectionTransformationUniform.setData({
     Shaders::TransformationProjectionUniform2D{}
-        .setTransformationProjectionMatrix(transformationMatrix*projectionMatrix)
+        .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
 });
 materialUniform.setData({
     Shaders::VectorMaterialUniform{}
@@ -1065,7 +1065,7 @@ Matrix4 transformationMatrix, projectionMatrix;
 GL::Buffer projectionTransformationUniform;
 projectionTransformationUniform.setData({
     Shaders::TransformationProjectionUniform3D{}
-        .setTransformationProjectionMatrix(transformationMatrix*projectionMatrix)
+        .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
 });
 
 Shaders::VertexColorGL3D shader{Shaders::VertexColorGL3D::Flag::UniformBuffers};
