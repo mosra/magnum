@@ -208,9 +208,12 @@ MAGNUM_MESHTOOLS_EXPORT bool isInterleaved(const Trade::MeshData& data);
 @m_since{2020,06}
 
 Returns a 2D view on @ref Trade::MeshData::vertexData() that spans all
-interleaved attributes, with the first dimension being the vertex count and the
-second being the attribute stride that's common for all attributes. Expects
-that the mesh is interleaved.
+interleaved attributes. Expects that the mesh is interleaved.
+
+First dimension of the returned view has size equal to vertex count and stride
+equal to original stride, second dimension size is the smallest possible byte
+count to cover all interleaved attributes, including any padding between them
+but not before or after.
 @see @ref isInterleaved()
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::StridedArrayView2D<const char> interleavedData(const Trade::MeshData& data);
