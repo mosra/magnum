@@ -97,7 +97,7 @@ atttribute data array instead of always allocating new ones. Only the attribute
 layout from @p destination is used, all vertex/index data are taken from
 @p meshes. Expects that @p meshes contains at least one item.
 */
-template<template<class> class Allocator = Containers::ArrayAllocator> void concatenateInto(Trade::MeshData& destination, const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes) {
+template<template<class> class Allocator = Containers::ArrayAllocator> void concatenateInto(Trade::MeshData& destination, Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes) {
     CORRADE_ASSERT(!meshes.empty(),
         "MeshTools::concatenateInto(): no meshes passed", );
     #ifndef CORRADE_NO_ASSERT
@@ -137,7 +137,7 @@ template<template<class> class Allocator = Containers::ArrayAllocator> void conc
  * @overload
  * @m_since{2020,06}
  */
-template<template<class> class Allocator = Containers::ArrayAllocator> void concatenateInto(Trade::MeshData& destination, const std::initializer_list<Containers::Reference<const Trade::MeshData>> meshes) {
+template<template<class> class Allocator = Containers::ArrayAllocator> void concatenateInto(Trade::MeshData& destination, std::initializer_list<Containers::Reference<const Trade::MeshData>> meshes) {
     concatenateInto<Allocator>(destination, Containers::arrayView(meshes));
 }
 
