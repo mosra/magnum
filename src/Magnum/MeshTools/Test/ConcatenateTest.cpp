@@ -73,7 +73,7 @@ ConcatenateTest::ConcatenateTest() {
               &ConcatenateTest::concatenateIntoNoMeshes});
 }
 
-/* MSVC 2015 doesn't like unnamed bitfields in local structs, so thhis has to
+/* MSVC 2015 doesn't like unnamed bitfields in local structs, so this has to
    be outside */
 struct VertexDataA {
     Vector2 texcoords1;
@@ -302,7 +302,7 @@ void ConcatenateTest::concatenateNoAttributesNotIndexed() {
     CORRADE_VERIFY(!dst.isIndexed());
 }
 
-/* MSVC 2015 doesn't like unnamed bitfields in local structs, so thhis has to
+/* MSVC 2015 doesn't like unnamed bitfields in local structs, so this has to
    be outside */
 struct VertexDataNonInterleaved {
     Vector2 texcoords1[2];
