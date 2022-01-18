@@ -71,6 +71,7 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
     /* this is additionally regression-tested in PrimitivesIcosphereTest */
 
     void removeDuplicatesMeshData();
+    void removeDuplicatesMeshDataPaddedAttributes();
     void removeDuplicatesMeshDataAttributeless();
     void removeDuplicatesMeshDataImplementationSpecificVertexFormat();
 
@@ -208,6 +209,8 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
 
     addInstancedTests({&RemoveDuplicatesTest::removeDuplicatesMeshData},
         Containers::arraySize(RemoveDuplicatesMeshDataData));
+
+    addTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataPaddedAttributes});
 
     addTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless,
               &RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificVertexFormat});
@@ -714,6 +717,83 @@ void RemoveDuplicatesTest::removeDuplicatesMeshData() {
             {15, 2}
         }),
         TestSuite::Compare::Container);
+}
+
+/* MSVC 2015 doesn't understand anonymous bitfields in function-local structs,
+   so this has to be outside */
+struct PaddedVertex {
+    Int:32;
+    Int:32;
+    Int:32;
+    Int:32;
+    Vector2 position;
+    Int padding;
+    Vector2s data;
+    Int:32;
+};
+
+void RemoveDuplicatesTest::removeDuplicatesMeshDataPaddedAttributes() {
+    /* Same as the non-indexed case in removeDuplicatesMeshData() except that
+       the vertex data is interleaved with deliberate padding at the front and
+       the end of each vertex to test that the output attribute offsets and
+       strides are recalculated appropriately -- and not the original attribute
+       stride/offset just being passed through.
+
+       Additionally, there's explicitly unique padding data for each vertex
+       which should be ignored by the algorithm -- otherwise no duplicates
+       would get removed.
+
+       The array aspect also doesn't need to be tested here again, so it's just
+       Vector2s instead of Short[2]. */
+    PaddedVertex vertices[]{
+        {{1.0f, 2.0f},  0, {-15, 2}},
+        {{3.0f, 4.0f},  1, {2, 32}},
+        {{5.0f, 6.0f},  2, {24, 2}},
+        {{7.0f, 8.0f},  3, {-15, 2}},
+        {{7.0f, 8.0f},  4, {15, 2}},
+        {{7.0f, 8.0f},  5, {2, 7541}},
+        {{9.0f, 10.0f}, 6, {24, 2}},
+        {{3.0f, 4.0f},  7, {2, 32}},
+        {{5.0f, 6.0f},  8, {24, 2}},
+        {{5.0f, 6.0f},  9, {15, 2}}
+    };
+
+    Trade::MeshData mesh{MeshPrimitive::Lines,
+        {}, vertices, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::stridedArrayView(vertices).slice(&PaddedVertex::position)},
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+                Containers::stridedArrayView(vertices).slice(&PaddedVertex::data)},
+    }};
+
+    Trade::MeshData unique = MeshTools::removeDuplicates(mesh);
+    CORRADE_COMPARE(unique.vertexCount(), 8);
+    CORRADE_COMPARE(unique.attributeCount(), 2);
+
+    /* Same as in removeDuplicatesMeshData() */
+    CORRADE_COMPARE(unique.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE_AS(unique.attribute<Vector2>(0), Containers::arrayView<Vector2>({
+        {1.0f, 2.0f},
+        {3.0f, 4.0f},
+        {5.0f, 6.0f},
+        {7.0f, 8.0f},
+        {7.0f, 8.0f},
+        {7.0f, 8.0f},
+        {9.0f, 10.0f},
+        {5.0f, 6.0f}
+    }), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(unique.attributeFormat(1), VertexFormat::Vector2s);
+    CORRADE_COMPARE_AS(unique.attribute<Vector2s>(1), Containers::arrayView<Vector2s>({
+        {-15, 2},
+        {2, 32},
+        {24, 2},
+        {-15, 2},
+        {15, 2},
+        {2, 7541},
+        {24, 2},
+        {15, 2}
+    }), TestSuite::Compare::Container);
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless() {
