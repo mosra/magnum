@@ -579,18 +579,23 @@ class Sdl2Application {
          * @param exitCode  The exit code the application should return
          *
          * When called from application constructor, it will cause the
-         * application to exit immediately after constructor ends, without any
-         * events being processed (thus not even @ref exitEvent()). Calling
-         * this function is recommended over @ref std::exit() or
-         * @ref Corrade::Utility::Fatal "Fatal", which exit without calling
-         * destructors on local scope. Note that, however, you need to
-         * explicitly @cpp return @ce after calling it, as it can't exit the
-         * constructor on its own:
+         * application to exit immediately after constructor ends, without
+         * entering the event loop. When called from within an event handler,
+         * it will cause it to exit at the start of next event loop iteration.
+         * Compared to requesting an application exit using the window close
+         * button or the @m_class{m-label m-default} **Alt**
+         * @m_class{m-label m-default} **F4** /
+         * @m_class{m-label m-default} **Cmd**
+         * @m_class{m-label m-default} **Q** keyboard shortcut, the
+         * @ref exitEvent() *isn't* called when using this function.
+         *
+         * Calling this function from an application constructor is recommended
+         * over @ref std::exit() or @ref Corrade::Utility::Fatal "Fatal", which
+         * exit without calling destructors on local scope. Note that, however,
+         * you need to explicitly @cpp return @ce after calling it, as it can't
+         * exit the constructor on its own:
          *
          * @snippet MagnumPlatform.cpp exit-from-constructor
-         *
-         * When called from the main loop, the application exits cleanly
-         * before next main loop iteration is executed.
          */
         void exit(int exitCode = 0);
 

@@ -89,6 +89,9 @@ struct GlfwApplicationTest: Platform::Application {
         } else if(event.key() == KeyEvent::Key::L) {
             Debug{} << "toggling locked mouse";
             setCursor(cursor() == Cursor::Arrow ? Cursor::HiddenLocked : Cursor::Arrow);
+        } else if(event.key() == KeyEvent::Key::X) {
+            Debug{} << "requesting an exit with code 5";
+            exit(5);
         }
     }
 

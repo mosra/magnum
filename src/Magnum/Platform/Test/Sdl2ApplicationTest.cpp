@@ -133,6 +133,10 @@ struct Sdl2ApplicationTest: Platform::Application {
             setContainerCssClass((_fullscreen ^= true) ? "mn-fullsize" : "");
         }
         #endif
+        else if(event.key() == KeyEvent::Key::X) {
+            Debug{} << "requesting an exit with code 5";
+            exit(5);
+        }
     }
 
     void textInputEvent(TextInputEvent& event) override {
