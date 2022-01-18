@@ -224,6 +224,7 @@ void ConcatenateTest::concatenate() {
     CORRADE_COMPARE(dst.attributeOffset(0), 0);
     CORRADE_COMPARE(dst.attributeOffset(1), sizeof(Vector2));
     CORRADE_COMPARE(dst.attributeOffset(2), 2*sizeof(Vector2) + 4);
+    CORRADE_COMPARE(dst.attributeOffset(3), 2*sizeof(Vector2) + 4 + sizeof(Vector3));
 }
 
 void ConcatenateTest::concatenateNotIndexed() {
