@@ -302,23 +302,12 @@ interleaved and owned, if the input is already interleaved attribute offsets
 and paddings are preserved. All attributes are expected to not have an
 implementation-specific format.
 
-This function unconditionally copies and interleaves passed vertex and index
-data in order to operate on them in-place. If your data is interleaved and
-owned by the instance and you don't need the original data after the process,
-call @ref removeDuplicates(Trade::MeshData&&) instead to avoid the extra copy.
+In order to remove random padding values from the input and make the vertices
+suitable for fast in-place duplicate removal, this function unconditionally
+copies and interleaves the input vertex and index data.
 @see @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(const Trade::MeshData& data);
-
-/**
-@brief Remove mesh data duplicates
-@m_since{2020,06}
-
-Same as @ref removeDuplicates(const Trade::MeshData&), except that it operates
-in-place on the passed instance, avoiding an extra copy of vertex and index
-data.
-*/
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(Trade::MeshData&& data);
 
 /**
 @brief Remove mesh data duplicates with fuzzy comparison for floating-point attributes

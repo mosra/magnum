@@ -527,6 +527,17 @@ See also:
     for most shader-related limits
 -   Fixed assertions related to OpenGL driver workarounds when the proprietary
     AMDGPU PRO drivers are used on Linux
+-   Fixed an assertion when using @ref MeshTools::removeDuplicates() on an
+    interleaved @ref Trade::MeshData that included padding at the beginning or
+    end of each vertex
+-   Fixed @ref MeshTools::removeDuplicates() to not take into account random
+    padding bytes and filtered-out attributes in interleaved source
+    @ref Trade::MeshData. This was a particularly glaring issue when using
+    @ref magnum-sceneconverter "magnum-sceneconverter" with both
+    `--only-attributes` and `--remove-duplicates` specified together, where it
+    usually just didn't remove any duplicate whatsoever while
+    `--remove-duplicates-fuzzy` did, no matter how ridiculously low epsilon
+    was used.
 -   @ref Platform::EmscriptenApplication randomly created antialiased contexts
     due to an uninitialized variable in its
     @ref Platform::EmscriptenApplication::GLConfiguration "GLConfiguration"

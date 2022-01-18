@@ -397,13 +397,6 @@ std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayVi
 }
 
 Trade::MeshData removeDuplicates(const Trade::MeshData& data) {
-    return removeDuplicates(Trade::MeshData{data.primitive(),
-        {}, data.indexData(), Trade::MeshIndexData{data.indices()},
-        {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
-        data.vertexCount()});
-}
-
-Trade::MeshData removeDuplicates(Trade::MeshData&& data) {
     CORRADE_ASSERT(data.attributeCount(),
         "MeshTools::removeDuplicates(): can't remove duplicates in an attributeless mesh",
         (Trade::MeshData{MeshPrimitive::Points, 0}));
@@ -418,12 +411,19 @@ Trade::MeshData removeDuplicates(Trade::MeshData&& data) {
 
     /* Turn the passed data into an interleaved owned mutable instance we can
        operate on -- owned() alone only makes the data owned, interleave()
-       alone only makes the data interleaved (but those can stay non-owned).
-       There's a chance the original data are already like this, in which case
-       this will be just a passthrough. */
-    Trade::MeshData ownedInterleaved = owned(interleave(std::move(data)));
+       alone only makes the data interleaved (but the index data can stay
+       non-owned). Additionally we need to ensure the interleaved data are
+       tightly packed by removing InterleaveFlag::PreserveInterleavedAttributes
+       which is set by default, otherwise random padding bytes or filtered-out
+       attributes may contribute to the non-uniqueness of particular
+       elements. */
+    Trade::MeshData ownedInterleaved = owned(interleave(data, {}, InterleaveFlags{}));
 
+    /* Because the interleaved mesh was forced to be repacked, the vertex data
+       should span the whole stride -- this is relied on in the attribute
+       rerouting loop below */
     const Containers::StridedArrayView2D<char> vertexData = MeshTools::interleavedMutableData(ownedInterleaved);
+    CORRADE_INTERNAL_ASSERT(vertexData.size()[1] == ownedInterleaved.attributeStride(0));
 
     UnsignedInt uniqueVertexCount;
     Containers::Array<char> indexData;
