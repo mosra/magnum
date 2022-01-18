@@ -290,7 +290,7 @@ class MAGNUM_TRADE_EXPORT MeshIndexData {
 Convenience type for populating @ref MeshData, see its documentation for an
 introduction. Additionally usable in various @ref MeshTools algorithms such as
 @ref MeshTools::duplicate(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData>)
-or @ref MeshTools::interleave(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData>).
+or @ref MeshTools::interleave(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags).
 
 @section Trade-MeshAttributeData-usage Usage
 

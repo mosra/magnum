@@ -109,11 +109,14 @@ Containers::StridedArrayView2D<char> interleavedMutableData(Trade::MeshData& dat
 
 namespace Implementation {
 
-Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
+Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
     /* Nothing to do here, bye! */
     if(!data.attributeCount() && extra.empty()) return {};
 
-    const bool interleaved = isInterleaved(data);
+    /* If we're not told to preserve the layout, treat the mesh as
+       noninterleaved always, forcing a repack. Otherwise check if it's already
+       interleaved. */
+    const bool interleaved = flags >= InterleaveFlag::PreserveInterleavedAttributes && isInterleaved(data);
 
     /* If the mesh is already interleaved, use the original stride to
        preserve all padding, but remove the initial offset. Otherwise calculate
@@ -210,8 +213,8 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
 
 }
 
-Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
-    Containers::Array<Trade::MeshAttributeData> attributeData = Implementation::interleavedLayout(std::move(data), extra);
+Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+    Containers::Array<Trade::MeshAttributeData> attributeData = Implementation::interleavedLayout(std::move(data), extra, flags);
 
     /* If there are no attributes, bail -- return an empty mesh with desired
        vertex count but nothing else */
@@ -235,23 +238,23 @@ Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vert
     return Trade::MeshData{data.primitive(), std::move(vertexData), std::move(attributeData)};
 }
 
-Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra) {
-    return interleavedLayout(std::move(data), vertexCount, Containers::arrayView(extra));
+Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+    return interleavedLayout(std::move(data), vertexCount, Containers::arrayView(extra), flags);
 }
 
-Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
+Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
     return interleavedLayout(
         Trade::MeshData{data.primitive(), {}, data.vertexData(),
             Trade::meshAttributeDataNonOwningArray(data.attributeData()),
             data.vertexCount()},
-        vertexCount, extra);
+        vertexCount, extra, flags);
 }
 
-Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra) {
-    return interleavedLayout(data, vertexCount, Containers::arrayView(extra));
+Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+    return interleavedLayout(data, vertexCount, Containers::arrayView(extra), flags);
 }
 
-Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
+Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
     /* Transfer the indices unchanged, in case the mesh is indexed */
     Containers::Array<char> indexData;
     Trade::MeshIndexData indices;
@@ -268,7 +271,10 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
         }
     }
 
-    const bool interleaved = isInterleaved(data);
+    /* If we're not told to preserve the layout, treat the mesh as
+       noninterleaved always, forcing a repack. Otherwise check if it's already
+       interleaved. */
+    const bool interleaved = flags >= InterleaveFlag::PreserveInterleavedAttributes && isInterleaved(data);
     const UnsignedInt vertexCount = data.vertexCount();
 
     /* If the mesh is already interleaved and we don't have anything extra,
@@ -283,7 +289,7 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
     } else {
         /* Calculate the layout. Can't std::move() the data in to avoid copying
            the attribute array as we need the original attributes below. */
-        Trade::MeshData layout = interleavedLayout(data, vertexCount, extra);
+        Trade::MeshData layout = interleavedLayout(data, vertexCount, extra, flags);
         #ifdef CORRADE_GRACEFUL_ASSERT
         /* If interleavedLayout() gracefully asserted and returned no
            attributes (but the original had some), exit right away to not blow
@@ -331,21 +337,21 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
         std::move(vertexData), std::move(attributeData), vertexCount};
 }
 
-Trade::MeshData interleave(Trade::MeshData&& data, const std::initializer_list<Trade::MeshAttributeData> extra) {
-    return interleave(std::move(data), Containers::arrayView(extra));
+Trade::MeshData interleave(Trade::MeshData&& data, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+    return interleave(std::move(data), Containers::arrayView(extra), flags);
 }
 
-Trade::MeshData interleave(const Trade::MeshData& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
+Trade::MeshData interleave(const Trade::MeshData& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
     return interleave(Trade::MeshData{data.primitive(),
         /* If data is not indexed, the reference will be also non-indexed */
         {}, data.indexData(), Trade::MeshIndexData{data.indices()},
         {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
         data.vertexCount()
-    }, extra);
+    }, extra, flags);
 }
 
-Trade::MeshData interleave(const Trade::MeshData& data, const std::initializer_list<Trade::MeshAttributeData> extra) {
-    return interleave(std::move(data), Containers::arrayView(extra));
+Trade::MeshData interleave(const Trade::MeshData& data, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+    return interleave(std::move(data), Containers::arrayView(extra), flags);
 }
 
 }}

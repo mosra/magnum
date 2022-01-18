@@ -345,6 +345,14 @@ See also:
     zero-fill while @ref Math::Matrix stays with the identity for consistency
     with other constructors.
 
+@subsubsection changelog-latest-changes-meshtools MeshTools library
+
+-   @ref MeshTools::interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags),
+    @ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) and
+    @ref MeshTools::concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>>, InterleaveFlags)
+    optionally take a @ref MeshTools::InterleaveFlags parameter affecting the
+    output, in particular whether to preserve the original interleaved layout.
+
 @subsubsection changelog-latest-changes-platform Platform libraries
 
 -   Added a @ref Platform::GlfwApplication::setWindowIcon() overload taking a
@@ -1033,7 +1041,7 @@ Released 2020-06-27, tagged as
     getting an interleaved view
 -   Added @ref MeshTools::interleavedLayout() for convenient creation of an
     interleaved mesh layout using the new @ref Trade::MeshData API
--   Added @ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>),
+-   Added @cpp MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>) @ce,
     @ref MeshTools::duplicate(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>),
     @ref MeshTools::compressIndices(const Trade::MeshData&, MeshIndexType)
     and @ref MeshTools::removeDuplicates(const Trade::MeshData&) that work

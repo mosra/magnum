@@ -185,7 +185,7 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
 
 }
 
-Trade::MeshData concatenate(const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes) {
+Trade::MeshData concatenate(const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes, const InterleaveFlags flags) {
     CORRADE_ASSERT(!meshes.empty(),
         "MeshTools::concatenate(): expected at least one mesh",
         (Trade::MeshData{MeshPrimitive::Points, 0}));
@@ -207,10 +207,10 @@ Trade::MeshData concatenate(const Containers::ArrayView<const Containers::Refere
     if(meshes.front()->attributeCount())
         attributeData = Implementation::interleavedLayout(Trade::MeshData{meshes.front()->primitive(),
             {}, meshes.front()->vertexData(),
-            Trade::meshAttributeDataNonOwningArray(meshes.front()->attributeData())}, {});
+            Trade::meshAttributeDataNonOwningArray(meshes.front()->attributeData())}, {}, flags);
     else attributeData =
         Implementation::interleavedLayout(Trade::MeshData{meshes.front()->primitive(),
-            meshes.front()->vertexCount()}, {});
+            meshes.front()->vertexCount()}, {}, flags);
 
     /* Calculate total index/vertex count and allocate the target memory.
        Index data are allocated with NoInit as the whole array will be written,
@@ -223,8 +223,8 @@ Trade::MeshData concatenate(const Containers::ArrayView<const Containers::Refere
     return Implementation::concatenate(std::move(indexData), indexVertexCount.second, std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenate():");
 }
 
-Trade::MeshData concatenate(std::initializer_list<Containers::Reference<const Trade::MeshData>> meshes) {
-    return concatenate(Containers::arrayView(meshes));
+Trade::MeshData concatenate(const std::initializer_list<Containers::Reference<const Trade::MeshData>> meshes, const InterleaveFlags flags) {
+    return concatenate(Containers::arrayView(meshes), flags);
 }
 
 }}

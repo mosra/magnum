@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <vector>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Endianness.h>
@@ -101,9 +102,12 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
 const struct {
     const char* name;
     VertexFormat vertexFormat;
+    Containers::Optional<InterleaveFlags> flags;
+    bool shouldPreserveLayout;
 } AlreadyInterleavedData[]{
-    {"", VertexFormat::Vector3},
-    {"implementation-specific vertex format", vertexFormatWrap(0xcaca)}
+    {"", VertexFormat::Vector3, {}, true},
+    {"implementation-specific vertex format", vertexFormatWrap(0xcaca), {}, true},
+    {"don't preserve layout", VertexFormat::Vector3, InterleaveFlags{}, false}
 };
 
 InterleaveTest::InterleaveTest() {
@@ -881,7 +885,11 @@ void InterleaveTest::interleavedLayoutAlreadyInterleaved() {
         std::move(vertexData), {positions, normals}};
     CORRADE_VERIFY(MeshTools::isInterleaved(mesh));
 
-    Trade::MeshData layout = MeshTools::interleavedLayout(mesh, 10);
+    /* To catch when the default argument becomes different */
+    Trade::MeshData layout = data.flags ?
+        MeshTools::interleavedLayout(mesh, 10, {}, *data.flags) :
+        MeshTools::interleavedLayout(mesh, 10);
+
     CORRADE_VERIFY(MeshTools::isInterleaved(layout));
     CORRADE_VERIFY(!layout.isIndexed()); /* Indices are not preserved */
     CORRADE_COMPARE(layout.attributeCount(), 2);
@@ -889,14 +897,24 @@ void InterleaveTest::interleavedLayoutAlreadyInterleaved() {
     CORRADE_COMPARE(layout.attributeName(1), Trade::MeshAttribute::Normal);
     CORRADE_COMPARE(layout.attributeFormat(0), VertexFormat::Vector2);
     CORRADE_COMPARE(layout.attributeFormat(1), data.vertexFormat);
-    /* Original stride should be preserved no matter what the formats are */
-    CORRADE_COMPARE(layout.attributeStride(0), 24);
-    CORRADE_COMPARE(layout.attributeStride(1), 24);
-    /* Relative offsets should be preserved, but the initial one removed */
-    CORRADE_COMPARE(layout.attributeOffset(0), 0);
-    CORRADE_COMPARE(layout.attributeOffset(1), 10);
+
     CORRADE_COMPARE(layout.vertexCount(), 10);
-    CORRADE_COMPARE(layout.vertexData().size(), 10*24);
+    if(data.shouldPreserveLayout) {
+        /* Original stride should be preserved no matter what the formats are */
+        CORRADE_COMPARE(layout.attributeStride(0), 24);
+        CORRADE_COMPARE(layout.attributeStride(1), 24);
+        /* Relative offsets should be preserved, but the initial one removed */
+        CORRADE_COMPARE(layout.attributeOffset(0), 0);
+        CORRADE_COMPARE(layout.attributeOffset(1), 10);
+        CORRADE_COMPARE(layout.vertexData().size(), 10*24);
+    } else {
+        /* Everything gets tightly packed */
+        CORRADE_COMPARE(layout.attributeStride(0), 8 + 12);
+        CORRADE_COMPARE(layout.attributeStride(1), 8 + 12);
+        CORRADE_COMPARE(layout.attributeOffset(0), 0);
+        CORRADE_COMPARE(layout.attributeOffset(1), 8);
+        CORRADE_COMPARE(layout.vertexData().size(), 10*20);
+    }
 }
 
 void InterleaveTest::interleavedLayoutAlreadyInterleavedAliased() {
@@ -917,7 +935,11 @@ void InterleaveTest::interleavedLayoutAlreadyInterleavedAliased() {
         std::move(vertexData), {positions, normals}};
     CORRADE_VERIFY(MeshTools::isInterleaved(mesh));
 
-    Trade::MeshData layout = MeshTools::interleavedLayout(mesh, 10);
+    /* To catch when the default argument becomes different */
+    Trade::MeshData layout = data.flags ?
+        MeshTools::interleavedLayout(mesh, 10, {}, *data.flags) :
+        MeshTools::interleavedLayout(mesh, 10);
+
     CORRADE_VERIFY(MeshTools::isInterleaved(layout));
     CORRADE_VERIFY(!layout.isIndexed()); /* Indices are not preserved */
     CORRADE_COMPARE(layout.attributeCount(), 2);
@@ -925,12 +947,22 @@ void InterleaveTest::interleavedLayoutAlreadyInterleavedAliased() {
     CORRADE_COMPARE(layout.attributeName(1), Trade::MeshAttribute::Normal);
     CORRADE_COMPARE(layout.attributeFormat(0), VertexFormat::Vector2);
     CORRADE_COMPARE(layout.attributeFormat(1), data.vertexFormat);
-    CORRADE_COMPARE(layout.attributeStride(0), 12);
-    CORRADE_COMPARE(layout.attributeStride(1), 12);
-    CORRADE_COMPARE(layout.attributeOffset(0), 0);
-    CORRADE_COMPARE(layout.attributeOffset(1), 0); /* aliases */
+
     CORRADE_COMPARE(layout.vertexCount(), 10);
-    CORRADE_COMPARE(layout.vertexData().size(), 10*12);
+    if(data.shouldPreserveLayout) {
+        CORRADE_COMPARE(layout.attributeStride(0), 12);
+        CORRADE_COMPARE(layout.attributeStride(1), 12);
+        CORRADE_COMPARE(layout.attributeOffset(0), 0);
+        CORRADE_COMPARE(layout.attributeOffset(1), 0); /* aliases */
+        CORRADE_COMPARE(layout.vertexData().size(), 10*12);
+    } else {
+        /* The attribute gets duplicated */
+        CORRADE_COMPARE(layout.attributeStride(0), 8 + 12);
+        CORRADE_COMPARE(layout.attributeStride(1), 8 + 12);
+        CORRADE_COMPARE(layout.attributeOffset(0), 0);
+        CORRADE_COMPARE(layout.attributeOffset(1), 8);
+        CORRADE_COMPARE(layout.vertexData().size(), 10*20);
+    }
 }
 
 void InterleaveTest::interleavedLayoutAlreadyInterleavedExtra() {
@@ -948,7 +980,7 @@ void InterleaveTest::interleavedLayoutAlreadyInterleavedExtra() {
         std::move(vertexData), {positions, normals}};
     CORRADE_VERIFY(MeshTools::isInterleaved(mesh));
 
-    Trade::MeshData layout = MeshTools::interleavedLayout(mesh, 10, {
+    std::initializer_list<Trade::MeshAttributeData> extra{
         Trade::MeshAttributeData{1},
         Trade::MeshAttributeData{Trade::meshAttributeCustom(15),
             VertexFormat::UnsignedShort, nullptr},
@@ -956,7 +988,13 @@ void InterleaveTest::interleavedLayoutAlreadyInterleavedExtra() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Color,
             VertexFormat::Vector3, nullptr},
         Trade::MeshAttributeData{4}
-    });
+    };
+
+    /* To catch when the default argument becomes different */
+    Trade::MeshData layout = data.flags ?
+        MeshTools::interleavedLayout(mesh, 10, extra, *data.flags) :
+        MeshTools::interleavedLayout(mesh, 10, extra);
+
     CORRADE_VERIFY(MeshTools::isInterleaved(layout));
     CORRADE_COMPARE(layout.attributeCount(), 4);
     CORRADE_COMPARE(layout.attributeName(0), Trade::MeshAttribute::Position);
@@ -967,19 +1005,35 @@ void InterleaveTest::interleavedLayoutAlreadyInterleavedExtra() {
     CORRADE_COMPARE(layout.attributeFormat(1), data.vertexFormat);
     CORRADE_COMPARE(layout.attributeFormat(2), VertexFormat::UnsignedShort);
     CORRADE_COMPARE(layout.attributeFormat(3), VertexFormat::Vector3);
-    /* Original stride should be preserved no matter what the formats, with
-       stride from extra attribs added */
-    CORRADE_COMPARE(layout.attributeStride(0), 24 + 20);
-    CORRADE_COMPARE(layout.attributeStride(1), 24 + 20);
-    CORRADE_COMPARE(layout.attributeStride(2), 24 + 20);
-    CORRADE_COMPARE(layout.attributeStride(3), 24 + 20);
-    /* Relative offsets should be preserved, but the initial one removed */
-    CORRADE_COMPARE(layout.attributeOffset(0), 0);
-    CORRADE_COMPARE(layout.attributeOffset(1), 10);
-    CORRADE_COMPARE(layout.attributeOffset(2), 25);
-    CORRADE_COMPARE(layout.attributeOffset(3), 28);
+
     CORRADE_COMPARE(layout.vertexCount(), 10);
-    CORRADE_COMPARE(layout.vertexData().size(), 10*44);
+    if(data.shouldPreserveLayout) {
+        /* Original stride should be preserved no matter what the formats, with
+           stride from extra attribs added */
+        CORRADE_COMPARE(layout.attributeStride(0), 24 + 20);
+        CORRADE_COMPARE(layout.attributeStride(1), 24 + 20);
+        CORRADE_COMPARE(layout.attributeStride(2), 24 + 20);
+        CORRADE_COMPARE(layout.attributeStride(3), 24 + 20);
+        /* Relative offsets should be preserved, but the initial one removed */
+        CORRADE_COMPARE(layout.attributeOffset(0), 0);
+        CORRADE_COMPARE(layout.attributeOffset(1), 10);
+        CORRADE_COMPARE(layout.attributeOffset(2), 25);
+        CORRADE_COMPARE(layout.attributeOffset(3), 28);
+        CORRADE_COMPARE(layout.vertexData().size(), 10*44);
+    } else {
+        /* Original data get tightly packed, but any explicit padding in extra
+           attributes gets preserved */
+        CORRADE_COMPARE(layout.attributeStride(0), 8 + 12 + 20);
+        CORRADE_COMPARE(layout.attributeStride(1), 8 + 12 + 20);
+        CORRADE_COMPARE(layout.attributeStride(2), 8 + 12 + 20);
+        CORRADE_COMPARE(layout.attributeStride(3), 8 + 12 + 20);
+        /* Any explicit padding in extra attributes gets preserved */
+        CORRADE_COMPARE(layout.attributeOffset(0), 0);
+        CORRADE_COMPARE(layout.attributeOffset(1), 8);
+        CORRADE_COMPARE(layout.attributeOffset(2), 20 + 1);
+        CORRADE_COMPARE(layout.attributeOffset(3), 22 + 1 + 1);
+        CORRADE_COMPARE(layout.vertexData().size(), 10*40);
+    }
 }
 
 void InterleaveTest::interleavedLayoutNothing() {
@@ -1257,16 +1311,30 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMove() {
         std::move(vertexData), std::move(attributeData)};
     CORRADE_VERIFY(MeshTools::isInterleaved(mesh));
 
-    /* {} just to cover the initializer_list overload :P */
-    Trade::MeshData interleaved = MeshTools::interleave(std::move(mesh), {});
+    /* To catch when the default argument becomes different */
+    Trade::MeshData interleaved = data.flags ?
+        MeshTools::interleave(std::move(mesh), {}, *data.flags) :
+        /* {} just to cover the initializer_list overload :P */
+        MeshTools::interleave(std::move(mesh), {});
+
     CORRADE_VERIFY(MeshTools::isInterleaved(interleaved));
     CORRADE_COMPARE(interleaved.indexCount(), 2);
     CORRADE_COMPARE(interleaved.attributeCount(), 2);
     CORRADE_COMPARE(interleaved.vertexCount(), 3);
-    /* Things got just moved without copying */
-    CORRADE_VERIFY(interleaved.indexData().data() == static_cast<const void*>(indexView.data()));
-    CORRADE_VERIFY(interleaved.attributeData().data() == attributePointer);
-    CORRADE_VERIFY(interleaved.vertexData().data() == positionView.data());
+
+    if(data.shouldPreserveLayout) {
+        /* Things got just moved without copying */
+        CORRADE_COMPARE(interleaved.attributeStride(0), 24);
+        CORRADE_VERIFY(interleaved.indexData().data() == static_cast<const void*>(indexView.data()));
+        CORRADE_VERIFY(interleaved.attributeData().data() == attributePointer);
+        CORRADE_VERIFY(interleaved.vertexData().data() == positionView.data());
+    } else {
+        /* Things got repacked, only the index array stayed the same */
+        CORRADE_COMPARE(interleaved.attributeStride(0), 20);
+        CORRADE_VERIFY(interleaved.indexData().data() == static_cast<const void*>(indexView.data()));
+        CORRADE_VERIFY(interleaved.attributeData().data() != attributePointer);
+        CORRADE_VERIFY(interleaved.vertexData().data() != positionView.data());
+    }
 }
 
 void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveNonOwned() {

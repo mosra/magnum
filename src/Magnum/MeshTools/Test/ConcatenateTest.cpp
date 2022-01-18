@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -54,9 +55,20 @@ struct ConcatenateTest: TestSuite::Tester {
     void concatenateIntoNoMeshes();
 };
 
+const struct {
+    const char* name;
+    Containers::Optional<InterleaveFlags> flags;
+    bool shouldPreserveLayout;
+} ConcatenateData[]{
+    {"", {}, true},
+    {"don't preserve layout", InterleaveFlags{}, false},
+};
+
 ConcatenateTest::ConcatenateTest() {
-    addTests({&ConcatenateTest::concatenate,
-              &ConcatenateTest::concatenateNotIndexed,
+    addInstancedTests({&ConcatenateTest::concatenate},
+        Containers::arraySize(ConcatenateData));
+
+    addTests({&ConcatenateTest::concatenateNotIndexed,
               &ConcatenateTest::concatenateNoAttributes,
               &ConcatenateTest::concatenateNoAttributesNotIndexed,
               &ConcatenateTest::concatenateOne,
@@ -84,6 +96,9 @@ struct VertexDataA {
 };
 
 void ConcatenateTest::concatenate() {
+    auto&& data = ConcatenateData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     using namespace Math::Literals;
 
     /* First is non-indexed, this layout (including the gap) will be
@@ -167,7 +182,11 @@ void ConcatenateTest::concatenate() {
                 &vertexDataC[0].texcoords3, 3, sizeof(VertexDataC))},
     }};
 
-    Trade::MeshData dst = MeshTools::concatenate({a, b, c});
+    /* To catch when the default argument becomes different */
+    Trade::MeshData dst = data.flags ?
+        MeshTools::concatenate({a, b, c}, *data.flags) :
+        MeshTools::concatenate({a, b, c});
+
     CORRADE_COMPARE(dst.primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(dst.attributeCount(), 4);
     CORRADE_COMPARE_AS(dst.attribute<Vector3>(Trade::MeshAttribute::Position),
@@ -218,13 +237,22 @@ void ConcatenateTest::concatenate() {
             6, 7, 8             /* implicit + offset for the third mesh */
         }), TestSuite::Compare::Container);
 
-    /* The original interleaved layout should be preserved */
     CORRADE_VERIFY(isInterleaved(dst));
-    CORRADE_COMPARE(dst.attributeStride(0), sizeof(VertexDataA));
-    CORRADE_COMPARE(dst.attributeOffset(0), 0);
-    CORRADE_COMPARE(dst.attributeOffset(1), sizeof(Vector2));
-    CORRADE_COMPARE(dst.attributeOffset(2), 2*sizeof(Vector2) + 4);
-    CORRADE_COMPARE(dst.attributeOffset(3), 2*sizeof(Vector2) + 4 + sizeof(Vector3));
+    if(data.shouldPreserveLayout) {
+        /* The original interleaved layout should be preserved */
+        CORRADE_COMPARE(dst.attributeStride(0), sizeof(VertexDataA));
+        CORRADE_COMPARE(dst.attributeOffset(0), 0);
+        CORRADE_COMPARE(dst.attributeOffset(1), sizeof(Vector2));
+        CORRADE_COMPARE(dst.attributeOffset(2), 2*sizeof(Vector2) + 4);
+        CORRADE_COMPARE(dst.attributeOffset(3), 2*sizeof(Vector2) + 4 + sizeof(Vector3));
+    } else {
+        /* Everything gets tightly packed */
+        CORRADE_COMPARE(dst.attributeStride(0), 2*sizeof(Vector2) + sizeof(Vector3) + 2*sizeof(Short));
+        CORRADE_COMPARE(dst.attributeOffset(0), 0);
+        CORRADE_COMPARE(dst.attributeOffset(1), sizeof(Vector2));
+        CORRADE_COMPARE(dst.attributeOffset(2), 2*sizeof(Vector2));
+        CORRADE_COMPARE(dst.attributeOffset(3), 2*sizeof(Vector2) + sizeof(Vector3));
+    }
 }
 
 void ConcatenateTest::concatenateNotIndexed() {
