@@ -228,10 +228,14 @@ CORRADE_ENUMSET_OPERATORS(InterleaveFlags)
 @brief If the mesh data is interleaved
 @m_since{2020,06}
 
-Returns @cpp true @ce if all attributes have the same stride and the difference
-between minimal and maximal offset is not larger than the stride, @cpp false @ce
-otherwise. In particular, returns @cpp true @ce also if the mesh has just one
-or no attributes.
+Returns @cpp true @ce if all attributes have the same *positive* stride and the
+difference between minimal and maximal offset is not larger than the stride,
+@cpp false @ce otherwise. In particular, returns @cpp true @ce also if the mesh
+has just one or no attributes.
+
+While interleaved layouts technically may also have zero or negative strides,
+this case is currently not implemented and such layouts are treated as
+non-interleaved.
 @see @ref Trade::MeshData::attributeStride(),
     @ref Trade::MeshData::attributeOffset(), @ref interleavedData()
 */
@@ -269,11 +273,11 @@ MAGNUM_MESHTOOLS_EXPORT Containers::StridedArrayView2D<char> interleavedMutableD
 Returns a @ref Trade::MeshData instance with its vertex data allocated for
 @p vertexCount vertices containing attributes from both @p data and @p extra
 interleaved together. No data is actually copied, only an interleaved layout is
-created. If @p data is already interleaved and
-@ref InterleaveFlag::PreserveInterleavedAttributes is set in @p flags, keeps
-the attributes in the same layout, potentially extending them with @p extra.
-The @p extra attributes, if any, are interleaved together with existing
-attributes. Returned instance vertex data flags have both
+created. If @p data is already interleaved according to @ref isInterleaved()
+and @ref InterleaveFlag::PreserveInterleavedAttributes is set in @p flags,
+keeps the attributes in the same layout, potentially extending them with
+@p extra. The @p extra attributes, if any, are interleaved together with
+existing attributes. Returned instance vertex data flags have both
 @ref Trade::DataFlag::Mutable and @ref Trade::DataFlag::Owned, so mutable
 attribute access is guaranteed.
 

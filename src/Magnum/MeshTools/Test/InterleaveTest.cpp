@@ -64,6 +64,8 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void interleavedDataNoVertices();
     void interleavedDataNotInterleaved();
     void interleavedDataAttributeAcrossStride();
+    void interleavedDataZeroStride();
+    void interleavedDataNegativeStride();
     void interleavedDataVertexDataWholeMemory();
     void interleavedMutableDataNotMutable();
     void interleavedDataImplementationSpecificVertexFormat();
@@ -129,6 +131,8 @@ InterleaveTest::InterleaveTest() {
               &InterleaveTest::interleavedDataNoVertices,
               &InterleaveTest::interleavedDataNotInterleaved,
               &InterleaveTest::interleavedDataAttributeAcrossStride,
+              &InterleaveTest::interleavedDataZeroStride,
+              &InterleaveTest::interleavedDataNegativeStride,
               &InterleaveTest::interleavedDataVertexDataWholeMemory,
               &InterleaveTest::interleavedMutableDataNotMutable,
               &InterleaveTest::interleavedDataImplementationSpecificVertexFormat,
@@ -420,6 +424,40 @@ void InterleaveTest::interleavedDataArrayAttributes() {
     CORRADE_COMPARE(interleaved.size()[1], 31);
     CORRADE_COMPARE(interleaved.stride()[0], 40);
     CORRADE_COMPARE(interleaved.stride()[1], 1);
+}
+
+void InterleaveTest::interleavedDataZeroStride() {
+    Containers::Array<char> vertexData{100 + 20};
+    Containers::StridedArrayView1D<Vector2> positions{vertexData,
+        reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 0};
+    Containers::StridedArrayView1D<Vector3> normals{vertexData,
+        reinterpret_cast<Vector3*>(vertexData.data() + 100 + 8), 3, 0};
+
+    Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals}
+    }};
+
+    /* Technically they *are*, but it causes way too many problems especially
+       when used within interleavedLayout() etc. May tackle properly later. */
+    CORRADE_VERIFY(!MeshTools::isInterleaved(data));
+}
+
+void InterleaveTest::interleavedDataNegativeStride() {
+    Containers::Array<char> vertexData{100 + 3*20};
+    Containers::StridedArrayView1D<Vector2> positions{vertexData,
+        reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 20};
+    Containers::StridedArrayView1D<Vector3> normals{vertexData,
+        reinterpret_cast<Vector3*>(vertexData.data() + 100 + 8), 3, 20};
+
+    Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions.flipped<0>()},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals.flipped<0>()}
+    }};
+
+    /* Technically they *are*, but it causes way too many problems especially
+       when used within interleavedLayout() etc. May tackle properly later. */
+    CORRADE_VERIFY(!MeshTools::isInterleaved(data));
 }
 
 void InterleaveTest::interleavedDataEmpty() {

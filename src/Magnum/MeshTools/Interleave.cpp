@@ -47,7 +47,13 @@ Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedData
     if(!data.attributeCount())
         return Containers::StridedArrayView2D<const char>{data.vertexData(), {data.vertexCount(), 0}};
 
-    const UnsignedInt stride = data.attributeStride(0);
+    /* Technically zero and negative strides *may* also be categorized as
+       interleaved if they are all the same, but it causes way too many
+       problems especially when used within interleavedLayout() etc. May
+       tackle properly later. */
+    const Int stride = data.attributeStride(0);
+    if(stride <= 0) return Containers::NullOpt;
+
     std::size_t minOffset = ~std::size_t{};
     std::size_t maxOffset = 0;
     bool hasImplementationSpecificVertexFormat = false;
@@ -77,7 +83,7 @@ Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedData
         maxOffset = Math::max(maxOffset, minOffset + stride);
 
     /* The offsets can't fit into the stride, report failure */
-    if(maxOffset - minOffset > stride) return Containers::NullOpt;
+    if(maxOffset - minOffset > UnsignedInt(stride)) return Containers::NullOpt;
 
     return Containers::StridedArrayView2D<const char>{
         data.vertexData(), data.vertexData().data() + minOffset,
