@@ -117,12 +117,15 @@ possibly also an index buffer, if the mesh is indexed.
     @ref compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
     for an example showing how to bind them manually, and
     @ref CompileFlag::NoWarnOnCustomAttributes to suppress the warning.
--   Implementation-specific @ref Magnum::MeshPrimitive values are passed
-    as-is with @ref meshPrimitiveUnwrap(). It's the user responsibility to
-    ensure an implementation-specific value is valid in this context.
+-   Implementation-specific @ref Magnum::MeshPrimitive and
+    @ref Magnum::MeshIndexType values are passed as-is with
+    @ref meshPrimitiveUnwrap() and @ref meshIndexTypeUnwrap(). It's the user
+    responsibility to ensure an implementation-specific value is valid in this
+    context.
 -   The index buffer is expected to be contiguous (size of the index type equal
     to @ref Trade::MeshData::indexStride()). OpenGL doesn't support interleaved
-    index buffers.
+    index buffers. In case the @ref MeshIndexType is implementation-specific,
+    this condition can't be checked and the buffer is assumed to be contiguous.
 -   Stride of all attributes is expected to be positive. OpenGL doesn't support
     zero and negative strides.
 

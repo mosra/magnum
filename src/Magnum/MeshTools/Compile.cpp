@@ -160,7 +160,9 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
     }
 
     if(meshData.isIndexed()) {
-        CORRADE_ASSERT(Short(meshIndexTypeSize(meshData.indexType())) == meshData.indexStride(),
+        /* If the type is implementation-specific, we have no way to know if
+           it's strided, so just assume it is */
+        CORRADE_ASSERT(isMeshIndexTypeImplementationSpecific(meshData.indexType()) || Short(meshIndexTypeSize(meshData.indexType())) == meshData.indexStride(),
             "MeshTools::compile():" << meshData.indexType() << "with stride of" << meshData.indexStride() << "bytes isn't supported by OpenGL", GL::Mesh{});
 
         mesh.setIndexBuffer(std::move(indices), meshData.indexOffset(), meshData.indexType())

@@ -147,49 +147,55 @@ struct CompileGLTest: GL::OpenGLTester {
         GL::Texture2D _texture;
 };
 
-constexpr struct {
+const struct {
     const char* name;
     Flags flags;
+    Containers::Optional<MeshIndexType> indexType;
 } Data2D[] {
-    {"positions", {}},
-    {"positions, nonindexed", Flag::NonIndexed},
-    {"positions + colors", Flag::Colors},
-    {"positions + texture coordinates", Flag::TextureCoordinates2D},
-    {"positions + texture coordinates + colors", Flag::TextureCoordinates2D|Flag::Colors},
-    {"positions, object id, nonindexed", Flag::ObjectId|Flag::NonIndexed}
+    {"positions", {}, {}},
+    {"positions, implementation-specific index type", {},
+        meshIndexTypeWrap(GL_UNSIGNED_INT)},
+    {"positions, nonindexed", Flag::NonIndexed, {}},
+    {"positions + colors", Flag::Colors, {}},
+    {"positions + texture coordinates", Flag::TextureCoordinates2D, {}},
+    {"positions + texture coordinates + colors", Flag::TextureCoordinates2D|Flag::Colors, {}},
+    {"positions, object id, nonindexed", Flag::ObjectId|Flag::NonIndexed, {}}
 };
 
-constexpr struct {
+const struct {
     const char* name;
     Flags flags;
+    Containers::Optional<MeshIndexType> indexType;
 } Data3D[] {
-    {"positions", {}},
-    {"positions, nonindexed", Flag::NonIndexed},
-    {"positions + colors", Flag::Colors},
-    {"positions + texcoords", Flag::TextureCoordinates2D},
-    {"positions + texcoords + colors", Flag::TextureCoordinates2D|Flag::Colors},
-    {"positions + normals", Flag::Normals},
-    {"positions + normals + colors", Flag::Normals|Flag::Colors},
-    {"positions + normals + texcoords", Flag::Normals|Flag::TextureCoordinates2D},
-    {"positions + normals + texcoords + colors", Flag::Normals|Flag::TextureCoordinates2D|Flag::Colors},
-    {"positions + gen flat normals", Flag::GeneratedFlatNormals},
-    {"positions + gen both smooth and flat normals", Flag::GeneratedSmoothNormals|Flag::GeneratedFlatNormals},
-    {"positions + normals, gen flat normals", Flag::Normals|Flag::GeneratedFlatNormals},
-    {"positions + gen flat normals + colors", Flag::GeneratedFlatNormals|Flag::Colors},
-    {"positions + gen flat normals + texcoords", Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D},
-    {"positions + gen flat normals + texcoords + colors", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D|Flag::Colors},
-    {"positions, nonindexed + gen flat normals", Flag::NonIndexed|Flag::GeneratedFlatNormals},
-    {"positions, nonindexed + gen flat normals + colors", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::Colors},
-    {"positions, nonindexed + gen flat normals + texcoords", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D},
-    {"positions, nonindexed + gen flat normals + texcoords + colors", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D|Flag::Colors},
-    {"positions, gen smooth normals", Flag::GeneratedSmoothNormals},
-    {"positions, gen smooth normals + colors", Flag::GeneratedSmoothNormals|Flag::Colors},
-    {"positions, gen smooth normals + texcoords", Flag::GeneratedSmoothNormals|Flag::TextureCoordinates2D},
-    {"positions, gen smooth normals + texcoords + colors", Flag::GeneratedSmoothNormals|Flag::TextureCoordinates2D|Flag::Colors},
-    {"positions, nonindexed + gen smooth normals", Flag::NonIndexed|Flag::GeneratedSmoothNormals},
-    {"positions, tangents, bitangents, normals", Flag::Tangents|Flag::Bitangents|Flag::Normals},
-    {"positions, tangents, bitangents from tangents, normals", Flag::Tangents|Flag::BitangentsFromTangents|Flag::Normals},
-    {"positions, object id, nonindexed", Flag::ObjectId|Flag::NonIndexed}
+    {"positions", {}, {}},
+    {"positions, implementation-specific index type", {},
+        meshIndexTypeWrap(GL_UNSIGNED_BYTE)},
+    {"positions, nonindexed", Flag::NonIndexed, {}},
+    {"positions + colors", Flag::Colors, {}},
+    {"positions + texcoords", Flag::TextureCoordinates2D,{}},
+    {"positions + texcoords + colors", Flag::TextureCoordinates2D|Flag::Colors, {}},
+    {"positions + normals", Flag::Normals, {}},
+    {"positions + normals + colors", Flag::Normals|Flag::Colors,{}},
+    {"positions + normals + texcoords", Flag::Normals|Flag::TextureCoordinates2D,  {}},
+    {"positions + normals + texcoords + colors", Flag::Normals|Flag::TextureCoordinates2D|Flag::Colors, {}},
+    {"positions + gen flat normals", Flag::GeneratedFlatNormals, {}},
+    {"positions + gen both smooth and flat normals", Flag::GeneratedSmoothNormals|Flag::GeneratedFlatNormals, {}},
+    {"positions + normals, gen flat normals", Flag::Normals|Flag::GeneratedFlatNormals, {}},
+    {"positions + gen flat normals + colors", Flag::GeneratedFlatNormals|Flag::Colors, {}},
+    {"positions + gen flat normals + texcoords", Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D, {}},
+    {"positions + gen flat normals + texcoords + colors", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D|Flag::Colors, {}},
+    {"positions, nonindexed + gen flat normals", Flag::NonIndexed|Flag::GeneratedFlatNormals, {}},
+    {"positions, nonindexed + gen flat normals + colors", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::Colors, {}},
+    {"positions, nonindexed + gen flat normals + texcoords", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D, {}},
+    {"positions, nonindexed + gen flat normals + texcoords + colors", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D|Flag::Colors, {}},
+    {"positions, gen smooth normals", Flag::GeneratedSmoothNormals, {}},
+    {"positions, gen smooth normals + colors", Flag::GeneratedSmoothNormals|Flag::Colors, {}},
+    {"positions, gen smooth normals + texcoords", Flag::GeneratedSmoothNormals|Flag::TextureCoordinates2D, {}},
+    {"positions, gen smooth normals + texcoords + colors", Flag::GeneratedSmoothNormals|Flag::TextureCoordinates2D|Flag::Colors, {}},
+    {"positions, nonindexed + gen smooth normals", Flag::NonIndexed|Flag::GeneratedSmoothNormals, {}},
+    {"positions, tangents, bitangents, normals", Flag::Tangents|Flag::Bitangents|Flag::Normals, {}},
+    {"positions, tangents, bitangents from tangents, normals", Flag::Tangents|Flag::BitangentsFromTangents|Flag::Normals, {}},
+    {"positions, object id, nonindexed", Flag::ObjectId|Flag::NonIndexed, {}}
 };
 
 constexpr struct {
@@ -394,7 +400,7 @@ template<class T> void CompileGLTest::twoDimensions() {
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH /** @todo remove once MeshDataXD is gone */
-    if(std::is_same<T, Trade::MeshData2D>::value && data.flags & Flag::ObjectId)
+    if(std::is_same<T, Trade::MeshData2D>::value && ((data.flags & Flag::ObjectId) || data.indexType))
         CORRADE_SKIP("Not possible with MeshData2D.");
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
@@ -461,8 +467,14 @@ template<class T> void CompileGLTest::twoDimensions() {
         4, 5, 8, 4, 8, 7
     };
 
+    Trade::MeshIndexData indices;
+    if(data.indexType)
+        indices = Trade::MeshIndexData{*data.indexType, Containers::stridedArrayView(Containers::arrayView(indexData).suffix(3))};
+    else
+        indices = Trade::MeshIndexData{Containers::arrayView(indexData).suffix(3)};
+
     Trade::MeshData meshData{MeshPrimitive::Triangles,
-        {}, indexData, Trade::MeshIndexData{Containers::arrayView(indexData).suffix(3)},
+        {}, indexData, indices,
         {}, vertexData, std::move(attributeData)};
 
     /* Duplicate everything if data is non-indexed */
@@ -573,7 +585,7 @@ template<class T> void CompileGLTest::threeDimensions() {
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH /** @todo remove once MeshDataXD is gone */
-    if(std::is_same<T, Trade::MeshData3D>::value && data.flags & (Flag::Tangents|Flag::Bitangents|Flag::BitangentsFromTangents|Flag::ObjectId))
+    if(std::is_same<T, Trade::MeshData3D>::value && ((data.flags & (Flag::Tangents|Flag::Bitangents|Flag::BitangentsFromTangents|Flag::ObjectId)) || data.indexType))
         CORRADE_SKIP("Not possible with MeshData3D.");
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
@@ -689,8 +701,14 @@ template<class T> void CompileGLTest::threeDimensions() {
         4, 5, 8, 4, 8, 7
     };
 
+    Trade::MeshIndexData indices;
+    if(data.indexType)
+        indices = Trade::MeshIndexData{*data.indexType, Containers::stridedArrayView(Containers::arrayView(indexData).suffix(3))};
+    else
+        indices = Trade::MeshIndexData{Containers::arrayView(indexData).suffix(3)};
+
     Trade::MeshData meshData{MeshPrimitive::Triangles,
-        {}, indexData, Trade::MeshIndexData{Containers::arrayView(indexData).suffix(3)},
+        {}, indexData, indices,
         {}, vertexData, std::move(attributeData)};
 
     /* Duplicate everything if data is non-indexed */
