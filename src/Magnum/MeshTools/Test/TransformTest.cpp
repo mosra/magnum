@@ -450,6 +450,7 @@ template<class T> void TransformTest::meshData2D() {
     CORRADE_COMPARE(mesh.isIndexed(), data.indexed);
 
     Trade::MeshData out = transform2D(mesh, data.transformation, data.id);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::TriangleStrip);
 
     /* Indices should be preserved */
     if(data.indexed) {
@@ -552,13 +553,14 @@ void TransformTest::meshData2DRvaluePassthrough() {
     });
     const void* originalAttributeData = attributes;
 
-    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+    Trade::MeshData mesh{MeshPrimitive::TriangleFan,
         data.indexed ? std::move(indexData) : nullptr,
         data.indexed ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
         std::move(vertexData), std::move(attributes)};
 
     const Matrix3 transformation = Matrix3::rotation(35.0_degf);
     Trade::MeshData out = transform2D(std::move(mesh), transformation, data.id);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::TriangleFan);
 
     /* Indices should be passed through unchanged */
     if(data.indexed) {
@@ -827,6 +829,7 @@ template<class T, class U, class V, class W> void TransformTest::meshData3D() {
     CORRADE_COMPARE(mesh.isIndexed(), data.indexed);
 
     Trade::MeshData out = transform3D(mesh, data.transformation, data.id);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::TriangleStrip);
 
     /* Indices should be preserved */
     if(data.indexed) {
@@ -995,13 +998,14 @@ void TransformTest::meshData3DRvaluePassthrough() {
         arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertices.slice(&Vertex::normal)});
     const void* originalAttributeData = attributes;
 
-    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+    Trade::MeshData mesh{MeshPrimitive::TriangleFan,
         data.indexed ? std::move(indexData) : nullptr,
         data.indexed ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
         std::move(vertexData), std::move(attributes)};
 
     const Matrix4 transformation = Matrix4::rotationX(35.0_degf);
     Trade::MeshData out = transform3D(std::move(mesh), transformation, data.id);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::TriangleFan);
 
     /* Indices should be passed through unchanged */
     if(data.indexed) {
@@ -1344,6 +1348,7 @@ template<class T> void TransformTest::meshDataTextureCoordinates2D() {
     CORRADE_COMPARE(mesh.isIndexed(), data.indexed);
 
     Trade::MeshData out = transformTextureCoordinates2D(mesh, data.transformation, data.id);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::TriangleStrip);
 
     /* Indices should be preserved */
     if(data.indexed) {
@@ -1431,13 +1436,14 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthrough() {
     });
     const void* originalAttributeData = attributes;
 
-    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+    Trade::MeshData mesh{MeshPrimitive::TriangleFan,
         data.indexed ? std::move(indexData) : nullptr,
         data.indexed ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
         std::move(vertexData), std::move(attributes)};
 
     const Matrix3 transformation = Matrix3::rotation(35.0_degf);
     Trade::MeshData out = transformTextureCoordinates2D(std::move(mesh), transformation, data.id);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::TriangleFan);
 
     /* Indices should be passed through unchanged */
     if(data.indexed) {
