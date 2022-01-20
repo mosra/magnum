@@ -861,7 +861,7 @@ template<class T> void Device::initializeExtensions(const Containers::ArrayView<
             const auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const Extension& a, const T& b) {
                 return a.string() < static_cast<const Containers::StringView&>(b);
             });
-            if(found->string() != extension) continue;
+            if(found == knownExtensions.end() || found->string() != extension) continue;
             _enabledExtensions.set(found->index(), true);
         }
     }
