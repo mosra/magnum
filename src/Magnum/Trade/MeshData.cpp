@@ -111,7 +111,14 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
         CORRADE_ASSERT(vertexCount != ImplicitVertexCount,
             "Trade::MeshData: vertex count can't be implicit if there are no attributes", );
         _vertexCount = vertexCount;
-        /* No attributes, so we won't be checking anything */
+        #ifndef CORRADE_NO_ASSERT
+        /* No attributes, so we won't be checking anything. GCC 11 however
+           insists that "warning: ‘expectedAttributeVertexCount’ may be used
+           uninitialized in this function" so I initialize the variable here to
+           make the damn thing shut up. YOUR NEW WARNINGS ARE NOT USEFUL,
+           GCC. */
+        expectedAttributeVertexCount = ~UnsignedInt{};
+        #endif
     } else if(vertexCount != ImplicitVertexCount) {
         _vertexCount = vertexCount;
         #ifndef CORRADE_NO_ASSERT
