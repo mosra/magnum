@@ -32,8 +32,21 @@
 namespace Magnum { namespace MeshTools {
 
 Trade::MeshData reference(const Trade::MeshData& data) {
+    /* Can't do just Trade::MeshIndexData{data.indices()} as that would discard
+       implementation-specific types. And can't do
+        Trade::meshIndexData{data.indexType(), view}
+       because asking for index type would assert on non-indexed meshes. */
+    Trade::MeshIndexData indices;
+    if(data.isIndexed()) indices = Trade::MeshIndexData{
+        data.indexType(),
+        Containers::StridedArrayView1D<const void>{
+            data.indexData(),
+            data.indexData().data() + data.indexOffset(),
+            data.indexCount(),
+            data.indexStride()}};
+
     return Trade::MeshData{data.primitive(),
-        {}, data.indexData(), Trade::MeshIndexData{data.indices()},
+        {}, data.indexData(), indices,
         {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
         data.vertexCount()};
 }
@@ -43,8 +56,21 @@ Trade::MeshData mutableReference(Trade::MeshData& data) {
         "MeshTools::mutableReference(): data not mutable",
         (Trade::MeshData{MeshPrimitive::Points, 0}));
 
+    /* Can't do just Trade::MeshIndexData{data.indices()} as that would discard
+       implementation-specific types. And can't do
+        Trade::meshIndexData{data.indexType(), view}
+       because asking for index type would assert on non-indexed meshes. */
+    Trade::MeshIndexData indices;
+    if(data.isIndexed()) indices = Trade::MeshIndexData{
+        data.indexType(),
+        Containers::StridedArrayView1D<const void>{
+            data.indexData(),
+            data.indexData().data() + data.indexOffset(),
+            data.indexCount(),
+            data.indexStride()}};
+
     return Trade::MeshData{data.primitive(),
-        Trade::DataFlag::Mutable, data.mutableIndexData(), Trade::MeshIndexData{data.indices()},
+        Trade::DataFlag::Mutable, data.mutableIndexData(), indices,
         Trade::DataFlag::Mutable, data.mutableVertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
         data.vertexCount()};
 }

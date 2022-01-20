@@ -43,10 +43,12 @@ struct ReferenceTest: TestSuite::Tester {
 
     void reference();
     void referenceNoIndexData();
+    void referenceImplementationSpecificIndexType();
     void referenceNoIndexVertexAttributeData();
 
     void mutableReference();
     void mutableReferenceNoIndexData();
+    void mutableReferenceImplementationSpecificIndexType();
     void mutableReferenceNoIndexVertexAttributeData();
     void mutableReferenceNotMutable();
 
@@ -60,21 +62,34 @@ struct ReferenceTest: TestSuite::Tester {
     void ownedRvaluePartialPassthrough();
 };
 
+struct {
+    const char* name;
+    MeshIndexType type;
+} StridedIndicesData[]{
+    {"", MeshIndexType::UnsignedShort},
+    {"implementation-specific index format", meshIndexTypeWrap(0xcaca)}
+};
+
 ReferenceTest::ReferenceTest() {
     addTests({&ReferenceTest::reference,
               &ReferenceTest::referenceNoIndexData,
+              &ReferenceTest::referenceImplementationSpecificIndexType,
               &ReferenceTest::referenceNoIndexVertexAttributeData,
 
               &ReferenceTest::mutableReference,
               &ReferenceTest::mutableReferenceNoIndexData,
+              &ReferenceTest::mutableReferenceImplementationSpecificIndexType,
               &ReferenceTest::mutableReferenceNoIndexVertexAttributeData,
               &ReferenceTest::mutableReferenceNotMutable,
 
               &ReferenceTest::owned,
               &ReferenceTest::ownedNoIndexData,
-              &ReferenceTest::ownedNoAttributeVertexData,
-              &ReferenceTest::ownedStridedIndices,
-              &ReferenceTest::ownedArrayAttribute,
+              &ReferenceTest::ownedNoAttributeVertexData});
+
+    addInstancedTests({&ReferenceTest::ownedStridedIndices},
+        Containers::arraySize(StridedIndicesData));
+
+    addTests({&ReferenceTest::ownedArrayAttribute,
               &ReferenceTest::ownedImplementationSpecificVertexFormat,
               &ReferenceTest::ownedRvaluePassthrough,
               &ReferenceTest::ownedRvaluePartialPassthrough});
@@ -112,6 +127,17 @@ void ReferenceTest::referenceNoIndexData() {
     CORRADE_COMPARE(static_cast<const void*>(reference.indexData().data()), circle.indexData().data());
     CORRADE_COMPARE(static_cast<const void*>(reference.vertexData().data()), circle.vertexData().data());
     CORRADE_COMPARE(static_cast<const void*>(reference.attributeData().data()), circle.attributeData().data());
+}
+
+void ReferenceTest::referenceImplementationSpecificIndexType() {
+    const UnsignedShort indices[7]{0, 3, 0, 7, 0, 15, 0};
+    Trade::MeshData stuff{MeshPrimitive::Points,
+        {}, indices, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::stridedArrayView(indices)},
+        16};
+
+    /* The type should be preserved. not just dropped */
+    Trade::MeshData reference = MeshTools::reference(stuff);
+    CORRADE_COMPARE(reference.indexType(), meshIndexTypeWrap(0xcaca));
 }
 
 void ReferenceTest::referenceNoIndexVertexAttributeData() {
@@ -159,6 +185,17 @@ void ReferenceTest::mutableReferenceNoIndexData() {
     CORRADE_COMPARE(static_cast<const void*>(reference.indexData().data()), circle.indexData().data());
     CORRADE_COMPARE(static_cast<const void*>(reference.vertexData().data()), circle.vertexData().data());
     CORRADE_COMPARE(static_cast<const void*>(reference.attributeData().data()), circle.attributeData().data());
+}
+
+void ReferenceTest::mutableReferenceImplementationSpecificIndexType() {
+    UnsignedShort indices[7]{0, 3, 0, 7, 0, 15, 0};
+    Trade::MeshData stuff{MeshPrimitive::Points,
+        Trade::DataFlag::Mutable, indices, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::stridedArrayView(indices)},
+        16};
+
+    /* The type should be preserved. not just dropped */
+    Trade::MeshData reference = MeshTools::mutableReference(stuff);
+    CORRADE_COMPARE(reference.indexType(), meshIndexTypeWrap(0xcaca));
 }
 
 void ReferenceTest::mutableReferenceNoIndexVertexAttributeData() {
@@ -257,24 +294,31 @@ void ReferenceTest::ownedNoAttributeVertexData() {
 }
 
 void ReferenceTest::ownedStridedIndices() {
+    auto&& data = StridedIndicesData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     const UnsignedShort indices[7]{0, 3, 0, 7, 0, 15, 0};
     Trade::MeshData stuff{MeshPrimitive::Points,
-        {}, indices, Trade::MeshIndexData{Containers::stridedArrayView(indices).suffix(1).every(2)},
+        {}, indices, Trade::MeshIndexData{data.type, Containers::stridedArrayView(indices).suffix(1).every(2)},
         16};
 
+    /* The full index data layout including whatever format should be
+       preserved */
     Trade::MeshData owned = MeshTools::owned(stuff);
     CORRADE_VERIFY(owned.isIndexed());
     CORRADE_COMPARE(owned.primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(owned.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_COMPARE(owned.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_COMPARE(owned.indexCount(), 3);
-    CORRADE_COMPARE(owned.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE(owned.indexType(), data.type);
     CORRADE_COMPARE(owned.indexOffset(), 2);
     CORRADE_COMPARE(owned.indexStride(), 4);
     CORRADE_COMPARE(owned.vertexCount(), 16);
     CORRADE_COMPARE(owned.attributeCount(), 0);
 
-    CORRADE_COMPARE_AS(owned.indices<UnsignedShort>(),
+    /* Has to do a prefix() because for an implementation-specific index type
+       the returned size is equal to stride */
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(owned.indices().prefix({owned.indexCount(), 2}))),
         Containers::arrayView<UnsignedShort>({3, 7, 15}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(owned.indexData(), stuff.indexData(),
