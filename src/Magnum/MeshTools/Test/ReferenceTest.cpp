@@ -34,6 +34,7 @@
 #include "Magnum/Primitives/Gradient.h"
 #include "Magnum/Primitives/Grid.h"
 #include "Magnum/Trade/MeshData.h"
+#include <Magnum/Primitives/Circle.h>
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
@@ -41,9 +42,11 @@ struct ReferenceTest: TestSuite::Tester {
     explicit ReferenceTest();
 
     void reference();
+    void referenceNoIndexData();
     void referenceNoIndexVertexAttributeData();
 
     void mutableReference();
+    void mutableReferenceNoIndexData();
     void mutableReferenceNoIndexVertexAttributeData();
     void mutableReferenceNotMutable();
 
@@ -59,9 +62,11 @@ struct ReferenceTest: TestSuite::Tester {
 
 ReferenceTest::ReferenceTest() {
     addTests({&ReferenceTest::reference,
+              &ReferenceTest::referenceNoIndexData,
               &ReferenceTest::referenceNoIndexVertexAttributeData,
 
               &ReferenceTest::mutableReference,
+              &ReferenceTest::mutableReferenceNoIndexData,
               &ReferenceTest::mutableReferenceNoIndexVertexAttributeData,
               &ReferenceTest::mutableReferenceNotMutable,
 
@@ -76,9 +81,30 @@ ReferenceTest::ReferenceTest() {
 }
 
 void ReferenceTest::reference() {
-    const Trade::MeshData circle = Primitives::grid3DSolid({15, 3}, Primitives::GridFlag::Tangents);
+    const Trade::MeshData grid = Primitives::grid3DSolid({15, 3}, Primitives::GridFlag::Tangents);
+    CORRADE_VERIFY(grid.isIndexed());
+
+    Trade::MeshData reference = MeshTools::reference(grid);
+    CORRADE_VERIFY(reference.isIndexed());
+    CORRADE_COMPARE(reference.primitive(), grid.primitive());
+    CORRADE_COMPARE(reference.indexDataFlags(), Trade::DataFlags{});
+    CORRADE_COMPARE(reference.vertexDataFlags(), Trade::DataFlags{});
+    CORRADE_COMPARE(reference.indexCount(), grid.indexCount());
+    CORRADE_COMPARE(reference.indexType(), grid.indexType());
+    CORRADE_COMPARE(reference.indexOffset(), grid.indexOffset());
+    CORRADE_COMPARE(reference.indexStride(), grid.indexStride());
+    CORRADE_COMPARE(reference.vertexCount(), grid.vertexCount());
+    CORRADE_COMPARE(static_cast<const void*>(reference.indexData().data()), grid.indexData().data());
+    CORRADE_COMPARE(static_cast<const void*>(reference.vertexData().data()), grid.vertexData().data());
+    CORRADE_COMPARE(static_cast<const void*>(reference.attributeData().data()), grid.attributeData().data());
+}
+
+void ReferenceTest::referenceNoIndexData() {
+    const Trade::MeshData circle = Primitives::circle3DSolid(5);
+    CORRADE_VERIFY(!circle.isIndexed());
 
     Trade::MeshData reference = MeshTools::reference(circle);
+    CORRADE_VERIFY(!reference.isIndexed());
     CORRADE_COMPARE(reference.primitive(), circle.primitive());
     CORRADE_COMPARE(reference.indexDataFlags(), Trade::DataFlags{});
     CORRADE_COMPARE(reference.vertexDataFlags(), Trade::DataFlags{});
@@ -102,10 +128,30 @@ void ReferenceTest::referenceNoIndexVertexAttributeData() {
 }
 
 void ReferenceTest::mutableReference() {
-    Trade::MeshData circle = Primitives::grid3DSolid({15, 3}, Primitives::GridFlag::Tangents);
-    CORRADE_VERIFY(circle.isIndexed());
+    Trade::MeshData grid = Primitives::grid3DSolid({15, 3}, Primitives::GridFlag::Tangents);
+    CORRADE_VERIFY(grid.isIndexed());
+
+    Trade::MeshData reference = MeshTools::mutableReference(grid);
+    CORRADE_VERIFY(reference.isIndexed());
+    CORRADE_COMPARE(reference.primitive(), grid.primitive());
+    CORRADE_COMPARE(reference.indexDataFlags(), Trade::DataFlag::Mutable);
+    CORRADE_COMPARE(reference.vertexDataFlags(), Trade::DataFlag::Mutable);
+    CORRADE_COMPARE(reference.indexCount(), grid.indexCount());
+    CORRADE_COMPARE(reference.indexType(), grid.indexType());
+    CORRADE_COMPARE(reference.indexOffset(), grid.indexOffset());
+    CORRADE_COMPARE(reference.indexStride(), grid.indexStride());
+    CORRADE_COMPARE(reference.vertexCount(), grid.vertexCount());
+    CORRADE_COMPARE(static_cast<const void*>(reference.indexData().data()), grid.indexData().data());
+    CORRADE_COMPARE(static_cast<const void*>(reference.vertexData().data()), grid.vertexData().data());
+    CORRADE_COMPARE(static_cast<const void*>(reference.attributeData().data()), grid.attributeData().data());
+}
+
+void ReferenceTest::mutableReferenceNoIndexData() {
+    Trade::MeshData circle = Primitives::circle3DSolid(5);
+    CORRADE_VERIFY(!circle.isIndexed());
 
     Trade::MeshData reference = MeshTools::mutableReference(circle);
+    CORRADE_VERIFY(!reference.isIndexed());
     CORRADE_COMPARE(reference.primitive(), circle.primitive());
     CORRADE_COMPARE(reference.indexDataFlags(), Trade::DataFlag::Mutable);
     CORRADE_COMPARE(reference.vertexDataFlags(), Trade::DataFlag::Mutable);
@@ -149,13 +195,14 @@ void ReferenceTest::owned() {
     CORRADE_COMPARE(cube.vertexDataFlags(), Trade::DataFlags{});
 
     Trade::MeshData owned = MeshTools::owned(cube);
+    CORRADE_VERIFY(owned.isIndexed());
     CORRADE_COMPARE(owned.primitive(), cube.primitive());
     CORRADE_COMPARE(owned.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_COMPARE(owned.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    CORRADE_VERIFY(owned.isIndexed());
     CORRADE_COMPARE(owned.indexCount(), cube.indexCount());
     CORRADE_COMPARE(owned.indexType(), cube.indexType());
     CORRADE_COMPARE(owned.indexOffset(), cube.indexOffset());
+    CORRADE_COMPARE(owned.indexStride(), cube.indexStride());
     CORRADE_COMPARE(owned.vertexCount(), cube.vertexCount());
     CORRADE_COMPARE(owned.attributeCount(), cube.attributeCount());
 
@@ -179,10 +226,10 @@ void ReferenceTest::ownedNoIndexData() {
     CORRADE_COMPARE(cube.vertexDataFlags(), Trade::DataFlags{});
 
     Trade::MeshData owned = MeshTools::owned(cube);
+    CORRADE_VERIFY(!owned.isIndexed());
     CORRADE_COMPARE(owned.primitive(), cube.primitive());
     CORRADE_COMPARE(owned.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_COMPARE(owned.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    CORRADE_VERIFY(!owned.isIndexed());
     CORRADE_COMPARE(owned.vertexCount(), cube.vertexCount());
     CORRADE_COMPARE(owned.attributeCount(), cube.attributeCount());
 }
@@ -194,10 +241,10 @@ void ReferenceTest::ownedNoAttributeVertexData() {
         42};
 
     Trade::MeshData owned = MeshTools::owned(indexedFourtytwo);
+    CORRADE_VERIFY(owned.isIndexed());
     CORRADE_COMPARE(owned.primitive(), MeshPrimitive::Edges);
     CORRADE_COMPARE(owned.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_COMPARE(owned.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    CORRADE_VERIFY(owned.isIndexed());
     CORRADE_COMPARE(owned.indexCount(), 3);
     CORRADE_COMPARE(owned.indexType(), MeshIndexType::UnsignedShort);
     CORRADE_COMPARE(owned.indexOffset(), 0);
@@ -216,10 +263,10 @@ void ReferenceTest::ownedStridedIndices() {
         16};
 
     Trade::MeshData owned = MeshTools::owned(stuff);
+    CORRADE_VERIFY(owned.isIndexed());
     CORRADE_COMPARE(owned.primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(owned.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_COMPARE(owned.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    CORRADE_VERIFY(owned.isIndexed());
     CORRADE_COMPARE(owned.indexCount(), 3);
     CORRADE_COMPARE(owned.indexType(), MeshIndexType::UnsignedShort);
     CORRADE_COMPARE(owned.indexOffset(), 2);
@@ -265,16 +312,27 @@ void ReferenceTest::ownedImplementationSpecificVertexFormat() {
 }
 
 void ReferenceTest::ownedRvaluePassthrough() {
-    Trade::MeshData circle = Primitives::grid3DSolid({15, 3}, Primitives::GridFlag::Tangents);
-    CORRADE_COMPARE(circle.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    CORRADE_COMPARE(circle.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    const void* indexData = circle.indexData();
-    const void* vertexData = circle.vertexData();
-    const void* attributeData = circle.attributeData();
+    Trade::MeshData grid = Primitives::grid3DSolid({15, 3}, Primitives::GridFlag::Tangents);
+    CORRADE_COMPARE(grid.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    CORRADE_COMPARE(grid.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    UnsignedInt indexCount = grid.indexCount();
+    MeshIndexType indexType = grid.indexType();
+    std::size_t indexOffset = grid.indexOffset();
+    Int indexStride = grid.indexStride();
+    UnsignedInt vertexCount = grid.vertexCount();
+    const void* indexData = grid.indexData();
+    const void* vertexData = grid.vertexData();
+    const void* attributeData = grid.attributeData();
 
-    Trade::MeshData owned = MeshTools::owned(std::move(circle));
+    Trade::MeshData owned = MeshTools::owned(std::move(grid));
+    CORRADE_VERIFY(owned.isIndexed());
     CORRADE_COMPARE(owned.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_COMPARE(owned.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    CORRADE_COMPARE(owned.indexCount(), indexCount);
+    CORRADE_COMPARE(owned.indexType(), indexType);
+    CORRADE_COMPARE(owned.indexOffset(), indexOffset);
+    CORRADE_COMPARE(owned.indexStride(), indexStride);
+    CORRADE_COMPARE(owned.vertexCount(), vertexCount);
     CORRADE_COMPARE(owned.indexData(), indexData);
     CORRADE_COMPARE(owned.vertexData(), vertexData);
     CORRADE_COMPARE(owned.attributeData(), attributeData);
@@ -283,13 +341,15 @@ void ReferenceTest::ownedRvaluePassthrough() {
 void ReferenceTest::ownedRvaluePartialPassthrough() {
     Trade::MeshData gradient = Primitives::gradient3DHorizontal({}, {});
     CORRADE_COMPARE(gradient.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    UnsignedInt vertexCount = gradient.vertexCount();
     const void* vertexData = gradient.vertexData();
     const void* attributeData = gradient.attributeData();
 
     Trade::MeshData owned = MeshTools::owned(std::move(gradient));
+    CORRADE_VERIFY(!owned.isIndexed());
     CORRADE_COMPARE(owned.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_COMPARE(owned.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    CORRADE_VERIFY(!owned.isIndexed());
+    CORRADE_COMPARE(owned.vertexCount(), vertexCount);
     CORRADE_COMPARE(owned.vertexData(), vertexData);
     /* Attribute data is constant in the original, so this gets copied */
     CORRADE_VERIFY(owned.attributeData() != attributeData);
