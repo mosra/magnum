@@ -719,19 +719,6 @@ void RemoveDuplicatesTest::removeDuplicatesMeshData() {
         TestSuite::Compare::Container);
 }
 
-/* MSVC 2015 doesn't understand anonymous bitfields in function-local structs,
-   so this has to be outside */
-struct PaddedVertex {
-    Int:32;
-    Int:32;
-    Int:32;
-    Int:32;
-    Vector2 position;
-    Int padding;
-    Vector2s data;
-    Int:32;
-};
-
 void RemoveDuplicatesTest::removeDuplicatesMeshDataPaddedAttributes() {
     /* Same as the non-indexed case in removeDuplicatesMeshData() except that
        the vertex data is interleaved with deliberate padding at the front and
@@ -745,7 +732,34 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataPaddedAttributes() {
 
        The array aspect also doesn't need to be tested here again, so it's just
        Vector2s instead of Short[2]. */
-    PaddedVertex vertices[]{
+    struct PaddedVertex {
+        /* Usually it was enough to just move the struct out of the function to
+           make MSVC 2015 recognize the anonymous padding bitfields, but in
+           this case that somehow leads to an ICE. So doing it the long way,
+           naming all fields and then providing a constructor that initializes
+           just some, *deliberately* leaving the others uninitialized to match
+           the behavior with anonymous bitfields. */
+        #ifdef CORRADE_MSVC2015_COMPATIBILITY
+        PaddedVertex(const Vector2& position, Int padding, const Vector2s& data): position{position}, padding{padding}, data{data} {}
+        Int padding0;
+        Int padding1;
+        Int padding2;
+        Int padding3;
+        Vector2 position;
+        Int padding;
+        Vector2s data;
+        Int padding4;
+        #else
+        Int:32;
+        Int:32;
+        Int:32;
+        Int:32;
+        Vector2 position;
+        Int padding;
+        Vector2s data;
+        Int:32;
+        #endif
+    } vertices[]{
         {{1.0f, 2.0f},  0, {-15, 2}},
         {{3.0f, 4.0f},  1, {2, 32}},
         {{5.0f, 6.0f},  2, {24, 2}},
