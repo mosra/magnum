@@ -73,11 +73,13 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
     void removeDuplicatesMeshData();
     void removeDuplicatesMeshDataPaddedAttributes();
     void removeDuplicatesMeshDataAttributeless();
+    void removeDuplicatesMeshDataImplementationSpecificIndexType();
     void removeDuplicatesMeshDataImplementationSpecificVertexFormat();
 
     void removeDuplicatesMeshDataFuzzy();
     void removeDuplicatesMeshDataFuzzyDouble();
     void removeDuplicatesMeshDataFuzzyAttributeless();
+    void removeDuplicatesMeshDataFuzzyImplementationSpecificIndexType();
     void removeDuplicatesMeshDataFuzzyImplementationSpecificVertexFormat();
 
     void soakTest();
@@ -213,6 +215,7 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
     addTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataPaddedAttributes});
 
     addTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless,
+              &RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificIndexType,
               &RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificVertexFormat});
 
     addInstancedTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzy},
@@ -221,6 +224,7 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
     addTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyDouble,
 
               &RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyAttributeless,
+              &RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecificIndexType,
               &RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecificVertexFormat});
 
     addRepeatedTests({&RemoveDuplicatesTest::soakTest,
@@ -822,6 +826,22 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless() {
         "MeshTools::removeDuplicates(): can't remove duplicates in an attributeless mesh\n");
 }
 
+void RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificIndexType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::removeDuplicates(Trade::MeshData{MeshPrimitive::Points,
+        nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr}
+        }});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::removeDuplicates(): mesh has an implementation-specific index type 0xcaca\n");
+}
+
 void RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificVertexFormat() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1154,6 +1174,22 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyAttributeless() {
     MeshTools::removeDuplicatesFuzzy(Trade::MeshData{MeshPrimitive::Points, 10});
     CORRADE_COMPARE(out.str(),
         "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an attributeless mesh\n");
+}
+
+void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecificIndexType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::removeDuplicatesFuzzy(Trade::MeshData{MeshPrimitive::Points,
+        nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr}
+        }});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::removeDuplicatesFuzzy(): mesh has an implementation-specific index type 0xcaca\n");
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecificVertexFormat() {

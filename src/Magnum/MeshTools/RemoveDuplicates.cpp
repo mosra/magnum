@@ -409,6 +409,12 @@ Trade::MeshData removeDuplicates(const Trade::MeshData& data) {
     }
     #endif
 
+    /* This has to be checked before passing the data to interleave() as there
+       it would die also, but with a confusing function name in the message */
+    CORRADE_ASSERT(!data.isIndexed() || !isMeshIndexTypeImplementationSpecific(data.indexType()),
+        "MeshTools::removeDuplicates(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(data.indexType())),
+        (Trade::MeshData{MeshPrimitive{}, 0}));
+
     /* Turn the passed data into an interleaved owned mutable instance we can
        operate on -- owned() alone only makes the data owned, interleave()
        alone only makes the data interleaved (but the index data can stay
@@ -580,6 +586,9 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
             Containers::arrayCast<UnsignedInt>(indexData));
         indexType = MeshIndexType::UnsignedInt;
     } else {
+        CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(owned.indexType()),
+            "MeshTools::removeDuplicatesFuzzy(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(owned.indexType())),
+            (Trade::MeshData{MeshPrimitive{}, 0}));
         vertexCount = removeDuplicatesIndexedInPlace(
             owned.mutableIndices(),
             Containers::arrayCast<2, char>(combinedIndices));
