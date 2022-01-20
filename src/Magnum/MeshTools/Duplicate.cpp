@@ -80,6 +80,9 @@ void duplicateInto(const Containers::StridedArrayView2D<const char>& indices, co
 
 Trade::MeshData duplicate(const Trade::MeshData& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
     CORRADE_ASSERT(data.isIndexed(), "MeshTools::duplicate(): mesh data not indexed", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+    CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(data.indexType()),
+        "MeshTools::duplicate(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(data.indexType())),
+        (Trade::MeshData{MeshPrimitive{}, 0}));
     #ifndef CORRADE_NO_ASSERT
     for(std::size_t i = 0; i != data.attributeCount(); ++i) {
         const VertexFormat format = data.attributeFormat(i);

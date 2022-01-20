@@ -144,11 +144,12 @@ is done by @ref interleavedLayout(), see its documentation for detailed
 behavior description. Note that offset-only @ref Trade::MeshAttributeData
 instances are not supported in the @p extra array.
 
-Expects that @p data is indexed and each attribute in @p extra has either the
-same amount of elements as @p data vertex count (*not* index count) or has
-none. All attributes are expected to not have an implementation-specific
-format.
-@see @ref isVertexFormatImplementationSpecific(),
+Expects that @p data is indexed with a non-implementation-specific index type
+and each attribute in @p extra has either the same amount of elements as
+@p data vertex count (*not* index count) or has none. All attributes are
+expected to not have an implementation-specific format.
+@see @ref isMeshIndexTypeImplementationSpecific(),
+    @ref isVertexFormatImplementationSpecific(),
     @ref Trade::MeshData::attributeData()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData duplicate(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});

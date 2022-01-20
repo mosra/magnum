@@ -59,6 +59,7 @@ struct DuplicateTest: TestSuite::Tester {
 
     template<class T> void duplicateMeshData();
     void duplicateMeshDataNotIndexed();
+    void duplicateMeshDataImplementationSpecificIndexType();
     void duplicateMeshDataImplementationSpecificVertexFormat();
     void duplicateMeshDataExtra();
     void duplicateMeshDataExtraEmpty();
@@ -94,6 +95,7 @@ DuplicateTest::DuplicateTest() {
               &DuplicateTest::duplicateMeshData<UnsignedShort>,
               &DuplicateTest::duplicateMeshData<UnsignedInt>,
               &DuplicateTest::duplicateMeshDataNotIndexed,
+              &DuplicateTest::duplicateMeshDataImplementationSpecificIndexType,
               &DuplicateTest::duplicateMeshDataImplementationSpecificVertexFormat,
               &DuplicateTest::duplicateMeshDataExtra,
               &DuplicateTest::duplicateMeshDataExtraEmpty,
@@ -328,6 +330,24 @@ void DuplicateTest::duplicateMeshDataNotIndexed() {
     Error redirectError{&out};
     MeshTools::duplicate(Trade::MeshData{MeshPrimitive::Points, 0});
     CORRADE_COMPARE(out.str(), "MeshTools::duplicate(): mesh data not indexed\n");
+}
+
+void DuplicateTest::duplicateMeshDataImplementationSpecificIndexType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData a{MeshPrimitive::Lines,
+        nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
+        nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::duplicate(a);
+    CORRADE_COMPARE(out.str(), "MeshTools::duplicate(): mesh has an implementation-specific index type 0xcaca\n");
 }
 
 void DuplicateTest::duplicateMeshDataImplementationSpecificVertexFormat() {
