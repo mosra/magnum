@@ -738,6 +738,42 @@ mesh positions:
 If the transformation includes a rotation or non-uniform scaling, you may want
 to do a similar operation with normals and tangents as well.
 
+@section Trade-MeshData-special-layouts Special data layouts
+
+The class is able to represent data layouts beyond what's supported by common
+GPU vertex pipelines, in particular:
+
+-   attributes with zero stride (a single value repeated for all vertices),
+-   attributes with negative stride (causing the attribute data to be read in
+    reverse order),
+-   indices in a non-contiguous array (strided, similar to attributes).
+
+These are allowed in order to support certain special cases where it would
+otherwise be needed to perform a manual and potentially expensive data
+repacking operation before putting them in a @ref MeshData. Unless explicitly
+stated otherwise, all Magnum APIs *returning* a @ref MeshData (such as the
+@ref Primitives library or various importer plugins) don't make use of those
+advanced data layout features; and conversely all Magnum APIs *taking* a
+@ref MeshData are aware of such features and can handle them approriately.
+
+When passing mesh data to the GPU, the @ref MeshTools::compile() utility will
+check and expect that only GPU-compatible layout features are used. However,
+when configuring meshes directly like shown in the
+@ref Trade-MeshData-usage-advanced chapter above, you may want to check the
+constraints explicitly before passing the values over.
+
+@snippet MagnumTrade.cpp MeshData-usage-special-layouts
+
+In order to convert a mesh with a special data layout to something the GPU
+vertex pipeline is able to consume, @ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "MeshTools::interleave()"
+can be used. If you pass neither @ref MeshTools::InterleaveFlag::PreserveInterleavedAttributes
+nor @ref MeshTools::InterleaveFlag::PreserveStridedIndices, it will interleave
+all attributes together, regardless of what stride they had originally, and
+repack the indices into a contiguous buffer as well. Note that, however, it
+won't be able to work with a custom @ref MeshIndexType or @ref VertexFormat. In
+that case, it's your responsibility to know what's actually in the mesh data
+and how to handle it.
+
 @section Trade-MeshData-populating Populating an instance
 
 A @ref MeshData instance by default takes over the ownership of an
