@@ -850,8 +850,7 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificVertexF
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::removeDuplicates(Trade::MeshData{MeshPrimitive::Points, nullptr, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-        VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertexFormatWrap(0xcaca), nullptr}
     }});
     CORRADE_COMPARE(out.str(),
@@ -1200,8 +1199,7 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecificVe
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::removeDuplicatesFuzzy(Trade::MeshData{MeshPrimitive::Points, nullptr, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-        VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertexFormatWrap(0xcaca), nullptr}
     }});
     CORRADE_COMPARE(out.str(),
