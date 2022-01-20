@@ -120,6 +120,10 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
 
         /* If the mesh is indexed, copy the indices over, expanded to 32bit */
         if(mesh.isIndexed()) {
+            CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(mesh.indexType()),
+                assertPrefix << "mesh" << i << "has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(mesh.indexType())),
+                (Trade::MeshData{MeshPrimitive{}, 0}));
+
             Containers::ArrayView<UnsignedInt> dst = indices.slice(indexOffset, indexOffset + mesh.indexCount());
             mesh.indicesInto(dst);
             indexOffset += mesh.indexCount();

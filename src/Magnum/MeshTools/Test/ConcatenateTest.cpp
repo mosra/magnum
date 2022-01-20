@@ -51,6 +51,7 @@ struct ConcatenateTest: TestSuite::Tester {
     void concatenateInconsistentPrimitive();
     void concatenateInconsistentAttributeFormat();
     void concatenateInconsistentAttributeArraySize();
+    void concatenateImplementationSpecificIndexType();
     void concatenateImplementationSpecificVertexFormat();
     void concatenateIntoNoMeshes();
 };
@@ -81,6 +82,7 @@ ConcatenateTest::ConcatenateTest() {
               &ConcatenateTest::concatenateInconsistentPrimitive,
               &ConcatenateTest::concatenateInconsistentAttributeFormat,
               &ConcatenateTest::concatenateInconsistentAttributeArraySize,
+              &ConcatenateTest::concatenateImplementationSpecificIndexType,
               &ConcatenateTest::concatenateImplementationSpecificVertexFormat,
               &ConcatenateTest::concatenateIntoNoMeshes});
 }
@@ -666,6 +668,42 @@ void ConcatenateTest::concatenateInconsistentAttributeArraySize() {
     CORRADE_COMPARE(out.str(),
         "MeshTools::concatenate(): expected array size 5 for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 4 in mesh 4 attribute 1\n"
         "MeshTools::concatenateInto(): expected array size 5 for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 4 in mesh 3 attribute 1\n");
+}
+
+void ConcatenateTest::concatenateImplementationSpecificIndexType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    /* Things are a bit duplicated to test correct numbering */
+    Trade::MeshData a{MeshPrimitive::Lines, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+    }};
+    const Trade::MeshData b{MeshPrimitive::Lines,
+        nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                VertexFormat::Vector3, nullptr},
+        }};
+    Trade::MeshData bDestination{MeshPrimitive::Lines,
+        nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                VertexFormat::Vector3, nullptr},
+        }};
+
+    /* This is fine, as the mesh index buffer is cleared and replaced with
+       a tightly-packed 32bit buffer */
+    MeshTools::concatenateInto(bDestination, {a});
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::concatenate({a, b});
+    MeshTools::concatenateInto(a, {b});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::concatenate(): mesh 1 has an implementation-specific index type 0xcaca\n"
+        "MeshTools::concatenateInto(): mesh 0 has an implementation-specific index type 0xcaca\n");
 }
 
 void ConcatenateTest::concatenateImplementationSpecificVertexFormat() {

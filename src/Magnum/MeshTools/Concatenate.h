@@ -50,9 +50,10 @@ namespace Implementation {
 @m_since{2020,06}
 
 The returned mesh contains vertices from all meshes concatenated together. If
-any mesh is indexed, the resulting mesh is indexed as well, with indices
-adjusted for vertex offsets of particular meshes. The behavior is undefined if
-any mesh has indices out of bounds for its particular vertex count. Meshes with
+any mesh is indexed (expected to not have an implementation-specific index
+type), the resulting mesh is indexed as well, with indices adjusted for vertex
+offsets of particular meshes. The behavior is undefined if any mesh has indices
+out of bounds for its particular vertex count. Meshes with
 @ref MeshPrimitive::LineStrip, @ref MeshPrimitive::LineLoop,
 @ref MeshPrimitive::TriangleStrip and @ref MeshPrimitive::TriangleFan can't be
 concatenated --- use @ref generateIndices() to turn them into
@@ -76,7 +77,8 @@ description.
 If an index buffer is needed, @ref MeshIndexType::UnsignedInt is always used.
 Call @ref compressIndices(const Trade::MeshData&, MeshIndexType) on the result
 to compress it to a smaller type, if desired.
-@see @ref concatenateInto(), @ref isVertexFormatImplementationSpecific(),
+@see @ref concatenateInto(), @ref isMeshIndexTypeImplementationSpecific(),
+    @ref isVertexFormatImplementationSpecific(),
     @ref SceneTools::flattenMeshHierarchy2D(),
     @ref SceneTools::flattenMeshHierarchy3D()
 */
