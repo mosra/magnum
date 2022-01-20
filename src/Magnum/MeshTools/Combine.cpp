@@ -127,6 +127,10 @@ Trade::MeshData combineIndexedAttributes(const Containers::ArrayView<const Conta
         CORRADE_ASSERT(data[i]->isIndexed(),
             "MeshTools::combineIndexedAttributes(): data" << i << "is not indexed",
             (Trade::MeshData{MeshPrimitive{}, 0}));
+        const MeshIndexType indexType = data[i]->indexType();
+        CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(indexType),
+            "MeshTools::combineIndexedAttributes(): data" << i << "has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(indexType)),
+            (Trade::MeshData{MeshPrimitive{}, 0}));
         if(i == 0) {
             primitive = data[i]->primitive();
             indexCount = data[i]->indexCount();
@@ -136,7 +140,7 @@ Trade::MeshData combineIndexedAttributes(const Containers::ArrayView<const Conta
             CORRADE_ASSERT(data[i]->indexCount() == indexCount,
                 "MeshTools::combineIndexedAttributes(): data" << i << "has" << data[i]->indexCount() << "indices but expected" << indexCount, (Trade::MeshData{MeshPrimitive{}, 0}));
         }
-        indexStride += meshIndexTypeSize(data[i]->indexType());
+        indexStride += meshIndexTypeSize(indexType);
     }
 
     /** @todo handle alignment in the above somehow (duplicate() will fail when
@@ -186,9 +190,19 @@ Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::
         (Trade::MeshData{MeshPrimitive{}, 0}));
 
     /* Make a combined index array. First copy the mesh indices as-is. */
+    const MeshIndexType meshIndexType = mesh.indexType();
+    CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(meshIndexType),
+        "MeshTools::combineFaceAttributes(): vertex mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(meshIndexType)),
+        (Trade::MeshData{MeshPrimitive{}, 0}));
     const UnsignedInt meshIndexSize = meshIndexTypeSize(mesh.indexType());
-    const UnsignedInt faceIndexSize = faceAttributes.isIndexed() ?
-        meshIndexTypeSize(faceAttributes.indexType()) : 4;
+    UnsignedInt faceIndexSize;
+    if(faceAttributes.isIndexed()) {
+        const MeshIndexType faceIndexType = faceAttributes.indexType();
+        CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(faceIndexType),
+            "MeshTools::combineFaceAttributes(): face mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(faceIndexType)),
+            (Trade::MeshData{MeshPrimitive{}, 0}));
+        faceIndexSize = meshIndexTypeSize(faceAttributes.indexType());
+    } else faceIndexSize = 4;
     const UnsignedInt indexStride = meshIndexSize + faceIndexSize;
     Containers::Array<char> combinedIndices{NoInit, meshIndexCount*indexStride};
     Utility::copy(mesh.indices(),

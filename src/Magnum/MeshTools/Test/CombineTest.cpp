@@ -47,6 +47,7 @@ struct CombineTest: TestSuite::Tester {
     void combineIndexedAttributesNotIndexed();
     void combineIndexedAttributesDifferentPrimitive();
     void combineIndexedAttributesDifferentIndexCount();
+    void combineIndexedAttributesImplementationSpecificIndexType();
     void combineIndexedAttributesImplementationSpecificVertexFormat();
 
     void combineFaceAttributes();
@@ -55,6 +56,7 @@ struct CombineTest: TestSuite::Tester {
     void combineFaceAttributesUnexpectedFaceCount();
     void combineFaceAttributesFacesNotInterleaved();
     void combineFaceAttributesFaceAttributeOffsetOnly();
+    void combineFaceAttributesImplementationSpecificIndexType();
     void combineFaceAttributesImplementationSpecificVertexFormat();
 };
 
@@ -75,6 +77,7 @@ CombineTest::CombineTest() {
               &CombineTest::combineIndexedAttributesNotIndexed,
               &CombineTest::combineIndexedAttributesDifferentPrimitive,
               &CombineTest::combineIndexedAttributesDifferentIndexCount,
+              &CombineTest::combineIndexedAttributesImplementationSpecificIndexType,
               &CombineTest::combineIndexedAttributesImplementationSpecificVertexFormat});
 
     addInstancedTests({&CombineTest::combineFaceAttributes},
@@ -85,6 +88,7 @@ CombineTest::CombineTest() {
               &CombineTest::combineFaceAttributesUnexpectedFaceCount,
               &CombineTest::combineFaceAttributesFacesNotInterleaved,
               &CombineTest::combineFaceAttributesFaceAttributeOffsetOnly,
+              &CombineTest::combineFaceAttributesImplementationSpecificIndexType,
               &CombineTest::combineFaceAttributesImplementationSpecificVertexFormat});
 }
 
@@ -245,6 +249,28 @@ void CombineTest::combineIndexedAttributesDifferentIndexCount() {
     Error redirectError{&out};
     MeshTools::combineIndexedAttributes({a, b, c});
     CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): data 2 has 4 indices but expected 5\n");
+}
+
+void CombineTest::combineIndexedAttributesImplementationSpecificIndexType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData a{MeshPrimitive::Points,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+        }};
+    Trade::MeshData b{MeshPrimitive::Points,
+        nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+        }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::combineIndexedAttributes({a, b});
+    CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): data 1 has an implementation-specific index type 0xcaca\n");
 }
 
 void CombineTest::combineIndexedAttributesImplementationSpecificVertexFormat() {
@@ -445,6 +471,42 @@ void CombineTest::combineFaceAttributesUnexpectedFaceCount() {
     MeshTools::combineFaceAttributes(mesh, faceAttributes);
     CORRADE_COMPARE(out.str(),
         "MeshTools::combineFaceAttributes(): expected 1 face entries for 3 indices but got 2\n");
+}
+
+void CombineTest::combineFaceAttributesImplementationSpecificIndexType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData triangles{MeshPrimitive::Triangles,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+        }};
+    Trade::MeshData trianglesImplementationSpecific{MeshPrimitive::Triangles,
+        nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+        }};
+
+    Trade::MeshData faces{MeshPrimitive::Faces,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+        }};
+    Trade::MeshData facesImplementationSpecific{MeshPrimitive::Faces,
+        nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+        }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::combineFaceAttributes(triangles, facesImplementationSpecific);
+    MeshTools::combineFaceAttributes(trianglesImplementationSpecific, faces);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::combineFaceAttributes(): face mesh has an implementation-specific index type 0xcaca\n"
+        "MeshTools::combineFaceAttributes(): vertex mesh has an implementation-specific index type 0xcaca\n");
 }
 
 void CombineTest::combineFaceAttributesImplementationSpecificVertexFormat() {
