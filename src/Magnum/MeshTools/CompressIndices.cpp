@@ -31,6 +31,7 @@
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/MeshTools/Reference.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools {
@@ -166,10 +167,9 @@ Trade::MeshData compressIndices(Trade::MeshData&& data, MeshIndexType atLeast) {
 }
 
 Trade::MeshData compressIndices(const Trade::MeshData& data, MeshIndexType atLeast) {
-    return compressIndices(Trade::MeshData{data.primitive(),
-        {}, data.indexData(), Trade::MeshIndexData{data.indices()},
-        {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
-        data.vertexCount()}, atLeast);
+    /* Pass through to the && overload, which then decides whether to reuse
+       anything based on the DataFlags */
+    return compressIndices(reference(data), atLeast);
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

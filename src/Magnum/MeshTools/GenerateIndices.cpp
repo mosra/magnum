@@ -30,6 +30,7 @@
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/Vector3.h"
+#include "Magnum/MeshTools/Reference.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools {
@@ -324,13 +325,9 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
 }
 
 Trade::MeshData generateIndices(const Trade::MeshData& data) {
-    return generateIndices(Trade::MeshData{data.primitive(),
-        /* Passing the indices through. If the mesh isn't indexed, this makes
-           the reference non-indexed also, if the mesh is indexed, it causes an
-           assert inside the delegated generateIndices(). */
-        {}, data.indexData(), Trade::MeshIndexData{data.indices()},
-        {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
-        data.vertexCount()});
+    /* Pass through to the && overload, which then decides whether to reuse
+       anything based on the DataFlags */
+    return generateIndices(reference(data));
 }
 
 }}

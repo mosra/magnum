@@ -29,6 +29,7 @@
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/Functions.h"
+#include "Magnum/MeshTools/Reference.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools {
@@ -249,11 +250,9 @@ Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vert
 }
 
 Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
-    return interleavedLayout(
-        Trade::MeshData{data.primitive(), {}, data.vertexData(),
-            Trade::meshAttributeDataNonOwningArray(data.attributeData()),
-            data.vertexCount()},
-        vertexCount, extra, flags);
+    /* Pass through to the && overload, which then decides whether to reuse
+       anything based on the DataFlags */
+    return interleavedLayout(reference(data), vertexCount, extra, flags);
 }
 
 Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
@@ -374,12 +373,9 @@ Trade::MeshData interleave(Trade::MeshData&& data, const std::initializer_list<T
 }
 
 Trade::MeshData interleave(const Trade::MeshData& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
-    return interleave(Trade::MeshData{data.primitive(),
-        /* If data is not indexed, the reference will be also non-indexed */
-        {}, data.indexData(), Trade::MeshIndexData{data.indices()},
-        {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
-        data.vertexCount()
-    }, extra, flags);
+    /* Pass through to the && overload, which then decides whether to reuse
+       anything based on the DataFlags */
+    return interleave(reference(data), extra, flags);
 }
 
 Trade::MeshData interleave(const Trade::MeshData& data, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
