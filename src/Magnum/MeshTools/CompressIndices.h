@@ -75,6 +75,9 @@ offsets accordingly. Example:
 A negative @p offset value will do an operation inverse to the above. See also
 @ref compressIndices(const Trade::MeshData&, MeshIndexType) that can do this
 operation directly on a @ref Trade::MeshData instance.
+
+The @p atLeast parameter is expected to not be an implementation-specific type.
+@see @ref isMeshIndexTypeImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort, Long offset = 0);
 
@@ -125,6 +128,9 @@ Expects that the second dimension of @p indices is contiguous and represents
 the actual 1/2/4-byte index type. Based on its size then calls one of the
 @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long)
 etc. overloads.
+
+The @p atLeast parameter is expected to not be an implementation-specific type.
+@see @ref isMeshIndexTypeImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView2D<const char>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort, Long offset = 0);
 
@@ -146,6 +152,10 @@ but together with adjusting vertex attribute offsets in the passed
 @ref Trade::MeshData instance. This function will unconditionally make a copy
 of all vertex data, use @ref compressIndices(Trade::MeshData&&, MeshIndexType)
 to avoid that copy.
+
+The mesh is expected to be indexed and the index type and the @p atLeast
+parameter is expected to not be implementation-specific type.
+@see @ref isMeshIndexTypeImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData compressIndices(const Trade::MeshData& data, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
 

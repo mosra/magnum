@@ -60,6 +60,8 @@ struct CompressIndicesTest: TestSuite::Tester {
     template<class T> void compressMeshData();
     void compressMeshDataMove();
     void compressMeshDataNonIndexed();
+    void compressMeshDataImplementationSpecificIndexType();
+    void compressMeshDataImplementationSpecificAtLeastIndexType();
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     void compressAsShort();
@@ -89,6 +91,8 @@ CompressIndicesTest::CompressIndicesTest() {
               &CompressIndicesTest::compressMeshData<UnsignedInt>,
               &CompressIndicesTest::compressMeshDataMove,
               &CompressIndicesTest::compressMeshDataNonIndexed,
+              &CompressIndicesTest::compressMeshDataImplementationSpecificIndexType,
+              &CompressIndicesTest::compressMeshDataImplementationSpecificAtLeastIndexType,
 
               #ifdef MAGNUM_BUILD_DEPRECATED
               &CompressIndicesTest::compressAsShort
@@ -352,6 +356,40 @@ void CompressIndicesTest::compressMeshDataNonIndexed() {
     CORRADE_COMPARE(out.str(),
         "MeshTools::compressIndices(): mesh data not indexed\n"
         "MeshTools::compressIndices(): mesh data not indexed\n");
+}
+
+void CompressIndicesTest::compressMeshDataImplementationSpecificIndexType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData mesh{MeshPrimitive::Points,
+        nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}}, 1};
+
+    /* Test both r-value and l-value overload */
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::compressIndices(mesh);
+    MeshTools::compressIndices(std::move(mesh));
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compressIndices(): mesh has an implementation-specific index type 0xcaca\n"
+        "MeshTools::compressIndices(): mesh has an implementation-specific index type 0xcaca\n");
+}
+
+void CompressIndicesTest::compressMeshDataImplementationSpecificAtLeastIndexType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    UnsignedInt indices[5]{};
+    Trade::MeshData mesh{MeshPrimitive::Points,
+        {}, indices, Trade::MeshIndexData{indices}, 1};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::compressIndices(mesh, meshIndexTypeWrap(0xcaca));
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compressIndices(): can't compress to an implementation-specific index type 0xcaca\n");
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

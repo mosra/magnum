@@ -51,6 +51,10 @@ template<class T, class U> inline Containers::Array<char> compress(const Contain
 }
 
 template<class T> std::pair<Containers::Array<char>, MeshIndexType> compressIndicesImplementation(const Containers::StridedArrayView1D<const T>& indices, const MeshIndexType atLeast, const Long offset) {
+    CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(atLeast),
+        "MeshTools::compressIndices(): can't compress to an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(atLeast)),
+        (std::pair<Containers::Array<char>, MeshIndexType>{nullptr, MeshIndexType::UnsignedInt}));
+
     const UnsignedInt max = Math::max(indices) - offset;
     Containers::Array<char> out;
     MeshIndexType type;
@@ -144,6 +148,9 @@ Trade::MeshData compressIndices(Trade::MeshData&& data, MeshIndexType atLeast) {
         offset = Math::min(indices);
         result = compressIndicesImplementation<UnsignedShort>(indices, atLeast, offset);
     } else {
+        CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(data.indexType()),
+            "MeshTools::compressIndices(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(data.indexType())),
+            (Trade::MeshData{MeshPrimitive{}, 0}));
         CORRADE_INTERNAL_ASSERT(data.indexType() == MeshIndexType::UnsignedByte);
         auto indices = data.indices<UnsignedByte>();
         offset = Math::min(indices);
@@ -163,7 +170,7 @@ Trade::MeshData compressIndices(Trade::MeshData&& data, MeshIndexType atLeast) {
 
     Trade::MeshIndexData indices{result.second, result.first};
     return Trade::MeshData{data.primitive(), std::move(result.first), indices,
-        std::move(vertexData), std::move(attributeData)};
+        std::move(vertexData), std::move(attributeData), newVertexCount};
 }
 
 Trade::MeshData compressIndices(const Trade::MeshData& data, MeshIndexType atLeast) {
