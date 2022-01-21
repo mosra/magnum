@@ -154,7 +154,7 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
     }
 
     if(meshData.isIndexed()) {
-        mesh.setIndexBuffer(std::move(indices), 0, meshData.indexType())
+        mesh.setIndexBuffer(std::move(indices), meshData.indexOffset(), meshData.indexType())
             .setCount(meshData.indexCount());
     } else mesh.setCount(meshData.vertexCount());
 

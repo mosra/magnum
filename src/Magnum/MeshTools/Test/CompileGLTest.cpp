@@ -445,6 +445,7 @@ template<class T> void CompileGLTest::twoDimensions() {
                 Containers::arraySize(vertexData), sizeof(Vertex))});
 
     const UnsignedInt indexData[]{
+        66, 78, 23, /* offset */
         0, 1, 4, 0, 4, 3,
         1, 2, 5, 1, 5, 4,
         3, 4, 7, 3, 7, 6,
@@ -452,7 +453,7 @@ template<class T> void CompileGLTest::twoDimensions() {
     };
 
     Trade::MeshData meshData{MeshPrimitive::Triangles,
-        {}, indexData, Trade::MeshIndexData{indexData},
+        {}, indexData, Trade::MeshIndexData{Containers::arrayView(indexData).suffix(3)},
         {}, vertexData, std::move(attributeData)};
 
     /* Duplicate everything if data is non-indexed */
@@ -672,6 +673,7 @@ template<class T> void CompileGLTest::threeDimensions() {
                 Containers::arraySize(vertexData), sizeof(Vertex))});
 
     const UnsignedByte indexData[]{
+        66, 78, 23, /* offset */
         0, 1, 4, 0, 4, 3,
         1, 2, 5, 1, 5, 4,
         3, 4, 7, 3, 7, 6,
@@ -679,7 +681,7 @@ template<class T> void CompileGLTest::threeDimensions() {
     };
 
     Trade::MeshData meshData{MeshPrimitive::Triangles,
-        {}, indexData, Trade::MeshIndexData{indexData},
+        {}, indexData, Trade::MeshIndexData{Containers::arrayView(indexData).suffix(3)},
         {}, vertexData, std::move(attributeData)};
 
     /* Duplicate everything if data is non-indexed */
