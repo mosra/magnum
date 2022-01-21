@@ -705,14 +705,12 @@ constexpr struct {
         2, 1, 1, 16,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
-    #ifndef MAGNUM_TARGET_GLES2
     {"bind with offset, texture array", "multidraw-textured.tga",
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
         2, 1, 1, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
-    #endif
     {"draw offset, colored", "multidraw.tga",
         {},
         4, 2, 3, 1,
@@ -723,14 +721,12 @@ constexpr struct {
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
-    #ifndef MAGNUM_TARGET_GLES2
     {"draw offset, texture array", "multidraw-textured.tga",
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
         4, 2, 3, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
-    #endif
     {"multidraw, colored", "multidraw.tga",
         PhongGL::Flag::MultiDraw,
         4, 2, 3, 1,
@@ -741,14 +737,12 @@ constexpr struct {
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
-    #ifndef MAGNUM_TARGET_GLES2
     {"multidraw, texture array", "multidraw-textured.tga",
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
         4, 2, 3, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
-    #endif
     /** @todo test normal and per-draw scaling when there's usable texture */
 };
 #endif
@@ -2785,7 +2779,6 @@ void PhongGLTest::renderObjectIdTeardown() {
 }
 
 template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
-    #ifndef MAGNUM_TARGET_GLES2
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2799,7 +2792,6 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
             CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
         #endif
     }
-    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -2868,14 +2860,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     /* Color output should have no difference -- same as in colored() */
-    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
        and Apple A8 has bigger rounding differences. */
     const Float maxThreshold = 8.34f, meanThreshold = 0.100f;
-    #else
-    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
-    const Float maxThreshold = 15.34f, meanThreshold = 3.33f;
-    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),

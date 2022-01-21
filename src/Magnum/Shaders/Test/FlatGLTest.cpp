@@ -2280,7 +2280,6 @@ void FlatGLTest::renderObjectIdTeardown() {
 }
 
 template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
-    #ifndef MAGNUM_TARGET_GLES2
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2289,7 +2288,6 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
         #endif
     }
-    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -2333,12 +2331,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     /* Color output should have no difference -- same as in colored2D() */
-    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     const Float maxThreshold = 0.0f, meanThreshold = 0.0f;
-    #else
-    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
-    const Float maxThreshold = 11.34f, meanThreshold = 0.51f;
-    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
@@ -2360,7 +2353,6 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
 }
 
 template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
-    #ifndef MAGNUM_TARGET_GLES2
     if(flag == FlatGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2369,7 +2361,6 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
         #endif
     }
-    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -3023,9 +3014,7 @@ void FlatGLTest::renderMulti2D() {
     FlatGL2D shader{FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId|data.flags, data.materialCount, data.drawCount};
 
     GL::Texture2D texture{NoCreate};
-    #ifndef MAGNUM_TARGET_GLES2
     GL::Texture2DArray textureArray{NoCreate};
-    #endif
     if(data.flags & FlatGL3D::Flag::Textured) {
         if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
           !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -3037,7 +3026,6 @@ void FlatGLTest::renderMulti2D() {
         Containers::Optional<Trade::ImageData2D> image;
         CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
 
-        #ifndef MAGNUM_TARGET_GLES2
         /* For arrays we upload three slices of the original image to half-high
            slices */
         if(data.flags & FlatGL2D::Flag::TextureArrays) {
@@ -3071,9 +3059,7 @@ void FlatGLTest::renderMulti2D() {
                 .setSubImage(0, {0, 0, 2}, third);
             shader.bindTexture(textureArray);
 
-        } else
-        #endif
-        {
+        } else {
             texture = GL::Texture2D{};
             texture.setMinificationFilter(GL::SamplerFilter::Linear)
                 .setMagnificationFilter(GL::SamplerFilter::Linear)
