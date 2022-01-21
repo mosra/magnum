@@ -40,7 +40,8 @@ namespace Magnum { namespace Math { namespace Algorithms {
 @param[in] sum              Initial value for the sum
 @param[in,out] compensation Floating-point roundoff error compensation value.
     If non-@cpp nullptr @ce, value behind the pointer is used as initial
-    compensation value and the resulting value is
+    compensation value and the resulting compensation value is saved back
+    there.
 
 Calculates a sum of a large range of floating-point numbers with roundoff error
 compensation. Compared to for example @ref std::accumulate() the algorithm
