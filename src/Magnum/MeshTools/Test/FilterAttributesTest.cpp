@@ -260,7 +260,8 @@ void FilterAttributesTest::filterOnlyAttributeIdsOutOfBounds() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    Vertex vertices[3]{};
+    /* GCC 4.8 dies if I try to initialize this with a {}. I won't, then. */
+    Vertex vertices[3];
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
         {}, vertices, {
@@ -494,7 +495,8 @@ void FilterAttributesTest::filterExceptAttributeIdsOutOfBounds() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    Vertex vertices[3]{};
+    /* GCC 4.8 dies if I try to initialize this with a {}. I won't, then. */
+    Vertex vertices[3];
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
         {}, vertices, {
