@@ -53,6 +53,7 @@ struct TransformTest: TestSuite::Tester {
     template<class T> void meshData2D();
     void meshData2DNoPosition();
     void meshData2DNot2D();
+    void meshData2DImplementationSpecificIndexType();
     void meshData2DImplementationSpecificVertexFormat();
     void meshData2DRvaluePassthrough();
     void meshData2DRvaluePassthroughIndexDataNotOwned();
@@ -68,6 +69,7 @@ struct TransformTest: TestSuite::Tester {
     template<class T, class U, class V, class W> void meshData3D();
     void meshData3DNoPosition();
     void meshData3DNot3D();
+    void meshData3DImplementationSpecificIndexType();
     void meshData3DImplementationSpecificVertexFormat();
     void meshData3DRvaluePassthrough();
     void meshData3DRvaluePassthroughIndexDataNotOwned();
@@ -82,6 +84,7 @@ struct TransformTest: TestSuite::Tester {
 
     template<class T> void meshDataTextureCoordinates2D();
     void meshDataTextureCoordinates2DNoCoordinates();
+    void meshDataTextureCoordinates2DImplementationSpecificIndexType();
     void meshDataTextureCoordinates2DImplementationSpecificVertexFormat();
     void meshDataTextureCoordinates2DRvaluePassthrough();
     void meshDataTextureCoordinates2DRvaluePassthroughIndexDataNotOwned();
@@ -286,6 +289,7 @@ TransformTest::TransformTest() {
 
     addTests({&TransformTest::meshData2DNoPosition,
               &TransformTest::meshData2DNot2D,
+              &TransformTest::meshData2DImplementationSpecificIndexType,
               &TransformTest::meshData2DImplementationSpecificVertexFormat});
 
     addInstancedTests({&TransformTest::meshData2DRvaluePassthrough},
@@ -307,7 +311,8 @@ TransformTest::TransformTest() {
     }, Containers::arraySize(MeshData3DData));
 
     addTests({&TransformTest::meshData3DNoPosition,
-              &TransformTest::meshData3DNot3D});
+              &TransformTest::meshData3DNot3D,
+              &TransformTest::meshData3DImplementationSpecificIndexType});
 
     addInstancedTests({&TransformTest::meshData3DImplementationSpecificVertexFormat},
         Containers::arraySize(MeshData3DIMplementationSpecificVertexFormatData));
@@ -334,6 +339,7 @@ TransformTest::TransformTest() {
     }, Containers::arraySize(MeshDataTextureCoordinatesData));
 
     addTests({&TransformTest::meshDataTextureCoordinates2DNoCoordinates,
+              &TransformTest::meshDataTextureCoordinates2DImplementationSpecificIndexType,
               &TransformTest::meshDataTextureCoordinates2DImplementationSpecificVertexFormat});
 
     addInstancedTests({&TransformTest::meshDataTextureCoordinates2DRvaluePassthrough},
@@ -503,6 +509,29 @@ void TransformTest::meshData2DNot2D() {
     Error redirectError{&out};
     transform2D(mesh, {});
     CORRADE_COMPARE(out.str(), "MeshTools::transform2D(): expected 2D positions but got VertexFormat::Vector3\n");
+}
+
+void TransformTest::meshData2DImplementationSpecificIndexType() {
+    const UnsignedShort indices[]{3, 1, 2, 0, 2};
+    const Vector2 vertices[]{
+        {0.0f, 0.0f},
+        {1.0f, 0.0f},
+        {0.0f, 2.0f}
+    };
+    Trade::MeshData mesh{MeshPrimitive::Points,
+        {}, indices, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::stridedArrayView(indices).slice(1, 4)},
+        {}, vertices, {Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertices)}}};
+
+    /* Just verify the index data get passed through with no information loss */
+    Trade::MeshData out = transform2D(mesh, Matrix3{}, 0, InterleaveFlag::PreserveStridedIndices);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Points);
+    CORRADE_COMPARE(out.indexType(), meshIndexTypeWrap(0xcaca));
+    CORRADE_COMPARE(out.indexOffset(), 2);
+    CORRADE_COMPARE(out.indexStride(), 2);
+    CORRADE_COMPARE(out.indexCount(), 3);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(out.indices())),
+        Containers::arrayView<UnsignedShort>({1, 2, 0}),
+        TestSuite::Compare::Container);
 }
 
 void TransformTest::meshData2DImplementationSpecificVertexFormat() {
@@ -919,6 +948,29 @@ void TransformTest::meshData3DNot3D() {
     Error redirectError{&out};
     transform3D(mesh, {});
     CORRADE_COMPARE(out.str(), "MeshTools::transform3D(): expected 3D positions but got VertexFormat::Vector2\n");
+}
+
+void TransformTest::meshData3DImplementationSpecificIndexType() {
+    const UnsignedShort indices[]{3, 1, 2, 0, 2};
+    const Vector3 vertices[]{
+        {0.0f, 0.0f, -1.0f},
+        {1.0f, 0.0f, -2.0f},
+        {0.0f, 2.0f, -1.0f}
+    };
+    Trade::MeshData mesh{MeshPrimitive::Points,
+        {}, indices, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::stridedArrayView(indices).slice(1, 4)},
+        {}, vertices, {Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertices)}}};
+
+    /* Just verify the index data get passed through with no information loss */
+    Trade::MeshData out = transform3D(mesh, Matrix4{}, 0, InterleaveFlag::PreserveStridedIndices);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Points);
+    CORRADE_COMPARE(out.indexType(), meshIndexTypeWrap(0xcaca));
+    CORRADE_COMPARE(out.indexOffset(), 2);
+    CORRADE_COMPARE(out.indexStride(), 2);
+    CORRADE_COMPARE(out.indexCount(), 3);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(out.indices())),
+        Containers::arrayView<UnsignedShort>({1, 2, 0}),
+        TestSuite::Compare::Container);
 }
 
 void TransformTest::meshData3DImplementationSpecificVertexFormat() {
@@ -1386,6 +1438,29 @@ void TransformTest::meshDataTextureCoordinates2DNoCoordinates() {
     Error redirectError{&out};
     transformTextureCoordinates2D(mesh, {}, 1);
     CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index 1\n");
+}
+
+void TransformTest::meshDataTextureCoordinates2DImplementationSpecificIndexType() {
+    const UnsignedShort indices[]{3, 1, 2, 0, 2};
+    const Vector2 vertices[]{
+        {0.0f, 0.0f},
+        {1.0f, 0.0f},
+        {0.0f, 2.0f}
+    };
+    Trade::MeshData mesh{MeshPrimitive::Points,
+        {}, indices, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::stridedArrayView(indices).slice(1, 4)},
+        {}, vertices, {Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, Containers::arrayView(vertices)}}};
+
+    /* Just verify the index data get passed through with no information loss */
+    Trade::MeshData out = transformTextureCoordinates2D(mesh, Matrix3{}, 0, InterleaveFlag::PreserveStridedIndices);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Points);
+    CORRADE_COMPARE(out.indexType(), meshIndexTypeWrap(0xcaca));
+    CORRADE_COMPARE(out.indexOffset(), 2);
+    CORRADE_COMPARE(out.indexStride(), 2);
+    CORRADE_COMPARE(out.indexCount(), 3);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(out.indices())),
+        Containers::arrayView<UnsignedShort>({1, 2, 0}),
+        TestSuite::Compare::Container);
 }
 
 void TransformTest::meshDataTextureCoordinates2DImplementationSpecificVertexFormat() {

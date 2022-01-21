@@ -27,12 +27,13 @@
 
 #include <Corrade/Containers/Optional.h>
 
+#include "Magnum/MeshTools/FilterAttributes.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools {
 
-Trade::MeshData transform2D(const Trade::MeshData& data, const Matrix3& transformation, const UnsignedInt id) {
+Trade::MeshData transform2D(const Trade::MeshData& data, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
     const Containers::Optional<UnsignedInt> positionAttributeId = data.findAttributeId(Trade::MeshAttribute::Position, id);
     CORRADE_ASSERT(positionAttributeId,
         "MeshTools::transform2D(): the mesh has no positions with index" << id,
@@ -60,10 +61,7 @@ Trade::MeshData transform2D(const Trade::MeshData& data, const Matrix3& transfor
 
     /* Create the output mesh, making more room for the full formats if
        necessary */
-    Trade::MeshData out = interleave(Trade::MeshData{data.primitive(),
-        /* If data is not indexed, the reference will be also non-indexed */
-        {}, data.indexData(), Trade::MeshIndexData{data.indices()},
-        {}, data.vertexData(), {}, data.vertexCount()}, attributes);
+    Trade::MeshData out = interleave(filterOnlyAttributes(data, Containers::ArrayView<const UnsignedInt>{}), attributes, flags);
 
     /* If the position attribute wasn't in a desired format, unpack it */
     if(positionAttributeFormat != VertexFormat::Vector2)
@@ -74,7 +72,7 @@ Trade::MeshData transform2D(const Trade::MeshData& data, const Matrix3& transfor
     return out;
 }
 
-Trade::MeshData transform2D(Trade::MeshData&& data, const Matrix3& transformation, const UnsignedInt id) {
+Trade::MeshData transform2D(Trade::MeshData&& data, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
     /* Perform the operation in-place, if we can transfer the ownership and
        have positions in the right format already. Explicitly checking for
        presence of the position attribute so we don't need to duplicate the
@@ -90,7 +88,7 @@ Trade::MeshData transform2D(Trade::MeshData&& data, const Matrix3& transformatio
 
     /* Otherwise delegate to the function that does all the copying and format
        expansion */
-    return transform2D(data, transformation, id);
+    return transform2D(data, transformation, id, flags);
 }
 
 void transform2DInPlace(Trade::MeshData& data, const Matrix3& transformation, const UnsignedInt id) {
@@ -107,7 +105,7 @@ void transform2DInPlace(Trade::MeshData& data, const Matrix3& transformation, co
         position = transformation.transformPoint(position);
 }
 
-Trade::MeshData transform3D(const Trade::MeshData& data, const Matrix4& transformation, const UnsignedInt id) {
+Trade::MeshData transform3D(const Trade::MeshData& data, const Matrix4& transformation, const UnsignedInt id, const InterleaveFlags flags) {
     const Containers::Optional<UnsignedInt> positionAttributeId = data.findAttributeId(Trade::MeshAttribute::Position, id);
     CORRADE_ASSERT(positionAttributeId,
         "MeshTools::transform3D(): the mesh has no positions with index" << id,
@@ -168,10 +166,7 @@ Trade::MeshData transform3D(const Trade::MeshData& data, const Matrix4& transfor
 
     /* Create the output mesh, making more room for the full formats if
        necessary */
-    Trade::MeshData out = interleave(Trade::MeshData{data.primitive(),
-        /* If data is not indexed, the reference will be also non-indexed */
-        {}, data.indexData(), Trade::MeshIndexData{data.indices()},
-        {}, data.vertexData(), {}, data.vertexCount()}, attributes);
+    Trade::MeshData out = interleave(filterOnlyAttributes(data, Containers::ArrayView<const UnsignedInt>{}), attributes, flags);
 
     /* If the position/TBN attributes weren't in a desired format, unpack them */
     if(positionAttributeFormat != VertexFormat::Vector3)
@@ -194,7 +189,7 @@ Trade::MeshData transform3D(const Trade::MeshData& data, const Matrix4& transfor
     return out;
 }
 
-Trade::MeshData transform3D(Trade::MeshData&& data, const Matrix4& transformation, const UnsignedInt id) {
+Trade::MeshData transform3D(Trade::MeshData&& data, const Matrix4& transformation, const UnsignedInt id, const InterleaveFlags flags) {
     /* Perform the operation in-place, if we can transfer the ownership and
        have positions in the right format already. Explicitly checking for
        presence of the position attribute so we don't need to duplicate the
@@ -217,7 +212,7 @@ Trade::MeshData transform3D(Trade::MeshData&& data, const Matrix4& transformatio
 
     /* Otherwise delegate to the function that does all the copying and format
        expansion */
-    return transform3D(data, transformation, id);
+    return transform3D(data, transformation, id, flags);
 }
 
 void transform3DInPlace(Trade::MeshData& data, const Matrix4& transformation, const UnsignedInt id) {
@@ -267,7 +262,7 @@ void transform3DInPlace(Trade::MeshData& data, const Matrix4& transformation, co
         normal = normalMatrix*normal;
 }
 
-Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& data, const Matrix3& transformation, const UnsignedInt id) {
+Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& data, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
     const Containers::Optional<UnsignedInt> textureCoordinateAttributeId = data.findAttributeId(Trade::MeshAttribute::TextureCoordinates, id);
     CORRADE_ASSERT(textureCoordinateAttributeId,
         "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index" << id,
@@ -292,10 +287,7 @@ Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& data, const
 
     /* Create the output mesh, making more room for the full formats if
        necessary */
-    Trade::MeshData out = interleave(Trade::MeshData{data.primitive(),
-        /* If data is not indexed, the reference will be also non-indexed */
-        {}, data.indexData(), Trade::MeshIndexData{data.indices()},
-        {}, data.vertexData(), {}, data.vertexCount()}, attributes);
+    Trade::MeshData out = interleave(filterOnlyAttributes(data, Containers::ArrayView<const UnsignedInt>{}), attributes, flags);
 
     /* If the position attribute wasn't in a desired format, unpack it */
     if(data.attributeFormat(*textureCoordinateAttributeId) != VertexFormat::Vector2)
@@ -306,7 +298,7 @@ Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& data, const
     return out;
 }
 
-Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& data, const Matrix3& transformation, const UnsignedInt id) {
+Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& data, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
     /* Perform the operation in-place, if we can transfer the ownership and
        have positions in the right format already. Explicitly checking for
        presence of the position attribute so we don't need to duplicate the
@@ -322,7 +314,7 @@ Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& data, const Matr
 
     /* Otherwise delegate to the function that does all the copying and format
        expansion */
-    return transformTextureCoordinates2D(data, transformation, id);
+    return transformTextureCoordinates2D(data, transformation, id, flags);
 }
 
 void transformTextureCoordinates2DInPlace(Trade::MeshData& data, const Matrix3& transformation, const UnsignedInt id) {
