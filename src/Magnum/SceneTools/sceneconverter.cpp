@@ -1047,9 +1047,13 @@ used.)")
     /* Filter attributes, if requested */
     if(!args.value("only-attributes").empty()) {
         std::set<UnsignedInt> only;
+        /** @todo drop this awful STL mess once we have an string-to-int
+            API that can take non-null-terminated string views */
         for(const std::string& i: Utility::String::split(args.value("only-attributes"), ' '))
             only.insert(std::stoi(i));
 
+        /** @todo use MeshTools::filterOnlyAttributes() once it has a rvalue
+            overload that transfers ownership */
         Containers::Array<Trade::MeshAttributeData> attributes;
         for(UnsignedInt i = 0; i != mesh->attributeCount(); ++i) {
             if(only.find(i) != only.end())
