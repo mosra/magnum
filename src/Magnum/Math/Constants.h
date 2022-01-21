@@ -163,7 +163,10 @@ template<> struct Constants<Double> {
 
     /* 17-digit string representation gives back the same value on rountrip.
        https://en.wikipedia.org/wiki/Double-precision_floating-point_format
-       Values taken using Wolfram Alpha.         1.2345678901234567 */
+       Values taken using Wolfram Alpha. The pi is one digit more than what
+       NASA deems to be enough for interplanetary navigation, so that should be
+       an acceptable precision: https://www.jpl.nasa.gov/edu/news/2016/3/16/how-many-decimals-of-pi-do-we-really-need
+                                                 1.2345678901234567 */
     static constexpr Double pi()        { return 3.1415926535897932; }
     static constexpr Double piHalf()    { return 1.5707963267948966; }
     static constexpr Double piQuarter() { return 0.7853981633974483; }
