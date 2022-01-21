@@ -86,6 +86,7 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
 
     void interleaveMeshData();
     void interleaveMeshDataIndexed();
+    void interleaveMeshDataImplementationSpecificIndexType();
     void interleaveMeshDataImplementationSpecificVertexFormat();
     void interleaveMeshDataExtra();
     void interleaveMeshDataExtraEmpty();
@@ -112,13 +113,15 @@ const struct {
 
 const struct {
     const char* name;
+    MeshIndexType indexType;
     Containers::Optional<InterleaveFlags> flags;
     bool flip;
     bool shouldPreserveLayoutInCopy, shouldPreserveLayoutInMove;
 } StridedIndicesData[]{
-    {"", {}, false, false, true},
-    {"strided indices", {}, true, false, false},
-    {"strided indices, preserved", InterleaveFlag::PreserveInterleavedAttributes|InterleaveFlag::PreserveStridedIndices, true, true, true}
+    {"", MeshIndexType::UnsignedShort, {}, false, false, true},
+    {"strided indices", MeshIndexType::UnsignedShort, {}, true, false, false},
+    {"strided indices, preserved", MeshIndexType::UnsignedShort, InterleaveFlag::PreserveInterleavedAttributes|InterleaveFlag::PreserveStridedIndices, true, true, true},
+    {"strided indices, implementation-specific index type, preserved", meshIndexTypeWrap(0xbaf), InterleaveFlag::PreserveInterleavedAttributes|InterleaveFlag::PreserveStridedIndices, true, true, true}
 };
 
 InterleaveTest::InterleaveTest() {
@@ -171,7 +174,8 @@ InterleaveTest::InterleaveTest() {
     addInstancedTests({&InterleaveTest::interleaveMeshDataIndexed},
         Containers::arraySize(StridedIndicesData));
 
-    addTests({&InterleaveTest::interleaveMeshDataImplementationSpecificVertexFormat,
+    addTests({&InterleaveTest::interleaveMeshDataImplementationSpecificIndexType,
+              &InterleaveTest::interleaveMeshDataImplementationSpecificVertexFormat,
               &InterleaveTest::interleaveMeshDataExtra,
               &InterleaveTest::interleaveMeshDataExtraEmpty,
               &InterleaveTest::interleaveMeshDataExtraOriginalEmpty,
@@ -1192,7 +1196,7 @@ void InterleaveTest::interleaveMeshDataIndexed() {
 
     Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
-        {}, Containers::arrayView(indexData), Trade::MeshIndexData{indices},
+        {}, Containers::arrayView(indexData), Trade::MeshIndexData{data.indexType, indices},
         {}, Containers::arrayView(positions), {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)}
         }};
@@ -1204,8 +1208,8 @@ void InterleaveTest::interleaveMeshDataIndexed() {
     CORRADE_COMPARE(interleaved.primitive(), MeshPrimitive::TriangleFan);
 
     CORRADE_VERIFY(interleaved.isIndexed());
-    CORRADE_COMPARE(interleaved.indexType(), MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE_AS(interleaved.indices<UnsignedShort>(),
+    CORRADE_COMPARE(interleaved.indexType(), data.indexType);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(interleaved.indices())),
         Containers::arrayView<UnsignedShort>({0, 2, 1}),
         TestSuite::Compare::Container);
 
@@ -1225,6 +1229,23 @@ void InterleaveTest::interleaveMeshDataIndexed() {
     CORRADE_COMPARE_AS(interleaved.attribute<Vector2>(Trade::MeshAttribute::Position),
         Containers::stridedArrayView(positions),
         TestSuite::Compare::Container);
+}
+
+void InterleaveTest::interleaveMeshDataImplementationSpecificIndexType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Trade::MeshData data{MeshPrimitive::Points,
+        nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr}
+        }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::interleave(data);
+    CORRADE_COMPARE(out.str(), "MeshTools::interleave(): mesh has an implementation-specific index type 0xcaca, enable MeshTools::InterleaveFlag::PreserveStridedIndices to pass the array through unchanged\n");
 }
 
 void InterleaveTest::interleaveMeshDataImplementationSpecificVertexFormat() {
@@ -1438,7 +1459,7 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveIndices() {
     const Trade::MeshAttributeData* attributePointer = attributeData;
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
-        std::move(indexData), Trade::MeshIndexData{indices},
+        std::move(indexData), Trade::MeshIndexData{data.indexType,indices},
         std::move(vertexData), std::move(attributeData)};
     CORRADE_VERIFY(MeshTools::isInterleaved(mesh));
 
@@ -1448,8 +1469,8 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveIndices() {
         MeshTools::interleave(std::move(mesh));
 
     CORRADE_VERIFY(MeshTools::isInterleaved(interleaved));
-    CORRADE_COMPARE(interleaved.indexType(), MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE_AS(interleaved.indices<UnsignedShort>(),
+    CORRADE_COMPARE(interleaved.indexType(), data.indexType);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(interleaved.indices())),
         Containers::arrayView<UnsignedShort>({0, 2, 1}),
         TestSuite::Compare::Container);
 

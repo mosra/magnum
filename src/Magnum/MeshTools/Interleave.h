@@ -219,12 +219,14 @@ enum class InterleaveFlag: UnsignedInt {
      *
      * If not set and the index buffer is strided, a tightly packed copy with
      * the same index type is allocated for the output, dropping also any
-     * padding before or after the original index view.
+     * padding before or after the original index view. In such case however,
+     * the index type is not allowed to be implementation-specific.
      *
      * Has no effect when passed to @ref interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "interleavedLayout()"
      * as that function doesn't preserve the index buffer. Has no effect when
      * passed to @ref concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>>, InterleaveFlags) "concatenate()"
      * as that function allocates a new combined index buffer anyway.
+     * @see @ref isMeshIndexTypeImplementationSpecific()
      */
     PreserveStridedIndices = 1 << 1
 };
@@ -361,8 +363,9 @@ it, see its documentation for detailed behavior description. Note that
 offset-only @ref Trade::MeshAttributeData instances are not supported in the
 @p extra array.
 
-Indices (if any) are kept as-is only if they're tightly packed. Otherwise the
-behavior depends on presence of @ref InterleaveFlag::PreserveStridedIndices.
+Indices (if any) are kept as-is only if they're tightly packed and not with an
+implementation-specific type. Otherwise the behavior depends on presence of
+@ref InterleaveFlag::PreserveStridedIndices.
 
 Expects that each attribute in @p extra has either the same amount of elements
 as @p data vertex count or has none. This function will unconditionally make a
@@ -373,7 +376,8 @@ to avoid that copy.
 All attributes in both @p data and @p extra are expected to not have an
 implementation-specific format, except for @p data attributes in case @p data
 is already interleaved, then the layout is untouched.
-@see @ref isInterleaved(), @ref isVertexFormatImplementationSpecific(),
+@see @ref isInterleaved(), @ref isMeshIndexTypeImplementationSpecific(),
+    @ref isVertexFormatImplementationSpecific(),
     @ref Trade::MeshData::attributeData()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData> extra = {}, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);

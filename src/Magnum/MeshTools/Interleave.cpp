@@ -265,11 +265,10 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
     Trade::MeshIndexData indices;
     if(data.isIndexed()) {
         const MeshIndexType indexType = data.indexType();
-        const std::size_t indexTypeSize = meshIndexTypeSize(indexType);
 
         /* If we can steal the data and we're allowed to preserve a strided
            layout or it's tightly packed, do the steal */
-        if((data.indexDataFlags() & Trade::DataFlag::Owned) && ((flags & InterleaveFlag::PreserveStridedIndices) || data.indexStride() == Int(indexTypeSize))) {
+        if((data.indexDataFlags() & Trade::DataFlag::Owned) && ((flags & InterleaveFlag::PreserveStridedIndices) || (!isMeshIndexTypeImplementationSpecific(indexType) && data.indexStride() == Int(meshIndexTypeSize(indexType))))) {
             indices = Trade::MeshIndexData{indexType,
                 Containers::StridedArrayView1D<const void>{
                     data.indexData(),
@@ -291,8 +290,14 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
                     data.indexStride()}};
             Utility::copy(data.indexData(), indexData);
 
-        /* Otherwise, make a tightly packed copy */
+        /* Otherwise, make a tightly packed copy, in which case we can't have
+           an implementation-specific index type */
         } else {
+            CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(indexType),
+                "MeshTools::interleave(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(indexType)) << Debug::nospace << ", enable MeshTools::InterleaveFlag::PreserveStridedIndices to pass the array through unchanged",
+                (Trade::MeshData{MeshPrimitive{}, 0}));
+
+            const std::size_t indexTypeSize = meshIndexTypeSize(indexType);
             indexData = Containers::Array<char>{NoInit, data.indexCount()*indexTypeSize};
             Containers::StridedArrayView2D<char> out{indexData,
                 {data.indexCount(), indexTypeSize},
