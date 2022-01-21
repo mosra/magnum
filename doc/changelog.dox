@@ -205,6 +205,8 @@ See also:
     updated with an introduction the new features.
 -   @ref Shaders::FlatGL and @ref Shaders::PhongGL now support texture arrays,
     available also in multi-draw and instanced scenarios
+-   @ref Shaders::FlatGL now supports object ID textures in addition to uniform
+    and per-vertex object ID
 -   Added @ref Shaders::PhongGL::setNormalTextureScale(), consuming the
     recently added @ref Trade::MaterialAttribute::NormalTextureScale material
     attribute

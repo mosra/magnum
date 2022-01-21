@@ -91,12 +91,20 @@ void FlatGL_Test::debugFlags() {
 
 void FlatGL_Test::debugFlagsSupersets() {
     #ifndef MAGNUM_TARGET_GLES2
-    /* InstancedObjectId is a superset of ObjectId so only one should be
-       printed */
+    /* InstancedObjectId and ObjectIdTexture are a superset of ObjectId so only
+       one should be printed, but if there are both then both should be */
     {
         std::ostringstream out;
         Debug{&out} << (FlatGL3D::Flag::ObjectId|FlatGL3D::Flag::InstancedObjectId);
         CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::InstancedObjectId\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (FlatGL3D::Flag::ObjectId|FlatGL3D::Flag::ObjectIdTexture);
+        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::ObjectIdTexture\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (FlatGL3D::Flag::ObjectId|FlatGL3D::Flag::InstancedObjectId|FlatGL3D::Flag::ObjectIdTexture);
+        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::InstancedObjectId|Shaders::FlatGL::Flag::ObjectIdTexture\n");
     }
     #endif
 

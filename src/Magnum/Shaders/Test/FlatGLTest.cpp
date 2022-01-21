@@ -94,9 +94,9 @@ struct FlatGLTest: GL::OpenGLTester {
     template<UnsignedInt dimensions> void setUniformUniformBuffersEnabled();
     template<UnsignedInt dimensions> void bindBufferUniformBuffersNotEnabled();
     #endif
-    template<UnsignedInt dimensions> void bindTextureInvalid();
+    template<UnsignedInt dimensions> void bindTexturesInvalid();
     #ifndef MAGNUM_TARGET_GLES2
-    template<UnsignedInt dimensions> void bindTextureArrayInvalid();
+    template<UnsignedInt dimensions> void bindTextureArraysInvalid();
     #endif
     template<UnsignedInt dimensions> void setAlphaMaskNotEnabled();
     template<UnsignedInt dimensions> void setTextureMatrixNotEnabled();
@@ -211,6 +211,9 @@ constexpr struct {
     {"object ID", FlatGL2D::Flag::ObjectId},
     {"instanced object ID", FlatGL2D::Flag::InstancedObjectId},
     {"object ID + alpha mask + textured", FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::Textured},
+    {"object ID texture", FlatGL2D::Flag::ObjectIdTexture},
+    {"instanced object ID texture array + texture transformation", FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedObjectId|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation},
+    {"object ID texture + textured", FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::Textured},
     #endif
     {"instanced transformation", FlatGL2D::Flag::InstancedTransformation},
     {"instanced texture offset", FlatGL2D::Flag::Textured|FlatGL2D::Flag::InstancedTextureOffset},
@@ -235,6 +238,9 @@ constexpr struct {
     {"texture arrays + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1, 1},
     {"alpha mask", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask, 1, 1},
     {"object ID", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId, 1, 1},
+    {"object ID texture", FlatGL2D::Flag::ObjectIdTexture, 1, 1},
+    {"instanced object ID texture array + texture transformation", FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedObjectId|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation, 1, 1},
+    {"object ID texture + textured", FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::Textured, 1, 1},
     {"instanced texture array offset + layer", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::InstancedTextureOffset, 1, 1},
     {"multidraw with all the things", FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId, 8, 48}
 };
@@ -245,10 +251,20 @@ constexpr struct {
     FlatGL2D::Flags flags;
     const char* message;
 } ConstructInvalidData[]{
-    {"texture transformation but not textured", FlatGL2D::Flag::TextureTransformation,
+    {"texture transformation but not textured",
+        /* ObjectId shares bits with ObjectIdTexture but should still trigger
+           the assert */
+        FlatGL2D::Flag::TextureTransformation
+            #ifndef MAGNUM_TARGET_GLES2
+            |FlatGL2D::Flag::ObjectId
+            #endif
+            ,
         "texture transformation enabled but the shader is not textured"},
     #ifndef MAGNUM_TARGET_GLES2
-    {"texture arrays but not textured", FlatGL2D::Flag::TextureArrays,
+    {"texture arrays but not textured",
+        /* ObjectId shares bits with ObjectIdTexture but should still trigger
+           the assert */
+        FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::ObjectId,
         "texture arrays enabled but the shader is not textured"}
     #endif
 };
@@ -273,12 +289,25 @@ constexpr struct {
     const char* name;
     FlatGL2D::Flags flags;
     const char* message;
-} BindTextureInvalidData[]{
-    {"not textured", {},
-        "the shader was not created with texturing enabled"},
+} BindTexturesInvalidData[]{
+    {"not textured",
+        FlatGL2D::Flags{}
+            #ifndef MAGNUM_TARGET_GLES2
+            /* ObjectId shares bits with ObjectIdTexture but should still
+               trigger the assert */
+            |FlatGL2D::Flag::ObjectId
+            #endif
+            ,
+        "Shaders::FlatGL::bindTexture(): the shader was not created with texturing enabled\n"
+        #ifndef MAGNUM_TARGET_GLES2
+        "Shaders::FlatGL::bindObjectIdTexture(): the shader was not created with object ID texture enabled\n"
+        #endif
+        },
     #ifndef MAGNUM_TARGET_GLES2
-    {"array", FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
-        "the shader was created with texture arrays enabled, use a Texture2DArray instead"}
+    {"array",
+        FlatGL2D::Flag::Textured|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays,
+        "Shaders::FlatGL::bindTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead\n"
+        "Shaders::FlatGL::bindObjectIdTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead\n"}
     #endif
 };
 
@@ -287,11 +316,17 @@ constexpr struct {
     const char* name;
     FlatGL2D::Flags flags;
     const char* message;
-} BindTextureArrayInvalidData[]{
-    {"not textured", {},
-        "the shader was not created with texturing enabled"},
-    {"not array", FlatGL2D::Flag::Textured,
-        "the shader was not created with texture arrays enabled, use a Texture2D instead"}
+} BindTextureArraysInvalidData[]{
+    {"not textured",
+        /* ObjectId shares bits with ObjectIdTexture but should still trigger
+           the assert */
+        FlatGL2D::Flag::ObjectId,
+        "Shaders::FlatGL::bindTexture(): the shader was not created with texturing enabled\n"
+        "Shaders::FlatGL::bindObjectIdTexture(): the shader was not created with object ID texture enabled\n"},
+    {"not array",
+        FlatGL2D::Flag::Textured|FlatGL2D::Flag::ObjectIdTexture,
+        "Shaders::FlatGL::bindTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead\n"
+        "Shaders::FlatGL::bindObjectIdTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead\n"}
 };
 #endif
 
@@ -358,6 +393,39 @@ const struct {
     /* texture arrays are orthogonal to this, no need to be tested here */
 };
 
+#ifndef MAGNUM_TARGET_GLES2
+const struct {
+    const char* name;
+    UnsignedInt expected[4];
+    FlatGL2D::Flags flags;
+    Matrix3 textureTransformation;
+    Int layer;
+} RenderObjectIdData[]{
+    {"",
+        {40006, 40006, 40006, 40006},
+        {}, {}, 0},
+    {"textured",
+        {40106, 40206, 40306, 40406},
+        FlatGL2D::Flag::ObjectIdTexture, {}, 0},
+    {"textured, texture transformation",
+        {40406, 40306, 40206, 40106},
+        FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}), 0},
+    {"texture array, first layer",
+        {40106, 40206, 40306, 40406},
+        FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays,
+        {}, 0},
+    {"texture array, arbitrary layer",
+        {40106, 40206, 40306, 40406},
+        FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays,
+        {}, 6},
+    {"texture array, texture transformation, arbitrary layer",
+        {40406, 40306, 40206, 40106},
+        FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::TextureArrays,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}), 6},
+};
+#endif
+
 constexpr struct {
     const char* name;
     const char* expected2D;
@@ -380,6 +448,21 @@ constexpr struct {
     {"colored + instanced object ID",
         "instanced2D.tga", "instanced3D.tga", {1211, 5627, 36363},
         FlatGL2D::Flag::InstancedObjectId,
+        /* Minor differences on SwiftShader */
+        164.4f, 0.094f},
+    {"colored + textured object ID",
+        "instanced2D.tga", "instanced3D.tga", {3000, 4000, 5000},
+        FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedTextureOffset,
+        /* Minor differences on SwiftShader */
+        164.4f, 0.094f},
+    {"colored + instanced textured object ID",
+        "instanced2D.tga", "instanced3D.tga", {3211, 8627, 40363},
+        FlatGL2D::Flag::InstancedObjectId|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedTextureOffset,
+        /* Minor differences on SwiftShader */
+        164.4f, 0.094f},
+    {"colored + instanced textured array object ID",
+        "instanced2D.tga", "instanced3D.tga", {3211, 8627, 40363},
+        FlatGL2D::Flag::InstancedObjectId|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::TextureArrays,
         /* Minor differences on SwiftShader */
         164.4f, 0.094f},
     #endif
@@ -417,6 +500,14 @@ constexpr struct {
         "multidraw2D.tga", "multidraw3D.tga", {1211, 5627, 36363},
         FlatGL2D::Flag::ObjectId,
         1, 1, 16, 0.0f, 0.0f},
+    {"bind with offset, colored + textured object ID",
+        "multidraw2D.tga", "multidraw3D.tga", {3211, 8627, 40363},
+        FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::ObjectIdTexture,
+        1, 1, 16, 0.0f, 0.0f},
+    {"bind with offset, colored + textured array object ID",
+        "multidraw2D.tga", "multidraw3D.tga", {3211, 8627, 40363},
+        FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays,
+        1, 1, 16, 0.0f, 0.0f},
     {"bind with offset, textured",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
@@ -438,6 +529,14 @@ constexpr struct {
         "multidraw2D.tga", "multidraw3D.tga", {1211, 5627, 36363},
         FlatGL2D::Flag::ObjectId,
         2, 3, 1, 0.0f, 0.0f},
+    {"draw offset, colored + textured object ID",
+        "multidraw2D.tga", "multidraw3D.tga", {3211, 8627, 40363},
+        FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::ObjectIdTexture,
+        2, 3, 1, 0.0f, 0.0f},
+    {"draw offset, colored + textured array object ID",
+        "multidraw2D.tga", "multidraw3D.tga", {3211, 8627, 40363},
+        FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays,
+        2, 3, 1, 0.0f, 0.0f},
     {"draw offset, textured",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
@@ -457,6 +556,14 @@ constexpr struct {
     {"multidraw, colored + object ID",
         "multidraw2D.tga", "multidraw3D.tga", {1211, 5627, 36363},
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::ObjectId,
+        2, 3, 1, 0.0f, 0.0f},
+    {"multidraw, colored + textured object ID",
+        "multidraw2D.tga", "multidraw3D.tga", {3211, 8627, 40363},
+        FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::ObjectIdTexture,
+        2, 3, 1, 0.0f, 0.0f},
+    {"multidraw, colored + textured array object ID",
+        "multidraw2D.tga", "multidraw3D.tga", {3211, 8627, 40363},
+        FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays,
         2, 3, 1, 0.0f, 0.0f},
     {"multidraw, textured",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
@@ -519,15 +626,15 @@ FlatGLTest::FlatGLTest() {
     });
 
     addInstancedTests<FlatGLTest>({
-        &FlatGLTest::bindTextureInvalid<2>,
-        &FlatGLTest::bindTextureInvalid<3>},
-        Containers::arraySize(BindTextureInvalidData));
+        &FlatGLTest::bindTexturesInvalid<2>,
+        &FlatGLTest::bindTexturesInvalid<3>},
+        Containers::arraySize(BindTexturesInvalidData));
 
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests<FlatGLTest>({
-        &FlatGLTest::bindTextureArrayInvalid<2>,
-        &FlatGLTest::bindTextureArrayInvalid<3>},
-        Containers::arraySize(BindTextureArrayInvalidData));
+        &FlatGLTest::bindTextureArraysInvalid<2>,
+        &FlatGLTest::bindTextureArraysInvalid<3>},
+        Containers::arraySize(BindTextureArraysInvalidData));
     #endif
 
     addTests<FlatGLTest>({
@@ -644,11 +751,12 @@ FlatGLTest::FlatGLTest() {
 
     #ifndef MAGNUM_TARGET_GLES2
     /* MSVC needs explicit type due to default template args */
-    addTests<FlatGLTest>({
+    addInstancedTests<FlatGLTest>({
         &FlatGLTest::renderObjectId2D,
         &FlatGLTest::renderObjectId2D<FlatGL2D::Flag::UniformBuffers>,
         &FlatGLTest::renderObjectId3D,
         &FlatGLTest::renderObjectId3D<FlatGL3D::Flag::UniformBuffers>},
+        Containers::arraySize(RenderObjectIdData),
         &FlatGLTest::renderObjectIdSetup,
         &FlatGLTest::renderObjectIdTeardown);
     #endif
@@ -935,8 +1043,8 @@ template<UnsignedInt dimensions> void FlatGLTest::bindBufferUniformBuffersNotEna
 }
 #endif
 
-template<UnsignedInt dimensions> void FlatGLTest::bindTextureInvalid() {
-    auto&& data = BindTextureInvalidData[testCaseInstanceId()];
+template<UnsignedInt dimensions> void FlatGLTest::bindTexturesInvalid() {
+    auto&& data = BindTexturesInvalidData[testCaseInstanceId()];
     setTestCaseTemplateName(std::to_string(dimensions));
     setTestCaseDescription(data.name);
 
@@ -955,13 +1063,15 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTextureInvalid() {
     FlatGL<dimensions> shader{data.flags};
     GL::Texture2D texture;
     shader.bindTexture(texture);
-    CORRADE_COMPARE(out.str(), Utility::formatString(
-        "Shaders::FlatGL::bindTexture(): {}\n", data.message));
+    #ifndef MAGNUM_TARGET_GLES2
+    shader.bindObjectIdTexture(texture);
+    #endif
+    CORRADE_COMPARE(out.str(), data.message);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> void FlatGLTest::bindTextureArrayInvalid() {
-    auto&& data = BindTextureArrayInvalidData[testCaseInstanceId()];
+template<UnsignedInt dimensions> void FlatGLTest::bindTextureArraysInvalid() {
+    auto&& data = BindTextureArraysInvalidData[testCaseInstanceId()];
     setTestCaseTemplateName(std::to_string(dimensions));
     setTestCaseDescription(data.name);
 
@@ -980,8 +1090,8 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTextureArrayInvalid() {
     FlatGL<dimensions> shader{data.flags};
     GL::Texture2DArray textureArray;
     shader.bindTexture(textureArray);
-    CORRADE_COMPARE(out.str(), Utility::formatString(
-        "Shaders::FlatGL::bindTexture(): {}\n", data.message));
+    shader.bindObjectIdTexture(textureArray);
+    CORRADE_COMPARE(out.str(), data.message);
 }
 #endif
 
@@ -2318,6 +2428,9 @@ void FlatGLTest::renderObjectIdTeardown() {
 }
 
 template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
+    auto&& data = RenderObjectIdData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2332,16 +2445,60 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
 
-    GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
+    Primitives::Circle2DFlags circleFlags;
+    if(data.flags & FlatGL2D::Flag::ObjectIdTexture)
+        circleFlags |= Primitives::Circle2DFlag::TextureCoordinates;
+    GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32, circleFlags));
 
-    FlatGL2D shader{FlatGL2D::Flag::ObjectId|flag};
+    FlatGL2D::Flags flags = data.flags|flag;
+    if(flag == FlatGL2D::Flag::UniformBuffers && (data.flags & FlatGL2D::Flag::TextureArrays) && !(data.flags & FlatGL2D::Flag::TextureTransformation)) {
+        CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= FlatGL2D::Flag::TextureTransformation;
+    }
+    FlatGL2D shader{FlatGL2D::Flag::ObjectId|flags};
+
+    GL::Texture2D texture{NoCreate};
+    GL::Texture2DArray textureArray{NoCreate};
+    if(data.flags >= FlatGL2D::Flag::ObjectIdTexture) {
+        const UnsignedShort imageData[]{
+            100, 200, 300, 400
+        };
+        ImageView2D image{PixelFormat::R16UI, {2, 2}, imageData};
+
+        if(data.flags & FlatGL2D::Flag::TextureArrays) {
+            textureArray = GL::Texture2DArray{};
+            textureArray.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, {image.size(), data.layer + 1})
+                .setSubImage(0, {0, 0, data.layer}, image);
+            shader.bindObjectIdTexture(textureArray);
+            if(flag != FlatGL2D::Flag::UniformBuffers && data.layer != 0)
+                shader.setTextureLayer(data.layer); /* to verify the default */
+        } else {
+            texture = GL::Texture2D{};
+            texture.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(texture);
+        }
+    }
 
     if(flag == FlatGL2D::Flag{}) {
+        if(data.textureTransformation != Matrix3{})
+            shader.setTextureMatrix(data.textureTransformation);
         shader.setColor(0x9999ff_rgbf)
             .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-            .setObjectId(48526)
+            .setObjectId(40006)
             .draw(circle);
     } else if(flag == FlatGL2D::Flag::UniformBuffers) {
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
@@ -2350,12 +2507,21 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             FlatDrawUniform{}
-                .setObjectId(48526)
+                .setObjectId(40006)
+        }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(data.textureTransformation)
+                .setLayer(data.layer)
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             FlatMaterialUniform{}
                 .setColor(0x9999ff_rgbf)
         }};
+        /* Also take into account the case when texture transform needs to be
+           enabled for texture arrays, so not data.flags but flags */
+        if(flags & FlatGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform)
@@ -2387,10 +2553,16 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
     /* Outside of the object, cleared to 27 */
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
     /* Inside of the object */
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 48526);
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[30][30], data.expected[0]);
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[30][50], data.expected[1]);
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[50][30], data.expected[2]);
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[50][50], data.expected[3]);
 }
 
 template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
+    auto&& data = RenderObjectIdData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(flag == FlatGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2405,20 +2577,64 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL3D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
 
-    GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
+    Primitives::UVSphereFlags sphereFlags;
+    if(data.flags & FlatGL3D::Flag::ObjectIdTexture)
+        sphereFlags |= Primitives::UVSphereFlag::TextureCoordinates;
+    GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32, sphereFlags));
 
-    FlatGL3D shader{FlatGL3D::Flag::ObjectId|flag};
+    FlatGL3D::Flags flags = data.flags|flag;
+    if(flag == FlatGL3D::Flag::UniformBuffers && (data.flags & FlatGL3D::Flag::TextureArrays) && !(data.flags & FlatGL3D::Flag::TextureTransformation)) {
+        CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= FlatGL3D::Flag::TextureTransformation;
+    }
+    FlatGL3D shader{FlatGL3D::Flag::ObjectId|flags};
+
+    GL::Texture2D texture{NoCreate};
+    GL::Texture2DArray textureArray{NoCreate};
+    if(data.flags & FlatGL3D::Flag::ObjectIdTexture) {
+        const UnsignedShort imageData[]{
+            100, 200, 300, 400
+        };
+        ImageView2D image{PixelFormat::R16UI, {2, 2}, imageData};
+
+        if(data.flags & FlatGL2D::Flag::TextureArrays) {
+            textureArray = GL::Texture2DArray{};
+            textureArray.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, {image.size(), data.layer + 1})
+                .setSubImage(0, {0, 0, data.layer}, image);
+            shader.bindObjectIdTexture(textureArray);
+            if(flag != FlatGL2D::Flag::UniformBuffers && data.layer != 0)
+                shader.setTextureLayer(data.layer); /* to verify the default */
+        } else {
+            texture = GL::Texture2D{};
+            texture.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(texture);
+        }
+    }
 
     if(flag == FlatGL3D::Flag{}) {
+        if(data.textureTransformation != Matrix3{})
+            shader.setTextureMatrix(data.textureTransformation);
         shader.setColor(0x9999ff_rgbf)
             .setTransformationProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
                 Matrix4::translation(Vector3::zAxis(-2.15f))*
                 Matrix4::rotationY(-15.0_degf)*
                 Matrix4::rotationX(15.0_degf))
-            .setObjectId(48526)
+            .setObjectId(40006)
             .draw(sphere);
     } else if(flag == FlatGL3D::Flag::UniformBuffers) {
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
@@ -2432,12 +2648,21 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             FlatDrawUniform{}
-                .setObjectId(48526)
+                .setObjectId(40006)
+        }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(data.textureTransformation)
+                .setLayer(data.layer)
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             FlatMaterialUniform{}
                 .setColor(0x9999ff_rgbf)
         }};
+        /* Also take into account the case when texture transform needs to be
+           enabled for texture arrays, so not data.flags but flags */
+        if(flags & FlatGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform)
@@ -2476,8 +2701,13 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     /* Outside of the object, cleared to 27 */
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
-    /* Inside of the object */
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 48526);
+    /* Inside of the object. It's a sphere and the seam is at the front,
+       rotated to bottom left, meaning left is actually the right part of the
+       texture and right is the left part of the texture. */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[20][50], data.expected[0]);
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[20][20], data.expected[1]);
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[50][50], data.expected[2]);
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[50][20], data.expected[3]);
 }
 #endif
 
@@ -2628,6 +2858,52 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
             shader.bindTexture(texture);
         }
     }
+
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2D objectIdTexture{NoCreate};
+    GL::Texture2DArray objectIdTextureArray{NoCreate};
+    if(data.flags >= FlatGL2D::Flag::ObjectIdTexture) {
+        /* This should match transformation done for the diffuse/normal
+           texture */
+        if(data.flags & FlatGL2D::Flag::TextureArrays) {
+            /* 2 extra slices as a base offset, each slice has half height,
+               second slice has the data in the right half */
+            const UnsignedShort imageData[]{
+                0, 0,
+                0, 0,
+                2000, 0,
+                0, 3000,
+                4000, 0
+            };
+            ImageView3D image{PixelFormat::R16UI, {2, 1, 5}, imageData};
+
+            objectIdTextureArray = GL::Texture2DArray{};
+            objectIdTextureArray.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTextureArray);
+        } else {
+            /* First is taken from bottom left, second from bottom right, third
+               from top center (there I just duplicate the pixel on both
+               sides) */
+            const UnsignedShort imageData[]{
+                2000, 3000,
+                4000, 4000
+            };
+            ImageView2D image{PixelFormat::R16UI, {2, 2}, imageData};
+
+            objectIdTexture = GL::Texture2D{};
+            objectIdTexture.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTexture);
+        }
+    }
+    #endif
 
     if(flag == FlatGL2D::Flag{}) {
         shader
@@ -2896,6 +3172,52 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         }
     }
 
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2D objectIdTexture{NoCreate};
+    GL::Texture2DArray objectIdTextureArray{NoCreate};
+    if(data.flags >= FlatGL3D::Flag::ObjectIdTexture) {
+        /* This should match transformation done for the diffuse/normal
+           texture */
+        if(data.flags & FlatGL3D::Flag::TextureArrays) {
+            /* 2 extra slices as a base offset, each slice has half height,
+               second slice has the data in the right half */
+            const UnsignedShort imageData[]{
+                0, 0,
+                0, 0,
+                2000, 0,
+                0, 3000,
+                4000, 0
+            };
+            ImageView3D image{PixelFormat::R16UI, {2, 1, 5}, imageData};
+
+            objectIdTextureArray = GL::Texture2DArray{};
+            objectIdTextureArray.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTextureArray);
+        } else {
+            /* First is taken from bottom left, second from bottom right, third
+               from top center (there I just duplicate the pixel on both
+               sides) */
+            const UnsignedShort imageData[]{
+                2000, 3000,
+                4000, 4000
+            };
+            ImageView2D image{PixelFormat::R16UI, {2, 2}, imageData};
+
+            objectIdTexture = GL::Texture2D{};
+            objectIdTexture.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTexture);
+        }
+    }
+    #endif
+
     if(flag == FlatGL3D::Flag{}) {
         shader
             .setColor(data.flags & FlatGL2D::Flag::Textured ? 0xffffff_rgbf : 0xffff00_rgbf)
@@ -3103,6 +3425,48 @@ void FlatGLTest::renderMulti2D() {
                 .setStorage(1, TextureFormatRGB, image->size())
                 .setSubImage(0, {}, *image);
             shader.bindTexture(texture);
+        }
+    }
+
+    GL::Texture2D objectIdTexture{NoCreate};
+    GL::Texture2DArray objectIdTextureArray{NoCreate};
+    if(data.flags >= FlatGL2D::Flag::ObjectIdTexture) {
+        /* This should match transformation done for the diffuse/normal
+           texture */
+        if(data.flags & FlatGL2D::Flag::TextureArrays) {
+            /* Each slice has half height, second slice has the data in the
+               right half */
+            const UnsignedShort imageData[]{
+                2000, 0,
+                0, 3000,
+                4000, 0
+            };
+            ImageView3D image{PixelFormat::R16UI, {2, 1, 3}, imageData};
+
+            objectIdTextureArray = GL::Texture2DArray{};
+            objectIdTextureArray.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTextureArray);
+        } else {
+            /* First is taken from bottom left, second from bottom right, third
+               from top center (there I just duplicate the pixel on both
+               sides) */
+            const UnsignedShort imageData[]{
+                2000, 3000,
+                4000, 4000
+            };
+            ImageView2D image{PixelFormat::R16UI, {2, 2}, imageData};
+
+            objectIdTexture = GL::Texture2D{};
+            objectIdTexture.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTexture);
         }
     }
 
@@ -3397,6 +3761,48 @@ void FlatGLTest::renderMulti3D() {
                 .setStorage(1, TextureFormatRGB, image->size())
                 .setSubImage(0, {}, *image);
             shader.bindTexture(texture);
+        }
+    }
+
+    GL::Texture2D objectIdTexture{NoCreate};
+    GL::Texture2DArray objectIdTextureArray{NoCreate};
+    if(data.flags >= FlatGL3D::Flag::ObjectIdTexture) {
+        /* This should match transformation done for the diffuse/normal
+           texture */
+        if(data.flags & FlatGL3D::Flag::TextureArrays) {
+            /* Each slice has half height, second slice has the data in the
+               right half */
+            const UnsignedShort imageData[]{
+                2000, 0,
+                0, 3000,
+                4000, 0
+            };
+            ImageView3D image{PixelFormat::R16UI, {2, 1, 3}, imageData};
+
+            objectIdTextureArray = GL::Texture2DArray{};
+            objectIdTextureArray.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTextureArray);
+        } else {
+            /* First is taken from bottom left, second from bottom right, third
+               from top center (there I just duplicate the pixel on both
+               sides) */
+            const UnsignedShort imageData[]{
+                2000, 3000,
+                4000, 4000
+            };
+            ImageView2D image{PixelFormat::R16UI, {2, 2}, imageData};
+
+            objectIdTexture = GL::Texture2D{};
+            objectIdTexture.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTexture);
         }
     }
 

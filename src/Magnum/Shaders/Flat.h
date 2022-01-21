@@ -143,8 +143,10 @@ struct FlatDrawUniform {
      * uniform data. Default value is @cpp 0 @ce.
      *
      * Used only if @ref FlatGL::Flag::ObjectId is enabled, ignored otherwise.
-     * If @ref FlatGL::Flag::InstancedObjectId is enabled as well, this value
-     * is added to the ID coming from the @ref FlatGL::ObjectId attribute.
+     * If @ref FlatGL::Flag::InstancedObjectId and/or
+     * @ref FlatGL::Flag::ObjectIdTexture is enabled as well, this value is
+     * added to the ID coming from the @ref FlatGL::ObjectId attribute and/or
+     * the texture.
      * @see @ref FlatGL::setObjectId()
      */
     UnsignedInt objectId;

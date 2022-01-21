@@ -46,6 +46,7 @@ namespace Implementation {
         #ifndef MAGNUM_TARGET_GLES2
         ObjectId = 1 << 4,
         InstancedObjectId = (1 << 5)|ObjectId,
+        ObjectIdTexture = (1 << 11)|ObjectId,
         #endif
         InstancedTransformation = 1 << 6,
         InstancedTextureOffset = (1 << 7)|TextureTransformation,
@@ -128,8 +129,10 @@ on framebuffers with integer attachments.
 
 If you have a batch of meshes with different object IDs, enable
 @ref Flag::InstancedObjectId and supply per-vertex IDs to the @ref ObjectId
-attribute. The output will contain a sum of the per-vertex ID and ID coming
-from @ref setObjectId().
+attribute. The object ID can be also supplied from an integer texture bound via
+@ref bindObjectIdTexture() if @ref Flag::ObjectIdTexture is enabled. The output
+will contain a sum of the per-vertex ID, texture ID and ID coming from
+@ref setObjectId().
 
 @requires_gl30 Extension @gl_extension{EXT,texture_integer}
 @requires_gles30 Object ID output requires integer support in shaders, which
@@ -315,8 +318,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
              * Object ID shader output. @ref shaders-generic "Generic output",
              * present only if @ref Flag::ObjectId is set. Expects a
              * single-component unsigned integral attachment. Writes the value
-             * set in @ref setObjectId() there, see
-             * @ref Shaders-FlatGL-object-id for more information.
+             * set in @ref setObjectId() and possibly also a per-vertex ID and
+             * an ID fetched from a texture, see @ref Shaders-FlatGL-object-id
+             * for more information.
              * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
              * @requires_gles30 Object ID output requires integer support in
              *      shaders, which is not available in OpenGL ES 2.0.
@@ -397,6 +401,23 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
              * @m_since{2020,06}
              */
             InstancedObjectId = (1 << 5)|ObjectId,
+
+            /**
+             * Object ID texture. Retrieves object IDs from a texture bound
+             * with @ref bindObjectIdTexture(), outputting a sum of the object
+             * ID texture, the ID coming from @ref setObjectId() or
+             * @ref FlatDrawUniform::objectId and possibly also the per-vertex
+             * ID, if @ref Flag::InstancedObjectId is enabled as well.
+             * Implicitly enables @ref Flag::ObjectId. See
+             * @ref Shaders-FlatGL-object-id for more information.
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Object ID output requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID output requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
+             * @m_since_latest
+             */
+            ObjectIdTexture = (1 << 11)|ObjectId,
             #endif
 
             /**
@@ -728,8 +749,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * Expects that the shader was created with @ref Flag::ObjectId
          * enabled. Value set here is written to the @ref ObjectIdOutput, see
          * @ref Shaders-FlatGL-object-id for more information. Default is
-         * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
-         * value is added to the ID coming from the @ref ObjectId attribute.
+         * @cpp 0 @ce. If @ref Flag::InstancedObjectId and/or
+         * @ref Flag::ObjectIdTexture is enabled as well, this value is added
+         * to the ID coming from the @ref ObjectId attribute and/or the
+         * texture.
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
          * @ref FlatDrawUniform::objectId and call @ref bindDrawBuffer()
@@ -901,6 +924,51 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
          */
         FlatGL<dimensions>& bindTexture(GL::Texture2DArray& texture);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Bind an object ID texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with @ref Flag::ObjectIdTexture
+         * enabled. If @ref Flag::TextureArrays is enabled as well, use
+         * @ref bindObjectIdTexture(GL::Texture2DArray&) instead. The texture
+         * needs to have an unsigned integer format.
+         * @see @ref setObjectId(), @ref Flag::TextureTransformation,
+         *      @ref setTextureMatrix()
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Object ID output requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID output requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& bindObjectIdTexture(GL::Texture2D& texture);
+
+        /**
+         * @brief Bind an object ID array texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with both
+         * @ref Flag::ObjectIdTexture and @ref Flag::TextureArrays enabled. If
+         * @ref Flag::UniformBuffers is not enabled, the layer is set via
+         * @ref setTextureLayer(); if @ref Flag::UniformBuffers is enabled,
+         * @ref Flag::TextureTransformation has to be enabled as well and the
+         * layer is set via @ref TextureTransformationUniform::layer.
+         * @see @ref setObjectId(), @ref Flag::TextureTransformation,
+         *      @ref setTextureLayer()
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4} and
+         *      @gl_extension{EXT,texture_array}
+         * @requires_gles30 Object ID output requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0. Texture
+         *      arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID output requires integer support in
+         *      shaders, which is not available in WebGL 1.0. Texture arrays
+         *      are not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& bindObjectIdTexture(GL::Texture2DArray& texture);
         #endif
 
         /**

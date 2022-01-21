@@ -49,7 +49,11 @@
 namespace Magnum { namespace Shaders {
 
 namespace {
-    enum: Int { TextureUnit = 0 };
+    enum: Int {
+        TextureUnit = 0,
+        /* 1/2/3 taken by Phong (D/S/N), 4 by MeshVisualizer colormap */
+        ObjectIdTextureUnit = 5
+    };
 
     #ifndef MAGNUM_TARGET_GLES2
     enum: Int {
@@ -74,8 +78,17 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     , _materialCount{materialCount}, _drawCount{drawCount}
     #endif
 {
-    CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & Flag::Textured),
-        "Shaders::FlatGL: texture transformation enabled but the shader is not textured", );
+    #ifndef CORRADE_NO_ASSERT
+    {
+        const bool textureTransformationNotEnabledOrTextured = !(flags & Flag::TextureTransformation) || flags & Flag::Textured
+            #ifndef MAGNUM_TARGET_GLES2
+            || flags >= Flag::ObjectIdTexture
+            #endif
+            ;
+        CORRADE_ASSERT(textureTransformationNotEnabledOrTextured,
+            "Shaders::FlatGL: texture transformation enabled but the shader is not textured", );
+    }
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
@@ -85,7 +98,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags & Flag::TextureArrays) || (flags & Flag::Textured),
+    CORRADE_ASSERT(!(flags & Flag::TextureArrays) || flags & Flag::Textured || flags >= Flag::ObjectIdTexture,
         "Shaders::FlatGL: texture arrays enabled but the shader is not textured", );
     CORRADE_ASSERT(!(flags & Flag::UniformBuffers) || !(flags & Flag::TextureArrays) || flags >= (Flag::TextureArrays|Flag::TextureTransformation),
         "Shaders::FlatGL: texture arrays require texture transformation enabled as well if uniform buffers are used", );
@@ -129,7 +142,11 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
-    vert.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
+    vert.addSource((flags & Flag::Textured
+            #ifndef MAGNUM_TARGET_GLES2
+            || flags >= Flag::ObjectIdTexture
+            #endif
+            ) ? "#define TEXTURED\n" : "")
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         .addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
@@ -161,6 +178,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
         .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(flags >= Flag::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n" : "")
         #endif
         ;
     #ifndef MAGNUM_TARGET_GLES2
@@ -189,7 +207,11 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
-        if(flags & Flag::Textured)
+        if(flags & Flag::Textured
+            #ifndef MAGNUM_TARGET_GLES2
+            || flags >= Flag::ObjectIdTexture
+            #endif
+        )
             bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
         if(flags & Flag::VertexColor)
             bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
@@ -241,6 +263,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     {
         if(flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureUnit);
         #ifndef MAGNUM_TARGET_GLES2
+        if(flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
         if(flags >= Flag::UniformBuffers) {
             setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
@@ -429,12 +452,42 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindTex
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindObjectIdTexture(GL::Texture2D& texture) {
+    CORRADE_ASSERT(_flags >= Flag::ObjectIdTexture,
+        "Shaders::FlatGL::bindObjectIdTexture(): the shader was not created with object ID texture enabled", *this);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags & Flag::TextureArrays),
+        "Shaders::FlatGL::bindObjectIdTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
+    #endif
+    texture.bind(ObjectIdTextureUnit);
+    return *this;
+}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindObjectIdTexture(GL::Texture2DArray& texture) {
+    CORRADE_ASSERT(_flags >= Flag::ObjectIdTexture,
+        "Shaders::FlatGL::bindObjectIdTexture(): the shader was not created with object ID texture enabled", *this);
+    CORRADE_ASSERT(_flags & Flag::TextureArrays,
+        "Shaders::FlatGL::bindObjectIdTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead", *this);
+    texture.bind(ObjectIdTextureUnit);
+    return *this;
+}
+#endif
+
 template class MAGNUM_SHADERS_EXPORT FlatGL<2>;
 template class MAGNUM_SHADERS_EXPORT FlatGL<3>;
 
 namespace Implementation {
 
 Debug& operator<<(Debug& debug, const FlatGLFlag value) {
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Special case coming from the FlatGLFlags printer. As both flags are a
+       superset of ObjectId, printing just one would result in
+       `Flag::InstancedObjectId|Flag(0x800)` in the output. */
+    if(value == FlatGLFlag(UnsignedShort(FlatGLFlag::InstancedObjectId|FlatGLFlag::ObjectIdTexture)))
+        return debug << FlatGLFlag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << FlatGLFlag::ObjectIdTexture;
+    #endif
+
     debug << "Shaders::FlatGL::Flag" << Debug::nospace;
 
     switch(value) {
@@ -447,6 +500,7 @@ Debug& operator<<(Debug& debug, const FlatGLFlag value) {
         #ifndef MAGNUM_TARGET_GLES2
         _c(ObjectId)
         _c(InstancedObjectId)
+        _c(ObjectIdTexture)
         #endif
         _c(InstancedTransformation)
         _c(InstancedTextureOffset)
@@ -470,7 +524,12 @@ Debug& operator<<(Debug& debug, const FlatGLFlags value) {
         FlatGLFlag::InstancedTextureOffset, /* Superset of TextureTransformation */
         FlatGLFlag::TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2
+        /* Both are a superset of ObjectId, meaning printing just one would
+           result in `Flag::InstancedObjectId|Flag(0x800)` in the output. So we
+           pass both and let the FlatGLFlag printer deal with that. */
+        FlatGLFlag(UnsignedShort(FlatGLFlag::InstancedObjectId|FlatGLFlag::ObjectIdTexture)),
         FlatGLFlag::InstancedObjectId, /* Superset of ObjectId */
+        FlatGLFlag::ObjectIdTexture, /* Superset of ObjectId */
         FlatGLFlag::ObjectId,
         #endif
         FlatGLFlag::InstancedTransformation,
