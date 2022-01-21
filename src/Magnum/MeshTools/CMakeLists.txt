@@ -52,6 +52,7 @@ set(MagnumMeshTools_HEADERS
     GenerateIndices.h
     GenerateNormals.h
     Interleave.h
+    InterleaveFlags.h
     Reference.h
     RemoveDuplicates.h
     Subdivide.h

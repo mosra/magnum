@@ -36,6 +36,7 @@
 #include <Corrade/Utility/TypeTraits.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/MeshTools/InterleaveFlags.h"
 #include "Magnum/MeshTools/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
@@ -187,61 +188,6 @@ template<class T, class ...U> void interleaveInto(Containers::ArrayView<char> bu
     /* Write data */
     Implementation::writeInterleaved(stride, buffer.begin(), first, next...);
 }
-
-/**
-@brief Interleaving behavior flag
-@m_since_latest
-
-@see @ref InterleaveFlags,
-    @ref interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags),
-    @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags),
-    @ref concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>>, InterleaveFlags)
-*/
-enum class InterleaveFlag: UnsignedInt {
-    /**
-     * If the mesh is already interleaved, preserves existing layout of the
-     * attributes as well as any padding or aliasing among them, keeping the
-     * original stride and only removing the initial offset. This can also
-     * preserve attributes with an implementation-specific @ref VertexFormat.
-     *
-     * If not set or if the mesh is not interleaved to begin with, a tightly
-     * packed stride is calculated from vertex format sizes of all attributes,
-     * removing all padding. In that case an implementation-specific
-     * @ref VertexFormat can't be used for any attribute.
-     */
-    PreserveInterleavedAttributes = 1 << 0,
-
-    /**
-     * If a mesh is indexed, makes @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags)
-     * preserve the index buffer even if it's not tightly packed. Since such
-     * data layouts are not commonly supported by GPU APIs, this flag is not
-     * set by default.
-     *
-     * If not set and the index buffer is strided, a tightly packed copy with
-     * the same index type is allocated for the output, dropping also any
-     * padding before or after the original index view. In such case however,
-     * the index type is not allowed to be implementation-specific.
-     *
-     * Has no effect when passed to @ref interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "interleavedLayout()"
-     * as that function doesn't preserve the index buffer. Has no effect when
-     * passed to @ref concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>>, InterleaveFlags) "concatenate()"
-     * as that function allocates a new combined index buffer anyway.
-     * @see @ref isMeshIndexTypeImplementationSpecific()
-     */
-    PreserveStridedIndices = 1 << 1
-};
-
-/**
-@brief Interleaving behavior flags
-@m_since_latest
-
-@see @ref interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags),
-    @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags),
-    @ref concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>>, InterleaveFlags)
-*/
-typedef Containers::EnumSet<InterleaveFlag> InterleaveFlags;
-
-CORRADE_ENUMSET_OPERATORS(InterleaveFlags)
 
 /**
 @brief If the mesh data is interleaved
