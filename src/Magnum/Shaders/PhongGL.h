@@ -221,8 +221,11 @@ The functionality is practically the same as in the @ref FlatGL shader, see
 @ref Shaders-FlatGL-object-id "its documentation" for more information and usage
 example.
 
-@requires_gles30 Object ID output requires integer buffer attachments, which
-    are not available in OpenGL ES 2.0 or WebGL 1.0.
+@requires_gl30 Extension @gl_extension{EXT,texture_integer}
+@requires_gles30 Object ID output requires integer support in shaders, which
+    is not available in OpenGL ES 2.0.
+@requires_webgl20 Object ID output requires integer support in shaders, which
+    is not available in WebGL 1.0.
 
 @section Shaders-PhongGL-instancing Instanced rendering
 
@@ -385,7 +388,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * Used only if @ref Flag::InstancedObjectId is set.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
-         *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID output requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
          */
         typedef GenericGL3D::ObjectId ObjectId;
         #endif
@@ -471,8 +476,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              * @ref Shaders-PhongGL-object-id for more information.
              * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
              * @requires_gles30 Object ID output requires integer support in
-             *      shaders, which is not available in OpenGL ES 2.0 or WebGL
-             *      1.0.
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID output requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
              * @m_since{2019,10}
              */
             ObjectIdOutput = GenericGL3D::ObjectIdOutput
@@ -557,8 +563,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              * for more information.
              * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
              * @requires_gles30 Object ID output requires integer support in
-             *      shaders, which is not available in OpenGL ES 2.0 or WebGL
-             *      1.0.
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID output requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
              * @m_since{2019,10}
              */
             ObjectId = 1 << 7,
@@ -572,8 +579,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              * information.
              * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
              * @requires_gles30 Object ID output requires integer support in
-             *      shaders, which is not available in OpenGL ES 2.0 or WebGL
-             *      1.0.
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID output requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
              * @m_since{2020,06}
              */
             InstancedObjectId = (1 << 8)|ObjectId,
@@ -976,7 +984,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * instead.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
-         *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID output requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
          */
         PhongGL& setObjectId(UnsignedInt id);
         #endif

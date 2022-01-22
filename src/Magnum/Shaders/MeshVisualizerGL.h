@@ -167,7 +167,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * Used only if @ref Flag::InstancedObjectId is set.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
-         *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID output requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
          */
         typedef GenericGL3D::ObjectId ObjectId;
         #endif
@@ -783,15 +785,20 @@ triangle mesh. You can use @ref MeshTools::duplicate() (and potentially
 @ref MeshTools::generateIndices()) to conveniently convert the mesh to a
 non-indexed @ref MeshPrimitive::Triangles.
 
-@requires_gl32 The `gl_PrimitiveID` shader variable is not available on OpenGL
-    3.1 and lower.
+@requires_gl30 Extension @gl_extension{EXT,gpu_shader4} for object ID input
 @requires_gl30 The `gl_VertexID` shader variable is not available on OpenGL
     2.1.
+@requires_gl32 The `gl_PrimitiveID` shader variable is not available on OpenGL
+    3.1 and lower.
 @requires_gles32 The `gl_PrimitiveID` shader variable is not available on
     OpenGL ES 3.1 and lower.
+@requires_gles30 Object ID input requires integer support in shaders, which
+    is not available in OpenGL ES 2.0.
 @requires_gles30 The `gl_VertexID` shader variable is not available on OpenGL
     ES 2.0.
 @requires_gles `gl_PrimitiveID` is not available in WebGL.
+@requires_webgl20 Object ID input requires integer support in shaders, which
+    is not available in WebGL 1.0.
 @requires_webgl20 `gl_VertexID` is not available in WebGL 1.0.
 
 @section Shaders-MeshVisualizerGL3D-ubo Uniform buffers
@@ -906,7 +913,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * Used only if @ref Flag::InstancedObjectId is set.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
-         *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID output requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
          */
         typedef GenericGL3D::ObjectId ObjectId;
         #endif
@@ -956,8 +965,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
              * @ref Flag::VertexId and @ref Flag::PrimitiveId.
              * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
              * @requires_gles30 Object ID output requires integer support in
-             *      shaders, which is not available in OpenGL ES 2.0 or WebGL
-             *      1.0.
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID output requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
              * @m_since{2020,06}
              */
             InstancedObjectId = 1 << 2,

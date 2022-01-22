@@ -269,7 +269,9 @@ template<UnsignedInt dimensions> struct GenericGL {
          * integral attachment.
          * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
          * @requires_gles30 Object ID output requires integer support in
-         *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID output requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
          */
         ObjectIdOutput = 1
         #endif
@@ -361,7 +363,9 @@ template<UnsignedInt dimensions> struct GenericGL {
      * @ref Tangent4 instead.
      * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
      * @requires_gles30 Object ID output requires integer support in shaders,
-     *      which is not available in OpenGL ES 2.0 or WebGL 1.0.
+     *      which is not available in OpenGL ES 2.0.
+     * @requires_webgl20 Object ID output requires integer support in shaders,
+     *      which is not available in WebGL 1.0.
      */
     typedef GL::Attribute<4, UnsignedInt> ObjectId;
     #endif

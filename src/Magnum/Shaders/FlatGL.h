@@ -131,8 +131,11 @@ If you have a batch of meshes with different object IDs, enable
 attribute. The output will contain a sum of the per-vertex ID and ID coming
 from @ref setObjectId().
 
-@requires_gles30 Object ID output requires integer buffer attachments, which
-    are not available in OpenGL ES 2.0 or WebGL 1.0.
+@requires_gl30 Extension @gl_extension{EXT,texture_integer}
+@requires_gles30 Object ID output requires integer support in shaders, which
+    is not available in OpenGL ES 2.0.
+@requires_webgl20 Object ID output requires integer support in shaders, which
+    is not available in WebGL 1.0.
 
 @section Shaders-FlatGL-instancing Instanced rendering
 
@@ -242,7 +245,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * Used only if @ref Flag::InstancedObjectId is set.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
-         *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID output requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
          */
         typedef typename GenericGL<dimensions>::ObjectId ObjectId;
         #endif
@@ -314,8 +319,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
              * @ref Shaders-FlatGL-object-id for more information.
              * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
              * @requires_gles30 Object ID output requires integer support in
-             *      shaders, which is not available in OpenGL ES 2.0 or WebGL
-             *      1.0.
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID output requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
              * @m_since{2019,10}
              */
             ObjectIdOutput = GenericGL<dimensions>::ObjectIdOutput
@@ -369,8 +375,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
              * more information.
              * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
              * @requires_gles30 Object ID output requires integer support in
-             *      shaders, which is not available in OpenGL ES 2.0 or WebGL
-             *      1.0.
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID output requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
              * @m_since{2019,10}
              */
             ObjectId = 1 << 4,
@@ -384,8 +391,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
              * information.
              * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
              * @requires_gles30 Object ID output requires integer support in
-             *      shaders, which is not available in OpenGL ES 2.0 or WebGL
-             *      1.0.
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID output requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
              * @m_since{2020,06}
              */
             InstancedObjectId = (1 << 5)|ObjectId,
@@ -728,7 +736,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * instead.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
-         *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID output requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
          */
         FlatGL<dimensions>& setObjectId(UnsignedInt id);
         #endif
