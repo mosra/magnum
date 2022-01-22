@@ -293,6 +293,19 @@ uniform lowp
 #endif
 #endif
 
+#ifdef OBJECT_ID_TEXTURE
+#ifdef EXPLICIT_BINDING
+layout(binding = 5)
+#endif
+uniform lowp
+    #ifndef TEXTURE_ARRAYS
+    usampler2D
+    #else
+    usampler2DArray
+    #endif
+    objectIdTextureData;
+#endif
+
 /* Inputs */
 
 #if LIGHT_COUNT
@@ -308,7 +321,7 @@ in mediump vec3 transformedBitangent;
 in highp vec3 transformedPosition;
 #endif
 
-#if defined(AMBIENT_TEXTURE) || defined(DIFFUSE_TEXTURE) || defined(SPECULAR_TEXTURE) || defined(NORMAL_TEXTURE)
+#if defined(AMBIENT_TEXTURE) || defined(DIFFUSE_TEXTURE) || defined(SPECULAR_TEXTURE) || defined(NORMAL_TEXTURE) || defined(OBJECT_ID_TEXTURE)
 in mediump
     #ifndef TEXTURE_ARRAYS
     vec2
@@ -523,6 +536,9 @@ void main() {
     fragmentObjectId =
         #ifdef INSTANCED_OBJECT_ID
         interpolatedInstanceObjectId +
+        #endif
+        #ifdef OBJECT_ID_TEXTURE
+        texture(objectIdTextureData, interpolatedTextureCoordinates).r +
         #endif
         objectId;
     #endif

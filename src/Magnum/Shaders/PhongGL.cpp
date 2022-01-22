@@ -57,7 +57,9 @@ namespace {
         AmbientTextureUnit = 0,
         DiffuseTextureUnit = 1,
         SpecularTextureUnit = 2,
-        NormalTextureUnit = 3
+        NormalTextureUnit = 3,
+        /* 4 taken by MeshVisualizer colormap */
+        ObjectIdTextureUnit = 5 /* shared with Flat */
     };
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -87,8 +89,15 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
     _lightSpecularColorsUniform{_lightPositionsUniform + 2*Int(lightCount)},
     _lightRangesUniform{_lightPositionsUniform + 3*Int(lightCount)}
 {
-    CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)),
-        "Shaders::PhongGL: texture transformation enabled but the shader is not textured", );
+    {
+        const bool textureTransformationNotEnabledOrTextured = !(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture))
+            #ifndef MAGNUM_TARGET_GLES2
+            || flags >= Flag::ObjectIdTexture
+            #endif
+            ;
+        CORRADE_ASSERT(textureTransformationNotEnabledOrTextured,
+            "Shaders::PhongGL: texture transformation enabled but the shader is not textured", );
+    }
 
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(flags >= Flag::InstancedObjectId) || !(flags & Flag::Bitangent),
@@ -103,7 +112,7 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags & Flag::TextureArrays) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)),
+    CORRADE_ASSERT(!(flags & Flag::TextureArrays) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)) || flags >= Flag::ObjectIdTexture,
         "Shaders::PhongGL: texture arrays enabled but the shader is not textured", );
     CORRADE_ASSERT(!(flags & Flag::UniformBuffers) || !(flags & Flag::TextureArrays) || flags >= (Flag::TextureArrays|Flag::TextureTransformation),
         "Shaders::PhongGL: texture arrays require texture transformation enabled as well if uniform buffers are used", );
@@ -206,7 +215,11 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
     }
     #endif
 
-    vert.addSource(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture) ? "#define TEXTURED\n" : "")
+    vert.addSource((flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)
+            #ifndef MAGNUM_TARGET_GLES2
+            || flags >= Flag::ObjectIdTexture
+            #endif
+            ) ? "#define TEXTURED\n" : "")
         .addSource(flags & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
         .addSource(flags & Flag::Bitangent ? "#define BITANGENT\n" : "")
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
@@ -245,6 +258,7 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
         .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(flags >= Flag::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n" : "")
         #endif
         .addSource(flags & Flag::NoSpecular ? "#define NO_SPECULAR\n" : "")
         ;
@@ -301,7 +315,11 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
         }
         if(flags & Flag::VertexColor)
             bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
-        if(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture))
+        if(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture)
+            #ifndef MAGNUM_TARGET_GLES2
+            || flags >= Flag::ObjectIdTexture
+            #endif
+        )
             bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
         #ifndef MAGNUM_TARGET_GLES2
         if(flags & Flag::ObjectId) {
@@ -372,6 +390,7 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
             if(flags & Flag::NormalTexture) setUniform(uniformLocation("normalTexture"), NormalTextureUnit);
         }
         #ifndef MAGNUM_TARGET_GLES2
+        if(flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
         if(flags >= Flag::UniformBuffers) {
             setUniformBlockBinding(uniformBlockIndex("Projection"), ProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Transformation"), TransformationBufferBinding);
@@ -901,6 +920,28 @@ PhongGL& PhongGL::bindNormalTexture(GL::Texture2DArray& texture) {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+PhongGL& PhongGL::bindObjectIdTexture(GL::Texture2D& texture) {
+    CORRADE_ASSERT(_flags >= Flag::ObjectIdTexture,
+        "Shaders::PhongGL::bindObjectIdTexture(): the shader was not created with object ID texture enabled", *this);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags & Flag::TextureArrays),
+        "Shaders::PhongGL::bindObjectIdTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
+    #endif
+    texture.bind(ObjectIdTextureUnit);
+    return *this;
+}
+
+PhongGL& PhongGL::bindObjectIdTexture(GL::Texture2DArray& texture) {
+    CORRADE_ASSERT(_flags >= Flag::ObjectIdTexture,
+        "Shaders::PhongGL::bindObjectIdTexture(): the shader was not created with object ID texture enabled", *this);
+    CORRADE_ASSERT(_flags & Flag::TextureArrays,
+        "Shaders::PhongGL::bindObjectIdTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead", *this);
+    texture.bind(ObjectIdTextureUnit);
+    return *this;
+}
+#endif
+
 PhongGL& PhongGL::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular, GL::Texture2D* normal) {
     CORRADE_ASSERT(_flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture),
         "Shaders::PhongGL::bindTextures(): the shader was not created with any textures enabled", *this);
@@ -913,6 +954,14 @@ PhongGL& PhongGL::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, G
 }
 
 Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Special case coming from the Flags printer. As both flags are a superset
+       of ObjectId, printing just one would result in
+       `Flag::InstancedObjectId|Flag(0x20000)` in the output. */
+    if(value == PhongGL::Flag(UnsignedInt(PhongGL::Flag::InstancedObjectId|PhongGL::Flag::ObjectIdTexture)))
+        return debug << PhongGL::Flag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << PhongGL::Flag::ObjectIdTexture;
+    #endif
+
     debug << "Shaders::PhongGL::Flag" << Debug::nospace;
 
     switch(value) {
@@ -927,8 +976,9 @@ Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
         _c(VertexColor)
         _c(TextureTransformation)
         #ifndef MAGNUM_TARGET_GLES2
-        _c(InstancedObjectId)
         _c(ObjectId)
+        _c(InstancedObjectId)
+        _c(ObjectIdTexture)
         #endif
         _c(InstancedTransformation)
         _c(InstancedTextureOffset)
@@ -958,7 +1008,12 @@ Debug& operator<<(Debug& debug, const PhongGL::Flags value) {
         PhongGL::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */
         PhongGL::Flag::TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2
+        /* Both are a superset of ObjectId, meaning printing just one would
+           result in `Flag::InstancedObjectId|Flag(0x20000)` in the output. So
+           we pass both and let the Flag printer deal with that. */
+        PhongGL::Flag(UnsignedInt(PhongGL::Flag::InstancedObjectId|PhongGL::Flag::ObjectIdTexture)),
         PhongGL::Flag::InstancedObjectId, /* Superset of ObjectId */
+        PhongGL::Flag::ObjectIdTexture, /* Superset of ObjectId */
         PhongGL::Flag::ObjectId,
         #endif
         PhongGL::Flag::InstancedTransformation,

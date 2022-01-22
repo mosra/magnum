@@ -85,12 +85,20 @@ void PhongGL_Test::debugFlags() {
 
 void PhongGL_Test::debugFlagsSupersets() {
     #ifndef MAGNUM_TARGET_GLES2
-    /* InstancedObjectId is a superset of ObjectId so only one should be
-       printed */
+    /* InstancedObjectId and ObjectIdTexture are a superset of ObjectId so only
+       one should be printed, but if there are both then both should be */
     {
         std::ostringstream out;
         Debug{&out} << (PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedObjectId);
         CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::InstancedObjectId\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (PhongGL::Flag::ObjectId|PhongGL::Flag::ObjectIdTexture);
+        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::ObjectIdTexture\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::ObjectIdTexture);
+        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::InstancedObjectId|Shaders::PhongGL::Flag::ObjectIdTexture\n");
     }
     #endif
 

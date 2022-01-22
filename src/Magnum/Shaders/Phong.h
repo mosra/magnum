@@ -176,8 +176,10 @@ struct PhongDrawUniform {
      * is @cpp 0 @ce.
      *
      * Used only if @ref PhongGL::Flag::ObjectId is enabled, ignored otherwise.
-     * If @ref PhongGL::Flag::InstancedObjectId is enabled as well, this value
-     * is added to the ID coming from the @ref PhongGL::ObjectId attribute.
+     * If @ref PhongGL::Flag::InstancedObjectId and/or
+     * @ref PhongGL::Flag::ObjectIdTexture is enabled as well, this value is
+     * added to the ID coming from the @ref PhongGL::ObjectId attribute and/or
+     * the texture.
      * @see @ref PhongGL::setObjectId()
      */
     UnsignedInt objectId;

@@ -214,8 +214,10 @@ The shader supports writing object ID to the framebuffer for object picking or
 other annotation purposes. Enable it using @ref Flag::ObjectId and set up an
 integer buffer attached to the @ref ObjectIdOutput attachment. If you have a
 batch of meshes with different object IDs, enable @ref Flag::InstancedObjectId
-and supply per-vertex IDs to the @ref ObjectId attribute. The output will
-contain a sum of the per-vertex ID and ID coming from @ref setObjectId().
+and supply per-vertex IDs to the @ref ObjectId attribute. The object ID can be
+also supplied from an integer texture bound via @ref bindObjectIdTexture() if
+@ref Flag::ObjectIdTexture is enabled. The output will contain a sum of the
+per-vertex ID, texture ID and ID coming from @ref setObjectId().
 
 The functionality is practically the same as in the @ref FlatGL shader, see
 @ref Shaders-FlatGL-object-id "its documentation" for more information and usage
@@ -472,8 +474,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              * Object ID shader output. @ref shaders-generic "Generic output",
              * present only if @ref Flag::ObjectId is set. Expects a
              * single-component unsigned integral attachment. Writes the value
-             * set in @ref setObjectId() there, see
-             * @ref Shaders-PhongGL-object-id for more information.
+             * set in @ref setObjectId() and possibly also a per-vertex ID and
+             * an ID fetched from a texture, see @ref Shaders-PhongGL-object-id
+             * for more information.
              * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
              * @requires_gles30 Object ID output requires integer support in
              *      shaders, which is not available in OpenGL ES 2.0.
@@ -585,6 +588,23 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              * @m_since{2020,06}
              */
             InstancedObjectId = (1 << 8)|ObjectId,
+
+            /**
+             * Object ID texture. Retrieves object IDs from a texture bound
+             * with @ref bindObjectIdTexture(), outputting a sum of the object
+             * ID texture, the ID coming from @ref setObjectId() or
+             * @ref PhongDrawUniform::objectId and possibly also the per-vertex
+             * ID, if @ref Flag::InstancedObjectId is enabled as well.
+             * Implicitly enables @ref Flag::ObjectId. See
+             * @ref Shaders-PhongGL-object-id for more information.
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Object ID output requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID output requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
+             * @m_since_latest
+             */
+            ObjectIdTexture = (1 << 17)|ObjectId,
             #endif
 
             /**
@@ -976,8 +996,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * Expects that the shader was created with @ref Flag::ObjectId
          * enabled. Value set here is written to the @ref ObjectIdOutput, see
          * @ref Shaders-PhongGL-object-id for more information. Default is
-         * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
-         * value is added to the ID coming from the @ref ObjectId attribute.
+         * @cpp 0 @ce. If @ref Flag::InstancedObjectId and/or
+         * @ref Flag::ObjectIdTexture is enabled as well, this value is added
+         * to the ID coming from the @ref ObjectId attribute and/or the
+         * texture.
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
          * @ref PhongDrawUniform::objectId and call @ref bindDrawBuffer()
@@ -1615,6 +1637,51 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *      @ref setNormalTextureScale()
          */
         PhongGL& bindNormalTexture(GL::Texture2DArray& texture);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Bind an object ID texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with @ref Flag::ObjectIdTexture
+         * enabled. If @ref Flag::TextureArrays is enabled as well, use
+         * @ref bindObjectIdTexture(GL::Texture2DArray&) instead. The texture
+         * needs to have an unsigned integer format.
+         * @see @ref setObjectId(), @ref Flag::TextureTransformation,
+         *      @ref setTextureMatrix()
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Object ID output requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID output requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
+         */
+        PhongGL& bindObjectIdTexture(GL::Texture2D& texture);
+
+        /**
+         * @brief Bind an object ID array texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with both
+         * @ref Flag::ObjectIdTexture and @ref Flag::TextureArrays enabled. If
+         * @ref Flag::UniformBuffers is not enabled, the layer is set via
+         * @ref setTextureLayer(); if @ref Flag::UniformBuffers is enabled,
+         * @ref Flag::TextureTransformation has to be enabled as well and the
+         * layer is set via @ref TextureTransformationUniform::layer.
+         * @see @ref setObjectId(), @ref Flag::TextureTransformation,
+         *      @ref setTextureLayer()
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4} and
+         *      @gl_extension{EXT,texture_array}
+         * @requires_gles30 Object ID output requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0. Texture
+         *      arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID output requires integer support in
+         *      shaders, which is not available in WebGL 1.0. Texture arrays
+         *      are not available in WebGL 1.0.
+         */
+        PhongGL& bindObjectIdTexture(GL::Texture2DArray& texture);
         #endif
 
         /**
