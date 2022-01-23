@@ -362,22 +362,35 @@ constexpr struct {
     const char* name;
     const char* expected2D;
     const char* expected3D;
+    UnsignedInt expectedId[3];
     FlatGL2D::Flags flags;
     Float maxThreshold, meanThreshold;
 } RenderInstancedData[] {
     {"colored",
-        "instanced2D.tga", "instanced3D.tga",
+        "instanced2D.tga", "instanced3D.tga", {},
         {},
         /* Minor differences on SwiftShader */
         164.4f, 0.094f},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"colored + object ID",
+        "instanced2D.tga", "instanced3D.tga", {1000, 1000, 1000},
+        FlatGL2D::Flag::ObjectId,
+        /* Minor differences on SwiftShader */
+        164.4f, 0.094f},
+    {"colored + instanced object ID",
+        "instanced2D.tga", "instanced3D.tga", {1211, 5627, 36363},
+        FlatGL2D::Flag::InstancedObjectId,
+        /* Minor differences on SwiftShader */
+        164.4f, 0.094f},
+    #endif
     {"textured",
-        "instanced-textured2D.tga", "instanced-textured3D.tga",
+        "instanced-textured2D.tga", "instanced-textured3D.tga", {},
         FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::Textured,
         /* Minor differences on SwiftShader */
         192.67f, 0.140f},
     #ifndef MAGNUM_TARGET_GLES2
     {"texture array",
-        "instanced-textured2D.tga", "instanced-textured3D.tga",
+        "instanced-textured2D.tga", "instanced-textured3D.tga", {},
         FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around); minor differences on
@@ -391,55 +404,68 @@ constexpr struct {
     const char* name;
     const char* expected2D;
     const char* expected3D;
+    UnsignedInt expectedId[3];
     FlatGL2D::Flags flags;
     UnsignedInt materialCount, drawCount;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
     {"bind with offset, colored",
-        "multidraw2D.tga", "multidraw3D.tga",
+        "multidraw2D.tga", "multidraw3D.tga", {},
         {}, 1, 1, 16, 0.0f, 0.0f},
+    {"bind with offset, colored + object ID",
+        "multidraw2D.tga", "multidraw3D.tga", {1211, 5627, 36363},
+        FlatGL2D::Flag::ObjectId,
+        1, 1, 16, 0.0f, 0.0f},
     {"bind with offset, textured",
-        "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
         1, 1, 16,
         /* Minor differences on ARM Mali */
         2.34f, 0.01f},
     {"bind with offset, texture array",
-        "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         1, 1, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         65.0f, 0.15f},
     {"draw offset, colored",
-        "multidraw2D.tga", "multidraw3D.tga",
+        "multidraw2D.tga", "multidraw3D.tga", {},
         {},
         2, 3, 1, 0.0f, 0.0f},
+    {"draw offset, colored + object ID",
+        "multidraw2D.tga", "multidraw3D.tga", {1211, 5627, 36363},
+        FlatGL2D::Flag::ObjectId,
+        2, 3, 1, 0.0f, 0.0f},
     {"draw offset, textured",
-        "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
         2, 3, 1,
         /* Minor differences on ARM Mali */
         2.34f, 0.01f},
     {"draw offset, texture array",
-        "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         2, 3, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         65.0f, 0.15f},
     {"multidraw, colored",
-        "multidraw2D.tga", "multidraw3D.tga",
+        "multidraw2D.tga", "multidraw3D.tga", {},
         FlatGL2D::Flag::MultiDraw, 2, 3, 1, 0.0f, 0.0f},
+    {"multidraw, colored + object ID",
+        "multidraw2D.tga", "multidraw3D.tga", {1211, 5627, 36363},
+        FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::ObjectId,
+        2, 3, 1, 0.0f, 0.0f},
     {"multidraw, textured",
-        "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
         2, 3, 1,
         /* Minor differences on ARM Mali */
         2.34f, 0.01f},
     {"multidraw, texture array",
-        "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         2, 3, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
@@ -2471,6 +2497,11 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
     if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
@@ -2532,18 +2563,8 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         )
         .setInstanceCount(3);
 
-    /* Enable also Object ID, if supported */
-    FlatGL2D::Flags flags = FlatGL2D::Flag::VertexColor|
-        FlatGL2D::Flag::InstancedTransformation|data.flags|flag;
-    #ifndef MAGNUM_TARGET_GLES2
-    #ifndef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-    #endif
-    {
-        flags |= FlatGL2D::Flag::InstancedObjectId;
-    }
-    #endif
-    FlatGL2D shader{flags};
+    FlatGL2D shader{FlatGL2D::Flag::VertexColor|
+        FlatGL2D::Flag::InstancedTransformation|data.flags|flag};
 
     GL::Texture2D texture{NoCreate};
     #ifndef MAGNUM_TARGET_GLES2
@@ -2627,11 +2648,9 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
             ));
 
         #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_GLES
-        if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        #endif
-        {
-            shader.setObjectId(1000); /* gets added to the per-instance ID */
+        if(data.flags & FlatGL2D::Flag::ObjectId) {
+            /* Gets added to the per-instance ID, if that's enabled as well */
+            shader.setObjectId(1000);
         }
         #endif
 
@@ -2648,7 +2667,9 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             FlatDrawUniform{}
-                .setObjectId(1000) /* gets added to the per-instance ID */
+                /* Gets added to the per-instance ID, if that's enabled as
+                   well */
+                .setObjectId(1000)
         }};
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
@@ -2705,18 +2726,18 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
        on known places have expected values. SwiftShader insists that the read
        format has to be 32bit, so the renderbuffer format is that too to make
        it the same (ES3 Mesa complains if these don't match). */
-    #ifndef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-    #endif
-    {
+    if(data.flags & FlatGL2D::Flag::ObjectId) {
         _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
         CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
         Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
         MAGNUM_VERIFY_NO_GL_ERROR();
+
+        /* If instanced object IDs are enabled, the per-instance ID gets added
+           to the output as well */
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[5][5], 27); /* Outside */
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], 1211);
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], 5627);
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], 36363);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], data.expectedId[0]);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], data.expectedId[1]);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], data.expectedId[2]);
     }
     #endif
 }
@@ -2734,6 +2755,11 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
             CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
         #endif
     }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL3D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -2801,18 +2827,8 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         )
         .setInstanceCount(3);
 
-    /* Enable also Object ID, if supported */
-    FlatGL3D::Flags flags = FlatGL3D::Flag::VertexColor|
-        FlatGL3D::Flag::InstancedTransformation|data.flags|flag;
-    #ifndef MAGNUM_TARGET_GLES2
-    #ifndef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-    #endif
-    {
-        flags |= FlatGL2D::Flag::InstancedObjectId;
-    }
-    #endif
-    FlatGL3D shader{flags};
+    FlatGL3D shader{FlatGL3D::Flag::VertexColor|
+        FlatGL3D::Flag::InstancedTransformation|data.flags|flag};
 
     GL::Texture2D texture{NoCreate};
     #ifndef MAGNUM_TARGET_GLES2
@@ -2897,11 +2913,9 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
             ));
 
         #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_GLES
-        if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        #endif
-        {
-            shader.setObjectId(1000); /* gets added to the per-instance ID */
+        if(data.flags & FlatGL3D::Flag::ObjectId) {
+            /* Gets added to the per-instance ID, if that's enabled as well */
+            shader.setObjectId(1000);
         }
         #endif
 
@@ -2919,7 +2933,9 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             FlatDrawUniform{}
-                .setObjectId(1000) /* gets added to the per-instance ID */
+                /* Gets added to the per-instance ID, if that's enabled as
+                   well */
+                .setObjectId(1000)
         }};
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
@@ -2977,18 +2993,15 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
        on known places have expected values. SwiftShader insists that the read
        format has to be 32bit, so the renderbuffer format is that too to make
        it the same (ES3 Mesa complains if these don't match). */
-    #ifndef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-    #endif
-    {
+    if(data.flags & FlatGL3D::Flag::ObjectId) {
         _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
         CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
         Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[5][5], 27); /* Outside */
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], 1211);
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], 5627);
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], 36363);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], data.expectedId[0]);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], data.expectedId[1]);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], data.expectedId[2]);
     }
     #endif
 }
@@ -3003,6 +3016,11 @@ void FlatGLTest::renderMulti2D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     if(data.flags >= FlatGL2D::Flag::MultiDraw) {
@@ -3023,7 +3041,7 @@ void FlatGLTest::renderMulti2D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
-    FlatGL2D shader{FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId|data.flags, data.materialCount, data.drawCount};
+    FlatGL2D shader{FlatGL2D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
 
     GL::Texture2D texture{NoCreate};
     GL::Texture2DArray textureArray{NoCreate};
@@ -3271,18 +3289,15 @@ void FlatGLTest::renderMulti2D() {
        on known places have expected values. SwiftShader insists that the read
        format has to be 32bit, so the renderbuffer format is that too to make
        it the same (ES3 Mesa complains if these don't match). */
-    #ifndef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-    #endif
-    {
+    if(data.flags & FlatGL2D::Flag::ObjectId) {
         _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
         CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
         Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[5][5], 27); /* Outside */
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], 1211); /* Circle */
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], 5627); /* Square */
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], 36363); /* Triangle */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], data.expectedId[0]); /* Circle */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], data.expectedId[1]); /* Square */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], data.expectedId[2]); /* Triangle */
     }
 }
 
@@ -3295,6 +3310,11 @@ void FlatGLTest::renderMulti3D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL3D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     if(data.flags >= FlatGL3D::Flag::MultiDraw) {
@@ -3315,7 +3335,7 @@ void FlatGLTest::renderMulti3D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
-    FlatGL3D shader{FlatGL3D::Flag::UniformBuffers|FlatGL3D::Flag::ObjectId|data.flags, data.materialCount, data.drawCount};
+    FlatGL3D shader{FlatGL3D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
 
     GL::Texture2D texture{NoCreate};
     GL::Texture2DArray textureArray{NoCreate};
@@ -3570,18 +3590,15 @@ void FlatGLTest::renderMulti3D() {
        on known places have expected values. SwiftShader insists that the read
        format has to be 32bit, so the renderbuffer format is that too to make
        it the same (ES3 Mesa complains if these don't match). */
-    #ifndef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-    #endif
-    {
+    if(data.flags & FlatGL2D::Flag::ObjectId) {
         _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
         CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
         Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[5][5], 27); /* Outside */
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], 1211); /* Sphere */
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], 5627); /* Plane */
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], 36363); /* Circle */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], data.expectedId[0]); /* Sphere */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], data.expectedId[1]); /* Plane */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], data.expectedId[2]); /* Circle */
     }
 }
 #endif

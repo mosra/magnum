@@ -665,23 +665,36 @@ const struct {
 constexpr struct {
     const char* name;
     const char* expected;
+    UnsignedInt expectedId[3];
     PhongGL::Flags flags;
     Float maxThreshold, meanThreshold;
 } RenderInstancedData[] {
     {"diffuse color",
-        "instanced.tga",
+        "instanced.tga", {},
         {},
         /* Minor differences on SwiftShader */
         81.0f, 0.06f},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"diffuse color + object ID",
+        "instanced.tga", {1000, 1000, 1000},
+        PhongGL::Flag::ObjectId,
+        /* Minor differences on SwiftShader */
+        81.0f, 0.06f},
+    {"diffuse color + instanced object ID",
+        "instanced.tga", {1211, 5627, 36363},
+        PhongGL::Flag::InstancedObjectId,
+        /* Minor differences on SwiftShader */
+        81.0f, 0.06f},
+    #endif
     {"diffuse texture",
-        "instanced-textured.tga",
+        "instanced-textured.tga", {},
         PhongGL::Flag::DiffuseTexture|PhongGL::Flag::InstancedTextureOffset,
         /* Minor differences on SwiftShader */
         112.0f, 0.09f},
     /** @todo test normal when there's usable texture */
     #ifndef MAGNUM_TARGET_GLES2
     {"diffuse texture array",
-        "instanced-textured.tga",
+        "instanced-textured.tga", {},
         PhongGL::Flag::DiffuseTexture|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::TextureArrays,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around); minor differences on
@@ -694,63 +707,82 @@ constexpr struct {
 constexpr struct {
     const char* name;
     const char* expected;
+    UnsignedInt expectedId[3];
     PhongGL::Flags flags;
     UnsignedInt lightCount, materialCount, drawCount;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
     {"bind with offset, colored",
-        "multidraw.tga",
+        "multidraw.tga", {},
         {},
         2, 1, 1, 16,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
+    {"bind with offset, colored + object ID",
+        "multidraw.tga", {1211, 5627, 36363},
+        PhongGL::Flag::ObjectId,
+        2, 1, 1, 16,
+        /* Minor differences on ARM Mali */
+        3.34f, 0.01f},
     {"bind with offset, textured",
-        "multidraw-textured.tga",
+        "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
         2, 1, 1, 16,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
     {"bind with offset, texture array",
-        "multidraw-textured.tga",
+        "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
         2, 1, 1, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
     {"draw offset, colored",
-        "multidraw.tga",
+        "multidraw.tga", {},
         {},
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
+    {"draw offset, colored + object ID",
+        "multidraw.tga", {1211, 5627, 36363},
+        PhongGL::Flag::ObjectId,
+        4, 2, 3, 1,
+        /* Minor differences on ARM Mali */
+        3.34f, 0.01f},
     {"draw offset, textured",
-        "multidraw-textured.tga",
+        "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
     {"draw offset, texture array",
-        "multidraw-textured.tga",
+        "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
         4, 2, 3, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
     {"multidraw, colored",
-        "multidraw.tga",
+        "multidraw.tga", {},
         PhongGL::Flag::MultiDraw,
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
+    {"multidraw, colored + object ID",
+        "multidraw.tga", {1211, 5627, 36363},
+        PhongGL::Flag::MultiDraw|PhongGL::Flag::ObjectId,
+        4, 2, 3, 1,
+        /* Minor differences on ARM Mali */
+        3.34f, 0.01f},
     {"multidraw, textured",
-        "multidraw-textured.tga",
+        "multidraw-textured.tga", {},
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
     {"multidraw, texture array",
-        "multidraw-textured.tga",
+        "multidraw-textured.tga", {},
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
         4, 2, 3, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
@@ -3356,6 +3388,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & PhongGL::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
     if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
@@ -3428,18 +3465,8 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         )
         .setInstanceCount(3);
 
-    /* Enable also Object ID, if supported */
-    PhongGL::Flags flags = PhongGL::Flag::VertexColor|
-          PhongGL::Flag::InstancedTransformation|data.flags|flag;
-    #ifndef MAGNUM_TARGET_GLES2
-    #ifndef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-    #endif
-    {
-        flags |= PhongGL::Flag::InstancedObjectId;
-    }
-    #endif
-    PhongGL shader{flags, 2};
+    PhongGL shader{PhongGL::Flag::VertexColor|
+          PhongGL::Flag::InstancedTransformation|data.flags|flag, 2};
 
     GL::Texture2D diffuse{NoCreate};
     GL::Texture2D normal{NoCreate};
@@ -3594,11 +3621,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_GLES
-        if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        #endif
-        {
-            shader.setObjectId(1000); /* gets added to the per-instance ID */
+        if(data.flags & PhongGL::Flag::ObjectId) {
+            /* Gets added to the per-instance ID, if that's enabled as well */
+            shader.setObjectId(1000);
         }
         #endif
 
@@ -3621,7 +3646,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             PhongDrawUniform{}
                 .setNormalMatrix(Matrix4::rotationY(90.0_degf).normalMatrix())
-                .setObjectId(1000) /* gets added to the per-instance ID */
+                /* Gets added to the per-instance ID, if that's enabled as
+                   well */
+                .setObjectId(1000)
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             PhongMaterialUniform{}
@@ -3691,18 +3718,15 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
        on known places have expected values. SwiftShader insists that the read
        format has to be 32bit, so the renderbuffer format is that too to make
        it the same (ES3 Mesa complains if these don't match). */
-    #ifndef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-    #endif
-    {
+    if(data.flags & PhongGL::Flag::ObjectId) {
         _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
         CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
         Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[5][5], 27); /* Outside */
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], 1211);
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], 5627);
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], 36363);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], data.expectedId[0]);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], data.expectedId[1]);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], data.expectedId[2]);
     }
     #endif
 }
@@ -3717,6 +3741,11 @@ void PhongGLTest::renderMulti() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & PhongGL::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     if(data.flags >= PhongGL::Flag::MultiDraw) {
@@ -3737,7 +3766,7 @@ void PhongGLTest::renderMulti() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
-    PhongGL shader{PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId|PhongGL::Flag::LightCulling|data.flags, data.lightCount, data.materialCount, data.drawCount};
+    PhongGL shader{PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling|data.flags, data.lightCount, data.materialCount, data.drawCount};
 
     GL::Texture2D diffuse{NoCreate};
     GL::Texture2DArray diffuseArray{NoCreate};
@@ -4035,18 +4064,15 @@ void PhongGLTest::renderMulti() {
        on known places have expected values. SwiftShader insists that the read
        format has to be 32bit, so the renderbuffer format is that too to make
        it the same (ES3 Mesa complains if these don't match). */
-    #ifndef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-    #endif
-    {
+    if(data.flags & PhongGL::Flag::ObjectId) {
         _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
         CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
         Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[5][5], 27); /* Outside */
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], 1211); /* Sphere */
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], 5627); /* Plane */
-        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], 36363); /* Circle */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][24], data.expectedId[0]); /* Sphere */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], data.expectedId[1]); /* Plane */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], data.expectedId[2]); /* Circle */
     }
 }
 #endif
