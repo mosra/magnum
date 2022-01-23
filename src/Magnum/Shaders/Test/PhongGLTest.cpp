@@ -3518,8 +3518,6 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
                     .setSubImage(0, {image->size().x()/2, 0, 3}, second)
                     .setSubImage(0, {0, 0, 4}, third);
                 shader.bindDiffuseTexture(diffuseArray);
-                if(flag != PhongGL::Flag::UniformBuffers)
-                    shader.setTextureLayer(2); /* base offset */
 
             } else
             #endif
@@ -3616,7 +3614,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
                 Vector2{0.5f}
             ));
         #ifndef MAGNUM_TARGET_GLES2
-        if((data.flags & PhongGL::Flag::TextureArrays) && flag != PhongGL::Flag::UniformBuffers)
+        if(data.flags & PhongGL::Flag::TextureArrays)
             shader.setTextureLayer(2); /* base offset */
         #endif
 

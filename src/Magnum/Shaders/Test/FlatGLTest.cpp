@@ -2615,8 +2615,6 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
                 .setSubImage(0, {image->size().x()/2, 0, 3}, second)
                 .setSubImage(0, {0, 0, 4}, third);
             shader.bindTexture(textureArray);
-            if(flag != FlatGL2D::Flag::UniformBuffers)
-                shader.setTextureLayer(2); /* base offset */
 
         } else
         #endif
@@ -2646,6 +2644,11 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
                 #endif
                 Vector2{0.5f}
             ));
+
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.flags & FlatGL2D::Flag::TextureArrays)
+            shader.setTextureLayer(2); /* base offset */
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         if(data.flags & FlatGL2D::Flag::ObjectId) {
@@ -2879,8 +2882,6 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
                 .setSubImage(0, {image->size().x()/2, 0, 3}, second)
                 .setSubImage(0, {0, 0, 4}, third);
             shader.bindTexture(textureArray);
-            if(flag != FlatGL2D::Flag::UniformBuffers)
-                shader.setTextureLayer(2); /* base offset */
 
         } else
         #endif
@@ -2911,6 +2912,11 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
                 #endif
                 Vector2{0.5f}
             ));
+
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.flags & FlatGL3D::Flag::TextureArrays)
+            shader.setTextureLayer(2); /* base offset */
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         if(data.flags & FlatGL3D::Flag::ObjectId) {
