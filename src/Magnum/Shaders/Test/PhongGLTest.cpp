@@ -668,16 +668,20 @@ constexpr struct {
     PhongGL::Flags flags;
     Float maxThreshold, meanThreshold;
 } RenderInstancedData[] {
-    {"diffuse color", "instanced.tga", {},
+    {"diffuse color",
+        "instanced.tga",
+        {},
         /* Minor differences on SwiftShader */
         81.0f, 0.06f},
-    {"diffuse texture", "instanced-textured.tga",
+    {"diffuse texture",
+        "instanced-textured.tga",
         PhongGL::Flag::DiffuseTexture|PhongGL::Flag::InstancedTextureOffset,
         /* Minor differences on SwiftShader */
         112.0f, 0.09f},
     /** @todo test normal when there's usable texture */
     #ifndef MAGNUM_TARGET_GLES2
-    {"diffuse texture array", "instanced-textured.tga",
+    {"diffuse texture array",
+        "instanced-textured.tga",
         PhongGL::Flag::DiffuseTexture|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::TextureArrays,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around); minor differences on
@@ -695,49 +699,58 @@ constexpr struct {
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
-    {"bind with offset, colored", "multidraw.tga",
+    {"bind with offset, colored",
+        "multidraw.tga",
         {},
         2, 1, 1, 16,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
-    {"bind with offset, textured", "multidraw-textured.tga",
+    {"bind with offset, textured",
+        "multidraw-textured.tga",
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
         2, 1, 1, 16,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
-    {"bind with offset, texture array", "multidraw-textured.tga",
+    {"bind with offset, texture array",
+        "multidraw-textured.tga",
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
         2, 1, 1, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
-    {"draw offset, colored", "multidraw.tga",
+    {"draw offset, colored",
+        "multidraw.tga",
         {},
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
-    {"draw offset, textured", "multidraw-textured.tga",
+    {"draw offset, textured",
+        "multidraw-textured.tga",
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
-    {"draw offset, texture array", "multidraw-textured.tga",
+    {"draw offset, texture array",
+        "multidraw-textured.tga",
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
         4, 2, 3, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
-    {"multidraw, colored", "multidraw.tga",
+    {"multidraw, colored",
+        "multidraw.tga",
         PhongGL::Flag::MultiDraw,
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
-    {"multidraw, textured", "multidraw-textured.tga",
+    {"multidraw, textured",
+        "multidraw-textured.tga",
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
         4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
-    {"multidraw, texture array", "multidraw-textured.tga",
+    {"multidraw, texture array",
+        "multidraw-textured.tga",
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
         4, 2, 3, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case

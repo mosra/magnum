@@ -365,16 +365,19 @@ constexpr struct {
     FlatGL2D::Flags flags;
     Float maxThreshold, meanThreshold;
 } RenderInstancedData[] {
-    {"colored", "instanced2D.tga", "instanced3D.tga",
+    {"colored",
+        "instanced2D.tga", "instanced3D.tga",
         {},
         /* Minor differences on SwiftShader */
         164.4f, 0.094f},
-    {"textured", "instanced-textured2D.tga", "instanced-textured3D.tga",
+    {"textured",
+        "instanced-textured2D.tga", "instanced-textured3D.tga",
         FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::Textured,
         /* Minor differences on SwiftShader */
         192.67f, 0.140f},
     #ifndef MAGNUM_TARGET_GLES2
-    {"texture array", "instanced-textured2D.tga", "instanced-textured3D.tga",
+    {"texture array",
+        "instanced-textured2D.tga", "instanced-textured3D.tga",
         FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around); minor differences on
@@ -393,41 +396,50 @@ constexpr struct {
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
-    {"bind with offset, colored", "multidraw2D.tga", "multidraw3D.tga",
+    {"bind with offset, colored",
+        "multidraw2D.tga", "multidraw3D.tga",
         {}, 1, 1, 16, 0.0f, 0.0f},
-    {"bind with offset, textured", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+    {"bind with offset, textured",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga",
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
         1, 1, 16,
         /* Minor differences on ARM Mali */
         2.34f, 0.01f},
-    {"bind with offset, texture array", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+    {"bind with offset, texture array",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga",
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         1, 1, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         65.0f, 0.15f},
-    {"draw offset, colored", "multidraw2D.tga", "multidraw3D.tga",
+    {"draw offset, colored",
+        "multidraw2D.tga", "multidraw3D.tga",
         {},
         2, 3, 1, 0.0f, 0.0f},
-    {"draw offset, textured", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+    {"draw offset, textured",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga",
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
         2, 3, 1,
         /* Minor differences on ARM Mali */
         2.34f, 0.01f},
-    {"draw offset, texture array", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+    {"draw offset, texture array",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga",
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         2, 3, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         65.0f, 0.15f},
-    {"multidraw, colored", "multidraw2D.tga", "multidraw3D.tga",
+    {"multidraw, colored",
+        "multidraw2D.tga", "multidraw3D.tga",
         FlatGL2D::Flag::MultiDraw, 2, 3, 1, 0.0f, 0.0f},
-    {"multidraw, textured", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+    {"multidraw, textured",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga",
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
         2, 3, 1,
         /* Minor differences on ARM Mali */
         2.34f, 0.01f},
-    {"multidraw, texture array", "multidraw-textured2D.tga", "multidraw-textured3D.tga",
+    {"multidraw, texture array",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga",
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         2, 3, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
