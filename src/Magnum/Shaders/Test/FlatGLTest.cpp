@@ -2636,7 +2636,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
                 Matrix3::projection({2.1f, 2.1f})*
                 Matrix3::scaling(Vector2{0.4f}));
 
-        if(data.flags & FlatGL3D::Flag::Textured)
+        if(data.flags & FlatGL3D::Flag::TextureTransformation)
             shader.setTextureMatrix(Matrix3::scaling(
                 #ifndef MAGNUM_TARGET_GLES2
                 /* Slices of the texture array have half the height */
@@ -2688,7 +2688,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
             FlatMaterialUniform{}
                 .setColor(data.flags & FlatGL2D::Flag::Textured ? 0xffffff_rgbf : 0xffff00_rgbf)
         }};
-        if(data.flags & FlatGL3D::Flag::Textured)
+        if(data.flags & FlatGL3D::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
@@ -2904,7 +2904,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
                 Matrix4::translation(Vector3::zAxis(-2.15f))*
                 Matrix4::scaling(Vector3{0.4f}));
 
-        if(data.flags & FlatGL3D::Flag::Textured)
+        if(data.flags & FlatGL3D::Flag::TextureTransformation)
             shader.setTextureMatrix(Matrix3::scaling(
                 #ifndef MAGNUM_TARGET_GLES2
                 /* Slices of the texture array have half the height */
@@ -2957,7 +2957,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
             FlatMaterialUniform{}
                 .setColor(data.flags & FlatGL3D::Flag::Textured ? 0xffffff_rgbf : 0xffff00_rgbf)
         }};
-        if(data.flags & FlatGL3D::Flag::Textured)
+        if(data.flags & FlatGL3D::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
