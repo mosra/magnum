@@ -664,7 +664,7 @@ const struct {
 
 constexpr struct {
     const char* name;
-    const char* file;
+    const char* expected;
     PhongGL::Flags flags;
     Float maxThreshold, meanThreshold;
 } RenderInstancedData[] {
@@ -3683,7 +3683,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "PhongTestFiles", data.file}),
+        Utility::Directory::join({_testDir, "PhongTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 
     #ifndef MAGNUM_TARGET_GLES2
