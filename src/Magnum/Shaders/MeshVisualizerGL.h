@@ -171,7 +171,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @requires_webgl20 Object ID output requires integer support in
          *      shaders, which is not available in WebGL 1.0.
          */
-        typedef GenericGL3D::ObjectId ObjectId;
+        typedef GenericGL2D::ObjectId ObjectId;
         #endif
 
         enum: UnsignedInt {
