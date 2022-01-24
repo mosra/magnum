@@ -343,22 +343,23 @@ void main() {
     #ifdef TWO_DIMENSIONS
     gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);
     #elif defined(THREE_DIMENSIONS)
-    gl_Position = projectionMatrix*transformationMatrix*position;
+    highp const vec4 transformedPosition4 = transformationMatrix*position;
+    gl_Position = projectionMatrix*transformedPosition4;
     #else
     #error
     #endif
 
     #ifdef TANGENT_DIRECTION
-    tangentEndpoint = projectionMatrix*(transformationMatrix*position + vec4(normalize(normalMatrix*tangent.xyz)*lineLength, 0.0));
+    tangentEndpoint = projectionMatrix*(transformedPosition4 + vec4(normalize(normalMatrix*tangent.xyz)*lineLength, 0.0));
     #endif
     #ifdef BITANGENT_FROM_TANGENT_DIRECTION
     vec3 bitangent = cross(normal, tangent.xyz)*tangent.w;
     #endif
     #if defined(BITANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION)
-    bitangentEndpoint = projectionMatrix*(transformationMatrix*position + vec4(normalize(normalMatrix*bitangent)*lineLength, 0.0));
+    bitangentEndpoint = projectionMatrix*(transformedPosition4 + vec4(normalize(normalMatrix*bitangent)*lineLength, 0.0));
     #endif
     #ifdef NORMAL_DIRECTION
-    normalEndpoint = projectionMatrix*(transformationMatrix*position + vec4(normalize(normalMatrix*normal)*lineLength, 0.0));
+    normalEndpoint = projectionMatrix*(transformedPosition4 + vec4(normalize(normalMatrix*normal)*lineLength, 0.0));
     #endif
 
     #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
