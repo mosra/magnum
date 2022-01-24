@@ -416,6 +416,16 @@ See also:
     attributes and a @ref Shaders::PhongGL::Flag::Bitangent flag, implementing
     support for both four-component tangents (used by glTF, for example) and
     separate tangent and bitangent direction (used by Assimp).
+-   Added missing @ref Shaders::MeshVisualizerGL3D::setObjectId() "Shaders::MeshVisualizerGL*D::setObjectId()"
+    and a corresponding @ref Shaders::MeshVisualizerDrawUniform3D::objectId
+    "Shaders::MeshVisualizerDrawUniform*D::objectId"
+    member for UBO workflows. Originally the uniform wasn't present with the
+    assumption that users could easily adjust color map offset to achieve the
+    same effect. That was however unnecessarily annoying and error-prone in
+    cases where it's essential to have the same object IDs from multiple
+    draws have a matching color, and it was complicating multidraw workflows as
+    the color map offset was not a part of per-draw data, but rather material
+    data.
 
 @subsubsection changelog-latest-changes-trade Trade library
 

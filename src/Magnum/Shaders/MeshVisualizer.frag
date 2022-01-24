@@ -43,7 +43,7 @@
 /* Uniforms */
 
 #ifndef UNIFORM_BUFFERS
-#if (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)) && !defined(TBN_DIRECTION)
+#if (defined(WIREFRAME_RENDERING) || defined(OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)) && !defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -74,7 +74,7 @@ uniform lowp float wireframeWidth
     ;
 #elif defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 9)
+layout(location = 10)
 #endif
 uniform lowp float lineWidth
     #ifndef GL_ES
@@ -94,7 +94,7 @@ uniform lowp float smoothness
     ;
 #endif
 
-#if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+#if defined(OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 5)
 #endif
@@ -105,6 +105,14 @@ uniform lowp vec2 colorMapOffsetScale
     ;
 #define colorMapOffset colorMapOffsetScale.x
 #define colorMapScale colorMapOffsetScale.y
+#endif
+
+#ifdef OBJECT_ID
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 6)
+#endif
+/* mediump is just 2^10, which might not be enough, this is 2^16 */
+uniform highp uint objectId; /* defaults to zero */
 #endif
 
 /* Uniform buffers */
@@ -136,8 +144,9 @@ struct DrawUniform {
     #elif !defined(TWO_DIMENSIONS)
     #error
     #endif
-    highp uvec4 materialIdReservedReservedReservedReserved;
-    #define draw_materialIdReserved materialIdReservedReservedReservedReserved.x
+    highp uvec4 materialIdReservedObjectIdReservedReserved;
+    #define draw_materialIdReserved materialIdReservedObjectIdReservedReserved.x
+    #define draw_objectId materialIdReservedObjectIdReservedReserved.y
 };
 
 layout(std140
@@ -175,7 +184,7 @@ layout(std140
 
 /* Textures */
 
-#if defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+#if defined(OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
 #ifdef EXPLICIT_BINDING
 layout(binding = 4)
 #endif
@@ -225,12 +234,15 @@ out lowp vec4 fragmentColor;
 
 void main() {
     #ifdef UNIFORM_BUFFERS
+    #ifdef OBJECT_ID
+    highp const uint objectId = draws[drawId].draw_objectId;
+    #endif
     #if MATERIAL_COUNT > 1
     mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
     #else
     #define materialId 0u
     #endif
-    #if (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)) && !defined(TBN_DIRECTION)
+    #if (defined(WIREFRAME_RENDERING) || defined(OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)) && !defined(TBN_DIRECTION)
     lowp const vec4 color = materials[materialId].color;
     lowp const vec4 wireframeColor = materials[materialId].wireframeColor;
     #endif
@@ -242,7 +254,7 @@ void main() {
     #if defined(WIREFRAME_RENDERING) || defined(TBN_DIRECTION)
     lowp const float smoothness = materials[materialId].material_smoothness;
     #endif
-    #if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    #if defined(OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
     lowp const float colorMapOffset = materials[materialId].material_colorMapOffset;
     lowp const float colorMapScale = materials[materialId].material_colorMapScale;
     #endif
@@ -251,14 +263,17 @@ void main() {
     /* Map object/vertex/primitive ID to a color. Will be either combined with
        the wireframe background color (if wireframe is enabled), ignored (if
        rendering TBN direction) or used as-is if nothing else is enabled */
-    #if defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    #if defined(OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
     lowp vec4 faceColor = texture(colorMapTexture, vec2(
         /* Object/primitive IDs are constant across the whole primitive so we
            do the offset/scale mapping here */
-        #if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+        #if defined(OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
         colorMapOffset + float(
-            #ifdef INSTANCED_OBJECT_ID
-            interpolatedInstanceObjectId
+            #ifdef OBJECT_ID
+            objectId
+                #ifdef INSTANCED_OBJECT_ID
+                + interpolatedInstanceObjectId
+                #endif
             #elif defined(PRIMITIVE_ID)
             gl_PrimitiveID
             #elif defined(PRIMITIVE_ID_FROM_VERTEX_ID)
@@ -312,7 +327,7 @@ void main() {
     #else
     fragmentColor = backgroundColor;
     #endif
-    #if defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    #if defined(OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
     fragmentColor *= faceColor;
     #endif
 
@@ -362,7 +377,7 @@ void main() {
     #endif
 
     /* Object / Vertex / Primitive ID visualization using a colormap */
-    #elif defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    #elif defined(OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
     fragmentColor = color*faceColor;
 
     #else

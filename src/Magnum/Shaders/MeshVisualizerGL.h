@@ -50,7 +50,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
             Wireframe = 1 << 0,
             NoGeometryShader = 1 << 1,
             #ifndef MAGNUM_TARGET_GLES2
-            InstancedObjectId = 1 << 2,
+            ObjectId = 1 << 12,
+            InstancedObjectId = (1 << 2)|ObjectId,
             VertexId = 1 << 3,
             PrimitiveId = 1 << 4,
             PrimitiveIdFromVertexId = (1 << 5)|PrimitiveId,
@@ -72,6 +73,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
 
         MAGNUM_SHADERS_LOCAL GL::Version setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs) const;
 
+        MeshVisualizerGLBase& setObjectId(UnsignedInt id);
         MeshVisualizerGLBase& setColor(const Color4& color);
         MeshVisualizerGLBase& setWireframeColor(const Color4& color);
         MeshVisualizerGLBase& setWireframeWidth(Float width);
@@ -104,7 +106,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
             _wireframeWidthUniform{3},
             _smoothnessUniform{4};
         #ifndef MAGNUM_TARGET_GLES2
-        Int _colorMapOffsetScaleUniform{5};
+        Int _colorMapOffsetScaleUniform{5},
+            _objectIdUniform{6};
         /* Used instead of all other uniforms except viewportSize when
            Flag::UniformBuffers is set, so it can alias them */
         Int _drawOffsetUniform{1};
@@ -208,8 +211,37 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
             NoGeometryShader = 1 << 1,
 
             #ifndef MAGNUM_TARGET_GLES2
-            /** @copydoc MeshVisualizerGL3D::Flag::InstancedObjectId */
-            InstancedObjectId = 1 << 2,
+            /**
+             * Visualize object ID set via @ref setObjectId() or
+             * @ref MeshVisualizerDrawUniform2D::objectId. Since the ID is
+             * uniform for the whole draw, this feature is mainly useful in
+             * multidraw scenarios or when combined with
+             * @ref Flag::InstancedObjectId. Mutually exclusive with
+             * @ref Flag::VertexId and @ref Flag::PrimitiveId.
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Object ID input requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID input requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
+             * @m_since_latest
+             */
+            ObjectId = 1 << 12,
+
+            /**
+             * Visualize instanced object ID. You need to provide the
+             * @ref ObjectId attribute in the mesh, which then gets summed with
+             * the ID coming from @ref setObjectId() or
+             * @ref MeshVisualizerDrawUniform2D::objectId. Implicitly enables
+             * @ref Flag::ObjectId. Mutually exclusive with @ref Flag::VertexId
+             * and @ref Flag::PrimitiveId.
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Object ID input requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID input requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
+             * @m_since{2020,06}
+             */
+            InstancedObjectId = (1 << 2)|ObjectId,
 
             /** @copydoc MeshVisualizerGL3D::Flag::VertexId */
             VertexId = 1 << 3,
@@ -405,6 +437,28 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * vector.
          */
         MeshVisualizerGL2D& setViewportSize(const Vector2& size);
+
+        /**
+         * @brief Set object ID
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that @ref Flag::ObjectId is enabled. Default is
+         * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
+         * value is added to the ID coming from the @ref ObjectId attribute.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref MeshVisualizerDrawUniform2D::objectId and call
+         * @ref bindDrawBuffer() instead.
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Object ID input requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID input requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
+         */
+        MeshVisualizerGL2D& setObjectId(UnsignedInt id) {
+            return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::setObjectId(id));
+        }
 
         /**
          * @brief Set base object color
@@ -633,7 +687,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         #endif
 
     private:
-        Int _transformationProjectionMatrixUniform{6};
+        Int _transformationProjectionMatrixUniform{7};
 };
 
 /**
@@ -960,17 +1014,36 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
 
             #ifndef MAGNUM_TARGET_GLES2
             /**
-             * Visualize instanced object ID. You need to provide the
-             * @ref ObjectId attribute in the mesh. Mutually exclusive with
+             * Visualize object ID set via @ref setObjectId() or
+             * @ref MeshVisualizerDrawUniform3D::objectId. Since the ID is
+             * uniform for the whole draw, this feature is mainly useful in
+             * multidraw scenarios or when combined with
+             * @ref Flag::InstancedObjectId. Mutually exclusive with
              * @ref Flag::VertexId and @ref Flag::PrimitiveId.
              * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
-             * @requires_gles30 Object ID output requires integer support in
+             * @requires_gles30 Object ID input requires integer support in
              *      shaders, which is not available in OpenGL ES 2.0.
-             * @requires_webgl20 Object ID output requires integer support in
+             * @requires_webgl20 Object ID input requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
+             * @m_since_latest
+             */
+            ObjectId = 1 << 12,
+
+            /**
+             * Visualize instanced object ID. You need to provide the
+             * @ref ObjectId attribute in the mesh, which then gets summed with
+             * the ID coming from @ref setObjectId() or
+             * @ref MeshVisualizerDrawUniform3D::objectId. Implicitly enables
+             * @ref Flag::ObjectId. Mutually exclusive with @ref Flag::VertexId
+             * and @ref Flag::PrimitiveId.
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Object ID input requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID input requires integer support in
              *      shaders, which is not available in WebGL 1.0.
              * @m_since{2020,06}
              */
-            InstancedObjectId = 1 << 2,
+            InstancedObjectId = (1 << 2)|ObjectId,
 
             /**
              * Visualize vertex ID (@cpp gl_VertexID @ce). Useful for
@@ -1340,6 +1413,28 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         MeshVisualizerGL3D& setViewportSize(const Vector2& size);
 
         /**
+         * @brief Set object ID
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that @ref Flag::ObjectId is enabled. Default is
+         * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
+         * value is added to the ID coming from the @ref ObjectId attribute.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref MeshVisualizerDrawUniform3D::objectId and call
+         * @ref bindDrawBuffer() instead.
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Object ID input requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID input requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
+         */
+        MeshVisualizerGL3D& setObjectId(UnsignedInt id) {
+            return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::setObjectId(id));
+        }
+
+        /**
          * @brief Set base object color
          * @return Reference to self (for method chaining)
          *
@@ -1404,11 +1499,6 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * map texture wrapping mode. Expects that either
          * @ref Flag::InstancedObjectId or @ref Flag::PrimitiveId /
          * @ref Flag::PrimitiveIdFromVertexId is enabled.
-         *
-         * Note that this shader doesn't directly offer a
-         * @ref FlatGL::setObjectId() "setObjectId()" uniform that's used to
-         * offset the per-vertex / per-instance ID. Instead, you need to encode
-         * the base offset into the @p offset parameter.
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
          * @ref MeshVisualizerMaterialUniform::colorMapOffset and
@@ -1685,12 +1775,12 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         #endif
 
     private:
-        Int _transformationMatrixUniform{6},
-            _projectionMatrixUniform{7};
+        Int _transformationMatrixUniform{7},
+            _projectionMatrixUniform{8};
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Int _normalMatrixUniform{8},
-            _lineWidthUniform{9},
-            _lineLengthUniform{10};
+        Int _normalMatrixUniform{9},
+            _lineWidthUniform{10},
+            _lineLengthUniform{11};
         #endif
 };
 

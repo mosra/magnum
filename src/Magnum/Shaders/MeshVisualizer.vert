@@ -49,7 +49,7 @@
 #ifndef UNIFORM_BUFFERS
 #ifdef TWO_DIMENSIONS
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 6)
+layout(location = 7)
 #endif
 uniform highp mat3 transformationProjectionMatrix
     #ifndef GL_ES
@@ -58,7 +58,7 @@ uniform highp mat3 transformationProjectionMatrix
     ;
 #elif defined(THREE_DIMENSIONS)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 6)
+layout(location = 7)
 #endif
 uniform highp mat4 transformationMatrix
     #ifndef GL_ES
@@ -66,7 +66,7 @@ uniform highp mat4 transformationMatrix
     #endif
     ;
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 7)
+layout(location = 8)
 #endif
 uniform highp mat4 projectionMatrix
     #ifndef GL_ES
@@ -92,7 +92,7 @@ uniform lowp vec2 colorMapOffsetScale
 
 #if defined(TANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 8)
+layout(location = 9)
 #endif
 uniform highp mat3 normalMatrix
     #ifndef GL_ES
@@ -101,7 +101,7 @@ uniform highp mat3 normalMatrix
     ;
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 10)
+layout(location = 11)
 #endif
 uniform highp float lineLength
     #ifndef GL_ES
@@ -166,8 +166,9 @@ struct DrawUniform {
     #elif !defined(TWO_DIMENSIONS)
     #error
     #endif
-    highp uvec4 materialIdReservedReservedReservedReserved;
-    #define draw_materialIdReserved materialIdReservedReservedReservedReserved.x
+    highp uvec4 materialIdReservedObjectIdReservedReserved;
+    #define draw_materialIdReserved materialIdReservedObjectIdReservedReserved.x
+    #define draw_objectId materialIdReservedObjectIdReservedReserved.y
 };
 
 layout(std140

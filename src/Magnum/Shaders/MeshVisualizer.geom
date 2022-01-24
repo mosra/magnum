@@ -66,7 +66,7 @@ uniform lowp vec4 wireframeColor
 
 #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 9)
+layout(location = 10)
 #endif
 uniform lowp float lineWidth
     #ifndef GL_ES
@@ -108,8 +108,9 @@ struct DrawUniform {
     #elif !defined(TWO_DIMENSIONS)
     #error
     #endif
-    highp uvec4 materialIdReservedReservedReservedReserved;
-    #define draw_materialIdReserved materialIdReservedReservedReservedReserved.x
+    highp uvec4 materialIdReservedObjectIdReservedReserved;
+    #define draw_materialIdReserved materialIdReservedObjectIdReservedReserved.x
+    #define draw_objectId materialIdReservedObjectIdReservedReserved.y
 };
 
 layout(std140

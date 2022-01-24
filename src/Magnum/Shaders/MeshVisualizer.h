@@ -59,11 +59,12 @@ struct MeshVisualizerDrawUniform2D {
         _pad0{}, /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif
         materialId{0}
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        #ifndef CORRADE_TARGET_BIG_ENDIAN
+        #if ((defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)) && !defined(CORRADE_TARGET_BIG_ENDIAN)
         , _pad0{}
         #endif
-        , _pad1{}, _pad2{}, _pad3{}
+        , objectId{0}
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        , _pad1{}, _pad2{}
         #endif
         {}
 
@@ -89,6 +90,15 @@ struct MeshVisualizerDrawUniform2D {
     }
 
     /**
+     * @brief Set the @ref objectId field
+     * @return Reference to self (for method chaining)
+     */
+    MeshVisualizerDrawUniform2D& setObjectId(UnsignedInt id) {
+        objectId = id;
+        return *this;
+    }
+
+    /**
      * @}
      */
 
@@ -108,7 +118,7 @@ struct MeshVisualizerDrawUniform2D {
     /* This field is an UnsignedInt in the shader and materialId is extracted
        as (value & 0xffff), so the order has to be different on BE */
     #ifndef CORRADE_TARGET_BIG_ENDIAN
-    alignas(4) UnsignedShort materialId;
+    UnsignedShort materialId;
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -119,13 +129,28 @@ struct MeshVisualizerDrawUniform2D {
         :16; /* reserved for skinOffset */
     #endif
     #else
-    alignas(4) UnsignedShort
+    UnsignedShort
         #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
         _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif
         :16; /* reserved for skinOffset */
     UnsignedShort materialId;
     #endif
+
+    /**
+     * @brief Object ID
+     *
+     * Unlike @ref materialId, this index is used only for the object ID
+     * visualization, not to access any other uniform data. Default value
+     * is @cpp 0 @ce.
+     *
+     * Used only if @ref MeshVisualizerGL2D::Flag::ObjectId is enabled, ignored
+     * otherwise. If @ref MeshVisualizerGL2D::Flag::InstancedObjectId is
+     * enabled as well, this value is added to the ID coming from the
+     * @ref MeshVisualizerGL2D::ObjectId attribute.
+     * @see @ref MeshVisualizerGL2D::setObjectId()
+     */
+    UnsignedInt objectId;
 
     /* warning: Member __pad1__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
@@ -138,11 +163,6 @@ struct MeshVisualizerDrawUniform2D {
     Int
         #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
         _pad2 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32;
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad3 /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif
         :32;
     #endif
@@ -165,11 +185,12 @@ struct MeshVisualizerDrawUniform3D {
         , _pad0{} /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif
         , materialId{0}
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        #ifndef CORRADE_TARGET_BIG_ENDIAN
+        #if ((defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)) && !defined(CORRADE_TARGET_BIG_ENDIAN)
         , _pad0{}
         #endif
-        , _pad1{}, _pad2{}, _pad3{}
+        , objectId{0}
+        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
+        , _pad1{}, _pad2{}
         #endif
         {}
 
@@ -203,6 +224,15 @@ struct MeshVisualizerDrawUniform3D {
      */
     MeshVisualizerDrawUniform3D& setMaterialId(UnsignedInt id) {
         materialId = id;
+        return *this;
+    }
+
+    /**
+     * @brief Set the @ref objectId field
+     * @return Reference to self (for method chaining)
+     */
+    MeshVisualizerDrawUniform3D& setObjectId(UnsignedInt id) {
+        objectId = id;
         return *this;
     }
 
@@ -252,6 +282,21 @@ struct MeshVisualizerDrawUniform3D {
     UnsignedShort materialId;
     #endif
 
+    /**
+     * @brief Object ID
+     *
+     * Unlike @ref materialId, this index is used only for the object ID
+     * visualization, not to access any other uniform data. Default value
+     * is @cpp 0 @ce.
+     *
+     * Used only if @ref MeshVisualizerGL3D::Flag::ObjectId is enabled, ignored
+     * otherwise. If @ref MeshVisualizerGL3D::Flag::InstancedObjectId is
+     * enabled as well, this value is added to the ID coming from the
+     * @ref MeshVisualizerGL3D::ObjectId attribute.
+     * @see @ref MeshVisualizerGL3D::setObjectId()
+     */
+    UnsignedInt objectId;
+
     /* warning: Member __pad1__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -263,11 +308,6 @@ struct MeshVisualizerDrawUniform3D {
     Int
         #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
         _pad2 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32;
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad3 /* Otherwise it refuses to constexpr, on 3.8 at least */
         #endif
         :32;
     #endif

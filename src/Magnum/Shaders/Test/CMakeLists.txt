@@ -199,6 +199,8 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/bitangents-from-tangents.tga
             MeshVisualizerTestFiles/defaults-instancedobjectid2D.tga
             MeshVisualizerTestFiles/defaults-instancedobjectid3D.tga
+            MeshVisualizerTestFiles/defaults-objectid2D.tga
+            MeshVisualizerTestFiles/defaults-objectid3D.tga
             MeshVisualizerTestFiles/defaults-primitiveid2D.tga
             MeshVisualizerTestFiles/defaults-primitiveid3D.tga
             MeshVisualizerTestFiles/defaults-tbn.tga
@@ -208,6 +210,8 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/defaults-wireframe3D.tga
             MeshVisualizerTestFiles/instancedobjectid2D.tga
             MeshVisualizerTestFiles/instancedobjectid3D.tga
+            MeshVisualizerTestFiles/objectid2D.tga
+            MeshVisualizerTestFiles/objectid3D.tga
             MeshVisualizerTestFiles/primitiveid-tn.tga
             MeshVisualizerTestFiles/primitiveid2D.tga
             MeshVisualizerTestFiles/primitiveid3D.tga
