@@ -103,7 +103,6 @@ struct ShadersGLBenchmark: GL::OpenGLTester {
     template<UnsignedInt dimensions> void distanceFieldVector();
     void meshVisualizer2D();
     void meshVisualizer3D();
-    /** @todo mesh visualizer TBN, how to verify output? */
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -128,7 +127,14 @@ using namespace Math::Literals;
 constexpr Vector2i GridSubdivisions{64, 64};
 constexpr Vector2i RenderSize{512, 512};
 constexpr std::size_t WarmupIterations{100};
+/* The "slow" is for MeshVisualizer TBN visualization */
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+constexpr std::size_t SlowWarmupIterations{25};
+#endif
 constexpr std::size_t BenchmarkIterations{1000};
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+constexpr std::size_t SlowBenchmarkIterations{250};
+#endif
 constexpr std::size_t BenchmarkRepeats{4};
 
 const struct {
@@ -304,6 +310,10 @@ const struct {
     {"primitive ID", MeshVisualizerGL3D::Flag::PrimitiveId, 1, 1},
     {"primitive ID from vertex ID", MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId, 1, 1},
     #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    {"wireframe + TBN direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
+    {"wireframe + TBN direction with separate bitangent", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
+    #endif
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_WEBGL
@@ -312,15 +322,24 @@ const struct {
     {"UBO single, wireframe w/o a GS", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 1, 1},
     {"UBO single, vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::VertexId, 1, 1},
     #ifndef MAGNUM_TARGET_WEBGL
+    {"UBO single, wireframe + TBN direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
+    #endif
+    #ifndef MAGNUM_TARGET_WEBGL
     {"UBO multi, wireframe", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe, 32, 128},
     #endif
     {"UBO multi, wireframe w/o a GS", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 32, 128},
     {"UBO multi, vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::VertexId, 32, 128},
     #ifndef MAGNUM_TARGET_WEBGL
+    {"UBO multi, wireframe + TBN direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 32, 128},
+    #endif
+    #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, wireframe", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe, 32, 128},
     #endif
     {"multidraw, wireframe w/o a GS", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 32, 128},
     {"multidraw, vertex ID", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::VertexId, 32, 128},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, wireframe + TBN direction", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 32, 128},
+    #endif
     #endif
 };
 
@@ -1253,6 +1272,7 @@ void ShadersGLBenchmark::meshVisualizer3D() {
         drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<MeshVisualizerDrawUniform3D>{data.drawCount}};
         Containers::Array<MeshVisualizerMaterialUniform> materialData{data.materialCount};
         materialData[0].setWireframeColor(0xffffffff_rgbaf);
+        materialData[0].setLineLength(0.0f);
         materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, materialData};
         shader.bindProjectionBuffer(projectionUniform)
             .bindTransformationBuffer(transformationUniform)
@@ -1263,6 +1283,10 @@ void ShadersGLBenchmark::meshVisualizer3D() {
     {
         if(data.flags >= MeshVisualizerGL3D::Flag::Wireframe)
             shader.setWireframeColor(0xffffffff_rgbaf);
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        if(data.flags & (MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection))
+            shader.setLineLength(0.0f);
+        #endif
     }
 
     GL::Mesh* mesh;
@@ -1275,12 +1299,25 @@ void ShadersGLBenchmark::meshVisualizer3D() {
     else
         mesh = &_mesh;
 
+    /* TBN visualization is hella slow due to the GS, reduce the iteration
+       count there */
+    const std::size_t warmupIterations =
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        data.flags & (MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection) ? SlowWarmupIterations :
+        #endif
+        WarmupIterations;
+    const std::size_t benchmarkIterations =
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        data.flags & (MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection) ? SlowBenchmarkIterations :
+        #endif
+        BenchmarkIterations;
+
     /* Warmup run */
     /** @todo make this possible to do inside CORRADE_BENCHMARK() */
-    for(std::size_t i = 0; i != WarmupIterations; ++i)
+    for(std::size_t i = 0; i != warmupIterations; ++i)
         shader.draw(*mesh);
 
-    CORRADE_BENCHMARK(BenchmarkIterations)
+    CORRADE_BENCHMARK(benchmarkIterations)
         shader.draw(*mesh);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
