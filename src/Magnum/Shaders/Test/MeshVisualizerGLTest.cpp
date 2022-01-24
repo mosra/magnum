@@ -589,7 +589,7 @@ constexpr struct {
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
     #endif
-    {"bind with offset, w/o GS", "multidraw-wireframe-nogeo2D.tga",
+    {"bind with offset, wireframe w/o GS", "multidraw-wireframe-nogeo2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
         1, 1, 16,
         /* Minor differences on ARM Mali */
@@ -2775,7 +2775,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         shader.setColor(0xffff00_rgbf)
             .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}));
         /* OTOH the wireframe color should stay at full channels, not mixed */
-        if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe)
+        if(data.flags2D & MeshVisualizerGL2D::Flag::Wireframe)
             shader.setWireframeColor(0xffffff_rgbf);
         /* For vertex ID we don't want any repeat/wraparound as that causes
            disruptions in the gradient and test failures. There's 17 vertices
@@ -2799,7 +2799,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         }};
         MeshVisualizerMaterialUniform materialUniformData[1];
         materialUniformData->setColor(0xffff00_rgbf);
-        if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe)
+        if(data.flags2D & MeshVisualizerGL2D::Flag::Wireframe)
             materialUniformData->setWireframeColor(0xffffff_rgbf);
         if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId)
             materialUniformData->setColorMapTransformation(1.0f, -1.0f/17.0f);
@@ -2906,12 +2906,12 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
                 Matrix4::rotationX(15.0_degf))
             .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f));
         /* OTOH the wireframe color should stay at full channels, not mixed */
-        if(data.flags2D & MeshVisualizerGL2D::Flag::Wireframe)
+        if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe)
             shader.setWireframeColor(0xffffff_rgbf);
         /* For vertex ID we don't want any repeat/wraparound as that causes
            disruptions in the gradient and test failures. There's 42 vertices
            also. */
-        if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId)
+        if(data.flags3D & MeshVisualizerGL3D::Flag::VertexId)
             shader.setColorMapTransformation(1.0f, -1.0f/42.0f);
         /* For object/primitive ID there's no gradient so a wraparound is okay.
            This should cover the first half of the colormap, in reverse order;
@@ -2940,7 +2940,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         materialUniformData->setColor(0xffff00_rgbf);
         if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe)
             materialUniformData->setWireframeColor(0xffffff_rgbf);
-        if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId)
+        if(data.flags3D & MeshVisualizerGL3D::Flag::VertexId)
             materialUniformData->setColorMapTransformation(1.0f, -1.0f/42.0f);
         else
             materialUniformData->setColorMapTransformation(0.5f, -1.0f/40.0f);
