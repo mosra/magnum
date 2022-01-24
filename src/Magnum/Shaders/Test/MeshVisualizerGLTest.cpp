@@ -134,8 +134,8 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderDefaultsWireframe3D();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
-    template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderDefaultsObjectId2D();
-    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderDefaultsObjectId3D();
+    template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderDefaultsInstancedObjectId2D();
+    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderDefaultsInstancedObjectId3D();
     template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderDefaultsVertexId2D();
     template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderDefaultsVertexId3D();
     template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderDefaultsPrimitiveId2D();
@@ -421,7 +421,7 @@ constexpr struct {
     const char* name;
     SamplerFilter filter;
     SamplerWrapping wrapping;
-} ObjectIdDefaultsData[] {
+} InstancedObjectIdDefaultsData[] {
     {"nearest, clamp", SamplerFilter::Nearest, SamplerWrapping::ClampToEdge},
     {"nearest, repeat", SamplerFilter::Nearest, SamplerWrapping::Repeat},
     {"linear, clamp", SamplerFilter::Linear, SamplerWrapping::ClampToEdge},
@@ -477,10 +477,10 @@ constexpr struct {
     const char* file2D;
     const char* file3D;
 } ObjectVertexPrimitiveIdData[] {
-    {"object ID",
+    {"instanced object ID",
         MeshVisualizerGL2D::Flag::InstancedObjectId,
         MeshVisualizerGL3D::Flag::InstancedObjectId,
-        "objectid2D.tga", "objectid3D.tga"},
+        "instancedobjectid2D.tga", "instancedobjectid3D.tga"},
     {"vertex ID",
         MeshVisualizerGL2D::Flag::VertexId,
         MeshVisualizerGL3D::Flag::VertexId,
@@ -495,16 +495,16 @@ constexpr struct {
         MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId,
         MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
         "primitiveid2D.tga", "primitiveid3D.tga"},
-    {"wireframe + object ID",
+    {"wireframe + instanced object ID",
         MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::Wireframe,
         MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::Wireframe,
-        "wireframe-objectid2D.tga", "wireframe-objectid3D.tga"},
-    {"wireframe + object ID, no geometry shader",
+        "wireframe-instancedobjectid2D.tga", "wireframe-instancedobjectid3D.tga"},
+    {"wireframe + instanced object ID, no geometry shader",
         MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::Wireframe|
         MeshVisualizerGL2D::Flag::NoGeometryShader,
         MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::Wireframe|
         MeshVisualizerGL3D::Flag::NoGeometryShader,
-        "wireframe-nogeo-objectid2D.tga", "wireframe-nogeo-objectid3D.tga"},
+        "wireframe-nogeo-instancedobjectid2D.tga", "wireframe-nogeo-instancedobjectid3D.tga"},
     {"wireframe + vertex ID",
         MeshVisualizerGL2D::Flag::VertexId|MeshVisualizerGL2D::Flag::Wireframe,
         MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::Wireframe,
@@ -783,16 +783,16 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     #ifndef MAGNUM_TARGET_GLES2
     /* MSVC needs explicit type due to default template args */
     addInstancedTests<MeshVisualizerGLTest>({
-        &MeshVisualizerGLTest::renderDefaultsObjectId2D,
+        &MeshVisualizerGLTest::renderDefaultsInstancedObjectId2D,
         #ifndef MAGNUM_TARGET_GLES2
-        &MeshVisualizerGLTest::renderDefaultsObjectId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        &MeshVisualizerGLTest::renderDefaultsInstancedObjectId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
         #endif
-        &MeshVisualizerGLTest::renderDefaultsObjectId3D,
+        &MeshVisualizerGLTest::renderDefaultsInstancedObjectId3D,
         #ifndef MAGNUM_TARGET_GLES2
-        &MeshVisualizerGLTest::renderDefaultsObjectId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        &MeshVisualizerGLTest::renderDefaultsInstancedObjectId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
         #endif
         },
-        Containers::arraySize(ObjectIdDefaultsData),
+        Containers::arraySize(InstancedObjectIdDefaultsData),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -1919,8 +1919,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
-    auto&& data = ObjectIdDefaultsData[testCaseInstanceId()];
+template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsInstancedObjectId2D() {
+    auto&& data = InstancedObjectIdDefaultsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
@@ -1990,13 +1990,13 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-objectid2D.tga"),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-instancedobjectid2D.tga"),
         /* SwiftShader has a few rounding errors on edges */
         (DebugTools::CompareImageToFile{_manager, 150.67f, 0.45f}));
 }
 
-template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsObjectId3D() {
-    auto&& data = ObjectIdDefaultsData[testCaseInstanceId()];
+template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsInstancedObjectId3D() {
+    auto&& data = InstancedObjectIdDefaultsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
@@ -2070,7 +2070,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-objectid3D.tga"),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-instancedobjectid3D.tga"),
         /* SwiftShader has a few rounding errors on edges */
         (DebugTools::CompareImageToFile{_manager, 150.67f, 0.165f}));
 }

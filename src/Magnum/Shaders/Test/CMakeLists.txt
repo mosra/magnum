@@ -197,8 +197,8 @@ if(BUILD_GL_TESTS)
             MagnumOpenGLTester
         FILES
             MeshVisualizerTestFiles/bitangents-from-tangents.tga
-            MeshVisualizerTestFiles/defaults-objectid2D.tga
-            MeshVisualizerTestFiles/defaults-objectid3D.tga
+            MeshVisualizerTestFiles/defaults-instancedobjectid2D.tga
+            MeshVisualizerTestFiles/defaults-instancedobjectid3D.tga
             MeshVisualizerTestFiles/defaults-primitiveid2D.tga
             MeshVisualizerTestFiles/defaults-primitiveid3D.tga
             MeshVisualizerTestFiles/defaults-tbn.tga
@@ -206,8 +206,8 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/defaults-vertexid3D.tga
             MeshVisualizerTestFiles/defaults-wireframe2D.tga
             MeshVisualizerTestFiles/defaults-wireframe3D.tga
-            MeshVisualizerTestFiles/objectid2D.tga
-            MeshVisualizerTestFiles/objectid3D.tga
+            MeshVisualizerTestFiles/instancedobjectid2D.tga
+            MeshVisualizerTestFiles/instancedobjectid3D.tga
             MeshVisualizerTestFiles/primitiveid-tn.tga
             MeshVisualizerTestFiles/primitiveid2D.tga
             MeshVisualizerTestFiles/primitiveid3D.tga
@@ -217,10 +217,10 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/vertexid3D.tga
             MeshVisualizerTestFiles/wireframe-nogeo2D.tga
             MeshVisualizerTestFiles/wireframe-nogeo3D.tga
-            MeshVisualizerTestFiles/wireframe-objectid2D.tga
-            MeshVisualizerTestFiles/wireframe-objectid3D.tga
-            MeshVisualizerTestFiles/wireframe-nogeo-objectid2D.tga
-            MeshVisualizerTestFiles/wireframe-nogeo-objectid3D.tga
+            MeshVisualizerTestFiles/wireframe-instancedobjectid2D.tga
+            MeshVisualizerTestFiles/wireframe-instancedobjectid3D.tga
+            MeshVisualizerTestFiles/wireframe-nogeo-instancedobjectid2D.tga
+            MeshVisualizerTestFiles/wireframe-nogeo-instancedobjectid3D.tga
             MeshVisualizerTestFiles/wireframe-perspective.tga
             MeshVisualizerTestFiles/wireframe-primitiveid-tn.tga
             MeshVisualizerTestFiles/wireframe-tn-smooth.tga
