@@ -240,7 +240,9 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/multidraw-wireframe-nogeo2D.tga
             MeshVisualizerTestFiles/multidraw-wireframe-nogeo3D.tga
             MeshVisualizerTestFiles/multidraw-vertexid2D.tga
-            MeshVisualizerTestFiles/multidraw-vertexid3D.tga)
+            MeshVisualizerTestFiles/multidraw-vertexid3D.tga
+            MeshVisualizerTestFiles/multidraw-instancedobjectid2D.tga
+            MeshVisualizerTestFiles/multidraw-instancedobjectid3D.tga)
     target_include_directories(ShadersMeshVisualizerGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)

@@ -619,6 +619,10 @@ constexpr struct {
         1, 1, 16,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
+    {"bind with offset, instanced object ID", "multidraw-instancedobjectid2D.tga",
+        MeshVisualizerGL2D::Flag::InstancedObjectId,
+        1, 1, 16,
+        0.0f, 0.0f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, wireframe", "multidraw-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe,
@@ -636,6 +640,10 @@ constexpr struct {
         2, 3, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
+    {"draw offset, instanced object ID", "multidraw-instancedobjectid2D.tga",
+        MeshVisualizerGL2D::Flag::InstancedObjectId,
+        2, 3, 1,
+        0.0f, 0.0f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, wireframe", "multidraw-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe,
@@ -653,6 +661,10 @@ constexpr struct {
         2, 3, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
+    {"multidraw, instanced object ID", "multidraw-instancedobjectid2D.tga",
+        MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::InstancedObjectId,
+        2, 3, 1,
+        0.0f, 0.0f},
 };
 
 constexpr struct {
@@ -681,6 +693,10 @@ constexpr struct {
         1, 1, 16,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
+    {"bind with offset, instanced object ID", "multidraw-instancedobjectid3D.tga",
+        MeshVisualizerGL3D::Flag::InstancedObjectId,
+        1, 1, 16,
+        0.0f, 0.0f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe,
@@ -699,6 +715,10 @@ constexpr struct {
         2, 3, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
+    {"draw offset, instanced object ID", "multidraw-instancedobjectid3D.tga",
+        MeshVisualizerGL3D::Flag::InstancedObjectId,
+        2, 3, 1,
+        0.0f, 0.0f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe,
@@ -717,6 +737,10 @@ constexpr struct {
         2, 3, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
+    {"multidraw, instanced object ID", "multidraw-instancedobjectid3D.tga",
+        MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::InstancedObjectId,
+        2, 3, 1,
+        0.0f, 0.0f},
 };
 #endif
 
@@ -3444,6 +3468,20 @@ void MeshVisualizerGLTest::renderMulti2D() {
     Trade::MeshData circleData = MeshTools::generateIndices(Primitives::circle2DSolid(8));
     Trade::MeshData squareData = MeshTools::generateIndices(Primitives::squareSolid());
     Trade::MeshData triangleData = MeshTools::generateIndices(Primitives::circle2DSolid(3));
+    /* For instanced object ID rendering we have to add the object ID
+       attribute. Use the same numbers for all meshes, it'll get differentiated
+       by the per-draw object ID. */
+    if(data.flags & MeshVisualizerGL2D::Flag::ObjectId) {
+        Containers::Array<UnsignedInt> ids{8};
+        /* Each two faces share the same ID */
+        for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
+        for(Trade::MeshData* i: {&circleData, &squareData, &triangleData}) {
+            *i = MeshTools::combineFaceAttributes(*i, {
+                Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
+                    ids.prefix(i->indexCount()/3)}
+            });
+        }
+    }
     /* For a GS-less wireframe we have to deindex the meshes */
     if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)
         for(Trade::MeshData* i: {&circleData, &squareData, &triangleData})
@@ -3474,13 +3512,23 @@ void MeshVisualizerGLTest::renderMulti2D() {
     Containers::Array<MeshVisualizerMaterialUniform> materialData{data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
         .setColor(0xffffcc_rgbf)
-        .setWireframeColor(0xcc0000_rgbf)
-        .setColorMapTransformation(0.5f/circleData.vertexCount(), 1.0f/circleData.vertexCount());
+        .setWireframeColor(0xcc0000_rgbf);
+    if(data.flags & MeshVisualizerGL2D::Flag::VertexId)
+        materialData[0*data.uniformIncrement].setColorMapTransformation(0.5f/circleData.vertexCount(), 1.0f/circleData.vertexCount());
+    else if(data.flags & MeshVisualizerGL2D::Flag::ObjectId)
+        /* There's at most 4 colors (one every 2 faces) per draw and 3 draws,
+           so make it fit 12 colors */
+        materialData[0*data.uniformIncrement].setColorMapTransformation(0.5f/12, 1.0f/12);
     materialData[1*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
         .setColor(0xccffff_rgbf)
         .setWireframeColor(0x0000cc_rgbf)
-        .setWireframeWidth(2.5f)
-        .setColorMapTransformation(0.5f/triangleData.vertexCount(), 1.0f/triangleData.vertexCount());
+        .setWireframeWidth(2.5f);
+    if(data.flags & MeshVisualizerGL2D::Flag::VertexId)
+        materialData[1*data.uniformIncrement].setColorMapTransformation(0.5f/triangleData.vertexCount(), 1.0f/triangleData.vertexCount());
+    else if(data.flags & MeshVisualizerGL2D::Flag::ObjectId)
+        /* There's at most 4 colors (one every 2 faces) per draw and 3 draws,
+           so make it fit 12 colors */
+        materialData[1*data.uniformIncrement].setColorMapTransformation(0.5f/12, 1.0f/12);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
     Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
@@ -3508,16 +3556,19 @@ void MeshVisualizerGLTest::renderMulti2D() {
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setObjectId(0);
     drawData[1*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setObjectId(4);
     drawData[2*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setObjectId(8);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
     shader.setViewportSize(Vector2{RenderSize});
-    if(data.flags & MeshVisualizerGL2D::Flag::VertexId)
+    if(data.flags & (MeshVisualizerGL2D::Flag::VertexId|MeshVisualizerGL2D::Flag::ObjectId))
         shader.bindColorMapTexture(_colorMapTexture);
 
     /* Just one draw, rebinding UBOs each time */
@@ -3647,6 +3698,20 @@ void MeshVisualizerGLTest::renderMulti3D() {
     /* Plane is a strip, make it indexed first */
     Trade::MeshData planeData = MeshTools::generateIndices(Primitives::planeSolid(Primitives::PlaneFlag::Tangents));
     Trade::MeshData coneData = Primitives::coneSolid(1, 8, 1.0f, Primitives::ConeFlag::Tangents);
+    /* For instanced object ID rendering we have to add the object ID
+       attribute. Use the same numbers for all meshes, it'll get differentiated
+       by the per-draw object ID. */
+    if(data.flags & MeshVisualizerGL3D::Flag::ObjectId) {
+        Containers::Array<UnsignedInt> ids{20};
+        /* Each two faces share the same ID */
+        for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
+        for(Trade::MeshData* i: {&sphereData, &planeData, &coneData}) {
+            *i = MeshTools::combineFaceAttributes(*i, {
+                Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
+                    ids.prefix(i->indexCount()/3)}
+            });
+        }
+    }
     /* For a GS-less wireframe we have to deindex the meshes */
     if(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)
         for(Trade::MeshData* i: {&sphereData, &planeData, &coneData})
@@ -3684,14 +3749,24 @@ void MeshVisualizerGLTest::renderMulti3D() {
     materialData[0*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
         .setColor(0xffffcc_rgbf)
         .setWireframeColor(0xcc0000_rgbf)
-        .setLineLength(0.0f) /* no TBN */
-        .setColorMapTransformation(0.5f/sphereData.vertexCount(), 1.0f/sphereData.vertexCount());
+        .setLineLength(0.0f); /* no TBN */
+    if(data.flags & MeshVisualizerGL3D::Flag::VertexId)
+        materialData[0*data.uniformIncrement].setColorMapTransformation(0.5f/sphereData.vertexCount(), 1.0f/sphereData.vertexCount());
+    else if(data.flags & MeshVisualizerGL3D::Flag::ObjectId)
+        /* There's at most 10 colors (one every 2 faces) per draw and 3 draws,
+           so make it fit 30 colors */
+        materialData[0*data.uniformIncrement].setColorMapTransformation(0.5f/30, 1.0f/30);
     materialData[1*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
         .setColor(0xccffff_rgbf)
         .setWireframeColor(0x0000cc_rgbf)
         .setLineLength(0.25f)
-        .setWireframeWidth(2.5f)
-        .setColorMapTransformation(0.5f/coneData.vertexCount(), 1.0f/coneData.vertexCount());
+        .setWireframeWidth(2.5f);
+    if(data.flags & MeshVisualizerGL3D::Flag::VertexId)
+        materialData[1*data.uniformIncrement].setColorMapTransformation(0.5f/coneData.vertexCount(), 1.0f/coneData.vertexCount());
+    else if(data.flags & MeshVisualizerGL3D::Flag::ObjectId)
+        /* There's at most 10 colors (one every 2 faces) per draw and 3 draws,
+           so make it fit 30 colors */
+        materialData[1*data.uniformIncrement].setColorMapTransformation(0.5f/30, 1.0f/30);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
     Containers::Array<TransformationUniform3D> transformationData{2*data.uniformIncrement + 1};
@@ -3719,17 +3794,20 @@ void MeshVisualizerGLTest::renderMulti3D() {
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. Also no need to supply a normal matrix. */
     drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setObjectId(0);
     drawData[1*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setObjectId(10);
     drawData[2*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setObjectId(20);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
     shader.setViewportSize(Vector2{RenderSize})
         .bindProjectionBuffer(projectionUniform);
-    if(data.flags & MeshVisualizerGL3D::Flag::VertexId)
+    if(data.flags & (MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::ObjectId))
         shader.bindColorMapTexture(_colorMapTexture);
 
     /* Just one draw, rebinding UBOs each time */
