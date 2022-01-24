@@ -215,7 +215,7 @@ constexpr struct {
     #endif
     {"wireframe w/o GS", MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader},
     #ifndef MAGNUM_TARGET_GLES2
-    {"object ID", MeshVisualizerGL2D::Flag::InstancedObjectId},
+    {"instanced object ID", MeshVisualizerGL2D::Flag::InstancedObjectId},
     {"vertex ID", MeshVisualizerGL2D::Flag::VertexId},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizerGL2D::Flag::PrimitiveId},
@@ -245,7 +245,7 @@ constexpr struct {
     {"wireframe", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe, 1, 1},
     #endif
     {"wireframe w/o GS", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 1},
-    {"object ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::InstancedObjectId, 1, 1},
+    {"instanced object ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::InstancedObjectId, 1, 1},
     {"vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::VertexId, 1, 1},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::PrimitiveId, 1, 1},
@@ -265,7 +265,7 @@ constexpr struct {
     #endif
     {"wireframe w/o GS", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader},
     #ifndef MAGNUM_TARGET_GLES2
-    {"object ID", MeshVisualizerGL3D::Flag::InstancedObjectId},
+    {"instanced object ID", MeshVisualizerGL3D::Flag::InstancedObjectId},
     {"vertex ID", MeshVisualizerGL3D::Flag::VertexId},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizerGL3D::Flag::PrimitiveId},
@@ -279,13 +279,13 @@ constexpr struct {
     {"normal direction", MeshVisualizerGL3D::Flag::NormalDirection},
     {"tbn direction", MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
     {"tbn direction with bitangent from tangent", MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
-    {"wireframe + vertex id", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId},
-    {"wireframe + t/n direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
-    {"wireframe + object id + t/n direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
-    {"wireframe + vertex id + t/b direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection},
+    {"wireframe + vertex ID", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId},
+    {"wireframe + T/N direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
+    {"wireframe + instanced object ID + T/N direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection},
+    {"wireframe + vertex ID + T/B direction", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection},
     /* InstancedObjectId|BitangentDirection is disallowed (checked in
        ConstructInvalidData3D), but this should work */
-    {"object id + bitangent from tangent direction", MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection},
+    {"instanced object ID + bitangent from tangent direction", MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection},
     #endif
 };
 
@@ -310,7 +310,7 @@ constexpr struct {
     {"wireframe", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe, 1, 1},
     #endif
     {"wireframe w/o GS", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 1, 1},
-    {"object ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::InstancedObjectId, 1, 1},
+    {"instanced object ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::InstancedObjectId, 1, 1},
     {"vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::VertexId, 1, 1},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::PrimitiveId, 1, 1},
@@ -323,10 +323,10 @@ constexpr struct {
     {"normal direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
     {"tbn direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
     {"tbn direction with bitangent from tangent", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
-    {"wireframe + vertex id", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId, 1, 1},
-    {"wireframe + t/n direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
-    {"wireframe + object id + t/n direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
-    {"wireframe + vertex id + t/b direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection, 1, 1}
+    {"wireframe + vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId, 1, 1},
+    {"wireframe + T/N direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
+    {"wireframe + instanced object ID + T/N direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection, 1, 1},
+    {"wireframe + vertex ID + T/B direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection, 1, 1}
     #endif
 };
 #endif
@@ -345,10 +345,10 @@ constexpr struct {
         #endif
         },
     #ifndef MAGNUM_TARGET_GLES2
-    {"both object and primitive id",
+    {"both instanced object and primitive ID",
         MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId,
         ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
-    {"both object and vertex id",
+    {"both instanced object and vertex ID",
         MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::VertexId,
         ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"}
     #endif
@@ -382,10 +382,10 @@ constexpr struct {
         #endif
         },
     #ifndef MAGNUM_TARGET_GLES2
-    {"both object and primitive id",
+    {"both instanced object and primitive ID",
         MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
         ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
-    {"both vertex and primitive id",
+    {"both vertex and primitive ID",
         MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
         ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
     #endif
@@ -396,7 +396,7 @@ constexpr struct {
     {"conflicting bitangent input",
         MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection,
         "3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive"},
-    {"conflicting bitangent and instanced object id attribute",
+    {"conflicting bitangent and instanced object ID attribute",
         MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::InstancedObjectId,
         "3D: Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead"},
     #endif
