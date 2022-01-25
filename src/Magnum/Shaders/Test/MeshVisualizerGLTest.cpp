@@ -2650,7 +2650,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWirefra
 
     GL::Mesh circle{NoCreate};
     if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader) {
-        /* Duplicate the vertices. The circle primitive is  */
+        /* Duplicate the vertices. The circle primitive is a triangle fan, so
+           we first need to turn it into indexed triangles. */
         const Trade::MeshData circleDataIndexed =
             MeshTools::generateIndices(circleData);
         circle = MeshTools::compile(MeshTools::duplicate(circleDataIndexed));
