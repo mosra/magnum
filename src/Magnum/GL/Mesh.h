@@ -384,11 +384,12 @@ calling @ref AbstractShaderProgram::draw():
 @ref MAGNUM_TARGET_WEBGL "WebGL" puts some restrictions on vertex buffer
 layout, see @ref addVertexBuffer() documentation for details.
 
-The @ref Buffer binding restriction transitively affects meshes as well,
-requiring @ref Buffer::TargetHint::ElementArray to be used for index buffers.
-To simplify debugging, the @ref addVertexBuffer() and @ref setIndexBuffer()
-functions checks proper target hint when adding vertex and index buffers under
-WebGL.
+A WebGL restriction that allows @ref Buffer "Buffers" to be bound only to one
+unique target transitively affects meshes as well, requiring
+@ref Buffer::TargetHint::ElementArray to be used for index buffers. To simplify
+dealing with this restriction, the @ref addVertexBuffer() and
+@ref setIndexBuffer() functions check proper target hint when adding vertex and
+index buffers under WebGL.
 
 @section GL-Mesh-performance-optimization Performance optimizations
 
