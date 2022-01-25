@@ -162,6 +162,9 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
     vert.addSource(_flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(_flags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        #endif
+        .addSource(_flags & FlagBase::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
+        #ifndef MAGNUM_TARGET_GLES2
         .addSource(_flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
         .addSource(_flags >= FlagBase::PrimitiveIdFromVertexId ? "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" : "")
         #endif
@@ -414,6 +417,8 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags
         if(flags >= Flag::InstancedObjectId)
             bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
+        if(flags & Flag::InstancedTransformation)
+            bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         #ifndef MAGNUM_TARGET_GLES
         if(!context.isVersionSupported(GL::Version::GL310))
@@ -732,6 +737,13 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
         if(flags >= Flag::InstancedObjectId)
             bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
+        if(flags & Flag::InstancedTransformation) {
+            bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+            if(flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection))
+                bindAttributeLocation(NormalMatrix::Location, "instancedNormalMatrix");
+            #endif
+        }
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         if(flags & Flag::TangentDirection ||
            flags & Flag::BitangentFromTangentDirection)
@@ -1014,6 +1026,9 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flag value) {
         #ifndef MAGNUM_TARGET_GLES2
         _c(ObjectId)
         _c(InstancedObjectId)
+        #endif
+        _c(InstancedTransformation)
+        #ifndef MAGNUM_TARGET_GLES2
         _c(VertexId)
         #ifndef MAGNUM_TARGET_WEBGL
         _c(PrimitiveId)
@@ -1048,6 +1063,9 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flag value) {
         #ifndef MAGNUM_TARGET_GLES2
         _c(ObjectId)
         _c(InstancedObjectId)
+        #endif
+        _c(InstancedTransformation)
+        #ifndef MAGNUM_TARGET_GLES2
         _c(VertexId)
         #ifndef MAGNUM_TARGET_WEBGL
         _c(PrimitiveId)
@@ -1074,6 +1092,9 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flags value) {
         #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizerGL2D::Flag::InstancedObjectId, /* Superset of ObjectId */
         MeshVisualizerGL2D::Flag::ObjectId,
+        #endif
+        MeshVisualizerGL2D::Flag::InstancedTransformation,
+        #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizerGL2D::Flag::VertexId,
         MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId, /* Superset of PrimitiveId */
         #ifndef MAGNUM_TARGET_WEBGL
@@ -1102,6 +1123,9 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flags value) {
         #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizerGL3D::Flag::InstancedObjectId, /* Superset of ObjectId */
         MeshVisualizerGL3D::Flag::ObjectId,
+        #endif
+        MeshVisualizerGL3D::Flag::InstancedTransformation,
+        #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizerGL3D::Flag::VertexId,
         MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId, /* Superset of PrimitiveId */
         #ifndef MAGNUM_TARGET_WEBGL

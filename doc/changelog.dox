@@ -207,6 +207,9 @@ See also:
     available also in multi-draw and instanced scenarios
 -   @ref Shaders::FlatGL and @ref Shaders::PhongGL now support object ID
     textures in addition to uniform and per-vertex object ID
+-   Support for instanced drawing in @ref Shaders::MeshVisualizerGL2D and
+    @ref Shaders::MeshVisualizerGL3D for better feature parity with the other
+    sahders
 -   Added @ref Shaders::PhongGL::setNormalTextureScale(), consuming the
     recently added @ref Trade::MaterialAttribute::NormalTextureScale material
     attribute

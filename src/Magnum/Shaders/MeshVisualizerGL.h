@@ -49,6 +49,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
                complex */
             Wireframe = 1 << 0,
             NoGeometryShader = 1 << 1,
+            InstancedTransformation = 1 << 13,
             #ifndef MAGNUM_TARGET_GLES2
             ObjectId = 1 << 12,
             InstancedObjectId = (1 << 2)|ObjectId,
@@ -142,7 +143,25 @@ configure the shader.
 The shader expects that you enable wireframe visualization by passing an
 appropriate @ref Flag to the constructor --- there's no default behavior with
 nothing enabled. The shader is a 2D variant of @ref MeshVisualizerGL3D with
-mostly identical workflow. See its documentation for more information.
+mostly identical workflow. See its documentation for more information,
+workflows that differ are shown below.
+
+@section Shaders-MeshVisualizerGL2D-instancing Instanced rendering
+
+Enabling @ref Flag::InstancedTransformation will turn the shader into an
+instanced one. It'll take per-instance transformation from the
+@ref TransformationMatrix attribute, applying it before the matrix set by
+@ref setTransformationProjectionMatrix(). The snippet below shows adding a
+buffer with per-instance transformation to a mesh:
+
+@snippet MagnumShaders-gl.cpp MeshVisualizerGL2D-usage-instancing
+
+@requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+@requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+    @gl_extension{EXT,instanced_arrays} or @gl_extension{NV,instanced_arrays}
+    in OpenGL ES 2.0.
+@requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays} in WebGL
+    1.0.
 */
 class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisualizerGLBase {
     public:
@@ -176,6 +195,21 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          */
         typedef GenericGL2D::ObjectId ObjectId;
         #endif
+
+        /**
+         * @brief (Instanced) transformation matrix
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix3.
+         * Used only if @ref Flag::InstancedTransformation is set.
+         * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+         *      @gl_extension{EXT,instanced_arrays} or
+         *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0.
+         */
+        typedef GenericGL2D::TransformationMatrix TransformationMatrix;
 
         enum: UnsignedInt {
             /**
@@ -258,6 +292,24 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
             PrimitiveIdFromVertexId = (1 << 5)|(1 << 4),
             #endif
             #endif
+
+            /**
+             * Instanced transformation. Retrieves a per-instance
+             * transformation matrix from the @ref TransformationMatrix
+             * attribute and uses it together with the matrix coming from
+             * @ref setTransformationProjectionMatrix() or
+             * @ref TransformationProjectionUniform2D::transformationProjectionMatrix
+             * (first the per-instance, then the uniform matrix). See
+             * @ref Shaders-MeshVisualizerGL2D-instancing for more information.
+             * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+             * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+             *      @gl_extension{EXT,instanced_arrays} or
+             *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+             * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+             *      in WebGL 1.0.
+             * @m_since_latest
+             */
+            InstancedTransformation = 1 << 13,
 
             #ifndef MAGNUM_TARGET_GLES2
             /**
@@ -420,7 +472,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
          *
-         * Initial value is an identity matrix.
+         * Initial value is an identity matrix. If
+         * @ref Flag::InstancedTransformation is set, the per-instance
+         * transformation matrix coming from the @ref TransformationMatrix
+         * attribute is applied first, before this one.
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
          * @ref TransformationProjectionUniform2D::transformationProjectionMatrix
@@ -855,6 +910,27 @@ non-indexed @ref MeshPrimitive::Triangles.
     is not available in WebGL 1.0.
 @requires_webgl20 `gl_VertexID` is not available in WebGL 1.0.
 
+@section Shaders-MeshVisualizerGL3D-instancing Instanced rendering
+
+Enabling @ref Flag::InstancedTransformation will turn the shader into an
+instanced one. It'll take per-instance transformation from the
+@ref TransformationMatrix attribute, applying it before the matrix set by
+@ref setTransformationMatrix(). If one of @ref Flag::TangentDirection,
+@ref Flag::BitangentDirection or @ref Flag::NormalDirection is set,
+additionally also a normal matrix from the @ref NormalMatrix attribute is
+taken, applied before the matrix set by @ref setNormalMatrix(). The snippet
+below shows adding a buffer with per-instance transformation to a mesh,
+including a normal matrix attribute for correct TBN visualization:
+
+@snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-usage-instancing
+
+@requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+@requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+    @gl_extension{EXT,instanced_arrays} or @gl_extension{NV,instanced_arrays}
+    in OpenGL ES 2.0.
+@requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays} in WebGL
+    1.0.
+
 @section Shaders-MeshVisualizerGL3D-ubo Uniform buffers
 
 See @ref shaders-usage-ubo for a high-level overview that applies to all
@@ -972,6 +1048,40 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          *      shaders, which is not available in WebGL 1.0.
          */
         typedef GenericGL3D::ObjectId ObjectId;
+        #endif
+
+        /**
+         * @brief (Instanced) transformation matrix
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix4.
+         * Used only if @ref Flag::InstancedTransformation is set.
+         * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+         *      @gl_extension{EXT,instanced_arrays} or
+         *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0.
+         */
+        typedef GenericGL3D::TransformationMatrix TransformationMatrix;
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief (Instanced) normal matrix
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix3x3.
+         * Used only if @ref Flag::InstancedTransformation and at least one of
+         * @ref Flag::TangentDirection, @ref Flag::BitangentDirection or
+         * @ref Flag::NormalDirection is set.
+         * @requires_gl33 Extension @gl_extension{ARB,geometry_shader4} and
+         *      @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a}
+         *      / @gl_extension{EXT,geometry_shader}
+         * @requires_gles Geometry shaders are not available in WebGL.
+         */
+        typedef GenericGL3D::NormalMatrix NormalMatrix;
         #endif
 
         enum: UnsignedInt {
@@ -1164,6 +1274,26 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
             NormalDirection = 1 << 9,
             #endif
 
+            /**
+             * Instanced transformation. Retrieves a per-instance
+             * transformation and normal matrix from the
+             * @ref TransformationMatrix / @ref NormalMatrix attributes and
+             * uses them together with matrices coming from
+             * @ref setTransformationMatrix() and @ref setNormalMatrix() or
+             * @ref TransformationUniform3D::transformationMatrix and
+             * @ref MeshVisualizerDrawUniform3D::normalMatrix (first the
+             * per-instance, then the uniform matrix). See
+             * @ref Shaders-MeshVisualizerGL3D-instancing for more information.
+             * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+             * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+             *      @gl_extension{EXT,instanced_arrays} or
+             *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+             * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+             *      in WebGL 1.0.
+             * @m_since_latest
+             */
+            InstancedTransformation = 1 << 13,
+
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Use uniform buffers. Expects that uniform data are supplied via
@@ -1355,7 +1485,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief Set transformation matrix
          * @return Reference to self (for method chaining)
          *
-         * Initial value is an identity matrix.
+         * Initial value is an identity matrix. If
+         * @ref Flag::InstancedTransformation is set, the per-instance
+         * transformation coming from the @ref TransformationMatrix attribute
+         * is applied first, before this one.
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
          * @ref TransformationUniform3D::transformationMatrix and call
@@ -1387,7 +1520,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @ref Flag::BitangentDirection or @ref Flag::NormalDirection is
          * enabled. The matrix doesn't need to be normalized, as
          * renormalization is done per-fragment anyway.
-         * Initial value is an identity matrix.
+         * Initial value is an identity matrix. If
+         * @ref Flag::InstancedTransformation is set, the per-instance normal
+         * matrix coming from the @ref NormalMatrix attribute is applied first,
+         * before this one.
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
          * @ref MeshVisualizerDrawUniform3D::normalMatrix and call

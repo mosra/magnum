@@ -615,6 +615,22 @@ mesh.setInstanceCount(Containers::arraySize(instanceData))
 /* [PhongGL-usage-instancing] */
 }
 
+{
+GL::Mesh mesh;
+/* [MeshVisualizerGL2D-usage-instancing] */
+Matrix3 instancedTransformations[] {
+    Matrix3::translation({1.0f, 2.0f}),
+    Matrix3::translation({2.0f, 1.0f}),
+    Matrix3::translation({3.0f, 0.0f}),
+    // ...
+};
+
+mesh.setInstanceCount(Containers::arraySize(instancedTransformations))
+    .addVertexBufferInstanced(GL::Buffer{instancedTransformations}, 1, 0,
+        Shaders::MeshVisualizerGL2D::TransformationMatrix{});
+/* [MeshVisualizerGL2D-usage-instancing] */
+}
+
 /* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
    on GCC 4.8 in the [60] array */
 #if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
@@ -798,6 +814,30 @@ shader
     .bindDrawBuffer(drawUniform)
     .draw(mesh);
 /* [MeshVisualizerGL3D-ubo] */
+}
+#endif
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+{
+GL::Mesh mesh;
+/* [MeshVisualizerGL3D-usage-instancing] */
+struct {
+    Matrix4 transformation;
+    Matrix3x3 normal;
+} instanceData[] {
+    {Matrix4::translation({1.0f, 2.0f, 0.0f}), {}},
+    {Matrix4::translation({2.0f, 1.0f, 0.0f}), {}},
+    {Matrix4::translation({3.0f, 0.0f, 1.0f}), {}},
+    // ...
+};
+for(auto& instance: instanceData)
+    instance.normal = instance.transformation.normalMatrix();
+
+mesh.setInstanceCount(Containers::arraySize(instanceData))
+    .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+        Shaders::MeshVisualizerGL3D::TransformationMatrix{},
+        Shaders::MeshVisualizerGL3D::NormalMatrix{});
+/* [MeshVisualizerGL3D-usage-instancing] */
 }
 #endif
 

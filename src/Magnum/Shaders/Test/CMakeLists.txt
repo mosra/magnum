@@ -234,6 +234,15 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/wireframe-wide3D.tga
             MeshVisualizerTestFiles/wireframe2D.tga
             MeshVisualizerTestFiles/wireframe3D.tga
+            MeshVisualizerTestFiles/instanced-wireframe2D.tga
+            MeshVisualizerTestFiles/instanced-wireframe3D.tga
+            MeshVisualizerTestFiles/instanced-wireframe-nogeo2D.tga
+            MeshVisualizerTestFiles/instanced-wireframe-nogeo3D.tga
+            MeshVisualizerTestFiles/instanced-wireframe-tbn3D.tga
+            MeshVisualizerTestFiles/instanced-vertexid2D.tga
+            MeshVisualizerTestFiles/instanced-vertexid3D.tga
+            MeshVisualizerTestFiles/instanced-instancedobjectid2D.tga
+            MeshVisualizerTestFiles/instanced-instancedobjectid3D.tga
             MeshVisualizerTestFiles/multidraw-wireframe2D.tga
             MeshVisualizerTestFiles/multidraw-wireframe3D.tga
             MeshVisualizerTestFiles/multidraw-wireframe-tbn3D.tga

@@ -255,6 +255,26 @@ layout(location = OBJECT_ID_ATTRIBUTE_LOCATION)
 in highp uint instanceObjectId;
 #endif
 
+#ifdef INSTANCED_TRANSFORMATION
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = TRANSFORMATION_MATRIX_ATTRIBUTE_LOCATION)
+#endif
+in highp
+    #ifdef TWO_DIMENSIONS
+    mat3
+    #else
+    mat4
+    #endif
+    instancedTransformationMatrix;
+
+#if defined(TANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = NORMAL_MATRIX_ATTRIBUTE_LOCATION)
+#endif
+in highp mat3 instancedNormalMatrix;
+#endif
+#endif
+
 /* Outputs */
 
 #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
@@ -342,25 +362,40 @@ void main() {
     #endif
 
     #ifdef TWO_DIMENSIONS
-    gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);
+    gl_Position.xywz = vec4(transformationProjectionMatrix*
+        #ifdef INSTANCED_TRANSFORMATION
+        instancedTransformationMatrix*
+        #endif
+        vec3(position, 1.0), 0.0);
     #elif defined(THREE_DIMENSIONS)
-    highp const vec4 transformedPosition4 = transformationMatrix*position;
+    highp const vec4 transformedPosition4 = transformationMatrix*
+        #ifdef INSTANCED_TRANSFORMATION
+        instancedTransformationMatrix*
+        #endif
+        position;
     gl_Position = projectionMatrix*transformedPosition4;
     #else
     #error
     #endif
 
+    #if defined(TANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
+    mat3 finalNormalMatrix = normalMatrix
+        #ifdef INSTANCED_TRANSFORMATION
+        *instancedNormalMatrix
+        #endif
+        ;
+    #endif
     #ifdef TANGENT_DIRECTION
-    tangentEndpoint = projectionMatrix*(transformedPosition4 + vec4(normalize(normalMatrix*tangent.xyz)*lineLength, 0.0));
+    tangentEndpoint = projectionMatrix*(transformedPosition4 + vec4(normalize(finalNormalMatrix*tangent.xyz)*lineLength, 0.0));
     #endif
     #ifdef BITANGENT_FROM_TANGENT_DIRECTION
     vec3 bitangent = cross(normal, tangent.xyz)*tangent.w;
     #endif
     #if defined(BITANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION)
-    bitangentEndpoint = projectionMatrix*(transformedPosition4 + vec4(normalize(normalMatrix*bitangent)*lineLength, 0.0));
+    bitangentEndpoint = projectionMatrix*(transformedPosition4 + vec4(normalize(finalNormalMatrix*bitangent)*lineLength, 0.0));
     #endif
     #ifdef NORMAL_DIRECTION
-    normalEndpoint = projectionMatrix*(transformedPosition4 + vec4(normalize(normalMatrix*normal)*lineLength, 0.0));
+    normalEndpoint = projectionMatrix*(transformedPosition4 + vec4(normalize(finalNormalMatrix*normal)*lineLength, 0.0));
     #endif
 
     #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
