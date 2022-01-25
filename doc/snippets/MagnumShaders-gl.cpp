@@ -699,7 +699,6 @@ shader.setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
     .setLineLength(0.3f)
     .draw(mesh);
 /* [MeshVisualizerGL3D-usage-tbn2] */
-
 }
 #endif
 #endif
