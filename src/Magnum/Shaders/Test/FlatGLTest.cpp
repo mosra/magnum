@@ -238,9 +238,9 @@ constexpr struct {
     {"texture arrays + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1, 1},
     {"alpha mask", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask, 1, 1},
     {"object ID", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId, 1, 1},
-    {"object ID texture", FlatGL2D::Flag::ObjectIdTexture, 1, 1},
-    {"instanced object ID texture array + texture transformation", FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedObjectId|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation, 1, 1},
-    {"object ID texture + textured", FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::Textured, 1, 1},
+    {"object ID texture", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture, 1, 1},
+    {"instanced object ID texture array + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedObjectId|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation, 1, 1},
+    {"object ID texture + textured", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::Textured, 1, 1},
     {"instanced texture array offset + layer", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::InstancedTextureOffset, 1, 1},
     {"multidraw with all the things", FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId, 8, 48}
 };

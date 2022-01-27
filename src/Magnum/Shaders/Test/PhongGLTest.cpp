@@ -273,9 +273,9 @@ constexpr struct {
     {"normal texture + separate bitangents", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1, 1, 1},
     {"alpha mask", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AlphaMask, 1, 1, 1},
     {"object ID", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId, 1, 1, 1},
-    {"object ID texture", PhongGL::Flag::ObjectIdTexture, 1, 1, 1},
-    {"instanced object ID texture array + texture transformation", PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1, 1, 1},
-    {"object ID texture + diffuse texture", PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::DiffuseTexture, 1, 1, 1},
+    {"object ID texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture, 1, 1, 1},
+    {"instanced object ID texture array + texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1, 1, 1},
+    {"object ID texture + diffuse texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::DiffuseTexture, 1, 1, 1},
     {"no specular", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NoSpecular, 1, 1, 1},
     {"multidraw with all the things", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::LightCulling, 8, 16, 24}
 };
