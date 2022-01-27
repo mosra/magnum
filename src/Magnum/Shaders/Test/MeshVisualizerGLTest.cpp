@@ -3166,16 +3166,16 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     #endif
     #endif
 
-    Trade::MeshData icosphereData = Primitives::icosphereSolid(1);
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(4, 8);
 
     /* Add the instanced Object ID data even if visualizing just uniform object
        ID, to test the attribute isn't accidentally accessed always */
     if(data.flags3D & MeshVisualizerGL3D::Flag::ObjectId) {
-        Containers::Array<UnsignedInt> ids{80};
-        /* Each four faces share the same ID */
-        for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/4;
-        icosphereData = MeshTools::combineFaceAttributes(
-            icosphereData, {
+        Containers::Array<UnsignedInt> ids{sphereData.indexCount()/3};
+        /* Each two faces share the same ID */
+        for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
+        sphereData = MeshTools::combineFaceAttributes(
+            sphereData, {
                 Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
                     Containers::arrayView(ids)}
             });
@@ -3185,9 +3185,9 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
        shader is disabled */
     if(data.flags3D >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId ||
        data.flags3D & MeshVisualizerGL3D::Flag::NoGeometryShader)
-        icosphereData = MeshTools::duplicate(icosphereData);
+        sphereData = MeshTools::duplicate(sphereData);
 
-    GL::Mesh icosphere = MeshTools::compile(icosphereData);
+    GL::Mesh sphere = MeshTools::compile(sphereData);
 
     MeshVisualizerGL3D shader{data.flags3D|flag};
     shader
@@ -3210,19 +3210,18 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         /* For object ID we set a base ID to verify the uniform and instanced
            ID get summed. */
         if(data.flags3D & MeshVisualizerGL3D::Flag::ObjectId)
-            shader.setObjectId(20);
+            shader.setObjectId(sphere.count()/6);
         /* For vertex ID we don't want any repeat/wraparound as that causes
-           disruptions in the gradient and test failures. There's 42 vertices
-           also. */
+           disruptions in the gradient and test failures */
         if(data.flags3D & MeshVisualizerGL3D::Flag::VertexId)
-            shader.setColorMapTransformation(1.0f, -1.0f/42.0f);
+            shader.setColorMapTransformation(1.0f, -1.0f/sphereData.vertexCount());
         /* For object/primitive ID there's no gradient so a wraparound is okay.
            For the object ID this should cover the second half of the colormap
            (due to the uniform object ID), in reverse order; for primitive ID
            the whole colormap due to the repeat wrapping */
         else
-            shader.setColorMapTransformation(0.5f, -1.0f/40.0f);
-        shader.draw(icosphere);
+            shader.setColorMapTransformation(0.5f, -1.0f/(sphere.count()/3));
+        shader.draw(sphere);
     } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         /* See above for comments */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
@@ -3239,23 +3238,23 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         }};
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             MeshVisualizerDrawUniform3D{}
-                .setObjectId(20)
+                .setObjectId(sphere.count()/6)
         }};
         MeshVisualizerMaterialUniform materialUniformData[1];
         materialUniformData->setColor(0xffff00_rgbf);
         if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe)
             materialUniformData->setWireframeColor(0xffffff_rgbf);
         if(data.flags3D & MeshVisualizerGL3D::Flag::VertexId)
-            materialUniformData->setColorMapTransformation(1.0f, -1.0f/42.0f);
+            materialUniformData->setColorMapTransformation(1.0f, -1.0f/sphereData.vertexCount());
         else
-            materialUniformData->setColorMapTransformation(0.5f, -1.0f/40.0f);
+            materialUniformData->setColorMapTransformation(0.5f, -1.0f/(sphere.count()/3));
         GL::Buffer materialUniform{materialUniformData};
         shader
             .bindProjectionBuffer(projectionUniform)
             .bindTransformationBuffer(transformationUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform)
-            .draw(icosphere);
+            .draw(sphere);
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -4132,12 +4131,9 @@ void MeshVisualizerGLTest::renderMulti3D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
-    Trade::MeshData sphereData = MeshTools::interleave(Primitives::icosphereSolid(0), {
-        /* The icosphere doesn't have tangents and we don't use them, but
-           concatenate() will ignore the tangents of others if the first mesh
-           doesn't have them, so add a bogus data at least */
-        Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, VertexFormat::Vector4, nullptr}
-    });
+    /* We don't visualize tangents for the sphere, but concatenate() will
+       ignore the tangents of others if the first mesh doesn't have them */
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(2, 4, Primitives::UVSphereFlag::Tangents);
     /* Plane is a strip, make it indexed first */
     Trade::MeshData planeData = MeshTools::generateIndices(Primitives::planeSolid(Primitives::PlaneFlag::Tangents));
     Trade::MeshData coneData = Primitives::coneSolid(1, 8, 1.0f, Primitives::ConeFlag::Tangents);
