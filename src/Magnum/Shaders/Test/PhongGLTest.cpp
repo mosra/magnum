@@ -1469,10 +1469,7 @@ void PhongGLTest::bindTextureArraysInvalid() {
           .bindDiffuseTexture(textureArray)
           .bindSpecularTexture(textureArray)
           .bindNormalTexture(textureArray)
-          #ifndef MAGNUM_TARGET_GLES2
-          .bindObjectIdTexture(textureArray)
-          #endif
-          ;
+          .bindObjectIdTexture(textureArray);
 
     CORRADE_COMPARE(out.str(), data.message);
 }
