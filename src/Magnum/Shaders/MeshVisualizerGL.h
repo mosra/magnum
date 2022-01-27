@@ -43,7 +43,7 @@ namespace Implementation {
 
 class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgram {
     protected:
-        enum class FlagBase: UnsignedShort {
+        enum class FlagBase: UnsignedInt {
             /* Unlike the public Wireframe flag, this one doesn't include
                NoGeometryShader on ES2 as that would make the checks too
                complex */
@@ -53,12 +53,16 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
             #ifndef MAGNUM_TARGET_GLES2
             ObjectId = 1 << 12,
             InstancedObjectId = (1 << 2)|ObjectId,
+            ObjectIdTexture = 1 << 14,
+            TextureTransformation = 1 << 15,
+            InstancedTextureOffset = (1 << 16)|TextureTransformation,
             VertexId = 1 << 3,
             PrimitiveId = 1 << 4,
             PrimitiveIdFromVertexId = (1 << 5)|PrimitiveId,
             /* bit 6, 7, 8, 9 used by 3D-specific TBN visualization */
             UniformBuffers = 1 << 10,
-            MultiDraw = UniformBuffers|(1 << 11)
+            MultiDraw = UniformBuffers|(1 << 11),
+            TextureArrays = 1 << 17,
             #endif
         };
         typedef Containers::EnumSet<FlagBase> FlagsBase;
@@ -74,6 +78,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
 
         MAGNUM_SHADERS_LOCAL GL::Version setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs) const;
 
+        MeshVisualizerGLBase& setTextureMatrix(const Matrix3& matrix);
+        MeshVisualizerGLBase& setTextureLayer(UnsignedInt layer);
         MeshVisualizerGLBase& setObjectId(UnsignedInt id);
         MeshVisualizerGLBase& setColor(const Color4& color);
         MeshVisualizerGLBase& setWireframeColor(const Color4& color);
@@ -81,10 +87,14 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
         #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizerGLBase& setColorMapTransformation(Float offset, Float scale);
         MeshVisualizerGLBase& bindColorMapTexture(GL::Texture2D& texture);
+        MeshVisualizerGLBase& bindObjectIdTexture(GL::Texture2D& texture);
+        MeshVisualizerGLBase& bindObjectIdTexture(GL::Texture2DArray& texture);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizerGLBase& setDrawOffset(UnsignedInt offset);
+        MeshVisualizerGLBase& bindTextureTransformationBuffer(GL::Buffer& buffer);
+        MeshVisualizerGLBase& bindTextureTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
         MeshVisualizerGLBase& bindMaterialBuffer(GL::Buffer& buffer);
         MeshVisualizerGLBase& bindMaterialBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
         #endif
@@ -108,7 +118,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
             _smoothnessUniform{4};
         #ifndef MAGNUM_TARGET_GLES2
         Int _colorMapOffsetScaleUniform{5},
-            _objectIdUniform{6};
+            _objectIdUniform{6},
+            _textureMatrixUniform{7},
+            _textureLayerUniform{8};
         /* Used instead of all other uniforms except viewportSize when
            Flag::UniformBuffers is set, so it can alias them */
         Int _drawOffsetUniform{1};
@@ -156,6 +168,11 @@ buffer with per-instance transformation to a mesh:
 
 @snippet MagnumShaders-gl.cpp MeshVisualizerGL2D-usage-instancing
 
+If @ref Flag::ObjectIdTexture is used and @ref Flag::InstancedTextureOffset is
+enabled, the @ref TextureOffset attribute (or @ref TextureOffsetLayer in case
+@ref Flag::TextureArrays is enabled as well) then can supply per-instance
+texture offset (or offset and layer).
+
 @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
 @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
     @gl_extension{EXT,instanced_arrays} or @gl_extension{NV,instanced_arrays}
@@ -172,6 +189,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @ref Magnum::Vector2 "Vector2".
          */
         typedef typename GenericGL2D::Position Position;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc MeshVisualizerGL3D::TextureCoordinates */
+        typedef GenericGL2D::TextureCoordinates TextureCoordinates;
+        #endif
 
         /**
          * @brief Vertex index
@@ -211,6 +233,14 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          */
         typedef GenericGL2D::TransformationMatrix TransformationMatrix;
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc MeshVisualizerGL3D::TextureOffset */
+        typedef typename GenericGL2D::TextureOffset TextureOffset;
+
+        /** @copydoc MeshVisualizerGL3D::TextureOffsetLayer */
+        typedef typename GenericGL2D::TextureOffsetLayer TextureOffsetLayer;
+        #endif
+
         enum: UnsignedInt {
             /**
              * Color shader output. @ref shaders-generic "Generic output",
@@ -225,7 +255,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          *
          * @see @ref Flags, @ref MeshVisualizerGL2D()
          */
-        enum class Flag: UnsignedShort {
+        enum class Flag: UnsignedInt {
             /**
              * Visualize wireframe. On OpenGL ES 2.0 and WebGL this also
              * enables @ref Flag::NoGeometryShader.
@@ -277,6 +307,22 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
              */
             InstancedObjectId = (1 << 2)|ObjectId,
 
+            /**
+             * Object ID texture. Retrieves object IDs from a texture bound
+             * with @ref bindObjectIdTexture(), outputting a sum of the object
+             * ID texture, the ID coming from @ref setObjectId() or
+             * @ref MeshVisualizerDrawUniform2D::objectId and possibly also the
+             * per-vertex ID, if @ref Flag::InstancedObjectId is enabled as
+             * well. Implicitly enables @ref Flag::ObjectId.
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Object ID input requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID input requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
+             * @m_since_latest
+             */
+            ObjectIdTexture = (1 << 14)|ObjectId,
+
             /** @copydoc MeshVisualizerGL3D::Flag::VertexId */
             VertexId = 1 << 3,
 
@@ -310,6 +356,41 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
              * @m_since_latest
              */
             InstancedTransformation = 1 << 13,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /** @copydoc MeshVisualizerGL3D::Flag::TextureTransformation */
+            TextureTransformation = 1 << 15,
+
+            /**
+             * Instanced texture offset for an object ID texture. Retrieves a
+             * per-instance offset vector from the @ref TextureOffset attribute
+             * and uses it together with the matrix coming from
+             * @ref setTextureMatrix() or
+             * @ref TextureTransformationUniform::rotationScaling and
+             * @ref TextureTransformationUniform::offset (first the
+             * per-instance vector, then the uniform matrix). Instanced texture
+             * scaling and rotation is not supported at the moment, you can
+             * specify that only via the uniform @ref setTextureMatrix().
+             * Implicitly enables @ref Flag::TextureTransformation. See
+             * @ref Shaders-MeshVisualizerGL3D-instancing for more information.
+             *
+             * If @ref Flag::TextureArrays is set as well, a three-component
+             * @ref TextureOffsetLayer attribute can be used instead of
+             * @ref TextureOffset to specify per-instance texture layer, which
+             * gets added to the uniform layer numbers set by
+             * @ref setTextureLayer() or
+             * @ref TextureTransformationUniform::layer.
+             * @requires_gl33 Extension @gl_extension{EXT,gpu_shader4} and
+             *      @gl_extension{ARB,instanced_arrays}
+             * @requires_gles30 Object ID input requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID input requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
+             * @m_since_latest
+             * @todoc rewrite the ext requirements once we have more textures
+             */
+            InstancedTextureOffset = (1 << 16)|TextureTransformation,
+            #endif
 
             #ifndef MAGNUM_TARGET_GLES2
             /**
@@ -348,7 +429,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
              *      relies on uniform buffers, which require WebGL 2.0.
              * @m_since_latest
              */
-            MultiDraw = UniformBuffers|(1 << 11)
+            MultiDraw = UniformBuffers|(1 << 11),
+
+            /** @copydoc MeshVisualizerGL3D::Flag::TextureArrays */
+            TextureArrays = 1 << 17,
             #endif
         };
 
@@ -432,7 +516,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
 
         /** @brief Flags */
         Flags flags() const {
-            return Flag(UnsignedShort(Implementation::MeshVisualizerGLBase::_flags));
+            return Flag(UnsignedInt(Implementation::MeshVisualizerGLBase::_flags));
         }
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -482,6 +566,18 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * and call @ref bindTransformationProjectionBuffer() instead.
          */
         MeshVisualizerGL2D& setTransformationProjectionMatrix(const Matrix3& matrix);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc MeshVisualizerGL3D::setTextureMatrix() */
+        MeshVisualizerGL2D& setTextureMatrix(const Matrix3& matrix) {
+            return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::setTextureMatrix(matrix));
+        }
+
+        /** @copydoc MeshVisualizerGL3D::setTextureLayer() */
+        MeshVisualizerGL2D& setTextureLayer(UnsignedInt layer) {
+            return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::setTextureLayer(layer));
+        }
+        #endif
 
         /**
          * @brief Set viewport size
@@ -663,6 +759,15 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          */
         MeshVisualizerGL2D& bindDrawBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
+        /** @copydoc MeshVisualizerGL3D::bindTextureTransformationBuffer(GL::Buffer&) */
+        MeshVisualizerGL2D& bindTextureTransformationBuffer(GL::Buffer& buffer) {
+            return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::bindTextureTransformationBuffer(buffer));
+        }
+        /** @copydoc MeshVisualizerGL3D::bindTextureTransformationBuffer(GL::Buffer&, GLintptr, GLsizeiptr) */
+        MeshVisualizerGL2D& bindTextureTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+            return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::bindTextureTransformationBuffer(buffer, offset, size));
+        }
+
         /**
          * @brief Set a material uniform buffer
          * @return Reference to self (for method chaining)
@@ -701,6 +806,16 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         /** @copydoc MeshVisualizerGL3D::bindColorMapTexture() */
         MeshVisualizerGL2D& bindColorMapTexture(GL::Texture2D& texture) {
             return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::bindColorMapTexture(texture));
+        }
+
+        /** @copydoc MeshVisualizerGL3D::bindObjectIdTexture(GL::Texture2D&) */
+        MeshVisualizerGL2D& bindObjectIdTexture(GL::Texture2D& texture) {
+            return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::bindObjectIdTexture(texture));
+        }
+
+        /** @copydoc MeshVisualizerGL3D::bindObjectIdTexture(GL::Texture2DArray&) */
+        MeshVisualizerGL2D& bindObjectIdTexture(GL::Texture2DArray& texture) {
+            return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::bindObjectIdTexture(texture));
         }
         #endif
 
@@ -742,7 +857,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         #endif
 
     private:
-        Int _transformationProjectionMatrixUniform{7};
+        Int _transformationProjectionMatrixUniform{9};
 };
 
 /**
@@ -880,6 +995,13 @@ the @f$ [0, 1] @f$ texture range. Various colormap presets are in the
 
 @snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-usage-object-id
 
+Consistently with the other shaders, textured object ID is also supported if
+@ref Flag::ObjectIdTexture is enabled. In that case you need to provide also
+the @ref TextureCoordinates attribute and bind an integer texture via
+@ref bindObjectIdTexture(). @ref Flag::TextureTransformation then enables
+texture transformation and @ref Flag::TextureArrays texture arrays for the
+object ID texture.
+
 If you enable @ref Flag::VertexId, the shader will use the color map to
 visualize how are vertices shared among primitives. That's useful for
 inspecting mesh connectivity --- primitives sharing vertices will have a smooth
@@ -894,7 +1016,8 @@ triangle mesh. You can use @ref MeshTools::duplicate() (and potentially
 @ref MeshTools::generateIndices()) to conveniently convert the mesh to a
 non-indexed @ref MeshPrimitive::Triangles.
 
-@requires_gl30 Extension @gl_extension{EXT,gpu_shader4} for object ID input
+@requires_gl30 Extension @gl_extension{EXT,gpu_shader4} for object ID input,
+    @gl_extension{EXT,texture_array} for object ID texture arrays
 @requires_gl30 The `gl_VertexID` shader variable is not available on OpenGL
     2.1.
 @requires_gl32 The `gl_PrimitiveID` shader variable is not available on OpenGL
@@ -902,12 +1025,14 @@ non-indexed @ref MeshPrimitive::Triangles.
 @requires_gles32 The `gl_PrimitiveID` shader variable is not available on
     OpenGL ES 3.1 and lower.
 @requires_gles30 Object ID input requires integer support in shaders, which
-    is not available in OpenGL ES 2.0.
+    is not available in OpenGL ES 2.0. Texture arrays for object ID texture
+    arrays are not available in OpenGL ES 2.0.
 @requires_gles30 The `gl_VertexID` shader variable is not available on OpenGL
     ES 2.0.
 @requires_gles `gl_PrimitiveID` is not available in WebGL.
 @requires_webgl20 Object ID input requires integer support in shaders, which
-    is not available in WebGL 1.0.
+    is not available in WebGL 1.0. Texture arrays for object ID texture
+    arrays are not available in WebGL 1.0.
 @requires_webgl20 `gl_VertexID` is not available in WebGL 1.0.
 
 @section Shaders-MeshVisualizerGL3D-instancing Instanced rendering
@@ -923,6 +1048,11 @@ below shows adding a buffer with per-instance transformation to a mesh,
 including a normal matrix attribute for correct TBN visualization:
 
 @snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-usage-instancing
+
+If @ref Flag::ObjectIdTexture is used and @ref Flag::InstancedTextureOffset is
+enabled, the @ref TextureOffset attribute (or @ref TextureOffsetLayer in case
+@ref Flag::TextureArrays is enabled as well) then can supply per-instance
+texture offset (or offset and layer).
 
 @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
 @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
@@ -1016,6 +1146,23 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          */
         typedef typename GenericGL3D::Normal Normal;
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief 2D texture coordinates
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector2 "Vector2". Used only if
+         * @ref Flag::ObjectIdTexture is enabled.
+         * @requires_gl33 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Object ID input requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID input requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
+         */
+        typedef GenericGL3D::TextureCoordinates TextureCoordinates;
+        #endif
+
         /**
          * @brief Vertex index
          *
@@ -1084,6 +1231,44 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         typedef GenericGL3D::NormalMatrix NormalMatrix;
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief (Instanced) texture offset for an object ID texture
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector2. Used
+         * only if @ref Flag::InstancedTextureOffset is set.
+         * @requires_gl33 Extension @gl_extension{EXT,gpu_shader4} and
+         *      @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Object ID input requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID input requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
+         */
+        typedef typename GenericGL3D::TextureOffset TextureOffset;
+
+        /**
+         * @brief (Instanced) texture offset and layer for an object ID texture
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector3, with
+         * the last component interpreted as an integer. Use either this or the
+         * @ref TextureOffset attribute. First two components used only if
+         * @ref Flag::InstancedTextureOffset is set, third component only if
+         * @ref Flag::TextureArrays is set.
+         * @requires_gl33 Extension @gl_extension{EXT,gpu_shader4},
+         *      @gl_extension{EXT,texture_array} and
+         *      @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Object ID input requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0. Texture
+         *      arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID input requires integer support in
+         *      shaders, which is not available in WebGL 1.0. Texture arrays
+         *      are not available in WebGL 1.0.
+         */
+        typedef typename GenericGL3D::TextureOffsetLayer TextureOffsetLayer;
+        #endif
+
         enum: UnsignedInt {
             /**
              * Color shader output. @ref shaders-generic "Generic output",
@@ -1098,7 +1283,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          *
          * @see @ref Flags, @ref MeshVisualizer()
          */
-        enum class Flag: UnsignedShort {
+        enum class Flag: UnsignedInt {
             /**
              * Visualize wireframe. On OpenGL ES 2.0 and WebGL this also
              * enables @ref Flag::NoGeometryShader.
@@ -1154,6 +1339,22 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
              * @m_since{2020,06}
              */
             InstancedObjectId = (1 << 2)|ObjectId,
+
+            /**
+             * Object ID texture. Retrieves object IDs from a texture bound
+             * with @ref bindObjectIdTexture(), outputting a sum of the object
+             * ID texture, the ID coming from @ref setObjectId() or
+             * @ref MeshVisualizerDrawUniform3D::objectId and possibly also the
+             * per-vertex ID, if @ref Flag::InstancedObjectId is enabled as
+             * well. Implicitly enables @ref Flag::ObjectId.
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Object ID input requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID input requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
+             * @m_since_latest
+             */
+            ObjectIdTexture = (1 << 14)|ObjectId,
 
             /**
              * Visualize vertex ID (@cpp gl_VertexID @ce). Useful for
@@ -1296,6 +1497,54 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
 
             #ifndef MAGNUM_TARGET_GLES2
             /**
+             * Enable texture coordinate transformation for an object ID
+             * texture. If this flag is set, the shader expects that
+             * @ref Flag::ObjectIdTexture is enabled as well.
+             * @see @ref setTextureMatrix()
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Object ID input requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID input requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
+             * @m_since_latest
+             * @todoc rewrite the ext requirements once we have more textures
+             */
+            TextureTransformation = 1 << 15,
+
+            /**
+             * Instanced texture offset for an object ID texture. Retrieves a
+             * per-instance offset vector from the @ref TextureOffset attribute
+             * and uses it together with the matrix coming from
+             * @ref setTextureMatrix() or
+             * @ref TextureTransformationUniform::rotationScaling and
+             * @ref TextureTransformationUniform::offset (first the
+             * per-instance vector, then the uniform matrix). Instanced texture
+             * scaling and rotation is not supported at the moment, you can
+             * specify that only via the uniform @ref setTextureMatrix().
+             * Implicitly enables @ref Flag::TextureTransformation. See
+             * @ref Shaders-MeshVisualizerGL2D-instancing for more information.
+             *
+             * If @ref Flag::TextureArrays is set as well, a three-component
+             * @ref TextureOffsetLayer attribute can be used instead of
+             * @ref TextureOffset to specify per-instance texture layer, which
+             * gets added to the uniform layer numbers set by
+             * @ref setTextureLayer() or
+             * @ref TextureTransformationUniform::layer.
+             * @requires_gl30 Extension
+             * @requires_gl33 Extension @gl_extension{EXT,gpu_shader4} and
+             *      @gl_extension{ARB,instanced_arrays}
+             * @requires_gles30 Object ID input requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID input requires integer support in
+             *      shaders, which is not available in WebGL 1.0.
+             * @m_since_latest
+             * @todoc rewrite the ext requirements once we have more textures
+             */
+            InstancedTextureOffset = (1 << 16)|TextureTransformation,
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
              * Use uniform buffers. Expects that uniform data are supplied via
              * @ref bindProjectionBuffer(), @ref bindTransformationBuffer(),
              * @ref bindDrawBuffer() and @ref bindMaterialBuffer() instead of
@@ -1332,7 +1581,30 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
              *      relies on uniform buffers, which require WebGL 2.0.
              * @m_since_latest
              */
-            MultiDraw = UniformBuffers|(1 << 11)
+            MultiDraw = UniformBuffers|(1 << 11),
+
+            /**
+             * Use 2D texture arrays for an object ID texture. Expects that the
+             * texture is supplied via
+             * @ref bindObjectIdTexture(GL::Texture2DArray&) and the layer
+             * is set via @ref setTextureLayer() or
+             * @ref TextureTransformationUniform::layer. If
+             * @ref Flag::InstancedTextureOffset is set as well and a
+             * three-component @ref TextureOffsetLayer attribute is used
+             * instead of @ref TextureOffset, the per-instance and uniform
+             * layer numbers are added together.
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4} and
+             *      @gl_extension{EXT,texture_array}
+             * @requires_gles30 Object ID input requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0. Texture
+             *      arrays are not available in OpenGL ES 2.0.
+             * @requires_webgl20 Object ID input requires integer support in
+             *      shaders, which is not available in WebGL 1.0. Texture
+             *      arrays are not available in WebGL 1.0.
+             * @m_since_latest
+             * @todoc rewrite the ext requirements once we have more textures
+             */
+            TextureArrays = 1 << 17
             #endif
         };
 
@@ -1432,7 +1704,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
 
         /** @brief Flags */
         Flags flags() const {
-            return Flag(UnsignedShort(Implementation::MeshVisualizerGLBase::_flags));
+            return Flag(UnsignedInt(Implementation::MeshVisualizerGLBase::_flags));
         }
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -1535,6 +1807,64 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @requires_gles Geometry shaders are not available in WebGL.
          */
         MeshVisualizerGL3D& setNormalMatrix(const Matrix3x3& matrix);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set texture coordinate transformation matrix for an object ID texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with
+         * @ref Flag::TextureTransformation enabled. Initial value is an
+         * identity matrix. If @ref Flag::InstancedTextureOffset is set, the
+         * per-instance offset coming from the @ref TextureOffset attribute is
+         * applied first, before this matrix.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref TextureTransformationUniform::rotationScaling and
+         * @ref TextureTransformationUniform::offset and call
+         * @ref bindTextureTransformationBuffer() instead.
+         * @requires_gl33 Extension @gl_extension{EXT,gpu_shader4} and
+         *      @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Object ID input requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID input requires integer support in
+         *      shaders, which is not available in WebGL 1.0.
+         * @todoc rewrite the ext requirements once we have more textures
+         */
+        MeshVisualizerGL3D& setTextureMatrix(const Matrix3& matrix) {
+            return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::setTextureMatrix(matrix));
+        }
+
+        /**
+         * @brief Set texture array layer for an object ID texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with @ref Flag::TextureArrays
+         * enabled. Initial value is @cpp 0 @ce. If
+         * @ref Flag::InstancedTextureOffset is set and a three-component
+         * @ref TextureOffsetLayer attribute is used instead of
+         * @ref TextureOffset, this value is added to the layer coming from the
+         * third component.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref TextureTransformationUniform::layer and call
+         * @ref bindTextureTransformationBuffer() instead.
+         * @requires_gl33 Extension @gl_extension{EXT,gpu_shader4} and
+         *      @gl_extension{EXT,texture_array}
+         * @requires_gles30 Object ID input requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0. Texture
+         *      arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID input requires integer support in
+         *      shaders, which is not available in WebGL 1.0.Texture arrays are
+         *      not available in WebGL 1.0.
+         * @todoc rewrite the ext requirements once we have more textures
+         */
+        MeshVisualizerGL3D& setTextureLayer(UnsignedInt layer) {
+            return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::setTextureLayer(layer));
+        }
         #endif
 
         /**
@@ -1817,6 +2147,34 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         MeshVisualizerGL3D& bindDrawBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
+         * @brief Set a texture transformation uniform buffer for an object ID texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that both @ref Flag::UniformBuffers and
+         * @ref Flag::TextureTransformation is set. The buffer is expected to
+         * contain @ref drawCount() instances of
+         * @ref TextureTransformationUniform.
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         *      Object ID input requires integer support in shaders, which is
+         *      not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         *      Object ID input requires integer support in shaders, which is
+         *      not available in WebGL 1.0.
+         */
+        MeshVisualizerGL3D& bindTextureTransformationBuffer(GL::Buffer& buffer) {
+            return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::bindTextureTransformationBuffer(buffer));
+        }
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        MeshVisualizerGL3D& bindTextureTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+            return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::bindTextureTransformationBuffer(buffer, offset, size));
+        }
+
+        /**
          * @brief Set a material uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
@@ -1871,6 +2229,53 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         MeshVisualizerGL3D& bindColorMapTexture(GL::Texture2D& texture) {
             return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::bindColorMapTexture(texture));
         }
+
+        /**
+         * @brief Bind an object ID texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with @ref Flag::ObjectIdTexture
+         * enabled. If @ref Flag::TextureArrays is enabled as well, use
+         * @ref bindObjectIdTexture(GL::Texture2DArray&) instead. The texture
+         * needs to have an unsigned integer format.
+         * @see @ref setObjectId(), @ref Flag::TextureTransformation,
+         *      @ref setTextureMatrix()
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Object ID visualization requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID visualization requires integer support
+         *      in shaders, which is not available in WebGL 1.0.
+         */
+        MeshVisualizerGL3D& bindObjectIdTexture(GL::Texture2D& texture) {
+            return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::bindObjectIdTexture(texture));
+        }
+
+        /**
+         * @brief Bind an object ID array texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with both
+         * @ref Flag::ObjectIdTexture and @ref Flag::TextureArrays enabled. If
+         * @ref Flag::UniformBuffers is not enabled, the layer is set via
+         * @ref setTextureLayer(); if @ref Flag::UniformBuffers is enabled,
+         * @ref Flag::TextureTransformation has to be enabled as well and the
+         * layer is set via @ref TextureTransformationUniform::layer.
+         * @see @ref setObjectId(), @ref Flag::TextureTransformation,
+         *      @ref setTextureLayer()
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4} and
+         *      @gl_extension{EXT,texture_array}
+         * @requires_gles30 Object ID output requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0. Texture
+         *      arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID output requires integer support in
+         *      shaders, which is not available in WebGL 1.0. Texture arrays
+         *      are not available in WebGL 1.0.
+         */
+        MeshVisualizerGL3D& bindObjectIdTexture(GL::Texture2DArray& texture) {
+            return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::bindObjectIdTexture(texture));
+        }
         #endif
 
         /**
@@ -1911,12 +2316,12 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         #endif
 
     private:
-        Int _transformationMatrixUniform{7},
-            _projectionMatrixUniform{8};
+        Int _transformationMatrixUniform{9},
+            _projectionMatrixUniform{10};
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Int _normalMatrixUniform{9},
-            _lineWidthUniform{10},
-            _lineLengthUniform{11};
+        Int _normalMatrixUniform{11},
+            _lineWidthUniform{12},
+            _lineLengthUniform{13};
         #endif
 };
 

@@ -74,7 +74,7 @@ uniform lowp float wireframeWidth
     ;
 #elif defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 10)
+layout(location = 12)
 #endif
 uniform lowp float lineWidth
     #ifndef GL_ES
@@ -191,7 +191,30 @@ layout(binding = 4)
 uniform lowp sampler2D colorMapTexture;
 #endif
 
+#ifdef OBJECT_ID_TEXTURE
+#ifdef EXPLICIT_BINDING
+layout(binding = 5)
+#endif
+uniform lowp
+    #ifndef TEXTURE_ARRAYS
+    usampler2D
+    #else
+    usampler2DArray
+    #endif
+    objectIdTextureData;
+#endif
+
 /* Inputs */
+
+#ifdef OBJECT_ID_TEXTURE
+in mediump
+    #ifndef TEXTURE_ARRAYS
+    vec2
+    #else
+    vec3
+    #endif
+    interpolatedTextureCoordinates;
+#endif
 
 #if defined(WIREFRAME_RENDERING) || defined(TBN_DIRECTION)
 #ifndef NO_GEOMETRY_SHADER
@@ -273,6 +296,9 @@ void main() {
             objectId
                 #ifdef INSTANCED_OBJECT_ID
                 + interpolatedInstanceObjectId
+                #endif
+                #ifdef OBJECT_ID_TEXTURE
+                + texture(objectIdTextureData, interpolatedTextureCoordinates).r
                 #endif
             #elif defined(PRIMITIVE_ID)
             gl_PrimitiveID

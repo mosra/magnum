@@ -117,15 +117,15 @@ void MeshVisualizerGL_Test::vertexIndexSameAsObjectId() {
 void MeshVisualizerGL_Test::debugFlag2D() {
     std::ostringstream out;
 
-    Debug{&out} << MeshVisualizerGL2D::Flag::Wireframe << MeshVisualizerGL2D::Flag(0xf0);
-    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::Wireframe Shaders::MeshVisualizerGL2D::Flag(0xf0)\n");
+    Debug{&out} << MeshVisualizerGL2D::Flag::Wireframe << MeshVisualizerGL2D::Flag(0xbad00000);
+    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::Wireframe Shaders::MeshVisualizerGL2D::Flag(0xbad00000)\n");
 }
 
 void MeshVisualizerGL_Test::debugFlag3D() {
     std::ostringstream out;
 
-    Debug{&out} << MeshVisualizerGL3D::Flag::Wireframe << MeshVisualizerGL3D::Flag(0xf0);
-    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::Wireframe Shaders::MeshVisualizerGL3D::Flag(0xf0)\n");
+    Debug{&out} << MeshVisualizerGL3D::Flag::Wireframe << MeshVisualizerGL3D::Flag(0xbad00000);
+    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::Wireframe Shaders::MeshVisualizerGL3D::Flag(0xbad00000)\n");
 }
 
 void MeshVisualizerGL_Test::debugFlags2D() {
@@ -152,12 +152,20 @@ void MeshVisualizerGL_Test::debugFlags3D() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshVisualizerGL_Test::debugFlagsSupersets2D() {
-    /* InstancedObjectId is a superset of ObjectId so only one should be
-       printed */
+    /* InstancedObjectId and ObjectIdTexture are a superset of ObjectId so only
+       one should be printed, but if there are both then both should be */
     {
         std::ostringstream out;
-        Debug{&out} << (MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectId);
+        Debug{&out} << (MeshVisualizerGL2D::Flag::ObjectId|MeshVisualizerGL2D::Flag::InstancedObjectId);
         CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::InstancedObjectId\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (MeshVisualizerGL2D::Flag::ObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture);
+        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::ObjectIdTexture\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (MeshVisualizerGL2D::Flag::ObjectId|MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture);
+        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::InstancedObjectId|Shaders::MeshVisualizerGL2D::Flag::ObjectIdTexture\n");
     }
 
     /* MultiDraw is a superset of UniformBuffers so only one should be printed */
@@ -169,12 +177,20 @@ void MeshVisualizerGL_Test::debugFlagsSupersets2D() {
 }
 
 void MeshVisualizerGL_Test::debugFlagsSupersets3D() {
-    /* InstancedObjectId is a superset of ObjectId so only one should be
-       printed */
+    /* InstancedObjectId and ObjectIdTexture are a superset of ObjectId so only
+       one should be printed, but if there are both then both should be */
     {
         std::ostringstream out;
-        Debug{&out} << (MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectId);
+        Debug{&out} << (MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::InstancedObjectId);
         CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::InstancedObjectId\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture);
+        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::ObjectIdTexture\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture);
+        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::InstancedObjectId|Shaders::MeshVisualizerGL3D::Flag::ObjectIdTexture\n");
     }
 
     /* MultiDraw is a superset of UniformBuffers so only one should be printed */

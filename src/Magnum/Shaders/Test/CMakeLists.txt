@@ -212,6 +212,8 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/instancedobjectid3D.tga
             MeshVisualizerTestFiles/objectid2D.tga
             MeshVisualizerTestFiles/objectid3D.tga
+            MeshVisualizerTestFiles/objectidtexture2D.tga
+            MeshVisualizerTestFiles/objectidtexture3D.tga
             MeshVisualizerTestFiles/primitiveid-tn.tga
             MeshVisualizerTestFiles/primitiveid2D.tga
             MeshVisualizerTestFiles/primitiveid3D.tga
@@ -225,6 +227,8 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/wireframe-instancedobjectid3D.tga
             MeshVisualizerTestFiles/wireframe-nogeo-instancedobjectid2D.tga
             MeshVisualizerTestFiles/wireframe-nogeo-instancedobjectid3D.tga
+            MeshVisualizerTestFiles/wireframe-objectidtexture2D.tga
+            MeshVisualizerTestFiles/wireframe-objectidtexture3D.tga
             MeshVisualizerTestFiles/wireframe-perspective.tga
             MeshVisualizerTestFiles/wireframe-primitiveid-tn.tga
             MeshVisualizerTestFiles/wireframe-tn-smooth.tga
@@ -243,6 +247,10 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/instanced-vertexid3D.tga
             MeshVisualizerTestFiles/instanced-instancedobjectid2D.tga
             MeshVisualizerTestFiles/instanced-instancedobjectid3D.tga
+            MeshVisualizerTestFiles/instanced-instancedobjectidtexture2D.tga
+            MeshVisualizerTestFiles/instanced-instancedobjectidtexture3D.tga
+            MeshVisualizerTestFiles/instanced-objectidtexture2D.tga
+            MeshVisualizerTestFiles/instanced-objectidtexture3D.tga
             MeshVisualizerTestFiles/multidraw-wireframe2D.tga
             MeshVisualizerTestFiles/multidraw-wireframe3D.tga
             MeshVisualizerTestFiles/multidraw-wireframe-tbn3D.tga
@@ -251,7 +259,9 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/multidraw-vertexid2D.tga
             MeshVisualizerTestFiles/multidraw-vertexid3D.tga
             MeshVisualizerTestFiles/multidraw-instancedobjectid2D.tga
-            MeshVisualizerTestFiles/multidraw-instancedobjectid3D.tga)
+            MeshVisualizerTestFiles/multidraw-instancedobjectid3D.tga
+            MeshVisualizerTestFiles/multidraw-objectidtexture2D.tga
+            MeshVisualizerTestFiles/multidraw-objectidtexture3D.tga)
     target_include_directories(ShadersMeshVisualizerGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)

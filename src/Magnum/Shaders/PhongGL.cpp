@@ -59,7 +59,7 @@ namespace {
         SpecularTextureUnit = 2,
         NormalTextureUnit = 3,
         /* 4 taken by MeshVisualizer colormap */
-        ObjectIdTextureUnit = 5 /* shared with Flat */
+        ObjectIdTextureUnit = 5 /* shared with Flat and MeshVisualizer */
     };
 
     #ifndef MAGNUM_TARGET_GLES2

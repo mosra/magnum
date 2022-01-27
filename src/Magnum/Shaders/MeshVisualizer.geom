@@ -66,7 +66,7 @@ uniform lowp vec4 wireframeColor
 
 #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 10)
+layout(location = 12)
 #endif
 uniform lowp float lineWidth
     #ifndef GL_ES
@@ -160,6 +160,15 @@ in highp vec4 bitangentEndpoint[];
 in highp vec4 normalEndpoint[];
 #endif
 
+#ifdef TEXTURED
+in mediump
+    #ifndef TEXTURE_ARRAYS
+    vec2
+    #else
+    vec3
+    #endif
+    interpolatedVsTextureCoordinates[];
+#endif
 #ifdef INSTANCED_OBJECT_ID
 flat in highp uint interpolatedVsInstanceObjectId[];
 #endif
@@ -184,6 +193,15 @@ noperspective
 #endif
 out lowp vec3 dist;
 
+#ifdef TEXTURED
+out mediump
+    #ifndef TEXTURE_ARRAYS
+    vec2
+    #else
+    vec3
+    #endif
+    interpolatedTextureCoordinates;
+#endif
 #ifdef INSTANCED_OBJECT_ID
 flat out highp uint interpolatedInstanceObjectId;
 #endif
@@ -345,6 +363,9 @@ void main() {
         #endif
         #ifdef VERTEX_ID
         interpolatedMappedVertexId = interpolatedVsMappedVertexId[i];
+        #endif
+        #ifdef TEXTURED
+        interpolatedTextureCoordinates = interpolatedVsTextureCoordinates[i];
         #endif
         #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
         backgroundColor = color;

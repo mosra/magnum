@@ -27,6 +27,10 @@
 #extension GL_EXT_gpu_shader4: require
 #endif
 
+#if defined(UNIFORM_BUFFERS) && defined(TEXTURE_ARRAYS) && !defined(GL_ES)
+#extension GL_ARB_shader_bit_encoding: require
+#endif
+
 #ifdef MULTI_DRAW
 #ifndef GL_ES
 #extension GL_ARB_shader_draw_parameters: require
@@ -49,7 +53,7 @@
 #ifndef UNIFORM_BUFFERS
 #ifdef TWO_DIMENSIONS
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 7)
+layout(location = 9)
 #endif
 uniform highp mat3 transformationProjectionMatrix
     #ifndef GL_ES
@@ -58,7 +62,7 @@ uniform highp mat3 transformationProjectionMatrix
     ;
 #elif defined(THREE_DIMENSIONS)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 7)
+layout(location = 9)
 #endif
 uniform highp mat4 transformationMatrix
     #ifndef GL_ES
@@ -66,7 +70,7 @@ uniform highp mat4 transformationMatrix
     #endif
     ;
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 8)
+layout(location = 10)
 #endif
 uniform highp mat4 projectionMatrix
     #ifndef GL_ES
@@ -92,7 +96,7 @@ uniform lowp vec2 colorMapOffsetScale
 
 #if defined(TANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 9)
+layout(location = 11)
 #endif
 uniform highp mat3 normalMatrix
     #ifndef GL_ES
@@ -101,13 +105,32 @@ uniform highp mat3 normalMatrix
     ;
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 11)
+layout(location = 13)
 #endif
 uniform highp float lineLength
     #ifndef GL_ES
     = 1.0
     #endif
     ;
+#endif
+
+#ifdef TEXTURE_TRANSFORMATION
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 7)
+#endif
+uniform mediump mat3 textureMatrix
+    #ifndef GL_ES
+    = mat3(1.0)
+    #endif
+    ;
+#endif
+
+#ifdef TEXTURE_ARRAYS
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 8)
+#endif
+/* mediump is just 2^10, which might not be enough, this is 2^16 */
+uniform highp uint textureLayer; /* defaults to zero */
 #endif
 
 /* Uniform buffers */
@@ -154,6 +177,23 @@ layout(std140
 };
 #else
 #error
+#endif
+
+#ifdef TEXTURE_TRANSFORMATION
+struct TextureTransformationUniform {
+    highp vec4 rotationScaling;
+    highp vec4 offsetLayerReserved;
+    #define textureTransformation_offset offsetLayerReserved.xy
+    #define textureTransformation_layer offsetLayerReserved.z
+};
+
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 3
+    #endif
+) uniform TextureTransformation {
+    TextureTransformationUniform textureTransformations[DRAW_COUNT];
+};
 #endif
 
 /* Keep in sync with MeshVisualizer.geom and MeshVisualizer.frag. Can't
@@ -238,6 +278,26 @@ layout(location = NORMAL_ATTRIBUTE_LOCATION)
 in highp vec3 normal;
 #endif
 
+#ifdef TEXTURED
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec2 textureCoordinates;
+#endif
+
+#ifdef INSTANCED_TEXTURE_OFFSET
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = TEXTURE_OFFSET_ATTRIBUTE_LOCATION)
+#endif
+in mediump
+    #ifndef TEXTURE_ARRAYS
+    vec2
+    #else
+    vec3
+    #endif
+    instancedTextureOffset;
+#endif
+
 #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
 #if (!defined(GL_ES) && __VERSION__ < 140) || (defined(GL_ES) && __VERSION__ < 300)
 #ifdef EXPLICIT_ATTRIB_LOCATION
@@ -276,6 +336,21 @@ in highp mat3 instancedNormalMatrix;
 #endif
 
 /* Outputs */
+
+#ifdef TEXTURED
+out mediump
+    #ifndef TEXTURE_ARRAYS
+    vec2
+    #else
+    vec3
+    #endif
+    #ifdef NO_GEOMETRY_SHADER
+    interpolatedTextureCoordinates
+    #else
+    interpolatedVsTextureCoordinates
+    #endif
+    ;
+#endif
 
 #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
 out vec3 barycentric;
@@ -359,6 +434,12 @@ void main() {
     lowp float colorMapOffset = materials[materialId].material_colorMapOffset;
     lowp float colorMapScale = materials[materialId].material_colorMapScale;
     highp float lineLength = materials[materialId].material_lineLength;
+    #ifdef TEXTURE_TRANSFORMATION
+    mediump const mat3 textureMatrix = mat3(textureTransformations[drawId].rotationScaling.xy, 0.0, textureTransformations[drawId].rotationScaling.zw, 0.0, textureTransformations[drawId].textureTransformation_offset, 1.0);
+    #ifdef TEXTURE_ARRAYS
+    highp const uint textureLayer = floatBitsToUint(textureTransformations[drawId].textureTransformation_layer);
+    #endif
+    #endif
     #endif
 
     #ifdef TWO_DIMENSIONS
@@ -396,6 +477,39 @@ void main() {
     #endif
     #ifdef NORMAL_DIRECTION
     normalEndpoint = projectionMatrix*(transformedPosition4 + vec4(normalize(finalNormalMatrix*normal)*lineLength, 0.0));
+    #endif
+
+    #ifdef TEXTURED
+    /* Texture coordinates, if needed */
+    #ifdef NO_GEOMETRY_SHADER
+    interpolatedTextureCoordinates
+    #else
+    interpolatedVsTextureCoordinates
+    #endif
+        .xy =
+        #ifdef TEXTURE_TRANSFORMATION
+        (textureMatrix*vec3(
+            #ifdef INSTANCED_TEXTURE_OFFSET
+            instancedTextureOffset.xy +
+            #endif
+            textureCoordinates, 1.0)).xy
+        #else
+        textureCoordinates
+        #endif
+        ;
+    #ifdef TEXTURE_ARRAYS
+    #ifdef NO_GEOMETRY_SHADER
+    interpolatedTextureCoordinates
+    #else
+    interpolatedVsTextureCoordinates
+    #endif
+        .z = float(
+        #ifdef INSTANCED_TEXTURE_OFFSET
+        uint(instancedTextureOffset.z) +
+        #endif
+        textureLayer
+    );
+    #endif
     #endif
 
     #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)

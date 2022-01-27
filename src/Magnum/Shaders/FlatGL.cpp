@@ -52,7 +52,7 @@ namespace {
     enum: Int {
         TextureUnit = 0,
         /* 1/2/3 taken by Phong (D/S/N), 4 by MeshVisualizer colormap */
-        ObjectIdTextureUnit = 5 /* shared with Phong */
+        ObjectIdTextureUnit = 5 /* shared with Phong and MeshVisualizer */
     };
 
     #ifndef MAGNUM_TARGET_GLES2

@@ -41,6 +41,7 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/TextureArray.h"
 #endif
 
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
@@ -50,7 +51,8 @@ namespace Magnum { namespace Shaders {
 namespace {
     enum: Int {
         /* First four taken by Phong (A/D/S/N) */
-        ColorMapTextureUnit = 4
+        ColorMapTextureUnit = 4,
+        ObjectIdTextureUnit = 5 /* shared with Flat and Phong */
     };
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -62,8 +64,7 @@ namespace {
         TransformationProjectionBufferBinding = 1,
         TransformationBufferBinding = 1,
         DrawBufferBinding = 2,
-        /* Binding 3 is commonly used by TextureTransformationBufferBinding,
-           leave it reserved */
+        TextureTransformationBufferBinding = 3,
         MaterialBufferBinding = 4,
     };
     #endif
@@ -91,6 +92,15 @@ MeshVisualizerGLBase::MeshVisualizerGLBase(FlagsBase flags
     #endif
     CORRADE_ASSERT(countMutuallyExclusive <= 1,
         "Shaders::MeshVisualizerGL: Flag::ObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive", );
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(flags & FlagBase::TextureTransformation) || flags >= FlagBase::ObjectIdTexture,
+        "Shaders::MeshVisualizerGL: texture transformation enabled but the shader is not textured", );
+    CORRADE_ASSERT(!(flags & FlagBase::TextureArrays) || flags >= FlagBase::ObjectIdTexture,
+        "Shaders::MeshVisualizerGL: texture arrays enabled but the shader is not textured", );
+    CORRADE_ASSERT(!(flags & FlagBase::UniformBuffers) || !(flags & FlagBase::TextureArrays) || flags >= (FlagBase::TextureArrays|FlagBase::TextureTransformation),
+        "Shaders::MeshVisualizerGL: texture arrays require texture transformation enabled as well if uniform buffers are used", );
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -161,10 +171,14 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
 
     vert.addSource(_flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
+        .addSource(_flags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n" : "")
+        .addSource(_flags & FlagBase::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
+        .addSource(_flags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
         .addSource(_flags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         #endif
         .addSource(_flags & FlagBase::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
+        .addSource(_flags >= FlagBase::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "")
         .addSource(_flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
         .addSource(_flags >= FlagBase::PrimitiveIdFromVertexId ? "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" : "")
         #endif
@@ -189,6 +203,8 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
     frag.addSource(_flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(_flags & FlagBase::ObjectId ? "#define OBJECT_ID\n" : "")
+        .addSource(_flags >= FlagBase::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n" : "")
+        .addSource(_flags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
         .addSource(_flags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         .addSource(_flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
         .addSource(_flags & FlagBase::PrimitiveId ?
@@ -213,6 +229,26 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+MeshVisualizerGLBase& MeshVisualizerGLBase::setTextureMatrix(const Matrix3& matrix) {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags >= FlagBase::UniformBuffers),
+        "Shaders::MeshVisualizerGL::setTextureMatrix(): the shader was created with uniform buffers enabled", *this);
+    #endif
+    CORRADE_ASSERT(_flags & FlagBase::TextureTransformation,
+        "Shaders::MeshVisualizerGL::setTextureMatrix(): the shader was not created with texture transformation enabled", *this);
+    setUniform(_textureMatrixUniform, matrix);
+    return *this;
+}
+
+MeshVisualizerGLBase& MeshVisualizerGLBase::setTextureLayer(UnsignedInt id) {
+    CORRADE_ASSERT(!(_flags >= FlagBase::UniformBuffers),
+        "Shaders::MeshVisualizerGL::setTextureLayer(): the shader was created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(_flags & FlagBase::TextureArrays,
+        "Shaders::MeshVisualizerGL::setTextureLayer(): the shader was not created with texture arrays enabled", *this);
+    setUniform(_textureLayerUniform, id);
+    return *this;
+}
+
 MeshVisualizerGLBase& MeshVisualizerGLBase::setObjectId(UnsignedInt id) {
     CORRADE_ASSERT(!(_flags >= FlagBase::UniformBuffers),
         "Shaders::MeshVisualizerGL::setObjectId(): the shader was created with uniform buffers enabled", *this);
@@ -282,6 +318,24 @@ MeshVisualizerGLBase& MeshVisualizerGLBase::setDrawOffset(const UnsignedInt offs
     return *this;
 }
 
+MeshVisualizerGLBase& MeshVisualizerGLBase::bindTextureTransformationBuffer(GL::Buffer& buffer) {
+    CORRADE_ASSERT(_flags >= FlagBase::UniformBuffers,
+        "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(_flags & FlagBase::TextureTransformation,
+        "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding);
+    return *this;
+}
+
+MeshVisualizerGLBase& MeshVisualizerGLBase::bindTextureTransformationBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    CORRADE_ASSERT(_flags >= FlagBase::UniformBuffers,
+        "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(_flags & FlagBase::TextureTransformation,
+        "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding, offset, size);
+    return *this;
+}
+
 MeshVisualizerGLBase& MeshVisualizerGLBase::bindMaterialBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= FlagBase::UniformBuffers,
         "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
@@ -304,6 +358,26 @@ MeshVisualizerGLBase& MeshVisualizerGLBase::bindColorMapTexture(GL::Texture2D& t
     texture.bind(ColorMapTextureUnit);
     return *this;
 }
+
+MeshVisualizerGLBase& MeshVisualizerGLBase::bindObjectIdTexture(GL::Texture2D& texture) {
+    CORRADE_ASSERT(_flags >= FlagBase::ObjectIdTexture,
+        "Shaders::MeshVisualizerGL::bindObjectIdTexture(): the shader was not created with object ID texture enabled", *this);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags & FlagBase::TextureArrays),
+        "Shaders::MeshVisualizerGL::bindObjectIdTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
+    #endif
+    texture.bind(ObjectIdTextureUnit);
+    return *this;
+}
+
+MeshVisualizerGLBase& MeshVisualizerGLBase::bindObjectIdTexture(GL::Texture2DArray& texture) {
+    CORRADE_ASSERT(_flags >= FlagBase::ObjectIdTexture,
+        "Shaders::MeshVisualizerGL::bindObjectIdTexture(): the shader was not created with object ID texture enabled", *this);
+    CORRADE_ASSERT(_flags & FlagBase::TextureArrays,
+        "Shaders::MeshVisualizerGL::bindObjectIdTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead", *this);
+    texture.bind(ObjectIdTextureUnit);
+    return *this;
+}
 #endif
 
 }
@@ -312,7 +386,7 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags
     #ifndef MAGNUM_TARGET_GLES2
     , const UnsignedInt materialCount, const UnsignedInt drawCount
     #endif
-): Implementation::MeshVisualizerGLBase{Implementation::MeshVisualizerGLBase::FlagBase(UnsignedShort(flags))
+): Implementation::MeshVisualizerGLBase{Implementation::MeshVisualizerGLBase::FlagBase(UnsignedInt(flags))
     #ifndef MAGNUM_TARGET_GLES2
     , materialCount, drawCount
     #endif
@@ -371,6 +445,8 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags
         geom = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Geometry);
         (*geom)
             .addSource("#define WIREFRAME_RENDERING\n#define MAX_VERTICES 3\n")
+            .addSource(_flags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n" : "")
+            .addSource(_flags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
             .addSource(_flags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
             .addSource(_flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
             .addSource(_flags & FlagBase::PrimitiveId ?
@@ -414,11 +490,17 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags
     {
         bindAttributeLocation(Position::Location, "position");
         #ifndef MAGNUM_TARGET_GLES2
+        if(flags >= Flag::ObjectIdTexture)
+            bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
         if(flags >= Flag::InstancedObjectId)
             bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
         if(flags & Flag::InstancedTransformation)
             bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
+        #ifndef MAGNUM_TARGET_GLES2
+        if(flags >= Flag::InstancedTextureOffset)
+            bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
+        #endif
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         #ifndef MAGNUM_TARGET_GLES
         if(!context.isVersionSupported(GL::Version::GL310))
@@ -448,6 +530,12 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags
         #endif
         {
             _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+            #ifndef MAGNUM_TARGET_GLES2
+            if(flags & Flag::TextureTransformation)
+                _textureMatrixUniform = uniformLocation("textureMatrix");
+            if(flags & Flag::TextureArrays)
+                _textureLayerUniform = uniformLocation("textureLayer");
+            #endif
             if(flags & (Flag::Wireframe
                 #ifndef MAGNUM_TARGET_GLES2
                 |Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
@@ -478,10 +566,14 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags
             setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
         }
         #ifndef MAGNUM_TARGET_GLES2
+        if(flags >= Flag::ObjectIdTexture)
+            setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
         if(flags >= Flag::UniformBuffers) {
             setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
+            if(flags & Flag::TextureTransformation)
+                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
         }
         #endif
     }
@@ -585,7 +677,7 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
     #ifndef MAGNUM_TARGET_GLES2
     , const UnsignedInt materialCount, const UnsignedInt drawCount
     #endif
-): Implementation::MeshVisualizerGLBase{Implementation::MeshVisualizerGLBase::FlagBase(UnsignedShort(flags))
+): Implementation::MeshVisualizerGLBase{Implementation::MeshVisualizerGLBase::FlagBase(UnsignedInt(flags))
     #ifndef MAGNUM_TARGET_GLES2
     , materialCount, drawCount
     #endif
@@ -688,6 +780,8 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
         (*geom)
             .addSource(Utility::formatString("#define MAX_VERTICES {}\n", maxVertices))
             .addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
+            .addSource(_flags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n" : "")
+            .addSource(_flags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
             .addSource(_flags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
             .addSource(_flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
             .addSource(_flags & FlagBase::PrimitiveId ?
@@ -734,6 +828,8 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
     {
         bindAttributeLocation(Position::Location, "position");
         #ifndef MAGNUM_TARGET_GLES2
+        if(flags >= Flag::ObjectIdTexture)
+            bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
         if(flags >= Flag::InstancedObjectId)
             bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
@@ -744,6 +840,10 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
                 bindAttributeLocation(NormalMatrix::Location, "instancedNormalMatrix");
             #endif
         }
+        #ifndef MAGNUM_TARGET_GLES2
+        if(flags >= Flag::InstancedTextureOffset)
+            bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
+        #endif
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         if(flags & Flag::TangentDirection ||
            flags & Flag::BitangentFromTangentDirection)
@@ -789,6 +889,12 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
         {
             _transformationMatrixUniform = uniformLocation("transformationMatrix");
             _projectionMatrixUniform = uniformLocation("projectionMatrix");
+            #ifndef MAGNUM_TARGET_GLES2
+            if(flags & Flag::TextureTransformation)
+                _textureMatrixUniform = uniformLocation("textureMatrix");
+            if(flags & Flag::TextureArrays)
+                _textureLayerUniform = uniformLocation("textureLayer");
+            #endif
             if(flags & (Flag::Wireframe
                 #ifndef MAGNUM_TARGET_GLES2
                 |Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
@@ -832,11 +938,15 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
             setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
         }
         #ifndef MAGNUM_TARGET_GLES2
+        if(flags >= Flag::ObjectIdTexture)
+            setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
         if(flags >= Flag::UniformBuffers) {
             setUniformBlockBinding(uniformBlockIndex("Projection"), ProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Transformation"), TransformationBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
+            if(flags & Flag::TextureTransformation)
+                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
         }
         #endif
     }
@@ -1016,6 +1126,14 @@ MeshVisualizerGL3D& MeshVisualizerGL3D::bindDrawBuffer(GL::Buffer& buffer, const
 #endif
 
 Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flag value) {
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Special case coming from the Flags printer. As both flags are a superset
+       of ObjectId, printing just one would result in
+       `Flag::InstancedObjectId|Flag(0x4000)` in the output. */
+    if(value == MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture)))
+        return debug << MeshVisualizerGL2D::Flag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL2D::Flag::ObjectIdTexture;
+    #endif
+
     debug << "Shaders::MeshVisualizerGL2D::Flag" << Debug::nospace;
 
     switch(value) {
@@ -1024,11 +1142,14 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flag value) {
         _c(NoGeometryShader)
         _c(Wireframe)
         #ifndef MAGNUM_TARGET_GLES2
+        _c(TextureTransformation)
         _c(ObjectId)
         _c(InstancedObjectId)
+        _c(ObjectIdTexture)
         #endif
         _c(InstancedTransformation)
         #ifndef MAGNUM_TARGET_GLES2
+        _c(InstancedTextureOffset)
         _c(VertexId)
         #ifndef MAGNUM_TARGET_WEBGL
         _c(PrimitiveId)
@@ -1038,15 +1159,24 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flag value) {
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
         _c(MultiDraw)
+        _c(TextureArrays)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flag value) {
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Special case coming from the Flags printer. As both flags are a superset
+       of ObjectId, printing just one would result in
+       `Flag::InstancedObjectId|Flag(0x4000)` in the output. */
+    if(value == MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture)))
+        return debug << MeshVisualizerGL3D::Flag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL3D::Flag::ObjectIdTexture;
+    #endif
+
     debug << "Shaders::MeshVisualizerGL3D::Flag" << Debug::nospace;
 
     switch(value) {
@@ -1061,11 +1191,14 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flag value) {
         _c(NormalDirection)
         #endif
         #ifndef MAGNUM_TARGET_GLES2
+        _c(TextureTransformation)
         _c(ObjectId)
         _c(InstancedObjectId)
+        _c(ObjectIdTexture)
         #endif
         _c(InstancedTransformation)
         #ifndef MAGNUM_TARGET_GLES2
+        _c(InstancedTextureOffset)
         _c(VertexId)
         #ifndef MAGNUM_TARGET_WEBGL
         _c(PrimitiveId)
@@ -1075,12 +1208,13 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flag value) {
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
         _c(MultiDraw)
+        _c(TextureArrays)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flags value) {
@@ -1090,7 +1224,12 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flags value) {
            there */
         MeshVisualizerGL2D::Flag::NoGeometryShader,
         #ifndef MAGNUM_TARGET_GLES2
+        /* Both are a superset of ObjectId, meaning printing just one would
+           result in `Flag::InstancedObjectId|Flag(0x4000)` in the output. So
+           we pass both and let the Flag printer deal with that. */
+        MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture)),
         MeshVisualizerGL2D::Flag::InstancedObjectId, /* Superset of ObjectId */
+        MeshVisualizerGL2D::Flag::ObjectIdTexture, /* Superset of ObjectId */
         MeshVisualizerGL2D::Flag::ObjectId,
         #endif
         MeshVisualizerGL2D::Flag::InstancedTransformation,
@@ -1121,7 +1260,12 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flags value) {
         MeshVisualizerGL3D::Flag::NormalDirection,
         #endif
         #ifndef MAGNUM_TARGET_GLES2
+        /* Both are a superset of ObjectId, meaning printing just one would
+           result in `Flag::InstancedObjectId|Flag(0x4000)` in the output. So
+           we pass both and let the Flag printer deal with that. */
+        MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture)),
         MeshVisualizerGL3D::Flag::InstancedObjectId, /* Superset of ObjectId */
+        MeshVisualizerGL3D::Flag::ObjectIdTexture, /* Superset of ObjectId */
         MeshVisualizerGL3D::Flag::ObjectId,
         #endif
         MeshVisualizerGL3D::Flag::InstancedTransformation,

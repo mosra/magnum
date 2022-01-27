@@ -207,6 +207,10 @@ See also:
     available also in multi-draw and instanced scenarios
 -   @ref Shaders::FlatGL and @ref Shaders::PhongGL now support object ID
     textures in addition to uniform and per-vertex object ID
+-   @ref Shaders::MeshVisualizerGL2D and @ref Shaders::MeshVisualizerGL3D now
+    supports object ID textures same as @ref Shaders::FlatGL and
+    @ref Shaders::PhongGL, including also support for object ID texture
+    transformation, instanced texture offset and texture arrays
 -   Support for instanced drawing in @ref Shaders::MeshVisualizerGL2D and
     @ref Shaders::MeshVisualizerGL3D for better feature parity with the other
     sahders

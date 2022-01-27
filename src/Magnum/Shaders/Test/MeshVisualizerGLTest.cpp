@@ -64,6 +64,7 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/MeshView.h"
+#include "Magnum/GL/TextureArray.h"
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/GenerateIndices.h"
 #include "Magnum/Primitives/Cone.h"
@@ -113,8 +114,22 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     void bindBufferUniformBuffersNotEnabled2D();
     void bindBufferUniformBuffersNotEnabled3D();
     #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void bindObjectIdTextureInvalid2D();
+    void bindObjectIdTextureInvalid3D();
+    void bindObjectIdTextureArrayInvalid2D();
+    void bindObjectIdTextureArrayInvalid3D();
+    #endif
     void setWireframeNotEnabled2D();
     void setWireframeNotEnabled3D();
+    #ifndef MAGNUM_TARGET_GLES2
+    void setTextureMatrixNotEnabled2D();
+    void setTextureMatrixNotEnabled3D();
+    void setTextureLayerNotArray2D();
+    void setTextureLayerNotArray3D();
+    void bindTextureTransformBufferNotEnabled2D();
+    void bindTextureTransformBufferNotEnabled3D();
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     void setObjectIdNotEnabled2D();
     void setObjectIdNotEnabled3D();
@@ -225,6 +240,12 @@ constexpr struct {
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", MeshVisualizerGL2D::Flag::ObjectId},
     {"instanced object ID", MeshVisualizerGL2D::Flag::InstancedObjectId},
+    {"object ID texture", MeshVisualizerGL2D::Flag::ObjectIdTexture},
+    {"object ID texture array", MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays},
+    {"object ID texture + instanced texture transformation", MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset},
+    {"object ID texture array + instanced texture transformation", MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::InstancedTextureOffset},
+    {"instanced object ID texture array + texture transformation", MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::TextureTransformation},
+    {"wireframe + object ID texture + instanced texture transformation", MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset},
     {"vertex ID", MeshVisualizerGL2D::Flag::VertexId},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizerGL2D::Flag::PrimitiveId},
@@ -256,6 +277,12 @@ constexpr struct {
     {"wireframe w/o GS", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 1},
     {"object ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectId, 1, 1},
     {"instanced object ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::InstancedObjectId, 1, 1},
+    {"object ID texture", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture, 1, 1},
+    {"object ID texture array", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::TextureTransformation, 1, 1},
+    {"object ID texture + instanced texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset, 1, 1},
+    {"object ID texture array + instanced texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::InstancedTextureOffset, 1, 1},
+    {"instanced object ID texture array + texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::TextureTransformation, 1, 1},
+    {"wireframe + object ID texture + instanced texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset, 1, 1},
     {"vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::VertexId, 1, 1},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::PrimitiveId, 1, 1},
@@ -277,6 +304,12 @@ constexpr struct {
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", MeshVisualizerGL3D::Flag::ObjectId},
     {"instanced object ID", MeshVisualizerGL3D::Flag::InstancedObjectId},
+    {"object ID texture", MeshVisualizerGL3D::Flag::ObjectIdTexture},
+    {"object ID texture array", MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays},
+    {"object ID texture + instanced texture transformation", MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedTextureOffset},
+    {"object ID texture array + instanced texture transformation", MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays|MeshVisualizerGL3D::Flag::InstancedTextureOffset},
+    {"instanced object ID texture array + texture transformation", MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::TextureArrays|MeshVisualizerGL3D::Flag::TextureTransformation},
+    {"wireframe + object ID texture + instanced texture transformation", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedTextureOffset},
     {"vertex ID", MeshVisualizerGL3D::Flag::VertexId},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizerGL3D::Flag::PrimitiveId},
@@ -325,6 +358,12 @@ constexpr struct {
     {"wireframe w/o GS", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 1, 1},
     {"object ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::ObjectId, 1, 1},
     {"instanced object ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::InstancedObjectId, 1, 1},
+    {"object ID texture", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::ObjectIdTexture, 1, 1},
+    {"object ID texture array", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays|MeshVisualizerGL3D::Flag::TextureTransformation, 1, 1},
+    {"object ID texture + instanced texture transformation", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedTextureOffset, 1, 1},
+    {"object ID texture array + instanced texture transformation", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays|MeshVisualizerGL3D::Flag::InstancedTextureOffset, 1, 1},
+    {"instanced object ID texture array + texture transformation", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::TextureArrays|MeshVisualizerGL3D::Flag::TextureTransformation, 1, 1},
+    {"wireframe + object ID texture + instanced texture transformation", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedTextureOffset, 1, 1},
     {"vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::VertexId, 1, 1},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::PrimitiveId, 1, 1},
@@ -367,7 +406,17 @@ constexpr struct {
         ": Flag::ObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
     {"both object and vertex ID",
         MeshVisualizerGL2D::Flag::ObjectId|MeshVisualizerGL2D::Flag::VertexId,
-        ": Flag::ObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"}
+        ": Flag::ObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
+    {"texture transformation but not textured",
+        /* ObjectId shares bits with ObjectIdTexture but should still trigger
+           the assert */
+        MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectId,
+        ": texture transformation enabled but the shader is not textured"},
+    {"texture arrays but not textured",
+        /* ObjectId shares bits with ObjectIdTexture but should still trigger
+           the assert */
+        MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::ObjectId,
+        ": texture arrays enabled but the shader is not textured"}
     #endif
 };
 
@@ -408,6 +457,16 @@ constexpr struct {
     {"both vertex and primitive ID",
         MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
         ": Flag::ObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
+    {"texture transformation but not textured",
+        /* ObjectId shares bits with ObjectIdTexture but should still trigger
+           the assert */
+        MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectId,
+        ": texture transformation enabled but the shader is not textured"},
+    {"texture arrays but not textured",
+        /* ObjectId shares bits with ObjectIdTexture but should still trigger
+           the assert */
+        MeshVisualizerGL3D::Flag::TextureArrays|MeshVisualizerGL3D::Flag::ObjectId,
+        ": texture arrays enabled but the shader is not textured"},
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"geometry shader disabled but needed",
@@ -433,6 +492,46 @@ constexpr struct {
         "draw count can't be zero"},
     {"zero materials", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 0, 1,
         "material count can't be zero"},
+};
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    MeshVisualizerGL2D::Flags flags2D;
+    MeshVisualizerGL3D::Flags flags3D;
+    const char* message;
+} BindObjectIdTextureInvalidData[]{
+    {"not textured",
+        /* ObjectId shares bits with ObjectIdTexture but should still trigger
+           the assert */
+        MeshVisualizerGL2D::Flag::ObjectId,
+        MeshVisualizerGL3D::Flag::ObjectId,
+        "Shaders::MeshVisualizerGL::bindObjectIdTexture(): the shader was not created with object ID texture enabled\n"},
+    {"array",
+        MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
+        MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
+        "Shaders::MeshVisualizerGL::bindObjectIdTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead\n"}
+};
+
+constexpr struct {
+    const char* name;
+    MeshVisualizerGL2D::Flags flags2D;
+    MeshVisualizerGL3D::Flags flags3D;
+    const char* message;
+} BindObjectIdTextureArrayInvalidData[]{
+    {"not textured",
+        /* ObjectId shares bits with ObjectIdTexture but should still trigger
+           the assert */
+        /* ObjectId shares bits with ObjectIdTexture but should still trigger
+           the assert */
+        MeshVisualizerGL2D::Flag::ObjectId,
+        MeshVisualizerGL3D::Flag::ObjectId,
+        "Shaders::MeshVisualizerGL::bindObjectIdTexture(): the shader was not created with object ID texture enabled\n"},
+    {"not array",
+        MeshVisualizerGL2D::Flag::ObjectIdTexture,
+        MeshVisualizerGL3D::Flag::ObjectIdTexture,
+        "Shaders::MeshVisualizerGL::bindObjectIdTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead\n"}
 };
 #endif
 
@@ -490,48 +589,96 @@ constexpr struct {
 };
 
 #ifndef MAGNUM_TARGET_GLES2
-constexpr struct {
+const struct {
     const char* name;
     MeshVisualizerGL2D::Flags flags2D;
     MeshVisualizerGL3D::Flags flags3D;
+    Matrix3 textureTransformation;
+    bool flip;
+    Int layer;
     const char* file2D;
     const char* file3D;
 } ObjectVertexPrimitiveIdData[] {
     {"object ID",
         MeshVisualizerGL2D::Flag::ObjectId,
         MeshVisualizerGL3D::Flag::ObjectId,
+        {}, false, 0,
         "objectid2D.tga", "objectid3D.tga"},
     {"instanced object ID",
         MeshVisualizerGL2D::Flag::InstancedObjectId,
         MeshVisualizerGL3D::Flag::InstancedObjectId,
+        {}, false, 0,
         "instancedobjectid2D.tga", "instancedobjectid3D.tga"},
+    {"textured object ID",
+        MeshVisualizerGL2D::Flag::ObjectIdTexture,
+        MeshVisualizerGL3D::Flag::ObjectIdTexture,
+        {}, false, 0,
+        "objectidtexture2D.tga", "objectidtexture3D.tga"},
+    {"textured object ID, texture transformation",
+        MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureTransformation,
+        MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}), true, 0,
+        "objectidtexture2D.tga", "objectidtexture3D.tga"},
+    {"texture array object ID, first layer",
+        MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
+        MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
+        {}, false, 0,
+        "objectidtexture2D.tga", "objectidtexture3D.tga"},
+    {"texture array object ID, arbitrary layer",
+        MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
+        MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
+        {}, false, 6,
+        "objectidtexture2D.tga", "objectidtexture3D.tga"},
+    {"texture array object ID, texture transformation, arbitrary layer",
+        MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::TextureTransformation,
+        MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays|MeshVisualizerGL3D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}), true, 6,
+        "objectidtexture2D.tga", "objectidtexture3D.tga"},
     {"vertex ID",
         MeshVisualizerGL2D::Flag::VertexId,
         MeshVisualizerGL3D::Flag::VertexId,
+        {}, false, 0,
         "vertexid2D.tga", "vertexid3D.tga"},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID",
         MeshVisualizerGL2D::Flag::PrimitiveId,
         MeshVisualizerGL3D::Flag::PrimitiveId,
+        {}, false, 0,
         "primitiveid2D.tga", "primitiveid3D.tga"},
     #endif
     {"primitive ID from vertex ID",
         MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId,
         MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
+        {}, false, 0,
         "primitiveid2D.tga", "primitiveid3D.tga"},
     {"wireframe + instanced object ID",
         MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::Wireframe,
         MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::Wireframe,
+        {}, false, 0,
         "wireframe-instancedobjectid2D.tga", "wireframe-instancedobjectid3D.tga"},
     {"wireframe + instanced object ID, no geometry shader",
         MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::Wireframe|
         MeshVisualizerGL2D::Flag::NoGeometryShader,
         MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::Wireframe|
         MeshVisualizerGL3D::Flag::NoGeometryShader,
+        {}, false, 0,
         "wireframe-nogeo-instancedobjectid2D.tga", "wireframe-nogeo-instancedobjectid3D.tga"},
+    /* These two are here to test that all required texture-related attributes
+       are properly passed through the GS */
+    {"wireframe + textured object ID",
+        MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::Wireframe,
+        MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::Wireframe,
+        {}, false, 0,
+        "wireframe-objectidtexture2D.tga", "wireframe-objectidtexture3D.tga"},
+    {"wireframe + texture array object ID, texture transformation, arbitrary layer",
+        MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::Wireframe,
+        MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::Wireframe,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}), true, 6,
+        "wireframe-objectidtexture2D.tga", "wireframe-objectidtexture3D.tga"},
     {"wireframe + vertex ID",
         MeshVisualizerGL2D::Flag::VertexId|MeshVisualizerGL2D::Flag::Wireframe,
         MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::Wireframe,
+        {}, false, 0,
         "wireframe-vertexid2D.tga", "wireframe-vertexid3D.tga"}
 };
 #endif
@@ -621,6 +768,18 @@ const struct {
         MeshVisualizerGL2D::Flag::InstancedObjectId,
         /* SwiftShader has a few rounding errors on edges */
         133.0f, 0.12f},
+    {"textured object ID", "instanced-objectidtexture2D.tga",
+        MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset,
+        /* SwiftShader has a few rounding errors on edges */
+        146.7f, 0.097f},
+    {"instanced textured object ID", "instanced-instancedobjectidtexture2D.tga",
+        MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset,
+        /* SwiftShader has a few rounding errors on edges */
+        133.0f, 0.071f},
+    {"instanced textured array object ID", "instanced-instancedobjectidtexture2D.tga",
+        MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset|MeshVisualizerGL2D::Flag::TextureArrays,
+        /* SwiftShader has a few rounding errors on edges */
+        133.0f, 0.071f},
     #endif
 };
 
@@ -653,6 +812,18 @@ const struct {
         MeshVisualizerGL3D::Flag::InstancedObjectId,
         /* SwiftShader has an off-by-one error on certain colors */
         0.334f, 0.042f},
+    {"textured object ID", "instanced-objectidtexture3D.tga",
+        MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedTextureOffset,
+        /* SwiftShader has a few rounding errors on edges */
+        28.67f, 0.097f},
+    {"instanced textured object ID", "instanced-instancedobjectidtexture3D.tga",
+        MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedTextureOffset,
+        /* SwiftShader has a few rounding errors on edges */
+        32.67f, 0.101f},
+    {"instanced textured array object ID", "instanced-instancedobjectidtexture3D.tga",
+        MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedTextureOffset|MeshVisualizerGL3D::Flag::TextureArrays,
+        /* SwiftShader has a few rounding errors on edges */
+        32.67f, 0.101f},
     #endif
 };
 
@@ -686,6 +857,14 @@ constexpr struct {
         MeshVisualizerGL2D::Flag::InstancedObjectId,
         1, 1, 16,
         0.0f, 0.0f},
+    {"bind with offset, textured object ID", "multidraw-objectidtexture2D.tga",
+        MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture,
+        1, 1, 16,
+        0.0f, 0.0f},
+    {"bind with offset, textured array object ID", "multidraw-objectidtexture2D.tga",
+        MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
+        1, 1, 16,
+        0.0f, 0.0f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, wireframe", "multidraw-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe,
@@ -707,6 +886,14 @@ constexpr struct {
         MeshVisualizerGL2D::Flag::InstancedObjectId,
         2, 3, 1,
         0.0f, 0.0f},
+    {"draw offset, textured object ID", "multidraw-objectidtexture2D.tga",
+        MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture,
+        2, 3, 1,
+        0.0f, 0.0f},
+    {"draw offset, textured array object ID", "multidraw-objectidtexture2D.tga",
+        MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
+        2, 3, 1,
+        0.0f, 0.0f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, wireframe", "multidraw-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe,
@@ -726,6 +913,14 @@ constexpr struct {
         0.67f, 0.01f},
     {"multidraw, instanced object ID", "multidraw-instancedobjectid2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::InstancedObjectId,
+        2, 3, 1,
+        0.0f, 0.0f},
+    {"multidraw, textured object ID", "multidraw-objectidtexture2D.tga",
+        MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture,
+        2, 3, 1,
+        0.0f, 0.0f},
+    {"multidraw, textured array object ID", "multidraw-objectidtexture2D.tga",
+        MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
         2, 3, 1,
         0.0f, 0.0f},
 };
@@ -760,6 +955,14 @@ constexpr struct {
         MeshVisualizerGL3D::Flag::InstancedObjectId,
         1, 1, 16,
         0.0f, 0.0f},
+    {"bind with offset, textured object ID", "multidraw-objectidtexture3D.tga",
+        MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture,
+        1, 1, 16,
+        0.0f, 0.0f},
+    {"bind with offset, textured array object ID", "multidraw-objectidtexture3D.tga",
+        MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
+        1, 1, 16,
+        0.0f, 0.0f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe,
@@ -782,6 +985,14 @@ constexpr struct {
         MeshVisualizerGL3D::Flag::InstancedObjectId,
         2, 3, 1,
         0.0f, 0.0f},
+    {"draw offset, textured object ID", "multidraw-objectidtexture3D.tga",
+        MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture,
+        2, 3, 1,
+        0.0f, 0.0f},
+    {"draw offset, textured array object ID", "multidraw-objectidtexture3D.tga",
+        MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
+        2, 3, 1,
+        0.0f, 0.0f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe,
@@ -802,6 +1013,14 @@ constexpr struct {
         0.67f, 0.01f},
     {"multidraw, instanced object ID", "multidraw-instancedobjectid3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::InstancedObjectId,
+        2, 3, 1,
+        0.0f, 0.0f},
+    {"multidraw, textured object ID", "multidraw-objectidtexture3D.tga",
+        MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture,
+        2, 3, 1,
+        0.0f, 0.0f},
+    {"multidraw, textured array object ID", "multidraw-objectidtexture3D.tga",
+        MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
         2, 3, 1,
         0.0f, 0.0f},
 };
@@ -856,8 +1075,28 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D,
         &MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D,
         #endif
+        });
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&MeshVisualizerGLTest::bindObjectIdTextureInvalid2D,
+                       &MeshVisualizerGLTest::bindObjectIdTextureInvalid3D},
+        Containers::arraySize(BindObjectIdTextureInvalidData));
+    addInstancedTests({&MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid2D,
+                       &MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid3D},
+        Containers::arraySize(BindObjectIdTextureArrayInvalidData));
+    #endif
+
+    addTests({
         &MeshVisualizerGLTest::setWireframeNotEnabled2D,
         &MeshVisualizerGLTest::setWireframeNotEnabled3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::setTextureMatrixNotEnabled2D,
+        &MeshVisualizerGLTest::setTextureMatrixNotEnabled3D,
+        &MeshVisualizerGLTest::setTextureLayerNotArray2D,
+        &MeshVisualizerGLTest::setTextureLayerNotArray3D,
+        &MeshVisualizerGLTest::bindTextureTransformBufferNotEnabled2D,
+        &MeshVisualizerGLTest::bindTextureTransformBufferNotEnabled3D,
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::setObjectIdNotEnabled2D,
         &MeshVisualizerGLTest::setObjectIdNotEnabled3D,
@@ -1540,6 +1779,8 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
 
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader};
     shader.setTransformationProjectionMatrix({})
+        .setTextureMatrix({})
+        .setTextureLayer({})
         /* setViewportSize() works on both UBOs and classic */
         .setObjectId({})
         .setColor({})
@@ -1549,6 +1790,8 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
         .setSmoothness({});
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL2D::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setTextureLayer(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setObjectId(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setWireframeColor(): the shader was created with uniform buffers enabled\n"
@@ -1573,6 +1816,8 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader};
     shader.setProjectionMatrix({})
         .setTransformationMatrix({})
+        .setTextureMatrix({})
+        .setTextureLayer({})
         /* setViewportSize() works on both UBOs and classic */
         .setObjectId({})
         .setColor({})
@@ -1583,6 +1828,8 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL3D::setProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL3D::setTransformationMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setTextureLayer(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setObjectId(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setWireframeColor(): the shader was created with uniform buffers enabled\n"
@@ -1618,6 +1865,8 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D() {
           .bindTransformationProjectionBuffer(buffer, 0, 16)
           .bindDrawBuffer(buffer)
           .bindDrawBuffer(buffer, 0, 16)
+          .bindTextureTransformationBuffer(buffer)
+          .bindTextureTransformationBuffer(buffer, 0, 16)
           .bindMaterialBuffer(buffer)
           .bindMaterialBuffer(buffer, 0, 16)
           .setDrawOffset(0);
@@ -1626,6 +1875,8 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D() {
         "Shaders::MeshVisualizerGL2D::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL2D::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL2D::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
@@ -1647,6 +1898,8 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D() {
           .bindTransformationBuffer(buffer, 0, 16)
           .bindDrawBuffer(buffer)
           .bindDrawBuffer(buffer, 0, 16)
+          .bindTextureTransformationBuffer(buffer)
+          .bindTextureTransformationBuffer(buffer, 0, 16)
           .bindMaterialBuffer(buffer)
           .bindMaterialBuffer(buffer, 0, 16)
           .setDrawOffset(0);
@@ -1657,9 +1910,103 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D() {
         "Shaders::MeshVisualizerGL3D::bindTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL3D::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL3D::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::bindObjectIdTextureInvalid2D() {
+    auto&& data = BindObjectIdTextureInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags2D & MeshVisualizerGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    GL::Texture2D texture;
+    MeshVisualizerGL2D shader{data.flags2D};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.bindObjectIdTexture(texture);
+    CORRADE_COMPARE(out.str(), data.message);
+}
+
+void MeshVisualizerGLTest::bindObjectIdTextureInvalid3D() {
+    auto&& data = BindObjectIdTextureInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags3D & MeshVisualizerGL3D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    GL::Texture2D texture;
+    MeshVisualizerGL3D shader{data.flags3D};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.bindObjectIdTexture(texture);
+    CORRADE_COMPARE(out.str(), data.message);
+}
+
+void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid2D() {
+    auto&& data = BindObjectIdTextureArrayInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Texture2DArray textureArray;
+    MeshVisualizerGL2D shader{data.flags2D};
+    shader.bindObjectIdTexture(textureArray);
+
+    CORRADE_COMPARE(out.str(), data.message);
+}
+
+void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid3D() {
+    auto&& data = BindObjectIdTextureArrayInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Texture2DArray textureArray;
+    MeshVisualizerGL3D shader{data.flags3D};
+    shader.bindObjectIdTexture(textureArray);
+
+    CORRADE_COMPARE(out.str(), data.message);
 }
 #endif
 
@@ -1731,6 +2078,108 @@ void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
         "Shaders::MeshVisualizerGL::setWireframeWidth(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizerGL3D::setSmoothness(): the shader was not created with wireframe or TBN direction enabled\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::setTextureMatrixNotEnabled2D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::ObjectIdTexture};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.setTextureMatrix({});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
+}
+
+void MeshVisualizerGLTest::setTextureMatrixNotEnabled3D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::ObjectIdTexture};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.setTextureMatrix({});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
+}
+
+void MeshVisualizerGLTest::setTextureLayerNotArray2D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::ObjectIdTexture};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.setTextureLayer(37);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL::setTextureLayer(): the shader was not created with texture arrays enabled\n");
+}
+
+void MeshVisualizerGLTest::setTextureLayerNotArray3D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::ObjectIdTexture};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.setTextureLayer(37);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL::setTextureLayer(): the shader was not created with texture arrays enabled\n");
+}
+
+void MeshVisualizerGLTest::bindTextureTransformBufferNotEnabled2D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.bindTextureTransformationBuffer(buffer)
+          .bindTextureTransformationBuffer(buffer, 0, 16);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n"
+        "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n");
+}
+
+void MeshVisualizerGLTest::bindTextureTransformBufferNotEnabled3D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.bindTextureTransformationBuffer(buffer)
+          .bindTextureTransformationBuffer(buffer, 0, 16);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n"
+        "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n");
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshVisualizerGLTest::setObjectIdNotEnabled2D() {
@@ -3003,6 +3452,11 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags2D & MeshVisualizerGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     /* Interestingly for PrimitiveIdFromVertexId gl_VertexID in SwiftShader
        works -- maybe it works only for nonindexed triangle draws? */
     if(data.flags2D & MeshVisualizerGL2D::Flag::VertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
@@ -3026,7 +3480,10 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     #endif
     #endif
 
-    Trade::MeshData circleData = Primitives::circle2DSolid(16);
+    Primitives::Circle2DFlags circleFlags;
+    if(data.flags2D & MeshVisualizerGL2D::Flag::ObjectIdTexture)
+        circleFlags |= Primitives::Circle2DFlag::TextureCoordinates;
+    Trade::MeshData circleData = Primitives::circle2DSolid(16, circleFlags);
 
     /* Add the instanced Object ID data even if visualizing just uniform object
        ID, to test the attribute isn't accidentally accessed always */
@@ -3054,11 +3511,44 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
 
     GL::Mesh circle = MeshTools::compile(circleData);
 
-    MeshVisualizerGL2D shader{data.flags2D|flag};
+    MeshVisualizerGL2D::Flags flags = data.flags2D|flag;
+    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers && (data.flags2D & MeshVisualizerGL2D::Flag::TextureArrays) && !(data.flags2D & MeshVisualizerGL2D::Flag::TextureTransformation)) {
+        CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= MeshVisualizerGL2D::Flag::TextureTransformation;
+    }
+    MeshVisualizerGL2D shader{flags};
     shader
         /* Shouldn't assert (nor warn) when wireframe is not enabled */
         .setViewportSize({80, 80})
         .bindColorMapTexture(_colorMapTexture);
+
+    GL::Texture2D texture{NoCreate};
+    GL::Texture2DArray textureArray{NoCreate};
+    if(data.flags2D >= MeshVisualizerGL2D::Flag::ObjectIdTexture) {
+        const UnsignedShort imageData[]{1, 0, 0, 7};
+        const UnsignedShort imageDataFlipped[]{7, 0, 0, 1};
+        ImageView2D image{PixelFormat::R16UI, {2, 2}, data.flip ? imageDataFlipped : imageData};
+
+        if(data.flags2D & MeshVisualizerGL2D::Flag::TextureArrays) {
+            textureArray = GL::Texture2DArray{};
+            textureArray.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, {image.size(), data.layer + 1})
+                .setSubImage(0, {0, 0, data.layer}, image);
+            shader.bindObjectIdTexture(textureArray);
+            if(flag != MeshVisualizerGL2D::Flag::UniformBuffers && data.layer != 0)
+                shader.setTextureLayer(data.layer); /* to verify the default */
+        } else {
+            texture = GL::Texture2D{};
+            texture.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(texture);
+        }
+    }
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
         /* Remove blue so it's clear the (wireframe) background and mapped ID
@@ -3083,6 +3573,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
            the whole colormap due to the repeat wrapping */
         else
             shader.setColorMapTransformation(0.5f, -1.0f/16.0f);
+        if(data.textureTransformation != Matrix3{})
+            shader.setTextureMatrix(data.textureTransformation);
         shader.draw(circle);
     } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
         /* See above for comments */
@@ -3094,6 +3586,11 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
             MeshVisualizerDrawUniform2D{}
                 .setObjectId(8)
         }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(data.textureTransformation)
+                .setLayer(data.layer)
+        }};
         MeshVisualizerMaterialUniform materialUniformData[1];
         materialUniformData->setColor(0xffff00_rgbf);
         if(data.flags2D & MeshVisualizerGL2D::Flag::Wireframe)
@@ -3103,6 +3600,10 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         else
             materialUniformData->setColorMapTransformation(0.5f, -1.0f/16.0f);
         GL::Buffer materialUniform{materialUniformData};
+        /* Also take into account the case when texture transform needs to be
+           enabled for texture arrays, so not data.flags but flags */
+        if(flags & MeshVisualizerGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader
             .bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
@@ -3143,6 +3644,11 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags2D & MeshVisualizerGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     /* Interestingly for PrimitiveIdFromVertexId gl_VertexID in SwiftShader
        works -- maybe it works only for nonindexed triangle draws? */
     if(data.flags3D & MeshVisualizerGL3D::Flag::VertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
@@ -3166,7 +3672,10 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     #endif
     #endif
 
-    Trade::MeshData sphereData = Primitives::uvSphereSolid(4, 8);
+    Primitives::UVSphereFlags sphereFlags;
+    if(data.flags2D & MeshVisualizerGL2D::Flag::ObjectIdTexture)
+        sphereFlags |= Primitives::UVSphereFlag::TextureCoordinates;
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(4, 8, sphereFlags);
 
     /* Add the instanced Object ID data even if visualizing just uniform object
        ID, to test the attribute isn't accidentally accessed always */
@@ -3189,11 +3698,44 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
 
     GL::Mesh sphere = MeshTools::compile(sphereData);
 
-    MeshVisualizerGL3D shader{data.flags3D|flag};
+    MeshVisualizerGL3D::Flags flags = data.flags3D|flag;
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers && (data.flags3D & MeshVisualizerGL3D::Flag::TextureArrays) && !(data.flags3D & MeshVisualizerGL3D::Flag::TextureTransformation)) {
+        CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= MeshVisualizerGL3D::Flag::TextureTransformation;
+    }
+    MeshVisualizerGL3D shader{flags};
     shader
         /* Shouldn't assert (nor warn) when wireframe is not enabled */
         .setViewportSize({80, 80})
         .bindColorMapTexture(_colorMapTexture);
+
+    GL::Texture2D texture{NoCreate};
+    GL::Texture2DArray textureArray{NoCreate};
+    if(data.flags3D >= MeshVisualizerGL3D::Flag::ObjectIdTexture) {
+        const UnsignedShort imageData[]{1, 0, 0, UnsignedShort(sphere.count()/6 - 1)};
+        const UnsignedShort imageDataFlipped[]{UnsignedShort(sphere.count()/6 - 1), 0, 0, 1};
+        ImageView2D image{PixelFormat::R16UI, {2, 2}, data.flip ? imageDataFlipped : imageData};
+
+        if(data.flags2D & MeshVisualizerGL2D::Flag::TextureArrays) {
+            textureArray = GL::Texture2DArray{};
+            textureArray.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, {image.size(), data.layer + 1})
+                .setSubImage(0, {0, 0, data.layer}, image);
+            shader.bindObjectIdTexture(textureArray);
+            if(flag != MeshVisualizerGL3D::Flag::UniformBuffers && data.layer != 0)
+                shader.setTextureLayer(data.layer); /* to verify the default */
+        } else {
+            texture = GL::Texture2D{};
+            texture.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(texture);
+        }
+    }
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
         /* Remove blue so it's clear the wireframe background and mapped ID
@@ -3221,6 +3763,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
            the whole colormap due to the repeat wrapping */
         else
             shader.setColorMapTransformation(0.5f, -1.0f/(sphere.count()/3));
+        if(data.textureTransformation != Matrix3{})
+            shader.setTextureMatrix(data.textureTransformation);
         shader.draw(sphere);
     } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         /* See above for comments */
@@ -3240,6 +3784,11 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
             MeshVisualizerDrawUniform3D{}
                 .setObjectId(sphere.count()/6)
         }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(data.textureTransformation)
+                .setLayer(data.layer)
+        }};
         MeshVisualizerMaterialUniform materialUniformData[1];
         materialUniformData->setColor(0xffff00_rgbf);
         if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe)
@@ -3249,6 +3798,10 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         else
             materialUniformData->setColorMapTransformation(0.5f, -1.0f/(sphere.count()/3));
         GL::Buffer materialUniform{materialUniformData};
+        /* Also take into account the case when texture transform needs to be
+           enabled for texture arrays, so not data.flags but flags */
+        if(flags & MeshVisualizerGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader
             .bindProjectionBuffer(projectionUniform)
             .bindTransformationBuffer(transformationUniform)
@@ -3545,6 +4098,18 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & MeshVisualizerGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Interestingly enough, on SwiftShader it only fails in case UBOs are
+       used. Dafuq is this buggy crap?! */
+    if(data.flags & MeshVisualizerGL2D::Flag::VertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        CORRADE_SKIP("gl_VertexID not supported");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
         CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
@@ -3559,7 +4124,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
     #endif
     #endif
 
-    Trade::MeshData circleData = Primitives::circle2DSolid(8);
+    Trade::MeshData circleData = Primitives::circle2DSolid(8, Primitives::Circle2DFlag::TextureCoordinates);
     /* For a GS-less wireframe we have to deindex the mesh (but first turn the
        triangle fan into an indexed mesh) */
     if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)
@@ -3569,19 +4134,27 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
     /* Three circles, each in a different location */
     struct {
         Matrix3 transformation;
+        Vector3 textureOffsetLayer;
         UnsignedInt objectId;
     } instanceData[] {
-        /* 6 gets added to objectId, wrapping it around to 0, making it
-           visually close to the multidraw test */
-        {Matrix3::translation({-1.25f, -1.25f}), 6},
-        {Matrix3::translation({ 1.25f, -1.25f}), 10},
-        {Matrix3::translation({ 0.00f,  1.25f}), 14},
+        {Matrix3::translation({-1.25f, -1.25f}),
+            /* 6 gets added to objectId, wrapping it around to 0, making it
+               visually close to the multidraw test */
+            {0.0f, 0.0f, 0.0f}, 6},
+        {Matrix3::translation({ 1.25f, -1.25f}),
+            {1.0f, 0.0f, 1.0f}, 10},
+        {Matrix3::translation({ 0.00f,  1.25f}),
+            #ifndef MAGNUM_TARGET_GLES2
+            data.flags & MeshVisualizerGL2D::Flag::TextureArrays ? Vector3{0.0f, 0.0f, 2.0f} :
+            #endif
+            Vector3{0.5f, 1.0f, 2.0f}, 14},
     };
 
     circle
         .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
             MeshVisualizerGL2D::TransformationMatrix{},
             #ifndef MAGNUM_TARGET_GLES2
+            MeshVisualizerGL2D::TextureOffsetLayer{},
             MeshVisualizerGL2D::ObjectId{}
             #else
             4
@@ -3597,14 +4170,82 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         shader.bindColorMapTexture(_colorMapTexture);
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2D objectIdTexture{NoCreate};
+    GL::Texture2DArray objectIdTextureArray{NoCreate};
+    if(data.flags >= MeshVisualizerGL2D::Flag::ObjectIdTexture) {
+        /* This should match transformation done for the diffuse/normal
+           texture */
+        if(data.flags & MeshVisualizerGL2D::Flag::TextureArrays) {
+            /* 2 extra slices as a base offset, each slice has half height,
+               second slice has the data in the right half */
+            const UnsignedShort imageData[]{
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+
+                5, 0, 0, 0,
+                0, 5, 0, 0,
+
+                0, 0, 3, 0,
+                0, 0, 0, 3,
+
+                1, 0, 0, 0,
+                0, 1, 0, 0
+            };
+            ImageView3D image{PixelFormat::R16UI, {4, 2, 5}, imageData};
+
+            objectIdTextureArray = GL::Texture2DArray{};
+            objectIdTextureArray.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTextureArray);
+        } else {
+            /* First is taken from bottom left, second from bottom right, third
+               from top center */
+            const UnsignedShort imageData[]{
+                5, 0, 3, 0,
+                0, 5, 0, 3,
+                0, 1, 0, 0,
+                0, 0, 1, 0
+            };
+            ImageView2D image{PixelFormat::R16UI, {4, 4}, imageData};
+
+            objectIdTexture = GL::Texture2D{};
+            objectIdTexture.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTexture);
+        }
+    }
+    #endif
+
     if(flag == MeshVisualizerGL2D::Flag{}) {
         shader
             .setColor(0xffffcc_rgbf)
             .setTransformationProjectionMatrix(
                 Matrix3::projection({2.1f, 2.1f})*
                 Matrix3::scaling(Vector2{0.4f}));
+
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.flags & MeshVisualizerGL2D::Flag::TextureTransformation)
+            shader.setTextureMatrix(Matrix3::scaling(
+                /* Slices of the texture array have half the height */
+                data.flags & MeshVisualizerGL2D::Flag::TextureArrays ? Vector2::xScale(0.5f) : Vector2{0.5f}
+            ));
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.flags & MeshVisualizerGL2D::Flag::TextureArrays)
+            shader.setTextureLayer(2); /* base offset */
+        #endif
+
         if(data.flags & MeshVisualizerGL2D::Flag::Wireframe)
             shader.setWireframeColor(0xcc0000_rgbf);
+
         #ifndef MAGNUM_TARGET_GLES2
         if(data.flags & MeshVisualizerGL2D::Flag::VertexId)
             shader.setColorMapTransformation(0.5f/circleData.vertexCount(), 1.0f/circleData.vertexCount());
@@ -3631,6 +4272,16 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
             MeshVisualizerDrawUniform2D{}
                 .setObjectId(6)
         }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(Matrix3::scaling(
+                    #ifndef MAGNUM_TARGET_GLES2
+                    /* Slices of the texture array have half the height */
+                    data.flags & MeshVisualizerGL2D::Flag::TextureArrays ? Vector2::xScale(0.5f) :
+                    #endif
+                    Vector2{0.5f}))
+                .setLayer(2) /* base offset */
+        }};
         MeshVisualizerMaterialUniform materialUniformData[1];
         (*materialUniformData)
             .setColor(0xffffcc_rgbf)
@@ -3640,6 +4291,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         else if(data.flags & MeshVisualizerGL2D::Flag::ObjectId)
             materialUniformData->setColorMapTransformation(0.5f/12, 1.0f/12);
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialUniformData};
+        if(data.flags & MeshVisualizerGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform)
@@ -3703,6 +4356,18 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & MeshVisualizerGL3D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Interestingly enough, on SwiftShader it only fails in case UBOs are
+       used. Dafuq is this buggy crap?! */
+    if(data.flags & MeshVisualizerGL3D::Flag::VertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        CORRADE_SKIP("gl_VertexID not supported");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
         CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
@@ -3717,7 +4382,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
     #endif
     #endif
 
-    Trade::MeshData sphereData = Primitives::uvSphereSolid(2, 4, Primitives::UVSphereFlag::Tangents);
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(2, 4, Primitives::UVSphereFlag::TextureCoordinates|Primitives::UVSphereFlag::Tangents);
     /* For a GS-less wireframe we have to deindex the mesh */
     if(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)
         sphereData = MeshTools::duplicate(sphereData);
@@ -3729,6 +4394,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
     struct {
         Matrix4 transformation;
         Matrix3x3 normal;
+        Vector3 textureOffsetLayer;
         UnsignedInt objectId;
     } instanceData[] {
         {Matrix4::translation(Math::gather<'z', 'y', 'x'>(Vector3{-1.25f, -1.25f, 0.0f}))*Matrix4::rotationY(-45.0_degf)*Matrix4::rotationX(45.0_degf),
@@ -3737,13 +4403,16 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
             (Matrix4::rotationY(-45.0_degf)*Matrix4::rotationX(45.0_degf)).normalMatrix(),
             /* 6 gets added to the uniform objectId, wrapping it around to 0,
                making it visually close to the multidraw test */
-            6},
+            {0.0f, 0.0f, 0.0f}, 6},
         {Matrix4::translation(Math::gather<'z', 'y', 'x'>(Vector3{ 1.25f, -1.25f, 0.0f})),
             {},
-            10},
+            {1.0f, 0.0f, 1.0f}, 10},
         {Matrix4::translation(Math::gather<'z', 'y', 'x'>(Vector3{  0.0f,  1.0f, -1.0f})),
             {},
-            14}
+            #ifndef MAGNUM_TARGET_GLES2
+            data.flags & MeshVisualizerGL3D::Flag::TextureArrays ? Vector3{0.0f, 0.0f, 2.0f} :
+            #endif
+            Vector3{0.5f, 1.0f, 2.0f}, 14}
     };
 
     sphere
@@ -3755,6 +4424,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
             sizeof(Matrix3x3),
             #endif
             #ifndef MAGNUM_TARGET_GLES2
+            MeshVisualizerGL3D::TextureOffsetLayer{},
             MeshVisualizerGL3D::ObjectId{}
             #else
             4
@@ -3770,6 +4440,60 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         shader.bindColorMapTexture(_colorMapTexture);
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2D objectIdTexture{NoCreate};
+    GL::Texture2DArray objectIdTextureArray{NoCreate};
+    if(data.flags >= MeshVisualizerGL3D::Flag::ObjectIdTexture) {
+        /* This should match transformation done for the diffuse/normal
+           texture */
+        if(data.flags & MeshVisualizerGL3D::Flag::TextureArrays) {
+            /* 2 extra slices as a base offset, each slice has half height,
+               second slice has the data in the right half */
+            const UnsignedShort imageData[]{
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+
+                5, 0, 0, 0,
+                0, 5, 0, 0,
+
+                0, 0, 3, 0,
+                0, 0, 0, 3,
+
+                1, 0, 0, 0,
+                0, 1, 0, 0
+            };
+            ImageView3D image{PixelFormat::R16UI, {4, 2, 5}, imageData};
+
+            objectIdTextureArray = GL::Texture2DArray{};
+            objectIdTextureArray.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTextureArray);
+        } else {
+            /* First is taken from bottom left, second from bottom right, third
+               from top center (there I just duplicate the pixel on both
+               sides) */
+            const UnsignedShort imageData[]{
+                5, 0, 3, 0,
+                0, 5, 0, 3,
+                0, 1, 0, 0,
+                0, 0, 1, 0
+            };
+            ImageView2D image{PixelFormat::R16UI, {4, 4}, imageData};
+
+            objectIdTexture = GL::Texture2D{};
+            objectIdTexture.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTexture);
+        }
+    }
+    #endif
+
     if(flag == MeshVisualizerGL3D::Flag{}) {
         shader
             .setColor(0xffffcc_rgbf)
@@ -3779,14 +4503,30 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
                 Matrix4::scaling(Vector3{0.4f}))
             .setProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f));
+
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         if(data.flags & (MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::NormalDirection))
             shader
                 .setNormalMatrix(Matrix4::rotationY(90.0_degf).normalMatrix())
                 .setLineLength(0.25f);
         #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.flags & MeshVisualizerGL3D::Flag::TextureTransformation)
+            shader.setTextureMatrix(Matrix3::scaling(
+                /* Slices of the texture array have half the height */
+                data.flags & MeshVisualizerGL3D::Flag::TextureArrays ? Vector2::xScale(0.5f) : Vector2{0.5f}
+            ));
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.flags & MeshVisualizerGL3D::Flag::TextureArrays)
+            shader.setTextureLayer(2); /* base offset */
+        #endif
+
         if(data.flags & MeshVisualizerGL3D::Flag::Wireframe)
             shader.setWireframeColor(0xcc0000_rgbf);
+
         #ifndef MAGNUM_TARGET_GLES2
         if(data.flags & MeshVisualizerGL3D::Flag::VertexId)
             shader.setColorMapTransformation(0.5f/sphereData.vertexCount(), 1.0f/sphereData.vertexCount());
@@ -3818,6 +4558,16 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
                 .setNormalMatrix(Matrix4::rotationY(90.0_degf).normalMatrix())
                 .setObjectId(6)
         }};
+        GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TextureTransformationUniform{}
+                .setTextureMatrix(Matrix3::scaling(
+                    #ifndef MAGNUM_TARGET_GLES2
+                    /* Slices of the texture array have half the height */
+                    data.flags & MeshVisualizerGL3D::Flag::TextureArrays ? Vector2::xScale(0.5f) :
+                    #endif
+                    Vector2{0.5f}))
+                .setLayer(2) /* base offset */
+        }};
         MeshVisualizerMaterialUniform materialUniformData[1];
         (*materialUniformData)
             .setColor(0xffffcc_rgbf)
@@ -3828,6 +4578,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         else if(data.flags & MeshVisualizerGL3D::Flag::ObjectId)
             materialUniformData->setColorMapTransformation(0.5f/12, 1.0f/12);
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialUniformData};
+        if(data.flags & MeshVisualizerGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindProjectionBuffer(projectionUniform)
             .bindTransformationBuffer(transformationUniform)
             .bindDrawBuffer(drawUniform)
@@ -3901,10 +4653,64 @@ void MeshVisualizerGLTest::renderMulti2D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
+    shader.setViewportSize(Vector2{RenderSize});
+    if(data.flags & (MeshVisualizerGL2D::Flag::VertexId|MeshVisualizerGL2D::Flag::ObjectId))
+        shader.bindColorMapTexture(_colorMapTexture);
+
+    GL::Texture2D objectIdTexture{NoCreate};
+    GL::Texture2DArray objectIdTextureArray{NoCreate};
+    if(data.flags >= MeshVisualizerGL2D::Flag::ObjectIdTexture) {
+        /* This should match transformation done for the diffuse/normal
+           texture */
+        if(data.flags & MeshVisualizerGL2D::Flag::TextureArrays) {
+            /* Each slice has half height, second slice has the data in the
+               right half */
+            const UnsignedShort imageData[]{
+                5, 0, 0, 0,
+                0, 5, 0, 0,
+
+                0, 0, 3, 0,
+                0, 0, 0, 3,
+
+                1, 0, 0, 0,
+                0, 1, 0, 0
+            };
+            ImageView3D image{PixelFormat::R16UI, {4, 2, 3}, imageData};
+
+            objectIdTextureArray = GL::Texture2DArray{};
+            objectIdTextureArray.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTextureArray);
+        } else {
+            /* First is taken from bottom left, second from bottom right, third
+               from top center (there I just duplicate the pixel on both
+               sides) */
+            const UnsignedShort imageData[]{
+                5, 0, 3, 0,
+                0, 5, 0, 3,
+                0, 1, 0, 0,
+                0, 0, 1, 0
+            };
+            ImageView2D image{PixelFormat::R16UI, {4, 4}, imageData};
+
+            objectIdTexture = GL::Texture2D{};
+            objectIdTexture.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTexture);
+        }
+    }
+
     /* Circle is a fan, plane is a strip, make it indexed first */
-    Trade::MeshData circleData = MeshTools::generateIndices(Primitives::circle2DSolid(8));
-    Trade::MeshData squareData = MeshTools::generateIndices(Primitives::squareSolid());
-    Trade::MeshData triangleData = MeshTools::generateIndices(Primitives::circle2DSolid(3));
+    Trade::MeshData circleData = MeshTools::generateIndices(Primitives::circle2DSolid(8, Primitives::Circle2DFlag::TextureCoordinates));
+    Trade::MeshData squareData = MeshTools::generateIndices(Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates));
+    Trade::MeshData triangleData = MeshTools::generateIndices(Primitives::circle2DSolid(3, Primitives::Circle2DFlag::TextureCoordinates));
     /* For instanced object ID rendering we have to add the object ID
        attribute. Use the same numbers for all meshes, it'll get differentiated
        by the per-draw object ID. */
@@ -3994,6 +4800,33 @@ void MeshVisualizerGLTest::renderMulti2D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
+    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            data.flags & MeshVisualizerGL2D::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({0.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({0.0f, 0.0f}))
+        .setLayer(0); /* ignored if not array */
+    textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            data.flags & MeshVisualizerGL2D::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({1.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({1.0f, 0.0f}))
+        .setLayer(1); /* ignored if not array */
+    textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            data.flags & MeshVisualizerGL2D::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({0.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({0.5f, 1.0f}))
+        .setLayer(2); /* ignored if not array */
+    GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
+
     Containers::Array<MeshVisualizerDrawUniform2D> drawData{2*data.uniformIncrement + 1};
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
@@ -4008,11 +4841,6 @@ void MeshVisualizerGLTest::renderMulti2D() {
         .setObjectId(8);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
-    shader.setViewportSize(Vector2{RenderSize});
-    if(data.flags & (MeshVisualizerGL2D::Flag::VertexId|MeshVisualizerGL2D::Flag::ObjectId))
-        shader.bindColorMapTexture(_colorMapTexture);
-
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {
         shader.bindMaterialBuffer(materialUniform,
@@ -4024,6 +4852,10 @@ void MeshVisualizerGLTest::renderMulti2D() {
         shader.bindDrawBuffer(drawUniform,
             0*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform2D),
             sizeof(MeshVisualizerDrawUniform2D));
+        if(data.flags & MeshVisualizerGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            0*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
         shader.draw(circle);
 
         shader.bindMaterialBuffer(materialUniform,
@@ -4035,6 +4867,10 @@ void MeshVisualizerGLTest::renderMulti2D() {
         shader.bindDrawBuffer(drawUniform,
             1*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform2D),
             sizeof(MeshVisualizerDrawUniform2D));
+        if(data.flags & MeshVisualizerGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            1*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
         shader.draw(square);
 
         shader.bindMaterialBuffer(materialUniform,
@@ -4046,6 +4882,10 @@ void MeshVisualizerGLTest::renderMulti2D() {
         shader.bindDrawBuffer(drawUniform,
             2*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform2D),
             sizeof(MeshVisualizerDrawUniform2D));
+        if(data.flags & MeshVisualizerGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            2*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
         shader.draw(triangle);
 
     /* Otherwise using the draw offset / multidraw */
@@ -4053,6 +4893,8 @@ void MeshVisualizerGLTest::renderMulti2D() {
         shader.bindMaterialBuffer(materialUniform)
             .bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform);
+        if(data.flags & MeshVisualizerGL2D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
 
         if(data.flags >= MeshVisualizerGL2D::Flag::MultiDraw)
             shader.draw({circle, square, triangle});
@@ -4131,12 +4973,66 @@ void MeshVisualizerGLTest::renderMulti3D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
+    shader.setViewportSize(Vector2{RenderSize});
+    if(data.flags & (MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::ObjectId))
+        shader.bindColorMapTexture(_colorMapTexture);
+
+    GL::Texture2D objectIdTexture{NoCreate};
+    GL::Texture2DArray objectIdTextureArray{NoCreate};
+    if(data.flags >= MeshVisualizerGL3D::Flag::ObjectIdTexture) {
+        /* This should match transformation done for the diffuse/normal
+           texture */
+        if(data.flags & MeshVisualizerGL3D::Flag::TextureArrays) {
+            /* Each slice has half height, second slice has the data in the
+               right half */
+            const UnsignedShort imageData[]{
+                5, 0, 0, 0,
+                0, 5, 0, 0,
+
+                0, 0, 3, 0,
+                0, 0, 0, 3,
+
+                1, 0, 0, 0,
+                0, 1, 0, 0
+            };
+            ImageView3D image{PixelFormat::R16UI, {4, 2, 3}, imageData};
+
+            objectIdTextureArray = GL::Texture2DArray{};
+            objectIdTextureArray.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTextureArray);
+        } else {
+            /* First is taken from bottom left, second from bottom right, third
+               from top center (there I just duplicate the pixel on both
+               sides) */
+            const UnsignedShort imageData[]{
+                5, 0, 3, 0,
+                0, 5, 0, 3,
+                0, 1, 0, 0,
+                0, 0, 1, 0
+            };
+            ImageView2D image{PixelFormat::R16UI, {4, 4}, imageData};
+
+            objectIdTexture = GL::Texture2D{};
+            objectIdTexture.setMinificationFilter(GL::SamplerFilter::Nearest)
+                .setMagnificationFilter(GL::SamplerFilter::Nearest)
+                .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                .setStorage(1, GL::TextureFormat::R16UI, image.size())
+                .setSubImage(0, {}, image);
+            shader.bindObjectIdTexture(objectIdTexture);
+        }
+    }
+
     /* We don't visualize tangents for the sphere, but concatenate() will
        ignore the tangents of others if the first mesh doesn't have them */
-    Trade::MeshData sphereData = Primitives::uvSphereSolid(2, 4, Primitives::UVSphereFlag::Tangents);
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(2, 4, Primitives::UVSphereFlag::Tangents|Primitives::UVSphereFlag::TextureCoordinates);
     /* Plane is a strip, make it indexed first */
-    Trade::MeshData planeData = MeshTools::generateIndices(Primitives::planeSolid(Primitives::PlaneFlag::Tangents));
-    Trade::MeshData coneData = Primitives::coneSolid(1, 8, 1.0f, Primitives::ConeFlag::Tangents);
+    Trade::MeshData planeData = MeshTools::generateIndices(Primitives::planeSolid(Primitives::PlaneFlag::Tangents|Primitives::PlaneFlag::TextureCoordinates));
+    Trade::MeshData coneData = Primitives::coneSolid(1, 8, 1.0f, Primitives::ConeFlag::Tangents|Primitives::ConeFlag::TextureCoordinates);
     /* For instanced object ID rendering we have to add the object ID
        attribute. Use the same numbers for all meshes, it'll get differentiated
        by the per-draw object ID. */
@@ -4179,6 +5075,7 @@ void MeshVisualizerGLTest::renderMulti3D() {
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
         )
     }};
+    shader.bindProjectionBuffer(projectionUniform);
 
     /* Some drivers have uniform offset alignment as high as 256, which means
        the subsequent sets of uniforms have to be aligned to a multiply of it.
@@ -4234,6 +5131,33 @@ void MeshVisualizerGLTest::renderMulti3D() {
         );
     GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, transformationData};
 
+    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            data.flags & MeshVisualizerGL3D::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({0.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({0.0f, 0.0f}))
+        .setLayer(0); /* ignored if not array */
+    textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            data.flags & MeshVisualizerGL3D::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({1.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({1.0f, 0.0f}))
+        .setLayer(1); /* ignored if not array */
+    textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
+        .setTextureMatrix(
+            data.flags & MeshVisualizerGL3D::Flag::TextureArrays ?
+                Matrix3::scaling(Vector2::xScale(0.5f))*
+                Matrix3::translation({0.0f, 0.0f}) :
+                Matrix3::scaling(Vector2{0.5f})*
+                Matrix3::translation({0.5f, 1.0f}))
+        .setLayer(2); /* ignored if not array */
+    GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
+
     Containers::Array<MeshVisualizerDrawUniform3D> drawData{2*data.uniformIncrement + 1};
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. Also no need to supply a normal matrix. */
@@ -4248,12 +5172,6 @@ void MeshVisualizerGLTest::renderMulti3D() {
         .setObjectId(20);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
-    shader.setViewportSize(Vector2{RenderSize})
-        .bindProjectionBuffer(projectionUniform);
-    if(data.flags & (MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::ObjectId))
-        shader.bindColorMapTexture(_colorMapTexture);
-
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {
         shader.bindMaterialBuffer(materialUniform,
@@ -4265,6 +5183,10 @@ void MeshVisualizerGLTest::renderMulti3D() {
         shader.bindDrawBuffer(drawUniform,
             0*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform3D),
             sizeof(MeshVisualizerDrawUniform3D));
+        if(data.flags & MeshVisualizerGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            0*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
         shader.draw(sphere);
 
         shader.bindMaterialBuffer(materialUniform,
@@ -4276,6 +5198,10 @@ void MeshVisualizerGLTest::renderMulti3D() {
         shader.bindDrawBuffer(drawUniform,
             1*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform3D),
             sizeof(MeshVisualizerDrawUniform3D));
+        if(data.flags & MeshVisualizerGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            1*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
         shader.draw(plane);
 
         shader.bindMaterialBuffer(materialUniform,
@@ -4287,6 +5213,10 @@ void MeshVisualizerGLTest::renderMulti3D() {
         shader.bindDrawBuffer(drawUniform,
             2*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform3D),
             sizeof(MeshVisualizerDrawUniform3D));
+        if(data.flags & MeshVisualizerGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform,
+            2*data.uniformIncrement*sizeof(TextureTransformationUniform),
+            sizeof(TextureTransformationUniform));
         shader.draw(cone);
 
     /* Otherwise using the draw offset / multidraw */
@@ -4294,6 +5224,8 @@ void MeshVisualizerGLTest::renderMulti3D() {
         shader.bindMaterialBuffer(materialUniform)
             .bindTransformationBuffer(transformationUniform)
             .bindDrawBuffer(drawUniform);
+        if(data.flags & MeshVisualizerGL3D::Flag::TextureTransformation)
+            shader.bindTextureTransformationBuffer(textureTransformationUniform);
 
         if(data.flags >= MeshVisualizerGL3D::Flag::MultiDraw)
             shader.draw({sphere, plane, cone});
