@@ -3924,7 +3924,8 @@ void MeshVisualizerGLTest::renderMulti2D() {
     if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)
         for(Trade::MeshData* i: {&circleData, &squareData, &triangleData})
             *i = MeshTools::duplicate(*i);
-    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({circleData, squareData, triangleData}));
+    Trade::MeshData concatenated = MeshTools::concatenate({circleData, squareData, triangleData});
+    GL::Mesh mesh = MeshTools::compile(concatenated);
     GL::MeshView circle{mesh};
     circle.setCount(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader ?
         circleData.vertexCount() : circleData.indexCount());
@@ -3952,7 +3953,9 @@ void MeshVisualizerGLTest::renderMulti2D() {
         .setColor(0xffffcc_rgbf)
         .setWireframeColor(0xcc0000_rgbf);
     if(data.flags & MeshVisualizerGL2D::Flag::VertexId)
-        materialData[0*data.uniformIncrement].setColorMapTransformation(0.5f/circleData.vertexCount(), 1.0f/circleData.vertexCount());
+        /* Here, gl_VertexID is taken *including* the base offset, which means
+           we have to count all vertices to avoid colormap wraparounds */
+        materialData[0*data.uniformIncrement].setColorMapTransformation(0.5f/concatenated.vertexCount(), 1.0f/concatenated.vertexCount());
     else if(data.flags & MeshVisualizerGL2D::Flag::ObjectId)
         /* There's at most 4 colors (one every 2 faces) per draw and 3 draws,
            so make it fit 12 colors */
@@ -3962,7 +3965,9 @@ void MeshVisualizerGLTest::renderMulti2D() {
         .setWireframeColor(0x0000cc_rgbf)
         .setWireframeWidth(2.5f);
     if(data.flags & MeshVisualizerGL2D::Flag::VertexId)
-        materialData[1*data.uniformIncrement].setColorMapTransformation(0.5f/triangleData.vertexCount(), 1.0f/triangleData.vertexCount());
+        /* Here, gl_VertexID is taken *including* the base offset, which means
+           we have to count all vertices to avoid colormap wraparounds */
+        materialData[1*data.uniformIncrement].setColorMapTransformation(0.5f/concatenated.vertexCount(), 1.0f/concatenated.vertexCount());
     else if(data.flags & MeshVisualizerGL2D::Flag::ObjectId)
         /* There's at most 4 colors (one every 2 faces) per draw and 3 draws,
            so make it fit 12 colors */
@@ -4154,7 +4159,8 @@ void MeshVisualizerGLTest::renderMulti3D() {
     if(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)
         for(Trade::MeshData* i: {&sphereData, &planeData, &coneData})
             *i = MeshTools::duplicate(*i);
-    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({sphereData, planeData, coneData}));
+    Trade::MeshData concatenated = MeshTools::concatenate({sphereData, planeData, coneData});
+    GL::Mesh mesh = MeshTools::compile(concatenated);
     GL::MeshView sphere{mesh};
     sphere.setCount(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader ?
         sphereData.vertexCount() : sphereData.indexCount());
@@ -4189,7 +4195,9 @@ void MeshVisualizerGLTest::renderMulti3D() {
         .setWireframeColor(0xcc0000_rgbf)
         .setLineLength(0.0f); /* no TBN */
     if(data.flags & MeshVisualizerGL3D::Flag::VertexId)
-        materialData[0*data.uniformIncrement].setColorMapTransformation(0.5f/sphereData.vertexCount(), 1.0f/sphereData.vertexCount());
+        /* Here, gl_VertexID is taken *including* the base offset, which means
+           we have to count all vertices to avoid colormap wraparounds */
+        materialData[0*data.uniformIncrement].setColorMapTransformation(0.5f/concatenated.vertexCount(), 1.0f/concatenated.vertexCount());
     else if(data.flags & MeshVisualizerGL3D::Flag::ObjectId)
         /* There's at most 10 colors (one every 2 faces) per draw and 3 draws,
            so make it fit 30 colors */
@@ -4200,7 +4208,9 @@ void MeshVisualizerGLTest::renderMulti3D() {
         .setLineLength(0.25f)
         .setWireframeWidth(2.5f);
     if(data.flags & MeshVisualizerGL3D::Flag::VertexId)
-        materialData[1*data.uniformIncrement].setColorMapTransformation(0.5f/coneData.vertexCount(), 1.0f/coneData.vertexCount());
+        /* Here, gl_VertexID is taken *including* the base offset, which means
+           we have to count all vertices to avoid colormap wraparounds */
+        materialData[1*data.uniformIncrement].setColorMapTransformation(0.5f/concatenated.vertexCount(), 1.0f/concatenated.vertexCount());
     else if(data.flags & MeshVisualizerGL3D::Flag::ObjectId)
         /* There's at most 10 colors (one every 2 faces) per draw and 3 draws,
            so make it fit 30 colors */
