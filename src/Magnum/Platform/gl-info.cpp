@@ -412,8 +412,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug{} << "   " << ", "_s.joinWithoutEmptyParts(c.shadingLanguageVersionStrings());
 
     if(args.isSet("extension-strings")) {
-        Debug{} << "Extension strings:" << Debug::newline
-            << c.extensionStrings();
+        Debug{} << "Extension strings:";
+        /* Because printing 500+ extensions on a single line just *isn't*
+           helpful. For further helpfulness this assumes the driver sorted them
+           (Mesa does). */
+        for(Containers::StringView e: c.extensionStrings())
+            Debug{} << "   " << e;
         return;
     }
 

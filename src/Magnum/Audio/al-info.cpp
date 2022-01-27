@@ -125,8 +125,10 @@ int main(const int argc, const char** const argv) {
     Debug() << "Current device:" << c.deviceSpecifierString();
 
     if(args.isSet("extension-strings")) {
-        Debug() << "Extension strings:" << Debug::newline
-            << c.extensionStrings();
+        Debug() << "Extension strings:";
+        /* Because printing all extensions on a single line isn't helpful. */
+        for(Containers::StringView e: c.extensionStrings())
+            Debug{} << "   " << e;
         return 0;
     }
 
