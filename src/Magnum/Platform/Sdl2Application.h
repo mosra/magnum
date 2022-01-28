@@ -2425,6 +2425,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
              * @m_since_latest
              */
             NumLock = SDLK_NUMLOCKCLEAR,
+
             /**
              * Print screen
              * @m_since_latest
