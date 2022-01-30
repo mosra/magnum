@@ -153,9 +153,12 @@ class CORRADE_DEPRECATED("use SceneData instead") MAGNUM_TRADE_EXPORT ObjectData
         explicit ObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, const void* importerState = nullptr);
 
         /** @brief Copying is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         ObjectData2D(const ObjectData2D&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Move constructor */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         ObjectData2D(ObjectData2D&&)
             /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
                the implicit signature so it can't be defaulted. Works on 4.8,
@@ -164,14 +167,18 @@ class CORRADE_DEPRECATED("use SceneData instead") MAGNUM_TRADE_EXPORT ObjectData
             noexcept
             #endif
             ;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Destructor */
         virtual ~ObjectData2D();
 
         /** @brief Copying is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         ObjectData2D& operator=(const ObjectData2D&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Move assignment */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         ObjectData2D& operator=(ObjectData2D&&)
             /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
                the implicit signature so it can't be defaulted. Works on 4.8,
@@ -180,6 +187,7 @@ class CORRADE_DEPRECATED("use SceneData instead") MAGNUM_TRADE_EXPORT ObjectData
             noexcept
             #endif
             ;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Child objects */
         std::vector<UnsignedInt>& children() { return _children; }

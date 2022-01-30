@@ -91,9 +91,12 @@ class CORRADE_DEPRECATED("use MeshData instead") MAGNUM_TRADE_EXPORT MeshData3D 
         #endif
 
         /** @brief Copying is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         MeshData3D(const MeshData3D&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Move constructor */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         MeshData3D(MeshData3D&&)
             /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
                the implicit signature so it can't be defaulted. Works on 4.8,
@@ -102,13 +105,17 @@ class CORRADE_DEPRECATED("use MeshData instead") MAGNUM_TRADE_EXPORT MeshData3D 
             noexcept
             #endif
             ;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         ~MeshData3D();
 
         /** @brief Copying is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         MeshData3D& operator=(const MeshData3D&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Move assignment */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         MeshData3D& operator=(MeshData3D&&)
             /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
                the implicit signature so it can't be defaulted. Works on 4.8,
@@ -117,6 +124,7 @@ class CORRADE_DEPRECATED("use MeshData instead") MAGNUM_TRADE_EXPORT MeshData3D 
             noexcept
             #endif
             ;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Primitive */
         MeshPrimitive primitive() const { return _primitive; }
