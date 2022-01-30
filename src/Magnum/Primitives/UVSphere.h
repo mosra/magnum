@@ -92,7 +92,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData uvSphereSolid(UnsignedInt rings, Unsign
 @brief Whether to generate UV sphere texture coordinates
 @m_deprecated_since{2020,06} Use @ref UVSphereFlags instead.
 */
-enum class CORRADE_DEPRECATED("use UVSphereFlags instead") UVSphereTextureCoords: UnsignedByte {
+enum class CORRADE_DEPRECATED_ENUM("use UVSphereFlags instead") UVSphereTextureCoords: UnsignedByte {
     DontGenerate,       /**< Don't generate texture coordinates */
     Generate            /**< Generate texture coordinates */
 };
