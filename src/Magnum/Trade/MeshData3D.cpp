@@ -90,54 +90,74 @@ MeshData3D& MeshData3D::operator=(MeshData3D&&)
     = default;
 CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here, for some reason */
 std::vector<UnsignedInt>& MeshData3D::indices() {
     CORRADE_ASSERT(isIndexed(), "Trade::MeshData3D::indices(): the mesh is not indexed", _indices);
     return _indices;
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here, for some reason */
 const std::vector<UnsignedInt>& MeshData3D::indices() const {
     CORRADE_ASSERT(isIndexed(), "Trade::MeshData3D::indices(): the mesh is not indexed", _indices);
     return _indices;
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here, for some reason */
 std::vector<Vector3>& MeshData3D::positions(const UnsignedInt id) {
     CORRADE_ASSERT(id < positionArrayCount(), "Trade::MeshData3D::positions(): index out of range", _positions[id]);
     return _positions[id];
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here, for some reason */
 const std::vector<Vector3>& MeshData3D::positions(const UnsignedInt id) const {
     CORRADE_ASSERT(id < positionArrayCount(), "Trade::MeshData3D::positions(): index out of range", _positions[id]);
     return _positions[id];
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here, for some reason */
 std::vector<Vector3>& MeshData3D::normals(const UnsignedInt id) {
     CORRADE_ASSERT(id < normalArrayCount(), "Trade::MeshData3D::normals(): index out of range", _normals[id]);
     return _normals[id];
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here, for some reason */
 const std::vector<Vector3>& MeshData3D::normals(const UnsignedInt id) const {
     CORRADE_ASSERT(id < normalArrayCount(), "Trade::MeshData3D::normals(): index out of range", _normals[id]);
     return _normals[id];
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here, for some reason */
 std::vector<Vector2>& MeshData3D::textureCoords2D(const UnsignedInt id) {
     CORRADE_ASSERT(id < textureCoords2DArrayCount(), "Trade::MeshData3D::textureCoords2D(): index out of range", _textureCoords2D[id]);
     return _textureCoords2D[id];
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here, for some reason */
 const std::vector<Vector2>& MeshData3D::textureCoords2D(const UnsignedInt id) const {
     CORRADE_ASSERT(id < textureCoords2DArrayCount(), "Trade::MeshData3D::textureCoords2D(): index out of range", _textureCoords2D[id]);
     return _textureCoords2D[id];
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here, for some reason */
 std::vector<Color4>& MeshData3D::colors(const UnsignedInt id) {
     CORRADE_ASSERT(id < colorArrayCount(), "Trade::MeshData3D::colors(): index out of range", _colors[id]);
     return _colors[id];
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here, for some reason */
 const std::vector<Color4>& MeshData3D::colors(const UnsignedInt id) const {
     CORRADE_ASSERT(id < colorArrayCount(), "Trade::MeshData3D::colors(): index out of range", _colors[id]);
     return _colors[id];
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
