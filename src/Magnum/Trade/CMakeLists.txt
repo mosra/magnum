@@ -150,6 +150,7 @@ install(TARGETS MagnumTrade
 install(FILES ${MagnumTrade_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Trade)
 
 if(WITH_IMAGECONVERTER)
+    set(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
 
     add_executable(magnum-imageconverter imageconverter.cpp)

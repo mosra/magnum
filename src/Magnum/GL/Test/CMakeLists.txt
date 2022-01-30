@@ -125,6 +125,7 @@ if(BUILD_GL_TESTS)
 
     corrade_add_test(GLContextGLTest ContextGLTest.cpp LIBRARIES MagnumOpenGLTester)
     if(NOT CORRADE_TARGET_EMSCRIPTEN)
+        set(THREADS_PREFER_PTHREAD_FLAG TRUE)
         find_package(Threads REQUIRED)
         target_link_libraries(GLContextGLTest PRIVATE Threads::Threads)
     endif()

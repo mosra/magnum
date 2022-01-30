@@ -25,6 +25,7 @@
 
 # Needed to test verbose output from OpenExrImageConverter (detected thread
 # count), unfortunately no better option for testing flags right now
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
