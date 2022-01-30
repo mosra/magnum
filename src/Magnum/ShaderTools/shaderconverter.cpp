@@ -430,15 +430,15 @@ see documentation of a particular converter for more information.)")
 
                 Containers::Array<std::pair<Containers::StringView, Containers::StringView>> definitions;
                 arrayReserve(definitions, args.arrayValueCount("define") + args.arrayValueCount("undefine"));
-                for(std::size_t i = 0; i != args.arrayValueCount("define"); ++i) {
+                for(std::size_t j = 0; j != args.arrayValueCount("define"); ++j) {
                     const Containers::Array3<Containers::StringView> define =
-                    args.arrayValue<Containers::StringView>("define", i).partition('=');
+                    args.arrayValue<Containers::StringView>("define", j).partition('=');
                     arrayAppend(definitions, InPlaceInit,
                         define[0], define[2]);
                 }
-                for(std::size_t i = 0; i != args.arrayValueCount("undefine"); ++i) {
+                for(std::size_t j = 0; j != args.arrayValueCount("undefine"); ++j) {
                     arrayAppend(definitions, InPlaceInit,
-                        args.arrayValue<Containers::StringView>("undefine", i), nullptr);
+                        args.arrayValue<Containers::StringView>("undefine", j), nullptr);
                 }
 
                 converter->setDefinitions(definitions);
@@ -464,9 +464,9 @@ see documentation of a particular converter for more information.)")
 
             if(args.isSet("link")) {
                 arrayReserve(linkInputs, args.arrayValueCount("input"));
-                for(std::size_t i = 0; i != args.arrayValueCount("input"); ++i)
+                for(std::size_t j = 0; j != args.arrayValueCount("input"); ++j)
                     arrayAppend(linkInputs, InPlaceInit,
-                        ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", i));
+                        ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", j));
             }
         }
 

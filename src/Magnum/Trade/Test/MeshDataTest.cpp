@@ -545,12 +545,12 @@ void MeshDataTest::constructIndexStrided() {
         CORRADE_COMPARE(indices.data().stride(), sizeof(IndexStruct));
 
         constexpr MeshIndexData cindices{Containers::stridedArrayView(IndexStructData, &IndexStructData[0].byteIndex, 3, sizeof(IndexStruct))};
-        constexpr MeshIndexType type = cindices.type();
-        constexpr Containers::StridedArrayView1D<const void> data = cindices.data();
-        CORRADE_COMPARE(type, MeshIndexType::UnsignedByte);
-        CORRADE_COMPARE(data.data(), &IndexStructData[0].byteIndex);
-        CORRADE_COMPARE(data.size(), 3);
-        CORRADE_COMPARE(data.stride(), sizeof(IndexStruct));
+        constexpr MeshIndexType ctype = cindices.type();
+        constexpr Containers::StridedArrayView1D<const void> cdata = cindices.data();
+        CORRADE_COMPARE(ctype, MeshIndexType::UnsignedByte);
+        CORRADE_COMPARE(cdata.data(), &IndexStructData[0].byteIndex);
+        CORRADE_COMPARE(cdata.size(), 3);
+        CORRADE_COMPARE(cdata.stride(), sizeof(IndexStruct));
     } {
         MeshIndexData indices{view.slice(&IndexStruct::shortIndex)};
         CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedShort);
@@ -559,12 +559,12 @@ void MeshDataTest::constructIndexStrided() {
         CORRADE_COMPARE(indices.data().stride(), sizeof(IndexStruct));
 
         constexpr MeshIndexData cindices{Containers::stridedArrayView(IndexStructData, &IndexStructData[0].shortIndex, 3, sizeof(IndexStruct))};
-        constexpr MeshIndexType type = cindices.type();
-        constexpr Containers::StridedArrayView1D<const void> data = cindices.data();
-        CORRADE_COMPARE(type, MeshIndexType::UnsignedShort);
-        CORRADE_COMPARE(data.data(), &IndexStructData[0].shortIndex);
-        CORRADE_COMPARE(data.size(), 3);
-        CORRADE_COMPARE(data.stride(), sizeof(IndexStruct));
+        constexpr MeshIndexType ctype = cindices.type();
+        constexpr Containers::StridedArrayView1D<const void> cdata = cindices.data();
+        CORRADE_COMPARE(ctype, MeshIndexType::UnsignedShort);
+        CORRADE_COMPARE(cdata.data(), &IndexStructData[0].shortIndex);
+        CORRADE_COMPARE(cdata.size(), 3);
+        CORRADE_COMPARE(cdata.stride(), sizeof(IndexStruct));
     } {
         MeshIndexData indices{view.slice(&IndexStruct::intIndex)};
         CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedInt);
@@ -573,12 +573,12 @@ void MeshDataTest::constructIndexStrided() {
         CORRADE_COMPARE(indices.data().stride(), sizeof(IndexStruct));
 
         constexpr MeshIndexData cindices{Containers::stridedArrayView(IndexStructData, &IndexStructData[0].intIndex, 3, sizeof(IndexStruct))};
-        constexpr MeshIndexType type = cindices.type();
-        constexpr Containers::StridedArrayView1D<const void> data = cindices.data();
-        CORRADE_COMPARE(type, MeshIndexType::UnsignedInt);
-        CORRADE_COMPARE(data.data(), &IndexStructData[0].intIndex);
-        CORRADE_COMPARE(data.size(), 3);
-        CORRADE_COMPARE(data.stride(), sizeof(IndexStruct));
+        constexpr MeshIndexType ctype = cindices.type();
+        constexpr Containers::StridedArrayView1D<const void> cdata = cindices.data();
+        CORRADE_COMPARE(ctype, MeshIndexType::UnsignedInt);
+        CORRADE_COMPARE(cdata.data(), &IndexStructData[0].intIndex);
+        CORRADE_COMPARE(cdata.size(), 3);
+        CORRADE_COMPARE(cdata.stride(), sizeof(IndexStruct));
     }
 }
 

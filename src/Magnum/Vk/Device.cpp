@@ -807,8 +807,8 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
     if(missingExtensions.any()) {
         for(std::size_t i = 0; i != Implementation::ExtensionCount; ++i) {
             if(!missingExtensions[i]) continue;
-            for(const Version version: KnownVersionsForExtensions) {
-                for(const Extension extension: Extension::extensions(version)) {
+            for(const Version extensionVersion: KnownVersionsForExtensions) {
+                for(const Extension extension: Extension::extensions(extensionVersion)) {
                     if(extension.index() != i) continue;
                     CORRADE_ASSERT_UNREACHABLE("Vk::Device::tryCreate(): some enabled features need" << extension.string() << "enabled", {});
                 }

@@ -230,8 +230,8 @@ MaterialData::MaterialData(const MaterialTypes types, Containers::Array<Material
            immutable (for example when acquiring release()d immutable data from
            another instance) it could cause crashes. (I expected not, but
            apparently ASan blows up on that.) */
-        if(end - begin > 1) for(std::size_t i = begin + 1; i != end; ++i) {
-            if(_data[i - 1].name() < _data[i].name()) continue;
+        if(end - begin > 1) for(std::size_t j = begin + 1; j != end; ++j) {
+            if(_data[j - 1].name() < _data[j].name()) continue;
 
             std::sort(_data + begin, _data + end, [](const MaterialAttributeData& a, const MaterialAttributeData& b) {
                 /* Need to check here (instead of in the outer for loop) as we
