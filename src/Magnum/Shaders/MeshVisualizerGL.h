@@ -78,9 +78,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
 
         MAGNUM_SHADERS_LOCAL GL::Version setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs) const;
 
+        #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizerGLBase& setTextureMatrix(const Matrix3& matrix);
         MeshVisualizerGLBase& setTextureLayer(UnsignedInt layer);
         MeshVisualizerGLBase& setObjectId(UnsignedInt id);
+        #endif
         MeshVisualizerGLBase& setColor(const Color4& color);
         MeshVisualizerGLBase& setWireframeColor(const Color4& color);
         MeshVisualizerGLBase& setWireframeWidth(Float width);
@@ -589,6 +591,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          */
         MeshVisualizerGL2D& setViewportSize(const Vector2& size);
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Set object ID
          * @return Reference to self (for method chaining)
@@ -610,6 +613,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         MeshVisualizerGL2D& setObjectId(UnsignedInt id) {
             return static_cast<MeshVisualizerGL2D&>(Implementation::MeshVisualizerGLBase::setObjectId(id));
         }
+        #endif
 
         /**
          * @brief Set base object color
@@ -1878,6 +1882,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          */
         MeshVisualizerGL3D& setViewportSize(const Vector2& size);
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Set object ID
          * @return Reference to self (for method chaining)
@@ -1899,6 +1904,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         MeshVisualizerGL3D& setObjectId(UnsignedInt id) {
             return static_cast<MeshVisualizerGL3D&>(Implementation::MeshVisualizerGLBase::setObjectId(id));
         }
+        #endif
 
         /**
          * @brief Set base object color
