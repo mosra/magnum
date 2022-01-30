@@ -1451,7 +1451,8 @@ void AbstractConverterTest::linkDataToDataNotImplemented() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    converter.linkDataToData({{}});
+    /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
+    converter.linkDataToData({std::pair<Stage, Containers::ArrayView<const void>>{}});
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
 }
 
@@ -1513,7 +1514,8 @@ void AbstractConverterTest::linkDataToDataCustomDeleter() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    converter.linkDataToData({{}});
+    /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
+    converter.linkDataToData({std::pair<Stage, Containers::ArrayView<const void>>{}});
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1571,7 +1573,8 @@ void AbstractConverterTest::linkDataToFileThroughDataFailed() {
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.linkDataToFile({{}}, filename));
+    /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
+    CORRADE_VERIFY(!converter.linkDataToFile({std::pair<Stage, Containers::ArrayView<const void>>{}}, filename));
     CORRADE_VERIFY(!Utility::Directory::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -1591,7 +1594,8 @@ void AbstractConverterTest::linkDataToFileThroughDataNotWritable() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.linkDataToFile({{}}, "/some/path/that/does/not/exist"));
+    /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
+    CORRADE_VERIFY(!converter.linkDataToFile({std::pair<Stage, Containers::ArrayView<const void>>{}}, "/some/path/that/does/not/exist"));
     CORRADE_COMPARE(out.str(),
         "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
         "ShaderTools::AbstractConverter::linkDataToFile(): cannot write to file /some/path/that/does/not/exist\n");
@@ -1631,7 +1635,8 @@ void AbstractConverterTest::linkDataToFileNotImplemented() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    converter.linkDataToFile({{}}, "file.dat");
+    /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
+    converter.linkDataToFile({std::pair<Stage, Containers::ArrayView<const void>>{}}, "file.dat");
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
 }
 
@@ -1850,7 +1855,8 @@ void AbstractConverterTest::linkFilesToFileNotImplemented() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    converter.linkFilesToFile({{}}, {});
+    /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
+    converter.linkFilesToFile({std::pair<Stage, Containers::StringView>{}}, {});
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): feature advertised but not implemented\n");
 }
 

@@ -104,7 +104,8 @@ Debug{} << "Color of the first pixel is" << image.pixels<Color4ub>()[0][0];
 }
 
 {
-std::nullptr_t data{};
+/* data{} makes GCC 4.8 warn about zero as null pointer constant */
+std::nullptr_t data = nullptr;
 /* [Image-pixels] */
 Image2D image{PixelFormat::RGB8Unorm, {128, 128}, data};
 

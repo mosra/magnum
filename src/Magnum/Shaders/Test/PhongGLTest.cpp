@@ -1502,7 +1502,8 @@ void PhongGLTest::setSpecularDisabled() {
     PhongGL shader{PhongGL::Flag::NoSpecular};
     shader.setSpecularColor({})
         .setShininess({})
-        .setLightSpecularColors({{}})
+        /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
+        .setLightSpecularColors({Color3{}})
         .setLightSpecularColor(0, {});
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setSpecularColor(): the shader was created with specular disabled\n"
