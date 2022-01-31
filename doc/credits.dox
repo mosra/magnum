@@ -192,7 +192,8 @@ Are the below lists missing your name or something's wrong?
     Gentoo ebuild)
 -   **Pablo Escobar** ([\@pezcode](https://github.com/pezcode)) --- @ref Math
     additions, support for multiple @ref Platform::EmscriptenApplication
-    canvases on one page, Emscripten-focused fixes
+    canvases on one page, Emscripten-focused fixes;
+    @ref Platform::Sdl2Application additions
 -   **Pascal Thomet** ([\@pthom](https://github.com/pthom)) --- C++17
     compilation fixes, buildsystem improvements, Hunter package
 -   **Sam Spilsbury** ([\@smspillaz](https://github.com/smspillaz)) --- WebGL

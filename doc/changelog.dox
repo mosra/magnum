@@ -397,6 +397,14 @@ See also:
 -   Added @ref Platform::EmscriptenApplication::Configuration::addWindowFlags()
     and @ref Platform::EmscriptenApplication::Configuration::clearWindowFlags()
     for consistency with other application implementations
+-   Added @ref Platform::Sdl2Application::KeyEvent::Key::CapsLock,
+    @relativeref{Platform::Sdl2Application::KeyEvent::Key,ScrollLock},
+    @relativeref{Platform::Sdl2Application::KeyEvent::Key,NumLock},
+    @relativeref{Platform::Sdl2Application::KeyEvent::Key,PrintScreen},
+    @relativeref{Platform::Sdl2Application::KeyEvent::Key,Pause} and
+    @relativeref{Platform::Sdl2Application::KeyEvent::Key,Menu} for consistency
+    with @ref Platform::EmscriptenApplication and
+    @ref Platform::GlfwApplication (see [mosra/magnum#547](https://github.com/mosra/magnum/pull/547))
 
 @subsubsection changelog-latest-changes-scenegraph SceneGraph library
 
@@ -583,6 +591,9 @@ See also:
     destroyed could fail with an error saying "cannot make the previous context
     current" on certain system. This was due to EGL not destroying the context
     if it's still made current.
+-   Fixed handling of @ref Sdl2Application::InputEvent::Modifier::Super, which
+    was misreported as @relativeref{Sdl2Application::InputEvent::Modifier,Alt}
+    (see [mosra/magnum#547](https://github.com/mosra/magnum/pull/547))
 -   For meshes with multiple sets of vertex attributes (such as texture
     coordinates), @ref MeshTools::compile() should be using only the first set
     but it wasn't.
