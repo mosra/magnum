@@ -559,6 +559,9 @@ See also:
 -   Fixed an assertion when using @ref MeshTools::removeDuplicates() on an
     interleaved @ref Trade::MeshData that included padding at the beginning or
     end of each vertex
+-   Fixed a silly mistake where there was no @cpp extern template @ce for a
+    @ref Frustumd debug printer but two declarations for the float version
+    instead (see [mosra/magnum#545](https://github.com/mosra/magnum/issues/545))
 -   Fixed @ref MeshTools::compile() to properly take into account index buffer
     offsets
 -   Fixed @ref MeshTools::removeDuplicates() to not take into account random

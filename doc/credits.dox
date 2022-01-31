@@ -120,6 +120,8 @@ Are the below lists missing your name or something's wrong?
     @ref ResourceManager, warning fixes
 -   **Denis Igorevich Lobanov** ([\@denislobanov](https://github.com/denislobanov))
     --- math fixes
+-   **[\@DJQuardaboff](https://github.com/DJQuardaboff)** --- discovery of a
+    silly mistake with @ref Frustumd debug output printer
 -   **[\@dlardi](https://github.com/dlardi)** --- WGL-related bugfixes
 -   **Eliot Saba** ([\@staticfloat](https://github.com/staticfloat)) ---
     macOS-related updates to @ref Platform::GlfwApplication
