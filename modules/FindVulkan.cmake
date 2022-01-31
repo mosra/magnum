@@ -78,10 +78,25 @@ find_library(Vulkan_LIBRARY
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Vulkan DEFAULT_MSG Vulkan_LIBRARY)
 
+# libvulkan.so *should* link against pthread on its own, but in some rare
+# corner cases (like the 1.2.203 ArchLinux package) it doesn't -- most probably
+# due to the vulkan loader wrongly using `-lpthread` instead of `-pthread` and
+# then the linker DCEing out the reference to it based on some unfortunate
+# combination of compiler/linker flags?
+#
+# In that case using drivers that rely on pthread (such as SwiftShader) would
+# lead to a nasty std::system_error telling me to link to pthreads. As I can't
+# have control over how the loader links to pthread or whether at all, and what
+# random packaging issues happened in various distributions, I have to link to
+# it explicitly to be immune against such issues.
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
+
 if(NOT TARGET Vulkan::Vulkan)
     add_library(Vulkan::Vulkan UNKNOWN IMPORTED)
-    set_property(TARGET Vulkan::Vulkan PROPERTY
-        IMPORTED_LOCATION ${Vulkan_LIBRARY})
+    set_target_properties(Vulkan::Vulkan PROPERTIES
+        IMPORTED_LOCATION ${Vulkan_LIBRARY}
+        INTERFACE_LINK_LIBRARIES Threads::Threads)
 endif()
 
 mark_as_advanced(Vulkan_LIBRARY)
