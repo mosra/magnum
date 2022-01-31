@@ -105,9 +105,9 @@ Containers::Optional<MeshData> AbstractSceneConverter::convert(const MeshData& m
 
     Containers::Optional<MeshData> out = doConvert(mesh);
     CORRADE_ASSERT(!out || (
-        (!out->_indexData.deleter() || out->_indexData.deleter() == Implementation::nonOwnedArrayDeleter || out->_indexData.deleter() == ArrayAllocator<char>::deleter) &&
-        (!out->_vertexData.deleter() || out->_vertexData.deleter() == Implementation::nonOwnedArrayDeleter || out->_vertexData.deleter() == ArrayAllocator<char>::deleter) &&
-        (!out->_attributes.deleter() || out->_attributes.deleter() == reinterpret_cast<void(*)(MeshAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
+        (!out->_indexData.deleter() || out->_indexData.deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || out->_indexData.deleter() == ArrayAllocator<char>::deleter) &&
+        (!out->_vertexData.deleter() || out->_vertexData.deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || out->_vertexData.deleter() == ArrayAllocator<char>::deleter) &&
+        (!out->_attributes.deleter() || out->_attributes.deleter() == static_cast<void(*)(MeshAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
         "Trade::AbstractSceneConverter::convert(): implementation is not allowed to use a custom Array deleter", {});
     return out;
 }
@@ -132,7 +132,7 @@ Containers::Array<char> AbstractSceneConverter::convertToData(const MeshData& me
         "Trade::AbstractSceneConverter::convertToData(): mesh conversion not supported", {});
 
     Containers::Array<char> out = doConvertToData(mesh);
-    CORRADE_ASSERT(!out || !out.deleter() || out.deleter() == Implementation::nonOwnedArrayDeleter || out.deleter() == ArrayAllocator<char>::deleter,
+    CORRADE_ASSERT(!out || !out.deleter() || out.deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || out.deleter() == ArrayAllocator<char>::deleter,
         "Trade::AbstractSceneConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
     return out;
 }

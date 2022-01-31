@@ -523,8 +523,7 @@ SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedA
 }
 
 Containers::Array<SceneFieldData> sceneFieldDataNonOwningArray(const Containers::ArrayView<const SceneFieldData> view) {
-    /* Ugly, eh? */
-    return Containers::Array<SceneFieldData>{const_cast<SceneFieldData*>(view.data()), view.size(), reinterpret_cast<void(*)(SceneFieldData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)};
+    return Containers::Array<SceneFieldData>{const_cast<SceneFieldData*>(view.data()), view.size(), Implementation::nonOwnedArrayDeleter};
 }
 
 SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mappingBound, Containers::Array<char>&& data, Containers::Array<SceneFieldData>&& fields, const void* const importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _mappingType{mappingType}, _dimensions{}, _mappingBound{mappingBound}, _importerState{importerState}, _fields{std::move(fields)}, _data{std::move(data)} {

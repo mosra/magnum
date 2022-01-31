@@ -79,8 +79,7 @@ MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexForma
 }
 
 Containers::Array<MeshAttributeData> meshAttributeDataNonOwningArray(const Containers::ArrayView<const MeshAttributeData> view) {
-    /* Ugly, eh? */
-    return Containers::Array<MeshAttributeData>{const_cast<MeshAttributeData*>(view.data()), view.size(), reinterpret_cast<void(*)(MeshAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)};
+    return Containers::Array<MeshAttributeData>{const_cast<MeshAttributeData*>(view.data()), view.size(), Implementation::nonOwnedArrayDeleter};
 }
 
 MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const UnsignedInt vertexCount, const void* const importerState) noexcept:

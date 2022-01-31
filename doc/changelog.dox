@@ -493,6 +493,10 @@ See also:
     with filtering along Z or if it's a 2D array with discrete slices.
 -   @ref magnum-imageconverter "magnum-imageconverter" has a new `--in-place`
     option for converting images in-place
+-   In order to reduce the amount of exported symbols, a single no-op
+    @relativeref{Corrade,Containers::Array} deleter function was used for
+    various types via a @cpp reinterpret_cast @ce. But in an effort to be
+    UBSan-clean, this is no longer done. See also [mosra/magnum#531](https://github.com/mosra/magnum/issues/531).
 
 @subsubsection changelog-latest-changes-vk Vk library
 

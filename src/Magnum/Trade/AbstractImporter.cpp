@@ -330,8 +330,8 @@ Containers::Optional<SceneData> AbstractImporter::scene(const UnsignedInt id) {
     CORRADE_ASSERT(id < doSceneCount(), "Trade::AbstractImporter::scene(): index" << id << "out of range for" << doSceneCount() << "entries", {});
     Containers::Optional<SceneData> scene = doScene(id);
     CORRADE_ASSERT(!scene || (
-        (!scene->_data.deleter() || scene->_data.deleter() == Implementation::nonOwnedArrayDeleter) &&
-        (!scene->_fields.deleter() || scene->_fields.deleter() == reinterpret_cast<void(*)(SceneFieldData*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
+        (!scene->_data.deleter() || scene->_data.deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter)) &&
+        (!scene->_fields.deleter() || scene->_fields.deleter() == static_cast<void(*)(SceneFieldData*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
         "Trade::AbstractImporter::scene(): implementation is not allowed to use a custom Array deleter", {});
     return scene;
 }
@@ -399,8 +399,8 @@ Containers::Optional<AnimationData> AbstractImporter::animation(const UnsignedIn
     CORRADE_ASSERT(id < doAnimationCount(), "Trade::AbstractImporter::animation(): index" << id << "out of range for" << doAnimationCount() << "entries", {});
     Containers::Optional<AnimationData> animation = doAnimation(id);
     CORRADE_ASSERT(!animation ||
-        ((!animation->_data.deleter() || animation->_data.deleter() == Implementation::nonOwnedArrayDeleter || animation->_data.deleter() == ArrayAllocator<char>::deleter) &&
-        (!animation->_tracks.deleter() || animation->_tracks.deleter() == reinterpret_cast<void(*)(AnimationTrackData*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
+        ((!animation->_data.deleter() || animation->_data.deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || animation->_data.deleter() == ArrayAllocator<char>::deleter) &&
+        (!animation->_tracks.deleter() || animation->_tracks.deleter() == static_cast<void(*)(AnimationTrackData*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
         "Trade::AbstractImporter::animation(): implementation is not allowed to use a custom Array deleter", {});
     return animation;
 }
@@ -953,8 +953,8 @@ Containers::Optional<SkinData2D> AbstractImporter::skin2D(const UnsignedInt id) 
     CORRADE_ASSERT(id < doSkin2DCount(), "Trade::AbstractImporter::skin2D(): index" << id << "out of range for" << doSkin2DCount() << "entries", {});
     Containers::Optional<SkinData2D> skin = doSkin2D(id);
     CORRADE_ASSERT(!skin || (
-        (!skin->_jointData.deleter() || skin->_jointData.deleter() == reinterpret_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter)) &&
-        (!skin->_inverseBindMatrixData.deleter() || skin->_inverseBindMatrixData.deleter() == reinterpret_cast<void(*)(Matrix3*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
+        (!skin->_jointData.deleter() || skin->_jointData.deleter() == static_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter)) &&
+        (!skin->_inverseBindMatrixData.deleter() || skin->_inverseBindMatrixData.deleter() == static_cast<void(*)(Matrix3*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
         "Trade::AbstractImporter::skin2D(): implementation is not allowed to use a custom Array deleter", {});
     return skin;
 }
@@ -1003,8 +1003,8 @@ Containers::Optional<SkinData3D> AbstractImporter::skin3D(const UnsignedInt id) 
     CORRADE_ASSERT(id < doSkin3DCount(), "Trade::AbstractImporter::skin3D(): index" << id << "out of range for" << doSkin3DCount() << "entries", {});
     Containers::Optional<SkinData3D> skin = doSkin3D(id);
     CORRADE_ASSERT(!skin || (
-        (!skin->_jointData.deleter() || skin->_jointData.deleter() == reinterpret_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter)) &&
-        (!skin->_inverseBindMatrixData.deleter() || skin->_inverseBindMatrixData.deleter() == reinterpret_cast<void(*)(Matrix4*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
+        (!skin->_jointData.deleter() || skin->_jointData.deleter() == static_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter)) &&
+        (!skin->_inverseBindMatrixData.deleter() || skin->_inverseBindMatrixData.deleter() == static_cast<void(*)(Matrix4*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
         "Trade::AbstractImporter::skin3D(): implementation is not allowed to use a custom Array deleter", {});
     return skin;
 }
@@ -1074,9 +1074,9 @@ Containers::Optional<MeshData> AbstractImporter::mesh(const UnsignedInt id, cons
     #endif
     Containers::Optional<MeshData> mesh = doMesh(id, level);
     CORRADE_ASSERT(!mesh || (
-        (!mesh->_indexData.deleter() || mesh->_indexData.deleter() == Implementation::nonOwnedArrayDeleter || mesh->_indexData.deleter() == ArrayAllocator<char>::deleter) &&
-        (!mesh->_vertexData.deleter() || mesh->_vertexData.deleter() == Implementation::nonOwnedArrayDeleter || mesh->_vertexData.deleter() == ArrayAllocator<char>::deleter) &&
-        (!mesh->_attributes.deleter() || mesh->_attributes.deleter() == reinterpret_cast<void(*)(MeshAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
+        (!mesh->_indexData.deleter() || mesh->_indexData.deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || mesh->_indexData.deleter() == ArrayAllocator<char>::deleter) &&
+        (!mesh->_vertexData.deleter() || mesh->_vertexData.deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || mesh->_vertexData.deleter() == ArrayAllocator<char>::deleter) &&
+        (!mesh->_attributes.deleter() || mesh->_attributes.deleter() == static_cast<void(*)(MeshAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
         "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter", {});
     return mesh;
 }
@@ -1240,8 +1240,8 @@ AbstractImporter::material(const UnsignedInt id) {
 
     Containers::Optional<MaterialData> material = doMaterial(id);
     CORRADE_ASSERT(!material || (
-        (!material->_data.deleter() || material->_data.deleter() == reinterpret_cast<void(*)(MaterialAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)) &&
-        (!material->_layerOffsets.deleter() || material->_layerOffsets.deleter() == reinterpret_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
+        (!material->_data.deleter() || material->_data.deleter() == static_cast<void(*)(MaterialAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)) &&
+        (!material->_layerOffsets.deleter() || material->_layerOffsets.deleter() == static_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
         "Trade::AbstractImporter::material(): implementation is not allowed to use a custom Array deleter", {});
 
     /* GCC 4.8 and clang-cl needs an explicit conversion here */
@@ -1367,7 +1367,7 @@ Containers::Optional<ImageData1D> AbstractImporter::image1D(const UnsignedInt id
     }
     #endif
     Containers::Optional<ImageData1D> image = doImage1D(id, level);
-    CORRADE_ASSERT(!image || !image->_data.deleter() || image->_data.deleter() == Implementation::nonOwnedArrayDeleter || image->_data.deleter() == ArrayAllocator<char>::deleter, "Trade::AbstractImporter::image1D(): implementation is not allowed to use a custom Array deleter", {});
+    CORRADE_ASSERT(!image || !image->_data.deleter() || image->_data.deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || image->_data.deleter() == ArrayAllocator<char>::deleter, "Trade::AbstractImporter::image1D(): implementation is not allowed to use a custom Array deleter", {});
     return image;
 }
 
@@ -1437,7 +1437,7 @@ Containers::Optional<ImageData2D> AbstractImporter::image2D(const UnsignedInt id
     }
     #endif
     Containers::Optional<ImageData2D> image = doImage2D(id, level);
-    CORRADE_ASSERT(!image || !image->_data.deleter() || image->_data.deleter() == Implementation::nonOwnedArrayDeleter || image->_data.deleter() == ArrayAllocator<char>::deleter, "Trade::AbstractImporter::image2D(): implementation is not allowed to use a custom Array deleter", {});
+    CORRADE_ASSERT(!image || !image->_data.deleter() || image->_data.deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || image->_data.deleter() == ArrayAllocator<char>::deleter, "Trade::AbstractImporter::image2D(): implementation is not allowed to use a custom Array deleter", {});
     return image;
 }
 
@@ -1507,7 +1507,7 @@ Containers::Optional<ImageData3D> AbstractImporter::image3D(const UnsignedInt id
     }
     #endif
     Containers::Optional<ImageData3D> image = doImage3D(id, level);
-    CORRADE_ASSERT(!image || !image->_data.deleter() || image->_data.deleter() == Implementation::nonOwnedArrayDeleter || image->_data.deleter() == ArrayAllocator<char>::deleter, "Trade::AbstractImporter::image3D(): implementation is not allowed to use a custom Array deleter", {});
+    CORRADE_ASSERT(!image || !image->_data.deleter() || image->_data.deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || image->_data.deleter() == ArrayAllocator<char>::deleter, "Trade::AbstractImporter::image3D(): implementation is not allowed to use a custom Array deleter", {});
     return image;
 }
 

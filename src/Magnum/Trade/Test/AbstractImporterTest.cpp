@@ -3739,7 +3739,7 @@ void AbstractImporterTest::animationNonOwningDeleters() {
         Containers::Optional<AnimationData> doAnimation(UnsignedInt) override {
             return AnimationData{Containers::Array<char>{data, 1, Implementation::nonOwnedArrayDeleter},
                 Containers::Array<AnimationTrackData>{&track, 1,
-                reinterpret_cast<void(*)(AnimationTrackData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)}};
+                Implementation::nonOwnedArrayDeleter}};
         }
 
         char data[1];

@@ -33,6 +33,7 @@
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Trade/Trade.h"
 #include "Magnum/Trade/visibility.h"
 
 namespace Magnum { namespace Trade {
@@ -102,8 +103,26 @@ CORRADE_ENUMSET_OPERATORS(DataFlags)
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, DataFlags value);
 
 namespace Implementation {
-    /* Used internally by MeshData */
+    /* Used internally by AnimationData, MaterialData, MeshData, SceneData,
+       SkinData -- we need them to be exported symbols in the Trade library and
+       not e.g. lambdas in order to ensure that data originating from
+       dynamically-loaded plugins don't contain pointers to deleter functions
+       contained inside the plugin binary, leading to a dangling function
+       pointer call if the array gets destructed after the plugin was unloaded.
+
+       All variants below do the same (which is nothing), but because
+       reinterpret_cast<>'ing function pointers triggers a UBSan complaint,
+       they are separate symbols. On MSVC /OPT:ICF *could* merge them, on other
+       compilers it might result in unnecessary duplicated symbols, but being
+       UBSan-clean is the bigger priority here. */
     MAGNUM_TRADE_EXPORT void nonOwnedArrayDeleter(char*, std::size_t);
+    MAGNUM_TRADE_EXPORT void nonOwnedArrayDeleter(AnimationTrackData*, std::size_t);
+    MAGNUM_TRADE_EXPORT void nonOwnedArrayDeleter(MeshAttributeData*, std::size_t);
+    MAGNUM_TRADE_EXPORT void nonOwnedArrayDeleter(MaterialAttributeData*, std::size_t);
+    MAGNUM_TRADE_EXPORT void nonOwnedArrayDeleter(UnsignedInt*, std::size_t);
+    MAGNUM_TRADE_EXPORT void nonOwnedArrayDeleter(Matrix3*, std::size_t);
+    MAGNUM_TRADE_EXPORT void nonOwnedArrayDeleter(Matrix4*, std::size_t);
+    MAGNUM_TRADE_EXPORT void nonOwnedArrayDeleter(SceneFieldData*, std::size_t);
 }
 
 }}

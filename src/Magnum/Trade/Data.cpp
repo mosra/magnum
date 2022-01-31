@@ -53,7 +53,14 @@ Debug& operator<<(Debug& debug, const DataFlags value) {
 }
 
 namespace Implementation {
-    void nonOwnedArrayDeleter(char*, std::size_t) { /* does nothing */ }
+    void nonOwnedArrayDeleter(char*, std::size_t) {}
+    void nonOwnedArrayDeleter(AnimationTrackData*, std::size_t) {}
+    void nonOwnedArrayDeleter(MeshAttributeData*, std::size_t) {}
+    void nonOwnedArrayDeleter(MaterialAttributeData*, std::size_t) {}
+    void nonOwnedArrayDeleter(UnsignedInt*, std::size_t) {}
+    void nonOwnedArrayDeleter(Matrix3*, std::size_t) {}
+    void nonOwnedArrayDeleter(Matrix4*, std::size_t) {}
+    void nonOwnedArrayDeleter(SceneFieldData*, std::size_t) {}
 }
 
 }}
