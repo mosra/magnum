@@ -283,7 +283,7 @@ See also:
         device-level properties
     -   @ref Vk::Instance and @ref Vk::Device APIs for instance and device
         creation and fetching instance/device-specific function pointers,
-        @ref Vk::Queue setup
+        @ref Vk::Queue setup. See also [mosra/magnum#549](https://github.com/mosra/magnum/pull/549).
     -   @ref Vk::CommandPool and @ref Vk::CommandBuffer wrappers
     -   Initial implementations of @ref Vk::Memory, @ref Vk::Buffer and
         @ref Vk::Image

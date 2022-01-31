@@ -200,6 +200,8 @@ Are the below lists missing your name or something's wrong?
     and GLES fixes
 -   **Samuel Kogler** ([\@skogler](https://github.com/skogler)) ---
     @ref Platform::GlfwApplication crash fixes
+-   **Samuel Vargas** ([\@Samulus](https://github.com/Samulus)) --- fixes in
+    the @ref Vk library
 -   **[\@Selot](https://github.com/Selot)** --- Fixes in the `base-qt`
     bootstrap project
 -   **Séverin Lemaignan** ([\@severin-lemaignan](https://github.com/severin-lemaignan))
