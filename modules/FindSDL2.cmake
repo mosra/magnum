@@ -176,7 +176,7 @@ endif()
 
 # (Static) macOS / iOS dependencies. On macOS these were mainly needed when
 # building SDL statically using its CMake project, on iOS always.
-if(CORRADE_TARGET_APPLE AND SDL2_LIBRARY MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$")
+if(CORRADE_TARGET_APPLE AND (SDL2_LIBRARY_DEBUG MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$" OR SDL2_LIBRARY_RELEASE MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$"))
     set(_SDL2_FRAMEWORKS
         iconv # should be in the system, needed by iOS as well now
         AudioToolbox
@@ -248,7 +248,7 @@ if(NOT TARGET SDL2::SDL2)
         endif()
 
         # Link frameworks on macOS / iOS if we have a static SDL
-        if(CORRADE_TARGET_APPLE AND SDL2_LIBRARY MATCHES ".*libSDL2.a$")
+        if(CORRADE_TARGET_APPLE AND (SDL2_LIBRARY_DEBUG MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$" OR SDL2_LIBRARY_RELEASE MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$"))
             set_property(TARGET SDL2::SDL2 APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES ${_SDL2_FRAMEWORK_LIBRARIES})
         endif()
