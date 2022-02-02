@@ -174,12 +174,15 @@ if(CORRADE_TARGET_WINDOWS)
         PATH_SUFFIXES ${_SDL2_RUNTIME_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
 endif()
 
-# (Static) macOS / iOS dependencies
+# (Static) macOS / iOS dependencies. On macOS these were mainly needed when
+# building SDL statically using its CMake project, on iOS always.
 if(CORRADE_TARGET_APPLE AND SDL2_LIBRARY MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$")
+    set(_SDL2_FRAMEWORKS
+        AudioToolbox
+        AVFoundation
+        Foundation)
     if(CORRADE_TARGET_IOS)
-        set(_SDL2_FRAMEWORKS
-            AudioToolbox
-            AVFoundation
+        list(APPEND _SDL2_FRAMEWORKS
             CoreGraphics
             CoreMotion
             Foundation
@@ -188,17 +191,13 @@ if(CORRADE_TARGET_APPLE AND SDL2_LIBRARY MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}
             QuartzCore
             UIKit)
     else()
-        # Those are needed when building SDL statically using its CMake project
-        set(_SDL2_FRAMEWORKS
+        list(APPEND _SDL2_FRAMEWORKS
             iconv # should be in the system
-            AudioToolbox
-            AVFoundation
             Carbon
             Cocoa
             CoreAudio
             CoreVideo
             ForceFeedback
-            Foundation
             IOKit)
     endif()
     set(_SDL2_FRAMEWORK_LIBRARIES )
