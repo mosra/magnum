@@ -389,7 +389,7 @@ template<std::size_t size, class T> inline Vector<size, T> clamp(const Vector<si
 
 Returns `1` if @p x > 0, `0` if @p x = 0 and `-1` if @p x < 0.
 */
-template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type sign(const T& scalar) {
+template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type sign(T scalar) {
     if(scalar > T(0)) return T(1);
     if(scalar < T(0)) return T(-1);
     return T(0);
