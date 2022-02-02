@@ -449,9 +449,6 @@ void FunctionsTest::fma() {
                               Vector3( 3.0f,  2.0f, -1.0f),
                               Vector3(0.75f, 0.25f,  0.1f)),
                               Vector3(6.75f, 3.25f, -0.4f));
-
-    /* Not testing wrapped types as the resulting unit is less clear -- convert
-       to an unitless type first */
 }
 
 void FunctionsTest::logIntegral() {
@@ -465,14 +462,10 @@ void FunctionsTest::log2() {
 
 void FunctionsTest::log() {
     CORRADE_COMPARE(Math::log(2.0f), 0.693147f);
-
-    /* Not testing wrapped types -- what unit should have degrees squared? */
 }
 
 void FunctionsTest::exp() {
     CORRADE_COMPARE(Math::exp(0.693147f), 2.0f);
-
-    /* Not testing wrapped types -- what unit should have degrees squared? */
 }
 
 void FunctionsTest::div() {
