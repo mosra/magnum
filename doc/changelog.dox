@@ -591,9 +591,9 @@ See also:
     destroyed could fail with an error saying "cannot make the previous context
     current" on certain system. This was due to EGL not destroying the context
     if it's still made current.
--   Fixed handling of @ref Sdl2Application::InputEvent::Modifier::Super, which
-    was misreported as @relativeref{Sdl2Application::InputEvent::Modifier,Alt}
-    (see [mosra/magnum#547](https://github.com/mosra/magnum/pull/547))
+-   Fixed handling of @ref Platform::Sdl2Application::InputEvent::Modifier::Super,
+    which was misreported as @relativeref{Platform::Sdl2Application::InputEvent::Modifier,Alt} (see
+    [mosra/magnum#547](https://github.com/mosra/magnum/pull/547))
 -   For meshes with multiple sets of vertex attributes (such as texture
     coordinates), @ref MeshTools::compile() should be using only the first set
     but it wasn't.
