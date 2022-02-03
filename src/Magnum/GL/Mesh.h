@@ -165,7 +165,7 @@ query availability of given primitive.
 MAGNUM_GL_EXPORT MeshPrimitive meshPrimitive(Magnum::MeshPrimitive primitive);
 
 /**
-@brief Index type
+@brief Mesh index type
 
 @see @ref Magnum::MeshIndexType, @ref meshIndexType(),
     @ref meshIndexTypeSize(), @ref Mesh::setIndexBuffer()
