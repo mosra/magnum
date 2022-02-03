@@ -711,7 +711,7 @@ used.)")
 
         /* In case the images have all just a single level and no names, write
            them in a compact way without listing levels. */
-        bool compactImages = false;
+        bool compactImages = true;
         Containers::Array<Trade::Implementation::ImageInfo> imageInfos;
         if(args.isSet("info") || args.isSet("info-images")) {
             imageInfos = Trade::Implementation::imageInfo(*importer, error, compactImages, importTime);
