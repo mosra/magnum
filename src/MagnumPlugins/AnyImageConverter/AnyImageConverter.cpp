@@ -176,7 +176,9 @@ bool AnyImageConverter::doConvertToFile(const ImageView3D& image, const Containe
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".exr"_s))
+    if(normalized.hasSuffix(".basis"_s))
+        plugin = "BasisImageConverter"_s;
+    else if(normalized.hasSuffix(".exr"_s))
         plugin = "OpenExrImageConverter"_s;
     else if(normalized.hasSuffix(".ktx2"_s))
         plugin = "KtxImageConverter"_s;
@@ -440,7 +442,9 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".exr"_s))
+    if(normalized.hasSuffix(".basis"_s))
+        plugin = "BasisImageConverter"_s;
+    else if(normalized.hasSuffix(".exr"_s))
         plugin = "OpenExrImageConverter"_s;
     else if(normalized.hasSuffix(".ktx2"_s))
         plugin = "KtxImageConverter"_s;

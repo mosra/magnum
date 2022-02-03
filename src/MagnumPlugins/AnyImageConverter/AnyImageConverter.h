@@ -57,8 +57,8 @@ Detects file type based on file extension, loads corresponding plugin and then
 tries to convert the file with it. Supported formats for uncompressed data:
 
 -   Basis Universal (`*.basis`), converted with @ref BasisImageConverter or any
-    other plugin that provides it. Only uncompressed 2D and multi-level 2D
-    images.
+    other plugin that provides it. Only uncompressed 2D/3D and multi-level
+    2D/3D images.
 -   Windows Bitmap (`*.bmp`), converted with any plugin that provides
     `BmpImageConverter`. Only uncompressed 2D images.
 -   OpenEXR (`*.exr`), converted with any plugin that provides
