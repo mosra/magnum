@@ -574,10 +574,9 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::CompressedRed:
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
+        /* for WebGL 1 these two are in the Luminance case instead */
         case TextureFormat::CompressedR11Eac:
         case TextureFormat::CompressedSignedR11Eac:
-        #endif
             return PixelFormat::Red;
         #endif
 
@@ -624,10 +623,9 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::CompressedRG:
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
+        /* for WebGL 1 these two are in the LuminanceAlpha case instead */
         case TextureFormat::CompressedRG11Eac:
         case TextureFormat::CompressedSignedRG11Eac:
-        #endif
             return PixelFormat::RG;
         #endif
 
@@ -692,9 +690,7 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::CompressedRGBBptcUnsignedFloat:
         case TextureFormat::CompressedRGBBptcSignedFloat:
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::CompressedRGB8Etc2:
-        #endif
         case TextureFormat::CompressedRGBS3tcDxt1:
         #ifdef MAGNUM_TARGET_GLES
         case TextureFormat::CompressedRGBPvrtc2bppV1:
@@ -708,9 +704,7 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::SRGB8:
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::CompressedSRGB8Etc2:
-        #endif
         case TextureFormat::CompressedSRGBS3tcDxt1:
         #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
         case TextureFormat::CompressedSRGBPvrtc2bppV1:
@@ -764,10 +758,8 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
         case TextureFormat::CompressedRGBABptcUnorm:
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::CompressedRGB8PunchthroughAlpha1Etc2:
         case TextureFormat::CompressedRGBA8Etc2Eac:
-        #endif
         case TextureFormat::CompressedRGBAS3tcDxt1:
         case TextureFormat::CompressedRGBAS3tcDxt3:
         case TextureFormat::CompressedRGBAS3tcDxt5:
@@ -800,10 +792,8 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
         case TextureFormat::CompressedSRGBAlphaBptcUnorm:
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::CompressedSRGB8PunchthroughAlpha1Etc2:
         case TextureFormat::CompressedSRGB8Alpha8Etc2Eac:
-        #endif
         case TextureFormat::CompressedSRGBAlphaS3tcDxt1:
         case TextureFormat::CompressedSRGBAlphaS3tcDxt3:
         case TextureFormat::CompressedSRGBAlphaS3tcDxt5:
@@ -850,8 +840,22 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
 
         #ifdef MAGNUM_TARGET_GLES2
         case TextureFormat::Luminance:
+        #ifdef MAGNUM_TARGET_WEBGL
+        /* Not sure if this is the right place, as neither of the
+           {ANGLE,WEBGL}_compressed_texture_etc specifications says what the corresponding pixel format is meant to be. For desktop, ES and
+           WebGL 2 these two are in the Red case instead. */
+        case TextureFormat::CompressedR11Eac:
+        case TextureFormat::CompressedSignedR11Eac:
+        #endif
             return PixelFormat::Luminance;
         case TextureFormat::LuminanceAlpha:
+        #ifdef MAGNUM_TARGET_WEBGL
+        /* Not sure if this is the right place, as neither of the
+           {ANGLE,WEBGL}_compressed_texture_etc specifications says what the corresponding pixel format is meant to be. For desktop, ES and
+           WebGL 2 these two are in the RG case instead. */
+        case TextureFormat::CompressedRG11Eac:
+        case TextureFormat::CompressedSignedRG11Eac:
+        #endif
             return PixelFormat::LuminanceAlpha;
         #endif
 
@@ -950,7 +954,6 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::CompressedRGBABptcUnorm:
         case TextureFormat::CompressedSRGBAlphaBptcUnorm:
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::CompressedRGB8Etc2:
         case TextureFormat::CompressedSRGB8Etc2:
         case TextureFormat::CompressedRGB8PunchthroughAlpha1Etc2:
@@ -961,7 +964,6 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::CompressedSignedR11Eac:
         case TextureFormat::CompressedRG11Eac:
         case TextureFormat::CompressedSignedRG11Eac:
-        #endif
         case TextureFormat::CompressedRGBS3tcDxt1:
         case TextureFormat::CompressedSRGBS3tcDxt1:
         case TextureFormat::CompressedRGBAS3tcDxt1:

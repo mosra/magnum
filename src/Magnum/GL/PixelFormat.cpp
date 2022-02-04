@@ -481,7 +481,6 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         _c(RGBABptcUnorm)
         _c(SRGBAlphaBptcUnorm)
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
         _c(RGB8Etc2)
         _c(SRGB8Etc2)
         _c(RGB8PunchthroughAlpha1Etc2)
@@ -492,7 +491,6 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         _c(SignedR11Eac)
         _c(RG11Eac)
         _c(SignedRG11Eac)
-        #endif
         _c(RGBS3tcDxt1)
         _c(SRGBS3tcDxt1)
         _c(RGBAS3tcDxt1)

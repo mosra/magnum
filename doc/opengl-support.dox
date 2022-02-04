@@ -391,6 +391,7 @@ Extension                                   | Status
 @gl_extension{ANGLE,framebuffer_multisample} | done
 @gl_extension{ANGLE,instanced_arrays}       | done
 @gl_extension{ANGLE,depth_texture}          | done
+@m_class{m-doc-external} [ANGLE_compressed_texture_etc](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_compressed_texture_etc.txt) (unlisted) | done
 @gl_extension{APPLE,framebuffer_multisample} | done (ES 3.0 subset)
 @gl_extension{APPLE,texture_max_level}      | done
 @gl_extension{ARM,rgba8}                    | done
@@ -570,6 +571,7 @@ Extension                                   | Status
 @webgl_extension{WEBGL,debug_shaders}       | |
 @webgl_extension{WEBGL,compressed_texture_s3tc} | done
 @webgl_extension{WEBGL,compressed_texture_pvrtc} | done
+@webgl_extension{WEBGL,compressed_texture_etc} | done
 @webgl_extension{WEBGL,compressed_texture_astc} | done
 @webgl_extension{WEBGL,compressed_texture_s3tc_srgb} | done
 @webgl_extension{WEBGL,multi_draw}          | done

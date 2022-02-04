@@ -1306,98 +1306,166 @@ enum class TextureFormat: GLenum {
     #endif
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES2
     /**
      * ETC2 compressed RGB, normalized unsigned. **Available only on 2D, 2D
      * array, cube map and cube map array textures.**
      * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
-     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
-     *      2.0.
+     * @requires_gles30 Extension @m_class{m-doc-external} [ANGLE_compressed_texture_etc](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_compressed_texture_etc.txt)
+     *      in OpenGL ES 2.0.
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_etc}
      */
+    #ifndef MAGNUM_TARGET_GLES2
     CompressedRGB8Etc2 = GL_COMPRESSED_RGB8_ETC2,
+    #else
+    /* ANGLE_compressed_texture_etc is not listed in gl_angle_ext.xml so we
+       have to hardcode; on ES3 (and thus WebGL 2) it's in the core header */
+    CompressedRGB8Etc2 = 0x9274,
+    #endif
 
     /**
      * ETC2 compressed sRGB, normalized unsigned. **Available only on 2D, 2D
      * array, cube map and cube map array textures.**
      * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
-     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
-     *      2.0.
+     * @requires_gles30 Extension @m_class{m-doc-external} [ANGLE_compressed_texture_etc](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_compressed_texture_etc.txt)
+     *      in OpenGL ES 2.0.
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_etc}
      */
+    #ifndef MAGNUM_TARGET_GLES2
     CompressedSRGB8Etc2 = GL_COMPRESSED_SRGB8_ETC2,
+    #else
+    /* ANGLE_compressed_texture_etc is not listed in gl_angle_ext.xml so we
+       have to hardcode; on ES3 (and thus WebGL 2) it's in the core header */
+    CompressedSRGB8Etc2 = 0x9275,
+    #endif
 
     /**
      * ETC2 compressed RGB with punchthrough (single-bit) alpha, normalized
      * unsigned. **Available only on 2D, 2D array, cube map and cube map array
      * textures.**
      * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
-     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
-     *      2.0.
+     * @requires_gles30 Extension @m_class{m-doc-external} [ANGLE_compressed_texture_etc](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_compressed_texture_etc.txt)
+     *      in OpenGL ES 2.0.
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_etc}
      */
+    #ifndef MAGNUM_TARGET_GLES2
     CompressedRGB8PunchthroughAlpha1Etc2 = GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2,
+    #else
+    /* ANGLE_compressed_texture_etc is not listed in gl_angle_ext.xml so we
+       have to hardcode; on ES3 (and thus WebGL 2) it's in the core header */
+    CompressedRGB8PunchthroughAlpha1Etc2 = 0x9276,
+    #endif
 
     /**
      * ETC2 compressed sRGB with punchthrough (single-bit) alpha, normalized
      * unsigned. **Available only on 2D, 2D array, cube map and cube map array
      * textures.**
      * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
-     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
-     *      2.0.
+     * @requires_gles30 Extension @m_class{m-doc-external} [ANGLE_compressed_texture_etc](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_compressed_texture_etc.txt)
+     *      in OpenGL ES 2.0.
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_etc}
      */
+    #ifndef MAGNUM_TARGET_GLES2
     CompressedSRGB8PunchthroughAlpha1Etc2 = GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2,
+    #else
+    /* ANGLE_compressed_texture_etc is not listed in gl_angle_ext.xml so we
+       have to hardcode; on ES3 (and thus WebGL 2) it's in the core header */
+    CompressedSRGB8PunchthroughAlpha1Etc2 = 0x9277,
+    #endif
 
     /**
      * ETC2/EAC compressed RGBA, normalized unsigned. **Available only on 2D,
      * 2D array, cube map and cube map array textures.**
      * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
-     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
-     *      2.0.
+     * @requires_gles30 Extension @m_class{m-doc-external} [ANGLE_compressed_texture_etc](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_compressed_texture_etc.txt)
+     *      in OpenGL ES 2.0.
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_etc}
      */
+    #ifndef MAGNUM_TARGET_GLES2
     CompressedRGBA8Etc2Eac = GL_COMPRESSED_RGBA8_ETC2_EAC,
+    #else
+    /* ANGLE_compressed_texture_etc is not listed in gl_angle_ext.xml so we
+       have to hardcode; on ES3 (and thus WebGL 2) it's in the core header */
+    CompressedRGBA8Etc2Eac = 0x9278,
+    #endif
 
     /**
      * ETC2/EAC compressed sRGB with alpha, normalized unsigned. **Available
      * only on 2D, 2D array, cube map and cube map array textures.**
      * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
-     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
-     *      2.0.
+     * @requires_gles30 Extension @m_class{m-doc-external} [ANGLE_compressed_texture_etc](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_compressed_texture_etc.txt)
+     *      in OpenGL ES 2.0.
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_etc}
      */
+    #ifndef MAGNUM_TARGET_GLES2
     CompressedSRGB8Alpha8Etc2Eac = GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC,
+    #else
+    /* ANGLE_compressed_texture_etc is not listed in gl_angle_ext.xml so we
+       have to hardcode; on ES3 (and thus WebGL 2) it's in the core header */
+    CompressedSRGB8Alpha8Etc2Eac = 0x9279,
+    #endif
 
     /**
      * EAC compressed red channel, normalized unsigned. **Available only on 2D,
      * 2D array, cube map and cube map array textures.**
      * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
-     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
-     *      2.0.
+     * @requires_gles30 Extension @m_class{m-doc-external} [ANGLE_compressed_texture_etc](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_compressed_texture_etc.txt)
+     *      in OpenGL ES 2.0.
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_etc}
      */
+    #ifndef MAGNUM_TARGET_GLES2
     CompressedR11Eac = GL_COMPRESSED_R11_EAC,
+    #else
+    /* ANGLE_compressed_texture_etc is not listed in gl_angle_ext.xml so we
+       have to hardcode; on ES3 (and thus WebGL 2) it's in the core header */
+    CompressedR11Eac = 0x9270,
+    #endif
 
     /**
      * EAC compressed red channel, normalized signed. **Available only on 2D,
      * 2D array, cube map and cube map array textures.**
      * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
-     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
-     *      2.0.
+     * @requires_gles30 Extension @m_class{m-doc-external} [ANGLE_compressed_texture_etc](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_compressed_texture_etc.txt)
+     *      in OpenGL ES 2.0.
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_etc}
      */
+    #ifndef MAGNUM_TARGET_GLES2
     CompressedSignedR11Eac = GL_COMPRESSED_SIGNED_R11_EAC,
+    #else
+    /* ANGLE_compressed_texture_etc is not listed in gl_angle_ext.xml so we
+       have to hardcode; on ES3 (and thus WebGL 2) it's in the core header */
+    CompressedSignedR11Eac = 0x9271,
+    #endif
 
     /**
      * EAC compressed red and green channel, normalized unsigned. **Available
      * only on 2D, 2D array, cube map and cube map array textures.**
      * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
-     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
-     *      2.0.
+     * @requires_gles30 Extension @m_class{m-doc-external} [ANGLE_compressed_texture_etc](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_compressed_texture_etc.txt)
+     *      in OpenGL ES 2.0.
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_etc}
      */
+    #ifndef MAGNUM_TARGET_GLES2
     CompressedRG11Eac = GL_COMPRESSED_RG11_EAC,
+    #else
+    /* ANGLE_compressed_texture_etc is not listed in gl_angle_ext.xml so we
+       have to hardcode; on ES3 (and thus WebGL 2) it's in the core header */
+    CompressedRG11Eac = 0x9272,
+    #endif
 
     /**
      * EAC compressed red and green channel, normalized signed. **Available
      * only on 2D, 2D array, cube map and cube map array textures.**
      * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
-     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
-     *      2.0.
+     * @requires_gles30 Extension @m_class{m-doc-external} [ANGLE_compressed_texture_etc](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_compressed_texture_etc.txt)
+     *      in OpenGL ES 2.0.
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_etc}
      */
+    #ifndef MAGNUM_TARGET_GLES2
     CompressedSignedRG11Eac = GL_COMPRESSED_SIGNED_RG11_EAC,
+    #else
+    /* ANGLE_compressed_texture_etc is not listed in gl_angle_ext.xml so we
+       have to hardcode; on ES3 (and thus WebGL 2) it's in the core header */
+    CompressedSignedRG11Eac = 0x9273,
     #endif
 
     /**

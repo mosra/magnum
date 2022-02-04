@@ -337,17 +337,18 @@ namespace ANGLE {
     _extension(37,WEBGL,color_buffer_float,         GLES200,    None) // #14
     _extension(38,WEBGL,draw_buffers,               GLES200, GLES300) // #18
     #endif
-    _extension(39,WEBGL,compressed_texture_astc,    GLES200,    None) // #30
-    _extension(40,WEBGL,compressed_texture_s3tc_srgb, GLES200,  None) // #32
-    _extension(41,WEBGL,multi_draw,                 GLES200,    None) // #40
-    _extension(42,WEBGL,blend_equation_advanced_coherent,GLES200,None) // #42
+    _extension(39,WEBGL,compressed_texture_etc,     GLES200,    None) // #29
+    _extension(40,WEBGL,compressed_texture_astc,    GLES200,    None) // #30
+    _extension(41,WEBGL,compressed_texture_s3tc_srgb, GLES200,  None) // #32
+    _extension(42,WEBGL,multi_draw,                 GLES200,    None) // #40
+    _extension(43,WEBGL,blend_equation_advanced_coherent,GLES200,None) // #42
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(43,WEBGL,draw_instanced_base_vertex_base_instance,GLES300,None) // #46
-    _extension(44,WEBGL,multi_draw_instanced_base_vertex_base_instance,GLES300,None) // #47
+    _extension(44,WEBGL,draw_instanced_base_vertex_base_instance,GLES300,None) // #46
+    _extension(45,WEBGL,multi_draw_instanced_base_vertex_base_instance,GLES300,None) // #47
     #endif
 } namespace MAGNUM {
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(45,MAGNUM,shader_vertex_id,          GLES300, GLES300)
+    _extension(46,MAGNUM,shader_vertex_id,          GLES300, GLES300)
     #endif
 }
 #else
@@ -377,21 +378,22 @@ namespace ANDROID {
        and this is THE ONLY SINGLE IMPLEMENTER so what gives?! */
     _extension( 10,ANGLE,base_vertex_base_instance, GLES300,    None) // #???
     #endif
+    _extension( 11,ANGLE,compressed_texture_etc,    GLES200,    None) // #???
 } namespace APPLE {
     #ifdef MAGNUM_TARGET_GLES2
-    _extension( 11,APPLE,framebuffer_multisample,   GLES200, GLES300) // #78
+    _extension( 12,APPLE,framebuffer_multisample,   GLES200, GLES300) // #78
     #endif
-    _extension( 12,APPLE,texture_format_BGRA8888,   GLES200,    None) // #79
+    _extension( 13,APPLE,texture_format_BGRA8888,   GLES200,    None) // #79
     #ifdef MAGNUM_TARGET_GLES2
-    _extension( 13,APPLE,texture_max_level,         GLES200, GLES300) // #80
+    _extension( 14,APPLE,texture_max_level,         GLES200, GLES300) // #80
     #endif
-    _extension( 14,APPLE,clip_distance,             GLES200,    None) // #193
+    _extension( 15,APPLE,clip_distance,             GLES200,    None) // #193
 } namespace ARM {
     #ifdef MAGNUM_TARGET_GLES2
-    _extension( 15,ARM,rgba8,                       GLES200, GLES300) // #82
+    _extension( 16,ARM,rgba8,                       GLES200, GLES300) // #82
     #endif
-    _extension( 16,ARM,shader_framebuffer_fetch,    GLES200,    None) // #165
-    _extension( 17,ARM,shader_framebuffer_fetch_depth_stencil, GLES200, None) // #166
+    _extension( 17,ARM,shader_framebuffer_fetch,    GLES200,    None) // #165
+    _extension( 18,ARM,shader_framebuffer_fetch_depth_stencil, GLES200, None) // #166
 } namespace EXT {
     _extension( 19,EXT,texture_filter_anisotropic,  GLES200,    None) // #41
     #ifdef MAGNUM_TARGET_GLES2

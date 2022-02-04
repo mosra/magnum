@@ -42,6 +42,10 @@ extension KHR_blend_equation_advanced optional
 extension ANGLE_multi_draw                      optional
 # Base for WEBGL_{multi_,}draw_instanced_base_vertex_base_instance
 extension ANGLE_base_vertex_base_instance       optional
+# Base for WEBGL_compressed_texture_etc. Haha you wish, OF COURSE it's not
+# included in gl_angle_ext.xml so I have to hardcode the numeric values there.
+# GOOGLE!!!
+# extension ANGLE_compressed_texture_etc        optional
 
 begin functions blacklist
     # Not present in WEBGL_blend_equation_advanced_coherent

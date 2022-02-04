@@ -441,12 +441,12 @@ void PixelFormatTest::mapCompressedFormatUnsupported() {
     #endif
 
     #ifdef MAGNUM_TARGET_GLES2
-    CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::Etc2RGB8Unorm));
+    CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm));
 
     std::ostringstream out;
     Error redirectError{&out};
-    compressedPixelFormat(Magnum::CompressedPixelFormat::Etc2RGB8Unorm);
-    CORRADE_COMPARE(out.str(), "GL::compressedPixelFormat(): format CompressedPixelFormat::Etc2RGB8Unorm is not supported on this target\n");
+    compressedPixelFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm);
+    CORRADE_COMPARE(out.str(), "GL::compressedPixelFormat(): format CompressedPixelFormat::Astc3x3x3RGBAUnorm is not supported on this target\n");
     #elif !defined(MAGNUM_TARGET_GLES)
     CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::PvrtcRGB2bppUnorm));
 
@@ -490,12 +490,12 @@ void PixelFormatTest::mapCompressedTextureFormatUnsupported() {
     #endif
 
     #ifdef MAGNUM_TARGET_GLES2
-    CORRADE_VERIFY(!hasTextureFormat(Magnum::CompressedPixelFormat::Etc2RGB8Unorm));
+    CORRADE_VERIFY(!hasTextureFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm));
 
     std::ostringstream out;
     Error redirectError{&out};
-    textureFormat(Magnum::CompressedPixelFormat::Etc2RGB8Unorm);
-    CORRADE_COMPARE(out.str(), "GL::textureFormat(): format CompressedPixelFormat::Etc2RGB8Unorm is not supported on this target\n");
+    textureFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm);
+    CORRADE_COMPARE(out.str(), "GL::textureFormat(): format CompressedPixelFormat::Astc3x3x3RGBAUnorm is not supported on this target\n");
     #elif !defined(MAGNUM_TARGET_GLES)
     CORRADE_VERIFY(!hasTextureFormat(Magnum::CompressedPixelFormat::PvrtcRGB2bppUnorm));
 

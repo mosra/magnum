@@ -183,7 +183,6 @@ Debug& operator<<(Debug& debug, const TextureFormat value) {
         _c(CompressedRGBABptcUnorm)
         _c(CompressedSRGBAlphaBptcUnorm)
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
         _c(CompressedRGB8Etc2)
         _c(CompressedSRGB8Etc2)
         _c(CompressedRGB8PunchthroughAlpha1Etc2)
@@ -194,7 +193,6 @@ Debug& operator<<(Debug& debug, const TextureFormat value) {
         _c(CompressedSignedR11Eac)
         _c(CompressedRG11Eac)
         _c(CompressedSignedRG11Eac)
-        #endif
         _c(CompressedRGBS3tcDxt1)
         _c(CompressedSRGBS3tcDxt1)
         _c(CompressedRGBAS3tcDxt1)

@@ -295,6 +295,7 @@ constexpr Extension ExtensionList[]{
     #endif
     Extensions::WEBGL::blend_equation_advanced_coherent{},
     Extensions::WEBGL::compressed_texture_astc{},
+    Extensions::WEBGL::compressed_texture_etc{},
     Extensions::WEBGL::compressed_texture_pvrtc{},
     Extensions::WEBGL::compressed_texture_s3tc{},
     Extensions::WEBGL::compressed_texture_s3tc_srgb{},
@@ -341,6 +342,7 @@ constexpr Extension ExtensionList[]{
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::ANGLE::base_vertex_base_instance{},
     #endif
+    Extensions::ANGLE::compressed_texture_etc{},
     Extensions::ANGLE::multi_draw{},
     Extensions::ANGLE::texture_compression_dxt1{},
     Extensions::ANGLE::texture_compression_dxt3{},

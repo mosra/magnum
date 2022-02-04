@@ -93,5 +93,8 @@ extension OVR_multiview2                            optional
 # From the gl_angle_ext file
 extension ANGLE_multi_draw                          optional
 extension ANGLE_base_vertex_base_instance           optional
+# Haha you wish, OF COURSE it's not included in gl_angle_ext.xml. But
+# fortunately ES3 defines these constants on its own so I don't need it anyway.
+# extension ANGLE_compressed_texture_etc            optional
 
 # kate: hl python

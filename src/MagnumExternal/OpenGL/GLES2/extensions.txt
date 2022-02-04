@@ -113,6 +113,9 @@ extension OES_draw_elements_base_vertex         optional
 
 # From the gl_angle_ext file
 extension ANGLE_multi_draw                      optional
+# Haha you wish, OF COURSE it's not included in gl_angle_ext.xml so I have to
+# hardcode the numeric values there. GOOGLE!!!
+# extension ANGLE_compressed_texture_etc        optional
 
 begin functions blacklist
     # These are listed in EXT_separate_shader_objects with only the comment
