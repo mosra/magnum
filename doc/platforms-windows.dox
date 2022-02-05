@@ -170,6 +170,21 @@ console window lurking in the background. This can be fixed by creating your
 executable with @cmake add_executable(... WIN32 ...) @ce and linking to the
 @ref main "Corrade::Main" library. See its documentation for more information.
 
+@section platforms-windows-vulkan Vulkan on Windows
+
+@todoc document the horrendous process of installing the whole crazy SDK,
+    touching registry and whatnot
+
+@section platform-windows-gl OpenGL on Windows
+
+@subsection platforms-macos-gl-angle Using ANGLE to translate OpenGL to Direct3D
+
+@todoc cmake options to switch to GLES/EGL, mention getting the binaries from browser installs
+@todoc steps for building angle from scratch?
+@todoc reference this from the RT guide?
+
+See also @ref platforms-gl-es-angle for further information.
+
 @section platforms-windows-clang-cl Using Clang-CL
 
 As an alternative to MSVC it's possible to use [Clang-CL](https://clang.llvm.org/docs/UsersManual.html#clang-cl).

@@ -103,6 +103,40 @@ for information about all options.
 If you don't use CMake, these options can be set directly through Xcode UI, for
 example.
 
+@subsection platforms-macos-bundle-dylibs Bundling dylibs
+
+If your application relies on dylibs (such as `libGLESv2.dylib` /
+`libEGL.dylib` for @ref platforms-gl-es-angle "ANGLE"), there's a few extra
+steps compared to static libraries to get them working. First, these have to be
+put into the `Frameworks/` directory inside the bundle --- for example like
+below if you have them referenced with a CMake project. Additionally, the
+files may need to get signed when copied:
+
+@code{.cmake}
+set_source_files_properties(libGLESv2.dylib libEGL.dylib PROPERTIES
+    MACOSX_PACKAGE_LOCATION Frameworks
+    XCODE_FILE_ATTRIBUTES CodeSignOnCopy)
+@endcode
+
+Then, the `*.dylib` files need to have their install name changed to contan a
+RPATH entry, so the executable linking to them will know it has to look for
+them in the RPATH. For 3rd party `*.dylib` files it can be done with the
+following command, dynamic libraries built directly by CMake
+[should have this already set](https://cmake.org/cmake/help/latest/prop_tgt/MACOSX_RPATH.html).
+
+@code{.sh}
+install_name_tool -id "@rpath/libGLESv2.dylib" libGLESv2.dylib
+install_name_tool -id "@rpath/libEGL.dylib" libEGL.dylib
+@endcode
+
+Finally, the application executable needs to have the RPATH pointed to the
+framework location:
+
+@code{.sh}
+set_target_properties(my-application PROPERTIES
+    INSTALL_RPATH "@executable_path/../Frameworks")
+@endcode
+
 @section platforms-macos-hidpi HiDPI (Retina) support
 
 macOS and iOS is the only platform where HiDPI support of an app can't be
@@ -266,9 +300,13 @@ for MoltenVK.
 
 With Apple decision to focus on Metal, macOS OpenGL support is stuck on version
 4.1 (i.e., two versions before compute shaders are available). Moreover, OpenGL
-is deprecated since macOS 10.14.
+is deprecated since macOS 10.14. If you don't want to rely on the deprecated
+OpenGL driver, you have an option to use
+@ref platforms-macos-vulkan "Vulkan as shown above", go with ANGLE to translate
+OpenGL to Metal (details below), or go with Mesa Zink to translate OpenGL to
+Vulkan.
 
-These are known macOS-specific OpenGL issues:
+With the deprecated macOS drivers, these are the known issues:
 
 -   @ref GL::AbstractShaderProgram::validate() expects that the shader has a
     properly configured framebuffer bound along with proper @ref GL::Renderer
@@ -276,6 +314,14 @@ These are known macOS-specific OpenGL issues:
     used for shader validity testing.
 -   `GL_TIMESTAMP` used by @ref GL::TimeQuery::timestamp() is not implemented
     on macOS and gives zero results.
+
+@subsection platforms-macos-gl-angle Using ANGLE to translate OpenGL to Metal
+
+@todoc cmake options to switch to GLES/EGL, mention getting the binaries from browser installs
+@todoc steps for building angle from scratch?
+@todoc reference this from the iOS guide
+
+See also @ref platforms-gl-es-angle for further information.
 
 */
 

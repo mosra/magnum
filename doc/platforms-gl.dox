@@ -71,12 +71,14 @@ Various links gathered around the web:
     work around that issue by using half-float texture formats or doing the
     interpolation manually in a shader.
 
-@subsection platforms-gl-es-angle ANGLE
+@subsection platforms-gl-es-angle ANGLE OpenGL ES translation layer
 
 [ANGLE](https://github.com/google/angle) is a layer that translates OpenGL ES
-code to D3D, desktop GL or Vulkan, originally created for web browsers to
-provide better WebGL experience without relying on buggy OpenGL drivers on
-Windows.
+code to D3D, desktop GL, Vulkan or Metal, originally created for web browsers
+to provide better WebGL experience without relying on buggy OpenGL drivers on
+Windows or abandoned OpenGL drivers on Apple platforms. See
+@ref platforms-macos-gl-angle and @ref platforms-windows-gl-angle for further
+information.
 
 Related links:
 
