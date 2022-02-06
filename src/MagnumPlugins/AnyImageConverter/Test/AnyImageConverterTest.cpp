@@ -429,7 +429,8 @@ void AnyImageConverterTest::convert1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2");
@@ -466,7 +467,8 @@ void AnyImageConverterTest::convert3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2");
@@ -488,7 +490,8 @@ void AnyImageConverterTest::convertCompressed1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-1d.ktx2");
@@ -508,7 +511,8 @@ void AnyImageConverterTest::convertCompressed2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-2d.ktx2");
@@ -528,7 +532,8 @@ void AnyImageConverterTest::convertCompressed3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-3d.ktx2");
@@ -548,7 +553,8 @@ void AnyImageConverterTest::convertLevels1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "levels-1d.ktx2");
@@ -570,7 +576,8 @@ void AnyImageConverterTest::convertLevels2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "levels-2d.ktx2");
@@ -592,7 +599,8 @@ void AnyImageConverterTest::convertLevels3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "levels-3d.ktx2");
@@ -614,7 +622,8 @@ void AnyImageConverterTest::convertCompressedLevels1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-levels-1d.ktx2");
@@ -636,7 +645,8 @@ void AnyImageConverterTest::convertCompressedLevels2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-levels-2d.ktx2");
@@ -658,7 +668,8 @@ void AnyImageConverterTest::convertCompressedLevels3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-levels-3d.ktx2");
@@ -1085,7 +1096,8 @@ void AnyImageConverterTest::propagateFlags3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("OpenExrImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
@@ -1141,7 +1153,8 @@ void AnyImageConverterTest::propagateFlagsLevels2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("OpenExrImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.exr");
@@ -1182,7 +1195,8 @@ void AnyImageConverterTest::propagateFlagsLevels3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("OpenExrImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
@@ -1236,7 +1250,8 @@ void AnyImageConverterTest::propagateConfiguration1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-1d.ktx2");
@@ -1258,7 +1273,8 @@ void AnyImageConverterTest::propagateConfiguration2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("OpenExrImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "depth32f-custom-channels.exr");
@@ -1282,7 +1298,8 @@ void AnyImageConverterTest::propagateConfiguration3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-3d.ktx2");
@@ -1304,7 +1321,8 @@ void AnyImageConverterTest::propagateConfigurationUnknown1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
@@ -1335,7 +1353,8 @@ void AnyImageConverterTest::propagateConfigurationUnknown3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
@@ -1353,7 +1372,8 @@ void AnyImageConverterTest::propagateConfigurationCompressed1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-1d.ktx2");
@@ -1375,7 +1395,8 @@ void AnyImageConverterTest::propagateConfigurationCompressed2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-2d.ktx2");
@@ -1397,7 +1418,8 @@ void AnyImageConverterTest::propagateConfigurationCompressed3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-3d.ktx2");
@@ -1419,7 +1441,8 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknown1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
@@ -1437,7 +1460,8 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknown2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
@@ -1455,7 +1479,8 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknown3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
@@ -1473,7 +1498,8 @@ void AnyImageConverterTest::propagateConfigurationLevels1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-1d.ktx2");
@@ -1497,7 +1523,8 @@ void AnyImageConverterTest::propagateConfigurationLevels2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-2d.ktx2");
@@ -1521,7 +1548,8 @@ void AnyImageConverterTest::propagateConfigurationLevels3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-3d.ktx2");
@@ -1545,7 +1573,8 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
@@ -1565,7 +1594,8 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
@@ -1585,7 +1615,8 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
@@ -1605,7 +1636,8 @@ void AnyImageConverterTest::propagateConfigurationCompressedLevels1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-1d.ktx2");
@@ -1629,7 +1661,8 @@ void AnyImageConverterTest::propagateConfigurationCompressedLevels2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-2d.ktx2");
@@ -1653,7 +1686,8 @@ void AnyImageConverterTest::propagateConfigurationCompressedLevels3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compresed-custom-writer-3d.ktx2");
@@ -1677,7 +1711,8 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
@@ -1697,7 +1732,8 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels2D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
@@ -1717,7 +1753,8 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImageConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");

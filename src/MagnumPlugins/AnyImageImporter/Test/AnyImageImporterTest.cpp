@@ -207,7 +207,8 @@ void AnyImageImporterTest::load1D() {
     CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImporter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImporter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
@@ -257,7 +258,8 @@ void AnyImageImporterTest::load3D() {
     CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("KtxImporter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImporter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
@@ -363,7 +365,8 @@ void AnyImageImporterTest::propagateConfiguration() {
     CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("OpenExrImporter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("OpenExrImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("OpenExrImporter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");

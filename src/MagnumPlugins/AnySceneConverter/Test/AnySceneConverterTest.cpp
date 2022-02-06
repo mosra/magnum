@@ -97,7 +97,8 @@ void AnySceneConverterTest::convert() {
     CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("StanfordSceneConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("StanfordSceneConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
@@ -156,7 +157,8 @@ void AnySceneConverterTest::propagateFlags() {
     CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("StanfordSceneConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("StanfordSceneConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
@@ -193,7 +195,8 @@ void AnySceneConverterTest::propagateConfiguration() {
     CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("StanfordSceneConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("StanfordSceneConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
 
     const std::string filename = Utility::Directory::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
@@ -225,7 +228,8 @@ void AnySceneConverterTest::propagateConfigurationUnknown() {
     CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
-    if(manager.loadState("StanfordSceneConverter") < PluginManager::LoadState::Loaded)
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("StanfordSceneConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
 
     const Vector3 positions[] {
