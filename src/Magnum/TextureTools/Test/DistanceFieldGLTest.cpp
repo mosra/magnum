@@ -178,8 +178,9 @@ void DistanceFieldGLTest::test() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    if(_manager.loadState("AnyImageImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter plugin not found.");
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     /** @todo Do this via some TextureTools::pixelFormatTransform() */
     if(actualOutputImage->format() == PixelFormat::RGBA8Unorm) {

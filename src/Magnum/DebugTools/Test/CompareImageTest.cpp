@@ -1046,9 +1046,9 @@ void CompareImageTest::imageError() {
 }
 
 void CompareImageTest::imageFileZeroDelta() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     CORRADE_COMPARE_WITH(
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
@@ -1064,9 +1064,9 @@ void CompareImageTest::imageFileZeroDelta() {
 }
 
 void CompareImageTest::imageFileNonZeroDelta() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     /* This will produce output if --verbose is specified */
     CORRADE_COMPARE_WITH(
@@ -1091,9 +1091,9 @@ void CompareImageTest::imageFileNonZeroDelta() {
 }
 
 void CompareImageTest::imageFileError() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     std::stringstream out;
 
@@ -1156,9 +1156,9 @@ void CompareImageTest::imageFilePluginLoadFailed() {
 }
 
 void CompareImageTest::imageFileActualLoadFailed() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     std::stringstream out;
 
@@ -1177,9 +1177,9 @@ void CompareImageTest::imageFileActualLoadFailed() {
 }
 
 void CompareImageTest::imageFileExpectedLoadFailed() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     std::stringstream out;
 
@@ -1276,9 +1276,9 @@ void CompareImageTest::imageFileExpectedIsCompressed() {
 }
 
 void CompareImageTest::imageToFileZeroDelta() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     CORRADE_COMPARE_WITH(ExpectedRgb,
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
@@ -1291,9 +1291,9 @@ void CompareImageTest::imageToFileZeroDelta() {
 }
 
 void CompareImageTest::imageToFileNonZeroDelta() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     /* This will produce output if --verbose is specified */
     CORRADE_COMPARE_WITH(ActualRgb,
@@ -1315,9 +1315,9 @@ void CompareImageTest::imageToFileNonZeroDelta() {
 }
 
 void CompareImageTest::imageToFileError() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     std::stringstream out;
 
@@ -1378,9 +1378,9 @@ void CompareImageTest::imageToFilePluginLoadFailed() {
 }
 
 void CompareImageTest::imageToFileExpectedLoadFailed() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     std::stringstream out;
 
@@ -1454,9 +1454,9 @@ void CompareImageTest::imageToFileExpectedIsCompressed() {
 }
 
 void CompareImageTest::fileToImageZeroDelta() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     CORRADE_COMPARE_WITH(
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
@@ -1470,9 +1470,9 @@ void CompareImageTest::fileToImageZeroDelta() {
 }
 
 void CompareImageTest::fileToImageNonZeroDelta() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     /* This will produce output if --verbose is specified */
     CORRADE_COMPARE_WITH(
@@ -1496,9 +1496,9 @@ void CompareImageTest::fileToImageNonZeroDelta() {
 }
 
 void CompareImageTest::fileToImageError() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     std::stringstream out;
 
@@ -1538,9 +1538,9 @@ void CompareImageTest::fileToImagePluginLoadFailed() {
 }
 
 void CompareImageTest::fileToImageActualLoadFailed() {
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     std::stringstream out;
 
@@ -1629,9 +1629,9 @@ void CompareImageTest::pixelsToImageError() {
 void CompareImageTest::pixelsToFileZeroDelta() {
     /* Same as imageToFile(), but taking pixels instead */
 
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     CORRADE_COMPARE_WITH(ExpectedRgb.pixels<Color3ub>(),
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
@@ -1646,9 +1646,9 @@ void CompareImageTest::pixelsToFileZeroDelta() {
 void CompareImageTest::pixelsToFileNonZeroDelta() {
     /* Same as imageToFile(), but taking pixels instead */
 
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     CORRADE_COMPARE_WITH(ActualRgb.pixels<Color3ub>(),
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
@@ -1671,9 +1671,9 @@ void CompareImageTest::pixelsToFileNonZeroDelta() {
 void CompareImageTest::pixelsToFileError() {
     /* Same as imageToFileError(), but taking pixels instead */
 
-    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
-       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     std::stringstream out;
 
