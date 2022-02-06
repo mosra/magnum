@@ -69,6 +69,7 @@ build() {
 
 check() {
     cd "$_rootdir/build-clang-libc++"
+    export CORRADE_TEST_SKIP_BENCHMARKS=ON
     CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5
 }
 

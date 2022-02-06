@@ -66,6 +66,7 @@ build() {
 
 check() {
     cd "$_rootdir/build-clang"
+    export CORRADE_TEST_SKIP_BENCHMARKS=ON
     CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5
 }
 
@@ -73,3 +74,5 @@ package() {
     cd "$_rootdir/build-clang"
     DESTDIR="$pkgdir/" ninja install
 }
+
+# kate: hl bash
