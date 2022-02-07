@@ -5605,7 +5605,7 @@ void SceneDataTest::releaseFieldData() {
 
     /* Data stays untouched, object count and type as well, as it con't result
        in any dangling data access */
-    CORRADE_COMPARE(scene.data(), view.data());
+    CORRADE_COMPARE(scene.data().data(), view.data());
     CORRADE_COMPARE(scene.mappingBound(), 50);
     CORRADE_COMPARE(scene.mappingType(), SceneMappingType::UnsignedByte);
 }
