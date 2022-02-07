@@ -329,8 +329,11 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
         if(flags >= Flag::InstancedObjectId)
             bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
-        if(flags & Flag::InstancedTransformation)
+        if(flags & Flag::InstancedTransformation) {
             bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
+            if(lightCount)
+                bindAttributeLocation(NormalMatrix::Location, "instancedNormalMatrix");
+        }
         if(flags >= Flag::InstancedTextureOffset)
             bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
     }
