@@ -90,7 +90,7 @@ std::pair<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(co
 
 namespace {
 
-#if defined(CORRADE_MSVC2019_COMPATIBILITY) && !defined(CORRADE_MSVC2017_COMPATIBILITY)
+#if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_MSVC_COMPATIBILITY) && _MSC_VER >= 1920 && _MSC_VER < 1930
 /* When using /permissive- with MSVC2019, using namespace inside the function
    below FOR SOME REASON gets lost when instantiating the template. That's
    stupid but what can we do -- the only way to work around that is to move it
