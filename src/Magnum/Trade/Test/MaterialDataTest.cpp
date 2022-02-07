@@ -978,6 +978,11 @@ void MaterialDataTest::constructDuplicateAttribute() {
     #endif
 
     Containers::Array<MaterialAttributeData> attributes{InPlaceInit, {
+        /* This attribute is in the first layer, so it should not be reported
+           as duplicated */
+        {MaterialAttribute::DoubleSided, true},
+
+        /* Second layer is empty, this is the third layer (index 2) */
         {MaterialAttribute::DoubleSided, true},
         {MaterialAttribute::DiffuseTextureCoordinates, 5u},
         {"highlightColor", 0x335566ff_rgbaf},
@@ -987,16 +992,16 @@ void MaterialDataTest::constructDuplicateAttribute() {
 
     /* Testing that it asserts in all input permutations */
     for(std::size_t i = 0; i != testCaseRepeatId(); ++i)
-        std::next_permutation(attributes.begin(), attributes.end(), [](const MaterialAttributeData& a, const MaterialAttributeData& b) {
+        std::next_permutation(attributes.begin() + 1, attributes.end(), [](const MaterialAttributeData& a, const MaterialAttributeData& b) {
             return a.name() < b.name();
         });
 
     std::ostringstream out;
     Error redirectError{&out};
-    MaterialData data{{}, std::move(attributes)};
+    MaterialData data{{}, std::move(attributes), Containers::array<UnsignedInt>({1, 1, 6})};
     /* Because with graceful asserts it doesn't exit on error, the assertion
        might get printed multiple times */
-    CORRADE_COMPARE(Utility::String::partition(out.str(), '\n')[0], "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates");
+    CORRADE_COMPARE(Utility::String::partition(out.str(), '\n')[0], "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates in layer 2");
 }
 
 void MaterialDataTest::constructFromImmutableSortedArray() {
