@@ -433,7 +433,9 @@ void main() {
     mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
     lowp float colorMapOffset = materials[materialId].material_colorMapOffset;
     lowp float colorMapScale = materials[materialId].material_colorMapScale;
+    #if defined(TANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
     highp float lineLength = materials[materialId].material_lineLength;
+    #endif
     #ifdef TEXTURE_TRANSFORMATION
     mediump const mat3 textureMatrix = mat3(textureTransformations[drawId].rotationScaling.xy, 0.0, textureTransformations[drawId].rotationScaling.zw, 0.0, textureTransformations[drawId].textureTransformation_offset, 1.0);
     #ifdef TEXTURE_ARRAYS
