@@ -44,7 +44,7 @@ layout(location = 0)
 uniform lowp vec2 viewportSize; /* defaults to zero */
 
 #ifndef UNIFORM_BUFFERS
-#if (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)) && (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID))
+#if (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)) && (defined(WIREFRAME_RENDERING) || defined(OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID))
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -234,8 +234,8 @@ void emitQuad(
     /* Calculate screen-space locations for the bar vertices and form two
        triangles out of them. In case TBN is rendered alone, half bar width is
        lineWidth + smoothness to allow for antialiasing, in case it's rendered
-       together with wireframe, it's just lineWidth, as antialiasing would
-       cause depth order issues.
+       together with wireframe, object ID, vertex ID or primitive ID, it's just
+       lineWidth, as antialiasing would cause depth order issues.
 
         3 - e - 1     -S_-w_0__w_S         -w_0__w
         |      /|      | |     | |         |     |
@@ -251,7 +251,7 @@ void emitQuad(
        and to 0 otherwise. See the fragment shader for details.
     */
     vec2 direction = normalize(endpointScreen - positionScreen);
-    #if defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    #if defined(WIREFRAME_RENDERING) || defined(OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
     float edgeDistance = 0.0;
     vec2 halfSide = lineWidth*vec2(-direction.y, direction.x);
     #else
@@ -292,7 +292,7 @@ void main() {
     #endif
 
     mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
-    #if (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)) && (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID))
+    #if (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)) && (defined(WIREFRAME_RENDERING) || defined(OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID))
     lowp const vec4 color = materials[materialId].color;
     lowp const vec4 wireframeColor = materials[materialId].wireframeColor;
     #endif
@@ -340,7 +340,7 @@ void main() {
         #endif
     }
 
-    #if defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    #if defined(WIREFRAME_RENDERING) || defined(OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
     /* Vector of each triangle side */
     const vec2 v[3] = vec2[3](
         p[2]-p[1],

@@ -959,10 +959,11 @@ Rendering setup the same as above.
 @section Shaders-MeshVisualizerGL3D-tbn Tangent space visualization
 
 On platforms with geometry shaders (desktop GL, OpenGL ES 3.2), the shader is
-able to visualize tangents, bitangent and normal direction via colored lines
-coming out of vertices (red, green and blue for tangent, bitangent and normal, respectively). This can be enabled together with wireframe visualization,
-however note that when both are enabled, the lines are not antialiased to avoid
-depth ordering artifacts.
+able to visualize tangent, bitangent and normal direction via colored lines
+coming out of vertices (red, green and blue for tangent, bitangent and normal, respectively). This can be enabled together with wireframe, object ID,
+vertex ID or primitive ID visualization, however note that when both are
+enabled, the lines are not antialiased to avoid depth ordering artifacts
+between faces and lines.
 
 For tangents and normals, you need to provide the @ref Tangent and @ref Normal
 attributes and enable @ref Flag::TangentDirection and

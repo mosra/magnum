@@ -447,6 +447,7 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags
             .addSource("#define WIREFRAME_RENDERING\n#define MAX_VERTICES 3\n")
             .addSource(_flags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n" : "")
             .addSource(_flags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
+            .addSource(_flags & FlagBase::ObjectId ? "#define OBJECT_ID\n" : "")
             .addSource(_flags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
             .addSource(_flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
             .addSource(_flags & FlagBase::PrimitiveId ?
@@ -782,6 +783,7 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
             .addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
             .addSource(_flags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n" : "")
             .addSource(_flags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
+            .addSource(_flags & FlagBase::ObjectId ? "#define OBJECT_ID\n" : "")
             .addSource(_flags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
             .addSource(_flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
             .addSource(_flags & FlagBase::PrimitiveId ?
