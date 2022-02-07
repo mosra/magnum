@@ -23,7 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <algorithm>
 #include <set>
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
@@ -650,11 +649,6 @@ used.)")
                         mesh->attributeFormat(k),
                         bounds);
                 }
-
-                std::sort(info.attributes.begin(), info.attributes.end(),
-                    [](const MeshAttributeInfo& a, const MeshAttributeInfo& b) {
-                        return a.offset < b.offset;
-                    });
 
                 arrayAppend(meshInfos, std::move(info));
             }
