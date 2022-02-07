@@ -26,8 +26,23 @@ environment:
   - TARGET: desktop
     COMPILER: msvc
     PLATFORM: x64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    APPVEYOR_JOB_NAME: windows-msvc2022
+    CONFIGURATION: Debug
+    ENABLE_VULKAN: ON
+  - TARGET: desktop
+    COMPILER: msvc
+    PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     APPVEYOR_JOB_NAME: windows-static-msvc2019
+    CONFIGURATION: Debug
+    BUILD_STATIC: ON
+    ENABLE_VULKAN: ON
+  - TARGET: desktop
+    COMPILER: msvc
+    PLATFORM: x64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    APPVEYOR_JOB_NAME: windows-static-msvc2022
     CONFIGURATION: Debug
     BUILD_STATIC: ON
     ENABLE_VULKAN: ON
@@ -36,6 +51,13 @@ environment:
     PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     APPVEYOR_JOB_NAME: windows-msvc2019-clang
+    CONFIGURATION: Debug
+    ENABLE_VULKAN: ON
+  - TARGET: desktop
+    COMPILER: msvc-clang
+    PLATFORM: x64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    APPVEYOR_JOB_NAME: windows-msvc2022-clang
     CONFIGURATION: Debug
     ENABLE_VULKAN: ON
   # Build at least one 32bit Release build, so we catch things that are not a
@@ -47,6 +69,24 @@ environment:
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
     APPVEYOR_JOB_NAME: windows-32b-msvc2015
     CONFIGURATION: Release
+  - TARGET: desktop
+    COMPILER: msvc
+    # Same reasoning as in Corrade for /EHsc
+    COMPILER_EXTRA: -DCMAKE_CXX_FLAGS="/permissive- /EHsc" -DMSVC_COMPATIBILITY=OFF
+    PLATFORM: x64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    APPVEYOR_JOB_NAME: windows-conforming-msvc2019
+    CONFIGURATION: Debug
+    ENABLE_VULKAN: ON
+  - TARGET: desktop
+    COMPILER: msvc
+    # Not playing with fire and using /EHsc on 2022 as well
+    COMPILER_EXTRA: -DCMAKE_CXX_FLAGS="/permissive- /EHsc" -DMSVC_COMPATIBILITY=OFF
+    PLATFORM: x64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    APPVEYOR_JOB_NAME: windows-conforming-msvc2022
+    CONFIGURATION: Debug
+    ENABLE_VULKAN: ON
   - TARGET: desktop
     COMPILER: mingw
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
@@ -60,6 +100,14 @@ environment:
     TARGET_GLES2: OFF
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     APPVEYOR_JOB_NAME: windows-gles3-msvc2019
+  - TARGET: desktop-gles
+    TARGET_GLES2: ON
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    APPVEYOR_JOB_NAME: windows-gles2-msvc2022
+  - TARGET: desktop-gles
+    TARGET_GLES2: OFF
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    APPVEYOR_JOB_NAME: windows-gles3-msvc2022
   - TARGET: rt
     TARGET_GLES2: OFF
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
