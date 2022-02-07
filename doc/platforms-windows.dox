@@ -177,7 +177,7 @@ executable with @cmake add_executable(... WIN32 ...) @ce and linking to the
 
 @section platform-windows-gl OpenGL on Windows
 
-@subsection platforms-macos-gl-angle Using ANGLE to translate OpenGL to Direct3D
+@subsection platforms-windows-gl-angle Using ANGLE to translate OpenGL to Direct3D
 
 @todoc cmake options to switch to GLES/EGL, mention getting the binaries from browser installs
 @todoc steps for building angle from scratch?
