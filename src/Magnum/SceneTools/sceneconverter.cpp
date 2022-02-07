@@ -23,7 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <set>
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
@@ -83,7 +82,8 @@ information.
 @code{.sh}
 magnum-sceneconverter [-h|--help] [-I|--importer IMPORTER]
     [-I|--converter CONVERTER]... [--plugin-dir DIR] [--map]
-    [--remove-duplicates] [--remove-duplicates-fuzzy EPSILON]
+    [--only-attributes N1,N2-N3…] [--remove-duplicates]
+    [--remove-duplicates-fuzzy EPSILON]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]... [--mesh MESH]
     [--level LEVEL] [--concatenate-meshes] [--info-animations] [--info-images]
@@ -103,8 +103,9 @@ Arguments:
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `--map` --- memory-map the input for zero-copy import (works only for
     standalone files)
--   `--only-attributes "i j …"` --- include only attributes of given IDs in the
-    output
+-   `--only-attributes N1,N2-N3…` --- include only attributes of given IDs in
+    the output. See @ref Utility::String::parseNumberSequence() for syntax
+    description.
 -   `--remove-duplicates` --- remove duplicate vertices using
     @ref MeshTools::removeDuplicates(const Trade::MeshData&) after import
 -   `--remove-duplicates-fuzzy EPSILON` --- remove duplicate vertices using
@@ -235,7 +236,7 @@ int main(int argc, char** argv) {
         #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
         .addBooleanOption("map").setHelp("map", "memory-map the input for zero-copy import (works only for standalone files)")
         #endif
-        .addOption("only-attributes").setHelp("only-attributes", "include only attributes of given IDs in the output", "\"i j …\"")
+        .addOption("only-attributes").setHelp("only-attributes", "include only attributes of given IDs in the output", "N1,N2-N3…")
         .addBooleanOption("remove-duplicates").setHelp("remove-duplicates", "remove duplicate vertices in the mesh after import")
         .addOption("remove-duplicates-fuzzy").setHelp("remove-duplicates-fuzzy", "remove duplicate vertices with fuzzy comparison in the mesh after import", "EPSILON")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
@@ -1040,19 +1041,15 @@ used.)")
 
     /* Filter attributes, if requested */
     if(!args.value("only-attributes").empty()) {
-        std::set<UnsignedInt> only;
-        /** @todo drop this awful STL mess once we have an string-to-int
-            API that can take non-null-terminated string views */
-        for(const std::string& i: Utility::String::split(args.value("only-attributes"), ' '))
-            only.insert(std::stoi(i));
+        const Containers::Optional<Containers::Array<UnsignedInt>> only = Utility::String::parseNumberSequence(args.value<Containers::StringView>("only-attributes"), 0, mesh->attributeCount());
+        if(!only) return 2;
 
         /** @todo use MeshTools::filterOnlyAttributes() once it has a rvalue
             overload that transfers ownership */
         Containers::Array<Trade::MeshAttributeData> attributes;
-        for(UnsignedInt i = 0; i != mesh->attributeCount(); ++i) {
-            if(only.find(i) != only.end())
-                arrayAppend(attributes, mesh->attributeData(i));
-        }
+        arrayReserve(attributes, only->size());
+        for(UnsignedInt i: *only)
+            arrayAppend(attributes, mesh->attributeData(i));
 
         const Trade::MeshIndexData indices{mesh->indices()};
         const UnsignedInt vertexCount = mesh->vertexCount();
