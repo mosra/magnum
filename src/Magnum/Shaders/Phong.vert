@@ -242,10 +242,12 @@ layout(location = TRANSFORMATION_MATRIX_ATTRIBUTE_LOCATION)
 #endif
 in highp mat4 instancedTransformationMatrix;
 
+#ifdef HAS_LIGHTS
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = NORMAL_MATRIX_ATTRIBUTE_LOCATION)
 #endif
 in highp mat3 instancedNormalMatrix;
+#endif
 #endif
 
 #ifdef INSTANCED_TEXTURE_OFFSET

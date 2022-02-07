@@ -247,6 +247,7 @@ constexpr struct {
     {"five lights", {}, 5},
     {"zero lights", {}, 0},
     {"instanced transformation", PhongGL::Flag::InstancedTransformation, 3},
+    {"instanced transformation, zero lights", PhongGL::Flag::InstancedTransformation, 0},
     {"instanced specular texture offset", PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset, 3},
     {"instanced normal texture offset", PhongGL::Flag::NormalTexture|PhongGL::Flag::InstancedTextureOffset, 3},
     #ifndef MAGNUM_TARGET_GLES2
