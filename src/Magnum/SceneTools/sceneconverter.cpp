@@ -160,6 +160,13 @@ doesn't support conversion to a file,
 if no `-C` / `--converter` is specified,
 @ref Trade::AnySceneConverter "AnySceneConverter" is used.
 
+If `--concatenate-meshes` is given, all meshes of the input file are
+concatenated into a single mesh using @ref MeshTools::concatenate(), with the
+scene hierarchy transformation baked in using
+@ref SceneTools::flattenMeshHierarchy3D(). Only attributes that are present in
+the first mesh are taken, if `--only-attributes` is specified as well, the IDs
+reference attributes of the first mesh.
+
 @section magnum-sceneconverter-example Example usage
 
 Printing info about all meshes in a glTF file:
@@ -284,7 +291,12 @@ together. All converters in the chain have to support the ConvertMesh feature,
 the last converter either ConvertMesh or ConvertMeshToFile. If the last
 converter doesn't support conversion to a file, AnySceneConverter is used to
 save its output; if no -C / --converter is specified, AnySceneConverter is
-used.)")
+used.
+
+If --concatenate-meshes is given, all meshes of the input file are concatenated
+into a single mesh, with the scene hierarchy transformation baked in. Only
+attributes that are present in the first mesh are taken, if --only-attributes
+is specified as well, the IDs reference attributes of the first mesh.)")
         .parse(argc, argv);
 
     /* Generic checks */
