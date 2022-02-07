@@ -736,11 +736,30 @@ constexpr struct {
         MeshVisualizerGL3D::Flag::NormalDirection,
         MeshVisualizerGL3D::Flag::Wireframe,
         false, 2.0f, 1.0f, 0.6f, 1.0f, "wireframe-tn-smooth.tga"},
+    {"vertex ID + tangents + normals",
+        MeshVisualizerGL3D::Flag::VertexId|
+        MeshVisualizerGL3D::Flag::TangentDirection|
+        MeshVisualizerGL3D::Flag::NormalDirection, {},
+        false, 2.0f, 1.0f, 0.6f, 1.0f, "vertexid-tn.tga"},
     {"primitive ID + tangents + normals",
         MeshVisualizerGL3D::Flag::PrimitiveId|
         MeshVisualizerGL3D::Flag::TangentDirection|
         MeshVisualizerGL3D::Flag::NormalDirection, {},
-        false, 2.0f, 1.0f, 0.6f, 1.0f, "primitiveid-tn.tga"}
+        false, 2.0f, 1.0f, 0.6f, 1.0f, "primitiveid-tn.tga"},
+    {"object ID + tangents + normals",
+        /* Not instanced, so it's testing the case where the GS doesn't need to
+           propagate any attribute but still has to render the actual face */
+        MeshVisualizerGL3D::Flag::ObjectId|
+        MeshVisualizerGL3D::Flag::TangentDirection|
+        MeshVisualizerGL3D::Flag::NormalDirection, {},
+        false, 2.0f, 1.0f, 0.6f, 1.0f, "objectid-tn.tga"},
+    {"instanced object ID + tangents + normals",
+        /* No instance data supplied, thus the output should be exactly the
+           same as the non-instanced case */
+        MeshVisualizerGL3D::Flag::InstancedObjectId|
+        MeshVisualizerGL3D::Flag::TangentDirection|
+        MeshVisualizerGL3D::Flag::NormalDirection, {},
+        false, 2.0f, 1.0f, 0.6f, 1.0f, "objectid-tn.tga"}
 };
 #endif
 
@@ -3991,7 +4010,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
     MeshVisualizerGL3D shader{data.flags|flag};
     /** @todo make this unnecessary */
     shader.setViewportSize({80, 80});
-    if(data.flags & MeshVisualizerGL3D::Flag::PrimitiveId)
+    if(data.flags & (MeshVisualizerGL3D::Flag::PrimitiveId|MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::VertexId))
         shader.bindColorMapTexture(_colorMapTexture);
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
@@ -4007,6 +4026,10 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
                 .setWireframeColor(0x9999ff_rgbf);
         if(data.flags & MeshVisualizerGL3D::Flag::PrimitiveId)
             shader.setColorMapTransformation(1.0f/512.0f, 0.5f);
+        else if(data.flags & MeshVisualizerGL3D::Flag::VertexId)
+            shader.setColorMapTransformation(1.0f/8.0f, 1.0f/4.0f);
+        else if(data.flags & MeshVisualizerGL3D::Flag::ObjectId)
+            shader.setObjectId(127);
         shader.draw(mesh);
     } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
@@ -4020,6 +4043,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             MeshVisualizerDrawUniform3D{}
                 .setNormalMatrix(transformation.normalMatrix()*data.multiply)
+                .setObjectId(127)
         }};
         MeshVisualizerMaterialUniform materialUniformData[1];
         (*materialUniformData)
@@ -4032,6 +4056,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
                 .setWireframeColor(0x9999ff_rgbf);
         if(data.flags & MeshVisualizerGL3D::Flag::PrimitiveId)
             materialUniformData->setColorMapTransformation(1.0f/512.0f, 0.5f);
+        else if(data.flags & MeshVisualizerGL3D::Flag::VertexId)
+            materialUniformData->setColorMapTransformation(1.0f/8.0f, 1.0f/4.0f);
         GL::Buffer materialUniform{materialUniformData};
         shader
             .bindProjectionBuffer(projectionUniform)

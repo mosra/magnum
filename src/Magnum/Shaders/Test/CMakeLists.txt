@@ -210,6 +210,7 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/defaults-wireframe3D.tga
             MeshVisualizerTestFiles/instancedobjectid2D.tga
             MeshVisualizerTestFiles/instancedobjectid3D.tga
+            MeshVisualizerTestFiles/objectid-tn.tga
             MeshVisualizerTestFiles/objectid2D.tga
             MeshVisualizerTestFiles/objectid3D.tga
             MeshVisualizerTestFiles/objectidtexture2D.tga
@@ -219,6 +220,7 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/primitiveid3D.tga
             MeshVisualizerTestFiles/tbn-wide.tga
             MeshVisualizerTestFiles/tbn.tga
+            MeshVisualizerTestFiles/vertexid-tn.tga
             MeshVisualizerTestFiles/vertexid2D.tga
             MeshVisualizerTestFiles/vertexid3D.tga
             MeshVisualizerTestFiles/wireframe-nogeo2D.tga
