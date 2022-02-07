@@ -45,4 +45,4 @@
 #endif
 #endif
 
-#endif
+#endif // kate: hl c++
