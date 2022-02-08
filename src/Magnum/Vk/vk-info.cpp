@@ -60,7 +60,7 @@ See @ref building, @ref cmake and the @ref Vk namespace for more information.
 
 @code{.sh}
 magnum-vk-info [--magnum-...] [-h|--help] [--extension-strings]
-    [--all-extensions]
+    [--all-extensions] [--features]
 @endcode
 
 Arguments:
@@ -68,6 +68,7 @@ Arguments:
 -   `-h`, `--help` --- display this help message and exit
 -   `--extension-strings` --- list all extension strings provided by the driver
 -   `--all-extensions` --- display extensions also for fully supported versions
+-   `--features` -- display also features supported by the device
 -   `--magnum-...` --- engine-specific options (see
     @ref Vk-Instance-command-line for details)
 
@@ -135,6 +136,7 @@ int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addBooleanOption("extension-strings").setHelp("extension-strings", "list all extension strings provided by the driver")
         .addBooleanOption("all-extensions").setHelp("all-extensions", "display extensions also for fully supported versions")
+        .addBooleanOption("features").setHelp("features", "display also features supported by the device")
         .addSkippedPrefix("magnum", "engine-specific options")
         .setGlobalHelp("Displays information about Magnum engine and Vulkan capabilities.")
         .parse(argc, argv);
@@ -432,8 +434,8 @@ int main(int argc, char** argv) {
     /* If we wanted only extension strings, exit now */
     if(args.isSet("extension-strings")) return 0;
 
-    Debug{} << "Feature support:";
-    {
+    if(args.isSet("features")) {
+        Debug{} << "Feature support:";
         #ifndef DOXYGEN_GENERATING_OUTPUT /* It gets really confused */
         const Vk::DeviceFeatures features = device.features();
         #define _c(value, field)                                            \
