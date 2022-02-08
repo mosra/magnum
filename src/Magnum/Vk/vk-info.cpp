@@ -55,6 +55,76 @@ add_custom_command(OUTPUT ... COMMAND Magnum::vk-info ...)
 @endcode
 
 See @ref building, @ref cmake and the @ref Vk namespace for more information.
+
+@section magnum-vk-info-usage Usage
+
+@code{.sh}
+magnum-vk-info [--magnum-...] [-h|--help] [--extension-strings]
+    [--all-extensions]
+@endcode
+
+Arguments:
+
+-   `-h`, `--help` --- display this help message and exit
+-   `--extension-strings` --- list all extension strings provided by the driver
+-   `--all-extensions` --- display extensions also for fully supported versions
+-   `--magnum-...` --- engine-specific options (see
+    @ref Vk-Instance-command-line for details)
+
+@section magnum-vk-info-example Example output
+
+@code{.shell-session}
+
+  +---------------------------------------------------------+
+  |   Information about Magnum engine Vulkan capabilities   |
+  +---------------------------------------------------------+
+
+Compilation flags:
+    CORRADE_BUILD_DEPRECATED
+    CORRADE_BUILD_MULTITHREADED
+    CORRADE_TARGET_UNIX
+    CORRADE_TARGET_X86
+    CORRADE_TARGET_GCC
+    CORRADE_TARGET_LIBSTDCXX
+    CORRADE_TARGET_SSE2,SSE3,SSSE3,SSE41,SSE42
+    CORRADE_TARGET_AVX,AVX_F16C,AVX_FMA,AVX2
+    MAGNUM_BUILD_DEPRECATED
+
+Reported instance version: Vulkan 1.2.203
+Reported instance layers:
+    …
+    VK_LAYER_KHRONOS_validation (r1, written against Vulkan 1.2.203)
+      Khronos Validation Layer
+Vendor instance extension support:
+    VK_EXT_debug_report                                               REV.9
+    VK_EXT_debug_utils                                                REV.1
+    VK_EXT_validation_features                                        REV.2
+
+Instance version: Vulkan 1.2.203
+Found 2 devices:
+    Intel(R) HD Graphics 630 (KBL GT2), Vulkan 1.2.195
+      Vk::DeviceType::IntegratedGpu, driver 21.3.5
+    llvmpipe (LLVM 13.0.0, 256 bits), Vulkan 1.2.195
+      Vk::DeviceType::Cpu, driver 0.0.1
+
+Picked device Intel(R) HD Graphics 630 (KBL GT2)
+
+Reported version: Vulkan 1.2.195
+Driver: Intel open-source Mesa driver (Vk::DeviceDriver::IntelOpenSourceMesa)
+Driver info: Mesa 21.3.5 (version 21.3.5)
+Vendor extension support:
+    VK_EXT_debug_marker                                               REV.4
+    VK_EXT_extended_dynamic_state                                     REV.1
+    VK_EXT_image_robustness                                           REV.1
+    VK_EXT_index_type_uint8                                           REV.1
+    VK_EXT_robustness2                                                REV.1
+    VK_EXT_texture_compression_astc_hdr                                 -
+    VK_EXT_vertex_attribute_divisor                                   REV.3
+    VK_IMG_format_pvrtc                                                 -
+    VK_KHR_acceleration_structure                                       -
+    …
+@endcode
+
 */
 
 }

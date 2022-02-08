@@ -56,7 +56,7 @@ information.
 @section magnum-al-info-usage Usage
 
 @code{.sh}
-magnum-al-info [-h|--help] [-s|--short] [--extension-strings]
+magnum-al-info [--magnum-...] [-h|--help] [-s|--short] [--extension-strings]
 @endcode
 
 Arguments:
@@ -65,6 +65,8 @@ Arguments:
 -   `-s`, `--short` --- display just essential info and exit
 -   `--extension-strings` --- list all extension strings provided by the driver
     (implies `--short`)
+-   `--magnum-...` --- engine-specific options (see
+    @ref Audio-Context-command-line for details)
 
 @subsection magnum-al-info-usage-emscripten Usage on Emscripten
 

@@ -107,14 +107,16 @@ See @ref building, @ref cmake and the @ref GL namespace for more information.
 @section magnum-gl-info-usage Usage
 
 @code{.sh}
-magnum-info [--magnum-...] [-h|--help] [-s|--short] [--all-extensions]
-    [--limits]
+magnum-gl-info [--magnum-...] [-h|--help] [-s|--short] [--extension-strings]
+    [--all-extensions] [--limits]
 @endcode
 
 Arguments:
 
 -   `-h`, `--help` --- display this help message and exit
 -   `-s`, `--short` --- display just essential info and exit
+-   `--extension-strings` --- list all extension strings provided by the driver
+    (implies `--short`)
 -   `--all-extensions` --- display extensions also for fully supported versions
 -   `--limits` --- display also limits and implementation-defined values
 -   `--magnum-...` --- engine-specific options (see

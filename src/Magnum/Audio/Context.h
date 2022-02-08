@@ -100,7 +100,7 @@ Magnum's internal OpenAL context.
     access to OpenAL version and extension information through a command line
     interface.
 
-@section AL-Context-command-line Command-line options
+@section Audio-Context-command-line Command-line options
 
 The context is configurable through command-line options, that can be passed
 for example from the `Platform::*Application` classes. Usage:
