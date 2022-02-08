@@ -548,8 +548,12 @@ void AbstractShaderProgram::bindFragmentDataLocationIndexedInternal(const Unsign
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
+void AbstractShaderProgram::setTransformFeedbackOutputs(const Containers::ArrayView<const std::string> outputs, const TransformFeedbackBufferMode bufferMode) {
+    (this->*Context::current().state().shaderProgram.transformFeedbackVaryingsImplementation)(outputs, bufferMode);
+}
+
 void AbstractShaderProgram::setTransformFeedbackOutputs(const std::initializer_list<std::string> outputs, const TransformFeedbackBufferMode bufferMode) {
-    (this->*Context::current().state().shaderProgram.transformFeedbackVaryingsImplementation)({outputs.begin(), outputs.size()}, bufferMode);
+    setTransformFeedbackOutputs(Containers::arrayView(outputs), bufferMode);
 }
 
 void AbstractShaderProgram::transformFeedbackVaryingsImplementationDefault(const Containers::ArrayView<const std::string> outputs, const TransformFeedbackBufferMode bufferMode) {

@@ -1414,6 +1414,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @brief Specify shader outputs to be recorded in transform feedback
          * @param outputs       Names of output variables
          * @param bufferMode    Buffer mode
+         * @m_since_latest
          *
          * Binds given output variables from vertex, geometry or tessellation
          * shader to transform feedback buffer binding points. If
@@ -1440,7 +1441,8 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl Special output names `gl_NextBuffer` and
          *      `gl_SkipComponents#` are not available in OpenGL ES or WebGL.
          */
-        void setTransformFeedbackOutputs(std::initializer_list<std::string> outputs, TransformFeedbackBufferMode bufferMode);
+        void setTransformFeedbackOutputs(Containers::ArrayView<const std::string> outputs, TransformFeedbackBufferMode bufferMode);
+        void setTransformFeedbackOutputs(std::initializer_list<std::string> outputs, TransformFeedbackBufferMode bufferMode); /**< @overload */
         #endif
 
         /**

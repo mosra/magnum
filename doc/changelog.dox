@@ -323,6 +323,9 @@ See also:
     prior to every draw, however with the new multidraw workflows that's no
     longer the case and the inability to chain draw calls proved to be
     annoying.
+-   Added an @ref GL::AbstractShaderProgram::setTransformFeedbackOutputs()
+    overload taking a @relativeref{Corrade,Containers::ArrayView} instead of
+    a @ref std::initializer_list
 -   The @ref GL::Context class got significantly optimized in terms of compile
     time, header size and runtime as well, significantly reducing the amount of
     allocations done at startup.
