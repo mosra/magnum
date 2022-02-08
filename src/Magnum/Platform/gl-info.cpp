@@ -320,43 +320,52 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug{} << "    CORRADE_TARGET_DINKUMWARE";
     #endif
     #ifdef CORRADE_TARGET_SSE2
-    Debug{} << "    CORRADE_TARGET_SSE2";
-    #endif
-    #ifdef CORRADE_TARGET_SSE3
-    Debug{} << "    CORRADE_TARGET_SSE3";
-    #endif
-    #ifdef CORRADE_TARGET_SSSE3
-    Debug{} << "    CORRADE_TARGET_SSSE3";
-    #endif
-    #ifdef CORRADE_TARGET_SSE41
-    Debug{} << "    CORRADE_TARGET_SSE41";
-    #endif
-    #ifdef CORRADE_TARGET_SSE42
-    Debug{} << "    CORRADE_TARGET_SSE42";
+    {
+        Debug d;
+        d << "    CORRADE_TARGET_SSE2";
+        #ifdef CORRADE_TARGET_SSE3
+        d << Debug::nospace << ",SSE3";
+        #endif
+        #ifdef CORRADE_TARGET_SSSE3
+        d << Debug::nospace << ",SSSE3";
+        #endif
+        #ifdef CORRADE_TARGET_SSE41
+        d << Debug::nospace << ",SSE41";
+        #endif
+        #ifdef CORRADE_TARGET_SSE42
+        d << Debug::nospace << ",SSE42";
+        #endif
+    }
     #endif
     #ifdef CORRADE_TARGET_AVX
-    Debug{} << "    CORRADE_TARGET_AVX";
-    #endif
-    #ifdef CORRADE_TARGET_AVX_F16C
-    Debug{} << "    CORRADE_TARGET_AVX_F16C";
-    #endif
-    #ifdef CORRADE_TARGET_AVX_FMA
-    Debug{} << "    CORRADE_TARGET_AVX_FMA";
-    #endif
-    #ifdef CORRADE_TARGET_AVX2
-    Debug{} << "    CORRADE_TARGET_AVX2";
-    #endif
-    #ifdef CORRADE_TARGET_AVX512F
-    Debug{} << "    CORRADE_TARGET_AVX512F";
+    {
+        Debug d;
+        d << "    CORRADE_TARGET_AVX";
+        #ifdef CORRADE_TARGET_AVX_F16C
+        d << Debug::nospace << ",AVX_F16C";
+        #endif
+        #ifdef CORRADE_TARGET_AVX_FMA
+        d << Debug::nospace << ",AVX_FMA";
+        #endif
+        #ifdef CORRADE_TARGET_AVX2
+        d << Debug::nospace << ",AVX2";
+        #endif
+        #ifdef CORRADE_TARGET_AVX512F
+        d << Debug::nospace << ",AVX512F";
+        #endif
+    }
     #endif
     #ifdef CORRADE_TARGET_NEON
-    Debug{} << "    CORRADE_TARGET_NEON";
-    #endif
-    #ifdef CORRADE_TARGET_NEON_FP16
-    Debug{} << "    CORRADE_TARGET_NEON_FP16";
-    #endif
-    #ifdef CORRADE_TARGET_NEON_FMA
-    Debug{} << "    CORRADE_TARGET_NEON_FMA";
+    {
+        Debug d;
+        d << "    CORRADE_TARGET_NEON";
+        #ifdef CORRADE_TARGET_NEON_FP16
+        d << Debug::nospace << ",NEON_FP16";
+        #endif
+        #ifdef CORRADE_TARGET_NEON_FMA
+        d << Debug::nospace << ",NEON_FMA";
+        #endif
+    }
     #endif
     #ifdef CORRADE_TARGET_SIMD128
     Debug{} << "    CORRADE_TARGET_SIMD128";
