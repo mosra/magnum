@@ -40,6 +40,8 @@ See also:
 
 @subsection changelog-latest-new New features
 
+-   MSVC 2022 support. See also [mosra/corrade#124](https://github.com/mosra/corrade/issues/124)
+    and [mosra/magnum#552](https://github.com/mosra/magnum/issues/552).
 -   New @ref NoAllocate constructor tag, to be used by the @ref Vk library
 -   New @ref DefaultInit constructor tag, simply an alias to the existing
     @ref Corrade::DefaultInit tag
