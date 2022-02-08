@@ -117,8 +117,8 @@ struct {
         Containers::array({"",
             "--magnum-enable-extensions", "VK_EXT_debug_marker VK_KHR_maintenance1"}),
         true, true, true,
-        "Device: {}\n"
-        "Device version: Vulkan {}.{}{}\n"
+        "Device: {}, Vulkan {}.{}{}\n"
+        "Device driver: {}, {}\n"
         "Enabled device extensions:\n"
         "    VK_EXT_debug_marker\n"
         "    VK_KHR_maintenance1\n"},
@@ -129,8 +129,8 @@ struct {
             "--magnum-vulkan-version", "1.0",
             "--magnum-enable-extensions", "VK_EXT_debug_marker VK_KHR_maintenance1"}),
         false, true, true,
-        "Device: {}\n"
-        "Device version: Vulkan 1.0\n"
+        "Device: {}, Vulkan 1.0\n"
+        "Device driver: {4}, {5}\n"
         "Enabled device extensions:\n"
         "    VK_EXT_debug_marker\n"
         "    VK_KHR_maintenance1\n"},
@@ -140,8 +140,8 @@ struct {
         Containers::array({"",
             "--magnum-enable-extensions", "VK_KHR_maintenance1"}),
         true, false, true,
-        "Device: {}\n"
-        "Device version: Vulkan {}.{}{}\n"
+        "Device: {}, Vulkan {}.{}{}\n"
+        "Device driver: {}, {}\n"
         "Enabled device extensions:\n"
         "    VK_KHR_maintenance1\n"},
     {"disabled extensions", "",
@@ -149,8 +149,8 @@ struct {
             "--magnum-disable-extensions", "VK_EXT_debug_marker VK_KHR_maintenance1"}),
         nullptr,
         true, false, false,
-        "Device: {}\n"
-        "Device version: Vulkan {}.{}{}\n"},
+        "Device: {}, Vulkan {}.{}{}\n"
+        "Device driver: {}, {}\n"},
 };
 
 struct {
@@ -160,8 +160,8 @@ struct {
     const char* log;
 } ConstructWorkaroundsCommandLineData[] {
     {"default", false, nullptr,
-        "Device: {}\n"
-        "Device version: Vulkan {}.{}{}\n"
+        "Device: {}, Vulkan {}.{}{}\n"
+        "Device driver: {}, {}\n"
         "Using device driver workarounds:\n"
         "    swiftshader-image-copy-extent-instead-of-layers\n"
         "    swiftshader-spirv-multi-entrypoint-conflicting-locations\n"},
@@ -173,8 +173,8 @@ struct {
     {"disabled workarounds", true,
         Containers::array({"",
             "--magnum-disable-workarounds", "swiftshader-image-copy-extent-instead-of-layers swiftshader-spirv-multi-entrypoint-conflicting-locations"}),
-        "Device: {}\n"
-        "Device version: Vulkan {}.{}{}\n"}
+        "Device: {}, Vulkan {}.{}{}\n"
+        "Device driver: {}, {}\n"}
 };
 
 DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
@@ -781,7 +781,7 @@ void DeviceVkTest::constructExtensionsCommandLineDisable() {
     UnsignedInt minor = versionMinor(deviceProperties.version());
     UnsignedInt patch = versionPatch(deviceProperties.version());
     /* SwiftShader reports just 1.1 with no patch version, special-case that */
-    std::string expected = Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : "");
+    std::string expected = Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : "", deviceProperties.driverName(), deviceProperties.driverInfo());
     /* The output might contain a device workaround list, cut that away.
        That's tested thoroughly in constructWorkaroundsCommandLineDisable(). */
     CORRADE_COMPARE(out.str().substr(0, expected.size()), expected);
@@ -838,7 +838,7 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
     UnsignedInt minor = versionMinor(deviceProperties.version());
     UnsignedInt patch = versionPatch(deviceProperties.version());
     /* SwiftShader reports just 1.1 with no patch version, special-case that */
-    std::string expected = Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : "");
+    std::string expected = Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : "", deviceProperties.driverName(), deviceProperties.driverInfo());
     /* The output might contain a device workaround list, cut that away.
        That's tested thoroughly in constructWorkaroundsCommandLineDisable(). */
     CORRADE_COMPARE(out.str().substr(0, expected.size()), expected);
@@ -878,7 +878,7 @@ void DeviceVkTest::constructWorkaroundsCommandLineDisable() {
     UnsignedInt minor = versionMinor(deviceProperties.version());
     UnsignedInt patch = versionPatch(deviceProperties.version());
     /* SwiftShader reports just 1.1 with no patch version, special-case that */
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : ""));
+    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : "", deviceProperties.driverName(), deviceProperties.driverInfo()));
 }
 
 void DeviceVkTest::constructMultipleQueues() {

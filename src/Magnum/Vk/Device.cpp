@@ -749,8 +749,8 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
        devices that *don't* advertise the extension) are not listed here but
        are added to Device::enabledFeatures() below. */
     if(!info._state->quietLog) {
-        Debug{} << "Device:" << _properties->name();
-        Debug{} << "Device version:" << version;
+        Debug{} << "Device:" << _properties->name() << Debug::nospace << "," << version;
+        Debug{} << "Device driver:" << _properties->driverName() << Debug::nospace << "," << _properties->driverInfo();
 
         if(info->enabledExtensionCount) {
             Debug{} << "Enabled device extensions:";
