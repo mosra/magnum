@@ -1004,7 +1004,7 @@ class MAGNUM_GL_EXPORT Context::Configuration {
              * Enable GPU validation, if available. Has a precedence over
              * @ref Flag::GpuValidationNoError.
              *
-             * Corresponds to the `--magnum-gou-validation on`
+             * Corresponds to the `--magnum-gpu-validation on`
              * @ref GL-Context-usage-command-line "command-line option".
              */
             GpuValidation = 1ull << 62,
@@ -1013,7 +1013,7 @@ class MAGNUM_GL_EXPORT Context::Configuration {
              * Enable a context without error reporting, if available. Ignored
              * if @ref Flag::GpuValidation is set.
              *
-             * Corresponds to the `--magnum-gou-validation no-error`
+             * Corresponds to the `--magnum-gpu-validation no-error`
              * @ref GL-Context-usage-command-line "command-line option".
              */
             GpuValidationNoError = 1ull << 63
