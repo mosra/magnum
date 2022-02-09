@@ -28,6 +28,9 @@ executors:
     # https://github.com/mosra/magnum/issues/413,
     # https://github.com/emscripten-core/emscripten/pull/10161
     - image: emscripten/emsdk:1.39.6-upstream
+  android-29:
+    machine:
+      image: android:202102-01
 
 commands:
   install-base-linux:
@@ -73,6 +76,26 @@ commands:
         command: |
           if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then export LCOV_PACKAGES="lcov"; fi
           HOMEBREW_NO_AUTO_UPDATE=1 brew install cmake ninja $LCOV_PACKAGES << parameters.extra >>
+
+  install-base-android:
+    steps:
+    - run:
+        name: Create Android 29 x86 AVD
+        command: |
+          SYSTEM_IMAGES="system-images;android-29;default;x86"
+          sdkmanager "$SYSTEM_IMAGES"
+          echo "no" | avdmanager --verbose create avd -n test -k "$SYSTEM_IMAGES"
+    - run:
+        name: Launch Android emulator
+        command: |
+          emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+        background: true
+    - run:
+        name: Update apt and install base packages
+        # Compared to Docker images this needs sudo, for some reason
+        command: |
+          sudo apt update
+          sudo apt install -y ninja-build
 
   install-gcc-4_8:
     steps:
@@ -477,6 +500,33 @@ jobs:
     - build:
         script: emscripten.sh
 
+  android-x86-gles2:
+    executor: android-29
+    environment:
+      # STUPID yml interprets unquoted ON as a boolean
+      TARGET_GLES2: "ON"
+    steps:
+    - install-base-android
+    - build:
+        script: android-x86-gles.sh
+
+  android-x86-gles3:
+    executor: android-29
+    environment:
+      # STUPID yml interprets unquoted ON as a boolean
+      TARGET_GLES2: "OFF"
+    steps:
+    - install-base-android
+    - build:
+        script: android-x86-gles.sh
+
+  android-x86-vulkan:
+    executor: android-29
+    steps:
+    - install-base-android
+    - build:
+        script: android-x86-vulkan.sh
+
 workflows:
   version: 2
   build:
@@ -495,3 +545,6 @@ workflows:
     - macos-static
     - emscripten-webgl1
     - emscripten-webgl2
+    - android-x86-gles2
+    - android-x86-gles3
+    - android-x86-vulkan
