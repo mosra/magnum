@@ -189,7 +189,9 @@ void PipelineTest::rasterizationCreateInfoConstruct() {
 
     MeshLayout meshLayout{MeshPrimitive::Triangles};
 
-    RasterizationPipelineCreateInfo info{shaderSet, meshLayout, reinterpret_cast<VkPipelineLayout>(0xdead), reinterpret_cast<VkRenderPass>(0xbeef), 15, 3, RasterizationPipelineCreateInfo::Flag::DisableOptimization|RasterizationPipelineCreateInfo::Flag::AllowDerivatives};
+    /* The double reinterpret_cast is needed because the handle is an uint64_t
+       instead of a pointer on 32-bit builds and only this works on both */
+    RasterizationPipelineCreateInfo info{shaderSet, meshLayout, reinterpret_cast<VkPipelineLayout>(reinterpret_cast<void*>(0xdead)), reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xbeef)), 15, 3, RasterizationPipelineCreateInfo::Flag::DisableOptimization|RasterizationPipelineCreateInfo::Flag::AllowDerivatives};
     CORRADE_COMPARE(info->flags, VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT|VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT);
     CORRADE_COMPARE(info->stageCount, 2);
     CORRADE_COMPARE(info->pStages, shaderSet.stages());
@@ -213,8 +215,8 @@ void PipelineTest::rasterizationCreateInfoConstruct() {
         CORRADE_COMPARE(info->pColorBlendState->pAttachments[i].colorWriteMask, VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT);
     }
     CORRADE_VERIFY(!info->pDynamicState);
-    CORRADE_COMPARE(info->layout, reinterpret_cast<VkPipelineLayout>(0xdead));
-    CORRADE_COMPARE(info->renderPass, reinterpret_cast<VkRenderPass>(0xbeef));
+    CORRADE_COMPARE(info->layout, reinterpret_cast<VkPipelineLayout>(reinterpret_cast<void*>(0xdead)));
+    CORRADE_COMPARE(info->renderPass, reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xbeef)));
     CORRADE_COMPARE(info->subpass, 15);
 }
 
@@ -540,14 +542,16 @@ void PipelineTest::computeCreateInfoConstruct() {
     ShaderSet shaderSet;
     Containers::StringView name = "dead"_s;
     /* Yes, I know Fragment is wrong, it's just for testing */
-    shaderSet.addShader(ShaderStage::Fragment, reinterpret_cast<VkShaderModule>(0xbeef), name);
+    /* The double reinterpret_cast is needed because the handle is an uint64_t
+       instead of a pointer on 32-bit builds and only this works on both */
+    shaderSet.addShader(ShaderStage::Fragment, reinterpret_cast<VkShaderModule>(reinterpret_cast<void*>(0xbeef)), name);
 
-    ComputePipelineCreateInfo info{shaderSet, reinterpret_cast<VkPipelineLayout>(0xdead), ComputePipelineCreateInfo::Flag::DisableOptimization|ComputePipelineCreateInfo::Flag::AllowDerivatives};
+    ComputePipelineCreateInfo info{shaderSet, reinterpret_cast<VkPipelineLayout>(reinterpret_cast<void*>(0xdead)), ComputePipelineCreateInfo::Flag::DisableOptimization|ComputePipelineCreateInfo::Flag::AllowDerivatives};
     CORRADE_COMPARE(info->flags, VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT|VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT);
     CORRADE_COMPARE(info->stage.stage, VK_SHADER_STAGE_FRAGMENT_BIT);
-    CORRADE_COMPARE(info->stage.module, reinterpret_cast<VkShaderModule>(0xbeef));
+    CORRADE_COMPARE(info->stage.module, reinterpret_cast<VkShaderModule>(reinterpret_cast<void*>(0xbeef)));
     CORRADE_COMPARE(info->stage.pName, name.data());
-    CORRADE_COMPARE(info->layout, reinterpret_cast<VkPipelineLayout>(0xdead));
+    CORRADE_COMPARE(info->layout, reinterpret_cast<VkPipelineLayout>(reinterpret_cast<void*>(0xdead)));
 }
 
 void PipelineTest::computeCreateInfoConstructOwnedEntrypoint() {
@@ -637,10 +641,12 @@ void PipelineTest::memoryBarrierConstructFromVk() {
 }
 
 void PipelineTest::bufferMemoryBarrierConstruct() {
-    BufferMemoryBarrier barrier{Access::ColorAttachmentWrite|Access::DepthStencilAttachmentWrite, Access::TransferRead, reinterpret_cast<VkBuffer>(0xdead), 3, 5};
+    /* The double reinterpret_cast is needed because the handle is an uint64_t
+       instead of a pointer on 32-bit builds and only this works on both */
+    BufferMemoryBarrier barrier{Access::ColorAttachmentWrite|Access::DepthStencilAttachmentWrite, Access::TransferRead, reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(0xdead)), 3, 5};
     CORRADE_COMPARE(barrier->srcAccessMask, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT|VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
     CORRADE_COMPARE(barrier->dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT);
-    CORRADE_COMPARE(barrier->buffer, reinterpret_cast<VkBuffer>(0xdead));
+    CORRADE_COMPARE(barrier->buffer, reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(0xdead)));
     CORRADE_COMPARE(barrier->offset, 3);
     CORRADE_COMPARE(barrier->size, 5);
 }
@@ -666,12 +672,14 @@ void PipelineTest::bufferMemoryBarrierConstructFromVk() {
 }
 
 void PipelineTest::imageMemoryBarrierConstruct() {
-    ImageMemoryBarrier barrier{Access::ColorAttachmentWrite|Access::DepthStencilAttachmentWrite, Access::TransferRead, ImageLayout::Preinitialized, ImageLayout::TransferSource, reinterpret_cast<VkImage>(0xdead), ImageAspect::Color|ImageAspect::Depth, 3, 5, 7, 9};
+    /* The double reinterpret_cast is needed because the handle is an uint64_t
+       instead of a pointer on 32-bit builds and only this works on both */
+    ImageMemoryBarrier barrier{Access::ColorAttachmentWrite|Access::DepthStencilAttachmentWrite, Access::TransferRead, ImageLayout::Preinitialized, ImageLayout::TransferSource, reinterpret_cast<VkImage>(reinterpret_cast<void*>(0xdead)), ImageAspect::Color|ImageAspect::Depth, 3, 5, 7, 9};
     CORRADE_COMPARE(barrier->srcAccessMask, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT|VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
     CORRADE_COMPARE(barrier->dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT);
     CORRADE_COMPARE(barrier->oldLayout, VK_IMAGE_LAYOUT_PREINITIALIZED);
     CORRADE_COMPARE(barrier->newLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-    CORRADE_COMPARE(barrier->image, reinterpret_cast<VkImage>(0xdead));
+    CORRADE_COMPARE(barrier->image, reinterpret_cast<VkImage>(reinterpret_cast<void*>(0xdead)));
     CORRADE_COMPARE(barrier->subresourceRange.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT|VK_IMAGE_ASPECT_DEPTH_BIT);
     CORRADE_COMPARE(barrier->subresourceRange.baseMipLevel, 7);
     CORRADE_COMPARE(barrier->subresourceRange.levelCount, 9);
@@ -680,8 +688,10 @@ void PipelineTest::imageMemoryBarrierConstruct() {
 }
 
 void PipelineTest::imageMemoryBarrierConstructImplicitAspect() {
+    /* The double reinterpret_cast is needed because the handle is an uint64_t
+       instead of a pointer on 32-bit builds and only this works on both */
     Device device{NoCreate};
-    Image image = Image::wrap(device, reinterpret_cast<VkImage>(0xdead), PixelFormat::Depth24UnormStencil8UI);
+    Image image = Image::wrap(device, reinterpret_cast<VkImage>(reinterpret_cast<void*>(0xdead)), PixelFormat::Depth24UnormStencil8UI);
 
     ImageMemoryBarrier barrier{
         Access::ColorAttachmentRead, Access::TransferWrite,
@@ -691,7 +701,7 @@ void PipelineTest::imageMemoryBarrierConstructImplicitAspect() {
     CORRADE_COMPARE(barrier->dstAccessMask, VK_ACCESS_TRANSFER_WRITE_BIT);
     CORRADE_COMPARE(barrier->oldLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
     CORRADE_COMPARE(barrier->newLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    CORRADE_COMPARE(barrier->image, reinterpret_cast<VkImage>(0xdead));
+    CORRADE_COMPARE(barrier->image, reinterpret_cast<VkImage>(reinterpret_cast<void*>(0xdead)));
     CORRADE_COMPARE(barrier->subresourceRange.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT|VK_IMAGE_ASPECT_STENCIL_BIT);
     CORRADE_COMPARE(barrier->subresourceRange.baseMipLevel, 7);
     CORRADE_COMPARE(barrier->subresourceRange.levelCount, 9);

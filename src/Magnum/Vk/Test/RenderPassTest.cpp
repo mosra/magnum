@@ -1130,8 +1130,10 @@ void RenderPassTest::constructCopy() {
 }
 
 void RenderPassTest::beginInfoConstruct() {
-    auto renderPass = reinterpret_cast<VkRenderPass>(0xbadbeef);
-    auto framebuffer = reinterpret_cast<VkFramebuffer>(0xdeadcafe);
+    /* The double reinterpret_cast is needed because the handle is an uint64_t
+       instead of a pointer on 32-bit builds and only this works on both */
+    auto renderPass = reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xbadbeef));
+    auto framebuffer = reinterpret_cast<VkFramebuffer>(reinterpret_cast<void*>(0xdeadcafe));
 
     RenderPassBeginInfo info{renderPass, framebuffer, Range2Di{{3, 7}, {15, 78}}};
     CORRADE_COMPARE(info->renderPass, renderPass);
@@ -1142,9 +1144,11 @@ void RenderPassTest::beginInfoConstruct() {
 }
 
 void RenderPassTest::beginInfoConstructImplicitSize() {
-    auto renderPass = reinterpret_cast<VkRenderPass>(0xbadbeef);
+    /* The double reinterpret_cast is needed because the handle is an uint64_t
+       instead of a pointer on 32-bit builds and only this works on both */
+    auto renderPass = reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xbadbeef));
     Device device{NoCreate};
-    auto framebuffer = Framebuffer::wrap(device, reinterpret_cast<VkFramebuffer>(0xdeadcafe), {256, 384, 16});
+    auto framebuffer = Framebuffer::wrap(device, reinterpret_cast<VkFramebuffer>(reinterpret_cast<void*>(0xdeadcafe)), {256, 384, 16});
 
     RenderPassBeginInfo info{renderPass, framebuffer};
     CORRADE_COMPARE(info->renderPass, renderPass);

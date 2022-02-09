@@ -111,7 +111,10 @@ void ShaderSetTest::constructMove() {
 
     {
         ShaderSet a;
-        a.addShader(ShaderStage::Geometry, reinterpret_cast<VkShaderModule>(0xdeadbeef), "main!"_s.except(1), {
+        /* The double reinterpret_cast is needed because the handle is an
+           uint64_t instead of a pointer on 32-bit builds and only this works
+           on both */
+        a.addShader(ShaderStage::Geometry, reinterpret_cast<VkShaderModule>(reinterpret_cast<void*>(0xdeadbeef)), "main!"_s.except(1), {
             {42, 1.15f}
         });
         CORRADE_COMPARE(a.stages().size(), 1);
@@ -153,10 +156,12 @@ void ShaderSetTest::constructMove() {
 void ShaderSetTest::addShader() {
     ShaderSet set;
     Containers::StringView entrypoint = "enterHere"_s;
-    set.addShader(ShaderStage::Geometry, reinterpret_cast<VkShaderModule>(0xdeadbeef), entrypoint);
+    /* The double reinterpret_cast is needed because the handle is an uint64_t
+       instead of a pointer on 32-bit builds and only this works on both */
+    set.addShader(ShaderStage::Geometry, reinterpret_cast<VkShaderModule>(reinterpret_cast<void*>(0xdeadbeef)), entrypoint);
     CORRADE_COMPARE(set.stages().size(), 1);
     CORRADE_COMPARE(set.stages()[0].stage, VK_SHADER_STAGE_GEOMETRY_BIT);
-    CORRADE_COMPARE(set.stages()[0].module, reinterpret_cast<VkShaderModule>(0xdeadbeef));
+    CORRADE_COMPARE(set.stages()[0].module, reinterpret_cast<VkShaderModule>(reinterpret_cast<void*>(0xdeadbeef)));
     /* The name should not be copied if it's null-terminated and global */
     CORRADE_COMPARE(set.stages()[0].pName, entrypoint.data());
     CORRADE_VERIFY(!set.stages()[0].pSpecializationInfo);
@@ -272,7 +277,9 @@ void ShaderSetTest::addShaderSpecializationsReallocation() {
 
 void ShaderSetTest::addShaderOwnershipTransfer() {
     Device device{NoCreate};
-    auto shader = Shader::wrap(device, reinterpret_cast<VkShaderModule>(0xdeadbeef));
+    /* The double reinterpret_cast is needed because the handle is an uint64_t
+       instead of a pointer on 32-bit builds and only this works on both */
+    auto shader = Shader::wrap(device, reinterpret_cast<VkShaderModule>(reinterpret_cast<void*>(0xdeadbeef)));
 
     ShaderSet set;
     set.addShader(ShaderStage::RayAnyHit, std::move(shader), "main"_s, {
@@ -281,7 +288,7 @@ void ShaderSetTest::addShaderOwnershipTransfer() {
 
     CORRADE_COMPARE(set.stages()[0].stage, VK_SHADER_STAGE_ANY_HIT_BIT_KHR);
     CORRADE_COMPARE(set.stages()[0].pName, "main"_s);
-    CORRADE_COMPARE(set.stages()[0].module, reinterpret_cast<VkShaderModule>(0xdeadbeef));
+    CORRADE_COMPARE(set.stages()[0].module, reinterpret_cast<VkShaderModule>(reinterpret_cast<void*>(0xdeadbeef)));
     CORRADE_VERIFY(set.stages()[0].pSpecializationInfo);
     CORRADE_COMPARE(set.stages()[0].pSpecializationInfo->mapEntryCount, 1);
     CORRADE_VERIFY(set.stages()[0].pSpecializationInfo->pMapEntries);

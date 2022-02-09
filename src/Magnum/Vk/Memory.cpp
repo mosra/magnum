@@ -102,7 +102,7 @@ Memory& Memory::operator=(Memory&& other) noexcept {
 Containers::Array<char, MemoryMapDeleter> Memory::map(const UnsignedLong offset, const UnsignedLong size) {
     void* data;
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).MapMemory(*_device, _handle, offset, size, {}, &data));
-    return Containers::Array<char, MemoryMapDeleter>{static_cast<char*>(data), size, MemoryMapDeleter{(**_device).UnmapMemory, *_device, _handle}};
+    return Containers::Array<char, MemoryMapDeleter>{static_cast<char*>(data), std::size_t(size), MemoryMapDeleter{(**_device).UnmapMemory, *_device, _handle}};
 }
 
 Containers::Array<char, MemoryMapDeleter> Memory::map() {
@@ -117,7 +117,7 @@ Containers::Array<const char, MemoryMapDeleter> Memory::mapRead(const UnsignedLo
        the order of operations is unspecified and the deleter could be queried
        after release() got called */
     const MemoryMapDeleter deleter = out.deleter();
-    return Containers::Array<const char, MemoryMapDeleter>{out.release(), size, deleter};
+    return Containers::Array<const char, MemoryMapDeleter>{out.release(), std::size_t(size), deleter};
 }
 
 Containers::Array<const char, MemoryMapDeleter> Memory::mapRead() {
