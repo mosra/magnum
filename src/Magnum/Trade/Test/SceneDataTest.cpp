@@ -680,7 +680,8 @@ void SceneDataTest::fieldTypeSizeAlignment() {
     CORRADE_COMPARE(sceneFieldTypeAlignment(SceneFieldType::Vector3ub), alignof(UnsignedByte));
     CORRADE_COMPARE(sceneFieldTypeAlignment(SceneFieldType::Matrix3x3h), alignof(Half));
     CORRADE_COMPARE(sceneFieldTypeAlignment(SceneFieldType::Range3Di), alignof(UnsignedInt));
-    CORRADE_COMPARE(sceneFieldTypeAlignment(SceneFieldType::DualComplexd), alignof(Double));
+    /* alignof(Double) is 4 on Android x86, which is stupid, so hardcode 8 */
+    CORRADE_COMPARE(sceneFieldTypeAlignment(SceneFieldType::DualComplexd), 8);
     CORRADE_COMPARE(sceneFieldTypeAlignment(SceneFieldType::Pointer), alignof(const void*));
 }
 
