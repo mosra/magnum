@@ -85,9 +85,9 @@ if(BUILD_GL_TESTS)
         LIBRARIES MagnumMeshTools MagnumGL MagnumOpenGLTester)
 
     if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-        set(COMPILEGLTEST_TEST_DIR ".")
+        set(MESHTOOLS_TEST_DIR ".")
     else()
-        set(COMPILEGLTEST_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CompileTestFiles)
+        set(MESHTOOLS_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
     # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see

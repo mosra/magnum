@@ -515,7 +515,7 @@ template<class T> void CompileGLTest::twoDimensions() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "flat2D.tga"),
+            Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/flat2D.tga"),
             (DebugTools::CompareImageToFile{_manager}));
     }
 
@@ -527,7 +527,7 @@ template<class T> void CompileGLTest::twoDimensions() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "color2D.tga"),
+            Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/color2D.tga"),
             (DebugTools::CompareImageToFile{_manager}));
     }
 
@@ -541,7 +541,7 @@ template<class T> void CompileGLTest::twoDimensions() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "textured2D.tga"),
+            Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/textured2D.tga"),
             /* SwiftShader has some minor off-by-one precision differences,
                llvmpipe as well */
             (DebugTools::CompareImageToFile{_manager, 1.75f, 0.22f}));
@@ -758,7 +758,7 @@ template<class T> void CompileGLTest::threeDimensions() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "flat3D.tga"),
+            Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/flat3D.tga"),
             (DebugTools::CompareImageToFile{_manager}));
     }
 
@@ -775,7 +775,7 @@ template<class T> void CompileGLTest::threeDimensions() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong.tga"),
+            Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/phong.tga"),
             /* SwiftShader has some minor off-by-one precision differences */
             (DebugTools::CompareImageToFile{_manager, 0.5f, 0.013f}));
     }
@@ -795,7 +795,7 @@ template<class T> void CompileGLTest::threeDimensions() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong-flat.tga"),
+            Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/phong-flat.tga"),
             /* SwiftShader has some minor off-by-one precision differences */
             (DebugTools::CompareImageToFile{_manager, 0.5f, 0.012f}));
     } else if(data.flags & Flag::GeneratedSmoothNormals) {
@@ -810,7 +810,7 @@ template<class T> void CompileGLTest::threeDimensions() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong-smooth.tga"),
+            Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/phong-smooth.tga"),
             /* SwiftShader has some minor off-by-one precision differences */
             (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0088f}));
     }
@@ -825,7 +825,7 @@ template<class T> void CompileGLTest::threeDimensions() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "color3D.tga"),
+            Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/color3D.tga"),
             /* SwiftShader has some minor off-by-one precision differences */
             (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0162f}));
     }
@@ -841,7 +841,7 @@ template<class T> void CompileGLTest::threeDimensions() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "textured3D.tga"),
+            Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/textured3D.tga"),
             /* SwiftShader has some minor off-by-one precision differences,
                llvmpipe as well */
             (DebugTools::CompareImageToFile{_manager, 2.0f, 0.256f}));
@@ -908,7 +908,7 @@ template<class T> void CompileGLTest::threeDimensions() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "tbn.tga"),
+            Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/tbn.tga"),
             /* SwiftShader has some minor off-by-one precision differences */
             (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0948f}));
         #else
@@ -973,7 +973,7 @@ void CompileGLTest::multipleAttributes() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "textured2D.tga"),
+        Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/textured2D.tga"),
         /* SwiftShader has some minor off-by-one precision differences,
             llvmpipe as well */
         (DebugTools::CompareImageToFile{_manager, 1.75f, 0.22f}));
@@ -1115,7 +1115,7 @@ void CompileGLTest::packedAttributes() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong.tga"),
+        Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/phong.tga"),
         /* SwiftShader has some minor off-by-one precision differences */
         (DebugTools::CompareImageToFile{_manager, 0.5f, 0.013f}));
 
@@ -1127,7 +1127,7 @@ void CompileGLTest::packedAttributes() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "color3D.tga"),
+        Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/color3D.tga"),
         /* SwiftShader has some minor off-by-one precision differences */
         (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0162f}));
 
@@ -1140,7 +1140,7 @@ void CompileGLTest::packedAttributes() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "textured3D.tga"),
+        Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/textured3D.tga"),
         /* SwiftShader has some minor off-by-one precision differences,
            llvmpipe more */
         (DebugTools::CompareImageToFile{_manager, 2.0f, 0.259f}));
@@ -1400,7 +1400,7 @@ void CompileGLTest::externalBuffers() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "flat2D.tga"),
+        Utility::Directory::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/flat2D.tga"),
         (DebugTools::CompareImageToFile{_manager}));
 }
 
