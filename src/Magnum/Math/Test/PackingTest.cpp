@@ -80,10 +80,8 @@ void PackingTest::bitMax() {
     CORRADE_COMPARE(Implementation::bitMax<Short>(), 0x7fff);
     CORRADE_COMPARE(Implementation::bitMax<UnsignedInt>(), 0xffffffff);
     CORRADE_COMPARE(Implementation::bitMax<Int>(), 0x7fffffff);
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_COMPARE(Implementation::bitMax<UnsignedLong>(), 0xffffffffffffffffull);
     CORRADE_COMPARE(Implementation::bitMax<Long>(), 0x7fffffffffffffffll);
-    #endif
 
     CORRADE_COMPARE((Implementation::bitMax<UnsignedShort, 14>()), 16383);
     CORRADE_COMPARE((Implementation::bitMax<UnsignedInt, 14>()), 16383);
@@ -99,10 +97,8 @@ void PackingTest::unpackUnsigned() {
     CORRADE_COMPARE((Math::unpack<Double, UnsignedInt>(0)), 0.0);
     CORRADE_COMPARE((Math::unpack<Double, UnsignedInt>(std::numeric_limits<UnsignedInt>::max())), 1.0);
 
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_COMPARE((Math::unpack<long double, UnsignedLong>(0)), 0.0);
     CORRADE_COMPARE((Math::unpack<long double, UnsignedLong>(std::numeric_limits<UnsignedLong>::max())), 1.0);
-    #endif
 
     CORRADE_COMPARE((Math::unpack<Float, UnsignedShort>(0)), 0.0f);
     CORRADE_COMPARE((Math::unpack<Float, UnsignedShort>(std::numeric_limits<UnsignedShort>::max())), 1.0f);
@@ -140,11 +136,9 @@ void PackingTest::unpackSigned() {
     CORRADE_COMPARE((Math::unpack<Double, Int>(0)), 0.0);
     CORRADE_COMPARE((Math::unpack<Double, Int>(std::numeric_limits<Int>::max())), 1.0);
 
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_COMPARE((Math::unpack<long double, Long>(std::numeric_limits<Long>::min())), -1.0);
     CORRADE_COMPARE((Math::unpack<long double, Long>(0)), 0.0);
     CORRADE_COMPARE((Math::unpack<long double, Long>(std::numeric_limits<Long>::max())), 1.0);
-    #endif
 
     CORRADE_COMPARE((Math::unpack<Float, Short>(16384)), 0.500015f);
     CORRADE_COMPARE((Math::unpack<Float, Short>(-16384)), -0.500015f);
@@ -181,7 +175,6 @@ void PackingTest::packUnsigned() {
     CORRADE_COMPARE(Math::pack<UnsignedInt>(0.0), 0);
     CORRADE_COMPARE(Math::pack<UnsignedInt>(1.0), std::numeric_limits<UnsignedInt>::max());
 
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_COMPARE(Math::pack<UnsignedLong>(0.0l), 0);
     {
         #ifdef _MSC_VER
@@ -189,7 +182,6 @@ void PackingTest::packUnsigned() {
         #endif
         CORRADE_COMPARE(Math::pack<UnsignedLong>(1.0l), std::numeric_limits<UnsignedLong>::max());
     }
-    #endif
 
     CORRADE_COMPARE(Math::pack<UnsignedShort>(0.33f), 21627);
     CORRADE_COMPARE(Math::pack<UnsignedShort>(0.66f), 43253);
@@ -218,7 +210,6 @@ void PackingTest::packSigned() {
     CORRADE_COMPARE(Math::pack<Short>(0.0f), 0);
     CORRADE_COMPARE(Math::pack<Short>(1.0f), std::numeric_limits<Short>::max());
 
-    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(Math::pack<Int>(-1.0), std::numeric_limits<Int>::min()+1);
     CORRADE_COMPARE(Math::pack<Int>(0.0), 0);
     CORRADE_COMPARE(Math::pack<Int>(1.0), std::numeric_limits<Int>::max());
@@ -236,7 +227,6 @@ void PackingTest::packSigned() {
         #endif
         CORRADE_COMPARE(Math::pack<Long>(1.0l), std::numeric_limits<Long>::max());
     }
-    #endif
 
     CORRADE_COMPARE(Math::pack<Short>(-0.33f), -10813);
     CORRADE_COMPARE(Math::pack<Short>(0.66f), 21626);
@@ -264,7 +254,6 @@ void PackingTest::reunpackUnsigned() {
     CORRADE_COMPARE(Math::unpack<Double>(Math::pack<UnsignedInt>(0.0)), 0.0);
     CORRADE_COMPARE(Math::unpack<Double>(Math::pack<UnsignedInt>(1.0)), 1.0);
 
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_COMPARE(Math::unpack<long double>(Math::pack<UnsignedLong>(0.0l)), 0.0l);
     {
         #ifdef _MSC_VER
@@ -272,7 +261,6 @@ void PackingTest::reunpackUnsigned() {
         #endif
         CORRADE_COMPARE(Math::unpack<long double>(Math::pack<UnsignedLong>(1.0l)), 1.0l);
     }
-    #endif
 }
 
 void PackingTest::reunpackSigned() {
@@ -288,7 +276,6 @@ void PackingTest::reunpackSigned() {
     CORRADE_COMPARE(Math::unpack<Double>(Math::pack<Int>(0.0)), 0.0);
     CORRADE_COMPARE(Math::unpack<Double>(Math::pack<Int>(1.0)), 1.0);
 
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_COMPARE(Math::unpack<long double>(Math::pack<Long>(-1.0l)), -1.0l);
     CORRADE_COMPARE(Math::unpack<long double>(Math::pack<Long>(0.0l)), 0.0l);
     {
@@ -297,7 +284,6 @@ void PackingTest::reunpackSigned() {
         #endif
         CORRADE_COMPARE(Math::unpack<long double>(Math::pack<Long>(1.0l)), 1.0l);
     }
-    #endif
 }
 
 void PackingTest::unpackTypeDeduction() {
