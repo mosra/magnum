@@ -110,10 +110,12 @@ void DistanceFieldGLTest::test() {
     const GL::TextureFormat inputFormat = GL::TextureFormat::R8;
     #elif !defined(MAGNUM_TARGET_WEBGL)
     GL::TextureFormat inputFormat;
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
+        CORRADE_INFO("Using" << GL::Extensions::EXT::texture_rg::string());
         inputFormat = GL::TextureFormat::R8;
-    else
+    } else {
         inputFormat = GL::TextureFormat::Luminance; /** @todo Luminance8 */
+    }
     #else
     const GL::TextureFormat inputFormat = GL::TextureFormat::Luminance;
     #endif
