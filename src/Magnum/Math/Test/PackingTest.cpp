@@ -177,8 +177,8 @@ void PackingTest::packUnsigned() {
 
     CORRADE_COMPARE(Math::pack<UnsignedLong>(0.0l), 0);
     {
-        #ifdef _MSC_VER
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC.");
+        #if defined(CORRADE_TARGET_MSVC) || (defined(CORRADE_TARGET_ANDROID) && defined(CORRADE_TARGET_32BIT) && defined(CORRADE_TARGET_X86))
+        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC and 32-bit x86 Android.");
         #endif
         CORRADE_COMPARE(Math::pack<UnsignedLong>(1.0l), std::numeric_limits<UnsignedLong>::max());
     }
@@ -215,15 +215,15 @@ void PackingTest::packSigned() {
     CORRADE_COMPARE(Math::pack<Int>(1.0), std::numeric_limits<Int>::max());
 
     {
-        #ifdef _MSC_VER
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC.");
+        #if defined(CORRADE_TARGET_MSVC) || (defined(CORRADE_TARGET_ANDROID) && defined(CORRADE_TARGET_32BIT) && defined(CORRADE_TARGET_X86))
+        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC and 32-bit x86 Android.");
         #endif
         CORRADE_COMPARE(Math::pack<Long>(-1.0l), std::numeric_limits<Long>::min()+1);
     }
     CORRADE_COMPARE(Math::pack<Long>(0.0l), 0);
     {
-        #ifdef _MSC_VER
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC.");
+        #if defined(CORRADE_TARGET_MSVC) || (defined(CORRADE_TARGET_ANDROID) && defined(CORRADE_TARGET_32BIT) && defined(CORRADE_TARGET_X86))
+        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC and 32-bit x86 Android.");
         #endif
         CORRADE_COMPARE(Math::pack<Long>(1.0l), std::numeric_limits<Long>::max());
     }
@@ -256,8 +256,8 @@ void PackingTest::reunpackUnsigned() {
 
     CORRADE_COMPARE(Math::unpack<long double>(Math::pack<UnsignedLong>(0.0l)), 0.0l);
     {
-        #ifdef _MSC_VER
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC.");
+        #if defined(CORRADE_TARGET_MSVC) || (defined(CORRADE_TARGET_ANDROID) && defined(CORRADE_TARGET_32BIT) && defined(CORRADE_TARGET_X86))
+        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC and 32-bit x86 Android.");
         #endif
         CORRADE_COMPARE(Math::unpack<long double>(Math::pack<UnsignedLong>(1.0l)), 1.0l);
     }
@@ -279,7 +279,7 @@ void PackingTest::reunpackSigned() {
     CORRADE_COMPARE(Math::unpack<long double>(Math::pack<Long>(-1.0l)), -1.0l);
     CORRADE_COMPARE(Math::unpack<long double>(Math::pack<Long>(0.0l)), 0.0l);
     {
-        #if defined(_MSC_VER) || (defined(CORRADE_TARGET_ANDROID) && !__LP64__)
+        #if defined(CORRADE_TARGET_MSVC) || (defined(CORRADE_TARGET_ANDROID) && defined(CORRADE_TARGET_32BIT))
         CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC and 32-bit Android.");
         #endif
         CORRADE_COMPARE(Math::unpack<long double>(Math::pack<Long>(1.0l)), 1.0l);
