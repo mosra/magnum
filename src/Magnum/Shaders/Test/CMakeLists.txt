@@ -305,6 +305,7 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/colored.tga
             PhongTestFiles/defaults.tga
             PhongTestFiles/instanced.tga
+            PhongTestFiles/instanced-textured.tga
             PhongTestFiles/instanced-normal.tga
             PhongTestFiles/low-light-angle.tga
             PhongTestFiles/shininess-no-specular.tga

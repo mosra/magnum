@@ -123,6 +123,7 @@ if(BUILD_GL_TESTS)
             CompileTestFiles/flat2D.tga
             CompileTestFiles/flat3D.tga
             CompileTestFiles/phong.tga
+            CompileTestFiles/phong-smooth.tga
             CompileTestFiles/phong-flat.tga
             CompileTestFiles/textured2D.tga
             CompileTestFiles/textured3D.tga)
