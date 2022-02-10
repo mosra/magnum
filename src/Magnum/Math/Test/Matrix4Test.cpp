@@ -745,17 +745,7 @@ void Matrix4Test::rotationPartNotOrthogonal() {
     Matrix4::shearingXY(1.5f, 0.0f).rotation();
     Matrix4::scaling(Vector3::yScale(0.0f)).rotation();
 
-    #if defined(CORRADE_TARGET_APPLE) || (defined(CORRADE_TARGET_WINDOWS) && defined(__MINGW32__)) || defined(CORRADE_TARGET_ANDROID)
-    CORRADE_COMPARE(out.str(),
-        "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:\n"
-        "Matrix(1, 0, 0.83205,\n"
-        "       0, 1, 0,\n"
-        "       0, 0, 0.5547)\n"
-        "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:\n"
-        "Matrix(1, nan, 0,\n"
-        "       0, nan, 0,\n"
-        "       0, nan, 1)\n");
-    #elif defined(CORRADE_TARGET_WINDOWS) && defined(_MSC_VER)
+    #ifdef CORRADE_TARGET_MSVC
     CORRADE_COMPARE(out.str(),
         "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:\n"
         "Matrix(1, 0, 0.83205,\n"
@@ -765,8 +755,24 @@ void Matrix4Test::rotationPartNotOrthogonal() {
         "Matrix(1, -nan(ind), 0,\n"
         "       0, -nan(ind), 0,\n"
         "       0, -nan(ind), 1)\n");
+
+    /* Linux, Emscripten, Android. Somehow Androids randomly differ between
+       printing positive and negative NaNs. Apple platforms and MinGW32 don't
+       print signed NaNs, but it doesn't make sense to have yet another branch
+       for those so they're handled here as well. */
     #else
-    CORRADE_COMPARE(out.str(),
+    constexpr const char* expectedPositive =
+        "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:\n"
+        "Matrix(1, 0, 0.83205,\n"
+        "       0, 1, 0,\n"
+        "       0, 0, 0.5547)\n"
+        "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:\n"
+        "Matrix(1, nan, 0,\n"
+        "       0, nan, 0,\n"
+        "       0, nan, 1)\n";
+    if(out.str() == expectedPositive)
+        CORRADE_COMPARE(out.str(), expectedPositive);
+    else CORRADE_COMPARE(out.str(),
         "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:\n"
         "Matrix(1, 0, 0.83205,\n"
         "       0, 1, 0,\n"
