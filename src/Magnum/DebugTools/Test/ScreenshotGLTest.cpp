@@ -249,6 +249,10 @@ void ScreenshotGLTest::unknownFormat() {
 }
 
 void ScreenshotGLTest::pluginLoadFailed() {
+    PluginManager::Manager<Trade::AbstractImageConverter> manager{"nowhere"};
+    if(manager.loadState("AnyImageConverter") != PluginManager::LoadState::NotFound)
+        CORRADE_SKIP("AnyImageConverter plugin found, can't test.");
+
     ImageView2D rgba{PixelFormat::RGBA8Unorm, {4, 3}, DataRgba8};
 
     GL::Texture2D texture;
@@ -269,7 +273,6 @@ void ScreenshotGLTest::pluginLoadFailed() {
     bool succeeded;
     {
         Error redirectOutput{&out};
-        PluginManager::Manager<Trade::AbstractImageConverter> manager{"nowhere"};
         succeeded = DebugTools::screenshot(manager, framebuffer, Utility::Directory::join(SCREENSHOTTEST_SAVE_DIR, "image.poo"));
     }
 
