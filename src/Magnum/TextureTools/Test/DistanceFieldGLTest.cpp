@@ -49,6 +49,10 @@
 
 #include "configure.h"
 
+#ifdef MAGNUM_TARGET_GLES
+#include <Corrade/Containers/StringView.h> /* for SwiftShader detection */
+#endif
+
 namespace Magnum { namespace TextureTools { namespace Test { namespace {
 
 struct DistanceFieldGLTest: GL::OpenGLTester {
@@ -63,6 +67,10 @@ struct DistanceFieldGLTest: GL::OpenGLTester {
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
         std::string _testDir;
 };
+
+#ifdef MAGNUM_TARGET_GLES
+using namespace Containers::Literals; /* for SwiftShader detection */
+#endif
 
 DistanceFieldGLTest::DistanceFieldGLTest() {
     addTests({&DistanceFieldGLTest::test});
@@ -162,7 +170,18 @@ void DistanceFieldGLTest::test() {
         #endif
         );
 
-    MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifdef MAGNUM_TARGET_GLES
+    {
+        /* Probably due to the luminance target pixel format? Works with 4.1,
+           didn't find any commit in between that would clearly affect
+           this. */
+        CORRADE_EXPECT_FAIL_IF(GL::Context::current().versionString().contains("SwiftShader 4.0.0"_s),
+            "SwiftShader 4.0.0 has a bug where the framebuffer is considered incomplete.");
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        if(GL::Context::current().versionString().contains("SwiftShader 4.0.0"_s))
+            CORRADE_SKIP("Skipping the rest of the test.");
+    }
+    #endif
 
     Containers::Optional<Image2D> actualOutputImage;
     #ifndef MAGNUM_TARGET_GLES2

@@ -392,6 +392,7 @@ constexpr struct {
 };
 #endif
 
+using namespace Containers::Literals;
 using namespace Math::Literals;
 
 const struct {
@@ -3250,7 +3251,18 @@ void PhongGLTest::renderLightsSetOneByOne() {
         .setProjectionMatrix(Matrix4::perspectiveProjection(80.0_degf, 1.0f, 0.1f, 20.0f))
         .draw(plane);
 
-    MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifdef MAGNUM_TARGET_GLES
+    {
+        /* The setLightPosition(1) is the first call that causes the error.
+           Works with 4.1, didn't find any commit in between that would clearly
+           affect this. */
+        CORRADE_EXPECT_FAIL_IF(GL::Context::current().versionString().contains("SwiftShader 4.0.0"_s),
+            "SwiftShader 4.0.0 has a bug where setting array uniform elements other than 0 causes GL_INVALID_OPERATION.");
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        if(GL::Context::current().versionString().contains("SwiftShader 4.0.0"_s))
+            CORRADE_SKIP("Skipping the rest of the test.");
+    }
+    #endif
 
     const Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
 
