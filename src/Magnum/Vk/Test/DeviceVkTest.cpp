@@ -159,8 +159,13 @@ struct {
     Containers::Array<const char*> args;
     const char* log;
 } ConstructWorkaroundsCommandLineData[] {
-    {"default", false, nullptr,
-        "Device: {}, Vulkan {}.{}{}\n"
+    {"default", false,
+        Containers::array({"",
+            /* Have to force version to 1.0 because on 1.1 SwiftShader requires
+               the "swiftshader-crashy-getdevicequeue2" workaround, they can't
+               be all disabled */
+            "--magnum-vulkan-version", "1.0"}),
+        "Device: {}, Vulkan 1.0\n"
         "Device driver: {}, {}\n"
         "Using device driver workarounds:\n"
         "    swiftshader-image-copy-extent-instead-of-layers\n"
@@ -172,8 +177,12 @@ struct {
         ""},
     {"disabled workarounds", true,
         Containers::array({"",
+            /* Have to force version to 1.0 because on 1.1 SwiftShader requires
+               the "swiftshader-crashy-getdevicequeue2" workaround, they can't
+               be all disabled */
+            "--magnum-vulkan-version", "1.0",
             "--magnum-disable-workarounds", "swiftshader-image-copy-extent-instead-of-layers swiftshader-spirv-multi-entrypoint-conflicting-locations"}),
-        "Device: {}, Vulkan {}.{}{}\n"
+        "Device: {}, Vulkan 1.0\n"
         "Device driver: {}, {}\n"}
 };
 
@@ -872,13 +881,7 @@ void DeviceVkTest::constructWorkaroundsCommandLineDisable() {
     };
 
     CORRADE_VERIFY(device.handle());
-
-    /** @todo cleanup when Debug::toString() or some similar utility exists */
-    UnsignedInt major = versionMajor(deviceProperties.version());
-    UnsignedInt minor = versionMinor(deviceProperties.version());
-    UnsignedInt patch = versionPatch(deviceProperties.version());
-    /* SwiftShader reports just 1.1 with no patch version, special-case that */
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : "", deviceProperties.driverName(), deviceProperties.driverInfo()));
+    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, deviceProperties.name(), deviceProperties.driverName(), deviceProperties.driverInfo()));
 }
 
 void DeviceVkTest::constructMultipleQueues() {

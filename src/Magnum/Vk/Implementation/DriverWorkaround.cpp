@@ -39,6 +39,10 @@ using namespace Containers::Literals;
 /* Search the code for the following strings to see where they are implemented */
 constexpr Containers::StringView KnownWorkarounds[]{
 /* [workarounds] */
+/* SwiftShader on Android 29 image advertises Vulkan 1.1 but crashes inside
+   vkGetDeviceQueue2(). Using the Vulkan 1.0 entrypoint instead. */
+"swiftshader-crashy-getdevicequeue2"_s,
+
 /* For layered image copies, SwiftShader (5.0? the version reporting is messy)
    expects the layer offsets/counts to be included as second/third dimension of
    the image offset/extent instead. Actually, having the Vulkan API contain

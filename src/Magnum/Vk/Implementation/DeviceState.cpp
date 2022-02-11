@@ -42,7 +42,10 @@ using namespace Containers::Literals;
 
 DeviceState::DeviceState(Device& device, Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds) {
     if(device.isVersionSupported(Version::Vk11)) {
-        getDeviceQueueImplementation = &Device::getQueueImplementation11;
+        if(device.properties().name().hasPrefix("SwiftShader"_s) && !Implementation::isDriverWorkaroundDisabled(encounteredWorkarounds, "swiftshader-crashy-getdevicequeue2"_s))
+            getDeviceQueueImplementation = &Device::getQueueImplementationDefault;
+        else
+            getDeviceQueueImplementation = &Device::getQueueImplementation11;
     } else {
         getDeviceQueueImplementation = &Device::getQueueImplementationDefault;
     }
