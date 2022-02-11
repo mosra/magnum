@@ -135,7 +135,7 @@ if(CORRADE_TARGET_ANDROID)
     corrade_add_test(VkAssertTestFailAssertVkSuccessOr
         $<TARGET_OBJECTS:VkAssertTestObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp
-        ARGUMENTS --fail-on-assert-vk-success-or-incomplete true
+        ARGUMENTS --fail-on-assert-vk-success-or true
         LIBRARIES MagnumVk)
     set_tests_properties(VkAssertTestFailAssertVkSuccessOr PROPERTIES
         PASS_REGULAR_EXPRESSION "Call a = s failed with Vk::Result::ErrorExtensionNotPresent at ")
