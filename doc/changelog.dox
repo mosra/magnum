@@ -136,6 +136,9 @@ See also:
 -   A new @cpp "angle-chatty-shader-compiler" @ce workaround for silencing
     useless linker output on ANGLE. See @ref opengl-workarounds for more
     information.
+-   A new @cpp "android-generic-hostname-might-be-swiftshader" @ce workaround
+    needed for testing against Android Emulator SwiftShader GPU. See
+    @ref opengl-workarounds for more information.
 
 @subsubsection changelog-latest-new-math Math library
 

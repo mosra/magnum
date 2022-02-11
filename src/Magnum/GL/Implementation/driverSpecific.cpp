@@ -44,6 +44,18 @@ using namespace Containers::Literals;
 /* Search the code for the following strings to see where they are implemented */
 constexpr Containers::StringView KnownWorkarounds[]{
 /* [workarounds] */
+#if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES)
+/* Android Emulator can run with a SwiftShader GPU and thus needs some of the
+   SwiftShader context creation workarounds. However, it's impossible to
+   detect, as EGL_VERSION is always "1.4 Android META-EGL" and EGL_VENDOR
+   always "Android". As there's nothing that would hint at SwiftShader being
+   used, we conservatively assume every emulator can be a SwiftShader. But
+   that's not easy either, the only vague hint that we're dealing with an
+   emulator is the HOSTNAME env var, which is set to e.g. generic_x86, but to
+   e.g. HWVTR on a device, so try that. */
+"android-generic-hostname-might-be-swiftshader"_s,
+#endif
+
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
 /* ANGLE's shader linker insists on returning a message consisting of a
    single newline on success, causing annoying noise in the console. Similar to
@@ -212,13 +224,18 @@ constexpr Containers::StringView KnownWorkarounds[]{
 #endif
 
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-/* Empty EGL_CONTEXT_FLAGS_KHR cause SwiftShader 3.3.0.1 to fail context
-   creation with EGL_BAD_ATTRIBUTE. Not sending the flags then. Relevant code:
-   https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L810 */
+/* Empty EGL_CONTEXT_FLAGS_KHR cause SwiftShader 3.3 to fail context creation
+   with EGL_BAD_ATTRIBUTE. Not sending the flags then. Relevant code:
+    https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L810
+   Version 4.1 suffers from the same thing, but 4.0 on Android not, for some
+   reason. */
 "swiftshader-no-empty-egl-context-flags"_s,
 
 /* SwiftShader 3.3.0.1 crashes deep inside eglMakeCurrent() when using
-   EGL_NO_SURFACE. Supplying a 32x32 PBuffer to work around that. */
+   EGL_NO_SURFACE. Supplying a 32x32 PBuffer to work around that. (Android's)
+   SwiftShader 4.0 needs it too, but doesn't crash, only fails to make the
+   context current with EGL_BAD_MATCH. Version 4.1 doesn't seem to need this
+   workaround anymore. */
 "swiftshader-egl-context-needs-pbuffer"_s,
 #endif
 

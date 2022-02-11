@@ -364,7 +364,11 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     /* SwiftShader 3.3.0.1 blows up on encountering EGL_CONTEXT_FLAGS_KHR with
        a zero value, so erase these. It also doesn't handle them as correct
        flags, but instead checks for the whole value, so a combination won't
-       work either: https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L8104 */
+       work either: https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L8104
+
+       Interestingly, on Android Emulator SwiftShader 4.0 this workaround isn't
+       needed, so we don't need to use the isSwiftShader variable (from below)
+       in this case. */
     if(!(UnsignedLong(flags) & 0xffffffffu) && version.contains("SwiftShader"_s) && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"_s))) {
         auto& contextFlags = attributes[nextAttribute - 2];
         CORRADE_INTERNAL_ASSERT(contextFlags == EGL_CONTEXT_FLAGS_KHR);
@@ -486,9 +490,27 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     }
 
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-    /* SwiftShader 3.3.0.1 needs some pbuffer, otherwise it crashes somewhere
-       deep inside when making the context current */
-    if(version.contains("SwiftShader"_s) && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-egl-context-needs-pbuffer"_s))) {
+    /* Android Emulator can run with a SwiftShader GPU and thus needs some of
+       the SwiftShader context creation workarounds. However, it's impossible
+       to detect, as EGL_VERSION is always "1.4 Android META-EGL" and
+       EGL_VENDOR always "Android". As there's nothing that would hint at
+       SwiftShader being used, we conservatively assume every emulator can be a
+       SwiftShader. But that's not easy either, the only vague hint that we're
+       dealing with an emulator is the HOSTNAME env var, which is set to e.g.
+       generic_x86, but to e.g. HWVTR on a device, so try that. */
+    const bool isSwiftShader =
+        #ifndef CORRADE_TARGET_ANDROID
+        version.contains("SwiftShader"_s)
+        #else
+        Containers::StringView{std::getenv("HOSTNAME")}.contains("generic"_s) && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("android-generic-hostname-might-be-swiftshader"_s))
+        #endif
+        ;
+
+    /* SwiftShader 3.3 needs some pbuffer, otherwise it crashes somewhere deep
+       inside when making the context current. (Android's) SwiftShader 4.0
+       needs it too, but doesn't crash, only fails to make the context current
+       with EGL_BAD_MATCH. Version 4.1 doesn't need this workaround anymore. */
+    if(isSwiftShader && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-egl-context-needs-pbuffer"_s))) {
         EGLint surfaceAttributes[] = {
             EGL_WIDTH, 32,
             EGL_HEIGHT, 32,
