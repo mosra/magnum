@@ -741,7 +741,12 @@ class MAGNUM_VK_EXPORT DeviceProperties {
 
         /* Combines isVersionSupported(E::coreVersion()) and
            ExtensionProperties::isSupported<E>(). Used internally to avoid
-           accidents with incorrectly specified extension core version. */
+           accidents with incorrectly specified extension core version when
+           we'd separately check the version and extensionPropertiesInternal();
+           not published because extensionPropertiesInternal() doesn't include
+           any layers and thus the behavior would be confusing to the user. Not
+           to mention there would be extra hurdle with the template and
+           dependency on ExtensionProperties. */
         template<class E> MAGNUM_VK_LOCAL bool isOrVersionSupportedInternal();
 
         /* Used by DeviceCreateInfo */
