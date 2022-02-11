@@ -1095,6 +1095,10 @@ void CompareImageTest::imageFileError() {
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
 
+    if(!(_converterManager->loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
+       !(_converterManager->loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
+
     {
         out.str({});
         Debug redirectOutput(&out);
@@ -1179,6 +1183,10 @@ void CompareImageTest::imageFileExpectedLoadFailed() {
     std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "nonexistent.tga");
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    if(!(_converterManager->loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
+       !(_converterManager->loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
 
     {
         out.str({});
@@ -1318,6 +1326,10 @@ void CompareImageTest::imageToFileError() {
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
 
+    if(!(_converterManager->loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
+       !(_converterManager->loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
+
     {
         out.str({});
         Debug redirectOutput(&out);
@@ -1378,6 +1390,10 @@ void CompareImageTest::imageToFileExpectedLoadFailed() {
     std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "nonexistent.tga");
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    if(!(_converterManager->loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
+       !(_converterManager->loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
 
     {
         out.str({});
@@ -1673,6 +1689,10 @@ void CompareImageTest::pixelsToFileError() {
     std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageExpected.tga");
     if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    if(!(_converterManager->loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
+       !(_converterManager->loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
 
     {
         out.str({});
