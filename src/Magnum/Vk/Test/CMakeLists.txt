@@ -89,7 +89,9 @@ corrade_add_test(VkResultTest ResultTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkRenderPassTest RenderPassTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkSamplerTest SamplerTest.cpp LIBRARIES MagnumVkTestLib)
 
-corrade_add_test(VkShaderTest ShaderTest.cpp LIBRARIES MagnumVk)
+corrade_add_test(VkShaderTest ShaderTest.cpp
+    LIBRARIES MagnumVk
+    FILES ShaderTestFiles/vert-frag.spv)
 target_include_directories(VkShaderTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 
 corrade_add_test(VkShaderSetTest ShaderSetTest.cpp LIBRARIES MagnumVkTestLib)
