@@ -993,6 +993,7 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
         "out mediump " + type + " valueInterpolated;\n"
         "void main() {\n"
         "    valueInterpolated = value;\n"
+        "    gl_PointSize = 1.0;\n"
         "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
         "}\n");
     frag.addSource(
@@ -1044,6 +1045,7 @@ IntegerShader::IntegerShader(const std::string& type) {
                    "flat out mediump " + type + " valueInterpolated;\n"
                    "void main() {\n"
                    "    valueInterpolated = value;\n"
+                   "    gl_PointSize = 1.0;\n"
                    "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
                    "}\n");
     frag.addSource("flat in mediump " + type + " valueInterpolated;\n"
@@ -1078,6 +1080,7 @@ DoubleShader::DoubleShader(const std::string& type, const std::string& outputTyp
         "out " + outputType + " valueInterpolated;\n"
         "void main() {\n"
         "    valueInterpolated = " + conversion + ";\n"
+        "    gl_PointSize = 1.0;\n"
         "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
         "}\n");
     frag.addSource("in " + outputType + " valueInterpolated;\n"
@@ -2114,6 +2117,7 @@ MultipleShader::MultipleShader() {
         "out mediump vec4 valueInterpolated;\n"
         "void main() {\n"
         "    valueInterpolated = position + vec4(normal, 0.0) + vec4(textureCoordinates, 0.0, 0.0);\n"
+        "    gl_PointSize = 1.0;\n"
         "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
         "}\n");
     frag.addSource(
@@ -3746,6 +3750,7 @@ MultiDrawShader::MultiDrawShader(bool vertexId, bool drawId) {
         "out mediump float valueInterpolated;\n"
         "void main() {\n"
         "    valueInterpolated = value[vertexOrDrawId];\n"
+        "    gl_PointSize = 1.0;\n"
         "    gl_Position = vec4(position, 0.0, 1.0);\n"
         "}\n");
     frag.addSource(
@@ -4563,6 +4568,7 @@ MultiDrawInstancedShader::MultiDrawInstancedShader(bool vertexId, bool drawId
         #else
         "    valueInterpolated = value[vertexOrDrawIdOrInstanceOffset + int(instanceId)];\n"
         #endif
+        "    gl_PointSize = 1.0;\n"
         "    gl_Position = vec4(positionX, positionY, 0.0, 1.0);\n"
         "}\n");
     frag.addSource(
