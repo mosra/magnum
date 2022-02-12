@@ -47,6 +47,7 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     set(OPENGLES3_LIBRARY GL CACHE STRING "Path to a library." FORCE)
 else()
     find_library(OPENGLES3_LIBRARY NAMES
+        # Used by Android
         GLESv3
 
         # On some platforms (e.g. desktop emulation with Mesa or NVidia) ES3
