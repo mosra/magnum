@@ -49,16 +49,18 @@ using namespace Magnum::Math::Literals;
 int main() {
 {
 /* [matrix-vector-construct] */
-Matrix2x3 a;                    // zero-filled
-Vector3i b;                     // zero-filled
+Matrix2x3 a;                            // zero-filled
+Vector3i b;                             // zero-filled
 
-Matrix3 identity;               // diagonal set to 1
-Matrix3 zero{Math::ZeroInit};   // zero-filled
+Matrix3 c;                              // diagonal set to 1.0f
+Matrix3 d{Math::IdentityInit};          // diagonal set to 1.0f
+Matrix3 e{Math::ZeroInit};              // zero-filled
 /* [matrix-vector-construct] */
 static_cast<void>(a);
 static_cast<void>(b);
-static_cast<void>(identity);
-static_cast<void>(zero);
+static_cast<void>(c);
+static_cast<void>(d);
+static_cast<void>(e);
 }
 
 {
@@ -76,7 +78,7 @@ static_cast<void>(mat);
 {
 /* [matrix-vector-construct-diagonal] */
 Matrix3 diag{Math::IdentityInit, 2.0f}; // diagonal is 2.0f, zeros elsewhere
-Vector3i fill(10);                      // {10, 10, 10}
+Vector3i fill{10};                      // {10, 10, 10}
 auto diag2 = Matrix3::fromDiagonal({3.0f, 2.0f, 1.0f});
 /* [matrix-vector-construct-diagonal] */
 static_cast<void>(diag);
@@ -105,29 +107,38 @@ Math::Matrix2x3<Int>::from(mat) *= 2;   // { 4, 8, 12, 2, 6, 10 }
 
 {
 /* [matrix-vector-construct-color] */
-Color4 a = Color3{0.2f, 0.7f, 0.5f};     // {0.2f, 0.7f, 0.5f, 1.0f}
-Color4ub b = Color3ub{0x33, 0xb2, 0x7f}; // {0x33, 0xb2, 0x7f, 0xff}
+Color4 a = Color3{0.2f, 0.7f, 0.5f};        // {0.2f, 0.7f, 0.5f, 1.0f}
+Color4ub b = Color3ub{0x33, 0xb2, 0x7f};    // {0x33, 0xb2, 0x7f, 0xff}
 /* [matrix-vector-construct-color] */
 static_cast<void>(a);
 static_cast<void>(b);
 }
 
 {
-/* [matrix-vector-construct-color-hue] */
-auto green = Color3::green();           // {0.0f, 1.0f, 0.0f}
-auto cyan = Color4::cyan(0.5f, 0.95f);  // {0.5f, 1.0f, 1.0f, 0.95f}
-auto fadedRed = Color3::fromHsv({219.0_degf, 0.50f, 0.57f});
-/* [matrix-vector-construct-color-hue] */
+/* [matrix-vector-construct-color-axis] */
+auto green = Color3::green();               // {0.0f, 1.0f, 0.0f}
+auto cyan = Color4::cyan(0.5f, 0.95f);      // {0.5f, 1.0f, 1.0f, 0.95f}
+/* [matrix-vector-construct-color-axis] */
 static_cast<void>(green);
 static_cast<void>(cyan);
+}
+
+{
+/* [matrix-vector-construct-color-colorspace] */
+auto fadedRed = Color3::fromHsv({219.0_degf, 0.50f, 0.57f});
+auto linear = Color3::fromSrgb(0x33b27f);   // {0.2f, 0.7f, 0.5f}
+auto white = Color3::fromXyz({0.950456f, 1.0f, 1.08906f});
+UnsignedInt srgb = linear.toSrgbInt();      // 0x33b27f
+/* [matrix-vector-construct-color-colorspace] */
 static_cast<void>(fadedRed);
+static_cast<void>(linear);
 }
 
 {
 /* [matrix-vector-construct-color-literal] */
-Color3ub a = 0x33b27f_rgb;      // {0x33, 0xb2, 0x7f}
-Color4 b = 0x33b27fcc_rgbaf;    // {0.2f, 0.7f, 0.5f, 0.8f}
-Color4 c = 0x33b27fcc_srgbaf;   // {0.0331048f, 0.445201f, 0.212231f, 0.8f}
+Color3ub a = 0x33b27f_rgb;    // {0x33, 0xb2, 0x7f}
+Color4 b = 0x33b27fcc_rgbaf;  // {0.2f, 0.7f, 0.5f, 0.8f}
+Color4 c = 0x33b27fcc_srgbaf; // {0.0331048f, 0.445201f, 0.212231f, 0.8f}
 /* [matrix-vector-construct-color-literal] */
 static_cast<void>(a);
 static_cast<void>(b);
@@ -137,15 +148,15 @@ static_cast<void>(c);
 {
 /* [matrix-vector-access] */
 Matrix3x2 a;
-a[2] /= 2.0f;   // third column (column major indexing, see explanation below)
-a[0][1] = 5.3f; // first column, second element
+a[2] /= 2.0f;                   // third column
+a[0][1] = 5.3f;                 // first column, second element
 
 Vector3i b;
-b[1] = 1;       // second element
+b[1] = 1;                       // second element
 /* [matrix-vector-access] */
 
 /* [matrix-vector-access-row] */
-Vector3 c = a.row(1); // second row
+Vector3 c = a.row(1);           // second row
 /* [matrix-vector-access-row] */
 static_cast<void>(c);
 }
@@ -165,13 +176,13 @@ static_cast<void>(x);
 {
 /* [matrix-vector-access-swizzle] */
 Vector4i orig{-1, 2, 3, 4};
-Vector4i bgra = Math::gather<'b', 'g', 'r', 'a'>(orig); // { 3, 2, -1, 4 }
+Vector4i bgra = Math::gather<'b', 'g', 'r', 'a'>(orig); // {3, 2, -1, 4}
 Math::Vector<6, Int> w10xyz = Math::gather<'w', '1', '0', 'x', 'y', 'z'>(orig);
-    // { 4, 1, 0, -1, 2, 3 }
+                                        // {4, 1, 0, -1, 2, 3}
 
 Vector4 vec{1.5f, 3.0f, 0.1f, 1.1f};
 Vector2 coords{5.0f, -2.0f};
-Math::scatter<'z', 'w'>(vec, coords); // { 1.5, 3.0, 5.0, -2.0 }
+Math::scatter<'z', 'w'>(vec, coords);   // {1.5f, 3.0f, 5.0f, -2.0f}
 
 /* [matrix-vector-access-swizzle] */
 static_cast<void>(bgra);
@@ -204,7 +215,7 @@ static_cast<void>(d);
 {
 /* [matrix-vector-operations-vector] */
 Vector3 a{1.0f, 2.0f, 3.0f};
-Vector3 b = a*5.0f - Vector3{3.0f, -0.5f, -7.5f}; // {5.0f, 9.5f, 7.5f}
+Vector3 b = a*5.0f - Vector3{3.0f, 0.5f, 7.5f}; // {2.0f, 9.5f, 7.5f}
 Vector3 c = 1.0f/a;                             // {1.0f, 0.5f, 0.333f}
 /* [matrix-vector-operations-vector] */
 static_cast<void>(b);
@@ -272,8 +283,8 @@ static_cast<void>(e);
 
 {
 /* [matrix-vector-operations-componentwise] */
-Float a = Vector3{1.5f, 0.3f, 8.0f}.sum();      // 8.8f
-Int b = Vector3i{32, -5, 7}.product();          // 1120
+Float a = Vector3{1.5f, 0.3f, 8.0f}.sum();      // 9.8f
+Int b = Vector3i{32, -5, 7}.product();          // -1120
 /* [matrix-vector-operations-componentwise] */
 static_cast<void>(a);
 static_cast<void>(b);
@@ -302,9 +313,9 @@ static_cast<void>(allLarger);
 
 {
 /* [matrix-vector-operations-functions] */
-Vector3 a{5.5f, -0.3f, 75.0f};
-Vector3 b = Math::round(a);                     // {5.0f,  0.0f, 75.0f}
-Vector3 c = Math::abs(a);                       // {5.5f, -0.3f, 75.0f}
+Vector3 a{5.5f, -0.3f, 75.1f};
+Vector3 b = Math::round(a);                     // {6.0f,  0.0f, 75.0f}
+Vector3 c = Math::abs(a);                       // {5.5f, -0.3f, 75.1f}
 Vector3 d = Math::clamp(a, -0.2f, 55.0f);       // {5.5f, -0.2f, 55.0f}
 /* [matrix-vector-operations-functions] */
 static_cast<void>(b);
@@ -334,6 +345,14 @@ static_cast<void>(minmax);
 static_cast<void>(a);
 static_cast<void>(b);
 static_cast<void>(c);
+}
+
+{
+/* [matrix-vector-linear-algebra] */
+Float zero = Math::dot(Vector3::xAxis(), Vector3::yAxis());
+Vector3 zAxis = Math::cross(Vector3::xAxis(), Vector3::yAxis());
+Deg ninety = Math::angle(Vector3::xAxis(), Vector3::zAxis());
+/* [matrix-vector-linear-algebra] */
 }
 
 {

@@ -49,12 +49,13 @@ MAGNUM_EXPORT Float unpackHalf(UnsignedShort value);
 /**
 @brief Half-precision float literal
 
-The purpose of this class is just to make specifying and printing of half-float
-literals easier. By design no arithmetic operations are supported, as majority
-of CPUs has no dedicated instructions for half-precision floats and thus it is
-faster to just use regular single-precision @ref Magnum::Float "Float". See
-[Wikipedia](https://en.wikipedia.org/wiki/Half-precision_floating-point_format)
-for more information about half floats.
+Represents a floating-point value in the [`binary16` format](https://en.wikipedia.org/wiki/Half-precision_floating-point_format).
+
+The sole purpose of this type is to make creation, conversion and visualization
+of half-float values easier. By design it doesn't support any arithmetic
+operations as not all CPU architecture have native support for half-floats and
+thus the operations would be done faster in a regular single-precision
+@ref Magnum::Float "Float".
 
 The class provides explicit conversion from and to @ref Magnum::Float "Float",
 equality comparison with correct treatment of NaN values, promotion and

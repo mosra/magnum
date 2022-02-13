@@ -433,7 +433,7 @@ template<class T> class Color3: public Vector3<T> {
         }
 
         /**
-         * @brief Create RGB color from CIE XYZ representation
+         * @brief Create RGB color from [CIE XYZ representation](https://en.wikipedia.org/wiki/CIE_1931_color_space)
          * @param xyz   Color in CIE XYZ color space
          *
          * Applies transformation matrix, returning the input in linear
@@ -596,7 +596,7 @@ template<class T> class Color3: public Vector3<T> {
         }
 
         /**
-         * @brief Convert to CIE XYZ representation
+         * @brief Convert to [CIE XYZ representation](https://en.wikipedia.org/wiki/CIE_1931_color_space)
          *
          * Assuming the color is in linear RGB with D65 illuminant and 2°
          * standard colorimetric observer, applies transformation matrix,
@@ -850,7 +850,7 @@ class Color4: public Vector4<T> {
         }
 
         /**
-         * @brief Create RGBA color from CIE XYZ representation
+         * @brief Create RGBA color from [CIE XYZ representation](https://en.wikipedia.org/wiki/CIE_1931_color_space)
          * @param xyz   Color in CIE XYZ color space
          * @param a     Alpha value, defaults to @cpp 1.0 @ce for
          *      floating-point types and maximum positive value for integral
@@ -1008,7 +1008,7 @@ class Color4: public Vector4<T> {
         }
 
         /**
-         * @brief Convert to CIE XYZ representation
+         * @brief Convert to [CIE XYZ representation](https://en.wikipedia.org/wiki/CIE_1931_color_space)
          *
          * Assuming the color is in linear RGB, applies transformation matrix,
          * returning the color in CIE XYZ color space. The alpha channel is not
@@ -1037,7 +1037,7 @@ class Color4: public Vector4<T> {
 };
 
 /** @relatesalso Color3
-@brief Convert color from CIE xyY representation to CIE XYZ
+@brief Convert color from [CIE xyY representation](https://en.wikipedia.org/wiki/CIE_1931_color_space#CIE_xy_chromaticity_diagram_and_the_CIE_xyY_color_space) to CIE XYZ
 
 @f[
     \begin{array}{rcl}
@@ -1052,7 +1052,7 @@ template<class T> inline Vector3<T> xyYToXyz(const Vector3<T>& xyY) {
 }
 
 /** @relatesalso Color3
-@brief Convert color from CIE XYZ representation to CIE xyY
+@brief Convert color from CIE XYZ representation to [CIE xyY](https://en.wikipedia.org/wiki/CIE_1931_color_space#CIE_xy_chromaticity_diagram_and_the_CIE_xyY_color_space)
 
 @f[
     \begin{array}{rcl}

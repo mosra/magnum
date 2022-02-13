@@ -42,7 +42,7 @@ Magnum provides its own typedefs for builtin integral and floating-point
 arithmetic types to ensure portability, maintain consistency and reduce
 confusion. E.g., the @ref Int typedef is guaranteed to *always* be 32-bit and
 Magnum's own code and documentation prefers to use it over a wild mixture of
-@ref std::int32_t, @cpp int @ce, @cpp GLint @ce and @cpp ALint @ce that all
+@ref std::int32_t, @cpp int @ce, @cpp GLint @ce or @cpp ALint @ce that all
 refer to the same type.
 
 | Magnum type        | Size           | Equivalent GLSL type    |
@@ -128,25 +128,44 @@ about the differences.
 Scalar types with a GLSL equivalent are guaranteed to have exactly the same
 binary representation. Consequently, matrix and vector classes also have the
 same binary representation as corresponding array of numeric values without any
-additional data or padding (e.g. @cpp sizeof(Vector3i) == sizeof(Int[3]) @ce),
-all matrices are stored in column-major order.
+additional data or padding (e.g. @cpp sizeof(Vector3i) == sizeof(Int[3]) @ce).
+All matrices are stored in column-major order.
 
 This means that all scalar, matrix and vector types can be used directly for
 filling GPU buffers and textures without any need for data extraction or
-conversion. For convenience all vector and matrix classes provide
-@ref Math::RectangularMatrix::data() "data()" function, which returns pointer
+conversion. For convenience all vector and matrix classes provide a
+@ref Math::RectangularMatrix::data() "data()" function, which returns a pointer
 to the internal data array.
+
+@section types-half Half-precision arithmetic
+
+The @ref Half type represents half-precision floating point values. The sole
+purpose of the type is to make creation, conversion and visualization of
+half-float values easier. By design it doesn't support any arithmetic
+operations as not all CPU architecture have native support for half-floats and
+thus the operations would be done faster in a regular single-precision
+@ref Float. The class provides explicit constructors and conversion operators
+from/to @ref Float and @ref UnsignedShort and you can also use the
+@link Math::Literals::operator""_h() _h @endlink literal that is provided in
+the @ref Math::Literals namespace:
+
+@snippet MagnumMath.cpp types-literals-half
+
+Half-precision vector and matrix types such as @ref Vector3h or @ref Matrix3x3h
+work similarly --- you can construct them and convert them from/to other types,
+but can't perform any arithmetic.
 
 @section types-special Special types
 
-Magnum has special type for strongly-typed representation of angles, namely
-the @ref Deg and @ref Rad classes (or @ref Degd and @ref Radd with @ref Double
-as underlying type). Their only purpose is to avoid common degree-vs-radian
-bugs (i.e. entering degree value where radians should be) and make the
-conversion between these two representations easier. They are just a tiny
-@cpp constexpr @ce wrapper around the native type and they support all
-meaningful numeric operations, so using them won't have any performance or
-usability impact in practice.
+Magnum has a special type for strongly-typed representation of angles, namely
+the @ref Deg and @ref Rad classes (or @ref Degd / @ref Degh and @ref Radd /
+@ref Radh with @ref Double / @ref Half as underlying type). Their purpose is to
+avoid common degree-vs-radian bugs (i.e. entering a degree value where radians
+should be and vice versa) and make the conversion between these two
+representations easier. They are just a tiny @cpp constexpr @ce wrapper around
+the native type and they support all meaningful numeric operations. The wrapper
+API may have a slight overhead on debug builds, but the safety benefits
+outweight that in most practical use cases.
 
 These classes are *not* implicitly constructible or convertible from/to
 @ref Float or @ref Double, you have to either construct/convert them explicitly
@@ -169,16 +188,6 @@ implicit conversion you can seamlessly use either radians or degrees without
 any need to care about what input the function expects:
 
 @snippet MagnumMath.cpp types-literals-usage
-
-There is also a @ref Half type for handling half-precision floating point
-values. By design it doesn't support any arithmetic operations as they would be
-done faster on single-precision, it's sole purpose is to make working with
-half-float values easier. It provides either explicit constructors and
-conversion operators from/to @ref Float and @ref UnsignedShort and you can also
-use the @link Math::Literals::operator""_h() _h @endlink literal that is
-provided in the @ref Math::Literals namespace:
-
-@snippet MagnumMath.cpp types-literals-half
 
 @section types-other Other types
 
@@ -203,22 +212,22 @@ These types can be used in GLSL either by extracting values from their
 underlying structure or converting them to types supported by GLSL (e.g.
 quaternion to matrix).
 
-For your convenience, there is also alias for class with often used constants
---- @ref Constants or @ref Constantsd.
+For your convenience, there is also a structure with often used constants
+--- @ref Constants, or @ref Constantsd for the double-precision variants.
 
 @section types-initialization Initialization
 
 Vectors, general matrices and range types are by default zero-initialized,
 transformation types (square matrices, (dual) complex numbers and quaternions)
 are set to identity transformation. It is possible to initialize the instances
-differently using so-called *tags* or use the *tag* to make the choice appear
+differently using so-called *tags* or use the tag to make the choice appear
 explicit:
 
 -   @ref Math::ZeroInit zero-initializes the contents (works for all types).
 -   @ref Math::IdentityInit initializes the contents to identity transformation
     (works only for transformation types, where it is also the default).
--   @ref Math::NoInit leaves the contents uninitialized (useful if you will
-    overwrite the contents anyway, works for all types).
+-   @ref NoInit leaves the contents uninitialized (useful if you will overwrite
+    the contents anyway, works for all types).
 
 Example:
 
