@@ -449,7 +449,11 @@ enum class PixelType: GLenum {
      * Half float.
      * @m_deprecated_since{2020,06} Use @ref PixelType::Half instead.
      */
-    HalfFloat CORRADE_DEPRECATED_ENUM("use Half instead") = Half,
+    HalfFloat CORRADE_DEPRECATED_ENUM("use Half instead")
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        = Half /* it messes up with @m_enum_values_as_keywords */
+        #endif
+        ,
     #endif
 
     /**
