@@ -520,32 +520,36 @@ auto Context::detectedDriver() -> DetectedDrivers {
     if(renderer.contains("ANGLE"_s))
         *_detectedDrivers |= DetectedDriver::Angle;
     #ifdef MAGNUM_TARGET_WEBGL
-    /* Otherwise assume ANGLE is present if WEBGL_debug_renderer_info isn't
-       present (which would tell us so already) and the ANGLE_instanced_arrays
-       is present on WebGL 1. Although e.g. Firefox exposes it even though it
-       renders directly through GL drivers on Linux, so this may catch more
-       drivers than just ANGLE. */
+    /* If the unmasked renderer string is not available, try other means */
     /** @todo this (and below) incorrectly detects ANGLE on FF 92+, as it has
         the WEBGL_debug_renderer_info disabled */
-    #ifdef MAGNUM_TARGET_GLES2
-    else if(!isExtensionSupported<Extensions::WEBGL::debug_renderer_info>() && isExtensionSupported<Extensions::ANGLE::instanced_arrays>())
-    /* Or if WEBGL_debug_renderer_info isn't present and WEBGL_multi_draw
-       (which is based on ANGLE_multi_draw) is present on WebGL 2. This
-       extension is rather recent (appearing in browsers in late 2020) so it
-       may not catch all ANGLE implementations. */
-    #else
-    else if(!isExtensionSupported<Extensions::WEBGL::debug_renderer_info>() && isExtensionSupported<Extensions::WEBGL::multi_draw>())
-    #endif
-        *_detectedDrivers |= DetectedDriver::Angle;
-    /* Otherwise try to detect a D3D ANGLE backend by querying line width. It's
-       always exactly just 1 on D3D, usually more on GL, not sure about Metal.
-       so this is not a 100% match. Sources: http://stackoverflow.com/a/20149090
-       and http://webglreport.com */
-    else {
-        Range1Di range;
-        glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
-        if(range.min() == 1 && range.max() == 1 && vendor != "Internet Explorer"_s)
+    else if(!isExtensionSupported<Extensions::WEBGL::debug_renderer_info>()) {
+        /* Otherwise assume ANGLE is present if the ANGLE_instanced_arrays is
+           present on WebGL 1. Although e.g. Firefox exposes it even though it
+           renders directly through GL drivers on Linux, so this may catch more
+           drivers than just ANGLE. */
+        #ifdef MAGNUM_TARGET_GLES2
+        if(isExtensionSupported<Extensions::ANGLE::instanced_arrays>())
+        /* Or if WEBGL_multi_draw (which is based on ANGLE_multi_draw) is
+           present on WebGL 2. This extension is rather recent (appearing in
+           browsers in late 2020) so it may not catch all ANGLE
+           implementations. */
+        #else
+        if(isExtensionSupported<Extensions::WEBGL::multi_draw>())
+        #endif
             *_detectedDrivers |= DetectedDriver::Angle;
+        /* Otherwise try to detect a D3D ANGLE backend by querying line width.
+           It's always exactly just 1 on D3D, usually (but not always) more on
+           GL, not sure about Metal. So this is not a 100% match. Sources:
+           http://stackoverflow.com/a/20149090 and http://webglreport.com */
+        else {
+            Range1Di range;
+            glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
+            if(range.min() == 1 && range.max() == 1 && vendor != "Internet Explorer"_s) {
+            !Debug{};
+                *_detectedDrivers |= DetectedDriver::Angle;
+            }
+        }
     }
     #endif
 
