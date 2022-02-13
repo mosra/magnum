@@ -558,7 +558,6 @@ auto Context::detectedDriver() -> DetectedDrivers {
             Range1Di range;
             glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
             if(range.min() == 1 && range.max() == 1 && vendor != "Internet Explorer"_s) {
-            !Debug{};
                 *_detectedDrivers |= DetectedDriver::Angle;
             }
         }
