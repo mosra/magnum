@@ -561,6 +561,17 @@ jobs:
     - build:
         script: android-x86-vulkan.sh
 
+  ios-gles3:
+    executor: xcode-11_4
+    environment:
+      # STUPID yml interprets unquoted ON as a boolean
+      TARGET_GLES2: "OFF"
+    steps:
+    - install-base-macos:
+        extra: xcbeautify
+    - build:
+        script: ios-simulator-gles.sh
+
 workflows:
   version: 2
   build:
@@ -583,3 +594,4 @@ workflows:
     - android-x86-gles2
     - android-x86-gles3
     - android-x86-vulkan
+    - ios-gles3
