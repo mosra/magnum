@@ -113,7 +113,7 @@ required to follow them to the point.
     -   the `package/gentoo/` `*.ebuild` file
     -   the `package/homebrew/` `*.rb` file (watch out, Ruby!)
     -   all `package/ci/appveyor-*.bat` files (`^` is a line continuation)
-    -   all `package/ci/travis-*.sh` files (@c \\ is a line continuation)
+    -   all `package/ci/``*.sh` files (@c \\ is a line continuation)
 12. If the library has dependencies:
     -   make sure they are mentioned in the library documentation
     -   make sure they are mentioned in building and CMake docs
@@ -911,7 +911,7 @@ pointers on a class that needs them:
         used now
     -   update building docs to say what version is required now
     -   add an entry to the dependencies section in `doc/changelog.dox`
-    -   update `package/ci/travis.yml` to download a newer version, possibly
+    -   update `package/ci/``*.yml` to download a newer version, possibly
         removing 32-bit compat libraries
 3.  In case of a compiler:
     -   remove everything related to `CORRADE_GCCXY_COMPATIBILITY` of the old

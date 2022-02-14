@@ -23,7 +23,7 @@ set -ev
 wget https://github.com/linux-test-project/lcov/archive/v1.15.tar.gz
 tar -xzf v1.15.tar.gz
 
-# Keep in sync with PKBUILD-coverage and travis.yml, please
+# Keep in sync with PKBUILD-coverage and circleci.yml, please
 lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --directory . --capture --output-file coverage.info > /dev/null
 lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null
 lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/src/MagnumExternal/*" --output-file coverage.info > /dev/null

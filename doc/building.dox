@@ -1140,21 +1140,16 @@ more information.
 
 @subsection building-ci-circleci CircleCI
 
-In `package/ci/` there is a `circle.yml` file with Linux GCC 4.8, macOS, Linux
-desktop GLES2/GLES3, Emscripten WebGL1/WebGL2, AddressSanitizer and
-ThreadSanitizer configuration. Online at https://circleci.com/gh/mosra/magnum.
-
-@subsection building-ci-travis Travis
-
-In `package/ci/` there is a `travis.yml` file with iOS GLES2/GLES3, Emscripten
-WebGL1/WebGL2 and Android GLES2/GLES3 configuration. Online at
-https://travis-ci.com/mosra/magnum.
+In `package/ci/` there is a `circle.yml` file with Linux GCC 4.8, Linux ARM64,
+macOS, Linux desktop GLES2/GLES3, Emscripten WebGL1/WebGL2, AddressSanitizer,
+ThreadSanitizer, Android x86 GLES2/GLES3/Vulkan and iOS x86_64 GLES3
+configuration. Online at https://circleci.com/gh/mosra/magnum.
 
 @subsection building-ci-appveyor AppVeyor
 
 In `package/ci/` there is an `appveyor.yml` file with Windows desktop MSVC,
-MinGW, Windows desktop GLES2/GLES3 and Windows RT GLES2/GLES3 configuration.
-Online at https://ci.appveyor.com/project/mosra/magnum.
+clang-cl, MinGW, Windows desktop GLES2/GLES3 and Windows RT GLES3
+configuration. Online at https://ci.appveyor.com/project/mosra/magnum.
 
 @subsection building-ci-coverage Codecov.io
 

@@ -33,7 +33,7 @@ namespace Magnum {
 @m_footernavigation
 @m_keywords{HTML5 Emscripten}
 
-@todoc testing, gl tests, coverage, travis setup
+@todoc testing, gl tests, coverage, ci setup
 @todoc static plugins
 
 The following guide explains basic workflow of using

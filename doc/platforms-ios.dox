@@ -161,7 +161,7 @@ Official Apple documentation:
 @todoc alternatives - including *.a files manually in your xcode project
 @todoc move stuff from Sdl2App
 @todoc static plugins
-@todoc travis setup
+@todoc ci setup
 */
 
 }
