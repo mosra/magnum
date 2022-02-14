@@ -541,9 +541,15 @@ See also:
     inside a CMake subproject
 -   Suppressed a warning specific to MinGW GCC 8+ (see
     [mosra/magnum#474](https://github.com/mosra/magnum/issues/474))
--   Switched Emscripten build from macOS to Ubuntu + Docker for 2x faster build
-    times (see [mosra/magnum#350](https://github.com/mosra/magnum/issues/350))
--   Linux, Emscripten and macOS builds were migrated from Travis to Circle CI
+-   Attempted a switch of Emscripten build on Travis CI from macOS to Ubuntu +
+    Docker for 2x faster build times in a futile attempt to not use the
+    extremely expensive features of a no-longer-free service. Ultimately,
+    Travis banned everyone from using their CI and so all Linux, macOS,
+    Emscripten, Android and iOS builds were migrated from Travis to Circle CI,
+    together with adding also an explicit ARM64 build and an ability to test
+    GLES and Vulkan functionality on Android. See
+    [mosra/magnum#350](https://github.com/mosra/magnum/issues/350) and
+    [mosra/magnum#523](https://github.com/mosra/magnum/issues/523).
 -   `UseEmscripten` is no longer implicitly included on Emscripten as it's not
     needed for anything (see [mosra/magnum#490](https://github.com/mosra/magnum/issues/490))
 -   @ref Trade::ObjImporter "ObjImporter" uses exceptions internally and needs
