@@ -110,7 +110,7 @@ commands:
         background: true
     - run:
         name: Update apt and install base packages
-        # Compared to Docker images this needs sudo, for some reason
+        # Compared to Docker images this needs sudo
         command: |
           sudo apt update
           sudo apt install -y ninja-build
