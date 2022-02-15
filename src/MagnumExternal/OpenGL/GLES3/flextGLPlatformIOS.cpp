@@ -160,6 +160,7 @@
 #undef glTexStorage3DMultisampleOES
 #undef glFramebufferTextureMultiviewOVR
 
+#define GLES_SILENCE_DEPRECATION /* YES I KNOW, APPLE! FFS */
 #include <OpenGLES/ES3/glext.h>
 
 void flextGLInit(Magnum::GL::Context&) {

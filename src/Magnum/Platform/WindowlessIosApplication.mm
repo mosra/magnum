@@ -31,6 +31,7 @@
 #include "Magnum/GL/Version.h"
 #include "Magnum/Platform/GLContext.h"
 
+#define GLES_SILENCE_DEPRECATION /* YES I KNOW, APPLE! FFS */
 #import "EAGL.h"
 
 #if __has_feature(objc_arc)

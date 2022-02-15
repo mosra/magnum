@@ -162,6 +162,7 @@
 #undef glGenVertexArraysOES
 #undef glIsVertexArrayOES
 
+#define GLES_SILENCE_DEPRECATION /* YES I KNOW, APPLE! FFS */
 #include <OpenGLES/ES2/glext.h>
 
 void flextGLInit(Magnum::GL::Context&) {
