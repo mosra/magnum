@@ -53,8 +53,9 @@ namespace Magnum { namespace Trade {
 /**
 @brief Any image importer plugin
 
-Detects file type based on file extension, loads corresponding plugin and then
-tries to open the file with it. Supported formats:
+Detects file type based on file extension or a signature at the start of the
+file, loads corresponding plugin and then tries to open the file with it.
+Supported formats:
 
 -   Basis Universal (`*.basis` or data with corresponding signature), loaded
     with @ref BasisImporter or any other plugin that provides it
@@ -99,6 +100,7 @@ tries to open the file with it. Supported formats:
 
 Detecting file type through @ref openData() is supported only for a subset of
 formats that are marked as such in the list above.
+@ref ImporterFeature::FileCallback is supported as well.
 
 @section Trade-AnyImageImporter-usage Usage
 
@@ -135,10 +137,10 @@ information.
 
 On a call to @ref openFile() / @ref openData(), a file format is detected from
 the extension / file signature and a corresponding plugin is loaded. After
-that, flags set via @ref setFlags() and options set through
-@ref configuration() are propagated to the concrete implementation, with a
-warning emitted in case given option is not present in the default
-configuration of the target plugin.
+that, flags set via @ref setFlags(), file callbacks set via
+@ref setFileCallback() and options set through @ref configuration() are
+propagated to the concrete implementation. A warning is emitted in case an
+option set is not present in the default configuration of the target plugin.
 
 Calls to the @ref image1DCount() / @ref image2DCount() / @ref image3DCount(),
 @ref image1DLevelCount() / @ref image2DLevelCount() / @ref image3DLevelCount()

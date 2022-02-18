@@ -48,7 +48,9 @@ AnyImageImporter::AnyImageImporter(AnyImageImporter&&) noexcept = default;
 
 AnyImageImporter::~AnyImageImporter() = default;
 
-ImporterFeatures AnyImageImporter::doFeatures() const { return ImporterFeature::OpenData; }
+ImporterFeatures AnyImageImporter::doFeatures() const {
+    return ImporterFeature::OpenData|ImporterFeature::FileCallback;
+}
 
 bool AnyImageImporter::doIsOpened() const { return !!_in; }
 
@@ -138,9 +140,10 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
 
-    /* Instantiate the plugin, propagate flags */
+    /* Instantiate the plugin, propagate flags and the file callback, if set */
     Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     importer->setFlags(flags());
+    if(fileCallback()) importer->setFileCallback(fileCallback(), fileCallbackUserData());
 
     /* Propagate configuration */
     Magnum::Implementation::propagateConfiguration("Trade::AnyImageImporter::openFile():", {}, metadata->name(), configuration(), importer->configuration());
@@ -244,7 +247,10 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
 
-    /* Instantiate the plugin, propagate flags */
+    /* Instantiate the plugin, propagate flags. File callbacks not propagated
+       here as no image importers currently load any extra files. */
+    /** @todo revisit callbacks when that becomes true (such as loading XMP
+        files accompanying RAWs) */
     Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     importer->setFlags(flags());
 

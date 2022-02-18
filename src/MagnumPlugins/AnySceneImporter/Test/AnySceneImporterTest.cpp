@@ -30,6 +30,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Math/Vector3.h"
@@ -60,6 +61,7 @@ struct AnySceneImporterTest: TestSuite::Tester {
     void propagateFlags();
     void propagateConfiguration();
     void propagateConfigurationUnknown();
+    void propagateFileCallback();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
@@ -103,7 +105,8 @@ AnySceneImporterTest::AnySceneImporterTest() {
 
               &AnySceneImporterTest::propagateFlags,
               &AnySceneImporterTest::propagateConfiguration,
-              &AnySceneImporterTest::propagateConfigurationUnknown});
+              &AnySceneImporterTest::propagateConfigurationUnknown,
+              &AnySceneImporterTest::propagateFileCallback});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -269,6 +272,30 @@ void AnySceneImporterTest::propagateConfigurationUnknown() {
         "Trade::AnySceneImporter::openFile(): option noSuchOption not recognized by AssimpImporter\n"
         "Trade::AnySceneImporter::openFile(): option postprocess/notHere not recognized by AssimpImporter\n"
         "Trade::AnySceneImporter::openFile(): option postprocess/feh/noHereNotEither not recognized by AssimpImporter\n");
+}
+
+void AnySceneImporterTest::propagateFileCallback() {
+    if(!(_manager.loadState("ObjImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+
+    Containers::Array<char> storage;
+    importer->setFileCallback([](const std::string&, InputFileCallbackPolicy, Containers::Array<char>& storage) -> Containers::Optional<Containers::ArrayView<const char>> {
+        storage = Utility::Directory::read(OBJ_FILE);
+        return Containers::ArrayView<const char>{storage};
+    }, storage);
+
+    CORRADE_VERIFY(importer->openFile("you-know-where-the-file-is.obj"));
+    CORRADE_COMPARE(importer->meshCount(), 1);
+
+    /* Check only size, as it is good enough proof that it is working */
+    Containers::Optional<MeshData> mesh = importer->mesh(0);
+    CORRADE_VERIFY(mesh);
+    CORRADE_COMPARE(mesh->vertexCount(), 3);
+
+    importer->close();
+    CORRADE_VERIFY(!importer->isOpened());
 }
 
 }}}}

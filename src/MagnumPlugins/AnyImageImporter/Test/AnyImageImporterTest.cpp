@@ -60,6 +60,7 @@ struct AnyImageImporterTest: TestSuite::Tester {
     void propagateConfigurationUnknown();
     /* configuration propagation fully tested in AnySceneImporter, as there the
        plugins have configuration subgroups as well */
+    void propagateFileCallback();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
@@ -181,6 +182,8 @@ AnyImageImporterTest::AnyImageImporterTest() {
 
     addInstancedTests({&AnyImageImporterTest::propagateConfigurationUnknown},
         Containers::arraySize(Load2DData));
+
+    addTests({&AnyImageImporterTest::propagateFileCallback});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -403,6 +406,30 @@ void AnyImageImporterTest::propagateConfigurationUnknown() {
     else
         CORRADE_VERIFY(importer->openFile(data.filename));
     CORRADE_COMPARE(out.str(), Utility::formatString("Trade::AnyImageImporter::{}(): option noSuchOption not recognized by TgaImporter\n", data.messageFunctionName));
+}
+
+void AnyImageImporterTest::propagateFileCallback() {
+    if(!(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, cannot test");
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
+
+    Containers::Array<char> storage;
+    importer->setFileCallback([](const std::string&, InputFileCallbackPolicy, Containers::Array<char>& storage) -> Containers::Optional<Containers::ArrayView<const char>> {
+        storage = Utility::Directory::read(TGA_FILE);
+        return Containers::ArrayView<const char>{storage};
+    }, storage);
+
+    CORRADE_VERIFY(importer->openFile("you-know-where-the-file-is.tga"));
+    CORRADE_COMPARE(importer->image2DCount(), 1);
+
+    /* Check only size, as it is good enough proof that it is working */
+    Containers::Optional<ImageData2D> image = importer->image2D(0);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), Vector2i(3, 2));
+
+    importer->close();
+    CORRADE_VERIFY(!importer->isOpened());
 }
 
 }}}}

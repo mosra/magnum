@@ -61,7 +61,9 @@ AnySceneImporter::AnySceneImporter(PluginManager::AbstractManager& manager, cons
 
 AnySceneImporter::~AnySceneImporter() = default;
 
-ImporterFeatures AnySceneImporter::doFeatures() const { return {}; }
+ImporterFeatures AnySceneImporter::doFeatures() const {
+    return ImporterFeature::FileCallback;
+}
 
 bool AnySceneImporter::doIsOpened() const { return !!_in; }
 
@@ -152,9 +154,10 @@ void AnySceneImporter::doOpenFile(const std::string& filename) {
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
 
-    /* Instantiate the plugin, propagate flags */
+    /* Instantiate the plugin, propagate flags and the file callback, if set */
     Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     importer->setFlags(flags());
+    if(fileCallback()) importer->setFileCallback(fileCallback(), fileCallbackUserData());
 
     /* Propagate configuration */
     Magnum::Implementation::propagateConfiguration("Trade::AnySceneImporter::openFile():", {}, metadata->name(), configuration(), importer->configuration());

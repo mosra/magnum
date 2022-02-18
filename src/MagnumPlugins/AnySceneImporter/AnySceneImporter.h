@@ -95,7 +95,8 @@ tries to open the file with it. Supported formats:
     `ValveImporter`
 -   XGL (`*.xgl`, `*.zgl`), loaded with any plugin that provides `XglImporter`
 
-Only loading from files is supported.
+Only loading from files is supported as the filename is used to detect the
+format, however @ref ImporterFeature::FileCallback is supported as well.
 
 @section Trade-AnySceneImporter-usage Usage
 
@@ -131,10 +132,11 @@ information.
 @section Trade-AnySceneImporter-proxy Interface proxying and option propagation
 
 On a call to @ref openFile(), a file format is detected from the extension and
-a corresponding plugin is loaded. After that, flags set via @ref setFlags() and
-options set through @ref configuration() are propagated to the concrete
-implementation, with a warning emitted in case given option is not present in
-the default configuration of the target plugin.
+a corresponding plugin is loaded. After that, flags set via @ref setFlags(),
+file callbacks set via @ref setFileCallback() and options set through
+@ref configuration() are propagated to the concrete implementation. A warning
+is emitted in case an option set is not present in the default configuration of
+the target plugin.
 
 Calls to the @ref animation(), @ref scene(), @ref light(), @ref camera(),
 @ref object2D(), @ref object3D(), @ref skin2D(), @ref skin3D(), @ref mesh(),
