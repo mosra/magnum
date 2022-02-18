@@ -168,10 +168,10 @@ find_path(SDL2_INCLUDE_DIR
 if(CORRADE_TARGET_WINDOWS)
     find_file(SDL2_DLL_RELEASE
         NAMES SDL2.dll
-        PATH_SUFFIXES ${_SDL2_RUNTIME_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
+        PATH_SUFFIXES bin ${_SDL2_RUNTIME_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
     find_file(SDL2_DLL_DEBUG
         NAMES SDL2d.dll # not sure?
-        PATH_SUFFIXES ${_SDL2_RUNTIME_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
+        PATH_SUFFIXES bin ${_SDL2_RUNTIME_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
 endif()
 
 # (Static) macOS / iOS dependencies. On macOS these were mainly needed when
