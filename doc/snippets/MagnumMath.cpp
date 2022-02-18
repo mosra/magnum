@@ -132,6 +132,8 @@ UnsignedInt srgb = linear.toSrgbInt();      // 0x33b27f
 /* [matrix-vector-construct-color-colorspace] */
 static_cast<void>(fadedRed);
 static_cast<void>(linear);
+static_cast<void>(white);
+static_cast<void>(srgb);
 }
 
 {
@@ -353,6 +355,9 @@ Float zero = Math::dot(Vector3::xAxis(), Vector3::yAxis());
 Vector3 zAxis = Math::cross(Vector3::xAxis(), Vector3::yAxis());
 Deg ninety = Math::angle(Vector3::xAxis(), Vector3::zAxis());
 /* [matrix-vector-linear-algebra] */
+static_cast<void>(zero);
+static_cast<void>(zAxis);
+static_cast<void>(ninety);
 }
 
 {
