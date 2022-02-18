@@ -46,7 +46,7 @@
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /* For return types of Context::versionString() etc., which used to be a
-   std::string. Not ideal, but at least something. */
+   std::string. Not ideal for the return types, but at least something. */
 #include <Corrade/Containers/StringStl.h>
 #endif
 

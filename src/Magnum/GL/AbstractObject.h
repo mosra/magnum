@@ -46,10 +46,11 @@ namespace Implementation { struct DebugState; }
 @see @ref ObjectFlags, @ref Buffer::wrap(), @ref BufferTexture::wrap(),
     @ref CubeMapTexture::wrap(), @ref CubeMapTextureArray::wrap(),
     @ref Framebuffer::wrap(), @ref Mesh::wrap(),
-    @ref MultisampleTexture::wrap(), @ref PrimitiveQuery::wrap(),
-    @ref RectangleTexture::wrap(), @ref Renderbuffer::wrap(),
-    @ref SampleQuery::wrap(), @ref Texture::wrap(), @ref TextureArray::wrap(),
-    @ref TimeQuery::wrap(), @ref TransformFeedback::wrap()
+    @ref MultisampleTexture::wrap(), @ref PipelineStatisticsQuery::wrap(),
+    @ref PrimitiveQuery::wrap(), @ref RectangleTexture::wrap(),
+    @ref Renderbuffer::wrap(), @ref SampleQuery::wrap(), @ref Texture::wrap(),
+    @ref TextureArray::wrap(), @ref TimeQuery::wrap(),
+    @ref TransformFeedback::wrap()
 */
 enum class ObjectFlag: UnsignedByte {
     /**
@@ -69,10 +70,11 @@ enum class ObjectFlag: UnsignedByte {
 @see @ref Buffer::wrap(), @ref BufferTexture::wrap(),
     @ref CubeMapTexture::wrap(), @ref CubeMapTextureArray::wrap(),
     @ref Framebuffer::wrap(), @ref Mesh::wrap(),
-    @ref MultisampleTexture::wrap(), @ref PrimitiveQuery::wrap(),
-    @ref RectangleTexture::wrap(), @ref Renderbuffer::wrap(),
-    @ref SampleQuery::wrap(), @ref Texture::wrap(), @ref TextureArray::wrap(),
-    @ref TimeQuery::wrap(), @ref TransformFeedback::wrap()
+    @ref MultisampleTexture::wrap(), @ref PipelineStatisticsQuery::wrap(),
+    @ref PrimitiveQuery::wrap(), @ref RectangleTexture::wrap(),
+    @ref Renderbuffer::wrap(), @ref SampleQuery::wrap(), @ref Texture::wrap(),
+    @ref TextureArray::wrap(), @ref TimeQuery::wrap(),
+    @ref TransformFeedback::wrap()
 */
 typedef Containers::EnumSet<ObjectFlag> ObjectFlags;
 
