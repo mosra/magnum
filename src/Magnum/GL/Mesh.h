@@ -813,8 +813,8 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * If specifying more than one attribute, the function assumes that
          * the array is interleaved. Adding non-interleaved vertex buffer can
          * be done by specifying one attribute at a time with specific offset.
-         * Above example with weight, position, texture coordinate and normal
-         * arrays one after another (non-interleaved):
+         * Above example with the position and normal arrays one after another
+         * (non-interleaved):
          *
          * @snippet MagnumGL.cpp Mesh-addVertexBuffer3
          *
