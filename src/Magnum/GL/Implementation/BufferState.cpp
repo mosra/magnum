@@ -209,8 +209,7 @@ BufferState::BufferState(Context& context, Containers::StaticArrayView<Implement
 }
 
 void BufferState::reset() {
-    /* libc++ complains about decrementing enum value otherwise */
-    std::fill_n(bindings, std::size_t{TargetCount}, State::DisengagedBinding);
+    for(GLuint& i: bindings) i = State::DisengagedBinding;
 }
 
 }}}

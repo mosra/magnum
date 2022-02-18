@@ -548,9 +548,11 @@ TextureState::TextureState(Context& context,
 }
 
 void TextureState::reset() {
-    std::fill_n(bindings.begin(), bindings.size(), std::pair<GLenum, GLuint>{{}, State::DisengagedBinding});
+    for(std::pair<GLenum, GLuint>& i: bindings)
+        i = {{}, State::DisengagedBinding};
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    std::fill_n(imageBindings.begin(), imageBindings.size(), std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>{State::DisengagedBinding, 0, false, 0, 0});
+    for(std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>& i: imageBindings)
+        i = {State::DisengagedBinding, 0, false, 0, 0};
     #endif
 }
 
