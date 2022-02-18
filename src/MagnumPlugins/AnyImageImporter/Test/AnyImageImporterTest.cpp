@@ -65,68 +65,63 @@ struct AnyImageImporterTest: TestSuite::Tester {
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
 
-Containers::Optional<Containers::ArrayView<const char>> fileCallback(const std::string& filename, InputFileCallbackPolicy, Containers::Array<char>& storage) {
-    storage = Utility::Directory::read(filename);
-    return Containers::ArrayView<const char>{storage};
-}
-
 constexpr struct {
     const char* name;
     const char* filename;
-    Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
+    bool asData;
     const char* messageFunctionName;
 } Load1DData[]{
-    {"KTX2", KTX_1D_FILE, nullptr, "KtxImporter"},
-    {"KTX2 data", KTX_1D_FILE, fileCallback, "KtxImporter"},
+    {"KTX2", KTX_1D_FILE, false, "KtxImporter"},
+    {"KTX2 data", KTX_1D_FILE, true, "KtxImporter"},
 };
 
 constexpr struct {
     const char* name;
     const char* filename;
-    Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
+    bool asData;
     const char* messageFunctionName;
 } Load2DData[]{
-    {"TGA", TGA_FILE, nullptr, "openFile"},
-    {"TGA data", TGA_FILE, fileCallback, "openData"}
+    {"TGA", TGA_FILE, false, "openFile"},
+    {"TGA data", TGA_FILE, true, "openData"}
 };
 
 constexpr struct {
     const char* name;
     const char* filename;
-    Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
+    bool asData;
     const char* messageFunctionName;
 } Load3DData[]{
-    {"KTX2", KTX_3D_FILE, nullptr, "KtxImporter"},
-    {"KTX2 data", KTX_3D_FILE, fileCallback, "KtxImporter"},
+    {"KTX2", KTX_3D_FILE, false, "KtxImporter"},
+    {"KTX2 data", KTX_3D_FILE, true, "KtxImporter"},
 };
 
 constexpr struct {
     const char* name;
     const char* filename;
-    Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
+    bool asData;
     const char* plugin;
 } DetectData[]{
-    {"PNG", "rgb.png", nullptr, "PngImporter"},
-    {"PNG data", "rgb.png", fileCallback, "PngImporter"},
-    {"JPEG", "gray.jpg", nullptr, "JpegImporter"},
-    {"JPEG data", "gray.jpg", fileCallback, "JpegImporter"},
-    {"JPEG uppercase", "uppercase.JPG", nullptr, "JpegImporter"},
-    {"JPEG2000", "image.jp2", nullptr, "Jpeg2000Importer"},
-    {"KTX2", "image.ktx2", nullptr, "KtxImporter"},
+    {"PNG", "rgb.png", false, "PngImporter"},
+    {"PNG data", "rgb.png", true, "PngImporter"},
+    {"JPEG", "gray.jpg", false, "JpegImporter"},
+    {"JPEG data", "gray.jpg", true, "JpegImporter"},
+    {"JPEG uppercase", "uppercase.JPG", false, "JpegImporter"},
+    {"JPEG2000", "image.jp2", false, "Jpeg2000Importer"},
+    {"KTX2", "image.ktx2", false, "KtxImporter"},
     /** @todo KTX2 data once we have some */
-    {"HDR", "rgb.hdr", nullptr, "HdrImporter"},
-    {"HDR data", "rgb.hdr", fileCallback, "HdrImporter"},
-    {"ICO", "pngs.ico", nullptr, "IcoImporter"},
-    {"DDS", "rgba_dxt1.dds", nullptr, "DdsImporter"},
-    {"DDS data", "rgba_dxt1.dds", fileCallback, "DdsImporter"},
-    {"BMP", "rgb.bmp", nullptr, "BmpImporter"},
-    {"BMP data", "rgb.bmp", fileCallback, "BmpImporter"},
-    {"GIF", "image.gif", nullptr, "GifImporter"},
-    {"PSD", "image.psd", nullptr, "PsdImporter"},
-    {"TIFF", "image.tiff", nullptr, "TiffImporter"},
-    {"TIFF data", "image.tiff", fileCallback, "TiffImporter"},
-    {"Basis", "rgb.basis", nullptr, "BasisImporter"},
-    {"Basis data", "rgb.basis", fileCallback, "BasisImporter"}
+    {"HDR", "rgb.hdr", false, "HdrImporter"},
+    {"HDR data", "rgb.hdr", true, "HdrImporter"},
+    {"ICO", "pngs.ico", false, "IcoImporter"},
+    {"DDS", "rgba_dxt1.dds", false, "DdsImporter"},
+    {"DDS data", "rgba_dxt1.dds", true, "DdsImporter"},
+    {"BMP", "rgb.bmp", false, "BmpImporter"},
+    {"BMP data", "rgb.bmp", true, "BmpImporter"},
+    {"GIF", "image.gif", false, "GifImporter"},
+    {"PSD", "image.psd", false, "PsdImporter"},
+    {"TIFF", "image.tiff", false, "TiffImporter"},
+    {"TIFF data", "image.tiff", true, "TiffImporter"},
+    {"Basis", "rgb.basis", false, "BasisImporter"},
+    {"Basis data", "rgb.basis", true, "BasisImporter"}
     /* Not testing everything, just the most important ones */
 };
 
@@ -152,10 +147,10 @@ const struct {
 constexpr struct {
     const char* name;
     const char* filename;
-    Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
+    bool asData;
 } PropagateConfigurationData[]{
-    {"EXR", EXR_FILE, nullptr},
-    {"EXR data", EXR_FILE, fileCallback}
+    {"EXR", EXR_FILE, false},
+    {"EXR data", EXR_FILE, true}
 };
 
 AnyImageImporterTest::AnyImageImporterTest() {
@@ -213,10 +208,10 @@ void AnyImageImporterTest::load1D() {
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
 
-    Containers::Array<char> storage;
-    importer->setFileCallback(data.callback, storage);
-
-    CORRADE_VERIFY(importer->openFile(data.filename));
+    if(data.asData)
+        CORRADE_VERIFY(importer->openData(Utility::Directory::read(data.filename)));
+    else
+        CORRADE_VERIFY(importer->openFile(data.filename));
     CORRADE_COMPARE(importer->image1DCount(), 1);
 
     /* Check only size, as it is good enough proof that it is working */
@@ -234,10 +229,10 @@ void AnyImageImporterTest::load2D() {
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
 
-    Containers::Array<char> storage;
-    importer->setFileCallback(data.callback, storage);
-
-    CORRADE_VERIFY(importer->openFile(data.filename));
+    if(data.asData)
+        CORRADE_VERIFY(importer->openData(Utility::Directory::read(data.filename)));
+    else
+        CORRADE_VERIFY(importer->openFile(data.filename));
     CORRADE_COMPARE(importer->image2DCount(), 1);
 
     /* Check only size, as it is good enough proof that it is working */
@@ -264,10 +259,10 @@ void AnyImageImporterTest::load3D() {
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
 
-    Containers::Array<char> storage;
-    importer->setFileCallback(data.callback, storage);
-
-    CORRADE_VERIFY(importer->openFile(data.filename));
+    if(data.asData)
+        CORRADE_VERIFY(importer->openData(Utility::Directory::read(data.filename)));
+    else
+        CORRADE_VERIFY(importer->openFile(data.filename));
     CORRADE_COMPARE(importer->image3DCount(), 1);
 
     /* Check only size, as it is good enough proof that it is working */
@@ -281,20 +276,21 @@ void AnyImageImporterTest::detect() {
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
-
-    Containers::Array<char> storage;
-    importer->setFileCallback(data.callback, storage);
+    const std::string filename = Utility::Directory::join(TEST_FILE_DIR, data.filename);
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!importer->openFile(Utility::Directory::join(TEST_FILE_DIR, data.filename)));
+    if(data.asData)
+        CORRADE_VERIFY(!importer->openData(Utility::Directory::read(filename)));
+    else
+        CORRADE_VERIFY(!importer->openFile(filename));
     /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnyImageImporter::{1}(): cannot load the {0} plugin\n", data.plugin, data.callback ? "openData" : "openFile"));
+"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnyImageImporter::{1}(): cannot load the {0} plugin\n", data.plugin, data.asData ? "openData" : "openFile"));
     #else
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnyImageImporter::{1}(): cannot load the {0} plugin\n", data.plugin, data.callback ? "openData" : "openFile"));
+"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnyImageImporter::{1}(): cannot load the {0} plugin\n", data.plugin, data.asData ? "openData" : "openFile"));
     #endif
 }
 
@@ -341,13 +337,13 @@ void AnyImageImporterTest::propagateFlags() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
     importer->setFlags(ImporterFlag::Verbose);
 
-    Containers::Array<char> storage;
-    importer->setFileCallback(data.callback, storage);
-
     std::ostringstream out;
     {
         Debug redirectOutput{&out};
-        CORRADE_VERIFY(importer->openFile(data.filename));
+        if(data.asData)
+            CORRADE_VERIFY(importer->openData(Utility::Directory::read(data.filename)));
+        else
+            CORRADE_VERIFY(importer->openFile(data.filename));
         CORRADE_VERIFY(importer->image2D(0));
     }
     CORRADE_COMPARE(out.str(), Utility::formatString(
@@ -373,10 +369,10 @@ void AnyImageImporterTest::propagateConfiguration() {
     importer->configuration().setValue("layer", "left");
     importer->configuration().setValue("depth", "height");
 
-    Containers::Array<char> storage;
-    importer->setFileCallback(data.callback, storage);
-    CORRADE_VERIFY(importer->openFile(data.filename));
-
+    if(data.asData)
+        CORRADE_VERIFY(importer->openData(Utility::Directory::read(data.filename)));
+    else
+        CORRADE_VERIFY(importer->openFile(data.filename));
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
 
@@ -400,12 +396,12 @@ void AnyImageImporterTest::propagateConfigurationUnknown() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
     importer->configuration().setValue("noSuchOption", "isHere");
 
-    Containers::Array<char> storage;
-    importer->setFileCallback(data.callback, storage);
-
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(importer->openFile(data.filename));
+    if(data.asData)
+        CORRADE_VERIFY(importer->openData(Utility::Directory::read(data.filename)));
+    else
+        CORRADE_VERIFY(importer->openFile(data.filename));
     CORRADE_COMPARE(out.str(), Utility::formatString("Trade::AnyImageImporter::{}(): option noSuchOption not recognized by TgaImporter\n", data.messageFunctionName));
 }
 
