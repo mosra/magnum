@@ -29,7 +29,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/TweakableParser.h>
 #endif
@@ -299,10 +299,9 @@ template<class T> void AngleTest::tweakable() {
     auto&& data = TweakableData[testCaseInstanceId()];
     setTestCaseTemplateName(TweakableTraits<T>::name());
     setTestCaseDescription(data.name);
-    std::string input = Corrade::Utility::formatString(data.data, TweakableTraits<T>::literal());
     Corrade::Utility::TweakableState state;
     T result;
-    std::tie(state, result) = Corrade::Utility::TweakableParser<T>::parse(input);
+    std::tie(state, result) = Corrade::Utility::TweakableParser<T>::parse(Corrade::Utility::format(data.data, TweakableTraits<T>::literal()));
     CORRADE_COMPARE(state, Corrade::Utility::TweakableState::Success);
     CORRADE_COMPARE(result, T(typename T::Type(data.result)));
 }
@@ -311,12 +310,11 @@ template<class T> void AngleTest::tweakableError() {
     auto&& data = TweakableErrorData[testCaseInstanceId()];
     setTestCaseTemplateName(TweakableTraits<T>::name());
     setTestCaseDescription(data.name);
-    std::string input = Corrade::Utility::formatString(data.data, TweakableTraits<T>::literal());
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
-    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<T>::parse(input).first;
+    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<T>::parse(Corrade::Utility::format(data.data, TweakableTraits<T>::literal())).first;
     CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, TweakableTraits<T>::literal()));
     CORRADE_COMPARE(state, data.state);
 }

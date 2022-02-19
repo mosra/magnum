@@ -29,8 +29,9 @@
 #include <sstream>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Math/Functions.h"
@@ -294,7 +295,7 @@ namespace {
 
 void printValue(Utility::Debug& out, const Double mean, const Double divisor, const char* const unitPrefix, const char* const units) {
     out << Debug::boldColor(Debug::Color::Green)
-        << Utility::formatString("{:.2f}", mean/divisor) << Debug::resetColor
+        << Utility::format("{:.2f}", mean/divisor) << Debug::resetColor
         << Debug::nospace << unitPrefix << Debug::nospace << units;
 }
 

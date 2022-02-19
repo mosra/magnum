@@ -263,7 +263,7 @@ void AnyConverterTest::validateFile() {
 
     /* Make it print a warning so we know it's doing something */
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
-        std::make_pair(true, Utility::formatString("WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
+        std::make_pair(true, Utility::format("WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
 }
 
 void AnyConverterTest::validateFilePluginLoadFailed() {
@@ -341,7 +341,7 @@ void AnyConverterTest::validateFilePropagateFlags() {
     std::ostringstream out;
     Debug redirectDebug{&out};
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
-        std::make_pair(false, Utility::formatString("WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
+        std::make_pair(false, Utility::format("WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::validateFile(): using GlslShaderConverter (provided by GlslangShaderConverter)\n");
 }
@@ -416,7 +416,7 @@ void AnyConverterTest::validateFilePropagatePreprocess() {
     });
 
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
-        std::make_pair(true, Utility::formatString("WARNING: {}:10: 'different__but_also_wrong' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
+        std::make_pair(true, Utility::format("WARNING: {}:10: 'different__but_also_wrong' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
 }
 
 void AnyConverterTest::validateFilePropagateConfiguration() {
@@ -434,7 +434,7 @@ void AnyConverterTest::validateFilePropagateConfiguration() {
 
     {
         CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
-            std::make_pair(false, Utility::formatString("ERROR: {}:2: '#version' : must occur first in shader \nERROR: 1 compilation errors.  No code generated.", filename)));
+            std::make_pair(false, Utility::format("ERROR: {}:2: '#version' : must occur first in shader \nERROR: 1 compilation errors.  No code generated.", filename)));
     } {
         converter->configuration().setValue("permissive", true);
         /* Lol stupid thing, apparently it has two differently worded messages
@@ -667,7 +667,7 @@ void AnyConverterTest::validateDataPropagateConfiguration() {
         /* Lol stupid thing, apparently it has two differently worded messages
            for the same thing? Dumpster fire. */
         CORRADE_COMPARE(converter->validateData(Stage::Fragment, Utility::Directory::read(filename)),
-            std::make_pair(true, Utility::formatString("WARNING: 0:0: '#version' : Illegal to have non-comment, non-whitespace tokens before #version")));
+            std::make_pair(true, Utility::format("WARNING: 0:0: '#version' : Illegal to have non-comment, non-whitespace tokens before #version")));
     }
 }
 

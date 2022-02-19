@@ -31,7 +31,7 @@
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/PixelFormat.h"
@@ -730,7 +730,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             if(!info.name.empty()) d << info.name;
             d << Debug::newline;
             d << "    bound:" << info.mappingBound << "objects," << info.mappingType
-                << "(" << Debug::nospace << Utility::formatString("{:.1f}", info.dataSize/1024.0f) << "kB)";
+                << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB)";
 
             for(const SceneFieldInfo& field: info.fields) {
                 d << Debug::newline << " " << field.name;
@@ -740,7 +740,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 }
                 d << "@" << field.type;
                 if(field.arraySize)
-                    d << Debug::nospace << Utility::formatString("[{}]", field.arraySize);
+                    d << Debug::nospace << Utility::format("[{}]", field.arraySize);
                 d << Debug::nospace << "," << field.size << "entries";
                 if(field.flags)
                     d << Debug::newline << "   " << field.flags;
@@ -782,7 +782,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             /* Print reference count only if there actually are scenes and they
                were parsed, otherwise this information is useless */
             if(skinReferenceCount)
-                d << Utility::formatString("(referenced by {} objects)", skinReferenceCount[info.skin]);
+                d << Utility::format("(referenced by {} objects)", skinReferenceCount[info.skin]);
 
             d << Debug::nospace << ":";
             if(!info.name.empty()) d << info.name;
@@ -797,7 +797,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             /* Print reference count only if there actually are scenes and they
                were parsed, otherwise this information is useless */
             if(lightReferenceCount)
-                d << Utility::formatString("(referenced by {} objects)", lightReferenceCount[info.light]);
+                d << Utility::format("(referenced by {} objects)", lightReferenceCount[info.light]);
 
             d << Debug::nospace << ":";
             if(!info.name.empty()) d << info.name;
@@ -818,7 +818,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             /* Print reference count only if there actually are scenes and they
                were parsed, otherwise this information is useless */
             if(materialReferenceCount)
-                d << Utility::formatString("(referenced by {} objects)", materialReferenceCount[info.material]);
+                d << Utility::format("(referenced by {} objects)", materialReferenceCount[info.material]);
 
             d << Debug::nospace << ":";
             if(!info.name.empty()) d << info.name;
@@ -903,7 +903,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 /* Print reference count only if there actually are scenes and
                    they were parsed, otherwise this information is useless */
                 if(meshReferenceCount)
-                    d << Utility::formatString("(referenced by {} objects)", meshReferenceCount[info.mesh]);
+                    d << Utility::format("(referenced by {} objects)", meshReferenceCount[info.mesh]);
 
                 d << Debug::nospace << ":";
                 if(!info.name.empty()) d << info.name;
@@ -912,12 +912,12 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             d << "  Level" << info.level << Debug::nospace << ":"
                 << info.primitive << Debug::nospace << "," << info.vertexCount
                 << "vertices (" << Debug::nospace
-                << Utility::formatString("{:.1f}", info.vertexDataSize/1024.0f)
+                << Utility::format("{:.1f}", info.vertexDataSize/1024.0f)
                 << "kB)";
             if(info.indexType != MeshIndexType{}) {
                 d << Debug::newline << "   " << info.indexCount << "indices, offset" << info.indexOffset << "@"
                     << info.indexType << Debug::nospace << ", stride" << info.indexStride << "(" << Debug::nospace
-                    << Utility::formatString("{:.1f}", info.indexDataSize/1024.0f)
+                    << Utility::format("{:.1f}", info.indexDataSize/1024.0f)
                     << "kB)";
                 if(!info.indexBounds.empty())
                     d << Debug::newline << "      bounds:" << info.indexBounds;
@@ -932,7 +932,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 }
                 d << "@" << attribute.format;
                 if(attribute.arraySize)
-                    d << Debug::nospace << Utility::formatString("[{}]", attribute.arraySize);
+                    d << Debug::nospace << Utility::format("[{}]", attribute.arraySize);
                 d << Debug::nospace << ", stride"
                     << attribute.stride;
                 if(!attribute.bounds.empty())
@@ -947,7 +947,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             /* Print reference count only if there actually are materials and
                they were parsed, otherwise this information is useless */
             if(textureReferenceCount)
-                d << Utility::formatString("(referenced by {} material attributes)", textureReferenceCount[info.texture]);
+                d << Utility::format("(referenced by {} material attributes)", textureReferenceCount[info.texture]);
 
             d << Debug::nospace << ":";
             if(!info.name.empty()) d << info.name;
@@ -971,11 +971,11 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                    and they were parsed otherwise this information is
                    useless */
                 if(info.size.z() && image3DReferenceCount)
-                    d << Utility::formatString("(referenced by {} textures)", image3DReferenceCount[info.image]);
+                    d << Utility::format("(referenced by {} textures)", image3DReferenceCount[info.image]);
                 else if(info.size.y() && image2DReferenceCount)
-                    d << Utility::formatString("(referenced by {} textures)", image2DReferenceCount[info.image]);
+                    d << Utility::format("(referenced by {} textures)", image2DReferenceCount[info.image]);
                 else if(image1DReferenceCount)
-                    d << Utility::formatString("(referenced by {} textures)", image1DReferenceCount[info.image]);
+                    d << Utility::format("(referenced by {} textures)", image1DReferenceCount[info.image]);
 
                 d << Debug::nospace << ":";
                 if(!info.name.empty()) d << info.name;
