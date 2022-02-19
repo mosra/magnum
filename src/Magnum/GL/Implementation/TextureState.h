@@ -25,8 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <utility> /* std::pair */
 #include <Corrade/Containers/ArrayView.h>
-#include <Corrade/Utility/StlForwardTuple.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
@@ -51,10 +51,32 @@
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct TextureState {
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    struct ImageBinding {
+        GLuint id;
+        GLint level;
+        GLboolean layered;
+        GLint layer;
+        GLenum access;
+
+        /* Used inside AbstractTexture to check if the state changed */
+        bool operator==(const ImageBinding& other) {
+            return other.id == id &&
+                   other.level == level &&
+                   other.layered == layered &&
+                   other.layer == layer &&
+                   other.access == access;
+        }
+        bool operator!=(const ImageBinding& other) {
+            return !operator==(other);
+        }
+    };
+    #endif
+
     explicit TextureState(Context& context,
         Containers::ArrayView<std::pair<GLenum, GLuint>> bindings,
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Containers::ArrayView<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings,
+        Containers::ArrayView<ImageBinding> imageBindings,
         #endif
         Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
 
@@ -171,7 +193,7 @@ struct TextureState {
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /* Texture object ID, level, layered, layer, access */
-    Containers::ArrayView<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings;
+    Containers::ArrayView<ImageBinding> imageBindings;
     #endif
 };
 

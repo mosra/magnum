@@ -25,7 +25,6 @@
 
 #include "State.h"
 
-#include <tuple>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Utility/Assert.h>
 
@@ -86,7 +85,7 @@ std::pair<Containers::ArrayTuple, State&> State::allocate(Context& context, std:
     Containers::ArrayView<TextureState> textureStateView;
     Containers::ArrayView<std::pair<GLenum, GLuint>> textureBindings;
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    Containers::ArrayView<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings;
+    Containers::ArrayView<TextureState::ImageBinding> imageBindings;
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     Containers::ArrayView<TransformFeedbackState> transformFeedbackStateView;

@@ -25,7 +25,6 @@
 
 #include "TextureState.h"
 
-#include <tuple>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 
@@ -46,7 +45,7 @@ using namespace Containers::Literals;
 TextureState::TextureState(Context& context,
     Containers::ArrayView<std::pair<GLenum, GLuint>> bindings,
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    Containers::ArrayView<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings,
+    Containers::ArrayView<ImageBinding> imageBindings,
     #endif
     Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions):
     maxSize{},
@@ -551,8 +550,8 @@ void TextureState::reset() {
     for(std::pair<GLenum, GLuint>& i: bindings)
         i = {{}, State::DisengagedBinding};
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    for(std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>& i: imageBindings)
-        i = std::make_tuple(State::DisengagedBinding, 0, false, 0, 0);
+    for(ImageBinding& i: imageBindings)
+        i = {State::DisengagedBinding, 0, false, 0, 0};
     #endif
 }
 

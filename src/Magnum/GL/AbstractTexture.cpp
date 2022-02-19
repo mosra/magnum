@@ -25,7 +25,6 @@
 
 #include "AbstractTexture.h"
 
-#include <tuple>
 #include <Corrade/Containers/Array.h>
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
@@ -245,7 +244,7 @@ AbstractTexture::~AbstractTexture() {
     /* Remove all image bindings */
     for(auto& binding: Context::current().state().texture.imageBindings) {
         /* MSVC 2015 needs the parentheses around */
-        if(std::get<0>(binding) == _id) binding = {};
+        if(binding.id == _id) binding = {};
     }
     #endif
 
@@ -281,10 +280,10 @@ void AbstractTexture::unbindImage(const Int imageUnit) {
     Implementation::TextureState& textureState = Context::current().state().texture;
 
     /* If already unbound in given image unit, nothing to do */
-    if(std::get<0>(textureState.imageBindings[imageUnit]) == 0) return;
+    if(textureState.imageBindings[imageUnit].id == 0) return;
 
     /* Update state tracker, bind the texture to the unit */
-    std::get<0>(textureState.imageBindings[imageUnit]) = 0;
+    textureState.imageBindings[imageUnit].id = 0;
     glBindImageTexture(imageUnit, 0, 0, false, 0, GL_READ_ONLY, GL_RGBA8);
 }
 
@@ -297,15 +296,15 @@ void AbstractTexture::bindImages(const Int firstImageUnit, Containers::ArrayView
     Containers::Array<GLuint> ids{textures ? textures.size() : 0};
     bool different = false;
     for(std::size_t i = 0; i != textures.size(); ++i) {
-        const std::tuple<GLuint, GLint, GLboolean, GLint, GLenum> state = textures && textures[i] ?
-            std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>(textures[i]->_id, 0, true, 0, GL_READ_WRITE) :
-            std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>(0, 0, false, 0, GL_READ_ONLY);
+        const Implementation::TextureState::ImageBinding state = textures && textures[i] ?
+            Implementation::TextureState::ImageBinding{textures[i]->_id, 0, true, 0, GL_READ_WRITE} :
+            Implementation::TextureState::ImageBinding{0, 0, false, 0, GL_READ_ONLY};
 
         if(textures) {
             if(textures[i]) {
                 textures[i]->createIfNotAlready();
             }
-            ids[i] = std::get<0>(state);
+            ids[i] = state.id;
         }
 
         if(textureState.imageBindings[firstImageUnit + i] != state) {
@@ -321,7 +320,7 @@ void AbstractTexture::bindImages(const Int firstImageUnit, Containers::ArrayView
 
 void AbstractTexture::bindImageInternal(const Int imageUnit, const Int level, const bool layered, const Int layer, const ImageAccess access, const ImageFormat format) {
     Implementation::TextureState& textureState = Context::current().state().texture;
-    const std::tuple<GLuint, GLint, GLboolean, GLint, GLenum> state{_id, level, layered, layer, GLenum(access)};
+    const Implementation::TextureState::ImageBinding state{_id, level, layered, layer, GLenum(access)};
 
     /* If already bound in given texture unit, nothing to do */
     if(textureState.imageBindings[imageUnit] == state) return;
