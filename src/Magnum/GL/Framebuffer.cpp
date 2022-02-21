@@ -73,6 +73,9 @@ const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::DepthStencil 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 const Framebuffer::InvalidationAttachment Framebuffer::InvalidationAttachment::Depth = Framebuffer::InvalidationAttachment(GL_DEPTH_ATTACHMENT);
 const Framebuffer::InvalidationAttachment Framebuffer::InvalidationAttachment::Stencil = Framebuffer::InvalidationAttachment(GL_STENCIL_ATTACHMENT);
+#ifndef MAGNUM_TARGET_GLES2
+const Framebuffer::InvalidationAttachment Framebuffer::InvalidationAttachment::DepthStencil = Framebuffer::InvalidationAttachment(GL_DEPTH_STENCIL_ATTACHMENT);
+#endif
 #endif
 
 Int Framebuffer::maxColorAttachments() {

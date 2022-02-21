@@ -256,6 +256,21 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
                  */
                 static const InvalidationAttachment Stencil;
 
+                #ifndef MAGNUM_TARGET_GLES2
+                /**
+                 * @brief Invalidate both depth and stencil buffer
+                 * @m_since_latest
+                 *
+                 * @m_keywords{GL_DEPTH_STENCIL_ATTACHMENT}
+                 * @requires_gles30 Combined depth and stencil attachment is
+                 *      not available in OpenGL ES 2.0. Invalidate both
+                 *      @ref InvalidationAttachment::Depth and
+                 *      @ref InvalidationAttachment::Stencil instead.
+                 * @todo Support this in ES2 (invalidate both depth and stencil internally)
+                 */
+                static const InvalidationAttachment DepthStencil;
+                #endif
+
                 /** @brief Invalidate color buffer */
                 constexpr /*implicit*/ InvalidationAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
 
