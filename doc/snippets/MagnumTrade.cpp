@@ -190,6 +190,24 @@ importer->openFile("scene.gltf"); // memory-maps all files
 }
 #endif
 
+#if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
+{
+Containers::Pointer<Trade::AbstractImporter> importer;
+/* [AbstractImporter-usage-zerocopy] */
+importer->addFlags(Trade::ImporterFlag::ZeroCopy);
+
+Containers::Array<const char, Utility::Directory::MapDeleter> memory;
+if(!(memory = Utility::Directory::mapRead("huge-file.gltf")) ||
+   !importer->openMemory(memory))
+    Fatal{} << "Can't memory-map and open the file";
+
+/* Depending on the importer, the actual vertex/index data will get paged from
+   the above file into the physical memory only once you actually access them */
+Containers::Optional<Trade::MeshData> mesh = importer->mesh("huge-cathedral");
+/* [AbstractImporter-usage-zerocopy] */
+}
+#endif
+
 {
 Containers::Pointer<Trade::AbstractImporter> importer;
 /* [AbstractImporter-setFileCallback] */

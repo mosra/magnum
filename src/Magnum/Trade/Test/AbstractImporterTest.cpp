@@ -31,6 +31,7 @@
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/FileCallback.h"
@@ -74,6 +75,7 @@ struct AbstractImporterTest: TestSuite::Tester {
 
     void setFlags();
     void setFlagsFileOpened();
+    void setFlagsFeatureNotSupported();
     void setFlagsNotImplemented();
 
     void openData();
@@ -342,6 +344,23 @@ struct AbstractImporterTest: TestSuite::Tester {
     void debugFlags();
 };
 
+const struct {
+    const char* message;
+    ImporterFlag flag;
+    ImporterFeatures features;
+} SetFlagsFeatureNotSupportedData[] {
+    #define _c(name, enumName) {"zero-copy " name, ImporterFlag::ForceZeroCopy ## enumName, ~ImporterFeature::ZeroCopy ## enumName}
+    _c("animations", Animations),
+    _c("images", Images),
+    _c("material attributes", MaterialAttributes),
+    _c("material layers", MaterialLayers),
+    _c("mesh indices", MeshIndices),
+    _c("mesh vertices", MeshVertices),
+    _c("skin joints", SkinJoints),
+    _c("skin inverse bind matrices", SkinInverseBindMatrices)
+    #undef _c
+};
+
 constexpr struct {
     const char* name;
     bool checkMessage;
@@ -357,8 +376,12 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::constructWithPluginManagerReference,
 
               &AbstractImporterTest::setFlags,
-              &AbstractImporterTest::setFlagsFileOpened,
-              &AbstractImporterTest::setFlagsNotImplemented,
+              &AbstractImporterTest::setFlagsFileOpened});
+
+    addInstancedTests({&AbstractImporterTest::setFlagsFeatureNotSupported},
+        Containers::arraySize(SetFlagsFeatureNotSupportedData));
+
+    addTests({&AbstractImporterTest::setFlagsNotImplemented,
 
               &AbstractImporterTest::openData,
               #ifdef MAGNUM_BUILD_DEPRECATED
@@ -681,14 +704,13 @@ void AbstractImporterTest::setFlags() {
     CORRADE_COMPARE(importer.flags(), ImporterFlag::Verbose);
     CORRADE_COMPARE(importer._flags, ImporterFlag::Verbose);
 
-    /** @todo use a real flag when we have more than one */
-    importer.addFlags(ImporterFlag(4));
-    CORRADE_COMPARE(importer.flags(), ImporterFlag::Verbose|ImporterFlag(4));
-    CORRADE_COMPARE(importer._flags, ImporterFlag::Verbose|ImporterFlag(4));
+    importer.addFlags(ImporterFlag::ZeroCopy);
+    CORRADE_COMPARE(importer.flags(), ImporterFlag::Verbose|ImporterFlag::ZeroCopy);
+    CORRADE_COMPARE(importer._flags, ImporterFlag::Verbose|ImporterFlag::ZeroCopy);
 
     importer.clearFlags(ImporterFlag::Verbose);
-    CORRADE_COMPARE(importer.flags(), ImporterFlag(4));
-    CORRADE_COMPARE(importer._flags, ImporterFlag(4));
+    CORRADE_COMPARE(importer.flags(), ImporterFlag::ZeroCopy);
+    CORRADE_COMPARE(importer._flags, ImporterFlag::ZeroCopy);
 }
 
 void AbstractImporterTest::setFlagsFileOpened() {
@@ -712,6 +734,32 @@ void AbstractImporterTest::setFlagsFileOpened() {
         /* These all call into setFlags(), so the same assert is reused */
         "Trade::AbstractImporter::setFlags(): can't be set while a file is opened\n"
         "Trade::AbstractImporter::setFlags(): can't be set while a file is opened\n");
+}
+
+void AbstractImporterTest::setFlagsFeatureNotSupported() {
+    auto&& data = SetFlagsFeatureNotSupportedData[testCaseInstanceId()];
+    setTestCaseDescription(data.message);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct Importer: AbstractImporter {
+        explicit Importer(ImporterFeatures features): _features{features} {}
+
+        ImporterFeatures doFeatures() const override { return _features; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        ImporterFeatures _features;
+    } importer{data.features};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.setFlags(data.flag);
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Trade::AbstractImporter::setFlags(): importer doesn't support {}\n",
+        data.message));
 }
 
 void AbstractImporterTest::setFlagsNotImplemented() {
@@ -7224,8 +7272,8 @@ void AbstractImporterTest::importerStateNoFile() {
 void AbstractImporterTest::debugFeature() {
     std::ostringstream out;
 
-    Debug{&out} << ImporterFeature::OpenData << ImporterFeature(0xf0);
-    CORRADE_COMPARE(out.str(), "Trade::ImporterFeature::OpenData Trade::ImporterFeature(0xf0)\n");
+    Debug{&out} << ImporterFeature::OpenData << ImporterFeature(0xfefe);
+    CORRADE_COMPARE(out.str(), "Trade::ImporterFeature::OpenData Trade::ImporterFeature(0xfefe)\n");
 }
 
 void AbstractImporterTest::debugFeatures() {
@@ -7238,15 +7286,15 @@ void AbstractImporterTest::debugFeatures() {
 void AbstractImporterTest::debugFlag() {
     std::ostringstream out;
 
-    Debug{&out} << ImporterFlag::Verbose << ImporterFlag(0xf0);
-    CORRADE_COMPARE(out.str(), "Trade::ImporterFlag::Verbose Trade::ImporterFlag(0xf0)\n");
+    Debug{&out} << ImporterFlag::Verbose << ImporterFlag(0xbaba);
+    CORRADE_COMPARE(out.str(), "Trade::ImporterFlag::Verbose Trade::ImporterFlag(0xbaba)\n");
 }
 
 void AbstractImporterTest::debugFlags() {
     std::ostringstream out;
 
-    Debug{&out} << (ImporterFlag::Verbose|ImporterFlag(0xf0)) << ImporterFlags{};
-    CORRADE_COMPARE(out.str(), "Trade::ImporterFlag::Verbose|Trade::ImporterFlag(0xf0) Trade::ImporterFlags{}\n");
+    Debug{&out} << (ImporterFlag::Verbose|ImporterFlag(0xf000)) << ImporterFlags{};
+    CORRADE_COMPARE(out.str(), "Trade::ImporterFlag::Verbose|Trade::ImporterFlag(0xf000) Trade::ImporterFlags{}\n");
 }
 
 }}}}

@@ -156,7 +156,7 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
     _in = std::move(importer);
 }
 
-void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
+void AnyImageImporter::doOpenData(Containers::Array<char>&& data, const DataFlags dataFlags) {
     using namespace Containers::Literals;
 
     CORRADE_INTERNAL_ASSERT(manager());
@@ -259,7 +259,7 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */
-    if(!importer->openData(data)) return;
+    if(!importer->openData(std::move(data), dataFlags)) return;
 
     /* Success, save the instance */
     _in = std::move(importer);
