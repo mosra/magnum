@@ -126,6 +126,9 @@ struct FramebufferGLTest: OpenGLTester {
     void invalidate();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
+    void invalidateCombinedDepthStencil();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     void invalidateSub();
     #endif
     void read();
@@ -267,6 +270,9 @@ FramebufferGLTest::FramebufferGLTest() {
               #endif
               #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
               &FramebufferGLTest::invalidate,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES2
+              &FramebufferGLTest::invalidateCombinedDepthStencil,
               #endif
               #ifndef MAGNUM_TARGET_GLES2
               &FramebufferGLTest::invalidateSub,
@@ -1398,6 +1404,40 @@ void FramebufferGLTest::invalidate() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     framebuffer.invalidate({Framebuffer::InvalidationAttachment::Depth, Framebuffer::ColorAttachment(0)});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Invalidating combined bits should work as well even if there's just stencil alone */
+    framebuffer.invalidate({Framebuffer::InvalidationAttachment::DepthStencil});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    #endif
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void FramebufferGLTest::invalidateCombinedDepthStencil() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
+    #endif
+
+    Renderbuffer depthStencil;
+    depthStencil.setStorage(RenderbufferFormat::Depth24Stencil8, Vector2i(128));
+
+    Framebuffer framebuffer({{}, Vector2i(128)});
+    framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    framebuffer.invalidate({Framebuffer::InvalidationAttachment::DepthStencil});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Invalidating separate bits should work as well */
+    framebuffer.invalidate({Framebuffer::InvalidationAttachment::Depth,
+                            Framebuffer::InvalidationAttachment::Stencil});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
