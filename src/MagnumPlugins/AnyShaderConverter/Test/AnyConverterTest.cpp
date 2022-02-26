@@ -707,8 +707,8 @@ void AnyConverterTest::convertFileToFile() {
 
     const std::string inputFilename = Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl");
     const std::string outputFilename = Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv");
-    Utility::Directory::rm(outputFilename);
-    CORRADE_VERIFY(!Utility::Directory::exists(outputFilename));
+    if(Utility::Directory::exists(outputFilename))
+        CORRADE_VERIFY(Utility::Directory::rm(outputFilename));
 
     /* Make it print a warning so we know it's doing something */
     std::ostringstream out;
@@ -936,8 +936,8 @@ void AnyConverterTest::convertFileToFilePropagatePreprocess() {
 
     const std::string inputFilename = Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl");
     const std::string outputFilename = Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv");
-    Utility::Directory::rm(outputFilename);
-    CORRADE_VERIFY(!Utility::Directory::exists(outputFilename));
+    if(Utility::Directory::exists(outputFilename))
+        CORRADE_VERIFY(Utility::Directory::rm(outputFilename));
 
     /* Make it print a warning so we know it's doing something */
     std::ostringstream out;

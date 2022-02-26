@@ -1019,8 +1019,8 @@ void AbstractConverterTest::convertDataToFileThroughData() {
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     const char data[] = {'S', 'P', 'I', 'R', 'V'};
     CORRADE_VERIFY(converter.convertDataToFile({}, data, filename));
@@ -1044,8 +1044,8 @@ void AbstractConverterTest::convertDataToFileThroughDataFailed() {
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
@@ -1132,8 +1132,8 @@ void AbstractConverterTest::convertFileToFile() {
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     CORRADE_VERIFY(converter.convertFileToFile({}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat"), filename));
     CORRADE_COMPARE_AS(filename, "VS",
@@ -1156,8 +1156,8 @@ void AbstractConverterTest::convertFileToFileThroughData() {
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     CORRADE_VERIFY(converter.convertFileToFile({}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat"), filename));
     CORRADE_COMPARE_AS(filename, "VS",
@@ -1200,8 +1200,8 @@ void AbstractConverterTest::convertFileToFileThroughDataFailed() {
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
@@ -1539,8 +1539,8 @@ void AbstractConverterTest::linkDataToFileThroughData() {
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     CORRADE_VERIFY(converter.linkDataToFile({
         {Stage::Vertex, Containers::arrayView({'V', 'E'})},
@@ -1566,8 +1566,8 @@ void AbstractConverterTest::linkDataToFileThroughDataFailed() {
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
@@ -1703,8 +1703,8 @@ void AbstractConverterTest::linkFilesToFile() {
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     CORRADE_VERIFY(converter.linkFilesToFile({
         {Stage::Vertex, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "another.dat")},
@@ -1734,8 +1734,8 @@ void AbstractConverterTest::linkFilesToFileThroughData() {
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     CORRADE_VERIFY(converter.linkFilesToFile({
         {Stage::Vertex, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "another.dat")},
@@ -1784,8 +1784,8 @@ void AbstractConverterTest::linkFilesToFileThroughDataFailed() {
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
@@ -2474,8 +2474,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileThroughBaseImpl
 
     /* Remove previous file, if any */
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     CORRADE_VERIFY(converter.convertFileToFile(Stage::Geometry, "file.dat", filename));
     CORRADE_VERIFY(converter.convertFileToFileCalled);
@@ -2555,8 +2555,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsData() {
 
     /* Remove previous file, if any */
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     CORRADE_VERIFY(converter.convertFileToFile(Stage::RayAnyHit, "file.dat", filename));
     CORRADE_VERIFY(state.loaded);
@@ -2909,8 +2909,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplem
 
     /* Remove previous file, if any */
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     CORRADE_VERIFY(converter.linkFilesToFile({
         {Stage::Vertex, "another.dat"},
@@ -3032,8 +3032,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsData() {
 
     /* Remove previous file, if any */
     const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     CORRADE_VERIFY(converter.linkFilesToFile({
         {Stage::Vertex, "another.dat"},

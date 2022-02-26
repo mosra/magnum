@@ -452,8 +452,8 @@ void AbstractSceneConverterTest::convertMeshToFile() {
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     CORRADE_VERIFY(converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xef}, filename));
     CORRADE_COMPARE_AS(filename,
@@ -472,8 +472,8 @@ void AbstractSceneConverterTest::convertMeshToFileThroughData() {
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     /* doConvertToFile() should call doConvertToData() */
     CORRADE_VERIFY(converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xef}, filename));
@@ -493,8 +493,8 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataFailed() {
     const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */

@@ -374,10 +374,10 @@ void AbstractFontConverterTest::exportFontToFile() {
     const std::string filename2 = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out.dat");
 
     /* Remove previous files, if any */
-    Utility::Directory::rm(filename);
-    Utility::Directory::rm(filename2);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
-    CORRADE_VERIFY(!Utility::Directory::exists(filename2));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    if(Utility::Directory::exists(filename2))
+        CORRADE_VERIFY(Utility::Directory::rm(filename2));
 
     CORRADE_VERIFY(converter.exportFontToFile(dummyFont, dummyGlyphCache, filename, "eh"));
     CORRADE_COMPARE_AS(filename, "\xf0",
@@ -438,10 +438,10 @@ void AbstractFontConverterTest::exportFontToFileThroughData() {
     const std::string filename2 = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out.dat");
 
     /* Remove previous files, if any */
-    Utility::Directory::rm(filename);
-    Utility::Directory::rm(filename2);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
-    CORRADE_VERIFY(!Utility::Directory::exists(filename2));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    if(Utility::Directory::exists(filename2))
+        CORRADE_VERIFY(Utility::Directory::rm(filename2));
 
     /* doExportToFile() should call doExportToData() */
     CORRADE_VERIFY(converter.exportFontToFile(dummyFont, dummyGlyphCache, filename, "awoo"));
@@ -463,8 +463,8 @@ void AbstractFontConverterTest::exportFontToFileThroughDataFailed() {
     const std::string filename = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
@@ -676,10 +676,10 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
     const std::string filename2 = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "cache.out.dat");
 
     /* Remove previous files, if any */
-    Utility::Directory::rm(filename);
-    Utility::Directory::rm(filename2);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
-    CORRADE_VERIFY(!Utility::Directory::exists(filename2));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    if(Utility::Directory::exists(filename2))
+        CORRADE_VERIFY(Utility::Directory::rm(filename2));
 
     CORRADE_VERIFY(converter.exportGlyphCacheToFile(dummyGlyphCache, filename));
     CORRADE_COMPARE_AS(filename, "\xf0",
@@ -740,10 +740,10 @@ void AbstractFontConverterTest::exportGlyphCacheToFileThroughData() {
     const std::string filename2 = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "cache.out.dat");
 
     /* Remove previous files, if any */
-    Utility::Directory::rm(filename);
-    Utility::Directory::rm(filename2);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
-    CORRADE_VERIFY(!Utility::Directory::exists(filename2));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    if(Utility::Directory::exists(filename2))
+        CORRADE_VERIFY(Utility::Directory::rm(filename2));
 
     /* doExportGlyphCacheToFile() should call doExportGlyphCacheToData() */
     CORRADE_VERIFY(converter.exportGlyphCacheToFile(dummyGlyphCache, filename));
@@ -763,8 +763,8 @@ void AbstractFontConverterTest::exportGlyphCacheToFileThroughDataFailed() {
     const std::string filename = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "cache.out");
 
     /* Remove previous file, if any */
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */

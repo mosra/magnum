@@ -76,9 +76,13 @@ MagnumFontConverterTest::MagnumFontConverterTest() {
 }
 
 void MagnumFontConverterTest::exportFont() {
+    std::string confFilename = Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.conf");
+    std::string tgaFilename = Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga");
     /* Remove previously created files */
-    Utility::Directory::rm(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.conf"));
-    Utility::Directory::rm(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga"));
+    if(Utility::Directory::exists(confFilename))
+        CORRADE_VERIFY(Utility::Directory::rm(confFilename));
+    if(Utility::Directory::exists(tgaFilename))
+        CORRADE_VERIFY(Utility::Directory::rm(tgaFilename));
 
     /* Fake font with fake cache */
     class FakeFont: public Text::AbstractFont {
@@ -136,7 +140,7 @@ void MagnumFontConverterTest::exportFont() {
     CORRADE_VERIFY(converter->exportFontToFile(font, cache, Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave"));
 
     /* Verify font parameters */
-    CORRADE_COMPARE_AS(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.conf"),
+    CORRADE_COMPARE_AS(confFilename,
                        Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"),
                        TestSuite::Compare::File);
 
@@ -146,7 +150,7 @@ void MagnumFontConverterTest::exportFont() {
     /* Verify font image, no need to test image contents, as the image is
        garbage anyway */
     Containers::Pointer<Trade::AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga")));
+    CORRADE_VERIFY(importer->openFile(tgaFilename));
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), Vector2i(256));
