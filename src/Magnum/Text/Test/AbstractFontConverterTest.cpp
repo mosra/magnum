@@ -25,9 +25,11 @@
 
 #include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/FileToString.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -491,9 +493,9 @@ void AbstractFontConverterTest::exportFontToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.exportFontToFile(dummyFont, dummyGlyphCache, "/some/path/that/does/not/exist", {}));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Text::AbstractFontConverter::exportFontToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Text::AbstractFontConverter::exportFontToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
@@ -789,9 +791,9 @@ void AbstractFontConverterTest::exportGlyphCacheToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.exportGlyphCacheToFile(dummyGlyphCache, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Text::AbstractFontConverter::exportGlyphCacheToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Text::AbstractFontConverter::exportGlyphCacheToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromSingleData() {

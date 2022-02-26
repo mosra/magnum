@@ -31,6 +31,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/FileToString.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -1072,9 +1073,9 @@ void AbstractConverterTest::convertDataToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertDataToFile({}, nullptr, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "ShaderTools::AbstractConverter::convertDataToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "ShaderTools::AbstractConverter::convertDataToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractConverterTest::convertDataToFileNotSupported() {
@@ -1228,9 +1229,9 @@ void AbstractConverterTest::convertFileToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToFile({}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat"), "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractConverterTest::convertFileToFileNotSupported() {
@@ -1596,9 +1597,9 @@ void AbstractConverterTest::linkDataToFileThroughDataNotWritable() {
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
     CORRADE_VERIFY(!converter.linkDataToFile({std::pair<Stage, Containers::ArrayView<const void>>{}}, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "ShaderTools::AbstractConverter::linkDataToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "ShaderTools::AbstractConverter::linkDataToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractConverterTest::linkDataToFileNotSupported() {
@@ -1816,9 +1817,9 @@ void AbstractConverterTest::linkFilesToFileThroughDataNotWritable() {
     CORRADE_VERIFY(!converter.linkFilesToFile({
         {{}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     }, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractConverterTest::linkFilesToFileNotSupported() {
@@ -2633,9 +2634,9 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsDataNotWritab
     CORRADE_VERIFY(!converter.convertFileToFile({}, "file.dat", "/some/path/that/does/not/exist"));
     CORRADE_VERIFY(state.loaded);
     CORRADE_VERIFY(state.closed);
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractConverterTest::setInputFileCallbackConvertFileToDataDirectly() {
@@ -3147,9 +3148,9 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataNotWritable
         "loaded file.dat\n"
         "closed another.dat\n"
         "closed file.dat\n");
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractConverterTest::setInputFileCallbackLinkFilesToDataDirectly() {

@@ -30,6 +30,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/FileToString.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -517,9 +518,9 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xef}, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractSceneConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractSceneConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractSceneConverterTest::convertMeshToFileNotImplemented() {

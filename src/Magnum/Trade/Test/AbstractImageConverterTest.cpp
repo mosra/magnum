@@ -31,6 +31,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/FileToString.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -2290,9 +2291,9 @@ void AbstractImageConverterTest::convert1DToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 1, data}, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImageConverterTest::convert2DToFileThroughDataNotWritable() {
@@ -2308,9 +2309,9 @@ void AbstractImageConverterTest::convert2DToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImageConverterTest::convert3DToFileThroughDataNotWritable() {
@@ -2326,9 +2327,9 @@ void AbstractImageConverterTest::convert3DToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImageConverterTest::convert1DToFileInvalidImage() {
@@ -2635,9 +2636,9 @@ void AbstractImageConverterTest::convertCompressed1DToFileThroughDataNotWritable
     std::ostringstream out;
     Error redirectError{&out};
     converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}, "/some/path/that/does/not/exist");
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImageConverterTest::convertCompressed2DToFileThroughDataNotWritable() {
@@ -2653,9 +2654,9 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughDataNotWritable
     std::ostringstream out;
     Error redirectError{&out};
     converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}, "/some/path/that/does/not/exist");
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImageConverterTest::convertCompressed3DToFileThroughDataNotWritable() {
@@ -2671,9 +2672,9 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughDataNotWritable
     std::ostringstream out;
     Error redirectError{&out};
     converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}, "/some/path/that/does/not/exist");
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImageConverterTest::convertCompressed1DToFileInvalidImage() {
@@ -3049,9 +3050,9 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile({ImageView1D{PixelFormat::RGBA8Unorm, 1, data}}, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImageConverterTest::convertLevels2DToFileThroughDataNotWritable() {
@@ -3067,9 +3068,9 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile({ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}}, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImageConverterTest::convertLevels3DToFileThroughDataNotWritable() {
@@ -3085,9 +3086,9 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile({ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}}, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImageConverterTest::convertLevels1DToFileInvalidImage() {
@@ -3418,9 +3419,9 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataNotWr
     std::ostringstream out;
     Error redirectError{&out};
     converter.convertToFile({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}}, "/some/path/that/does/not/exist");
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataNotWritable() {
@@ -3436,9 +3437,9 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataNotWr
     std::ostringstream out;
     Error redirectError{&out};
     converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}}, "/some/path/that/does/not/exist");
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataNotWritable() {
@@ -3454,9 +3455,9 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataNotWr
     std::ostringstream out;
     Error redirectError{&out};
     converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}}, "/some/path/that/does/not/exist");
-    CORRADE_COMPARE(out.str(),
-        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
-        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::AbstractImageConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToFileInvalidImage() {
