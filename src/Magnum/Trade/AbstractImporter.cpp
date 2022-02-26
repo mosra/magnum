@@ -1232,7 +1232,7 @@ std::string AbstractImporter::doMaterialName(UnsignedInt) { return {}; }
 #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
 Containers::Optional<MaterialData>
 #else
-OptionalButAlsoPointer<MaterialData>
+Implementation::OptionalButAlsoPointer<MaterialData>
 #endif
 AbstractImporter::material(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::material(): no file opened", {});
@@ -1246,7 +1246,7 @@ AbstractImporter::material(const UnsignedInt id) {
 
     /* GCC 4.8 and clang-cl needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return OptionalButAlsoPointer<MaterialData>{std::move(material)};
+    return Implementation::OptionalButAlsoPointer<MaterialData>{std::move(material)};
     #else
     return material;
     #endif
@@ -1259,7 +1259,7 @@ Containers::Optional<MaterialData> AbstractImporter::doMaterial(UnsignedInt) {
 #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
 Containers::Optional<MaterialData>
 #else
-OptionalButAlsoPointer<MaterialData>
+Implementation::OptionalButAlsoPointer<MaterialData>
 #endif
 AbstractImporter::material(const std::string& name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::material(): no file opened", {});

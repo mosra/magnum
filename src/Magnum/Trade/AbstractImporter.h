@@ -138,16 +138,18 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImporterFlag value);
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImporterFlags value);
 
-#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(DOXYGEN_GENERATING_OUTPUT)
-/* Could be a concrete type as only MaterialData need this, but that would
-   mean I'd need to include MaterialData here */
-template<class T> struct OptionalButAlsoPointer: Containers::Optional<T> {
-    /*implicit*/ OptionalButAlsoPointer() = default;
-    /*implicit*/ OptionalButAlsoPointer(Containers::Optional<T>&& optional): Containers::Optional<T>{std::move(optional)} {}
-    CORRADE_DEPRECATED("use Containers::Optional instead of Containers::Pointer for a MaterialData") /*implicit*/ operator Containers::Pointer<T>() && {
-        return Containers::Pointer<T>{new T{std::move(**this)}};
-    }
-};
+#ifdef MAGNUM_BUILD_DEPRECATED
+namespace Implementation {
+    /* Could be a concrete type as only MaterialData need this, but that would
+       mean I'd need to include MaterialData here */
+    template<class T> struct OptionalButAlsoPointer: Containers::Optional<T> {
+        /*implicit*/ OptionalButAlsoPointer() = default;
+        /*implicit*/ OptionalButAlsoPointer(Containers::Optional<T>&& optional): Containers::Optional<T>{std::move(optional)} {}
+        CORRADE_DEPRECATED("use Containers::Optional instead of Containers::Pointer for a MaterialData") /*implicit*/ operator Containers::Pointer<T>() && {
+            return Containers::Pointer<T>{new T{std::move(**this)}};
+        }
+    };
+}
 #endif
 
 /**
@@ -1417,7 +1419,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
         Containers::Optional<MaterialData>
         #else
-        OptionalButAlsoPointer<MaterialData>
+        Implementation::OptionalButAlsoPointer<MaterialData>
         #endif
         material(UnsignedInt id);
 
@@ -1434,7 +1436,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
         Containers::Optional<MaterialData>
         #else
-        OptionalButAlsoPointer<MaterialData>
+        Implementation::OptionalButAlsoPointer<MaterialData>
         #endif
         material(const std::string& name);
 
