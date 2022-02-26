@@ -591,8 +591,8 @@ void CompareImageTest::compareDifferentSize() {
         TestSuite::ComparisonStatusFlags flags = compare(a, b);
         /* No diagnostic as we don't have any expected filename */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
-        Error e(&out);
-        compare.printMessage(flags, e, "a", "b");
+        Debug d{&out};
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), "Images a and b have different size, actual Vector(3, 4) but Vector(3, 5) expected.\n");
@@ -610,8 +610,8 @@ void CompareImageTest::compareDifferentFormat() {
         TestSuite::ComparisonStatusFlags flags = compare(a, b);
         /* No diagnostic as we don't have any expected filename */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
-        Error e(&out);
-        compare.printMessage(flags, e, "a", "b");
+        Debug d{&out};
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), "Images a and b have different format, actual PixelFormat::RGBA32F but PixelFormat::RGB32F expected.\n");
