@@ -27,9 +27,12 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once PluginManager is <string>-free */
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 #include "Magnum/Audio/configure.h"
@@ -47,9 +50,10 @@ std::string AbstractImporter::pluginInterface() {
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 std::vector<std::string> AbstractImporter::pluginSearchPaths() {
+    const Containers::Optional<Containers::String> libraryLocation = Utility::Path::libraryLocation(&pluginInterface);
     return PluginManager::implicitPluginSearchPaths(
         #ifndef MAGNUM_BUILD_STATIC
-        Utility::Directory::libraryLocation(&pluginInterface),
+        libraryLocation ? *libraryLocation : Containers::String{},
         #else
         {},
         #endif
@@ -96,12 +100,13 @@ void AbstractImporter::doOpenFile(const std::string& filename) {
     CORRADE_ASSERT(features() & ImporterFeature::OpenData, "Audio::AbstractImporter::openFile(): not implemented", );
 
     /* Open file */
-    if(!Utility::Directory::exists(filename)) {
+    const Containers::Optional<Containers::Array<char>> data = Utility::Path::read(filename);
+    if(!data) {
         Error() << "Audio::AbstractImporter::openFile(): cannot open file" << filename;
         return;
     }
 
-    doOpenData(Utility::Directory::read(filename));
+    doOpenData(*data);
 }
 
 void AbstractImporter::close() {

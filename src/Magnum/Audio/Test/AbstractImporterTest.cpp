@@ -25,10 +25,13 @@
 
 #include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Audio/AbstractImporter.h"
 #include "Magnum/Audio/BufferFormat.h"
@@ -155,7 +158,7 @@ void AbstractImporterTest::openFileAsData() {
 
     /* doOpenFile() should call doOpenData() */
     CORRADE_VERIFY(!importer.isOpened());
-    importer.openFile(Utility::Directory::join(AUDIO_TEST_DIR, "file.bin"));
+    importer.openFile(Utility::Path::join(AUDIO_TEST_DIR, "file.bin"));
     CORRADE_VERIFY(importer.isOpened());
 
     importer.close();
@@ -184,7 +187,10 @@ void AbstractImporterTest::openFileAsDataNotFound() {
 
     CORRADE_VERIFY(!importer.openFile("nonexistent.bin"));
     CORRADE_VERIFY(!importer.isOpened());
-    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::openFile(): cannot open file nonexistent.bin\n");
+    /* There's an error from Path::read() before */
+    CORRADE_COMPARE_AS(out.str(),
+        "\nAudio::AbstractImporter::openFile(): cannot open file nonexistent.bin\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImporterTest::openFileNotImplemented() {
