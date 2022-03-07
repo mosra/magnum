@@ -24,8 +24,10 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Shaders/DistanceFieldVectorGL.h"
 
@@ -63,7 +65,7 @@ DistanceFieldVectorGL_Test::DistanceFieldVectorGL_Test() {
 }
 
 template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::constructNoCreate() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     {
         DistanceFieldVectorGL<dimensions> shader{NoCreate};
@@ -75,7 +77,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::constructNoCre
 }
 
 template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::constructCopy() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     CORRADE_VERIFY(!std::is_copy_constructible<DistanceFieldVectorGL<dimensions>>{});
     CORRADE_VERIFY(!std::is_copy_assignable<DistanceFieldVectorGL<dimensions>>{});

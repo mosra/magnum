@@ -828,7 +828,7 @@ FlatGLTest::FlatGLTest() {
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::construct() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     auto&& data = ConstructData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -855,7 +855,7 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     auto&& data = ConstructUniformBuffersData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -899,7 +899,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
 #endif
 
 template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     FlatGL<dimensions> a{FlatGL<dimensions>::Flag::Textured};
     const GLuint id = a.id();
@@ -921,7 +921,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::constructMoveUniformBuffers() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -953,7 +953,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMoveUniformBuffers() 
 
 template<UnsignedInt dimensions> void FlatGLTest::constructInvalid() {
     auto&& data = ConstructInvalidData[testCaseInstanceId()];
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
     setTestCaseDescription(data.name);
 
     #ifdef CORRADE_NO_ASSERT
@@ -970,7 +970,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructInvalid() {
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersInvalid() {
     auto&& data = ConstructUniformBuffersInvalidData[testCaseInstanceId()];
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
     setTestCaseDescription(data.name);
 
     #ifdef CORRADE_NO_ASSERT
@@ -992,7 +992,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersInvalid
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::setUniformUniformBuffersEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1023,7 +1023,7 @@ template<UnsignedInt dimensions> void FlatGLTest::setUniformUniformBuffersEnable
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::bindBufferUniformBuffersNotEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1058,7 +1058,7 @@ template<UnsignedInt dimensions> void FlatGLTest::bindBufferUniformBuffersNotEna
 
 template<UnsignedInt dimensions> void FlatGLTest::bindTexturesInvalid() {
     auto&& data = BindTexturesInvalidData[testCaseInstanceId()];
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
     setTestCaseDescription(data.name);
 
     #ifdef CORRADE_NO_ASSERT
@@ -1085,7 +1085,7 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTexturesInvalid() {
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::bindTextureArraysInvalid() {
     auto&& data = BindTextureArraysInvalidData[testCaseInstanceId()];
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
     setTestCaseDescription(data.name);
 
     #ifdef CORRADE_NO_ASSERT
@@ -1109,7 +1109,7 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTextureArraysInvalid() {
 #endif
 
 template<UnsignedInt dimensions> void FlatGLTest::setAlphaMaskNotEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1126,7 +1126,7 @@ template<UnsignedInt dimensions> void FlatGLTest::setAlphaMaskNotEnabled() {
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::setTextureMatrixNotEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1144,7 +1144,7 @@ template<UnsignedInt dimensions> void FlatGLTest::setTextureMatrixNotEnabled() {
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::setTextureLayerNotArray() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1163,7 +1163,7 @@ template<UnsignedInt dimensions> void FlatGLTest::setTextureLayerNotArray() {
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::bindTextureTransformBufferNotEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1189,7 +1189,7 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTextureTransformBufferNotE
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::setObjectIdNotEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1208,7 +1208,7 @@ template<UnsignedInt dimensions> void FlatGLTest::setObjectIdNotEnabled() {
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::setWrongDrawOffset() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");

@@ -23,11 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <cstring>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Animation/Easing.h"
 
@@ -232,10 +232,10 @@ void EasingTest::monotonicity() {
 
 void EasingTest::symmetry() {
     auto&& data = SymmetryData[testCaseInstanceId()];
-    if(std::strcmp(data.name, data.symmetricName) == 0)
+    if(data.name == Containers::StringView{data.symmetricName})
         setTestCaseDescription(data.name);
     else
-        setTestCaseDescription(Utility::formatString("{} : {}", data.name, data.symmetricName));
+        setTestCaseDescription(Utility::format("{} : {}", data.name, data.symmetricName));
 
     /* Not testing the edges, as these are tested in values() anyway (and are
        problematic in functions that have explicit handling for them) */

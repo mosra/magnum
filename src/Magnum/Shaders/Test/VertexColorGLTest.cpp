@@ -28,6 +28,7 @@
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #ifdef CORRADE_TARGET_APPLE
@@ -294,7 +295,7 @@ VertexColorGLTest::VertexColorGLTest() {
 }
 
 template<UnsignedInt dimensions> void VertexColorGLTest::construct() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     VertexColorGL<dimensions> shader;
     CORRADE_VERIFY(shader.id());
@@ -310,7 +311,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::construct() {
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     auto&& data = ConstructUniformBuffersData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -349,7 +350,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
 #endif
 
 template<UnsignedInt dimensions> void VertexColorGLTest::constructMove() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     VertexColorGL<dimensions> a;
     const GLuint id = a.id();
@@ -369,7 +370,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructMove() {
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VertexColorGLTest::constructMoveUniformBuffers() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -399,7 +400,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructMoveUniformBuf
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffersZeroDraws() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -420,7 +421,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VertexColorGLTest::setUniformUniformBuffersEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -441,7 +442,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::setUniformUniformBuffer
 }
 
 template<UnsignedInt dimensions> void VertexColorGLTest::bindBufferUniformBuffersNotEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -462,7 +463,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::bindBufferUniformBuffer
 }
 
 template<UnsignedInt dimensions> void VertexColorGLTest::setWrongDrawOffset() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");

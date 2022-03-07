@@ -352,7 +352,7 @@ VectorGLTest::VectorGLTest() {
 }
 
 template<UnsignedInt dimensions> void VectorGLTest::construct() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     auto&& data = ConstructData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -372,7 +372,7 @@ template<UnsignedInt dimensions> void VectorGLTest::construct() {
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffers() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     auto&& data = ConstructUniformBuffersData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -411,7 +411,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffers() {
 #endif
 
 template<UnsignedInt dimensions> void VectorGLTest::constructMove() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     VectorGL<dimensions> a{VectorGL<dimensions>::Flag::TextureTransformation};
     const GLuint id = a.id();
@@ -433,7 +433,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructMove() {
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VectorGLTest::constructMoveUniformBuffers() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -466,7 +466,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructMoveUniformBuffers(
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersInvalid() {
     auto&& data = ConstructUniformBuffersInvalidData[testCaseInstanceId()];
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
     setTestCaseDescription(data.name);
 
     #ifdef CORRADE_NO_ASSERT
@@ -488,7 +488,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersInval
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VectorGLTest::setUniformUniformBuffersEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -515,7 +515,7 @@ template<UnsignedInt dimensions> void VectorGLTest::setUniformUniformBuffersEnab
 }
 
 template<UnsignedInt dimensions> void VectorGLTest::bindBufferUniformBuffersNotEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -549,7 +549,7 @@ template<UnsignedInt dimensions> void VectorGLTest::bindBufferUniformBuffersNotE
 #endif
 
 template<UnsignedInt dimensions> void VectorGLTest::setTextureMatrixNotEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -567,7 +567,7 @@ template<UnsignedInt dimensions> void VectorGLTest::setTextureMatrixNotEnabled()
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VectorGLTest::bindTextureTransformBufferNotEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -593,7 +593,7 @@ template<UnsignedInt dimensions> void VectorGLTest::bindTextureTransformBufferNo
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VectorGLTest::setWrongDrawOffset() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");

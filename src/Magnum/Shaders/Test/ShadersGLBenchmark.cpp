@@ -25,7 +25,7 @@
 
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
@@ -565,7 +565,7 @@ template<> struct UniformTraits<3> {
 
 template<UnsignedInt dimensions> void ShadersGLBenchmark::flat() {
     auto&& data = FlatData[testCaseInstanceId()];
-    setTestCaseTemplateName(Utility::formatString("{}", dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
     setTestCaseDescription(data.name);
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
@@ -844,7 +844,7 @@ void ShadersGLBenchmark::phong() {
 
 template<UnsignedInt dimensions> void ShadersGLBenchmark::vertexColor() {
     auto&& data = VertexColorData[testCaseInstanceId()];
-    setTestCaseTemplateName(Utility::formatString("{}", dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
     setTestCaseDescription(data.name);
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
@@ -903,7 +903,7 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vertexColor() {
 
 template<UnsignedInt dimensions> void ShadersGLBenchmark::vector() {
     auto&& data = VectorData[testCaseInstanceId()];
-    setTestCaseTemplateName(Utility::formatString("{}", dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
     setTestCaseDescription(data.name);
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
@@ -975,7 +975,7 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vector() {
 
 template<UnsignedInt dimensions> void ShadersGLBenchmark::distanceFieldVector() {
     auto&& data = DistanceFieldVectorData[testCaseInstanceId()];
-    setTestCaseTemplateName(Utility::formatString("{}", dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
     setTestCaseDescription(data.name);
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||

@@ -30,6 +30,7 @@
 #include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #ifdef CORRADE_TARGET_APPLE
@@ -355,7 +356,7 @@ DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
 }
 
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::construct() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     auto&& data = ConstructData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -375,7 +376,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::construct() {
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUniformBuffers() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     auto&& data = ConstructUniformBuffersData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -415,7 +416,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
 #endif
 
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMove() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     DistanceFieldVectorGL<dimensions> a{DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation};
     const GLuint id = a.id();
@@ -437,7 +438,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMove()
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMoveUniformBuffers() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -472,7 +473,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
     auto&& data = ConstructUniformBuffersInvalidData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -493,7 +494,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setUniformUniformBuffersEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -524,7 +525,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setUniformUnifo
 }
 
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::bindBufferUniformBuffersNotEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -558,7 +559,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::bindBufferUnifo
 #endif
 
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setTextureMatrixNotEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -576,7 +577,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setTextureMatri
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::bindTextureTransformBufferNotEnabled() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -602,7 +603,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::bindTextureTran
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setWrongDrawOffset() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");

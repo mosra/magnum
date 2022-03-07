@@ -24,8 +24,10 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Shaders/VertexColorGL.h"
 
@@ -63,7 +65,7 @@ VertexColorGL_Test::VertexColorGL_Test() {
 }
 
 template<UnsignedInt dimensions> void VertexColorGL_Test::constructNoCreate() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     {
         VertexColorGL<dimensions> shader{NoCreate};
@@ -74,7 +76,7 @@ template<UnsignedInt dimensions> void VertexColorGL_Test::constructNoCreate() {
 }
 
 template<UnsignedInt dimensions> void VertexColorGL_Test::constructCopy() {
-    setTestCaseTemplateName(std::to_string(dimensions));
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     CORRADE_VERIFY(!std::is_copy_constructible<VertexColorGL<dimensions>>{});
     CORRADE_VERIFY(!std::is_copy_assignable<VertexColorGL<dimensions>>{});
