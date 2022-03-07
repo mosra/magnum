@@ -28,13 +28,14 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/File.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/ImageView.h"
@@ -1026,16 +1027,17 @@ void CompareImageTest::imageFileZeroDelta() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    CORRADE_COMPARE_WITH(
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+    CORRADE_COMPARE_WITH(expectedFilename, expectedFilename,
         (CompareImageFile{*_importerManager, 40.0f, 20.0f}));
 
     /* No diagnostic as there's no error */
     TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
-    CORRADE_COMPARE(compare(
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")),
+    CORRADE_COMPARE(compare(expectedFilename, expectedFilename),
         TestSuite::ComparisonStatusFlag{});
 }
 
@@ -1044,19 +1046,21 @@ void CompareImageTest::imageFileNonZeroDelta() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String actualFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga");
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
     /* This will produce output if --verbose is specified */
-    CORRADE_COMPARE_WITH(
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
+    CORRADE_COMPARE_WITH(actualFilename, expectedFilename,
         (CompareImageFile{*_importerManager, 40.0f, 20.0f}));
 
     std::ostringstream out;
 
     {
         TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
-        TestSuite::ComparisonStatusFlags flags = compare(
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+        TestSuite::ComparisonStatusFlags flags = compare(actualFilename, expectedFilename);
         /* No diagnostic as there's no error */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Verbose);
         Debug d{&out, Debug::Flag::DisableColors};
@@ -1074,9 +1078,13 @@ void CompareImageTest::imageFileError() {
     std::stringstream out;
 
     TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
-    TestSuite::ComparisonStatusFlags flags = compare(
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String actualFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga");
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+    TestSuite::ComparisonStatusFlags flags = compare(actualFilename, expectedFilename);
     /* The diagnostic flag should be slapped on the failure coming from the
        operator() comparing two ImageViews */
     CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
@@ -1090,10 +1098,10 @@ void CompareImageTest::imageFileError() {
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
-    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
-    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageExpected.tga");
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    CORRADE_VERIFY(Utility::Path::make(COMPAREIMAGETEST_SAVE_DIR));
+    Containers::String filename = Utility::Path::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageExpected.tga");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     if(!(_converterManager->loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
        !(_converterManager->loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
@@ -1110,7 +1118,7 @@ void CompareImageTest::imageFileError() {
        file. */
     CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
     CORRADE_COMPARE_AS(filename,
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
+        Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
 
 void CompareImageTest::imageFilePluginLoadFailed() {
@@ -1122,9 +1130,13 @@ void CompareImageTest::imageFilePluginLoadFailed() {
 
     {
         TestSuite::Comparator<CompareImageFile> compare{&manager, nullptr, 20.0f, 10.0f};
-        TestSuite::ComparisonStatusFlags flags = compare(
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+        /* The filenames are referenced as string views as the assumption is
+           that the whole comparison and diagnostic printing gets done in a
+           single expression. Thus don't pass them as temporaries to avoid
+           dangling views. */
+        Containers::String actualFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga");
+        Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+        TestSuite::ComparisonStatusFlags flags = compare(actualFilename, expectedFilename);
         /* Can't load a plugin, so we can't open the file, so we can't save
            it either and thus no diagnostic */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
@@ -1144,8 +1156,12 @@ void CompareImageTest::imageFileActualLoadFailed() {
 
     {
         TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, nullptr, 20.0f, 10.0f};
-        TestSuite::ComparisonStatusFlags flags = compare("nonexistent.tga",
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+        /* The filenames are referenced as string views as the assumption is
+           that the whole comparison and diagnostic printing gets done in a
+           single expression. Thus don't pass them as temporaries to avoid
+           dangling views. */
+        Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+        TestSuite::ComparisonStatusFlags flags = compare("nonexistent.tga", expectedFilename);
         /* We can't open the file, so we can't save it either and thus no
            diagnostic */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
@@ -1164,9 +1180,12 @@ void CompareImageTest::imageFileExpectedLoadFailed() {
     std::stringstream out;
 
     TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
-    TestSuite::ComparisonStatusFlags flags = compare(
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-        "nonexistent.tga");
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String actualFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga");
+    TestSuite::ComparisonStatusFlags flags = compare(actualFilename, "nonexistent.tga");
     /* Actual file *could* be loaded, so save it! */
     CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
 
@@ -1179,10 +1198,10 @@ void CompareImageTest::imageFileExpectedLoadFailed() {
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
-    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
-    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "nonexistent.tga");
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    CORRADE_VERIFY(Utility::Path::make(COMPAREIMAGETEST_SAVE_DIR));
+    Containers::String filename = Utility::Path::join(COMPAREIMAGETEST_SAVE_DIR, "nonexistent.tga");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     if(!(_converterManager->loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
        !(_converterManager->loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
@@ -1199,7 +1218,7 @@ void CompareImageTest::imageFileExpectedLoadFailed() {
        file. */
     CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
     CORRADE_COMPARE_AS(filename,
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
+        Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
 
 void CompareImageTest::imageFileActualIsCompressed() {
@@ -1212,9 +1231,13 @@ void CompareImageTest::imageFileActualIsCompressed() {
 
     {
         TestSuite::Comparator<CompareImageFile> compare{&manager, nullptr, 20.0f, 10.0f};
-        TestSuite::ComparisonStatusFlags flags = compare(
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds"),
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+        /* The filenames are referenced as string views as the assumption is
+           that the whole comparison and diagnostic printing gets done in a
+           single expression. Thus don't pass them as temporaries to avoid
+           dangling views. */
+        Containers::String actualFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds");
+        Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+        TestSuite::ComparisonStatusFlags flags = compare(actualFilename, expectedFilename);
         /* We most probably couldn't save the file because it's in a different
            format, so no diagnostic */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
@@ -1234,9 +1257,13 @@ void CompareImageTest::imageFileExpectedIsCompressed() {
     std::stringstream out;
 
     TestSuite::Comparator<CompareImageFile> compare{&manager, nullptr, 20.0f, 10.0f};
-    TestSuite::ComparisonStatusFlags flags = compare(
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds"));
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String actualFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga");
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds");
+    TestSuite::ComparisonStatusFlags flags = compare(actualFilename, expectedFilename);
     /* Actual file is not, so save it! */
     CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
 
@@ -1247,16 +1274,16 @@ void CompareImageTest::imageFileExpectedIsCompressed() {
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
-    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
-    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageCompressed.dds");
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    CORRADE_VERIFY(Utility::Path::make(COMPAREIMAGETEST_SAVE_DIR));
+    Containers::String filename = Utility::Path::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageCompressed.dds");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* This will attempt to save a DDS and then fails, because we have no DDS
        exporter. */
     Debug d;
     compare.saveDiagnostic(flags, d, COMPAREIMAGETEST_SAVE_DIR);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_VERIFY(!Utility::Path::exists(filename));
 }
 
 void CompareImageTest::imageToFileZeroDelta() {
@@ -1264,13 +1291,18 @@ void CompareImageTest::imageToFileZeroDelta() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    CORRADE_COMPARE_WITH(ExpectedRgb,
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+
+    CORRADE_COMPARE_WITH(ExpectedRgb, expectedFilename,
         (CompareImageToFile{*_importerManager, 40.0f, 20.0f}));
 
     /* No diagnostic as there's no error */
     TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
-    CORRADE_COMPARE(compare(ExpectedRgb, Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")),
+    CORRADE_COMPARE(compare(ExpectedRgb, expectedFilename),
         TestSuite::ComparisonStatusFlags{});
 }
 
@@ -1279,16 +1311,21 @@ void CompareImageTest::imageToFileNonZeroDelta() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+
     /* This will produce output if --verbose is specified */
-    CORRADE_COMPARE_WITH(ActualRgb,
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
+    CORRADE_COMPARE_WITH(ActualRgb, expectedFilename,
         (CompareImageToFile{*_importerManager, 40.0f, 20.0f}));
 
     std::ostringstream out;
 
     {
         TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
-        TestSuite::ComparisonStatusFlags flags = compare(ActualRgb, Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+        TestSuite::ComparisonStatusFlags flags = compare(ActualRgb, expectedFilename);
         /* No diagnostic as there's no error */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Verbose);
         Debug d{&out, Debug::Flag::DisableColors};
@@ -1306,8 +1343,12 @@ void CompareImageTest::imageToFileError() {
     std::stringstream out;
 
     TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
-    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb,
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb, expectedFilename);
     /* The diagnostic flag should be slapped on the failure coming from the
        operator() comparing two ImageViews */
     CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
@@ -1321,10 +1362,10 @@ void CompareImageTest::imageToFileError() {
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
-    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
-    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageExpected.tga");
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    CORRADE_VERIFY(Utility::Path::make(COMPAREIMAGETEST_SAVE_DIR));
+    Containers::String filename = Utility::Path::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageExpected.tga");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     if(!(_converterManager->loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
        !(_converterManager->loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
@@ -1341,7 +1382,7 @@ void CompareImageTest::imageToFileError() {
        file. */
     CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
     CORRADE_COMPARE_AS(filename,
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
+        Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
 
 void CompareImageTest::imageToFilePluginLoadFailed() {
@@ -1353,8 +1394,12 @@ void CompareImageTest::imageToFilePluginLoadFailed() {
 
     {
         TestSuite::Comparator<CompareImageToFile> compare{&manager, nullptr, 20.0f, 10.0f};
-        TestSuite::ComparisonStatusFlags flags = compare(ActualRgb,
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+        /* The filenames are referenced as string views as the assumption is
+           that the whole comparison and diagnostic printing gets done in a
+           single expression. Thus don't pass them as temporaries to avoid
+           dangling views. */
+        Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+        TestSuite::ComparisonStatusFlags flags = compare(ActualRgb, expectedFilename);
         /* Can't load a plugin, so we can't open the file, so we can't save
            it either and thus no diagnostic */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
@@ -1386,10 +1431,10 @@ void CompareImageTest::imageToFileExpectedLoadFailed() {
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
-    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
-    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "nonexistent.tga");
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    CORRADE_VERIFY(Utility::Path::make(COMPAREIMAGETEST_SAVE_DIR));
+    Containers::String filename = Utility::Path::join(COMPAREIMAGETEST_SAVE_DIR, "nonexistent.tga");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     if(!(_converterManager->loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
        !(_converterManager->loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
@@ -1406,7 +1451,7 @@ void CompareImageTest::imageToFileExpectedLoadFailed() {
        file. */
     CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
     CORRADE_COMPARE_AS(filename,
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
+        Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
 
 void CompareImageTest::imageToFileExpectedIsCompressed() {
@@ -1418,8 +1463,12 @@ void CompareImageTest::imageToFileExpectedIsCompressed() {
     std::stringstream out;
 
     TestSuite::Comparator<CompareImageToFile> compare{&manager, nullptr, 20.0f, 10.0f};
-    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb,
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds"));
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds");
+    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb, expectedFilename);
     /* Actual file is not, so save it! */
     CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
 
@@ -1433,16 +1482,16 @@ void CompareImageTest::imageToFileExpectedIsCompressed() {
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
-    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
-    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageCompressed.dds");
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    CORRADE_VERIFY(Utility::Path::make(COMPAREIMAGETEST_SAVE_DIR));
+    Containers::String filename = Utility::Path::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageCompressed.dds");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* This will attempt to save a DDS and then fails, because we have no DDS
        exporter. */
     Debug d;
     compare.saveDiagnostic(flags, d, COMPAREIMAGETEST_SAVE_DIR);
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_VERIFY(!Utility::Path::exists(filename));
 }
 
 void CompareImageTest::fileToImageZeroDelta() {
@@ -1450,15 +1499,18 @@ void CompareImageTest::fileToImageZeroDelta() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    CORRADE_COMPARE_WITH(
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
-        ExpectedRgb,
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+
+    CORRADE_COMPARE_WITH(expectedFilename, ExpectedRgb,
         (CompareFileToImage{*_importerManager, 40.0f, 20.0f}));
 
     /* No diagnostic as there's no error */
     TestSuite::Comparator<CompareFileToImage> compare{&*_importerManager, 40.0f, 20.0f};
-    CORRADE_COMPARE(compare(Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
-        ExpectedRgb), TestSuite::ComparisonStatusFlags{});
+    CORRADE_COMPARE(compare(expectedFilename, ExpectedRgb), TestSuite::ComparisonStatusFlags{});
 }
 
 void CompareImageTest::fileToImageNonZeroDelta() {
@@ -1466,18 +1518,21 @@ void CompareImageTest::fileToImageNonZeroDelta() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String actualFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga");
+
     /* This will produce output if --verbose is specified */
-    CORRADE_COMPARE_WITH(
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-        ExpectedRgb,
+    CORRADE_COMPARE_WITH(actualFilename, ExpectedRgb,
         (CompareFileToImage{*_importerManager, 40.0f, 20.0f}));
 
     std::ostringstream out;
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&*_importerManager, 40.0f, 20.0f};
-        TestSuite::ComparisonStatusFlags flags = compare(Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-        ExpectedRgb);
+        TestSuite::ComparisonStatusFlags flags = compare(actualFilename, ExpectedRgb);
         /* No diagnostic as there's no error */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Verbose);
         Debug d{&out, Debug::Flag::DisableColors};
@@ -1496,9 +1551,12 @@ void CompareImageTest::fileToImageError() {
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&*_importerManager, 20.0f, 10.0f};
-        TestSuite::ComparisonStatusFlags flags = compare(
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-            ExpectedRgb);
+        /* The filenames are referenced as string views as the assumption is
+           that the whole comparison and diagnostic printing gets done in a
+           single expression. Thus don't pass them as temporaries to avoid
+           dangling views. */
+        Containers::String actualFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga");
+        TestSuite::ComparisonStatusFlags flags = compare(actualFilename, ExpectedRgb);
         /* No diagnostic as we don't have any expected filename */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
@@ -1517,9 +1575,12 @@ void CompareImageTest::fileToImagePluginLoadFailed() {
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&manager, 20.0f, 10.0f};
-        TestSuite::ComparisonStatusFlags flags = compare(
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-            ExpectedRgb);
+        /* The filenames are referenced as string views as the assumption is
+           that the whole comparison and diagnostic printing gets done in a
+           single expression. Thus don't pass them as temporaries to avoid
+           dangling views. */
+        Containers::String actualFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga");
+        TestSuite::ComparisonStatusFlags flags = compare(actualFilename, ExpectedRgb);
         /* No diagnostic as we don't have any expected filename */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
@@ -1558,7 +1619,12 @@ void CompareImageTest::fileToImageActualIsCompressed() {
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&manager, 20.0f, 10.0f};
-        TestSuite::ComparisonStatusFlags flags = compare(Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds"), ExpectedRgb);
+        /* The filenames are referenced as string views as the assumption is
+           that the whole comparison and diagnostic printing gets done in a
+           single expression. Thus don't pass them as temporaries to avoid
+           dangling views. */
+        Containers::String actualFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds");
+        TestSuite::ComparisonStatusFlags flags = compare(actualFilename, ExpectedRgb);
         /* No diagnostic as we don't have any expected filename */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
@@ -1625,13 +1691,18 @@ void CompareImageTest::pixelsToFileZeroDelta() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    CORRADE_COMPARE_WITH(ExpectedRgb.pixels<Color3ub>(),
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+
+    CORRADE_COMPARE_WITH(ExpectedRgb.pixels<Color3ub>(), expectedFilename,
         (CompareImageToFile{*_importerManager, 40.0f, 20.0f}));
 
     /* No diagnostic as there's no error */
     TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
-    CORRADE_COMPARE(compare(ExpectedRgb.pixels<Color3ub>(), Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")),
+    CORRADE_COMPARE(compare(ExpectedRgb.pixels<Color3ub>(), expectedFilename),
         TestSuite::ComparisonStatusFlags{});
 }
 
@@ -1642,15 +1713,21 @@ void CompareImageTest::pixelsToFileNonZeroDelta() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+
     CORRADE_COMPARE_WITH(ActualRgb.pixels<Color3ub>(),
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
+        expectedFilename,
         (CompareImageToFile{*_importerManager, 40.0f, 20.0f}));
 
     std::ostringstream out;
 
     {
         TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
-        TestSuite::ComparisonStatusFlags flags = compare(ActualRgb.pixels<Color3ub>(), Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+        TestSuite::ComparisonStatusFlags flags = compare(ActualRgb.pixels<Color3ub>(), expectedFilename);
         /* No diagnostic as there's no error */
         CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Verbose);
         Debug d{&out, Debug::Flag::DisableColors};
@@ -1667,11 +1744,16 @@ void CompareImageTest::pixelsToFileError() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+
     std::stringstream out;
 
     TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
-    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb.pixels<Color3ub>(),
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb.pixels<Color3ub>(), expectedFilename);
     /* The diagnostic flag should be slapped on the failure coming from the
        operator() comparing two ImageViews */
     CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
@@ -1685,10 +1767,10 @@ void CompareImageTest::pixelsToFileError() {
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
-    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
-    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageExpected.tga");
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    CORRADE_VERIFY(Utility::Path::make(COMPAREIMAGETEST_SAVE_DIR));
+    Containers::String filename = Utility::Path::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageExpected.tga");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     if(!(_converterManager->loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
        !(_converterManager->loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
@@ -1705,7 +1787,7 @@ void CompareImageTest::pixelsToFileError() {
        file. */
     CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
     CORRADE_COMPARE_AS(filename,
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
+        Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
 
 }}}}

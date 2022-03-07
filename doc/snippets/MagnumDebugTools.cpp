@@ -25,6 +25,7 @@
 
 #include <chrono>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/PluginManager/Manager.h>
 

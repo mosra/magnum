@@ -28,13 +28,15 @@
 #include <map>
 #include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Containers/StringStl.h> /* for Directory */
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Comparator.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -244,10 +246,10 @@ void printDeltaImage(Debug& out, Containers::ArrayView<const Float> deltas, cons
             const char c = Math::isNan(blockMax) ? Characters.back() : Characters[Int(Math::round(Math::min(1.0f, blockMax/max)*(Characters.size() - 1)))];
 
             if(blockMax > maxThreshold)
-                out << Debug::boldColor(Debug::Color::Red) << Debug::nospace << std::string{c} << Debug::resetColor;
+                out << Debug::boldColor(Debug::Color::Red) << Debug::nospace << Containers::StringView{&c, 1} << Debug::resetColor;
             else if(blockMax > meanThreshold)
-                out << Debug::boldColor(Debug::Color::Yellow) << Debug::nospace << std::string{c} << Debug::resetColor;
-            else out << Debug::nospace << std::string{c};
+                out << Debug::boldColor(Debug::Color::Yellow) << Debug::nospace << Containers::StringView{&c, 1} << Debug::resetColor;
+            else out << Debug::nospace << Containers::StringView{&c, 1};
         }
 
         out << Debug::nospace << "|";
@@ -434,7 +436,9 @@ class ImageComparatorBase::State {
         PluginManager::Manager<Trade::AbstractImageConverter>* _converterManager{};
 
     public:
-        std::string actualFilename, expectedFilename;
+        /* The whole comparison is done in a single expression so the filenames
+           can stay as views */
+        Containers::StringView actualFilename, expectedFilename;
         Containers::Optional<Trade::ImageData2D> actualImageData, expectedImageData;
         PixelFormat actualFormat;
         Containers::StridedArrayView3D<const char> actualPixels;
@@ -511,7 +515,7 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView
     return compare(actual.format(), actual.pixels(), expected);
 }
 
-TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::string& actual, const std::string& expected) {
+TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const Containers::StringView actual, const Containers::StringView expected) {
     _state->actualFilename = actual;
     _state->expectedFilename = expected;
 
@@ -570,7 +574,7 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::stri
     return flags;
 }
 
-TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const std::string& expected) {
+TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const Containers::StringView expected) {
     _state->expectedFilename = expected;
 
     Containers::Pointer<Trade::AbstractImporter> importer;
@@ -615,11 +619,11 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat 
     return flags;
 }
 
-TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const std::string& expected) {
+TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const Containers::StringView expected) {
     return compare(actual.format(), actual.pixels(), expected);
 }
 
-TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::string& actual, const ImageView2D& expected) {
+TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const Containers::StringView actual, const ImageView2D& expected) {
     _state->actualFilename = actual;
 
     /* Here we are comparing against a view, not a file, so we cannot save
@@ -647,7 +651,7 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::stri
     return compare(_state->actualFormat, _state->actualPixels, expected);
 }
 
-void ImageComparatorBase::printMessage(const TestSuite::ComparisonStatusFlags flags, Debug& out, const std::string& actual, const std::string& expected) const {
+void ImageComparatorBase::printMessage(const TestSuite::ComparisonStatusFlags flags, Debug& out, const Containers::StringView actual, const Containers::StringView expected) const {
     if(_state->result == Result::PluginLoadFailed) {
         out << "AnyImageImporter plugin could not be loaded.";
         return;
@@ -711,7 +715,7 @@ void ImageComparatorBase::printMessage(const TestSuite::ComparisonStatusFlags fl
     }
 }
 
-void ImageComparatorBase::saveDiagnostic(TestSuite::ComparisonStatusFlags, Utility::Debug& out, const std::string& path) {
+void ImageComparatorBase::saveDiagnostic(TestSuite::ComparisonStatusFlags, Utility::Debug& out, Containers::StringView path) {
     /* Tightly pack the actual pixels into a new array and create an image from
        it -- the array view might have totally arbitrary strides that can't
        be represented in an Image */
@@ -729,7 +733,7 @@ void ImageComparatorBase::saveDiagnostic(TestSuite::ComparisonStatusFlags, Utili
     }
 
     const ImageView2D image{PixelStorage{}.setAlignment(1), _state->actualFormat, Vector2i{Int(pixels.size()[1]), Int(pixels.size()[0])}, data};
-    const std::string filename = Utility::Directory::join(path, Utility::Directory::filename(_state->expectedFilename));
+    const Containers::String filename = Utility::Path::join(path, Utility::Path::split(_state->expectedFilename).second());
 
     /* Export the data the base view/view comparator saved. Ignore failures,
        we're in the middle of a fail anyway (and everything will print messages
@@ -740,3 +744,19 @@ void ImageComparatorBase::saveDiagnostic(TestSuite::ComparisonStatusFlags, Utili
 }
 
 }}}
+
+namespace Corrade { namespace TestSuite {
+
+ComparisonStatusFlags Comparator<Magnum::DebugTools::CompareImageFile>::operator()(const Containers::StringView actual, const Containers::StringView expected) {
+    return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
+}
+
+ComparisonStatusFlags Comparator<Magnum::DebugTools::CompareImageToFile>::operator()(const Magnum::ImageView2D& actual, const Containers::StringView expected) {
+    return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
+}
+
+ComparisonStatusFlags Comparator<Magnum::DebugTools::CompareFileToImage>::operator()(const Containers::StringView actual, const Magnum::ImageView2D& expected) {
+    return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
+}
+
+}}

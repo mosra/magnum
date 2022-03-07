@@ -32,7 +32,6 @@
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/TestSuite/TestSuite.h>
-#include <Corrade/Utility/StlForwardString.h>
 #include <Corrade/Utility/StlForwardTuple.h>
 
 #include "Magnum/Magnum.h"
@@ -40,6 +39,12 @@
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/DebugTools/visibility.h"
 #include "Magnum/Trade/Trade.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Some arguments used to be a std::string, so provide implicit conversion to a
+   StringView */
+#include "Corrade/Containers/StringStl.h"
+#endif
 
 namespace Magnum { namespace DebugTools {
 
@@ -70,21 +75,21 @@ class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
 
         TestSuite::ComparisonStatusFlags operator()(const ImageView2D& actual, const ImageView2D& expected);
 
-        TestSuite::ComparisonStatusFlags operator()(const std::string& actual, const std::string& expected);
+        TestSuite::ComparisonStatusFlags operator()(Containers::StringView actual, Containers::StringView expected);
 
-        TestSuite::ComparisonStatusFlags operator()(const std::string& actual, const ImageView2D& expected);
+        TestSuite::ComparisonStatusFlags operator()(Containers::StringView actual, const ImageView2D& expected);
 
-        TestSuite::ComparisonStatusFlags operator()(const ImageView2D& actual, const std::string& expected);
+        TestSuite::ComparisonStatusFlags operator()(const ImageView2D& actual, Containers::StringView expected);
 
         /* Used in templated CompareImage::operator() */
         TestSuite::ComparisonStatusFlags compare(PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected);
 
         /* Used in templated CompareImageToFile::operator() */
-        TestSuite::ComparisonStatusFlags compare(PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const std::string& expected);
+        TestSuite::ComparisonStatusFlags compare(PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, Containers::StringView expected);
 
-        void printMessage(TestSuite::ComparisonStatusFlags flags, Debug& out, const std::string& actual, const std::string& expected) const;
+        void printMessage(TestSuite::ComparisonStatusFlags flags, Debug& out, Containers::StringView actual, Containers::StringView expected) const;
 
-        void saveDiagnostic(TestSuite::ComparisonStatusFlags flags, Utility::Debug& out, const std::string& path);
+        void saveDiagnostic(TestSuite::ComparisonStatusFlags flags, Utility::Debug& out, Containers::StringView path);
 
     private:
         class MAGNUM_DEBUGTOOLS_LOCAL State;
@@ -130,9 +135,7 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
 
         /*implicit*/ Comparator(): Comparator{nullptr, nullptr, 0.0f, 0.0f} {}
 
-        ComparisonStatusFlags operator()(const std::string& actual, const std::string& expected) {
-            return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
-        }
+        ComparisonStatusFlags operator()(Containers::StringView actual, const Containers::StringView expected);
 };
 
 template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::CompareImageToFile>: public Magnum::DebugTools::Implementation::ImageComparatorBase {
@@ -141,11 +144,12 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
 
         /*implicit*/ Comparator(): Comparator{nullptr, nullptr, 0.0f, 0.0f} {}
 
-        ComparisonStatusFlags operator()(const Magnum::ImageView2D& actual, const std::string& expected) {
-            return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
-        }
+        ComparisonStatusFlags operator()(const Magnum::ImageView2D& actual, Containers::StringView expected);
 
-        template<class T> TestSuite::ComparisonStatusFlags operator()(const Containers::StridedArrayView2D<const T>& actualPixels, const std::string& expected) {
+        /* Unlike other functions, this one is using const StringView& to avoid
+           having to include it -- it's not needed when comparing just images
+           alone, not files */
+        template<class T> TestSuite::ComparisonStatusFlags operator()(const Containers::StridedArrayView2D<const T>& actualPixels, const Containers::StringView& expected) {
             /** @todo do some tryFindCompatibleFormat() here */
             return Magnum::DebugTools::Implementation::ImageComparatorBase::compare(
                 Magnum::DebugTools::Implementation::pixelFormatFor<T>(),
@@ -159,9 +163,7 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
 
         /*implicit*/ Comparator(): Comparator{nullptr, 0.0f, 0.0f} {}
 
-        ComparisonStatusFlags operator()(const std::string& actual, const Magnum::ImageView2D& expected) {
-            return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
-        }
+        ComparisonStatusFlags operator()(Containers::StringView actual, const Magnum::ImageView2D& expected);
 };
 
 namespace Implementation {
@@ -183,13 +185,13 @@ template<class T, class U> struct ComparatorTraits<Magnum::DebugTools::CompareIm
    Comparator<CompareImageToFile>::operator() is overloaded */
 template<class T> struct ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Magnum::ImageView2D, T> {
     typedef Magnum::ImageView2D ActualType;
-    typedef std::string ExpectedType;
+    typedef Containers::StringView ExpectedType;
 };
 template<class T> struct ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Magnum::Image2D, T>: ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Magnum::ImageView2D, T> {};
 template<class T> struct ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Magnum::Trade::ImageData2D, T>: ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Magnum::ImageView2D, T> {};
 template<class T, class U> struct ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Containers::StridedArrayView2D<T>, U> {
     typedef Containers::StridedArrayView2D<const T> ActualType;
-    typedef std::string ExpectedType;
+    typedef Containers::StringView ExpectedType;
 };
 
 }

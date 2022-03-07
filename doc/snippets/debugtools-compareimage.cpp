@@ -24,9 +24,11 @@
 */
 
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -45,7 +47,7 @@ namespace {
 Image2D doProcessing() {
     PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
     Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("TgaImporter");
-    importer->openFile(Utility::Directory::join(SNIPPETS_DIR, "image2.tga"));
+    importer->openFile(Utility::Path::join(SNIPPETS_DIR, "image2.tga"));
     auto image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
     return Image2D{image->storage(), image->format(), image->size(), image->release()};
@@ -54,7 +56,7 @@ Image2D doProcessing() {
 Image2D loadExpectedImage() {
     PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
     Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("TgaImporter");
-    importer->openFile(Utility::Directory::join(SNIPPETS_DIR, "image1.tga"));
+    importer->openFile(Utility::Path::join(SNIPPETS_DIR, "image1.tga"));
     auto image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
     return Image2D{image->storage(), image->format(), image->size(), image->release()};
