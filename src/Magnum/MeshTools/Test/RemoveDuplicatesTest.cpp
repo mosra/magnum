@@ -23,8 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <algorithm>
-#include <random>
+#include <algorithm> /* std::shuffle() */
+#include <random> /* random device for std::shuffle() */
 #include <sstream>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/TestSuite/Tester.h>

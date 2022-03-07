@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <algorithm>
+#include <algorithm> /* std::sort() */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 

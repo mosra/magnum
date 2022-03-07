@@ -26,7 +26,7 @@
 #include "MaterialData.h"
 
 #include <cstring>
-#include <algorithm>
+#include <algorithm> /* std::sort() */
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/GrowableArray.h>
 

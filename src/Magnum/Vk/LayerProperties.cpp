@@ -25,7 +25,7 @@
 
 #include "LayerProperties.h"
 
-#include <algorithm>
+#include <algorithm> /* std::sort() */
 #include <Corrade/Containers/StringView.h>
 
 #include "Magnum/Vk/Assert.h"

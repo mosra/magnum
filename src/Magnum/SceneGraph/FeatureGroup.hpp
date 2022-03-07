@@ -29,7 +29,7 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref FeatureGroup.h
  */
 
-#include <algorithm>
+#include <algorithm> /* std::find_if() */
 
 #include "Magnum/SceneGraph/FeatureGroup.h"
 

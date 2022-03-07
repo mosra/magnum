@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <algorithm>
+#include <algorithm> /* std::sort() */
 
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Intersection.h"

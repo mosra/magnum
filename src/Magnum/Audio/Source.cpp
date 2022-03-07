@@ -25,7 +25,7 @@
 
 #include "Source.h"
 
-#include <algorithm>
+#include <algorithm> /* std::remove_if() */
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Reference.h>

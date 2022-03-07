@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <algorithm>
+#include <algorithm> /* std::next_permutation() */
 #include <sstream>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/StringStl.h>

@@ -25,7 +25,7 @@
 
 #include "Context.h"
 
-#include <algorithm>
+#include <algorithm> /* std::lower_bound() */
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/Arguments.h>

@@ -27,7 +27,7 @@
 
 #include "Profiler.h"
 
-#include <algorithm>
+#include <algorithm> /* std::sort() */
 #include <numeric>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>

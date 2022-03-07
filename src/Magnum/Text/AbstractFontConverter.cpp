@@ -25,7 +25,7 @@
 
 #include "AbstractFontConverter.h"
 
-#include <algorithm>
+#include <algorithm> /* std::sort(), std::unique() */
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Assert.h>

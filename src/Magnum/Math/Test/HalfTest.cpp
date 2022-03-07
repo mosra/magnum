@@ -24,7 +24,6 @@
 */
 
 #include <cstring>
-#include <algorithm>
 #include <sstream>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>

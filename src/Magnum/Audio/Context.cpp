@@ -28,7 +28,7 @@
 #include "Context.h"
 
 #include <cstring>
-#include <algorithm>
+#include <algorithm> /* std::lower_bound() */
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>

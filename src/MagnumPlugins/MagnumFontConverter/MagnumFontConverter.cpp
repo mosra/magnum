@@ -25,7 +25,7 @@
 
 #include "MagnumFontConverter.h"
 
-#include <algorithm>
+#include <algorithm> /* std::sort() */
 #include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Configuration.h>

@@ -29,7 +29,7 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref AbstractObject.h, @ref AbstractTransformation.h and @ref Object.h
  */
 
-#include <algorithm>
+#include <algorithm> /* std::remove_if() */
 #include <stack>
 
 #include "Magnum/SceneGraph/AbstractTransformation.h"

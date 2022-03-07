@@ -25,7 +25,7 @@
 
 #include "ExtensionProperties.h"
 
-#include <algorithm>
+#include <algorithm> /* std::lower_bound() */
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>

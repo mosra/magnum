@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <algorithm>
+#include <algorithm> /* std::find() */
 #include <sstream>
 #include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Containers/StringStl.h>

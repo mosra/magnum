@@ -26,7 +26,7 @@
 #include "Instance.h"
 #include "InstanceCreateInfo.h"
 
-#include <algorithm>
+#include <algorithm> /* std::lower_bound() */
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/String.h>
