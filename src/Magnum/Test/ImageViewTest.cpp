@@ -210,7 +210,7 @@ template<class T> void ImageViewTest::constructGenericEmpty() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 8);
         CORRADE_COMPARE(a.size(), (Vector2i{2, 6}));
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
         ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             PixelFormat::RGB16F, {8, 3}};
@@ -220,7 +220,7 @@ template<class T> void ImageViewTest::constructGenericEmpty() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), (Vector2i{8, 3}));
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 }
 
@@ -305,7 +305,7 @@ template<class T> void ImageViewTest::constructImplementationSpecificEmpty() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 12);
         CORRADE_COMPARE(a.size(), (Vector2i{2, 16}));
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
         ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             Vk::PixelFormat::R32G32B32F, {1, 2}};
@@ -315,7 +315,7 @@ template<class T> void ImageViewTest::constructImplementationSpecificEmpty() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 12);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 2}));
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 
     /* Format + extra */
@@ -327,7 +327,7 @@ template<class T> void ImageViewTest::constructImplementationSpecificEmpty() {
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
         ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {8, 2}};
@@ -336,7 +336,7 @@ template<class T> void ImageViewTest::constructImplementationSpecificEmpty() {
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), (Vector2i{8, 2}));
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 
     /* Manual pixel size */
@@ -348,7 +348,7 @@ template<class T> void ImageViewTest::constructImplementationSpecificEmpty() {
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), (Vector2i{3, 3}));
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 }
 
@@ -387,7 +387,7 @@ template<class T> void ImageViewTest::constructCompressedGenericEmpty() {
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
         CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
         CORRADE_COMPARE(a.size(), (Vector2i{8, 16}));
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
         CompressedImageView<2, T> a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
             CompressedPixelFormat::Bc1RGBAUnorm, {8, 16}};
@@ -395,7 +395,7 @@ template<class T> void ImageViewTest::constructCompressedGenericEmpty() {
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
         CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
         CORRADE_COMPARE(a.size(), (Vector2i{8, 16}));
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 }
 
@@ -438,7 +438,7 @@ template<class T> void ImageViewTest::constructCompressedImplementationSpecificE
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
         CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
         CORRADE_COMPARE(a.size(), (Vector2i{8, 16}));
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
         CompressedImageView<2, T> a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
             GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 8}};
@@ -446,7 +446,7 @@ template<class T> void ImageViewTest::constructCompressedImplementationSpecificE
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
         CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
         CORRADE_COMPARE(a.size(), (Vector2i{4, 8}));
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 
     /* Manual properties not implemented yet */
@@ -817,7 +817,7 @@ template<class T> void ImageViewTest::pixels3D() {
 void ImageViewTest::pixelsNullptr() {
     ImageView3D image{PixelFormat::RGB8Unorm, {2, 4, 3}};
 
-    CORRADE_COMPARE(image.data(), nullptr);
+    CORRADE_COMPARE(image.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(image.data().size(), 0);
 
     CORRADE_COMPARE(image.pixels().data(), nullptr);

@@ -649,7 +649,7 @@ void AnimationDataTest::release() {
     CORRADE_COMPARE(data.trackCount(), 1);
 
     Containers::Array<char> released = data.release();
-    CORRADE_COMPARE(data.data(), nullptr);
+    CORRADE_COMPARE(data.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(data.trackCount(), 0);
     CORRADE_COMPARE(static_cast<const void*>(released.data()), keyframes);
 }

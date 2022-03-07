@@ -1568,7 +1568,7 @@ void MeshDataTest::constructIndexless() {
        allowed, to allow creation of MeshData instances referencing other
        MeshData without having to branch on isIndexed(). */
     CORRADE_VERIFY(!data.isIndexed());
-    CORRADE_COMPARE(data.indexData(), nullptr);
+    CORRADE_COMPARE(data.indexData(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(data.indices().data(), nullptr);
     CORRADE_COMPARE(data.indices().size(), (Containers::StridedArrayView2D<std::size_t>::Size{0, 0}));
     CORRADE_COMPARE(data.mutableIndices().data(), nullptr);
@@ -1584,8 +1584,8 @@ void MeshDataTest::constructIndexlessZeroVertices() {
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, nullptr};
     MeshData data{MeshPrimitive::LineLoop, nullptr, {positions}};
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::LineLoop);
-    CORRADE_COMPARE(data.indexData(), nullptr);
-    CORRADE_COMPARE(data.vertexData(), nullptr);
+    CORRADE_COMPARE(data.indexData(), static_cast<const void*>(nullptr));
+    CORRADE_COMPARE(data.vertexData(), static_cast<const void*>(nullptr));
 
     CORRADE_VERIFY(!data.isIndexed());
     CORRADE_COMPARE(data.vertexCount(), 0);
@@ -1612,7 +1612,7 @@ void MeshDataTest::constructAttributeless() {
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::TriangleStrip);
     CORRADE_VERIFY(!data.attributeData());
-    CORRADE_COMPARE(data.vertexData(), nullptr);
+    CORRADE_COMPARE(data.vertexData(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(data.importerState(), &importerState);
 
     CORRADE_VERIFY(data.isIndexed());
@@ -1781,9 +1781,9 @@ void MeshDataTest::constructIndexlessNotOwned() {
     CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.vertexDataFlags(), instanceData.dataFlags);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::LineLoop);
-    CORRADE_COMPARE(data.indexData(), nullptr);
+    CORRADE_COMPARE(data.indexData(), static_cast<const void*>(nullptr));
     if(instanceData.dataFlags & DataFlag::Mutable)
-        CORRADE_COMPARE(data.mutableIndexData(), nullptr);
+        CORRADE_COMPARE(data.mutableIndexData(), static_cast<void*>(nullptr));
     CORRADE_COMPARE(data.importerState(), &importerState);
 
     CORRADE_VERIFY(!data.isIndexed());
@@ -1808,7 +1808,7 @@ void MeshDataTest::constructAttributelessNotOwned() {
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::TriangleStrip);
     CORRADE_VERIFY(!data.attributeData());
-    CORRADE_COMPARE(data.vertexData(), nullptr);
+    CORRADE_COMPARE(data.vertexData(), static_cast<const void*>(nullptr));
     if(instanceData.dataFlags & DataFlag::Mutable)
         CORRADE_COMPARE(data.mutableVertexData(), nullptr);
     CORRADE_COMPARE(data.importerState(), &importerState);
@@ -1838,8 +1838,8 @@ void MeshDataTest::constructIndexlessAttributeless() {
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::TriangleStrip);
     CORRADE_VERIFY(!data.attributeData());
-    CORRADE_COMPARE(data.indexData(), nullptr);
-    CORRADE_COMPARE(data.vertexData(), nullptr);
+    CORRADE_COMPARE(data.indexData(), static_cast<const void*>(nullptr));
+    CORRADE_COMPARE(data.vertexData(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(data.importerState(), &state);
 
     CORRADE_VERIFY(!data.isIndexed());
@@ -1852,8 +1852,8 @@ void MeshDataTest::constructIndexlessAttributelessZeroVertices() {
     MeshData data{MeshPrimitive::TriangleStrip, 0, &state};
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::TriangleStrip);
     CORRADE_VERIFY(!data.attributeData());
-    CORRADE_COMPARE(data.indexData(), nullptr);
-    CORRADE_COMPARE(data.vertexData(), nullptr);
+    CORRADE_COMPARE(data.indexData(), static_cast<const void*>(nullptr));
+    CORRADE_COMPARE(data.vertexData(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(data.importerState(), &state);
 
     CORRADE_VERIFY(!data.isIndexed());

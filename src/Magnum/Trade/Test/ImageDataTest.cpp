@@ -680,7 +680,7 @@ void ImageDataTest::constructMoveGeneric() {
         PixelFormat::RGBA32F, {1, 3}, Containers::Array<char>{data, 3*16}, &state};
     ImageData2D b(std::move(a));
 
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
 
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -723,7 +723,7 @@ void ImageDataTest::constructMoveImplementationSpecific() {
         GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, &state};
     ImageData2D b(std::move(a));
 
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
 
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -765,7 +765,7 @@ void ImageDataTest::constructMoveCompressedGeneric() {
         CompressedPixelFormat::Bc3RGBAUnorm, {4, 4}, Containers::Array<char>{data, 8}, &state};
     ImageData2D b{std::move(a)};
 
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
 
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -802,7 +802,7 @@ void ImageDataTest::constructMoveCompressedImplementationSpecific() {
         GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, &state};
     ImageData2D b{std::move(a)};
 
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
 
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -839,7 +839,7 @@ void ImageDataTest::constructMoveAttachState() {
         GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, &stateOld};
     ImageData2D b{std::move(a), &stateNew};
 
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
 
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -863,7 +863,7 @@ void ImageDataTest::constructMoveCompressedAttachState() {
         GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, &stateOld};
     ImageData2D b{std::move(a), &stateNew};
 
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
 
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -1001,7 +1001,7 @@ void ImageDataTest::release() {
     const char* const pointer = a.release().release();
 
     CORRADE_COMPARE(pointer, data);
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i());
 }
 
@@ -1011,7 +1011,7 @@ void ImageDataTest::releaseCompressed() {
     const char* const pointer = a.release().release();
 
     CORRADE_COMPARE(pointer, data);
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i());
 }
 
