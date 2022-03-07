@@ -23,10 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/ShaderTools/Implementation/spirv.h"
 #include "Magnum/Vk/ShaderCreateInfo.h"
@@ -73,10 +73,11 @@ ShaderTest::ShaderTest() {
 }
 
 void ShaderTest::spirvPatchSwiftShaderConflictingMultiEntrypointLocations() {
-    Containers::Array<char> data = Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "ShaderTestFiles/vert-frag.spv"));
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "ShaderTestFiles/vert-frag.spv"));
+    CORRADE_VERIFY(data);
 
     /* The file is a full SPIR-V, strip the header first */
-    const Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(data, data.size());
+    const Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(*data, data->size());
     CORRADE_VERIFY(spirv);
 
     Containers::ArrayView<const UnsignedInt> view = spirv;

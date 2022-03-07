@@ -23,10 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Vk/ShaderCreateInfo.h"
 #include "Magnum/Vk/DeviceProperties.h"
@@ -56,11 +57,11 @@ ShaderVkTest::ShaderVkTest() {
 }
 
 void ShaderVkTest::construct() {
-    Containers::Array<char> data = Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"));
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "triangle-shaders.spv"));
     CORRADE_VERIFY(data);
 
     {
-        Shader shader{device(), ShaderCreateInfo{data}};
+        Shader shader{device(), ShaderCreateInfo{*data}};
         CORRADE_VERIFY(shader.handle());
         CORRADE_COMPARE(shader.handleFlags(), HandleFlag::DestroyOnDestruction);
     }
@@ -70,10 +71,10 @@ void ShaderVkTest::construct() {
 }
 
 void ShaderVkTest::constructMove() {
-    Containers::Array<char> data = Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"));
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "triangle-shaders.spv"));
     CORRADE_VERIFY(data);
 
-    Shader a{device(), ShaderCreateInfo{data}};
+    Shader a{device(), ShaderCreateInfo{*data}};
     VkShaderModule handle = a.handle();
 
     Shader b = std::move(a);
@@ -93,12 +94,12 @@ void ShaderVkTest::constructMove() {
 }
 
 void ShaderVkTest::wrap() {
-    Containers::Array<char> data = Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"));
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "triangle-shaders.spv"));
     CORRADE_VERIFY(data);
 
     VkShaderModule shader{};
     CORRADE_COMPARE(Result(device()->CreateShaderModule(device(),
-        ShaderCreateInfo{data},
+        ShaderCreateInfo{*data},
         nullptr, &shader)), Result::Success);
 
     auto wrapped = Shader::wrap(device(), shader, HandleFlag::DestroyOnDestruction);

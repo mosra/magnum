@@ -27,7 +27,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Mesh.h"
@@ -1214,7 +1214,7 @@ Vk::Device device{NoCreate};
 DOXYGEN_ELLIPSIS()
 
 Vk::ShaderCreateInfo info{
-    CORRADE_INTERNAL_ASSERT_EXPRESSION(Utility::Directory::read("shader.spv"))
+    *CORRADE_INTERNAL_ASSERT_EXPRESSION(Utility::Path::read("shader.spv"))
 };
 
 DOXYGEN_ELLIPSIS()

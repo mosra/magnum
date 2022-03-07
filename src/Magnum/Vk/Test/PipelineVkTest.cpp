@@ -25,9 +25,10 @@
 
 #include <sstream>
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Math/Range.h"
 #include "Magnum/Vk/BufferCreateInfo.h"
@@ -130,9 +131,9 @@ void PipelineVkTest::constructRasterization() {
 
         PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
-        Shader shader{device(), ShaderCreateInfo{
-            Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
-        }};
+        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "triangle-shaders.spv"));
+        CORRADE_VERIFY(data);
+        Shader shader{device(), ShaderCreateInfo{*data}};
 
         ShaderSet shaderSet;
         shaderSet
@@ -200,9 +201,9 @@ void PipelineVkTest::constructRasterizationViewportNotSetDiscardEnabled() {
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "triangle-shaders.spv"));
+    CORRADE_VERIFY(data);
+    Shader shader{device(), ShaderCreateInfo{*data}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -243,9 +244,9 @@ void PipelineVkTest::constructRasterizationViewportNotSetDynamic() {
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "triangle-shaders.spv"));
+    CORRADE_VERIFY(data);
+    Shader shader{device(), ShaderCreateInfo{*data}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -271,9 +272,9 @@ void PipelineVkTest::constructCompute() {
     {
         PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
-        Shader shader{device(), ShaderCreateInfo{
-            Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "compute-noop.spv"))
-        }};
+        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "compute-noop.spv"));
+        CORRADE_VERIFY(data);
+        Shader shader{device(), ShaderCreateInfo{*data}};
 
         ShaderSet shaderSet;
         shaderSet.addShader(ShaderStage::Compute, shader, "main"_s);
@@ -313,9 +314,9 @@ void PipelineVkTest::constructMove() {
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "triangle-shaders.spv"));
+    CORRADE_VERIFY(data);
+    Shader shader{device(), ShaderCreateInfo{*data}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -373,9 +374,9 @@ void PipelineVkTest::wrapRasterization() {
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "triangle-shaders.spv"));
+    CORRADE_VERIFY(data);
+    Shader shader{device(), ShaderCreateInfo{*data}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -403,9 +404,9 @@ void PipelineVkTest::wrapRasterization() {
 void PipelineVkTest::wrapCompute() {
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "compute-noop.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "compute-noop.spv"));
+    CORRADE_VERIFY(data);
+    Shader shader{device(), ShaderCreateInfo{*data}};
 
     ShaderSet shaderSet;
     shaderSet.addShader(ShaderStage::Compute, shader, "main"_s);
@@ -432,9 +433,9 @@ void PipelineVkTest::dynamicRasterizationStatesNotRasterization() {
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "compute-noop.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "compute-noop.spv"));
+    CORRADE_VERIFY(data);
+    Shader shader{device(), ShaderCreateInfo{*data}};
 
     ShaderSet shaderSet;
     shaderSet.addShader(ShaderStage::Compute, shader, "main"_s);
@@ -476,9 +477,9 @@ void PipelineVkTest::cmdBindRasterization() {
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "triangle-shaders.spv"));
+    CORRADE_VERIFY(data);
+    Shader shader{device(), ShaderCreateInfo{*data}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -512,9 +513,9 @@ void PipelineVkTest::cmdBindCompute() {
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "compute-noop.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "compute-noop.spv"));
+    CORRADE_VERIFY(data);
+    Shader shader{device(), ShaderCreateInfo{*data}};
 
     ShaderSet shaderSet;
     shaderSet.addShader(ShaderStage::Compute, shader, "main"_s);

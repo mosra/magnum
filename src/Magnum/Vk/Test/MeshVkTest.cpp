@@ -25,11 +25,12 @@
 
 #include <sstream>
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -268,9 +269,10 @@ void MeshVkTest::cmdDraw() {
             .setCount(4);
     }
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/flat.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> shaderData = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/flat.spv"));
+    CORRADE_VERIFY(shaderData);
+
+    Shader shader{device(), ShaderCreateInfo{*shaderData}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -307,7 +309,7 @@ void MeshVkTest::cmdDraw() {
     CORRADE_COMPARE_WITH((ImageView2D{Magnum::PixelFormat::RGBA8Unorm,
         _framebuffer.size().xy(),
         _pixels.dedicatedMemory().mapRead()}),
-        Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/flat.tga"),
+        Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/flat.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -334,9 +336,10 @@ void MeshVkTest::cmdDrawIndexed() {
             .setCount(6);
     }
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/flat.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> shaderData = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/flat.spv"));
+    CORRADE_VERIFY(shaderData);
+
+    Shader shader{device(), ShaderCreateInfo{*shaderData}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -373,7 +376,7 @@ void MeshVkTest::cmdDrawIndexed() {
     CORRADE_COMPARE_WITH((ImageView2D{Magnum::PixelFormat::RGBA8Unorm,
         _framebuffer.size().xy(),
         _pixels.dedicatedMemory().mapRead()}),
-        Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/flat.tga"),
+        Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/flat.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -395,9 +398,10 @@ void MeshVkTest::cmdDrawTwoAttributes() {
             .setCount(4);
     }
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/vertexcolor.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> shaderData = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/vertexcolor.spv"));
+    CORRADE_VERIFY(shaderData);
+
+    Shader shader{device(), ShaderCreateInfo{*shaderData}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -434,7 +438,7 @@ void MeshVkTest::cmdDrawTwoAttributes() {
     CORRADE_COMPARE_WITH((ImageView2D{Magnum::PixelFormat::RGBA8Unorm,
         _framebuffer.size().xy(),
         _pixels.dedicatedMemory().mapRead()}),
-        Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/vertexcolor.tga"),
+        Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/vertexcolor.tga"),
         /* ARM Mali (Android) has some minor off-by-one differences */
         (DebugTools::CompareImageToFile{_manager, 0.5f, 0.012f}));
 }
@@ -465,9 +469,10 @@ void MeshVkTest::cmdDrawTwoAttributesTwoBindings() {
             .setCount(4);
     }
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/vertexcolor.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> shaderData = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/vertexcolor.spv"));
+    CORRADE_VERIFY(shaderData);
+
+    Shader shader{device(), ShaderCreateInfo{*shaderData}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -504,7 +509,7 @@ void MeshVkTest::cmdDrawTwoAttributesTwoBindings() {
     CORRADE_COMPARE_WITH((ImageView2D{Magnum::PixelFormat::RGBA8Unorm,
         _framebuffer.size().xy(),
         _pixels.dedicatedMemory().mapRead()}),
-        Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/vertexcolor.tga"),
+        Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/vertexcolor.tga"),
         /* ARM Mali (Android) has some minor off-by-one differences */
         (DebugTools::CompareImageToFile{_manager, 0.5f, 0.012f}));
 }
@@ -531,9 +536,10 @@ void MeshVkTest::cmdDrawNullBindingRobustness2() {
             .setCount(4);
     }
 
-    Shader shader{_deviceRobustness2, ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/vertexcolor.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> shaderData = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/vertexcolor.spv"));
+    CORRADE_VERIFY(shaderData);
+
+    Shader shader{_deviceRobustness2, ShaderCreateInfo{*shaderData}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -570,7 +576,7 @@ void MeshVkTest::cmdDrawNullBindingRobustness2() {
     CORRADE_COMPARE_WITH((ImageView2D{Magnum::PixelFormat::RGBA8Unorm,
         _framebuffer.size().xy(),
         _pixels.dedicatedMemory().mapRead()}),
-        Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/nullcolor.tga"),
+        Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/nullcolor.tga"),
         /* ARM Mali (Android) has some minor off-by-one differences */
         (DebugTools::CompareImageToFile{_manager}));
 }
@@ -588,9 +594,10 @@ void MeshVkTest::cmdDrawZeroCount() {
     mesh.setCount(data.count)
         .setInstanceCount(data.instanceCount);
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/flat.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> shaderData = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/flat.spv"));
+    CORRADE_VERIFY(shaderData);
+
+    Shader shader{device(), ShaderCreateInfo{*shaderData}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -627,7 +634,7 @@ void MeshVkTest::cmdDrawZeroCount() {
     CORRADE_COMPARE_WITH((ImageView2D{Magnum::PixelFormat::RGBA8Unorm,
         _framebuffer.size().xy(),
         _pixels.dedicatedMemory().mapRead()}),
-        Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/noop.tga"),
+        Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/noop.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -638,9 +645,10 @@ void MeshVkTest::cmdDrawNoCountSet() {
 
     Mesh mesh{MeshLayout{MeshPrimitive::Triangles}};
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/noop.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> shaderData = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/noop.spv"));
+    CORRADE_VERIFY(shaderData);
+
+    Shader shader{device(), ShaderCreateInfo{*shaderData}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -690,9 +698,10 @@ void MeshVkTest::cmdDrawDynamicPrimitive() {
             .setCount(4);
     }
 
-    Shader shader{_deviceExtendedDynamicState, ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/flat.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> shaderData = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/flat.spv"));
+    CORRADE_VERIFY(shaderData);
+
+    Shader shader{_deviceExtendedDynamicState, ShaderCreateInfo{*shaderData}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -735,7 +744,7 @@ void MeshVkTest::cmdDrawDynamicPrimitive() {
     CORRADE_COMPARE_WITH((ImageView2D{Magnum::PixelFormat::RGBA8Unorm,
         _framebuffer.size().xy(),
         _pixels.dedicatedMemory().mapRead()}),
-        Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/flat.tga"),
+        Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/flat.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -764,9 +773,10 @@ void MeshVkTest::cmdDrawDynamicStride() {
             .setCount(4);
     }
 
-    Shader shader{_deviceExtendedDynamicState, ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/flat.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> shaderData = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/flat.spv"));
+    CORRADE_VERIFY(shaderData);
+
+    Shader shader{_deviceExtendedDynamicState, ShaderCreateInfo{*shaderData}};
 
     ShaderSet shaderSet;
     shaderSet
@@ -810,7 +820,7 @@ void MeshVkTest::cmdDrawDynamicStride() {
     CORRADE_COMPARE_WITH((ImageView2D{Magnum::PixelFormat::RGBA8Unorm,
         _framebuffer.size().xy(),
         _pixels.dedicatedMemory().mapRead()}),
-        Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/flat.tga"),
+        Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/flat.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -839,9 +849,10 @@ void MeshVkTest::cmdDrawDynamicStrideInsufficientImplementation() {
             .setCount(4);
     }
 
-    Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "MeshTestFiles/flat.spv"))
-    }};
+    Containers::Optional<Containers::Array<char>> shaderData = Utility::Path::read(Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/flat.spv"));
+    CORRADE_VERIFY(shaderData);
+
+    Shader shader{device(), ShaderCreateInfo{*shaderData}};
 
     ShaderSet shaderSet;
     shaderSet
