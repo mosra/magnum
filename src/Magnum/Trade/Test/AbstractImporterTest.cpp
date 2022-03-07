@@ -26,11 +26,14 @@
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free and AbstractImporter is <string>-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/FileCallback.h"
@@ -831,7 +834,7 @@ void AbstractImporterTest::openFileAsData() {
 
     /* doOpenFile() should call doOpenData() */
     CORRADE_VERIFY(!importer.isOpened());
-    CORRADE_VERIFY(importer.openFile(Utility::Directory::join(TRADE_TEST_DIR, "file.bin")));
+    CORRADE_VERIFY(importer.openFile(Utility::Path::join(TRADE_TEST_DIR, "file.bin")));
     CORRADE_VERIFY(importer.isOpened());
 
     importer.close();
@@ -856,7 +859,10 @@ void AbstractImporterTest::openFileAsDataNotFound() {
 
     CORRADE_VERIFY(!importer.openFile("nonexistent.bin"));
     CORRADE_VERIFY(!importer.isOpened());
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::openFile(): cannot open file nonexistent.bin\n");
+    /* There's an error message from Path::read() before */
+    CORRADE_COMPARE_AS(out.str(),
+        "\nTrade::AbstractImporter::openFile(): cannot open file nonexistent.bin\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractImporterTest::openFileNotImplemented() {

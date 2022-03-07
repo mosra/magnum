@@ -29,9 +29,9 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h> /* for Directory */
+#include <Corrade/Containers/StringStl.h> /** @todo remove once PluginManager is <string>-free */
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
@@ -55,9 +55,10 @@ std::string AbstractImageConverter::pluginInterface() {
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 std::vector<std::string> AbstractImageConverter::pluginSearchPaths() {
+    const Containers::Optional<Containers::String> libraryLocation = Utility::Path::libraryLocation(&pluginInterface);
     return PluginManager::implicitPluginSearchPaths(
         #ifndef MAGNUM_BUILD_STATIC
-        Utility::Directory::libraryLocation(&pluginInterface),
+        libraryLocation ? *libraryLocation : Containers::String{},
         #else
         {},
         #endif
@@ -647,7 +648,7 @@ bool AbstractImageConverter::doConvertToFile(const ImageView1D& image, const Con
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -681,7 +682,7 @@ bool AbstractImageConverter::doConvertToFile(const ImageView2D& image, const Con
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -721,7 +722,7 @@ bool AbstractImageConverter::doConvertToFile(const ImageView3D& image, const Con
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -755,7 +756,7 @@ bool AbstractImageConverter::doConvertToFile(const CompressedImageView1D& image,
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -789,7 +790,7 @@ bool AbstractImageConverter::doConvertToFile(const CompressedImageView2D& image,
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -829,7 +830,7 @@ bool AbstractImageConverter::doConvertToFile(const CompressedImageView3D& image,
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -879,7 +880,7 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const I
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -911,7 +912,7 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const I
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -943,7 +944,7 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const I
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -975,7 +976,7 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const C
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -1007,7 +1008,7 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const C
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -1039,7 +1040,7 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const C
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }

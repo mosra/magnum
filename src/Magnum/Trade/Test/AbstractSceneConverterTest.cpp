@@ -25,14 +25,14 @@
 
 #include <sstream>
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/FileToString.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/ArrayAllocator.h"
@@ -117,7 +117,7 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
               &AbstractSceneConverterTest::debugFlags});
 
     /* Create testing dir */
-    Utility::Directory::mkpath(TRADE_TEST_OUTPUT_DIR);
+    Utility::Path::make(TRADE_TEST_OUTPUT_DIR);
 }
 
 void AbstractSceneConverterTest::featuresNone() {
@@ -197,7 +197,7 @@ void AbstractSceneConverterTest::thingNotSupported() {
     converter.convert(mesh);
     converter.convertInPlace(mesh);
     converter.convertToData(mesh);
-    converter.convertToFile(mesh, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out"));
+    converter.convertToFile(mesh, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out"));
     CORRADE_COMPARE(out.str(),
         "Trade::AbstractSceneConverter::convert(): mesh conversion not supported\n"
         "Trade::AbstractSceneConverter::convertInPlace(): mesh conversion not supported\n"
@@ -446,15 +446,14 @@ void AbstractSceneConverterTest::convertMeshToFile() {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToFile; }
 
         bool doConvertToFile(const MeshData& mesh, Containers::StringView filename) override {
-            return Utility::Directory::write(filename, Containers::arrayView(               {char(mesh.vertexCount())}));
+            return Utility::Path::write(filename, Containers::arrayView(               {char(mesh.vertexCount())}));
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     CORRADE_VERIFY(converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xef}, filename));
     CORRADE_COMPARE_AS(filename,
@@ -470,11 +469,10 @@ void AbstractSceneConverterTest::convertMeshToFileThroughData() {
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* doConvertToFile() should call doConvertToData() */
     CORRADE_VERIFY(converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xef}, filename));
@@ -491,18 +489,17 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataFailed() {
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xef}, filename));
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_VERIFY(!Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
 
@@ -534,7 +531,7 @@ void AbstractSceneConverterTest::convertMeshToFileNotImplemented() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertToFile(MeshData{MeshPrimitive::Triangles, 6}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out"));
+    converter.convertToFile(MeshData{MeshPrimitive::Triangles, 6}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out"));
     CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::convertToFile(): mesh conversion advertised but not implemented\n");
 }
 

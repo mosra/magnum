@@ -26,10 +26,11 @@
 #include <unordered_map>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once file callbacks are <string>-free */
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/FileCallback.h"
@@ -162,8 +163,8 @@ if(!importer->openData(data)) /* or openMemory() */
 Containers::Pointer<Trade::AbstractImporter> importer;
 /* [AbstractImporter-usage-callbacks] */
 struct Data {
-    std::unordered_map<std::string,
-        Containers::Array<const char, Utility::Directory::MapDeleter>> files;
+    std::unordered_map<std::string, Containers::Optional<
+        Containers::Array<const char, Utility::Path::MapDeleter>>> files;
 } data;
 
 importer->setFileCallback([](const std::string& filename,
@@ -178,11 +179,13 @@ importer->setFileCallback([](const std::string& filename,
             return {};
         }
 
-        /* Load if not there yet */
+        /* Load if not there yet. If the mapping fails, remember that to not
+           attempt to load the same file again next time. */
         if(found == data.files.end()) found = data.files.emplace(
-            filename, Utility::Directory::mapRead(filename)).first;
+            filename, Utility::Path::mapRead(filename)).first;
 
-        return Containers::arrayView(found->second);
+        if(!found->second) return {};
+        return Containers::arrayView(*found->second);
     }, data);
 
 importer->openFile("scene.gltf"); // memory-maps all files

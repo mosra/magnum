@@ -28,10 +28,9 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/StringStl.h> /* Needed for Directory */
-#include <Corrade/Containers/StringView.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once PluginManager is <string>-free */
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Trade/ArrayAllocator.h"
 #include "Magnum/Trade/MeshData.h"
@@ -52,9 +51,10 @@ std::string AbstractSceneConverter::pluginInterface() {
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 std::vector<std::string> AbstractSceneConverter::pluginSearchPaths() {
+    const Containers::Optional<Containers::String> libraryLocation = Utility::Path::libraryLocation(&pluginInterface);
     return PluginManager::implicitPluginSearchPaths(
         #ifndef MAGNUM_BUILD_STATIC
-        Utility::Directory::libraryLocation(&pluginInterface),
+        libraryLocation ? *libraryLocation : Containers::String{},
         #else
         {},
         #endif
@@ -161,7 +161,7 @@ bool AbstractSceneConverter::doConvertToFile(const MeshData& mesh, const Contain
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Directory::write(filename, data)) {
+    if(!Utility::Path::write(filename, data)) {
         Error() << "Trade::AbstractSceneConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
