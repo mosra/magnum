@@ -285,7 +285,7 @@ template<std::size_t size, class T> inline BoolVector<size> isNan(const Vector<s
 <em>NaN</em>s passed in the @p value parameter are propagated.
 @see @ref max(), @ref minmax(), @ref clamp(),
     @ref min(const Corrade::Containers::StridedArrayView1D<const T>&),
-    @ref Vector::min()
+    @ref Vector::min(), @ref Corrade::Utility::min()
 */
 /* defined in Vector.h */
 template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type min(T value, T min);
@@ -312,7 +312,7 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 <em>NaN</em>s passed in the @p value parameter are propagated.
 @see @ref min(), @ref minmax(), @ref clamp(),
     @ref max(const Corrade::Containers::StridedArrayView1D<const T>&),
-    @ref Vector::max()
+    @ref Vector::max(), @ref Corrade::Utility::max()
 */
 /* defined in Vector.h */
 template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type max(T a, T b);
