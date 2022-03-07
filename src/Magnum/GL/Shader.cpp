@@ -30,10 +30,11 @@
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
+#include <Corrade/Containers/StringStl.h> /** @todo remove once Shader is <string>-free */
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -740,10 +741,9 @@ void Shader::addSourceImplementationEmscriptenPthread(std::string source) {
 #endif
 
 Shader& Shader::addFile(const std::string& filename) {
-    CORRADE_ASSERT(Utility::Directory::exists(filename),
-        "GL::Shader file " << '\'' + filename + '\'' << " cannot be read.", *this);
-
-    addSource(Utility::Directory::readString(filename));
+    const Containers::Optional<Containers::String> string = Utility::Path::readString(filename);
+    CORRADE_ASSERT(string, "GL::Shader::addFile(): can't read" << filename, *this);
+    addSource(*string);
     return *this;
 }
 

@@ -23,8 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/StringStl.h> /** @todo remove once Shader is <string>-free */
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -243,7 +244,7 @@ void ShaderGLTest::addFile() {
     Shader shader(Version::GLES200, Shader::Type::Fragment);
     #endif
 
-    shader.addFile(Utility::Directory::join(SHADERGLTEST_FILES_DIR, "shader.glsl"));
+    shader.addFile(Utility::Path::join(SHADERGLTEST_FILES_DIR, "shader.glsl"));
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{

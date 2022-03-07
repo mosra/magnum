@@ -24,9 +24,14 @@
 */
 
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
+
+#ifdef CORRADE_TARGET_APPLE
+#include <Corrade/Utility/System.h> /* isSandboxed() */
+#endif
 
 #include "Magnum/Image.h"
 #include "Magnum/DebugTools/CompareImage.h"
@@ -65,7 +70,7 @@ struct RendererGLTest: OpenGLTester {
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
-        std::string _testDir;
+        Containers::String _testDir;
 
         GL::Renderbuffer _color{NoCreate};
         GL::Framebuffer _framebuffer{NoCreate};
@@ -95,13 +100,13 @@ RendererGLTest::RendererGLTest() {
     #endif
 
     #ifdef CORRADE_TARGET_APPLE
-    if(Utility::Directory::isSandboxed()
+    if(Utility::System::isSandboxed()
         #if defined(CORRADE_TARGET_IOS) && defined(CORRADE_TESTSUITE_TARGET_XCTEST)
         /** @todo Fix this once I persuade CMake to run XCTest tests properly */
         && std::getenv("SIMULATOR_UDID")
         #endif
     ) {
-        _testDir = Utility::Directory::join(Utility::Directory::path(Utility::Directory::executableLocation()), "RendererGLTestFiles");
+        _testDir = Utility::Path::join(Utility::Path::split(*Utility::Path::executableLocation()).first(), "RendererGLTestFiles");
     } else
     #endif
     {
@@ -232,7 +237,7 @@ void RendererGLTest::pointCoord() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {Magnum::PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "pointcoord.tga"),
+        Utility::Path::join(_testDir, "pointcoord.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
