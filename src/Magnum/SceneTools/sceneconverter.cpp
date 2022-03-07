@@ -419,6 +419,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         };
 
         /* Parse everything first to avoid errors interleaved with output */
+        bool error = false;
 
         /* Scene properties, together with counting how much is each mesh /
            light / material / skin shared (which gets used only if both
@@ -438,7 +439,10 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
             for(UnsignedInt i = 0; i != importer->sceneCount(); ++i) {
                 Containers::Optional<Trade::SceneData> scene = importer->scene(i);
-                if(!scene) continue;
+                if(!scene) {
+                    error = true;
+                    continue;
+                }
 
                 SceneInfo info{};
                 info.scene = i;
@@ -482,7 +486,6 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         }
 
         /* Animation properties */
-        bool error = false;
         Containers::Array<AnimationInfo> animationInfos;
         if(args.isSet("info") || args.isSet("info-animations")) for(UnsignedInt i = 0; i != importer->animationCount(); ++i) {
             Containers::Optional<Trade::AnimationData> animation;
