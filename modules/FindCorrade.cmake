@@ -529,7 +529,7 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             set_property(TARGET Corrade::${_component} APPEND PROPERTY
                 COMPATIBLE_INTERFACE_NUMBER_MAX CORRADE_CXX_STANDARD)
 
-            # Directory::libraryLocation() needs this
+            # Path::libraryLocation() needs this
             if(CORRADE_TARGET_UNIX)
                 set_property(TARGET Corrade::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
