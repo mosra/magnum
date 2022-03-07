@@ -26,7 +26,7 @@
 #include "Angle.h"
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <algorithm> /** @todo get rid of this once StringView::find() exists */
+#include <cstdlib>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/TweakableParser.h>
 
@@ -38,7 +38,7 @@ std::pair<TweakableState, Magnum::Math::Deg<Magnum::Float>> TweakableParser<Magn
     char* end;
     const Magnum::Float result = std::strtof(value.data(), &end);
 
-    if(end == value.begin() || std::find(value.begin(), value.end(), '.') == value.end()) {
+    if(end == value.begin() || !value.contains('.')) {
         Warning{} << "Utility::TweakableParser:" << value << "is not an angle literal";
         return {TweakableState::Recompile, {}};
     }
@@ -62,7 +62,7 @@ std::pair<TweakableState, Magnum::Math::Deg<Magnum::Double>> TweakableParser<Mag
     char* end;
     const Magnum::Double result = std::strtod(value.data(), &end);
 
-    if(end == value.begin() || std::find(value.begin(), value.end(), '.') == value.end()) {
+    if(end == value.begin() || !value.contains('.')) {
         Warning{} << "Utility::TweakableParser:" << value << "is not an angle literal";
         return {TweakableState::Recompile, {}};
     }
@@ -86,7 +86,7 @@ std::pair<TweakableState, Magnum::Math::Rad<Magnum::Float>> TweakableParser<Magn
     char* end;
     const Magnum::Float result = std::strtof(value.data(), &end);
 
-    if(end == value.begin() || std::find(value.begin(), value.end(), '.') == value.end()) {
+    if(end == value.begin() || !value.contains('.')) {
         Warning{} << "Utility::TweakableParser:" << value << "is not an angle literal";
         return {TweakableState::Recompile, {}};
     }
@@ -110,7 +110,7 @@ std::pair<TweakableState, Magnum::Math::Rad<Magnum::Double>> TweakableParser<Mag
     char* end;
     const Magnum::Double result = std::strtod(value.data(), &end);
 
-    if(end == value.begin() || std::find(value.begin(), value.end(), '.') == value.end()) {
+    if(end == value.begin() || !value.contains('.')) {
         Warning{} << "Utility::TweakableParser:" << value << "is not an angle literal";
         return {TweakableState::Recompile, {}};
     }

@@ -30,7 +30,6 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <algorithm> /** @todo get rid of this once StringView::find() exists */
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/TweakableParser.h>
 #endif
@@ -56,7 +55,7 @@ std::pair<TweakableState, Magnum::Math::Half> TweakableParser<Magnum::Math::Half
     char* end;
     const Magnum::Float result = std::strtof(value.data(), &end);
 
-    if(end == value.begin() || std::find(value.begin(), value.end(), '.') == value.end()) {
+    if(end == value.begin() || !value.contains('.')) {
         Warning{} << "Utility::TweakableParser:" << value << "is not a half literal";
         return {TweakableState::Recompile, {}};
     }
