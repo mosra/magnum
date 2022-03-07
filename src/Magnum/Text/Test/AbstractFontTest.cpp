@@ -26,9 +26,11 @@
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFont is <string>-free */
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/FileCallback.h"
 #include "Magnum/Math/Vector2.h"
@@ -223,7 +225,7 @@ void AbstractFontTest::openFileAsData() {
 
     /* doOpenFile() should call doOpenData() */
     CORRADE_VERIFY(!font.isOpened());
-    font.openFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"), 13.0f);
+    font.openFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"), 13.0f);
     CORRADE_VERIFY(font.isOpened());
     CORRADE_COMPARE(font.size(), 13.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
@@ -247,7 +249,10 @@ void AbstractFontTest::openFileAsDataNotFound() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!font.openFile("nonexistent.foo", 12.0f));
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::openFile(): cannot open file nonexistent.foo\n");
+    /* There's an error message from Path::read() before */
+    CORRADE_COMPARE_AS(out.str(),
+        "\nText::AbstractFont::openFile(): cannot open file nonexistent.foo\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractFontTest::openFileNotImplemented() {

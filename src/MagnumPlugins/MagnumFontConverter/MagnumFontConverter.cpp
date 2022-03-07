@@ -28,8 +28,9 @@
 #include <algorithm> /* std::sort() */
 #include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Configuration.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -58,7 +59,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
     Utility::Configuration configuration;
 
     configuration.setValue("version", 1);
-    configuration.setValue("image", Utility::Directory::filename(filename) + ".tga");
+    configuration.setValue("image", Utility::Path::split(filename).second() + ".tga");
     configuration.setValue("originalImageSize", cache.textureSize());
     configuration.setValue("padding", cache.padding());
     configuration.setValue("fontSize", font.size());

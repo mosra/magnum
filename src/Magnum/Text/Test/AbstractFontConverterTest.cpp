@@ -25,13 +25,14 @@
 
 #include <sstream>
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove when AbstractFontConverter is <string>-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/FileToString.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
@@ -151,7 +152,7 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
               &AbstractFontConverterTest::debugFeatures});
 
     /* Create testing dir */
-    Utility::Directory::mkpath(TEXT_TEST_OUTPUT_DIR);
+    Utility::Path::make(TEXT_TEST_OUTPUT_DIR);
 }
 
 struct DummyFont: AbstractFont {
@@ -366,20 +367,22 @@ void AbstractFontConverterTest::exportFontToFile() {
         }
 
         bool doExportFontToFile(AbstractFont&, AbstractGlyphCache&, const std::string& filename, const std::u32string& characters) const override {
-            return
-                Utility::Directory::write(filename, Containers::arrayView({'\xf0'})) &&
-                Utility::Directory::write(filename + ".dat", Containers::arrayView({'\xfe', char(characters.size())}));
+            CORRADE_VERIFY(Utility::Path::write(filename, Containers::arrayView({'\xf0'})));
+            CORRADE_VERIFY(Utility::Path::write(filename + ".dat", Containers::arrayView({'\xfe', char(characters.size())})));
+            return true;
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out");
-    const std::string filename2 = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out.dat");
+    Containers::String filename = Utility::Path::join(TEXT_TEST_OUTPUT_DIR, "font.out");
+    Containers::String filename2 = Utility::Path::join(TEXT_TEST_OUTPUT_DIR, "font.out.dat");
 
     /* Remove previous files, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
-    if(Utility::Directory::exists(filename2))
-        CORRADE_VERIFY(Utility::Directory::rm(filename2));
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+    if(Utility::Path::exists(filename2))
+        CORRADE_VERIFY(Utility::Path::remove(filename2));
+
+    CORRADE_VERIFY(true); /* Capture correct function name first */
 
     CORRADE_VERIFY(converter.exportFontToFile(dummyFont, dummyGlyphCache, filename, "eh"));
     CORRADE_COMPARE_AS(filename, "\xf0",
@@ -436,14 +439,14 @@ void AbstractFontConverterTest::exportFontToFileThroughData() {
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out");
-    const std::string filename2 = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out.dat");
+    Containers::String filename = Utility::Path::join(TEXT_TEST_OUTPUT_DIR, "font.out");
+    Containers::String filename2 = Utility::Path::join(TEXT_TEST_OUTPUT_DIR, "font.out.dat");
 
     /* Remove previous files, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
-    if(Utility::Directory::exists(filename2))
-        CORRADE_VERIFY(Utility::Directory::rm(filename2));
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+    if(Utility::Path::exists(filename2))
+        CORRADE_VERIFY(Utility::Path::remove(filename2));
 
     /* doExportToFile() should call doExportToData() */
     CORRADE_VERIFY(converter.exportFontToFile(dummyFont, dummyGlyphCache, filename, "awoo"));
@@ -462,18 +465,18 @@ void AbstractFontConverterTest::exportFontToFileThroughDataFailed() {
         std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont&, AbstractGlyphCache&, const std::string&, const std::u32string&) const override { return {}; }
     } converter;
 
-    const std::string filename = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out");
+    Containers::String filename = Utility::Path::join(TEXT_TEST_OUTPUT_DIR, "font.out");
 
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.exportFontToFile(dummyFont, dummyGlyphCache, filename, {}));
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_VERIFY(!Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
 
@@ -668,20 +671,22 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
         }
 
         bool doExportGlyphCacheToFile(AbstractGlyphCache&, const std::string& filename) const override {
-            return
-                Utility::Directory::write(filename, Containers::arrayView({'\xf0'})) &&
-                Utility::Directory::write(filename + ".dat", Containers::arrayView({'\xfe', '\xed'}));
+            CORRADE_VERIFY(Utility::Path::write(filename, Containers::arrayView({'\xf0'})));
+            CORRADE_VERIFY(Utility::Path::write(filename + ".dat", Containers::arrayView({'\xfe', '\xed'})));
+            return true;
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "cache.out");
-    const std::string filename2 = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "cache.out.dat");
+    Containers::String filename = Utility::Path::join(TEXT_TEST_OUTPUT_DIR, "cache.out");
+    Containers::String filename2 = Utility::Path::join(TEXT_TEST_OUTPUT_DIR, "cache.out.dat");
 
     /* Remove previous files, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
-    if(Utility::Directory::exists(filename2))
-        CORRADE_VERIFY(Utility::Directory::rm(filename2));
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+    if(Utility::Path::exists(filename2))
+        CORRADE_VERIFY(Utility::Path::remove(filename2));
+
+    CORRADE_VERIFY(true); /* Capture correct function name first */
 
     CORRADE_VERIFY(converter.exportGlyphCacheToFile(dummyGlyphCache, filename));
     CORRADE_COMPARE_AS(filename, "\xf0",
@@ -738,14 +743,14 @@ void AbstractFontConverterTest::exportGlyphCacheToFileThroughData() {
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "cache.out");
-    const std::string filename2 = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "cache.out.dat");
+    Containers::String filename = Utility::Path::join(TEXT_TEST_OUTPUT_DIR, "cache.out");
+    Containers::String filename2 = Utility::Path::join(TEXT_TEST_OUTPUT_DIR, "cache.out.dat");
 
     /* Remove previous files, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
-    if(Utility::Directory::exists(filename2))
-        CORRADE_VERIFY(Utility::Directory::rm(filename2));
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+    if(Utility::Path::exists(filename2))
+        CORRADE_VERIFY(Utility::Path::remove(filename2));
 
     /* doExportGlyphCacheToFile() should call doExportGlyphCacheToData() */
     CORRADE_VERIFY(converter.exportGlyphCacheToFile(dummyGlyphCache, filename));
@@ -762,18 +767,17 @@ void AbstractFontConverterTest::exportGlyphCacheToFileThroughDataFailed() {
         std::vector<std::pair<std::string, Containers::Array<char>>> doExportGlyphCacheToData(AbstractGlyphCache&, const std::string&) const override { return {}; }
     } converter;
 
-    const std::string filename = Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "cache.out");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(TEXT_TEST_OUTPUT_DIR, "cache.out");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.exportGlyphCacheToFile(dummyGlyphCache, filename));
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_VERIFY(!Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
 
@@ -964,14 +968,16 @@ void AbstractFontConverterTest::importGlyphCacheFromFile() {
         }
 
         Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromFile(const std::string& filename) const override {
-            Containers::Array<char> data = Utility::Directory::read(filename);
-            if(data.size() == 1 && data[0] == '\xa5')
-                return Containers::pointer(new DummyGlyphCache{{123, 345}});
-            return nullptr;
+            Containers::Optional<Containers::Array<char>> data = Utility::Path::read(filename);
+            CORRADE_VERIFY(data);
+            CORRADE_COMPARE_AS(*data,
+                Containers::arrayView({'\xa5'}),
+                TestSuite::Compare::Container);
+            return Containers::pointer(new DummyGlyphCache{{123, 345}});
         }
     } converter;
 
-    Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"));
+    Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"));
     CORRADE_VERIFY(cache);
     CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
 }
@@ -1024,7 +1030,7 @@ void AbstractFontConverterTest::importGlyphCacheFromFileAsSingleData() {
     } converter;
 
     /* doImportFromFile() should call doImportFromSingleData() */
-    Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"));
+    Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"));
     CORRADE_VERIFY(cache);
     CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
 }
@@ -1044,7 +1050,10 @@ void AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataNotFound() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.importGlyphCacheFromFile("nonexistent.bin"));
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::importGlyphCacheFromFile(): cannot open file nonexistent.bin\n");
+    /* There's an error message from Path::read() before */
+    CORRADE_COMPARE_AS(out.str(),
+        "\nText::AbstractFontConverter::importGlyphCacheFromFile(): cannot open file nonexistent.bin\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractFontConverterTest::debugFeature() {

@@ -28,8 +28,10 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once PluginManager is <string>-free */
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/Unicode.h>
 
 #include "Magnum/FileCallback.h"
@@ -52,9 +54,10 @@ std::string AbstractFont::pluginInterface() {
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 std::vector<std::string> AbstractFont::pluginSearchPaths() {
+    const Containers::Optional<Containers::String> libraryLocation = Utility::Path::libraryLocation(&pluginInterface);
     return PluginManager::implicitPluginSearchPaths(
         #ifndef MAGNUM_BUILD_STATIC
-        Utility::Directory::libraryLocation(&pluginInterface),
+        libraryLocation ? *libraryLocation : Containers::String{},
         #else
         {},
         #endif
@@ -185,12 +188,13 @@ auto AbstractFont::doOpenFile(const std::string& filename, const Float size) -> 
 
     /* Otherwise open the file directly */
     } else {
-        if(!Utility::Directory::exists(filename)) {
+        const Containers::Optional<Containers::Array<char>> data = Utility::Path::read(filename);
+        if(!data) {
             Error() << "Text::AbstractFont::openFile(): cannot open file" << filename;
             return {};
         }
 
-        metrics = doOpenData(Utility::Directory::read(filename), size);
+        metrics = doOpenData(*data, size);
     }
 
     return metrics;

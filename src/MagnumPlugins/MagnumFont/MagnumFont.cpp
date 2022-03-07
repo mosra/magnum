@@ -28,8 +28,10 @@
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFont is <string>-free */
 #include <Corrade/Utility/Configuration.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/Unicode.h>
 
 #include "Magnum/ImageView.h"
@@ -48,7 +50,7 @@ struct MagnumFont::Data {
 
     Utility::Configuration conf;
     Containers::Optional<Trade::ImageData2D> image;
-    Containers::Optional<std::string> filePath;
+    Containers::Optional<Containers::String> filePath;
     std::unordered_map<char32_t, UnsignedInt> glyphId;
     std::vector<Vector2> glyphAdvance;
 };
@@ -108,7 +110,7 @@ auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const 
        TgaImporter already, no need to repeat them again. */
     Trade::TgaImporter importer;
     importer.setFileCallback(fileCallback(), fileCallbackUserData());
-    if(!importer.openFile(Utility::Directory::join(_opened->filePath ? *_opened->filePath : "", conf.value("image")))) return {};
+    if(!importer.openFile(Utility::Path::join(_opened->filePath ? *_opened->filePath : "", conf.value("image")))) return {};
     _opened->image = importer.image2D(0);
     if(!_opened->image) return {};
 
@@ -137,7 +139,7 @@ auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const 
 
 auto MagnumFont::doOpenFile(const std::string& filename, Float size) -> Metrics {
     _opened.emplace();
-    _opened->filePath = Utility::Directory::path(filename);
+    _opened->filePath.emplace(Utility::Path::split(filename).first());
 
     return AbstractFont::doOpenFile(filename, size);
 }

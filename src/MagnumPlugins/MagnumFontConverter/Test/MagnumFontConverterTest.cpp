@@ -25,10 +25,11 @@
 
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFont is <string>-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/File.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
@@ -72,17 +73,17 @@ MagnumFontConverterTest::MagnumFontConverterTest() {
     #endif
 
     /* Create the output directory if it doesn't exist yet */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Directory::mkpath(MAGNUMFONTCONVERTER_TEST_WRITE_DIR));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Path::make(MAGNUMFONTCONVERTER_TEST_WRITE_DIR));
 }
 
 void MagnumFontConverterTest::exportFont() {
-    std::string confFilename = Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.conf");
-    std::string tgaFilename = Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga");
+    Containers::String confFilename = Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.conf");
+    Containers::String tgaFilename = Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga");
     /* Remove previously created files */
-    if(Utility::Directory::exists(confFilename))
-        CORRADE_VERIFY(Utility::Directory::rm(confFilename));
-    if(Utility::Directory::exists(tgaFilename))
-        CORRADE_VERIFY(Utility::Directory::rm(tgaFilename));
+    if(Utility::Path::exists(confFilename))
+        CORRADE_VERIFY(Utility::Path::remove(confFilename));
+    if(Utility::Path::exists(tgaFilename))
+        CORRADE_VERIFY(Utility::Path::remove(tgaFilename));
 
     /* Fake font with fake cache */
     class FakeFont: public Text::AbstractFont {
@@ -137,12 +138,12 @@ void MagnumFontConverterTest::exportFont() {
 
     /* Convert the file */
     Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
-    CORRADE_VERIFY(converter->exportFontToFile(font, cache, Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave"));
+    CORRADE_VERIFY(converter->exportFontToFile(font, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave"));
 
     /* Verify font parameters */
     CORRADE_COMPARE_AS(confFilename,
-                       Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"),
-                       TestSuite::Compare::File);
+        Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"),
+        TestSuite::Compare::File);
 
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, not testing glyph cache contents");
@@ -182,7 +183,7 @@ void MagnumFontConverterTest::exportFontNoGlyphCacheImageDownload() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->exportFontToFile(font, cache, Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave"));
+    CORRADE_VERIFY(!converter->exportFontToFile(font, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave"));
     CORRADE_COMPARE(out.str(), "Text::MagnumFontConverter::exportFontToData(): passed glyph cache doesn't support image download\n");
 }
 

@@ -24,7 +24,9 @@
 */
 
 #include <sstream>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFont is <string>-free */
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/AbstractFont.h"
@@ -60,7 +62,7 @@ MagnumFontGLTest::MagnumFontGLTest() {
 void MagnumFontGLTest::createGlyphCache() {
     Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
 
-    CORRADE_VERIFY(font->openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
+    CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
 
     /* Just testing that nothing crashes, asserts or errors */
     Containers::Pointer<AbstractGlyphCache> cache = font->createGlyphCache();
