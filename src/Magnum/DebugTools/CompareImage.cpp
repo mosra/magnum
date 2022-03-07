@@ -396,6 +396,8 @@ void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, Pixe
     }
 }
 
+namespace {
+
 enum class Result: UnsignedByte {
     PluginLoadFailed = 1,
     ActualImageLoadFailed,
@@ -409,6 +411,8 @@ enum class Result: UnsignedByte {
     AboveMaxThreshold,
     VerboseMessage
 };
+
+}
 
 class ImageComparatorBase::State {
     public:
