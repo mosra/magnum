@@ -25,14 +25,15 @@
 
 #include <sstream>
 #include <thread> /* std::thread::hardware_concurrency(), sigh */
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/File.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -387,8 +388,10 @@ AnyImageConverterTest::AnyImageConverterTest() {
     #endif
 
     /* Create the output directory if it doesn't exist yet */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Directory::mkpath(ANYIMAGECONVERTER_TEST_OUTPUT_DIR));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Path::make(ANYIMAGECONVERTER_TEST_OUTPUT_DIR));
 }
+
+using namespace Containers::Literals;
 
 /* 2*3*2 RGB pixels with four-byte row padding, or 3 16-byte blocks */
 constexpr const char Data[] = {
@@ -433,10 +436,9 @@ void AnyImageConverterTest::convert1D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(converter->convertToFile(Image1D, filename));
@@ -450,15 +452,14 @@ void AnyImageConverterTest::convert2D() {
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "2d.tga");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "2d.tga");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(converter->convertToFile(Image2D, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
 }
 
 void AnyImageConverterTest::convert3D() {
@@ -471,10 +472,9 @@ void AnyImageConverterTest::convert3D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(converter->convertToFile(Image3D, filename));
@@ -494,15 +494,14 @@ void AnyImageConverterTest::convertCompressed1D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-1d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-1d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(converter->convertToFile(CompressedImage1D, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
 }
 
 void AnyImageConverterTest::convertCompressed2D() {
@@ -515,15 +514,14 @@ void AnyImageConverterTest::convertCompressed2D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-2d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-2d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(converter->convertToFile(CompressedImage2D, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
 }
 
 void AnyImageConverterTest::convertCompressed3D() {
@@ -536,15 +534,14 @@ void AnyImageConverterTest::convertCompressed3D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-3d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-3d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(converter->convertToFile(CompressedImage3D, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
 }
 
 void AnyImageConverterTest::convertLevels1D() {
@@ -557,17 +554,16 @@ void AnyImageConverterTest::convertLevels1D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "levels-1d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "levels-1d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({Image1D}, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
 }
 
 void AnyImageConverterTest::convertLevels2D() {
@@ -580,17 +576,16 @@ void AnyImageConverterTest::convertLevels2D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "levels-2d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "levels-2d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({Image2D}, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
 }
 
 void AnyImageConverterTest::convertLevels3D() {
@@ -603,17 +598,16 @@ void AnyImageConverterTest::convertLevels3D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "levels-3d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "levels-3d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({Image3D}, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
 }
 
 void AnyImageConverterTest::convertCompressedLevels1D() {
@@ -626,17 +620,16 @@ void AnyImageConverterTest::convertCompressedLevels1D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-levels-1d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-levels-1d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({CompressedImage1D}, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
 }
 
 void AnyImageConverterTest::convertCompressedLevels2D() {
@@ -649,17 +642,16 @@ void AnyImageConverterTest::convertCompressedLevels2D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-levels-2d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-levels-2d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({CompressedImage2D}, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
 }
 
 void AnyImageConverterTest::convertCompressedLevels3D() {
@@ -672,17 +664,16 @@ void AnyImageConverterTest::convertCompressedLevels3D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-levels-3d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-levels-3d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({CompressedImage3D}, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
 }
 
 void AnyImageConverterTest::detect1D() {
@@ -1071,10 +1062,9 @@ void AnyImageConverterTest::propagateFlags2D() {
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.tga");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.tga");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
@@ -1084,7 +1074,7 @@ void AnyImageConverterTest::propagateFlags2D() {
         Debug redirectOutput{&out};
         CORRADE_VERIFY(converter->convertToFile(Image2D, filename));
     }
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(),
         "Trade::AnyImageConverter::convertToFile(): using TgaImageConverter\n"
         "Trade::TgaImageConverter::convertToData(): converting from RGB to BGR\n");
@@ -1100,10 +1090,9 @@ void AnyImageConverterTest::propagateFlags3D() {
     if(!(manager.load("OpenExrImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("envmap", "cube");
@@ -1115,8 +1104,8 @@ void AnyImageConverterTest::propagateFlags3D() {
     converter->configuration().setValue("threads", 0);
     CORRADE_VERIFY(converter->convertToFile(ImageCube, filename));
 
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     converter->setFlags(ImageConverterFlag::Verbose);
     std::ostringstream out;
@@ -1124,7 +1113,7 @@ void AnyImageConverterTest::propagateFlags3D() {
         Debug redirectOutput{&out};
         CORRADE_VERIFY(converter->convertToFile(ImageCube, filename));
     }
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Trade::AnyImageConverter::convertToFile(): using OpenExrImageConverter\n"
         "Trade::OpenExrImageConverter::convertToData(): autodetected hardware concurrency to {} threads\n",
@@ -1157,10 +1146,9 @@ void AnyImageConverterTest::propagateFlagsLevels2D() {
     if(!(manager.load("OpenExrImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.exr");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "output.exr");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     /* This will make the verbose output print the detected hardware thread
@@ -1171,8 +1159,8 @@ void AnyImageConverterTest::propagateFlagsLevels2D() {
     converter->configuration().setValue("threads", 0);
     CORRADE_VERIFY(converter->convertToFile({Image2DFloat}, filename));
 
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     converter->setFlags(ImageConverterFlag::Verbose);
     std::ostringstream out;
@@ -1182,7 +1170,7 @@ void AnyImageConverterTest::propagateFlagsLevels2D() {
            still trigger the correct code path for AnyImageConverter. */
         CORRADE_VERIFY(converter->convertToFile({Image2DFloat}, filename));
     }
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Trade::AnyImageConverter::convertToFile(): using OpenExrImageConverter\n"
         "Trade::OpenExrImageConverter::convertToData(): autodetected hardware concurrency to {} threads\n",
@@ -1199,10 +1187,9 @@ void AnyImageConverterTest::propagateFlagsLevels3D() {
     if(!(manager.load("OpenExrImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "cube.exr");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("envmap", "cube");
@@ -1214,8 +1201,8 @@ void AnyImageConverterTest::propagateFlagsLevels3D() {
     converter->configuration().setValue("threads", 0);
     CORRADE_VERIFY(converter->convertToFile({ImageCube}, filename));
 
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     converter->setFlags(ImageConverterFlag::Verbose);
     std::ostringstream out;
@@ -1225,7 +1212,7 @@ void AnyImageConverterTest::propagateFlagsLevels3D() {
            still trigger the correct code path for AnyImageConverter. */
         CORRADE_VERIFY(converter->convertToFile({ImageCube}, filename));
     }
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_VERIFY(Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Trade::AnyImageConverter::convertToFile(): using OpenExrImageConverter\n"
         "Trade::OpenExrImageConverter::convertToData(): autodetected hardware concurrency to {} threads\n",
@@ -1254,17 +1241,19 @@ void AnyImageConverterTest::propagateConfiguration1D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-1d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-1d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("writerName", "Yello this did Magnum!");
     CORRADE_VERIFY(converter->convertToFile(Image1D, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
-    /** @todo clean up once Directory::readString() returns our String */
-    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
+
+    Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
+    CORRADE_VERIFY(output);
+    CORRADE_COMPARE_AS(*output,
+        "KTXwriter\0Yello this did Magnum!"_s,
+        TestSuite::Compare::StringContains);
 }
 
 void AnyImageConverterTest::propagateConfiguration2D() {
@@ -1277,10 +1266,9 @@ void AnyImageConverterTest::propagateConfiguration2D() {
     if(!(manager.load("OpenExrImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("OpenExrImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "depth32f-custom-channels.exr");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "depth32f-custom-channels.exr");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("layer", "left");
@@ -1302,17 +1290,19 @@ void AnyImageConverterTest::propagateConfiguration3D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-3d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-3d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("writerName", "Yello this did Magnum!");
     CORRADE_VERIFY(converter->convertToFile(Image3D, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
-    /** @todo clean up once Directory::readString() returns our String */
-    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
+
+    Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
+    CORRADE_VERIFY(output);
+    CORRADE_COMPARE_AS(*output,
+        "KTXwriter\0Yello this did Magnum!"_s,
+        TestSuite::Compare::StringContains);
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknown1D() {
@@ -1330,7 +1320,7 @@ void AnyImageConverterTest::propagateConfigurationUnknown1D() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(converter->convertToFile(Image1D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2")));
+    CORRADE_VERIFY(converter->convertToFile(Image1D, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
@@ -1343,7 +1333,7 @@ void AnyImageConverterTest::propagateConfigurationUnknown2D() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(converter->convertToFile(Image2D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "2d.tga")));
+    CORRADE_VERIFY(converter->convertToFile(Image2D, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "2d.tga")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by TgaImageConverter\n");
 }
 
@@ -1362,7 +1352,7 @@ void AnyImageConverterTest::propagateConfigurationUnknown3D() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(converter->convertToFile(Image3D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2")));
+    CORRADE_VERIFY(converter->convertToFile(Image3D, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
@@ -1376,17 +1366,19 @@ void AnyImageConverterTest::propagateConfigurationCompressed1D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-1d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-1d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("writerName", "Yello this did Magnum!");
     CORRADE_VERIFY(converter->convertToFile(CompressedImage1D, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
-    /** @todo clean up once Directory::readString() returns our String */
-    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
+
+    Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
+    CORRADE_VERIFY(output);
+    CORRADE_COMPARE_AS(*output,
+        "KTXwriter\0Yello this did Magnum!"_s,
+        TestSuite::Compare::StringContains);
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressed2D() {
@@ -1399,17 +1391,19 @@ void AnyImageConverterTest::propagateConfigurationCompressed2D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-2d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-2d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("writerName", "Yello this did Magnum!");
     CORRADE_VERIFY(converter->convertToFile(CompressedImage2D, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
-    /** @todo clean up once Directory::readString() returns our String */
-    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
+
+    Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
+    CORRADE_VERIFY(output);
+    CORRADE_COMPARE_AS(*output,
+        "KTXwriter\0Yello this did Magnum!"_s,
+        TestSuite::Compare::StringContains);
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressed3D() {
@@ -1422,17 +1416,19 @@ void AnyImageConverterTest::propagateConfigurationCompressed3D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-3d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-3d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("writerName", "Yello this did Magnum!");
     CORRADE_VERIFY(converter->convertToFile(CompressedImage3D, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
-    /** @todo clean up once Directory::readString() returns our String */
-    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
+
+    Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
+    CORRADE_VERIFY(output);
+    CORRADE_COMPARE_AS(*output,
+        "KTXwriter\0Yello this did Magnum!"_s,
+        TestSuite::Compare::StringContains);
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknown1D() {
@@ -1450,7 +1446,7 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknown1D() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(converter->convertToFile(CompressedImage1D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-1d.ktx2")));
+    CORRADE_VERIFY(converter->convertToFile(CompressedImage1D, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-1d.ktx2")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
@@ -1469,7 +1465,7 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknown2D() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(converter->convertToFile(CompressedImage2D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-2d.ktx2")));
+    CORRADE_VERIFY(converter->convertToFile(CompressedImage2D, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-2d.ktx2")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
@@ -1488,7 +1484,7 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknown3D() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(converter->convertToFile(CompressedImage3D, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-3d.ktx2")));
+    CORRADE_VERIFY(converter->convertToFile(CompressedImage3D, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-3d.ktx2")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
@@ -1502,19 +1498,21 @@ void AnyImageConverterTest::propagateConfigurationLevels1D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-1d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-1d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("writerName", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({Image1D}, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
-    /** @todo clean up once Directory::readString() returns our String */
-    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
+
+    Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
+    CORRADE_VERIFY(output);
+    CORRADE_COMPARE_AS(*output,
+        "KTXwriter\0Yello this did Magnum!"_s,
+        TestSuite::Compare::StringContains);
 }
 
 void AnyImageConverterTest::propagateConfigurationLevels2D() {
@@ -1527,19 +1525,21 @@ void AnyImageConverterTest::propagateConfigurationLevels2D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-2d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-2d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("writerName", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({Image2D}, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
-    /** @todo clean up once Directory::readString() returns our String */
-    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
+
+    Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
+    CORRADE_VERIFY(output);
+    CORRADE_COMPARE_AS(*output,
+        "KTXwriter\0Yello this did Magnum!"_s,
+        TestSuite::Compare::StringContains);
 }
 
 void AnyImageConverterTest::propagateConfigurationLevels3D() {
@@ -1552,19 +1552,21 @@ void AnyImageConverterTest::propagateConfigurationLevels3D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-3d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "custom-writer-3d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("writerName", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({Image3D}, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
-    /** @todo clean up once Directory::readString() returns our String */
-    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
+
+    Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
+    CORRADE_VERIFY(output);
+    CORRADE_COMPARE_AS(*output,
+        "KTXwriter\0Yello this did Magnum!"_s,
+        TestSuite::Compare::StringContains);
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknownLevels1D() {
@@ -1584,7 +1586,7 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels1D() {
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
-    CORRADE_VERIFY(converter->convertToFile({Image1D}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2")));
+    CORRADE_VERIFY(converter->convertToFile({Image1D}, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
@@ -1605,7 +1607,7 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels2D() {
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
-    CORRADE_VERIFY(converter->convertToFile({Image2D}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "2d.ktx2")));
+    CORRADE_VERIFY(converter->convertToFile({Image2D}, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "2d.ktx2")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
@@ -1626,7 +1628,7 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels3D() {
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
-    CORRADE_VERIFY(converter->convertToFile({Image3D}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2")));
+    CORRADE_VERIFY(converter->convertToFile({Image3D}, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
@@ -1640,19 +1642,21 @@ void AnyImageConverterTest::propagateConfigurationCompressedLevels1D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-1d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-1d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("writerName", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({CompressedImage1D}, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
-    /** @todo clean up once Directory::readString() returns our String */
-    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
+
+    Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
+    CORRADE_VERIFY(output);
+    CORRADE_COMPARE_AS(*output,
+        "KTXwriter\0Yello this did Magnum!"_s,
+        TestSuite::Compare::StringContains);
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedLevels2D() {
@@ -1665,19 +1669,21 @@ void AnyImageConverterTest::propagateConfigurationCompressedLevels2D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-2d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-custom-writer-2d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("writerName", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({CompressedImage2D}, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
-    /** @todo clean up once Directory::readString() returns our String */
-    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
+
+    Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
+    CORRADE_VERIFY(output);
+    CORRADE_COMPARE_AS(*output,
+        "KTXwriter\0Yello this did Magnum!"_s,
+        TestSuite::Compare::StringContains);
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedLevels3D() {
@@ -1690,19 +1696,21 @@ void AnyImageConverterTest::propagateConfigurationCompressedLevels3D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compresed-custom-writer-3d.ktx2");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compresed-custom-writer-3d.ktx2");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("writerName", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({CompressedImage3D}, filename));
-    CORRADE_VERIFY(Utility::Directory::exists(filename));
-    /** @todo clean up once Directory::readString() returns our String */
-    CORRADE_VERIFY(Containers::StringView{Containers::ArrayView<const char>(Utility::Directory::read(filename))}.contains("KTXwriter\0Yello this did Magnum!"));
+
+    Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
+    CORRADE_VERIFY(output);
+    CORRADE_COMPARE_AS(*output,
+        "KTXwriter\0Yello this did Magnum!"_s,
+        TestSuite::Compare::StringContains);
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels1D() {
@@ -1722,7 +1730,7 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels1D() {
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
-    CORRADE_VERIFY(converter->convertToFile({CompressedImage1D}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-1d.ktx2")));
+    CORRADE_VERIFY(converter->convertToFile({CompressedImage1D}, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-1d.ktx2")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
@@ -1743,7 +1751,7 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels2D() {
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
-    CORRADE_VERIFY(converter->convertToFile({CompressedImage2D}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-2d.ktx2")));
+    CORRADE_VERIFY(converter->convertToFile({CompressedImage2D}, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-2d.ktx2")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
@@ -1764,7 +1772,7 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels3D() {
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
-    CORRADE_VERIFY(converter->convertToFile({CompressedImage3D}, Utility::Directory::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-3d.ktx2")));
+    CORRADE_VERIFY(converter->convertToFile({CompressedImage3D}, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-3d.ktx2")));
     CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 

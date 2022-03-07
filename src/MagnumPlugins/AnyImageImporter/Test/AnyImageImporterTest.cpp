@@ -30,9 +30,9 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/DebugTools/CompareImage.h"
@@ -211,10 +211,11 @@ void AnyImageImporterTest::load1D() {
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
 
-    if(data.asData)
-        CORRADE_VERIFY(importer->openData(Utility::Directory::read(data.filename)));
-    else
-        CORRADE_VERIFY(importer->openFile(data.filename));
+    if(data.asData) {
+        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(data.filename);
+        CORRADE_VERIFY(read);
+        CORRADE_VERIFY(importer->openData(*read));
+    } else CORRADE_VERIFY(importer->openFile(data.filename));
     CORRADE_COMPARE(importer->image1DCount(), 1);
 
     /* Check only size, as it is good enough proof that it is working */
@@ -232,10 +233,11 @@ void AnyImageImporterTest::load2D() {
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
 
-    if(data.asData)
-        CORRADE_VERIFY(importer->openData(Utility::Directory::read(data.filename)));
-    else
-        CORRADE_VERIFY(importer->openFile(data.filename));
+    if(data.asData) {
+        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(data.filename);
+        CORRADE_VERIFY(read);
+        CORRADE_VERIFY(importer->openData(*read));
+    } else CORRADE_VERIFY(importer->openFile(data.filename));
     CORRADE_COMPARE(importer->image2DCount(), 1);
 
     /* Check only size, as it is good enough proof that it is working */
@@ -262,10 +264,11 @@ void AnyImageImporterTest::load3D() {
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
 
-    if(data.asData)
-        CORRADE_VERIFY(importer->openData(Utility::Directory::read(data.filename)));
-    else
-        CORRADE_VERIFY(importer->openFile(data.filename));
+    if(data.asData) {
+        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(data.filename);
+        CORRADE_VERIFY(read);
+        CORRADE_VERIFY(importer->openData(*read));
+    } else CORRADE_VERIFY(importer->openFile(data.filename));
     CORRADE_COMPARE(importer->image3DCount(), 1);
 
     /* Check only size, as it is good enough proof that it is working */
@@ -279,14 +282,15 @@ void AnyImageImporterTest::detect() {
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
-    const std::string filename = Utility::Directory::join(TEST_FILE_DIR, data.filename);
+    Containers::String filename = Utility::Path::join(TEST_FILE_DIR, data.filename);
 
     std::ostringstream out;
     Error redirectError{&out};
-    if(data.asData)
-        CORRADE_VERIFY(!importer->openData(Utility::Directory::read(filename)));
-    else
-        CORRADE_VERIFY(!importer->openFile(filename));
+    if(data.asData) {
+        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(filename);
+        CORRADE_VERIFY(read);
+        CORRADE_VERIFY(!importer->openData(*read));
+    } else CORRADE_VERIFY(!importer->openFile(filename));
     /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
@@ -343,10 +347,11 @@ void AnyImageImporterTest::propagateFlags() {
     std::ostringstream out;
     {
         Debug redirectOutput{&out};
-        if(data.asData)
-            CORRADE_VERIFY(importer->openData(Utility::Directory::read(data.filename)));
-        else
-            CORRADE_VERIFY(importer->openFile(data.filename));
+        if(data.asData) {
+            Containers::Optional<Containers::Array<char>> read = Utility::Path::read(data.filename);
+            CORRADE_VERIFY(read);
+            CORRADE_VERIFY(importer->openData(*read));
+        } else CORRADE_VERIFY(importer->openFile(data.filename));
         CORRADE_VERIFY(importer->image2D(0));
     }
     CORRADE_COMPARE(out.str(), Utility::formatString(
@@ -372,10 +377,11 @@ void AnyImageImporterTest::propagateConfiguration() {
     importer->configuration().setValue("layer", "left");
     importer->configuration().setValue("depth", "height");
 
-    if(data.asData)
-        CORRADE_VERIFY(importer->openData(Utility::Directory::read(data.filename)));
-    else
-        CORRADE_VERIFY(importer->openFile(data.filename));
+    if(data.asData) {
+        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(data.filename);
+        CORRADE_VERIFY(read);
+        CORRADE_VERIFY(importer->openData(*read));
+    } else CORRADE_VERIFY(importer->openFile(data.filename));
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
 
@@ -401,10 +407,11 @@ void AnyImageImporterTest::propagateConfigurationUnknown() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    if(data.asData)
-        CORRADE_VERIFY(importer->openData(Utility::Directory::read(data.filename)));
-    else
-        CORRADE_VERIFY(importer->openFile(data.filename));
+    if(data.asData) {
+        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(data.filename);
+        CORRADE_VERIFY(read);
+        CORRADE_VERIFY(importer->openData(*read));
+    } else CORRADE_VERIFY(importer->openFile(data.filename));
     CORRADE_COMPARE(out.str(), Utility::formatString("Trade::AnyImageImporter::{}(): option noSuchOption not recognized by TgaImporter\n", data.messageFunctionName));
 }
 
@@ -416,9 +423,13 @@ void AnyImageImporterTest::propagateFileCallback() {
 
     Containers::Array<char> storage;
     importer->setFileCallback([](const std::string&, InputFileCallbackPolicy, Containers::Array<char>& storage) -> Containers::Optional<Containers::ArrayView<const char>> {
-        storage = Utility::Directory::read(TGA_FILE);
+        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(TGA_FILE);
+        CORRADE_VERIFY(data);
+        storage = *std::move(data);
         return Containers::ArrayView<const char>{storage};
     }, storage);
+
+    CORRADE_VERIFY(true); /* Capture correct function name first */
 
     CORRADE_VERIFY(importer->openFile("you-know-where-the-file-is.tga"));
     CORRADE_COMPARE(importer->image2DCount(), 1);

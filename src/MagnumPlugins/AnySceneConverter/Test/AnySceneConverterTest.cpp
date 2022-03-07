@@ -25,14 +25,13 @@
 
 #include <sstream>
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/File.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/AbstractSceneConverter.h"
@@ -88,7 +87,7 @@ AnySceneConverterTest::AnySceneConverterTest() {
     #endif
 
     /* Create the output directory if it doesn't exist yet */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Directory::mkpath(ANYSCENECONVERTER_TEST_OUTPUT_DIR));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Path::make(ANYSCENECONVERTER_TEST_OUTPUT_DIR));
 }
 
 void AnySceneConverterTest::convert() {
@@ -101,10 +100,9 @@ void AnySceneConverterTest::convert() {
     if(!(manager.load("StanfordSceneConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
-
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     const Vector3 positions[] {
         {-0.5f, -0.5f, 0.0f},
@@ -161,7 +159,7 @@ void AnySceneConverterTest::propagateFlags() {
     if(!(manager.load("StanfordSceneConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
+    Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
 
     const Vector3 positions[] {
         {-0.5f, -0.5f, 0.0f},
@@ -179,7 +177,7 @@ void AnySceneConverterTest::propagateFlags() {
     {
         Debug redirectOutput{&out};
         CORRADE_VERIFY(converter->convertToFile(mesh, filename));
-        CORRADE_VERIFY(Utility::Directory::exists(filename));
+        CORRADE_VERIFY(Utility::Path::exists(filename));
     }
     CORRADE_COMPARE(out.str(),
         "Trade::AnySceneConverter::convertToFile(): using StanfordSceneConverter\n");
@@ -199,7 +197,7 @@ void AnySceneConverterTest::propagateConfiguration() {
     if(!(manager.load("StanfordSceneConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
 
-    const std::string filename = Utility::Directory::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
+    Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
 
     const struct Data {
         Vector3 position;
@@ -246,7 +244,7 @@ void AnySceneConverterTest::propagateConfigurationUnknown() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(converter->convertToFile(mesh, Utility::Directory::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply")));
+    CORRADE_VERIFY(converter->convertToFile(mesh, Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply")));
     CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::convertToFile(): option noSuchOption not recognized by StanfordSceneConverter\n");
 }
 

@@ -26,12 +26,14 @@
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/AbstractImporter.h"
@@ -457,15 +459,15 @@ void TgaImporterTest::openMemory() {
 void TgaImporterTest::openTwice() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
 
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(TGAIMPORTER_TEST_DIR, "file.tga")));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(TGAIMPORTER_TEST_DIR, "file.tga")));
 
     /* Shouldn't crash, leak or anything */
 }
 
 void TgaImporterTest::importTwice() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(TGAIMPORTER_TEST_DIR, "file.tga")));
 
     /* Verify that everything is working the same way on second use */
     {

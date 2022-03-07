@@ -30,8 +30,8 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/AbstractImporter.h"
@@ -282,9 +282,13 @@ void AnySceneImporterTest::propagateFileCallback() {
 
     Containers::Array<char> storage;
     importer->setFileCallback([](const std::string&, InputFileCallbackPolicy, Containers::Array<char>& storage) -> Containers::Optional<Containers::ArrayView<const char>> {
-        storage = Utility::Directory::read(OBJ_FILE);
+        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(OBJ_FILE);
+        CORRADE_VERIFY(data);
+        storage = *std::move(data);
         return Containers::ArrayView<const char>{storage};
     }, storage);
+
+    CORRADE_VERIFY(true); /* Capture correct function name first */
 
     CORRADE_VERIFY(importer->openFile("you-know-where-the-file-is.obj"));
     CORRADE_COMPARE(importer->meshCount(), 1);
