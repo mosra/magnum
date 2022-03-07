@@ -29,9 +29,8 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once file callbacks are <string>-free */
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/FileCallback.h"
 
@@ -51,9 +50,10 @@ std::string AbstractConverter::pluginInterface() {
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 std::vector<std::string> AbstractConverter::pluginSearchPaths() {
+    const Containers::Optional<Containers::String> libraryLocation = Utility::Path::libraryLocation(&pluginInterface);
     return PluginManager::implicitPluginSearchPaths(
         #ifndef MAGNUM_BUILD_STATIC
-        Utility::Directory::libraryLocation(&pluginInterface),
+        libraryLocation ? *libraryLocation : Containers::String{},
         #else
         {},
         #endif
@@ -244,12 +244,13 @@ std::pair<bool, Containers::String> AbstractConverter::doValidateFile(const Stag
 
     /* Otherwise open the file directly */
     } else {
-        if(!Utility::Directory::exists(filename)) {
+        const Containers::Optional<Containers::Array<char>> data = Utility::Path::read(filename);
+        if(!data) {
             Error() << "ShaderTools::AbstractConverter::validateFile(): cannot open file" << filename;
             return {};
         }
 
-        return doValidateData(stage, Utility::Directory::read(filename));
+        return doValidateData(stage, *data);
     }
 }
 
@@ -278,7 +279,7 @@ bool AbstractConverter::convertDataToFile(const Stage stage, const Containers::A
     const Containers::Array<char> out = doConvertDataToData(stage, Containers::arrayCast<const char>(data));
     if(!out) return false;
 
-    if(!Utility::Directory::write(filename, out)) {
+    if(!Utility::Path::write(filename, out)) {
         Error{} << "ShaderTools::AbstractConverter::convertDataToFile(): cannot write to file" << filename;
         return false;
     }
@@ -325,7 +326,7 @@ bool AbstractConverter::convertFileToFile(const Stage stage, const Containers::S
         const Containers::Array<char> out = convertDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::convertFileToFile():", stage, from);
         if(!out) return false;
 
-        if(!Utility::Directory::write(to, out)) {
+        if(!Utility::Path::write(to, out)) {
             Error{} << "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file" << to;
             return false;
         }
@@ -349,17 +350,18 @@ bool AbstractConverter::doConvertFileToFile(const Stage stage, const Containers:
 
     /* Otherwise open the file directly */
     } else {
-        if(!Utility::Directory::exists(from)) {
+        const Containers::Optional<Containers::Array<char>> data = Utility::Path::read(from);
+        if(!data) {
             Error() << "ShaderTools::AbstractConverter::convertFileToFile(): cannot open file" << from;
             return {};
         }
 
-        out = doConvertDataToData(stage, Utility::Directory::read(from));
+        out = doConvertDataToData(stage, *data);
     }
 
     if(!out) return false;
 
-    if(!Utility::Directory::write(to, out)) {
+    if(!Utility::Path::write(to, out)) {
         Error{} << "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file" << to;
         return false;
     }
@@ -408,12 +410,13 @@ Containers::Array<char> AbstractConverter::doConvertFileToData(const Stage stage
 
     /* Otherwise open the file directly */
     } else {
-        if(!Utility::Directory::exists(filename)) {
+        const Containers::Optional<Containers::Array<char>> data = Utility::Path::read(filename);
+        if(!data) {
             Error() << "ShaderTools::AbstractConverter::convertFileToData(): cannot open file" << filename;
             return {};
         }
 
-        return doConvertDataToData(stage, Utility::Directory::read(filename));
+        return doConvertDataToData(stage, *data);
     }
 }
 
@@ -454,7 +457,7 @@ bool AbstractConverter::linkDataToFile(const Containers::ArrayView<const std::pa
     const Containers::Array<char> out = doLinkDataToData(Containers::arrayCast<const std::pair<Stage, Containers::ArrayView<const char>>>(data));
     if(!out) return false;
 
-    if(!Utility::Directory::write(filename, out)) {
+    if(!Utility::Path::write(filename, out)) {
         Error{} << "ShaderTools::AbstractConverter::linkDataToFile(): cannot write to file" << filename;
         return false;
     }
@@ -533,7 +536,7 @@ bool AbstractConverter::linkFilesToFile(const Containers::ArrayView<const std::p
         const Containers::Array<char> out = linkDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::linkFilesToFile():", from);
         if(!out) return false;
 
-        if(!Utility::Directory::write(to, out)) {
+        if(!Utility::Path::write(to, out)) {
             Error{} << "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file" << to;
             return false;
         }
@@ -563,12 +566,13 @@ bool AbstractConverter::doLinkFilesToFile(const Containers::ArrayView<const std:
     } else {
         Containers::Array<Containers::Array<char>> fileData{from.size()};
         for(std::size_t i = 0; i != from.size(); ++i) {
-            if(!Utility::Directory::exists(from[i].second)) {
+            Containers::Optional<Containers::Array<char>> data = Utility::Path::read(from[i].second);
+            if(!data) {
                 Error() << "ShaderTools::AbstractConverter::linkFilesToFile(): cannot open file" << from[i].second;
                 return {};
             }
 
-            fileData[i] = Utility::Directory::read(from[i].second);
+            fileData[i] = *std::move(data);
         }
 
         /** @todo merge the allocations once we have an ArrayTuple (actually,
@@ -584,7 +588,7 @@ bool AbstractConverter::doLinkFilesToFile(const Containers::ArrayView<const std:
 
     if(!out) return false;
 
-    if(!Utility::Directory::write(to, out)) {
+    if(!Utility::Path::write(to, out)) {
         Error{} << "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file" << to;
         return false;
     }
@@ -643,12 +647,13 @@ Containers::Array<char> AbstractConverter::doLinkFilesToData(const Containers::A
     } else {
         Containers::Array<Containers::Array<char>> fileData{filenames.size()};
         for(std::size_t i = 0; i != filenames.size(); ++i) {
-            if(!Utility::Directory::exists(filenames[i].second)) {
+            Containers::Optional<Containers::Array<char>> data = Utility::Path::read(filenames[i].second);
+            if(!data) {
                 Error() << "ShaderTools::AbstractConverter::linkFilesToData(): cannot open file" << filenames[i].second;
                 return {};
             }
 
-            fileData[i] = Utility::Directory::read(filenames[i].second);
+            fileData[i] = *std::move(data);
         }
 
         /** @todo merge the allocations once we have an ArrayTuple */

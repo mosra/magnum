@@ -23,10 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/ShaderTools/Implementation/spirv.h"
 #include "MagnumExternal/Vulkan/spirv.h"
@@ -150,10 +150,11 @@ void SpirvTest::findInstructionNotEnoughData() {
 }
 
 void SpirvTest::nextEntrypoint() {
-    Containers::Array<char> data = Utility::Directory::read(Utility::Directory::join(SHADERTOOLS_TEST_DIR, "SpirvTestFiles/entrypoint-interface.spv"));
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(SHADERTOOLS_TEST_DIR, "SpirvTestFiles/entrypoint-interface.spv"));
+    CORRADE_VERIFY(data);
 
     /* The file is a full SPIR-V, strip the header first */
-    Containers::ArrayView<const UnsignedInt> view = Implementation::spirvData(data, data.size());
+    Containers::ArrayView<const UnsignedInt> view = Implementation::spirvData(*data, data->size());
     CORRADE_VERIFY(view);
 
     Containers::Optional<Implementation::SpirvEntrypoint> vert = Implementation::spirvNextEntrypoint(view);
@@ -188,10 +189,11 @@ void SpirvTest::nextEntrypointInvalidInstruction() {
 }
 
 void SpirvTest::entrypointInterface() {
-    Containers::Array<char> data = Utility::Directory::read(Utility::Directory::join(SHADERTOOLS_TEST_DIR, "SpirvTestFiles/entrypoint-interface.spv"));
+    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(SHADERTOOLS_TEST_DIR, "SpirvTestFiles/entrypoint-interface.spv"));
+    CORRADE_VERIFY(data);
 
     /* The file is a full SPIR-V, strip the header first */
-    Containers::ArrayView<const UnsignedInt> view = Implementation::spirvData(data, data.size());
+    Containers::ArrayView<const UnsignedInt> view = Implementation::spirvData(*data, data->size());
     CORRADE_VERIFY(view);
 
     Containers::Optional<Implementation::SpirvEntrypoint> vert = Implementation::spirvNextEntrypoint(view);

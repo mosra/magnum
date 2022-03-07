@@ -27,13 +27,13 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/FileToString.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/FileCallback.h"
 #include "Magnum/ShaderTools/AbstractConverter.h"
@@ -325,7 +325,7 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::debugFormat});
 
     /* Create testing dir */
-    Utility::Directory::mkpath(SHADERTOOLS_TEST_OUTPUT_DIR);
+    Utility::Path::make(SHADERTOOLS_TEST_OUTPUT_DIR);
 }
 
 void AbstractConverterTest::featuresNone() {
@@ -808,7 +808,7 @@ void AbstractConverterTest::validateFileAsData() {
         }
     } converter;
 
-    std::pair<bool, Containers::String> out = converter.validateFile(Stage::Compute, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat"));
+    std::pair<bool, Containers::String> out = converter.validateFile(Stage::Compute, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"));
     CORRADE_VERIFY(out.first);
     CORRADE_COMPARE(out.second, "Yes, this is valid");
 }
@@ -832,7 +832,10 @@ void AbstractConverterTest::validateFileAsDataNotFound() {
     std::pair<bool, Containers::String> out2 = converter.validateFile({}, "nonexistent.bin");
     CORRADE_VERIFY(!out2.first);
     CORRADE_COMPARE(out2.second, "");
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateFile(): cannot open file nonexistent.bin\n");
+    /* There's an error message from Path::read() before */
+    CORRADE_COMPARE_AS(out.str(),
+        "\nShaderTools::AbstractConverter::validateFile(): cannot open file nonexistent.bin\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractConverterTest::validateFileNotSupported() {
@@ -1017,11 +1020,10 @@ void AbstractConverterTest::convertDataToFileThroughData() {
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     const char data[] = {'S', 'P', 'I', 'R', 'V'};
     CORRADE_VERIFY(converter.convertDataToFile({}, data, filename));
@@ -1042,18 +1044,17 @@ void AbstractConverterTest::convertDataToFileThroughDataFailed() {
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertDataToFile({}, {}, filename));
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_VERIFY(!Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
 
@@ -1125,18 +1126,20 @@ void AbstractConverterTest::convertFileToFile() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doConvertFileToFile(Stage, const Containers::StringView from, const Containers::StringView to) override {
-            Containers::Array<char> data = Utility::Directory::read(from);
-            return Utility::Directory::write(to, Containers::array({data.back(), data.front()}));
+            Containers::Optional<Containers::Array<char>> data = Utility::Path::read(from);
+            CORRADE_VERIFY(data);
+            return Utility::Path::write(to, Containers::array({data->back(), data->front()}));
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+    CORRADE_VERIFY(true); /* Capture correct function name first */
 
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    CORRADE_VERIFY(converter.convertFileToFile({}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat"), filename));
+    CORRADE_VERIFY(converter.convertFileToFile({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"), filename));
     CORRADE_COMPARE_AS(filename, "VS",
         TestSuite::Compare::FileToString);
 }
@@ -1154,13 +1157,12 @@ void AbstractConverterTest::convertFileToFileThroughData() {
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    CORRADE_VERIFY(converter.convertFileToFile({}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat"), filename));
+    CORRADE_VERIFY(converter.convertFileToFile({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"), filename));
     CORRADE_COMPARE_AS(filename, "VS",
         TestSuite::Compare::FileToString);
 }
@@ -1182,7 +1184,10 @@ void AbstractConverterTest::convertFileToFileThroughDataNotFound() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToFile({}, "nonexistent.bin", "file.dat"));
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertFileToFile(): cannot open file nonexistent.bin\n");
+    /* There's an error message from Path::read() before */
+    CORRADE_COMPARE_AS(out.str(),
+        "\nShaderTools::AbstractConverter::convertFileToFile(): cannot open file nonexistent.bin\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractConverterTest::convertFileToFileThroughDataFailed() {
@@ -1198,18 +1203,17 @@ void AbstractConverterTest::convertFileToFileThroughDataFailed() {
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertFileToFile({}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat"), filename));
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_VERIFY(!converter.convertFileToFile({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"), filename));
+    CORRADE_VERIFY(!Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
 
@@ -1228,7 +1232,7 @@ void AbstractConverterTest::convertFileToFileThroughDataNotWritable() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertFileToFile({}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat"), "/some/path/that/does/not/exist"));
+    CORRADE_VERIFY(!converter.convertFileToFile({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"), "/some/path/that/does/not/exist"));
     CORRADE_COMPARE_AS(out.str(),
         "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
@@ -1281,12 +1285,15 @@ void AbstractConverterTest::convertFileToData() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doConvertFileToData(Stage, const Containers::StringView from) override {
-            Containers::Array<char> data = Utility::Directory::read(from);
-            return Containers::array({data.back(), data.front()});
+            Containers::Optional<Containers::Array<char>> data = Utility::Path::read(from);
+            CORRADE_VERIFY(data);
+            return Containers::array({data->back(), data->front()});
         }
     } converter;
 
-    Containers::Array<char> out = converter.convertFileToData({}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat"));
+    CORRADE_VERIFY(true); /* Capture correct function name first */
+
+    Containers::Array<char> out = converter.convertFileToData({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"));
     CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
         TestSuite::Compare::Container);
 }
@@ -1304,7 +1311,7 @@ void AbstractConverterTest::convertFileToDataAsData() {
         }
     } converter;
 
-    Containers::Array<char> out = converter.convertFileToData({}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat"));
+    Containers::Array<char> out = converter.convertFileToData({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"));
     CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
         TestSuite::Compare::Container);
 }
@@ -1326,7 +1333,10 @@ void AbstractConverterTest::convertFileToDataAsDataNotFound() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToData({}, "nonexistent.bin"));
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertFileToData(): cannot open file nonexistent.bin\n");
+    /* There's an error message from Path::read() before */
+    CORRADE_COMPARE_AS(out.str(),
+        "\nShaderTools::AbstractConverter::convertFileToData(): cannot open file nonexistent.bin\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractConverterTest::convertFileToDataNotSupported() {
@@ -1364,7 +1374,7 @@ void AbstractConverterTest::convertFileToDataNotImplemented() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    converter.convertFileToData({}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat"));
+    converter.convertFileToData({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"));
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertDataToData(): feature advertised but not implemented\n");
 }
 
@@ -1537,11 +1547,10 @@ void AbstractConverterTest::linkDataToFileThroughData() {
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     CORRADE_VERIFY(converter.linkDataToFile({
         {Stage::Vertex, Containers::arrayView({'V', 'E'})},
@@ -1564,11 +1573,10 @@ void AbstractConverterTest::linkDataToFileThroughDataFailed() {
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
@@ -1576,7 +1584,7 @@ void AbstractConverterTest::linkDataToFileThroughDataFailed() {
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
     CORRADE_VERIFY(!converter.linkDataToFile({std::pair<Stage, Containers::ArrayView<const void>>{}}, filename));
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_VERIFY(!Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
 
@@ -1690,26 +1698,27 @@ void AbstractConverterTest::linkFilesToFile() {
 
         bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
             CORRADE_COMPARE(from.size(), 2);
-            Containers::Array<char> first = Utility::Directory::read(from[0].second);
-            Containers::Array<char> second = Utility::Directory::read(from[1].second);
+            Containers::Optional<Containers::Array<char>> first = Utility::Path::read(from[0].second);
+            Containers::Optional<Containers::Array<char>> second = Utility::Path::read(from[1].second);
             CORRADE_VERIFY(first);
             CORRADE_VERIFY(second);
-            return Utility::Directory::write(to, Containers::array({
-                from[0].first == Stage::Vertex ? first[0] : ' ',
-                from[1].first == Stage::Fragment ? second[0] : ' '
+            return Utility::Path::write(to, Containers::array({
+                from[0].first == Stage::Vertex ? (*first)[0] : ' ',
+                from[1].first == Stage::Fragment ? (*second)[0] : ' '
             }));
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+
+    CORRADE_VERIFY(true); /* Capture correct function name first */
 
     CORRADE_VERIFY(converter.linkFilesToFile({
-        {Stage::Vertex, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "another.dat")},
-        {Stage::Fragment, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+        {Stage::Vertex, Utility::Path::join(SHADERTOOLS_TEST_DIR, "another.dat")},
+        {Stage::Fragment, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     }, filename));
     CORRADE_COMPARE_AS(filename, "VS",
         TestSuite::Compare::FileToString);
@@ -1732,15 +1741,14 @@ void AbstractConverterTest::linkFilesToFileThroughData() {
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     CORRADE_VERIFY(converter.linkFilesToFile({
-        {Stage::Vertex, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "another.dat")},
-        {Stage::Fragment, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+        {Stage::Vertex, Utility::Path::join(SHADERTOOLS_TEST_DIR, "another.dat")},
+        {Stage::Fragment, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     }, filename));
     CORRADE_COMPARE_AS(filename, "VS",
         TestSuite::Compare::FileToString);
@@ -1763,10 +1771,13 @@ void AbstractConverterTest::linkFilesToFileThroughDataNotFound() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.linkFilesToFile({
-        {{}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "another.dat")},
+        {{}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "another.dat")},
         {{}, "nonexistent.bin"}
     }, "file.dat"));
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): cannot open file nonexistent.bin\n");
+    /* There's an error message from Path::read() before */
+    CORRADE_COMPARE_AS(out.str(),
+        "\nShaderTools::AbstractConverter::linkFilesToFile(): cannot open file nonexistent.bin\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractConverterTest::linkFilesToFileThroughDataFailed() {
@@ -1782,20 +1793,19 @@ void AbstractConverterTest::linkFilesToFileThroughDataFailed() {
         }
     } converter;
 
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
-
     /* Remove previous file, if any */
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.linkFilesToFile({
-        {{}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+        {{}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     }, filename));
-    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_VERIFY(!Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
 
@@ -1815,7 +1825,7 @@ void AbstractConverterTest::linkFilesToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.linkFilesToFile({
-        {{}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+        {{}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     }, "/some/path/that/does/not/exist"));
     CORRADE_COMPARE_AS(out.str(),
         "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file /some/path/that/does/not/exist\n",
@@ -1910,22 +1920,22 @@ void AbstractConverterTest::linkFilesToData() {
 
         Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
             CORRADE_COMPARE(from.size(), 2);
-            Containers::Array<char> first = Utility::Directory::read(from[0].second);
-            Containers::Array<char> second = Utility::Directory::read(from[1].second);
+            Containers::Optional<Containers::Array<char>> first = Utility::Path::read(from[0].second);
+            Containers::Optional<Containers::Array<char>> second = Utility::Path::read(from[1].second);
             CORRADE_VERIFY(first);
             CORRADE_VERIFY(second);
             return Containers::array({
-                from[0].first == Stage::Vertex ? first[0] : ' ',
-                from[1].first == Stage::Fragment ? second[0] : ' '
+                from[0].first == Stage::Vertex ? (*first)[0] : ' ',
+                from[1].first == Stage::Fragment ? (*second)[0] : ' '
             });
         }
     } converter;
 
-    CORRADE_VERIFY(true); /* so it picks up correct test case name */
+    CORRADE_VERIFY(true); /* Capture correct function name first */
 
     Containers::Array<char> out = converter.linkFilesToData({
-        {Stage::Vertex, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "another.dat")},
-        {Stage::Fragment, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+        {Stage::Vertex, Utility::Path::join(SHADERTOOLS_TEST_DIR, "another.dat")},
+        {Stage::Fragment, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     });
     CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
         TestSuite::Compare::Container);
@@ -1948,9 +1958,11 @@ void AbstractConverterTest::linkFilesToDataAsData() {
         }
     } converter;
 
+    CORRADE_VERIFY(true); /* Capture correct function name first */
+
     Containers::Array<char> out = converter.linkFilesToData({
-        {Stage::Vertex, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "another.dat")},
-        {Stage::Fragment, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+        {Stage::Vertex, Utility::Path::join(SHADERTOOLS_TEST_DIR, "another.dat")},
+        {Stage::Fragment, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     });
     CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
         TestSuite::Compare::Container);
@@ -1970,12 +1982,17 @@ void AbstractConverterTest::linkFilesToDataAsDataNotFound() {
         }
     } converter;
 
+    CORRADE_VERIFY(true); /* Capture correct function name first */
+
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.linkFilesToData({
         {{}, "nonexistent.bin"}
     }));
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): cannot open file nonexistent.bin\n");
+    /* There's an error message from Path::read() before */
+    CORRADE_COMPARE_AS(out.str(),
+        "\nShaderTools::AbstractConverter::linkFilesToData(): cannot open file nonexistent.bin\n",
+        TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractConverterTest::linkFilesToDataNotSupported() {
@@ -2013,7 +2030,7 @@ void AbstractConverterTest::linkFilesToDataNotImplemented() {
     std::ostringstream out;
     Error redirectError{&out};
     converter.linkFilesToData({
-        {{}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+        {{}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     });
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
 }
@@ -2474,9 +2491,9 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileThroughBaseImpl
     }, state);
 
     /* Remove previous file, if any */
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     CORRADE_VERIFY(converter.convertFileToFile(Stage::Geometry, "file.dat", filename));
     CORRADE_VERIFY(converter.convertFileToFileCalled);
@@ -2555,9 +2572,9 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsData() {
     }, state);
 
     /* Remove previous file, if any */
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     CORRADE_VERIFY(converter.convertFileToFile(Stage::RayAnyHit, "file.dat", filename));
     CORRADE_VERIFY(state.loaded);
@@ -2909,9 +2926,9 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplem
     }, state);
 
     /* Remove previous file, if any */
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     CORRADE_VERIFY(converter.linkFilesToFile({
         {Stage::Vertex, "another.dat"},
@@ -3032,9 +3049,9 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsData() {
     }, state);
 
     /* Remove previous file, if any */
-    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
-    if(Utility::Directory::exists(filename))
-        CORRADE_VERIFY(Utility::Directory::rm(filename));
+    Containers::String filename = Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     CORRADE_VERIFY(converter.linkFilesToFile({
         {Stage::Vertex, "another.dat"},
