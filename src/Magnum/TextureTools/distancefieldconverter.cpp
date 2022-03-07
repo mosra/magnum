@@ -26,7 +26,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/PluginManager/Manager.h>
 
 #include "Magnum/Image.h"
@@ -161,15 +161,15 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Plat
 int DistanceFieldConverter::exec() {
     /* Load importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
-        args.value("plugin-dir").empty() ? std::string{} :
-        Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths()[0])};
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths()[0])};
     Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
     if(!importer) return 1;
 
     /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
-        args.value("plugin-dir").empty() ? std::string{} :
-        Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths()[0])};
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths()[0])};
     Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
     if(!converter) return 2;
 

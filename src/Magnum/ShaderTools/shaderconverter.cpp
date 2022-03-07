@@ -27,7 +27,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Implementation/converterUtilities.h"
@@ -337,10 +337,15 @@ see documentation of a particular converter for more information.)")
 
     /* If we want just SPIR-V info and the input looks like a SPIR-V binary,
        do that right away without going through any plugin. If it doesn't, we
-       try again after using a converter.s */
+       try again after using a converter. */
     if(args.isSet("info")) {
-        const Containers::Array<char> data = Utility::Directory::read(args.arrayValue("input", 0));
-        if(Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(data, data.size())) {
+        const Containers::Optional<Containers::Array<char>> data = Utility::Path::read(args.arrayValue("input", 0));
+        if(!data) {
+            Error{} << "Can't read" << args.arrayValue("input", 0);
+            return 24;
+        }
+
+        if(Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(*data, data->size())) {
             printSpirvInfo(spirv);
             return 0;
         }
@@ -348,8 +353,8 @@ see documentation of a particular converter for more information.)")
 
     /* Set up a converter manager */
     PluginManager::Manager<ShaderTools::AbstractConverter> converterManager{
-        args.value("plugin-dir").empty() ? std::string{} :
-        Utility::Directory::join(args.value("plugin-dir"), ShaderTools::AbstractConverter::pluginSearchPaths()[0])};
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), ShaderTools::AbstractConverter::pluginSearchPaths()[0])};
 
     /* Data passed from one converter to another in case there's more than one */
     Containers::Array<char> data;

@@ -30,8 +30,8 @@
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/PixelFormat.h"
@@ -309,8 +309,8 @@ is specified as well, the IDs reference attributes of the first mesh.)")
     }
 
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
-        args.value("plugin-dir").empty() ? std::string{} :
-        Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths()[0])};
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths()[0])};
 
     Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
     if(!importer) {
@@ -327,10 +327,10 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
     /* Open the file or map it if requested */
     #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
-    Containers::Array<const char, Utility::Directory::MapDeleter> mapped;
+    Containers::Optional<Containers::Array<const char, Utility::Path::MapDeleter>> mapped;
     if(args.isSet("map")) {
         Trade::Implementation::Duration d{importTime};
-        if(!(mapped = Utility::Directory::mapRead(args.value("input"))) || !importer->openMemory(mapped)) {
+        if(!(mapped = Utility::Path::mapRead(args.value("input"))) || !importer->openMemory(*mapped)) {
             Error() << "Cannot memory-map file" << args.value("input");
             return 3;
         }
@@ -1099,8 +1099,8 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
     /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{
-        args.value("plugin-dir").empty() ? std::string{} :
-        Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractSceneConverter::pluginSearchPaths()[0])};
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractSceneConverter::pluginSearchPaths()[0])};
 
     /* Assume there's always one passed --converter option less, and the last
        is implicitly AnySceneConverter. All converters except the last one are

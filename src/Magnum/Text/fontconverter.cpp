@@ -26,7 +26,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Text/AbstractFont.h"
@@ -163,21 +163,21 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
 int FontConverter::exec() {
     /* Font converter dependencies */
     PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager{
-        args.value("plugin-dir").empty() ? std::string{} :
-        Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths()[0])};
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths()[0])};
 
     /* Load font */
     PluginManager::Manager<Text::AbstractFont> fontManager{
-        args.value("plugin-dir").empty() ? std::string{} :
-        Utility::Directory::join(args.value("plugin-dir"), Text::AbstractFont::pluginSearchPaths()[0])};
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Text::AbstractFont::pluginSearchPaths()[0])};
     Containers::Pointer<Text::AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
     if(!font) return 1;
 
     /* Register the image converter manager for potential dependencies
        (MagnumFontConverter needs TgaImageConverter, for example) */
     PluginManager::Manager<Text::AbstractFontConverter> converterManager{
-        args.value("plugin-dir").empty() ? std::string{} :
-        Utility::Directory::join(args.value("plugin-dir"), Text::AbstractFontConverter::pluginSearchPaths()[0])};
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Text::AbstractFontConverter::pluginSearchPaths()[0])};
     converterManager.registerExternalManager(imageConverterManager);
 
     /* Load font converter */

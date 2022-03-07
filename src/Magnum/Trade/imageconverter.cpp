@@ -32,7 +32,7 @@
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/ImageView.h"
@@ -362,8 +362,8 @@ key=true; configuration subgroups are delimited with /.)")
     }
 
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
-        args.value("plugin-dir").empty() ? std::string{} :
-        Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths()[0])};
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths()[0])};
 
     const Int dimensions = args.value<Int>("dimensions");
     /** @todo make them array options as well? */
@@ -371,7 +371,7 @@ key=true; configuration subgroups are delimited with /.)")
     Containers::Optional<UnsignedInt> level;
     if(!args.value("level").empty()) level = args.value<UnsignedInt>("level");
     #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
-    Containers::Array<Containers::Array<const char, Utility::Directory::MapDeleter>> mapped;
+    Containers::Array<Containers::Array<const char, Utility::Path::MapDeleter>> mapped;
     #endif
     Containers::Array<Trade::ImageData1D> images1D;
     Containers::Array<Trade::ImageData2D> images2D;
@@ -401,12 +401,6 @@ key=true; configuration subgroups are delimited with /.)")
                 return 4;
             }
 
-            /** @todo simplify once read() reliably returns an Optional */
-            if(!Utility::Directory::exists(input)) {
-                Error{} << "Cannot open file" << input;
-                return 3;
-            }
-
             /* Read the file or map it if requested */
             Containers::Array<char> data;
             #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
@@ -414,20 +408,28 @@ key=true; configuration subgroups are delimited with /.)")
                 arrayAppend(mapped, InPlaceInit);
 
                 Trade::Implementation::Duration d{importTime};
-                if(!(mapped.back() = Utility::Directory::mapRead(input))) {
+                Containers::Optional<Containers::Array<const char, Utility::Path::MapDeleter>> mappedMaybe = Utility::Path::mapRead(input);
+                if(!mappedMaybe) {
                     Error() << "Cannot memory-map file" << input;
                     return 3;
                 }
 
                 /* Fake a mutable array with a non-owning deleter to have the
-                   same type as from Directory::read(). The actual memory is
-                   owned by the `mapped` array. */
+                   same type as from Path::read(). The actual memory is owned
+                   by the `mapped` array. */
+                mapped.back() = *std::move(mappedMaybe);
                 data = Containers::Array<char>{const_cast<char*>(mapped.back().data()), mapped.back().size(), [](char*, std::size_t){}};
             } else
             #endif
             {
                 Trade::Implementation::Duration d{importTime};
-                data = Utility::Directory::read(input);
+                Containers::Optional<Containers::Array<char>> dataMaybe = Utility::Path::read(input);
+                if(!dataMaybe) {
+                    Error{} << "Cannot read file" << input;
+                    return 3;
+                }
+
+                data = *std::move(dataMaybe);
             }
 
             auto side = Int(std::sqrt(data.size()/pixelSize));
@@ -467,10 +469,13 @@ key=true; configuration subgroups are delimited with /.)")
                 arrayAppend(mapped, InPlaceInit);
 
                 Trade::Implementation::Duration d{importTime};
-                if(!(mapped.back() = Utility::Directory::mapRead(input)) || !importer->openMemory(mapped.back())) {
+                Containers::Optional<Containers::Array<const char, Utility::Path::MapDeleter>> mappedMaybe = Utility::Path::mapRead(input);
+                if(!mappedMaybe || !importer->openMemory(*mappedMaybe)) {
                     Error() << "Cannot memory-map file" << input;
                     return 3;
                 }
+
+                mapped.back() = *std::move(mappedMaybe);
             } else
             #endif
             {
@@ -882,7 +887,7 @@ key=true; configuration subgroups are delimited with /.)")
 
         {
             Trade::Implementation::Duration d{conversionTime};
-            if(!Utility::Directory::write(output, data)) return 1;
+            if(!Utility::Path::write(output, data)) return 1;
         }
 
         if(args.isSet("profile")) {
@@ -895,8 +900,8 @@ key=true; configuration subgroups are delimited with /.)")
 
     /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
-        args.value("plugin-dir").empty() ? std::string{} :
-        Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths()[0])};
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths()[0])};
     Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
     if(!converter) {
         Debug{} << "Available converter plugins:" << Utility::String::join(converterManager.aliasList(), ", ");
