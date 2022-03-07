@@ -24,8 +24,9 @@
 */
 
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -125,7 +126,7 @@ void ForceRendererGLTest::render2D() {
 
     CORRADE_COMPARE_WITH(
         framebuffer.read({{}, {64, 64}}, {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "ForceRenderer2D.tga"),
+        Utility::Path::join(DEBUGTOOLS_TEST_DIR, "ForceRenderer2D.tga"),
         *comparator);
 }
 
@@ -173,12 +174,12 @@ void ForceRendererGLTest::render3D() {
         CORRADE_EXPECT_FAIL("I'm unable to convince it to orient the arrowhead correctly in 3D.");
         CORRADE_COMPARE_WITH(
             framebuffer.read({{}, {64, 64}}, {PixelFormat::RGBA8Unorm}),
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "ForceRenderer2D.tga"),
+            Utility::Path::join(DEBUGTOOLS_TEST_DIR, "ForceRenderer2D.tga"),
             CompareImageToFile{_manager});
     }
     CORRADE_COMPARE_WITH(
         framebuffer.read({{}, {64, 64}}, {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "ForceRenderer3D.tga"),
+        Utility::Path::join(DEBUGTOOLS_TEST_DIR, "ForceRenderer3D.tga"),
         CompareImageToFile{_manager});
 }
 

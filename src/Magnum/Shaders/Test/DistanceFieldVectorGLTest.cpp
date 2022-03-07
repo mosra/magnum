@@ -26,9 +26,16 @@
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Path.h>
+
+#ifdef CORRADE_TARGET_APPLE
+#include <Corrade/Containers/Pair.h>
+#include <Corrade/Utility/System.h> /* isSandboxed() */
+#endif
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -333,13 +340,13 @@ DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
     #endif
 
     #ifdef CORRADE_TARGET_APPLE
-    if(Utility::Directory::isSandboxed()
+    if(Utility::System::isSandboxed()
         #if defined(CORRADE_TARGET_IOS) && defined(CORRADE_TESTSUITE_TARGET_XCTEST)
         /** @todo Fix this once I persuade CMake to run XCTest tests properly */
         && std::getenv("SIMULATOR_UDID")
         #endif
     ) {
-        _testDir = Utility::Directory::path(Utility::Directory::executableLocation());
+        _testDir = Utility::Path::split(*Utility::Path::executableLocation()).first();
     } else
     #endif
     {
@@ -673,7 +680,7 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
 
     GL::Texture2D texture;
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
     texture.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge);
@@ -720,7 +727,7 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "VectorTestFiles/defaults.tga"),
+        Utility::Path::join(_testDir, "VectorTestFiles/defaults.tga"),
         (DebugTools::CompareImageToFile{_manager, 201.0f, 6.1f}));
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -734,7 +741,7 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "VectorTestFiles/defaults-distancefield.tga"),
+        Utility::Path::join(_testDir, "VectorTestFiles/defaults-distancefield.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -761,7 +768,7 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
 
     GL::Texture2D texture;
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
     texture.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge);
@@ -808,7 +815,7 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "VectorTestFiles/defaults.tga"),
+        Utility::Path::join(_testDir, "VectorTestFiles/defaults.tga"),
         (DebugTools::CompareImageToFile{_manager, 201.0f, 6.1f}));
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -822,7 +829,7 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "VectorTestFiles/defaults-distancefield.tga"),
+        Utility::Path::join(_testDir, "VectorTestFiles/defaults-distancefield.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -852,7 +859,7 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
 
     GL::Texture2D texture;
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
     texture.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge);
@@ -930,7 +937,7 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
     const Float maxThreshold = 32.0f, meanThreshold = 2.386f;
     #endif
     CORRADE_COMPARE_WITH(pixels,
-        Utility::Directory::join({_testDir, "VectorTestFiles", data.file2D}),
+        Utility::Path::join({_testDir, "VectorTestFiles", data.file2D}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -960,7 +967,7 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
 
     GL::Texture2D texture;
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
     texture.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge);
@@ -1044,7 +1051,7 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
     const Float maxThreshold = 32.0f, meanThreshold = 1.613f;
     #endif
     CORRADE_COMPARE_WITH(pixels,
-        Utility::Directory::join({_testDir, "VectorTestFiles", data.file3D}),
+        Utility::Path::join({_testDir, "VectorTestFiles", data.file3D}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -1084,7 +1091,7 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
     CORRADE_VERIFY(importer);
 
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
     GL::Texture2D vector;
     vector.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
@@ -1246,7 +1253,7 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "VectorTestFiles", data.expected2D}),
+        Utility::Path::join({_testDir, "VectorTestFiles", data.expected2D}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
 
@@ -1285,7 +1292,7 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
     CORRADE_VERIFY(importer);
 
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
     GL::Texture2D vector;
     vector.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
@@ -1452,7 +1459,7 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "VectorTestFiles", data.expected3D}),
+        Utility::Path::join({_testDir, "VectorTestFiles", data.expected3D}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
 #endif

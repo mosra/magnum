@@ -24,8 +24,9 @@
 */
 
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -116,7 +117,7 @@ void ObjectRendererGLTest::render2D() {
 
     CORRADE_COMPARE_WITH(
         framebuffer.read({{}, {64, 64}}, {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "ObjectRenderer2D.tga"),
+        Utility::Path::join(DEBUGTOOLS_TEST_DIR, "ObjectRenderer2D.tga"),
         /* SwiftShader misplaces two pixels here. Nothing serious. */
         (CompareImageToFile{_manager, 71.6f, 0.07f}));
 }
@@ -172,7 +173,7 @@ void ObjectRendererGLTest::render3D() {
 
     CORRADE_COMPARE_WITH(
         framebuffer.read({{}, {64, 64}}, {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "ObjectRenderer3D.tga"),
+        Utility::Path::join(DEBUGTOOLS_TEST_DIR, "ObjectRenderer3D.tga"),
         *comparator);
 }
 

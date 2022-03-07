@@ -23,9 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -670,7 +671,7 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::flat() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_WITH(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
+        Utility::Path::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -837,7 +838,7 @@ void ShadersGLBenchmark::phong() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_WITH(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
+        Utility::Path::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -896,7 +897,7 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vertexColor() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_WITH(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
+        Utility::Path::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -968,7 +969,7 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vector() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_WITH(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
+        Utility::Path::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -1038,7 +1039,7 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::distanceFieldVector() 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_WITH(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
+        Utility::Path::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -1172,7 +1173,7 @@ void ShadersGLBenchmark::meshVisualizer2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_WITH(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
+        Utility::Path::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -1323,7 +1324,7 @@ void ShadersGLBenchmark::meshVisualizer3D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_WITH(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}),
-        Utility::Directory::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
+        Utility::Path::join(SHADERS_TEST_DIR, "BenchmarkFiles/trivial.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 

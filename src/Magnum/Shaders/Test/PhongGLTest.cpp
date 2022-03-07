@@ -26,12 +26,18 @@
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
+
+#ifdef CORRADE_TARGET_APPLE
+#include <Corrade/Containers/Pair.h>
+#include <Corrade/Utility/System.h> /* isSandboxed() */
+#endif
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -162,7 +168,7 @@ struct PhongGLTest: GL::OpenGLTester {
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
-        std::string _testDir;
+        Containers::String _testDir;
 
         GL::Renderbuffer _color{NoCreate};
         #ifndef MAGNUM_TARGET_GLES2
@@ -1147,13 +1153,13 @@ PhongGLTest::PhongGLTest() {
     #endif
 
     #ifdef CORRADE_TARGET_APPLE
-    if(Utility::Directory::isSandboxed()
+    if(Utility::System::isSandboxed()
         #if defined(CORRADE_TARGET_IOS) && defined(CORRADE_TESTSUITE_TARGET_XCTEST)
         /** @todo Fix this once I persuade CMake to run XCTest tests properly */
         && std::getenv("SIMULATOR_UDID")
         #endif
     ) {
-        _testDir = Utility::Directory::path(Utility::Directory::executableLocation());
+        _testDir = Utility::Path::split(*Utility::Path::executableLocation()).first();
     } else
     #endif
     {
@@ -1753,7 +1759,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderDefaults() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "PhongTestFiles/defaults.tga"),
+        Utility::Path::join(_testDir, "PhongTestFiles/defaults.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -1853,7 +1859,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderColored() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "PhongTestFiles/colored.tga"),
+        Utility::Path::join(_testDir, "PhongTestFiles/colored.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -2050,7 +2056,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "PhongTestFiles/colored.tga"),
+        Utility::Path::join(_testDir, "PhongTestFiles/colored.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -2108,7 +2114,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
     #endif
     if(data.flags & PhongGL::Flag::AmbientTexture) {
         Containers::Optional<Trade::ImageData2D> image;
-        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/ambient-texture.tga")) && (image = importer->image2D(0)));
+        CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/ambient-texture.tga")) && (image = importer->image2D(0)));
 
         #ifndef MAGNUM_TARGET_GLES2
         if(data.flags & PhongGL::Flag::TextureArrays) {
@@ -2136,7 +2142,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
        so ambient/specular is visible */
     if(data.flags & PhongGL::Flag::DiffuseTexture) {
         Containers::Optional<Trade::ImageData2D> image;
-        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+        CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
 
         #ifndef MAGNUM_TARGET_GLES2
         if(data.flags & PhongGL::Flag::TextureArrays) {
@@ -2162,7 +2168,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
 
     if(data.flags & PhongGL::Flag::SpecularTexture) {
         Containers::Optional<Trade::ImageData2D> image;
-        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/specular-texture.tga")) && (image = importer->image2D(0)));
+        CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/specular-texture.tga")) && (image = importer->image2D(0)));
 
         #ifndef MAGNUM_TARGET_GLES2
         if(data.flags & PhongGL::Flag::TextureArrays) {
@@ -2288,7 +2294,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "PhongTestFiles", data.expected}),
+        Utility::Path::join({_testDir, "PhongTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -2326,7 +2332,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
 
     /* Normal texture. Flip normal Y, if requested */
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/normal-texture.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/normal-texture.tga")) && (image = importer->image2D(0)));
     if(data.flipNormalY) for(auto row: image->mutablePixels<Color3ub>())
         for(Color3ub& pixel: row)
             pixel.y() = 255 - pixel.y();
@@ -2484,7 +2490,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
     const Float maxThreshold = 191.0f, meanThreshold = 3.017f;
     #endif
     CORRADE_COMPARE_WITH(pixels,
-        Utility::Directory::join({_testDir, "PhongTestFiles", data.expected}),
+        Utility::Path::join({_testDir, "PhongTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -2532,7 +2538,7 @@ template<class T, PhongGL::Flag flag> void PhongGLTest::renderVertexColor() {
 
     GL::Texture2D diffuse;
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
     diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
@@ -2609,7 +2615,7 @@ template<class T, PhongGL::Flag flag> void PhongGLTest::renderVertexColor() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "PhongTestFiles/vertexColor.tga"),
+        Utility::Path::join(_testDir, "PhongTestFiles/vertexColor.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -2723,7 +2729,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-            Utility::Directory::join({_testDir, "PhongTestFiles", data.expected}),
+            Utility::Path::join({_testDir, "PhongTestFiles", data.expected}),
             (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
     }
 
@@ -2745,7 +2751,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-            Utility::Directory::join({_testDir, "PhongTestFiles", "shininess0-overflow.tga"}),
+            Utility::Path::join({_testDir, "PhongTestFiles", "shininess0-overflow.tga"}),
             /* The threshold = 0.001 case has a slight reddish tone on
                SwiftShader; ARM Mali has one pixel off */
             (DebugTools::CompareImageToFile{_manager, 255.0f, 23.1f}));
@@ -2795,7 +2801,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
     CORRADE_VERIFY(importer);
 
     GL::Texture2D ambient;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join({_testDir, "TestFiles", data.ambientTexture})) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join({_testDir, "TestFiles", data.ambientTexture})) && (image = importer->image2D(0)));
     ambient.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
@@ -2803,7 +2809,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
         .setSubImage(0, {}, *image);
 
     GL::Texture2D diffuse;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join({_testDir, "TestFiles", data.diffuseTexture})) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join({_testDir, "TestFiles", data.diffuseTexture})) && (image = importer->image2D(0)));
     diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge);
@@ -2912,7 +2918,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, data.expected),
+        Utility::Path::join(_testDir, data.expected),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -3093,7 +3099,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "PhongTestFiles/colored.tga"),
+        Utility::Path::join(_testDir, "PhongTestFiles/colored.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 
     /* Object ID -- no need to verify the whole image, just check that pixels
@@ -3221,7 +3227,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<const Color3ub>(image.pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "PhongTestFiles", data.file}),
+        Utility::Path::join({_testDir, "PhongTestFiles", data.file}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -3279,7 +3285,7 @@ void PhongGLTest::renderLightsSetOneByOne() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<const Color3ub>(image.pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "PhongTestFiles/light-point-range1.5.tga"}),
+        Utility::Path::join({_testDir, "PhongTestFiles/light-point-range1.5.tga"}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -3320,7 +3326,7 @@ void PhongGLTest::renderLowLightAngle() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "PhongTestFiles/low-light-angle.tga"),
+        Utility::Path::join(_testDir, "PhongTestFiles/low-light-angle.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -3393,7 +3399,7 @@ void PhongGLTest::renderLightCulling() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "PhongTestFiles/colored.tga"),
+        Utility::Path::join(_testDir, "PhongTestFiles/colored.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 #endif
@@ -3434,7 +3440,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderZeroLights() {
 
     GL::Texture2D ambient;
     Containers::Optional<Trade::ImageData2D> ambientImage;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-alpha-texture.tga")) && (ambientImage = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-alpha-texture.tga")) && (ambientImage = importer->image2D(0)));
     ambient.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
@@ -3541,7 +3547,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderZeroLights() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         /* Should be equivalent to masked Flat3D */
-        Utility::Directory::join(_testDir, "FlatTestFiles/textured3D-alpha-mask0.5.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/textured3D-alpha-mask0.5.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -3682,7 +3688,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
 
         if(data.flags & PhongGL::Flag::DiffuseTexture) {
             Containers::Optional<Trade::ImageData2D> image;
-            CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+            CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
 
             #ifndef MAGNUM_TARGET_GLES2
             if(data.flags & PhongGL::Flag::TextureArrays) {
@@ -3732,7 +3738,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
 
         if(data.flags & PhongGL::Flag::NormalTexture) {
             Containers::Optional<Trade::ImageData2D> image;
-            CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/normal-texture.tga")) && (image = importer->image2D(0)));
+            CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/normal-texture.tga")) && (image = importer->image2D(0)));
 
             #ifndef MAGNUM_TARGET_GLES2
             if(data.flags & PhongGL::Flag::TextureArrays) {
@@ -3953,7 +3959,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "PhongTestFiles", data.expected}),
+        Utility::Path::join({_testDir, "PhongTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -4022,7 +4028,7 @@ void PhongGLTest::renderMulti() {
         CORRADE_VERIFY(importer);
 
         Containers::Optional<Trade::ImageData2D> image;
-        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+        CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
 
         /* For arrays we upload three slices of the original image to half-high
            slices */
@@ -4342,7 +4348,7 @@ void PhongGLTest::renderMulti() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "PhongTestFiles", data.expected}),
+        Utility::Path::join({_testDir, "PhongTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 
     /* Object ID -- no need to verify the whole image, just check that pixels

@@ -26,10 +26,17 @@
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
+
+#ifdef CORRADE_TARGET_APPLE
+#include <Corrade/Containers/Pair.h>
+#include <Corrade/Utility/System.h> /* isSandboxed() */
+#endif
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -150,7 +157,7 @@ struct FlatGLTest: GL::OpenGLTester {
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
-        std::string _testDir;
+        Containers::String _testDir;
 
         GL::Renderbuffer _color{NoCreate};
         #ifndef MAGNUM_TARGET_GLES2
@@ -806,13 +813,13 @@ FlatGLTest::FlatGLTest() {
     #endif
 
     #ifdef CORRADE_TARGET_APPLE
-    if(Utility::Directory::isSandboxed()
+    if(Utility::System::isSandboxed()
         #if defined(CORRADE_TARGET_IOS) && defined(CORRADE_TESTSUITE_TARGET_XCTEST)
         /** @todo Fix this once I persuade CMake to run XCTest tests properly */
         && std::getenv("SIMULATOR_UDID")
         #endif
     ) {
-        _testDir = Utility::Directory::path(Utility::Directory::executableLocation());
+        _testDir = Utility::Path::split(*Utility::Path::executableLocation()).first();
     } else
     #endif
     {
@@ -1296,7 +1303,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderDefaults2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "FlatTestFiles/defaults.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/defaults.tga"),
         /* SwiftShader has 8 different pixels on the edges */
         (DebugTools::CompareImageToFile{_manager, 238.0f, 0.2975f}));
 }
@@ -1349,7 +1356,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderDefaults3D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "FlatTestFiles/defaults.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/defaults.tga"),
         /* SwiftShader has 8 different pixels on the edges */
         (DebugTools::CompareImageToFile{_manager, 238.0f, 0.2975f}));
 }
@@ -1413,7 +1420,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderColored2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "FlatTestFiles/colored2D.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/colored2D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -1486,7 +1493,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderColored3D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "FlatTestFiles/colored3D.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/colored3D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -1613,7 +1620,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSinglePixelTextured2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "FlatTestFiles/colored2D.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/colored2D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -1735,7 +1742,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderSinglePixelTextured3D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "FlatTestFiles/colored3D.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/colored3D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -1770,7 +1777,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderTextured2D() {
     CORRADE_VERIFY(importer);
 
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
 
     FlatGL2D::Flags flags = data.flags|flag;
     #ifndef MAGNUM_TARGET_GLES2
@@ -1861,7 +1868,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderTextured2D() {
     const Float maxThreshold = 15.667f, meanThreshold = 3.254f;
     #endif
     CORRADE_COMPARE_WITH(pixels,
-        Utility::Directory::join(_testDir, "FlatTestFiles/textured2D.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/textured2D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -1896,7 +1903,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderTextured3D() {
     CORRADE_VERIFY(importer);
 
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
 
     FlatGL3D::Flags flags = data.flags|flag;
     #ifndef MAGNUM_TARGET_GLES2
@@ -1997,7 +2004,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderTextured3D() {
     const Float maxThreshold = 139.0f, meanThreshold = 2.896f;
     #endif
     CORRADE_COMPARE_WITH(pixels,
-        Utility::Directory::join(_testDir, "FlatTestFiles/textured3D.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/textured3D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -2038,7 +2045,7 @@ template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor2D() {
 
     GL::Texture2D texture;
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
     texture.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
@@ -2086,7 +2093,7 @@ template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "FlatTestFiles/vertexColor2D.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/vertexColor2D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -2127,7 +2134,7 @@ template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor3D() {
 
     GL::Texture2D texture;
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
     texture.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
@@ -2184,7 +2191,7 @@ template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor3D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "FlatTestFiles/vertexColor3D.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/vertexColor3D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -2226,7 +2233,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderAlpha2D() {
     CORRADE_VERIFY(importer);
 
     GL::Texture2D texture;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join({_testDir, "TestFiles", "diffuse-alpha-texture.tga"})) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join({_testDir, "TestFiles", "diffuse-alpha-texture.tga"})) && (image = importer->image2D(0)));
     texture.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
@@ -2284,7 +2291,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderAlpha2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, data.expected2D),
+        Utility::Path::join(_testDir, data.expected2D),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -2312,7 +2319,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderAlpha3D() {
     CORRADE_VERIFY(importer);
 
     GL::Texture2D texture;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join({_testDir, "TestFiles", "diffuse-alpha-texture.tga"})) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join({_testDir, "TestFiles", "diffuse-alpha-texture.tga"})) && (image = importer->image2D(0)));
     texture.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
@@ -2391,7 +2398,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderAlpha3D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, data.expected3D}),
+        Utility::Path::join({_testDir, data.expected3D}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -2545,7 +2552,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "FlatTestFiles/colored2D.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/colored2D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 
     /* Object ID -- no need to verify the whole image, just check that pixels
@@ -2694,7 +2701,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "FlatTestFiles/colored3D.tga"),
+        Utility::Path::join(_testDir, "FlatTestFiles/colored3D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 
     /* Object ID -- no need to verify the whole image, just check that pixels
@@ -2815,7 +2822,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         CORRADE_VERIFY(importer);
 
         Containers::Optional<Trade::ImageData2D> image;
-        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+        CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
 
         #ifndef MAGNUM_TARGET_GLES2
         /* For arrays we upload three slices of the original image to half-high
@@ -3003,7 +3010,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "FlatTestFiles", data.expected2D}),
+        Utility::Path::join({_testDir, "FlatTestFiles", data.expected2D}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -3128,7 +3135,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         CORRADE_VERIFY(importer);
 
         Containers::Optional<Trade::ImageData2D> image;
-        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+        CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
 
         #ifndef MAGNUM_TARGET_GLES2
         /* For arrays we upload three slices of the original image to half-high
@@ -3319,7 +3326,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "FlatTestFiles", data.expected3D}),
+        Utility::Path::join({_testDir, "FlatTestFiles", data.expected3D}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -3388,7 +3395,7 @@ void FlatGLTest::renderMulti2D() {
         CORRADE_VERIFY(importer);
 
         Containers::Optional<Trade::ImageData2D> image;
-        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+        CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
 
         /* For arrays we upload three slices of the original image to half-high
            slices */
@@ -3658,7 +3665,7 @@ void FlatGLTest::renderMulti2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "FlatTestFiles", data.expected2D}),
+        Utility::Path::join({_testDir, "FlatTestFiles", data.expected2D}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 
     /* Object ID -- no need to verify the whole image, just check that pixels
@@ -3724,7 +3731,7 @@ void FlatGLTest::renderMulti3D() {
         CORRADE_VERIFY(importer);
 
         Containers::Optional<Trade::ImageData2D> image;
-        CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+        CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
 
         /* For arrays we upload three slices of the original image to half-high
            slices */
@@ -4001,7 +4008,7 @@ void FlatGLTest::renderMulti3D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "FlatTestFiles", data.expected3D}),
+        Utility::Path::join({_testDir, "FlatTestFiles", data.expected3D}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 
     /* Object ID -- no need to verify the whole image, just check that pixels

@@ -25,10 +25,12 @@
 
 #include <sstream>
 #include <Corrade/Containers/ScopeGuard.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove when screenshot() is <string>-free */
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -122,11 +124,11 @@ void ScreenshotGLTest::rgba8() {
 
     CORRADE_COMPARE(framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
 
-    std::string file = Utility::Directory::join(SCREENSHOTTEST_SAVE_DIR, "image.tga");
-    if(Utility::Directory::exists(file))
-        CORRADE_VERIFY(Utility::Directory::rm(file));
+    Containers::String file = Utility::Path::join(SCREENSHOTTEST_SAVE_DIR, "image.tga");
+    if(Utility::Path::exists(file))
+        CORRADE_VERIFY(Utility::Path::remove(file));
     else
-        CORRADE_VERIFY(Utility::Directory::mkpath(SCREENSHOTTEST_SAVE_DIR));
+        CORRADE_VERIFY(Utility::Path::make(SCREENSHOTTEST_SAVE_DIR));
 
     std::ostringstream out;
     bool succeeded;
@@ -179,11 +181,11 @@ void ScreenshotGLTest::r8() {
 
     CORRADE_COMPARE(framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
 
-    std::string file = Utility::Directory::join(SCREENSHOTTEST_SAVE_DIR, "image.tga");
-    if(Utility::Directory::exists(file))
-        CORRADE_VERIFY(Utility::Directory::rm(file));
+    Containers::String file = Utility::Path::join(SCREENSHOTTEST_SAVE_DIR, "image.tga");
+    if(Utility::Path::exists(file))
+        CORRADE_VERIFY(Utility::Path::remove(file));
     else
-        CORRADE_VERIFY(Utility::Directory::mkpath(SCREENSHOTTEST_SAVE_DIR));
+        CORRADE_VERIFY(Utility::Path::make(SCREENSHOTTEST_SAVE_DIR));
 
     std::ostringstream out;
     bool succeeded;
@@ -236,7 +238,7 @@ void ScreenshotGLTest::unknownFormat() {
     bool succeeded;
     {
         Error redirectOutput{&out};
-        succeeded = DebugTools::screenshot(_converterManager, framebuffer, Utility::Directory::join(SCREENSHOTTEST_SAVE_DIR, "image.tga"));
+        succeeded = DebugTools::screenshot(_converterManager, framebuffer, Utility::Path::join(SCREENSHOTTEST_SAVE_DIR, "image.tga"));
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -273,7 +275,7 @@ void ScreenshotGLTest::pluginLoadFailed() {
     bool succeeded;
     {
         Error redirectOutput{&out};
-        succeeded = DebugTools::screenshot(manager, framebuffer, Utility::Directory::join(SCREENSHOTTEST_SAVE_DIR, "image.poo"));
+        succeeded = DebugTools::screenshot(manager, framebuffer, Utility::Path::join(SCREENSHOTTEST_SAVE_DIR, "image.poo"));
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();

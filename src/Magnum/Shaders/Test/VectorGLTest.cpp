@@ -26,10 +26,17 @@
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
+
+#ifdef CORRADE_TARGET_APPLE
+#include <Corrade/Containers/Pair.h>
+#include <Corrade/Utility/System.h> /* isSandboxed() */
+#endif
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -116,7 +123,7 @@ struct VectorGLTest: GL::OpenGLTester {
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
-        std::string _testDir;
+        Containers::String _testDir;
 
         GL::Renderbuffer _color{NoCreate};
         #ifndef MAGNUM_TARGET_GLES2
@@ -330,13 +337,13 @@ VectorGLTest::VectorGLTest() {
     #endif
 
     #ifdef CORRADE_TARGET_APPLE
-    if(Utility::Directory::isSandboxed()
+    if(Utility::System::isSandboxed()
         #if defined(CORRADE_TARGET_IOS) && defined(CORRADE_TESTSUITE_TARGET_XCTEST)
         /** @todo Fix this once I persuade CMake to run XCTest tests properly */
         && std::getenv("SIMULATOR_UDID")
         #endif
     ) {
-        _testDir = Utility::Directory::path(Utility::Directory::executableLocation());
+        _testDir = Utility::Path::split(*Utility::Path::executableLocation()).first();
     } else
     #endif
     {
@@ -664,7 +671,7 @@ template<VectorGL2D::Flag flag> void VectorGLTest::renderDefaults2D() {
 
     GL::Texture2D texture;
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
     texture.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge);
@@ -716,7 +723,7 @@ template<VectorGL2D::Flag flag> void VectorGLTest::renderDefaults2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "VectorTestFiles/defaults.tga"),
+        Utility::Path::join(_testDir, "VectorTestFiles/defaults.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -743,7 +750,7 @@ template<VectorGL3D::Flag flag> void VectorGLTest::renderDefaults3D() {
 
     GL::Texture2D texture;
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
     texture.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge);
@@ -795,7 +802,7 @@ template<VectorGL3D::Flag flag> void VectorGLTest::renderDefaults3D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "VectorTestFiles/defaults.tga"),
+        Utility::Path::join(_testDir, "VectorTestFiles/defaults.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -825,7 +832,7 @@ template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
 
     GL::Texture2D texture;
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
     texture.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge);
@@ -900,7 +907,7 @@ template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
     const Float maxThreshold = 170.0f, meanThreshold = 0.962f;
     #endif
     CORRADE_COMPARE_WITH(pixels,
-        Utility::Directory::join({_testDir, "VectorTestFiles", data.file2D}),
+        Utility::Path::join({_testDir, "VectorTestFiles", data.file2D}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -930,7 +937,7 @@ template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
 
     GL::Texture2D texture;
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
     texture.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge);
@@ -1009,7 +1016,7 @@ template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
     const Float maxThreshold = 170.0f, meanThreshold = 0.660f;
     #endif
     CORRADE_COMPARE_WITH(pixels,
-        Utility::Directory::join({_testDir, "VectorTestFiles", data.file3D}),
+        Utility::Path::join({_testDir, "VectorTestFiles", data.file3D}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -1049,7 +1056,7 @@ void VectorGLTest::renderMulti2D() {
     CORRADE_VERIFY(importer);
 
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
     GL::Texture2D vector;
     vector.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
@@ -1211,7 +1218,7 @@ void VectorGLTest::renderMulti2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "VectorTestFiles", data.expected2D}),
+        Utility::Path::join({_testDir, "VectorTestFiles", data.expected2D}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
 
@@ -1250,7 +1257,7 @@ void VectorGLTest::renderMulti3D() {
     CORRADE_VERIFY(importer);
 
     Containers::Optional<Trade::ImageData2D> image;
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
     GL::Texture2D vector;
     vector.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
@@ -1417,7 +1424,7 @@ void VectorGLTest::renderMulti3D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "VectorTestFiles", data.expected3D}),
+        Utility::Path::join({_testDir, "VectorTestFiles", data.expected3D}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
 #endif

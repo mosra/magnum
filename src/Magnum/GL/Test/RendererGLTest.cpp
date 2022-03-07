@@ -30,6 +30,7 @@
 #include <Corrade/Utility/Path.h>
 
 #ifdef CORRADE_TARGET_APPLE
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/System.h> /* isSandboxed() */
 #endif
 

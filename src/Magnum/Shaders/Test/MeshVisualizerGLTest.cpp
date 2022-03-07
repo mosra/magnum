@@ -26,11 +26,17 @@
 #include <numeric>
 #include <sstream>
 #include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
+
+#ifdef CORRADE_TARGET_APPLE
+#include <Corrade/Containers/Pair.h>
+#include <Corrade/Utility/System.h> /* isSandboxed() */
+#endif
 
 #include "Magnum/DebugTools/ColorMap.h"
 #include "Magnum/DebugTools/CompareImage.h"
@@ -186,7 +192,7 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
-        std::string _testDir;
+        Containers::String _testDir;
 
         GL::Renderbuffer _color{NoCreate},
             _depth{NoCreate};
@@ -1310,13 +1316,13 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     #endif
 
     #ifdef CORRADE_TARGET_APPLE
-    if(Utility::Directory::isSandboxed()
+    if(Utility::System::isSandboxed()
         #if defined(CORRADE_TARGET_IOS) && defined(CORRADE_TESTSUITE_TARGET_XCTEST)
         /** @todo Fix this once I persuade CMake to run XCTest tests properly */
         && std::getenv("SIMULATOR_UDID")
         #endif
     ) {
-        _testDir = Utility::Directory::path(Utility::Directory::executableLocation());
+        _testDir = Utility::Path::split(*Utility::Path::executableLocation()).first();
     } else
     #endif
     {
@@ -2425,7 +2431,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-            Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe2D.tga"),
+            Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe2D.tga"),
             (DebugTools::CompareImageToFile{_manager}));
     }
 
@@ -2456,7 +2462,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe2D.tga"),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe2D.tga"),
         /* AMD has off-by-one errors on edges compared to Intel */
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.082f}));
 }
@@ -2522,7 +2528,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-            Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe3D.tga"),
+            Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe3D.tga"),
             (DebugTools::CompareImageToFile{_manager}));
     }
 
@@ -2557,7 +2563,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe3D.tga"),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe3D.tga"),
         /* AMD has off-by-one errors on edges compared to Intel */
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.06f}));
 }
@@ -2612,7 +2618,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-objectid2D.tga"),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-objectid2D.tga"),
         /* SwiftShader has a few rounding errors on edges */
         (DebugTools::CompareImageToFile{_manager, 24.67f, 0.11f}));
 }
@@ -2669,7 +2675,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-objectid3D.tga"),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-objectid3D.tga"),
         /* SwiftShader has a few rounding errors on edges and off-by-two
            pixels */
         (DebugTools::CompareImageToFile{_manager, 24.67f, 2.55f}));
@@ -2746,7 +2752,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-instancedobjectid2D.tga"),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-instancedobjectid2D.tga"),
         /* SwiftShader has a few rounding errors on edges */
         (DebugTools::CompareImageToFile{_manager, 150.67f, 0.45f}));
 }
@@ -2826,7 +2832,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-instancedobjectid3D.tga"),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-instancedobjectid3D.tga"),
         /* SwiftShader has a few rounding errors on edges */
         (DebugTools::CompareImageToFile{_manager, 150.67f, 0.165f}));
 }
@@ -2878,7 +2884,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-vertexid2D.tga"),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-vertexid2D.tga"),
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.017f}));
 }
 
@@ -2933,7 +2939,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-vertexid3D.tga"),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-vertexid3D.tga"),
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.012f}));
 }
 
@@ -3013,7 +3019,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-primitiveid2D.tga"),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-primitiveid2D.tga"),
         /* SwiftShader has a few rounding errors on edges */
         (DebugTools::CompareImageToFile{_manager, 76.67f, 0.23f}));
 }
@@ -3098,7 +3104,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-primitiveid3D.tga"),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-primitiveid3D.tga"),
         /* SwiftShader has a few rounding errors on edges */
         (DebugTools::CompareImageToFile{_manager, 88.34f, 0.071f}));
 }
@@ -3166,7 +3172,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-tbn.tga"),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-tbn.tga"),
         /* AMD has off-by-one errors on edges compared to Intel */
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.06f}));
 }
@@ -3282,7 +3288,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWirefra
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-            Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.file}),
+            Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.file}),
             (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
     }
 
@@ -3299,7 +3305,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWirefra
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-            Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.fileXfail}),
+            Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.fileXfail}),
             (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
     }
 }
@@ -3430,7 +3436,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWirefra
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-            Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.file}),
+            Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.file}),
             (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
     }
 
@@ -3447,7 +3453,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWirefra
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-            Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.fileXfail}),
+            Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.fileXfail}),
             (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
     }
 }
@@ -3639,7 +3645,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.file2D}),
+        Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.file2D}),
         /* AMD has slight off-by-one errors compared to Intel, SwiftShader a
            bit more */
         (DebugTools::CompareImageToFile{_manager, 4.67f, 0.141f}));
@@ -3850,7 +3856,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.file3D}),
+        Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.file3D}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 #endif
@@ -3893,7 +3899,7 @@ void MeshVisualizerGLTest::renderWireframe3DPerspective() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/wireframe-perspective.tga"),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/wireframe-perspective.tga"),
         (DebugTools::CompareImageToFile{_manager, 0.667f, 0.002f}));
 }
 
@@ -4086,7 +4092,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.file}),
+        Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.file}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 #endif
@@ -4345,7 +4351,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
+        Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
 
@@ -4635,7 +4641,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
+        Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
 
@@ -4956,7 +4962,7 @@ void MeshVisualizerGLTest::renderMulti2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
+        Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
 
@@ -5287,7 +5293,7 @@ void MeshVisualizerGLTest::renderMulti3D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
+        Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
 #endif

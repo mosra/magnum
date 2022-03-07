@@ -23,8 +23,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove when AbstractImporter is <string>-free */
 #include <Corrade/PluginManager/AbstractManager.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
+
+#ifdef CORRADE_TARGET_APPLE
+#include <Corrade/Containers/Pair.h>
+#include <Corrade/Utility/System.h> /* isSandboxed() */
+#endif
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -65,7 +72,7 @@ struct DistanceFieldGLTest: GL::OpenGLTester {
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
-        std::string _testDir;
+        Containers::String _testDir;
 };
 
 #ifdef MAGNUM_TARGET_GLES
@@ -89,13 +96,13 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
     #endif
 
     #ifdef CORRADE_TARGET_APPLE
-    if(Utility::Directory::isSandboxed()
+    if(Utility::System::isSandboxed()
         #if defined(CORRADE_TARGET_IOS) && defined(CORRADE_TESTSUITE_TARGET_XCTEST)
         /** @todo Fix this once I persuade CMake to run XCTest tests properly */
         && std::getenv("SIMULATOR_UDID")
         #endif
     ) {
-        _testDir = Utility::Directory::join(Utility::Directory::path(Utility::Directory::executableLocation()), "DistanceFieldGLTestFiles");
+        _testDir = Utility::Path::join(Utility::Path::split(*Utility::Path::executableLocation()).first(), "DistanceFieldGLTestFiles");
     } else
     #endif
     {
@@ -108,7 +115,7 @@ void DistanceFieldGLTest::test() {
     if(!(importer = _manager.loadAndInstantiate("TgaImporter")))
         CORRADE_SKIP("TgaImporter plugin not found.");
 
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "input.tga")));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "input.tga")));
     CORRADE_COMPARE(importer->image2DCount(), 1);
     Containers::Optional<Trade::ImageData2D> inputImage = importer->image2D(0);
     CORRADE_VERIFY(inputImage);
@@ -225,7 +232,7 @@ void DistanceFieldGLTest::test() {
     #endif
 
     CORRADE_COMPARE_WITH(*actualOutputImage,
-        Utility::Directory::join(_testDir, "output.tga"),
+        Utility::Path::join(_testDir, "output.tga"),
         /* Some mobile GPUs have slight (off-by-one) rounding errors compared
            to the ground truth, but it's just a very small amount of pixels
            (20-50 out of the total 4k pixels, iOS/WebGL has slightly more).
@@ -245,7 +252,7 @@ void DistanceFieldGLTest::benchmark() {
     if(!(importer = _manager.loadAndInstantiate("TgaImporter")))
         CORRADE_SKIP("TgaImporter plugin not found.");
 
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "input.tga")));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "input.tga")));
     CORRADE_COMPARE(importer->image2DCount(), 1);
     Containers::Optional<Trade::ImageData2D> inputImage = importer->image2D(0);
     CORRADE_VERIFY(inputImage);
