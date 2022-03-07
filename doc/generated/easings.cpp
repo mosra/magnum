@@ -41,8 +41,8 @@
 */
 
 #include <Corrade/Containers/StringStl.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Magnum.h"
@@ -95,7 +95,7 @@ void generateThumb(const std::string& file, Float(*function)(Float)) {
 </svg>
 )");
 
-    Utility::Directory::writeString("easings-" + file + "-thumb.svg", out);
+    Utility::Path::write("easings-" + file + "-thumb.svg", Containers::StringView{out});
 }
 
 void generate(const std::string& file, Float(*function)(Float), std::initializer_list<Float(*)(Float)> related = {}, const CubicBezier2D& bezier = {}, const Color3& colorBefore = 0xcd3431_srgbf, const Color3 colorAfter = 0xcd3431_srgbf, bool extraMargin = false) {
@@ -189,7 +189,7 @@ void generate(const std::string& file, Float(*function)(Float), std::initializer
     Utility::formatInto(out, out.size(), R"(</svg>
 )");
 
-    Utility::Directory::writeString("easings-" + file + ".svg", out);
+    Utility::Path::write("easings-" + file + ".svg", Containers::StringView{out});
 
     generateThumb(file, function);
 }

@@ -27,7 +27,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Magnum/Platform/WindowlessCglApplication.h>
@@ -146,7 +146,7 @@ int ShaderVisualizer::exec() {
 
         GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
         Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-        converter->convertToFile(result, Utility::Directory::join("../", "shaders-" + filename));
+        converter->convertToFile(result, Utility::Path::join("../", "shaders-" + filename));
     }
 
     _importer.reset();
