@@ -33,12 +33,15 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Trade/ImageData.h"
 #include "MagnumPlugins/Implementation/propagateConfiguration.h"
 
 namespace Magnum { namespace Trade {
+
+using namespace Containers::Literals;
 
 AnyImageImporter::AnyImageImporter(PluginManager::Manager<AbstractImporter>& manager): AbstractImporter{manager} {}
 
@@ -61,65 +64,67 @@ void AnyImageImporter::doClose() {
 void AnyImageImporter::doOpenFile(const std::string& filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo lowercase only the extension, once Directory::split() is done */
-    const std::string normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
-    std::string plugin;
-    if(Utility::String::endsWith(normalized, ".basis"))
-        plugin = "BasisImporter";
-    else if(Utility::String::endsWith(normalized, ".bmp"))
-        plugin = "BmpImporter";
-    else if(Utility::String::endsWith(normalized, ".dds"))
-        plugin = "DdsImporter";
-    else if(Utility::String::endsWith(normalized, ".exr"))
-        plugin = "OpenExrImporter";
-    else if(Utility::String::endsWith(normalized, ".gif"))
-        plugin = "GifImporter";
-    else if(Utility::String::endsWith(normalized, ".hdr"))
-        plugin = "HdrImporter";
-    else if(Utility::String::endsWith(normalized, ".ico") ||
-            Utility::String::endsWith(normalized, ".cur"))
-        plugin = "IcoImporter";
-    else if(Utility::String::endsWith(normalized, ".jpg") ||
-            Utility::String::endsWith(normalized, ".jpeg") ||
-            Utility::String::endsWith(normalized, ".jpe"))
-        plugin = "JpegImporter";
-    else if(Utility::String::endsWith(normalized, ".jp2"))
-        plugin = "Jpeg2000Importer";
-    else if(Utility::String::endsWith(normalized, ".ktx2"))
-        plugin = "KtxImporter";
-    else if(Utility::String::endsWith(normalized, ".mng"))
-        plugin = "MngImporter";
-    else if(Utility::String::endsWith(normalized, ".pbm"))
-        plugin = "PbmImporter";
-    else if(Utility::String::endsWith(normalized, ".pcx"))
-        plugin = "PcxImporter";
-    else if(Utility::String::endsWith(normalized, ".pgm"))
-        plugin = "PgmImporter";
-    else if(Utility::String::endsWith(normalized, ".pic"))
-        plugin = "PicImporter";
-    else if(Utility::String::endsWith(normalized, ".pnm"))
-        plugin = "PnmImporter";
-    else if(Utility::String::endsWith(normalized, ".png"))
-        plugin = "PngImporter";
-    else if(Utility::String::endsWith(normalized, ".ppm"))
-        plugin = "PpmImporter";
-    else if(Utility::String::endsWith(normalized, ".psd"))
-        plugin = "PsdImporter";
-    else if(Utility::String::endsWith(normalized, ".sgi") ||
-            Utility::String::endsWith(normalized, ".bw") ||
-            Utility::String::endsWith(normalized, ".rgb") ||
-            Utility::String::endsWith(normalized, ".rgba"))
-        plugin = "SgiImporter";
-    else if(Utility::String::endsWith(normalized, ".tif") ||
-            Utility::String::endsWith(normalized, ".tiff"))
-        plugin = "TiffImporter";
-    else if(Utility::String::endsWith(normalized, ".tga") ||
-            Utility::String::endsWith(normalized, ".vda") ||
-            Utility::String::endsWith(normalized, ".icb") ||
-            Utility::String::endsWith(normalized, ".vst"))
-        plugin = "TgaImporter";
+    Containers::StringView plugin;
+    if(normalizedExtension == ".basis"_s)
+        plugin = "BasisImporter"_s;
+    else if(normalizedExtension == ".bmp"_s)
+        plugin = "BmpImporter"_s;
+    else if(normalizedExtension == ".dds"_s)
+        plugin = "DdsImporter"_s;
+    else if(normalizedExtension == ".exr"_s)
+        plugin = "OpenExrImporter"_s;
+    else if(normalizedExtension == ".gif"_s)
+        plugin = "GifImporter"_s;
+    else if(normalizedExtension == ".hdr"_s)
+        plugin = "HdrImporter"_s;
+    else if(normalizedExtension == ".ico"_s ||
+            normalizedExtension == ".cur"_s)
+        plugin = "IcoImporter"_s;
+    else if(normalizedExtension == ".jpg"_s ||
+            normalizedExtension == ".jpeg"_s ||
+            normalizedExtension == ".jpe"_s)
+        plugin = "JpegImporter"_s;
+    else if(normalizedExtension == ".jp2"_s)
+        plugin = "Jpeg2000Importer"_s;
+    else if(normalizedExtension == ".ktx2"_s)
+        plugin = "KtxImporter"_s;
+    else if(normalizedExtension == ".mng"_s)
+        plugin = "MngImporter"_s;
+    else if(normalizedExtension == ".pbm"_s)
+        plugin = "PbmImporter"_s;
+    else if(normalizedExtension == ".pcx"_s)
+        plugin = "PcxImporter"_s;
+    else if(normalizedExtension == ".pgm"_s)
+        plugin = "PgmImporter"_s;
+    else if(normalizedExtension == ".pic"_s)
+        plugin = "PicImporter"_s;
+    else if(normalizedExtension == ".pnm"_s)
+        plugin = "PnmImporter"_s;
+    else if(normalizedExtension == ".png"_s)
+        plugin = "PngImporter"_s;
+    else if(normalizedExtension == ".ppm"_s)
+        plugin = "PpmImporter"_s;
+    else if(normalizedExtension == ".psd"_s)
+        plugin = "PsdImporter"_s;
+    else if(normalizedExtension == ".sgi"_s ||
+            normalizedExtension == ".bw"_s ||
+            normalizedExtension == ".rgb"_s ||
+            normalizedExtension == ".rgba"_s)
+        plugin = "SgiImporter"_s;
+    else if(normalizedExtension == ".tif"_s ||
+            normalizedExtension == ".tiff"_s)
+        plugin = "TiffImporter"_s;
+    else if(normalizedExtension == ".tga"_s ||
+            normalizedExtension == ".vda"_s ||
+            normalizedExtension == ".icb"_s ||
+            normalizedExtension == ".vst"_s)
+        plugin = "TgaImporter"_s;
     else {
         Error{} << "Trade::AnyImageImporter::openFile(): cannot determine the format of" << filename;
         return;
@@ -161,7 +166,7 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
 
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /* So we can use the convenient hasSuffix() API */
+    /* So we can use the convenient hasPrefix() API */
     const Containers::ArrayView<const char> dataView = data;
     const Containers::StringView dataString = dataView;
 

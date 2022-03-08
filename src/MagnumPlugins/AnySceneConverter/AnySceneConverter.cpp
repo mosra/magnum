@@ -31,6 +31,7 @@
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Trade/ImageData.h"
@@ -53,13 +54,14 @@ SceneConverterFeatures AnySceneConverter::doFeatures() const {
 bool AnySceneConverter::doConvertToFile(const MeshData& mesh, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::StringView normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".ply"_s))
+    if(normalizedExtension == ".ply"_s)
         plugin = "StanfordSceneConverter"_s;
     else {
         Error{} << "Trade::AnySceneConverter::convertToFile(): cannot determine the format of" << filename;

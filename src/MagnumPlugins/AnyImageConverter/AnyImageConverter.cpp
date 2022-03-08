@@ -31,6 +31,7 @@
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Trade/ImageData.h"
@@ -65,13 +66,14 @@ ImageConverterFeatures AnyImageConverter::doFeatures() const {
 bool AnyImageConverter::doConvertToFile(const ImageView1D& image, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".ktx2"_s))
+    if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a 1D image";
@@ -108,32 +110,33 @@ bool AnyImageConverter::doConvertToFile(const ImageView1D& image, const Containe
 bool AnyImageConverter::doConvertToFile(const ImageView2D& image, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".bmp"_s))
+    if(normalizedExtension == ".bmp"_s)
         plugin = "BmpImageConverter"_s;
-    else if(normalized.hasSuffix(".basis"_s))
+    else if(normalizedExtension == ".basis"_s)
         plugin = "BasisImageConverter"_s;
-    else if(normalized.hasSuffix(".exr"_s))
+    else if(normalizedExtension == ".exr"_s)
         plugin = "OpenExrImageConverter"_s;
-    else if(normalized.hasSuffix(".hdr"_s))
+    else if(normalizedExtension == ".hdr"_s)
         plugin = "HdrImageConverter"_s;
-    else if(normalized.hasSuffix(".jpg"_s) ||
-            normalized.hasSuffix(".jpeg"_s) ||
-            normalized.hasSuffix(".jpe"_s))
+    else if(normalizedExtension == ".jpg"_s ||
+            normalizedExtension == ".jpeg"_s ||
+            normalizedExtension == ".jpe"_s)
         plugin = "JpegImageConverter"_s;
-    else if(normalized.hasSuffix(".ktx2"_s))
+    else if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
-    else if(normalized.hasSuffix(".png"_s))
+    else if(normalizedExtension == ".png"_s)
         plugin = "PngImageConverter"_s;
-    else if(normalized.hasSuffix(".tga"_s) ||
-            normalized.hasSuffix(".vda"_s) ||
-            normalized.hasSuffix(".icb"_s) ||
-            normalized.hasSuffix( ".vst"_s))
+    else if(normalizedExtension == ".tga"_s ||
+            normalizedExtension == ".vda"_s ||
+            normalizedExtension == ".icb"_s ||
+            normalizedExtension ==  ".vst"_s)
         plugin = "TgaImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a 2D image";
@@ -170,17 +173,18 @@ bool AnyImageConverter::doConvertToFile(const ImageView2D& image, const Containe
 bool AnyImageConverter::doConvertToFile(const ImageView3D& image, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".basis"_s))
+    if(normalizedExtension == ".basis"_s)
         plugin = "BasisImageConverter"_s;
-    else if(normalized.hasSuffix(".exr"_s))
+    else if(normalizedExtension == ".exr"_s)
         plugin = "OpenExrImageConverter"_s;
-    else if(normalized.hasSuffix(".ktx2"_s))
+    else if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a 3D image";
@@ -217,13 +221,14 @@ bool AnyImageConverter::doConvertToFile(const ImageView3D& image, const Containe
 bool AnyImageConverter::doConvertToFile(const CompressedImageView1D& image, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".ktx2"_s))
+    if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 1D image";
@@ -260,13 +265,14 @@ bool AnyImageConverter::doConvertToFile(const CompressedImageView1D& image, cons
 bool AnyImageConverter::doConvertToFile(const CompressedImageView2D& image, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".ktx2"_s))
+    if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 2D image";
@@ -303,13 +309,14 @@ bool AnyImageConverter::doConvertToFile(const CompressedImageView2D& image, cons
 bool AnyImageConverter::doConvertToFile(const CompressedImageView3D& image, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".ktx2"_s))
+    if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 3D image";
@@ -346,13 +353,14 @@ bool AnyImageConverter::doConvertToFile(const CompressedImageView3D& image, cons
 bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageView1D> imageLevels, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".ktx2"_s))
+    if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 1D image";
@@ -389,17 +397,18 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
 bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageView2D> imageLevels, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".basis"_s))
+    if(normalizedExtension == ".basis"_s)
         plugin = "BasisImageConverter"_s;
-    else if(normalized.hasSuffix(".exr"_s))
+    else if(normalizedExtension == ".exr"_s)
         plugin = "OpenExrImageConverter"_s;
-    else if(normalized.hasSuffix(".ktx2"_s))
+    else if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 2D image";
@@ -436,17 +445,18 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
 bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageView3D> imageLevels, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".basis"_s))
+    if(normalizedExtension == ".basis"_s)
         plugin = "BasisImageConverter"_s;
-    else if(normalized.hasSuffix(".exr"_s))
+    else if(normalizedExtension == ".exr"_s)
         plugin = "OpenExrImageConverter"_s;
-    else if(normalized.hasSuffix(".ktx2"_s))
+    else if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 3D image";
@@ -483,13 +493,14 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
 bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const CompressedImageView1D> imageLevels, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".ktx2"_s))
+    if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 1D image";
@@ -526,13 +537,14 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const Compre
 bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const CompressedImageView2D> imageLevels, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".ktx2"_s))
+    if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 2D image";
@@ -569,13 +581,14 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const Compre
 bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const CompressedImageView3D> imageLevels, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo once Directory is std::string-free, use splitExtension(), but
-        only if we don't detect more than one extension yet */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalized.hasSuffix(".ktx2"_s))
+    if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 3D image";

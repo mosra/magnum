@@ -30,11 +30,14 @@
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
 #include "MagnumPlugins/Implementation/propagateConfiguration.h"
 
 namespace Magnum { namespace Audio {
+
+using namespace Containers::Literals;
 
 AnyImporter::AnyImporter(PluginManager::Manager<AbstractImporter>& manager): AbstractImporter{manager} {}
 
@@ -51,21 +54,23 @@ void AnyImporter::doClose() { _in = nullptr; }
 void AnyImporter::doOpenFile(const std::string& filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo lowercase only the extension, once Directory::split() is done */
-    const std::string normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
-    std::string plugin;
-    if(Utility::String::endsWith(normalized, ".aac"))
-        plugin = "AacAudioImporter";
-    else if(Utility::String::endsWith(normalized, ".mp3"))
-        plugin = "Mp3AudioImporter";
-    else if(Utility::String::endsWith(normalized, ".ogg"))
-        plugin = "VorbisAudioImporter";
-    else if(Utility::String::endsWith(normalized, ".wav"))
-        plugin = "WavAudioImporter";
-    else if(Utility::String::endsWith(normalized, ".flac"))
-        plugin = "FlacAudioImporter";
+    Containers::StringView plugin;
+    if(normalizedExtension == ".aac"_s)
+        plugin = "AacAudioImporter"_s;
+    else if(normalizedExtension == ".mp3"_s)
+        plugin = "Mp3AudioImporter"_s;
+    else if(normalizedExtension == ".ogg"_s)
+        plugin = "VorbisAudioImporter"_s;
+    else if(normalizedExtension == ".wav"_s)
+        plugin = "WavAudioImporter"_s;
+    else if(normalizedExtension == ".flac"_s)
+        plugin = "FlacAudioImporter"_s;
     else {
         Error{} << "Audio::AnyImporter::openFile(): cannot determine the format of" << filename;
         return;

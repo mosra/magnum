@@ -32,6 +32,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
 #include "MagnumPlugins/Implementation/propagateConfiguration.h"
@@ -122,8 +123,8 @@ Containers::StringView stringForFormat(const Format format) {
 
 Format formatForExtension(const char* prefix, const Containers::StringView filename) {
     /* Can't reliably lowercase just the extension as we detect double
-       extensions as well */
-    const Containers::String normalized = Utility::String::lowercase(filename);
+       extensions as well. But we can lowercase just the filename, at least. */
+    const Containers::String normalized = Utility::String::lowercase(Utility::Path::split(filename).second());
 
     /* https://github.com/KhronosGroup/SPIRV-Tools/blob/a715b1b4053519ad0f2bdb2d22ace35d35867cff/README.md#command-line-tools
        "It's a convention to name SPIR-V assembly and binary files with suffix
