@@ -290,7 +290,7 @@ DeviceCreateInfo& DeviceCreateInfo::operator=(DeviceCreateInfo&& other) noexcept
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Containers::StringView> extensions) & {
-    if(extensions.empty()) return *this;
+    if(extensions.isEmpty()) return *this;
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
        constructor */
     if(!_state) _state.emplace();
@@ -334,7 +334,7 @@ DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const std::initializer
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Extension> extensions) & {
-    if(extensions.empty()) return *this;
+    if(extensions.isEmpty()) return *this;
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
        constructor */
     if(!_state) _state.emplace();
@@ -575,7 +575,7 @@ DeviceCreateInfo&& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fe
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) & {
-    CORRADE_ASSERT(!priorities.empty(), "Vk::DeviceCreateInfo::addQueues(): at least one queue priority has to be specified", *this);
+    CORRADE_ASSERT(!priorities.isEmpty(), "Vk::DeviceCreateInfo::addQueues(): at least one queue priority has to be specified", *this);
     CORRADE_ASSERT(output.size() == priorities.size(), "Vk::DeviceCreateInfo::addQueues(): expected" << priorities.size() << "outuput queue references but got" << output.size(), *this);
 
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
@@ -594,7 +594,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Co
        this grows too big as all pointers would need to be patched, so there's
        a static limit. */
     CORRADE_INTERNAL_ASSERT(_state->nextQueuePriority + priorities.size() <= _state->queuePriorities.size());
-    Utility::copy(priorities, _state->queuePriorities.suffix(_state->nextQueuePriority).prefix(priorities.size()));
+    Utility::copy(priorities, _state->queuePriorities.exceptPrefix(_state->nextQueuePriority).prefix(priorities.size()));
     for(std::size_t i = 0; i != priorities.size(); ++i)
         _state->queueOutput[_state->nextQueuePriority + i] = &*output[i];
     _state->nextQueuePriority += priorities.size();

@@ -125,8 +125,8 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
         vert.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
-    vert.addSource(rs.get("generic.glsl"))
-        .addSource(rs.get("Vector.vert"));
+    vert.addSource(rs.getString("generic.glsl"))
+        .addSource(rs.getString("Vector.vert"));
     #ifndef MAGNUM_TARGET_GLES2
     if(flags >= Flag::UniformBuffers) {
         frag.addSource(Utility::formatString(
@@ -138,8 +138,8 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
         frag.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
-    frag.addSource(rs.get("generic.glsl"))
-        .addSource(rs.get("Vector.frag"));
+    frag.addSource(rs.getString("generic.glsl"))
+        .addSource(rs.getString("Vector.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 

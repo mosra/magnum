@@ -958,7 +958,7 @@ Debug& operator<<(Debug& debug, const MaterialAttribute value) {
 
     /* LayerName is prefixed with a single space, drop that */
     Containers::StringView string = AttributeMap[UnsignedInt(value) - 1].name;
-    if(string[0] == ' ') string = string.suffix(1);
+    if(string[0] == ' ') string = string.exceptPrefix(1);
 
     return debug << "::" << Debug::nospace << string;
 }

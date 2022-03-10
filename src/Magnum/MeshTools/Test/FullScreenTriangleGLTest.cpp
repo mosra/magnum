@@ -82,7 +82,7 @@ void FullScreenTriangleGLTest::test() {
             Utility::Resource rs{"FullScreenTriangleTest"};
 
             GL::Shader vert = Shaders::Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-            vert.addSource(rs.get("FullScreenTriangle.glsl"))
+            vert.addSource(rs.getString("FullScreenTriangle.glsl"))
                 .addSource(R"(
 void main() {
     fullScreenTriangle();

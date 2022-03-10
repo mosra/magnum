@@ -333,7 +333,7 @@ int main(int argc, char** argv) {
 
     } else for(std::size_t i = instanceFuture; i != Containers::arraySize(versions); ++i) {
         Containers::ArrayView<const Vk::InstanceExtension> extensions = Vk::InstanceExtension::extensions(versions[i]);
-        if(extensions.empty()) continue;
+        if(extensions.isEmpty()) continue;
 
         if(versions[i] != Vk::Version::None)
             Debug{} << versions[i] << "instance extension support:";
@@ -366,7 +366,7 @@ int main(int argc, char** argv) {
                 << Debug::packed << device.driverVersion();
         }
 
-        if(devices.empty()) return 0;
+        if(devices.isEmpty()) return 0;
     }
 
     Debug{} << "";
@@ -412,7 +412,7 @@ int main(int argc, char** argv) {
 
     } else for(std::size_t i = deviceFuture; i != Containers::arraySize(versions); ++i) {
         Containers::ArrayView<const Vk::Extension> extensions = Vk::Extension::extensions(versions[i]);
-        if(extensions.empty()) continue;
+        if(extensions.isEmpty()) continue;
 
         if(versions[i] != Vk::Version::None)
             Debug{} << versions[i] << "extension support:";

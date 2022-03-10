@@ -556,7 +556,7 @@ void PipelineTest::computeCreateInfoConstruct() {
 
 void PipelineTest::computeCreateInfoConstructOwnedEntrypoint() {
     ShaderSet shaderSet;
-    shaderSet.addShader({}, {}, "dead!"_s.except(1));
+    shaderSet.addShader({}, {}, "dead!"_s.exceptSuffix(1));
 
     ComputePipelineCreateInfo info{shaderSet, {}};
     CORRADE_COMPARE(info->stage.pName, "dead"_s);

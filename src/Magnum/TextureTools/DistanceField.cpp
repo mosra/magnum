@@ -99,10 +99,10 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
     GL::Shader vert = Shaders::Implementation::createCompatibilityShader(rs, v, GL::Shader::Type::Vertex);
     GL::Shader frag = Shaders::Implementation::createCompatibilityShader(rs, v, GL::Shader::Type::Fragment);
 
-    vert.addSource(rs.get("FullScreenTriangle.glsl"))
-        .addSource(rs.get("DistanceFieldShader.vert"));
+    vert.addSource(rs.getString("FullScreenTriangle.glsl"))
+        .addSource(rs.getString("DistanceFieldShader.vert"));
     frag.addSource(Utility::formatString("#define RADIUS {}\n", radius))
-        .addSource(rs.get("DistanceFieldShader.frag"));
+        .addSource(rs.getString("DistanceFieldShader.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 

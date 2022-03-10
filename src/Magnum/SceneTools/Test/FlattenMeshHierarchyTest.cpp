@@ -173,31 +173,31 @@ void FlattenMeshHierarchyTest::test2D() {
         Trade::SceneFieldData{Trade::SceneField::Parent,
             Containers::stridedArrayView(data->parents)
                 .slice(&Data::Parent::object)
-                .except(instanceData.parentsToExclude),
+                .exceptSuffix(instanceData.parentsToExclude),
             Containers::stridedArrayView(data->parents)
                 .slice(&Data::Parent::parent)
-                .except(instanceData.parentsToExclude)},
+                .exceptSuffix(instanceData.parentsToExclude)},
         Trade::SceneFieldData{Trade::SceneField::Transformation,
             Containers::stridedArrayView(data->transforms)
                 .slice(&Data::Transformation::object)
-                .except(instanceData.transformationsToExclude),
+                .exceptSuffix(instanceData.transformationsToExclude),
             Containers::stridedArrayView(data->transforms)
                 .slice(&Data::Transformation::transformation)
-                .except(instanceData.transformationsToExclude)},
+                .exceptSuffix(instanceData.transformationsToExclude)},
         Trade::SceneFieldData{Trade::SceneField::Mesh,
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::object)
-                .suffix(instanceData.meshesToExclude),
+                .exceptPrefix(instanceData.meshesToExclude),
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::mesh)
-                .suffix(instanceData.meshesToExclude)},
+                .exceptPrefix(instanceData.meshesToExclude)},
         Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::object)
-                .suffix(instanceData.meshesToExclude),
+                .exceptPrefix(instanceData.meshesToExclude),
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::meshMaterial)
-                .suffix(instanceData.meshesToExclude)},
+                .exceptPrefix(instanceData.meshesToExclude)},
     }};
 
     Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> out;
@@ -313,31 +313,31 @@ void FlattenMeshHierarchyTest::test3D() {
         Trade::SceneFieldData{Trade::SceneField::Parent,
             Containers::stridedArrayView(data->parents)
                 .slice(&Data::Parent::object)
-                .except(instanceData.parentsToExclude),
+                .exceptSuffix(instanceData.parentsToExclude),
             Containers::stridedArrayView(data->parents)
                 .slice(&Data::Parent::parent)
-                .except(instanceData.parentsToExclude)},
+                .exceptSuffix(instanceData.parentsToExclude)},
         Trade::SceneFieldData{Trade::SceneField::Transformation,
             Containers::stridedArrayView(data->transforms)
                 .slice(&Data::Transformation::object)
-                .except(instanceData.transformationsToExclude),
+                .exceptSuffix(instanceData.transformationsToExclude),
             Containers::stridedArrayView(data->transforms)
                 .slice(&Data::Transformation::transformation)
-                .except(instanceData.transformationsToExclude)},
+                .exceptSuffix(instanceData.transformationsToExclude)},
         Trade::SceneFieldData{Trade::SceneField::Mesh,
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::object)
-                .suffix(instanceData.meshesToExclude),
+                .exceptPrefix(instanceData.meshesToExclude),
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::mesh)
-                .suffix(instanceData.meshesToExclude)},
+                .exceptPrefix(instanceData.meshesToExclude)},
         Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::object)
-                .suffix(instanceData.meshesToExclude),
+                .exceptPrefix(instanceData.meshesToExclude),
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::meshMaterial)
-                .suffix(instanceData.meshesToExclude)},
+                .exceptPrefix(instanceData.meshesToExclude)},
     }};
 
     Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> out;

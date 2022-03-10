@@ -155,7 +155,7 @@ DevicePropertiesVkTest::DevicePropertiesVkTest(): VulkanTester{NoCreate} {
 void DevicePropertiesVkTest::enumerate() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     Debug{} << "Found" << devices.size() << "devices";
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     for(DeviceProperties& device: devices) {
         CORRADE_ITERATION(device.name());
@@ -177,7 +177,7 @@ void DevicePropertiesVkTest::enumerate() {
 
 void DevicePropertiesVkTest::constructMove() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
     VkPhysicalDevice handle = devices[0].handle();
     Containers::StringView name = devices[0].name();
 
@@ -322,7 +322,7 @@ void DevicePropertiesVkTest::featureExpectedUnsupported() {
 
 void DevicePropertiesVkTest::enumerateExtensions() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     ExtensionProperties properties = devices[0].enumerateExtensionProperties();
     Debug{} << "Available device extension count:" << properties.names().size();
@@ -343,7 +343,7 @@ void DevicePropertiesVkTest::enumerateExtensionsWithKhronosValidationLayer() {
         CORRADE_SKIP("VK_LAYER_KHRONOS_validation not supported, can't test");
 
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     /* There should be more extensions with this layer enabled */
     ExtensionProperties global = devices[0].enumerateExtensionProperties();
@@ -368,7 +368,7 @@ void DevicePropertiesVkTest::enumerateExtensionsNonexistentLayer() {
 
 void DevicePropertiesVkTest::extensionConstructMove() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     ExtensionProperties a = devices[0].enumerateExtensionProperties();
     const UnsignedInt count = a.count();
@@ -387,7 +387,7 @@ void DevicePropertiesVkTest::extensionConstructMove() {
 
 void DevicePropertiesVkTest::extensionIsSupported() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     ExtensionProperties properties = devices[0].enumerateExtensionProperties();
 
@@ -402,7 +402,7 @@ void DevicePropertiesVkTest::extensionIsSupported() {
 
 void DevicePropertiesVkTest::extensionIsSupportedRevision() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     ExtensionProperties properties = devices[0].enumerateExtensionProperties();
 
@@ -422,7 +422,7 @@ void DevicePropertiesVkTest::extensionIsSupportedRevision() {
 
 void DevicePropertiesVkTest::extensionNamedRevision() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     ExtensionProperties properties = devices[0].enumerateExtensionProperties();
 
@@ -440,7 +440,7 @@ void DevicePropertiesVkTest::extensionNamedRevision() {
 
 void DevicePropertiesVkTest::queueFamilies() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     Debug{} << "Available queue family count:" << devices[0].queueFamilyCount();
 
@@ -462,7 +462,7 @@ void DevicePropertiesVkTest::queueFamilies() {
 
 void DevicePropertiesVkTest::queueFamiliesOutOfRange() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     const UnsignedInt count = devices[0].queueFamilyCount();
 
@@ -477,7 +477,7 @@ void DevicePropertiesVkTest::queueFamiliesOutOfRange() {
 
 void DevicePropertiesVkTest::queueFamiliesPick() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     Containers::Optional<UnsignedInt> id = devices[0].tryPickQueueFamily(QueueFlag::Compute|QueueFlag::Graphics);
     CORRADE_VERIFY(id);
@@ -492,7 +492,7 @@ void DevicePropertiesVkTest::queueFamiliesPick() {
 
 void DevicePropertiesVkTest::queueFamiliesPickFailed() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -503,7 +503,7 @@ void DevicePropertiesVkTest::queueFamiliesPickFailed() {
 
 void DevicePropertiesVkTest::memoryHeaps() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     Debug{} << "Available memory heap count:" << devices[0].memoryHeapCount();
 
@@ -533,7 +533,7 @@ void DevicePropertiesVkTest::memoryHeapOutOfRange() {
     #endif
 
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     const UnsignedInt count = devices[0].memoryHeapCount();
 
@@ -548,7 +548,7 @@ void DevicePropertiesVkTest::memoryHeapOutOfRange() {
 
 void DevicePropertiesVkTest::memoryTypes() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     Debug{} << "Available memory type count:" << devices[0].memoryCount();
 
@@ -577,7 +577,7 @@ void DevicePropertiesVkTest::memoryTypeOutOfRange() {
     #endif
 
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     const UnsignedInt count = devices[0].memoryCount();
 
@@ -592,7 +592,7 @@ void DevicePropertiesVkTest::memoryTypeOutOfRange() {
 
 void DevicePropertiesVkTest::memoryTypesPick() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     Containers::Optional<UnsignedInt> id = devices[0].tryPickMemory(MemoryFlag::HostVisible|MemoryFlag::HostCoherent);
     CORRADE_VERIFY(id);
@@ -614,7 +614,7 @@ void DevicePropertiesVkTest::memoryTypesPick() {
 
 void DevicePropertiesVkTest::memoryTypesPickIgnoreSomePreferred() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     Containers::Optional<UnsignedInt> id = devices[0].tryPickMemory({}, MemoryFlag::HostVisible|MemoryFlag::HostCoherent|MemoryFlag(0xcafe0000u));
     CORRADE_VERIFY(id);
@@ -635,7 +635,7 @@ void DevicePropertiesVkTest::memoryTypesPickFailed() {
     #endif
 
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -656,7 +656,7 @@ void DevicePropertiesVkTest::pickDevice() {
 
 void DevicePropertiesVkTest::pickDeviceIndex() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    CORRADE_VERIFY(!devices.empty());
+    CORRADE_VERIFY(!devices.isEmpty());
 
     /* Pick the last one */
     CORRADE_COMPARE_AS(devices.size(), 10, TestSuite::Compare::Less);

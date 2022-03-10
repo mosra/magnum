@@ -129,10 +129,10 @@ void TrackTest::constructEmpty() {
 
     CORRADE_VERIFY(!ca.interpolator());
     CORRADE_VERIFY(!ca.size());
-    CORRADE_VERIFY(ca.keys().empty());
-    CORRADE_VERIFY(ca.keys().empty());
-    CORRADE_VERIFY(a.values().empty());
-    CORRADE_VERIFY(ca.values().empty());
+    CORRADE_VERIFY(ca.keys().isEmpty());
+    CORRADE_VERIFY(ca.keys().isEmpty());
+    CORRADE_VERIFY(a.values().isEmpty());
+    CORRADE_VERIFY(ca.values().isEmpty());
     CORRADE_COMPARE(ca.at(42.0f), Vector3{});
 }
 

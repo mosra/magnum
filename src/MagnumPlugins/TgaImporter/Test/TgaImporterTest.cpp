@@ -119,11 +119,11 @@ const struct {
 } ShortData[] {
     {"short header", Containers::arrayView(Color24).prefix(17),
         "file too short, expected at least 18 bytes but got 17"},
-    {"short data", Containers::arrayView(Color24).except(1),
+    {"short data", Containers::arrayView(Color24).exceptSuffix(1),
         "file too short, expected 36 bytes but got 35"},
-    {"short RLE data", Containers::arrayView(Color24Rle).except(1),
+    {"short RLE data", Containers::arrayView(Color24Rle).exceptSuffix(1),
         "RLE file too short at pixel 3"},
-    {"short RLE raw data", Containers::arrayView(Color24Rle).except(5),
+    {"short RLE raw data", Containers::arrayView(Color24Rle).exceptSuffix(5),
         "RLE file too short at pixel 0"}
 };
 

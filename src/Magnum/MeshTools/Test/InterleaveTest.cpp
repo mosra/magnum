@@ -536,8 +536,8 @@ void InterleaveTest::interleavedDataNotInterleaved() {
     #endif
 
     Containers::Array<char> vertexData{100 + 3*20};
-    auto positions = Containers::arrayCast<Vector2>(vertexData.suffix(100).prefix(3*8));
-    auto normals = Containers::arrayCast<Vector3>(vertexData.suffix(100).suffix(3*8));
+    auto positions = Containers::arrayCast<Vector2>(vertexData.exceptPrefix(100).prefix(3*8));
+    auto normals = Containers::arrayCast<Vector3>(vertexData.exceptPrefix(100+3*8));
 
     Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals},
@@ -745,7 +745,7 @@ void InterleaveTest::interleavedLayout() {
             Containers::arrayCast<Vector3>(vertexData.slice(3*8, 3*20))},
         /* Array attribute to verify it's correctly propagated */
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-            VertexFormat::Short, Containers::StridedArrayView2D<char>{vertexData.suffix(3*20), {3, 4}}, 2}
+            VertexFormat::Short, Containers::StridedArrayView2D<char>{vertexData.exceptPrefix(3*20), {3, 4}}, 2}
     };
 
     Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
@@ -801,7 +801,7 @@ void InterleaveTest::interleavedLayoutExtra() {
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
         Containers::arrayCast<Vector2>(vertexData.prefix(3*8))};
     Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
-        Containers::arrayCast<Vector3>(vertexData.suffix(3*8))};
+        Containers::arrayCast<Vector3>(vertexData.exceptPrefix(3*8))};
 
     Trade::MeshData data{MeshPrimitive::Triangles,
         std::move(vertexData), {positions, normals}};
@@ -1119,7 +1119,7 @@ void InterleaveTest::interleavedLayoutRvalue() {
     attributeData[0] = Trade::MeshAttributeData{Trade::MeshAttribute::Position,
         Containers::arrayCast<Vector2>(vertexData.prefix(3*8))};
     attributeData[1] = Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
-        Containers::arrayCast<Vector3>(vertexData.suffix(3*8))};
+        Containers::arrayCast<Vector3>(vertexData.exceptPrefix(3*8))};
     const void* originalAttributeData = attributeData.data();
 
     Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
@@ -1190,7 +1190,7 @@ void InterleaveTest::interleaveMeshDataIndexed() {
 
     /* Testing also offset */
     UnsignedShort indexData[50 + 3];
-    Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayView(indexData).suffix(50);
+    Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayView(indexData).exceptPrefix(50);
     if(data.flip) indices = indices.flipped<0>();
     Utility::copy({0, 2, 1}, indices);
 
@@ -1446,7 +1446,7 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveIndices() {
 
     /* Testing also offset */
     Containers::Array<char> indexData{(50 + 3)*sizeof(UnsignedShort)};
-    Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData).suffix(50);
+    Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData).exceptPrefix(50);
     if(data.flip) indices = indices.flipped<0>();
     Utility::copy({0, 2, 1}, indices);
 

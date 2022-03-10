@@ -112,7 +112,7 @@ Trade::MeshData combineIndexedImplementation(
 }
 
 Trade::MeshData combineIndexedAttributes(const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> data) {
-    CORRADE_ASSERT(!data.empty(),
+    CORRADE_ASSERT(!data.isEmpty(),
         "MeshTools::combineIndexedAttributes(): no meshes passed",
         (Trade::MeshData{MeshPrimitive{}, 0}));
 

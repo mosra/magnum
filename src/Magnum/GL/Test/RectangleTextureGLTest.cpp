@@ -108,11 +108,11 @@ const struct {
     std::size_t offset;
 } PixelStorageData[]{
     {"default pixel storage",
-        Containers::arrayView(Data).suffix(8), {},
-        Containers::arrayView(Data).suffix(8), 0},
+        Containers::arrayView(Data).exceptPrefix(8), {},
+        Containers::arrayView(Data).exceptPrefix(8), 0},
     #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
     {"skip Y",
-        Containers::arrayView(Data).suffix(8), PixelStorage{}.setSkip({0, 1, 0}),
+        Containers::arrayView(Data).exceptPrefix(8), PixelStorage{}.setSkip({0, 1, 0}),
         Containers::arrayView(Data), 8}
     #endif
 };
@@ -215,7 +215,7 @@ void RectangleTextureGLTest::label() {
 
     /* Test the string size gets correctly used, instead of relying on null
        termination */
-    texture.setLabel("MyTexture!"_s.except(1));
+    texture.setLabel("MyTexture!"_s.exceptSuffix(1));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(texture.label(), "MyTexture");
@@ -374,7 +374,7 @@ void RectangleTextureGLTest::image() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -401,7 +401,7 @@ void RectangleTextureGLTest::imageBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -427,7 +427,7 @@ void RectangleTextureGLTest::imageQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -514,7 +514,7 @@ void RectangleTextureGLTest::subImageQuery() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -540,7 +540,7 @@ void RectangleTextureGLTest::subImageQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -567,7 +567,7 @@ void RectangleTextureGLTest::subImageQueryBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }

@@ -177,7 +177,7 @@ MeshLayout& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt 
     if(!_state) _state.emplace();
 
     /* Ensure order for efficient comparisons */
-    CORRADE_ASSERT(_state->bindings.empty() || _state->bindings.back().binding < binding,
+    CORRADE_ASSERT(_state->bindings.isEmpty() || _state->bindings.back().binding < binding,
         "Vk::MeshLayout::addBinding(): binding" << binding << "can't be ordered after" << _state->bindings.back().binding, *this);
 
     VkVertexInputBindingDescription description{};
@@ -199,7 +199,7 @@ MeshLayout& MeshLayout::addInstancedBinding(const UnsignedInt binding, const Uns
     if(!_state) _state.emplace();
 
     /* Ensure order for efficient comparisons */
-    CORRADE_ASSERT(_state->bindings.empty() || _state->bindings.back().binding < binding,
+    CORRADE_ASSERT(_state->bindings.isEmpty() || _state->bindings.back().binding < binding,
         "Vk::MeshLayout::addInstancedBinding(): binding" << binding << "can't be ordered after" << _state->bindings.back().binding, *this);
 
     VkVertexInputBindingDescription description{};
@@ -234,7 +234,7 @@ MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedI
     if(!_state) _state.emplace();
 
     /* Ensure order for efficient comparisons */
-    CORRADE_ASSERT(_state->attributes.empty() || _state->attributes.back().location < location,
+    CORRADE_ASSERT(_state->attributes.isEmpty() || _state->attributes.back().location < location,
         "Vk::MeshLayout::addAttribute(): location" << location << "can't be ordered after" << _state->attributes.back().location, *this);
 
     VkVertexInputAttributeDescription description{};

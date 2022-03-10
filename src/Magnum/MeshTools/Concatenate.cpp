@@ -95,7 +95,7 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
     Trade::MeshData out{meshes.front()->primitive(),
         /* If the index array is empty, we're creating a non-indexed mesh (not
            an indexed mesh with zero indices) */
-        std::move(indexData), indices.empty() ?
+        std::move(indexData), indices.isEmpty() ?
             Trade::MeshIndexData{} : Trade::MeshIndexData{indices},
         std::move(vertexData), std::move(attributeData), vertexCount};
     /* Create an attribute map. Yes, this is an inevitable fugly thing that
@@ -133,7 +133,7 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
 
         /* Otherwise, if we need an index buffer (meaning at least one of the
            meshes is indexed), generate a trivial index buffer */
-        } else if(!indices.empty()) {
+        } else if(!indices.isEmpty()) {
             std::iota(indices + indexOffset, indices + indexOffset + mesh.vertexCount(), UnsignedInt(vertexOffset));
             indexOffset += mesh.vertexCount();
         }
@@ -190,7 +190,7 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
 }
 
 Trade::MeshData concatenate(const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes, const InterleaveFlags flags) {
-    CORRADE_ASSERT(!meshes.empty(),
+    CORRADE_ASSERT(!meshes.isEmpty(),
         "MeshTools::concatenate(): expected at least one mesh",
         (Trade::MeshData{MeshPrimitive::Points, 0}));
     #ifndef CORRADE_NO_ASSERT
@@ -223,7 +223,7 @@ Trade::MeshData concatenate(const Containers::ArrayView<const Containers::Refere
     Containers::Array<char> indexData{NoInit,
         indexVertexCount.first*sizeof(UnsignedInt)};
     Containers::Array<char> vertexData{ValueInit,
-        attributeData.empty() ? 0 : (attributeData[0].stride()*indexVertexCount.second)};
+        attributeData.isEmpty() ? 0 : (attributeData[0].stride()*indexVertexCount.second)};
     return Implementation::concatenate(std::move(indexData), indexVertexCount.second, std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenate():");
 }
 

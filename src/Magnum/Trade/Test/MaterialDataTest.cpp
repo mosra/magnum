@@ -570,7 +570,7 @@ void MaterialDataTest::constructAttributeMutablePointer() {
 void MaterialDataTest::constructAttributeStringNameStringValue() {
     /* Explicitly using a non-null-terminated view on input to check the null
        byte isn't read by accident*/
-    MaterialAttributeData attribute{"name that's long", "and a value\0that's also long but still fits!!"_s.except(1)};
+    MaterialAttributeData attribute{"name that's long", "and a value\0that's also long but still fits!!"_s.exceptSuffix(1)};
     CORRADE_COMPARE(attribute.name(), "name that's long");
     CORRADE_COMPARE(attribute.name().flags(), Containers::StringViewFlag::NullTerminated);
     CORRADE_COMPARE(attribute.name()[attribute.name().size()], '\0');
@@ -581,7 +581,7 @@ void MaterialDataTest::constructAttributeStringNameStringValue() {
     CORRADE_COMPARE(attribute.value<Containers::StringView>().flags(), Containers::StringViewFlag::NullTerminated);
     CORRADE_COMPARE(attribute.value<Containers::StringView>()[attribute.value<Containers::StringView>().size()], '\0');
 
-    constexpr MaterialAttributeData cattribute{"name that's long"_s, "and a value\0that's also long but still fits!!"_s.except(1)};
+    constexpr MaterialAttributeData cattribute{"name that's long"_s, "and a value\0that's also long but still fits!!"_s.exceptSuffix(1)};
     CORRADE_COMPARE(cattribute.name(), "name that's long");
     CORRADE_COMPARE(cattribute.name().flags(), Containers::StringViewFlag::NullTerminated);
     CORRADE_COMPARE(cattribute.name()[cattribute.name().size()], '\0');
@@ -591,7 +591,7 @@ void MaterialDataTest::constructAttributeStringNameStringValue() {
     CORRADE_COMPARE(cattribute.value<Containers::StringView>()[cattribute.value<Containers::StringView>().size()], '\0');
 
     /* Type-erased variant */
-    const Containers::StringView value = "and a value\0that's also long but still fits!!"_s.except(1);
+    const Containers::StringView value = "and a value\0that's also long but still fits!!"_s.exceptSuffix(1);
     MaterialAttributeData typeErased{"name that's long", MaterialAttributeType::String, &value};
     CORRADE_COMPARE(typeErased.name(), "name that's long");
     CORRADE_COMPARE(typeErased.name().flags(), Containers::StringViewFlag::NullTerminated);
@@ -606,7 +606,7 @@ void MaterialDataTest::constructAttributeNameStringValue() {
     /* Explicitly using a non-null-terminated view on input to check the null
        byte isn't read by accident*/
 
-    MaterialAttributeData attribute{MaterialAttribute::LayerName, "a value\0that's long but still fits!!"_s.except(1)};
+    MaterialAttributeData attribute{MaterialAttribute::LayerName, "a value\0that's long but still fits!!"_s.exceptSuffix(1)};
     CORRADE_COMPARE(attribute.name(), " LayerName");
     CORRADE_COMPARE(attribute.name().flags(), Containers::StringViewFlag::NullTerminated);
     CORRADE_COMPARE(attribute.name()[attribute.name().size()], '\0');
@@ -618,7 +618,7 @@ void MaterialDataTest::constructAttributeNameStringValue() {
     CORRADE_COMPARE(attribute.value<Containers::StringView>()[attribute.value<Containers::StringView>().size()], '\0');
 
     /* Type-erased variant */
-    const Containers::StringView value = "a value\0that's long but still fits!!"_s.except(1);
+    const Containers::StringView value = "a value\0that's long but still fits!!"_s.exceptSuffix(1);
     MaterialAttributeData typeErased{MaterialAttribute::LayerName, MaterialAttributeType::String, &value};
     CORRADE_COMPARE(typeErased.name(), " LayerName");
     CORRADE_COMPARE(typeErased.name().flags(), Containers::StringViewFlag::NullTerminated);

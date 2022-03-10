@@ -116,10 +116,10 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
         vert.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
-    vert.addSource(rs.get("generic.glsl"))
-        .addSource(rs.get("VertexColor.vert"));
-    frag.addSource(rs.get("generic.glsl"))
-        .addSource(rs.get("VertexColor.frag"));
+    vert.addSource(rs.getString("generic.glsl"))
+        .addSource(rs.getString("VertexColor.vert"));
+    frag.addSource(rs.getString("generic.glsl"))
+        .addSource(rs.getString("VertexColor.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 

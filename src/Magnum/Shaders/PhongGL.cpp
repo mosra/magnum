@@ -243,8 +243,8 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
         vert.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
-    vert.addSource(rs.get("generic.glsl"))
-        .addSource(rs.get("Phong.vert"));
+    vert.addSource(rs.getString("generic.glsl"))
+        .addSource(rs.getString("Phong.vert"));
     frag.addSource(flags & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n" : "")
         .addSource(flags & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n" : "")
         .addSource(flags & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
@@ -291,8 +291,8 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount
     if(!(flags >= Flag::UniformBuffers) && lightCount)
         frag.addSource(std::move(lightInitializer));
     #endif
-    frag.addSource(rs.get("generic.glsl"))
-        .addSource(rs.get("Phong.frag"));
+    frag.addSource(rs.getString("generic.glsl"))
+        .addSource(rs.getString("Phong.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 

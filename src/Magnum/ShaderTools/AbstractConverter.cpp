@@ -425,7 +425,7 @@ Containers::Array<char> AbstractConverter::linkDataToData(const Containers::Arra
         "ShaderTools::AbstractConverter::linkDataToData(): feature not supported", {});
     CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
         "ShaderTools::AbstractConverter::linkDataToData(): PreprocessOnly is not allowed in combination with linking", {});
-    CORRADE_ASSERT(!data.empty(),
+    CORRADE_ASSERT(!data.isEmpty(),
         "ShaderTools::AbstractConverter::linkDataToData(): no data passed", {});
 
     /* Cast to a non-void type for more convenience */
@@ -448,7 +448,7 @@ bool AbstractConverter::linkDataToFile(const Containers::ArrayView<const std::pa
         "ShaderTools::AbstractConverter::linkDataToFile(): feature not supported", {});
     CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
         "ShaderTools::AbstractConverter::linkDataToFile(): PreprocessOnly is not allowed in combination with linking", {});
-    CORRADE_ASSERT(!data.empty(),
+    CORRADE_ASSERT(!data.isEmpty(),
         "ShaderTools::AbstractConverter::linkDataToFile(): no data passed", {});
 
     /** @todo this needs expansion once output callbacks are supported as well */
@@ -509,7 +509,7 @@ bool AbstractConverter::linkFilesToFile(const Containers::ArrayView<const std::p
         "ShaderTools::AbstractConverter::linkFilesToFile(): feature not supported", {});
     CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
         "ShaderTools::AbstractConverter::linkFilesToFile(): PreprocessOnly is not allowed in combination with linking", {});
-    CORRADE_ASSERT(!from.empty(),
+    CORRADE_ASSERT(!from.isEmpty(),
         "ShaderTools::AbstractConverter::linkFilesToFile(): no files passed", {});
 
     /** @todo this needs expansion once output callbacks are supported as well */
@@ -601,7 +601,7 @@ Containers::Array<char> AbstractConverter::linkFilesToData(const Containers::Arr
         "ShaderTools::AbstractConverter::linkFilesToData(): feature not supported", {});
     CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
         "ShaderTools::AbstractConverter::linkFilesToData(): PreprocessOnly is not allowed in combination with linking", {});
-    CORRADE_ASSERT(!filenames.empty(),
+    CORRADE_ASSERT(!filenames.isEmpty(),
         "ShaderTools::AbstractConverter::linkFilesToData(): no files passed", {});
 
     Containers::Array<char> out;

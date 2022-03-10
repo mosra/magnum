@@ -1886,7 +1886,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * at least @cpp 1 @ce.
          */
         UnsignedInt layerCount() const {
-            return _layerOffsets.empty() ? 1 : _layerOffsets.size();
+            return _layerOffsets.isEmpty() ? 1 : _layerOffsets.size();
         }
 
         /**

@@ -87,7 +87,7 @@ template<class T, class K> Player<T, K>::Player(Scaler scaler): _scaler{scaler} 
 template<class T, class K> Player<T, K>::~Player() = default;
 
 template<class T, class K> bool Player<T, K>::isEmpty() const {
-    return _tracks.empty();
+    return _tracks.isEmpty();
 }
 
 template<class T, class K> std::size_t Player<T, K>::size() const {
@@ -102,7 +102,7 @@ template<class T, class K> const TrackViewStorage<const K>& Player<T, K>::track(
 }
 
 template<class T, class K> Player<T, K>& Player<T, K>::addInternal(const TrackViewStorage<const K>& track, void(*const advancer)(const TrackViewStorage<const K>&, K, std::size_t&, void*, void(*)(), void*), void* const destination, void(*const userCallback)(), void* const userCallbackData) {
-    if(_tracks.empty() && _duration == Math::Range1D<K>{})
+    if(_tracks.isEmpty() && _duration == Math::Range1D<K>{})
         _duration = track.duration();
     else
         _duration = Math::join(track.duration(), _duration);

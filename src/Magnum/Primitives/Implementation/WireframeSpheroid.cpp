@@ -36,7 +36,7 @@ namespace Magnum { namespace Primitives { namespace Implementation {
 WireframeSpheroid::WireframeSpheroid(const UnsignedInt segments): _segments(segments) {}
 
 void WireframeSpheroid::bottomHemisphere(const Float endY, const UnsignedInt rings) {
-    CORRADE_INTERNAL_ASSERT(_vertexData.empty());
+    CORRADE_INTERNAL_ASSERT(_vertexData.isEmpty());
 
     /* Initial vertex */
     Containers::arrayAppend<Trade::ArrayAllocator>(_vertexData,

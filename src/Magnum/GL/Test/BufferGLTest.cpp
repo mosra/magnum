@@ -206,7 +206,7 @@ void BufferGLTest::label() {
 
     /* Test the string size gets correctly used, instead of relying on null
        termination */
-    buffer.setLabel("MyBuffer!"_s.except(1));
+    buffer.setLabel("MyBuffer!"_s.exceptSuffix(1));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(buffer.label(), "MyBuffer");

@@ -215,7 +215,7 @@ void WavImporterTest::zeroSamples() {
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(WAVAUDIOIMPORTER_TEST_DIR, "zeroSamples.wav")));
     CORRADE_COMPARE(importer->format(), BufferFormat::Mono16);
     CORRADE_COMPARE(importer->frequency(), 22050);
-    CORRADE_VERIFY(importer->data().empty());
+    CORRADE_VERIFY(importer->data().isEmpty());
 }
 
 void WavImporterTest::mono4() {

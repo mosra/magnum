@@ -168,7 +168,7 @@ void ShaderGLTest::label() {
 
     /* Test the string size gets correctly used, instead of relying on null
        termination */
-    shader.setLabel("MyShader!"_s.except(1));
+    shader.setLabel("MyShader!"_s.exceptSuffix(1));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(shader.label(), "MyShader");

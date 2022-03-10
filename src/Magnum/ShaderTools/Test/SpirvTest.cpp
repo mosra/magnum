@@ -73,7 +73,7 @@ const struct {
     /* GCC 4.8 needs the ArrayView conversion explicit */
     {"just the header", Containers::arrayView(JustHeader)},
     {"invalid magic", Containers::arrayView(InvalidMagic)},
-    {"size not divisible by four", Containers::arrayCast<const char>(Data).except(1)}
+    {"size not divisible by four", Containers::arrayCast<const char>(Data).exceptSuffix(1)}
 };
 
 SpirvTest::SpirvTest() {
@@ -254,7 +254,7 @@ void SpirvTest::entrypointInterfaceNothing() {
 
     Containers::Optional<Implementation::SpirvEntrypoint> comp = Implementation::spirvNextEntrypoint(view);
     CORRADE_VERIFY(comp);
-    CORRADE_VERIFY(comp->interfaces.empty());
+    CORRADE_VERIFY(comp->interfaces.isEmpty());
 
     Implementation::spirvEntrypointInterface(view, *comp, {});
 

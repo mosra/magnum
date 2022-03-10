@@ -174,7 +174,7 @@ InstanceCreateInfo& InstanceCreateInfo::setApplicationInfo(const Containers::Str
 }
 
 InstanceCreateInfo& InstanceCreateInfo::addEnabledLayers(const Containers::ArrayView<const Containers::StringView> layers) {
-    if(layers.empty()) return *this;
+    if(layers.isEmpty()) return *this;
     if(!_state) _state.emplace();
 
     /* Add null-terminated strings to the layer array */
@@ -208,7 +208,7 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledLayers(const std::initializer_
 }
 
 InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Containers::StringView> extensions) {
-    if(extensions.empty()) return *this;
+    if(extensions.isEmpty()) return *this;
     if(!_state) _state.emplace();
 
     /* Add null-terminated strings to the extension array */
@@ -242,7 +242,7 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const std::initiali
 }
 
 InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const InstanceExtension> extensions) {
-    if(extensions.empty()) return *this;
+    if(extensions.isEmpty()) return *this;
     if(!_state) _state.emplace();
 
     arrayReserve(_state->extensions, _state->extensions.size() + extensions.size());

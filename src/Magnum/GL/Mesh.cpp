@@ -442,7 +442,7 @@ void Mesh::drawInternal(const Containers::ArrayView<const UnsignedInt>& counts, 
             "GL::AbstractShaderProgram::draw(): expected" << counts.size() << "index offset items but got" << indexOffsets.size(), );
 
         /* Indexed meshes */
-        if(vertexOffsets.empty()) {
+        if(vertexOffsets.isEmpty()) {
             #ifndef MAGNUM_TARGET_GLES
             glMultiDrawElements
             #else
@@ -495,7 +495,7 @@ void Mesh::drawInternal(const Containers::ArrayView<const UnsignedInt>& counts, 
 
         /* Non-indexed instanced meshes */
         #ifndef MAGNUM_TARGET_GLES2
-        if(instanceOffsets.empty())
+        if(instanceOffsets.isEmpty())
         #endif
         {
             state.multiDrawArraysInstancedImplementation(GLenum(_primitive), reinterpret_cast<const GLint*>(vertexOffsets.data()), reinterpret_cast<const GLsizei*>(counts.data()), reinterpret_cast<const GLsizei*>(instanceCounts.data()), counts.size());
@@ -518,9 +518,9 @@ void Mesh::drawInternal(const Containers::ArrayView<const UnsignedInt>& counts, 
             "GL::AbstractShaderProgram::draw(): expected" << counts.size() << "index offset items but got" << indexOffsets.size(), );
 
         /* Indexed meshes */
-        if(vertexOffsets.empty()
+        if(vertexOffsets.isEmpty()
             #ifndef MAGNUM_TARGET_GLES2
-            && instanceOffsets.empty()
+            && instanceOffsets.isEmpty()
             #endif
         ) {
             state.multiDrawElementsInstancedImplementation(GLenum(_primitive), reinterpret_cast<const GLsizei*>(counts.data()), GLenum(_indexType), reinterpret_cast<const void* const*>(indexOffsets.data()), reinterpret_cast<const GLsizei*>(instanceCounts.data()), counts.size());

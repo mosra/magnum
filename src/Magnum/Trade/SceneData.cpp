@@ -506,9 +506,9 @@ SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedA
        because I feel that makes more sense than duplicating the full assert
        logic */
     #ifndef CORRADE_NO_ASSERT
-    if(fieldArraySize) CORRADE_ASSERT(fieldData.empty()[0] || fieldData.size()[1] == sceneFieldTypeSize(fieldType)*fieldArraySize,
+    if(fieldArraySize) CORRADE_ASSERT(fieldData.isEmpty()[0] || fieldData.size()[1] == sceneFieldTypeSize(fieldType)*fieldArraySize,
         "Trade::SceneFieldData: second field view dimension size" << fieldData.size()[1] << "doesn't match" << fieldType << "and field array size" << fieldArraySize, );
-    else CORRADE_ASSERT(fieldData.empty()[0] || fieldData.size()[1] == sceneFieldTypeSize(fieldType),
+    else CORRADE_ASSERT(fieldData.isEmpty()[0] || fieldData.size()[1] == sceneFieldTypeSize(fieldType),
         "Trade::SceneFieldData: second field view dimension size" << fieldData.size()[1] << "doesn't match" << fieldType, );
     #endif
 
@@ -779,7 +779,7 @@ SceneData::SceneData(std::vector<UnsignedInt> children2D, std::vector<UnsignedIn
        doesn't take any nested object into account but SceneData created this
        way is expected to be used only through the deprecated APIs anyway,
        which don't care about this value. */
-    _mappingBound = children.empty() ? 0 : Math::max(children) + 1;
+    _mappingBound = children.isEmpty() ? 0 : Math::max(children) + 1;
 
     /* Convert the vector with top-level object IDs to the parent field, where
        all have -1 as a parent. This way the (also deprecated) children2D() /

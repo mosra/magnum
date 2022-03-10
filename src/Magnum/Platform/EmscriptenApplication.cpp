@@ -145,7 +145,7 @@ namespace {
 
         /* Numpad keys */
         } else if(codeView.hasPrefix(numpad)) {
-            const Containers::StringView numKey = codeView.suffix(numpad.size());
+            const Containers::StringView numKey = codeView.exceptPrefix(numpad.size());
             if(numKey == "Add"_s) return Key::NumAdd;
             if(numKey == "Decimal"_s) return Key::NumDecimal;
             if(numKey == "Divide"_s) return Key::NumDivide;

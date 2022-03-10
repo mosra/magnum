@@ -1348,7 +1348,7 @@ void SceneDataTest::construct() {
 
     /* Basics */
     CORRADE_COMPARE(scene.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
-    CORRADE_VERIFY(!scene.fieldData().empty());
+    CORRADE_VERIFY(!scene.fieldData().isEmpty());
     CORRADE_COMPARE(static_cast<const void*>(scene.data()), transformsParentFieldMappingData.data());
     CORRADE_COMPARE(static_cast<void*>(scene.mutableData()), transformsParentFieldMappingData.data());
     CORRADE_COMPARE(scene.mappingBound(), 8);
@@ -1588,7 +1588,7 @@ void SceneDataTest::constructZeroFields() {
     int importerState{};
     SceneData scene{SceneMappingType::UnsignedShort, 37563, nullptr, {}, &importerState};
     CORRADE_COMPARE(scene.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
-    CORRADE_VERIFY(scene.fieldData().empty());
+    CORRADE_VERIFY(scene.fieldData().isEmpty());
     CORRADE_COMPARE(static_cast<const void*>(scene.data()), nullptr);
     CORRADE_COMPARE(static_cast<void*>(scene.mutableData()), nullptr);
     CORRADE_COMPARE(scene.importerState(), &importerState);
@@ -1606,7 +1606,7 @@ void SceneDataTest::constructZeroObjects() {
     SceneFieldData materials{SceneField::MeshMaterial, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr};
     SceneData scene{SceneMappingType::UnsignedInt, 0, nullptr, {meshes, materials}, &importerState};
     CORRADE_COMPARE(scene.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
-    CORRADE_VERIFY(!scene.fieldData().empty());
+    CORRADE_VERIFY(!scene.fieldData().isEmpty());
     CORRADE_COMPARE(static_cast<const void*>(scene.data()), nullptr);
     CORRADE_COMPARE(static_cast<void*>(scene.mutableData()), nullptr);
     CORRADE_COMPARE(scene.importerState(), &importerState);
@@ -1996,8 +1996,8 @@ void SceneDataTest::constructMismatchedTRSViews() {
     SceneFieldData translations{SceneField::Translation, translationMappingData, translationFieldData};
     SceneFieldData rotationsDifferent{SceneField::Rotation, rotationMappingData, rotationFieldData};
     SceneFieldData scalingsDifferent{SceneField::Scaling, scalingMappingData, scalingFieldData};
-    SceneFieldData rotationsSameButLess{SceneField::Rotation, translationMappingData.except(1), rotationFieldData.except(1)};
-    SceneFieldData scalingsSameButLess{SceneField::Scaling, translationMappingData.except(2), scalingFieldData.except(2)};
+    SceneFieldData rotationsSameButLess{SceneField::Rotation, translationMappingData.exceptSuffix(1), rotationFieldData.exceptSuffix(1)};
+    SceneFieldData scalingsSameButLess{SceneField::Scaling, translationMappingData.exceptSuffix(2), scalingFieldData.exceptSuffix(2)};
 
     /* Test that all pairs get checked */
     std::ostringstream out;
@@ -2162,7 +2162,7 @@ void SceneDataTest::constructMismatchedMeshMaterialView() {
 
     SceneFieldData meshes{SceneField::Mesh, meshMappingData, meshFieldData};
     SceneFieldData meshMaterialsDifferent{SceneField::MeshMaterial, meshMaterialMappingData, meshMaterialFieldData};
-    SceneFieldData meshMaterialsSameButLess{SceneField::MeshMaterial, meshMappingData.except(1), meshMaterialFieldData.except(1)};
+    SceneFieldData meshMaterialsSameButLess{SceneField::MeshMaterial, meshMappingData.exceptSuffix(1), meshMaterialFieldData.exceptSuffix(1)};
 
     std::ostringstream out;
     Error redirectError{&out};

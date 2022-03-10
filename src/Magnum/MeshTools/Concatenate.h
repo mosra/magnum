@@ -107,7 +107,7 @@ layout from @p destination is used, all vertex/index data are taken from
 @p meshes. Expects that @p meshes contains at least one item.
 */
 template<template<class> class Allocator = Containers::ArrayAllocator> void concatenateInto(Trade::MeshData& destination, Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes) {
-    CORRADE_ASSERT(!meshes.empty(),
+    CORRADE_ASSERT(!meshes.isEmpty(),
         "MeshTools::concatenateInto(): no meshes passed", );
     #ifndef CORRADE_NO_ASSERT
     for(std::size_t i = 0; i != destination.attributeCount(); ++i) {
@@ -129,7 +129,7 @@ template<template<class> class Allocator = Containers::ArrayAllocator> void conc
 
     Containers::Array<Trade::MeshAttributeData> attributeData = Implementation::interleavedLayout(std::move(destination), {}, flags);
     Containers::Array<char> vertexData;
-    if(!attributeData.empty() && indexVertexCount.second) {
+    if(!attributeData.isEmpty() && indexVertexCount.second) {
         const UnsignedInt attributeStride = attributeData[0].stride();
         vertexData = destination.releaseVertexData();
         /* Resize to 0 and then to the desired size to zero-out whatever was

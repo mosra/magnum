@@ -138,10 +138,10 @@ const struct {
     std::size_t offset;
 } PixelStorageData[]{
     {"default pixel storage",
-        Containers::arrayView(Data).suffix(16), {},
-        Containers::arrayView(Data).suffix(16), 0},
+        Containers::arrayView(Data).exceptPrefix(16), {},
+        Containers::arrayView(Data).exceptPrefix(16), 0},
     {"skip Z",
-        Containers::arrayView(Data).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
+        Containers::arrayView(Data).exceptPrefix(16), PixelStorage{}.setSkip({0, 0, 1}),
         Containers::arrayView(Data), 16}
 };
 
@@ -178,14 +178,14 @@ const struct {
     std::size_t offset;
 } CompressedPixelStorageData[]{
     {"default pixel storage",
-        Containers::arrayView(CompressedData).suffix(16*4),
+        Containers::arrayView(CompressedData).exceptPrefix(16*4),
         #ifndef MAGNUM_TARGET_GLES
         {},
         #endif
-        Containers::arrayView(CompressedData).suffix(16*4), 0},
+        Containers::arrayView(CompressedData).exceptPrefix(16*4), 0},
     #ifndef MAGNUM_TARGET_GLES
     {"skip Z",
-        Containers::arrayView(CompressedData).suffix(16*4),
+        Containers::arrayView(CompressedData).exceptPrefix(16*4),
         CompressedPixelStorage{}
             .setCompressedBlockSize({4, 4, 1})
             .setCompressedBlockDataSize(16)
@@ -217,10 +217,10 @@ const struct {
     std::size_t offset;
 } SubPixelStorageData[]{
     {"default pixel storage",
-        Containers::arrayView(SubData).suffix(16), {},
-        Containers::arrayView(SubData).suffix(16), 0},
+        Containers::arrayView(SubData).exceptPrefix(16), {},
+        Containers::arrayView(SubData).exceptPrefix(16), 0},
     {"skip Z",
-        Containers::arrayView(SubData).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
+        Containers::arrayView(SubData).exceptPrefix(16), PixelStorage{}.setSkip({0, 0, 1}),
         Containers::arrayView(SubData), 16}
 };
 
@@ -251,14 +251,14 @@ const struct {
     std::size_t offset;
 } CompressedSubPixelStorageData[]{
     {"default pixel storage",
-        Containers::arrayView(CompressedSubData).suffix(16*4),
+        Containers::arrayView(CompressedSubData).exceptPrefix(16*4),
         #ifndef MAGNUM_TARGET_GLES
         {},
         #endif
-        Containers::arrayView(CompressedSubData).suffix(16*4), 0},
+        Containers::arrayView(CompressedSubData).exceptPrefix(16*4), 0},
     #ifndef MAGNUM_TARGET_GLES
     {"skip Z",
-        Containers::arrayView(CompressedSubData).suffix(16*4),
+        Containers::arrayView(CompressedSubData).exceptPrefix(16*4),
         CompressedPixelStorage{}
             .setCompressedBlockSize({4, 4, 1})
             .setCompressedBlockDataSize(16)
@@ -396,7 +396,7 @@ void CubeMapTextureArrayGLTest::label() {
 
     /* Test the string size gets correctly used, instead of relying on null
        termination */
-    texture.setLabel("MyTexture!"_s.except(1));
+    texture.setLabel("MyTexture!"_s.exceptSuffix(1));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(texture.label(), "MyTexture");
@@ -641,7 +641,7 @@ void CubeMapTextureArrayGLTest::image() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 6));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
     #endif
@@ -676,7 +676,7 @@ void CubeMapTextureArrayGLTest::imageBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 6));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
     #endif
@@ -704,7 +704,7 @@ void CubeMapTextureArrayGLTest::imageQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 6));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -749,7 +749,7 @@ void CubeMapTextureArrayGLTest::compressedImage() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 6}));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedPixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorageData[testCaseInstanceId()].offset),
         CompressedPixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
     #endif
@@ -797,7 +797,7 @@ void CubeMapTextureArrayGLTest::compressedImageBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 6}));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedPixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(CompressedPixelStorageData[testCaseInstanceId()].offset),
         CompressedPixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
     #endif
@@ -832,7 +832,7 @@ void CubeMapTextureArrayGLTest::compressedImageQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 6}));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedPixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorageData[testCaseInstanceId()].offset),
         CompressedPixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -964,7 +964,7 @@ void CubeMapTextureArrayGLTest::subImageQuery() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 4));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(SubPixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(SubPixelStorageData[testCaseInstanceId()].offset),
         SubPixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -990,7 +990,7 @@ void CubeMapTextureArrayGLTest::subImageQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 4));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(SubPixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(SubPixelStorageData[testCaseInstanceId()].offset),
         SubPixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1017,7 +1017,7 @@ void CubeMapTextureArrayGLTest::subImageQueryBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 4));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(SubPixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(SubPixelStorageData[testCaseInstanceId()].offset),
         SubPixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1217,7 +1217,7 @@ void CubeMapTextureArrayGLTest::compressedSubImageQuery() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{4});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedSubPixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedSubPixelStorageData[testCaseInstanceId()].offset),
         CompressedSubPixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1249,7 +1249,7 @@ void CubeMapTextureArrayGLTest::compressedSubImageQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{4});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedSubPixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedSubPixelStorageData[testCaseInstanceId()].offset),
         CompressedSubPixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1280,7 +1280,7 @@ void CubeMapTextureArrayGLTest::compressedSubImageQueryBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{4});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedSubPixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(CompressedSubPixelStorageData[testCaseInstanceId()].offset),
         CompressedSubPixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }

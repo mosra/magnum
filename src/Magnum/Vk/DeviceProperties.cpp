@@ -375,7 +375,7 @@ Containers::ArrayView<const VkQueueFamilyProperties2> DeviceProperties::queueFam
     if(!_state) _state.emplace(*_instance, _handle);
 
     /* Fetch if not already */
-    if(_state->queueFamilyProperties.empty()) {
+    if(_state->queueFamilyProperties.isEmpty()) {
         UnsignedInt count;
         _state->getQueueFamilyPropertiesImplementation(*this, count, nullptr);
 

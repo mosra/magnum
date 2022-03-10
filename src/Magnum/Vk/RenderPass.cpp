@@ -306,7 +306,7 @@ template<class T> void SubpassDescription::setColorAttachmentsInternal(Container
         new(vkAttachments2 + i) VkAttachmentReference2(*wrappers[i]);
     }
 
-    if(!resolveAttachments.empty()) for(std::size_t i = 0; i != attachments.size(); ++i) {
+    if(!resolveAttachments.isEmpty()) for(std::size_t i = 0; i != attachments.size(); ++i) {
         new(resolveWrappers + i) AttachmentReference{resolveAttachments[i]};
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
@@ -315,7 +315,7 @@ template<class T> void SubpassDescription::setColorAttachmentsInternal(Container
 
     _description.colorAttachmentCount = attachments.size();
     _description.pColorAttachments = vkAttachments2;
-    _description.pResolveAttachments = resolveAttachments.empty() ?
+    _description.pResolveAttachments = resolveAttachments.isEmpty() ?
         nullptr : vkResolveAttachments2;
 }
 
@@ -455,7 +455,7 @@ Containers::Array<VkSubpassDescription> SubpassDescription::vkSubpassDescription
 
     /* Fill it with data and return, faking a size of 1 and with a custom
        deleter that correctly deletes as a char array again */
-    std::pair<VkSubpassDescription, std::size_t> out = vkSubpassDescriptionExtrasInto(_description, storage.suffix(sizeof(VkSubpassDescription)));
+    std::pair<VkSubpassDescription, std::size_t> out = vkSubpassDescriptionExtrasInto(_description, storage.exceptPrefix(sizeof(VkSubpassDescription)));
     CORRADE_INTERNAL_ASSERT(out.second == extrasSize);
     *reinterpret_cast<VkSubpassDescription*>(storage.data()) = out.first;
     return Containers::Array<VkSubpassDescription>{

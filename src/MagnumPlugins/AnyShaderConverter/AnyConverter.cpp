@@ -212,7 +212,7 @@ std::pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage sta
     }
 
     /* Check that it can preprocess, in case we were asked to preprocess */
-    if((!_state->definitionViews.empty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
+    if((!_state->definitionViews.isEmpty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
         Error{} << "ShaderTools::AnyConverter::validateFile():" << metadata->name() << "does not support preprocessing";
         return {};
     }
@@ -223,7 +223,7 @@ std::pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage sta
     converter->setOutputFormat(_state->outputFormat, _state->outputVersion);
 
     /* Propagate definitions, if any */
-    if(!_state->definitionViews.empty())
+    if(!_state->definitionViews.isEmpty())
         converter->setDefinitions(_state->definitionViews);
 
     /* Propagate configuration */
@@ -269,7 +269,7 @@ std::pair<bool, Containers::String> AnyConverter::doValidateData(const Stage sta
     }
 
     /* Check that it can preprocess, in case we were asked to preprocess */
-    if((!_state->definitionViews.empty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
+    if((!_state->definitionViews.isEmpty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
         Error{} << "ShaderTools::AnyConverter::validateData():" << metadata->name() << "does not support preprocessing";
         return {};
     }
@@ -280,7 +280,7 @@ std::pair<bool, Containers::String> AnyConverter::doValidateData(const Stage sta
     converter->setOutputFormat(_state->outputFormat, _state->outputVersion);
 
     /* Propagate definitions, if any */
-    if(!_state->definitionViews.empty())
+    if(!_state->definitionViews.isEmpty())
         converter->setDefinitions(_state->definitionViews);
 
     /* Propagate configuration */
@@ -337,7 +337,7 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
     }
 
     /* Check that it can preprocess, in case we were asked to preprocess */
-    if((!_state->definitionViews.empty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
+    if((!_state->definitionViews.isEmpty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
         Error{} << "ShaderTools::AnyConverter::convertFileToFile():" << metadata->name() << "does not support preprocessing";
         return {};
     }
@@ -360,7 +360,7 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
     converter->setOutputFormat(_state->outputFormat, _state->outputVersion);
 
     /* Propagate definitions and debug info, if any */
-    if(!_state->definitionViews.empty())
+    if(!_state->definitionViews.isEmpty())
         converter->setDefinitions(_state->definitionViews);
     if(!_state->debugInfoLevel.isEmpty())
         converter->setDebugInfoLevel(_state->debugInfoLevel);
@@ -422,7 +422,7 @@ Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, con
     }
 
     /* Check that it can preprocess, in case we were asked to preprocess */
-    if((!_state->definitionViews.empty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
+    if((!_state->definitionViews.isEmpty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
         Error{} << "ShaderTools::AnyConverter::convertFileToData():" << metadata->name() << "does not support preprocessing";
         return {};
     }
@@ -445,7 +445,7 @@ Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, con
     converter->setOutputFormat(_state->outputFormat, _state->outputVersion);
 
     /* Propagate definitions and debug info, if any */
-    if(!_state->definitionViews.empty())
+    if(!_state->definitionViews.isEmpty())
         converter->setDefinitions(_state->definitionViews);
     if(!_state->debugInfoLevel.isEmpty())
         converter->setDebugInfoLevel(_state->debugInfoLevel);
@@ -505,7 +505,7 @@ Containers::Array<char> AnyConverter::doConvertDataToData(const Stage stage, con
     }
 
     /* Check that it can preprocess, in case we were asked to preprocess */
-    if((!_state->definitionViews.empty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
+    if((!_state->definitionViews.isEmpty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
         Error{} << "ShaderTools::AnyConverter::convertDataToData():" << metadata->name() << "does not support preprocessing";
         return {};
     }
@@ -528,7 +528,7 @@ Containers::Array<char> AnyConverter::doConvertDataToData(const Stage stage, con
     converter->setOutputFormat(_state->outputFormat, _state->outputVersion);
 
     /* Propagate definitions and debug info, if any */
-    if(!_state->definitionViews.empty())
+    if(!_state->definitionViews.isEmpty())
         converter->setDefinitions(_state->definitionViews);
     if(!_state->debugInfoLevel.isEmpty())
         converter->setDebugInfoLevel(_state->debugInfoLevel);

@@ -199,7 +199,7 @@ using namespace Magnum;
 namespace {
 
 template<UnsignedInt dimensions> bool checkCommonFormat(const Utility::Arguments& args, const Containers::Array<Trade::ImageData<dimensions>>& images) {
-    CORRADE_INTERNAL_ASSERT(!images.empty());
+    CORRADE_INTERNAL_ASSERT(!images.isEmpty());
     const bool compressed = images.front().isCompressed();
     PixelFormat format{};
     CompressedPixelFormat compressedFormat{};
@@ -231,7 +231,7 @@ template<UnsignedInt dimensions> bool checkCommonFormat(const Utility::Arguments
 template<UnsignedInt dimensions> bool checkCommonFormatAndSize(const Utility::Arguments& args, const Containers::Array<Trade::ImageData<dimensions>>& images) {
     if(!checkCommonFormat(args, images)) return false;
 
-    CORRADE_INTERNAL_ASSERT(!images.empty());
+    CORRADE_INTERNAL_ASSERT(!images.isEmpty());
     Math::Vector<dimensions, Int> size = images.front().size();
     for(std::size_t i = 1; i != images.size(); ++i) {
         if(images[i].size() != size) {
@@ -258,7 +258,7 @@ template<UnsignedInt dimensions> bool convertOneOrMoreImages(Trade::AbstractImag
     if(outputImages.size() == 1)
         return converter.convertToFile(outputImages.front(), output);
 
-    CORRADE_INTERNAL_ASSERT(!outputImages.empty());
+    CORRADE_INTERNAL_ASSERT(!outputImages.isEmpty());
     if(outputImages.front().isCompressed())
         return convertOneOrMoreImages<CompressedImageView, dimensions>(converter, outputImages, output);
     else

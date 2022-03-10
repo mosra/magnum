@@ -330,7 +330,7 @@ void MeshVkTest::cmdDrawIndexed() {
         Utility::copy(Containers::stridedArrayView(QuadData).slice(&Quad::position),
             Containers::arrayCast<Vector3>(data.slice(32, 32 + 12*4)));
         Utility::copy(Containers::arrayCast<const char>(QuadIndexData),
-            Containers::stridedArrayView(data).suffix(32 + 12*4));
+            Containers::stridedArrayView(data).exceptPrefix(32 + 12*4));
         mesh.addVertexBuffer(0, buffer, 32)
             .setIndexBuffer(std::move(buffer), 32 + 12*4, MeshIndexType::UnsignedShort)
             .setCount(6);

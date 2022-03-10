@@ -25,6 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/StringStl.h> /** @todo remove when Shader is <string>-free */
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/GL/Context.h"
@@ -65,7 +67,7 @@ inline GL::Shader createCompatibilityShader(const Utility::Resource& rs, GL::Ver
     shader.addSource("#ifndef GL_ES\n#define GL_ES 1\n#endif\n");
     #endif
 
-    shader.addSource(rs.get("compatibility.glsl"));
+    shader.addSource(rs.getString("compatibility.glsl"));
     return shader;
 }
 

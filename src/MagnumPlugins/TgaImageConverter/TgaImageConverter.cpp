@@ -69,7 +69,7 @@ Containers::Array<char> TgaImageConverter::doConvertToData(const ImageView2D& im
     header->height = UnsignedShort(Utility::Endianness::littleEndian(image.size().y()));
 
     /* Copy the pixels into output, dropping padding (if any) */
-    const Containers::ArrayView<char> pixels = data.suffix(sizeof(Implementation::TgaHeader));
+    const Containers::ArrayView<char> pixels = data.exceptPrefix(sizeof(Implementation::TgaHeader));
     Utility::copy(image.pixels(), Containers::StridedArrayView3D<char>{pixels,
         {std::size_t(image.size().y()), std::size_t(image.size().x()), pixelSize}});
 

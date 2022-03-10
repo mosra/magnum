@@ -36,6 +36,7 @@
 
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once GL::Shader is <string>-free */
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -83,8 +84,8 @@ FloatReinterpretShader::FloatReinterpretShader() {
     GL::Shader frag{GL::Version::GLES300, GL::Shader::Type::Fragment};
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         vert.addSource("#define DISABLE_GL_MAGNUM_shader_vertex_id\n");
-    vert.addSource(rs.get("TextureImage.vert"));
-    frag.addSource(rs.get("TextureImage.frag"));
+    vert.addSource(rs.getString("TextureImage.vert"));
+    frag.addSource(rs.getString("TextureImage.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
     attachShaders({vert, frag});

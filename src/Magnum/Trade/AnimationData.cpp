@@ -46,7 +46,7 @@ AnimationData::AnimationData(const DataFlags dataFlags, const Containers::ArrayV
 AnimationData::AnimationData(const DataFlags dataFlags, const Containers::ArrayView<const void> data, std::initializer_list<AnimationTrackData> tracks, const Range1D& duration, const void* importerState): AnimationData{dataFlags, data, Implementation::initializerListToArrayWithDefaultDeleter(tracks), duration, importerState} {}
 
 AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _data{std::move(data)}, _tracks{std::move(tracks)}, _importerState{importerState} {
-    if(!_tracks.empty()) {
+    if(!_tracks.isEmpty()) {
         /* Reset duration to duration of the first track so it properly support
            cases where tracks don't start at 0 */
         _duration = _tracks.front()._view.duration();

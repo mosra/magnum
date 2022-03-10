@@ -129,9 +129,9 @@ void MeshTest::construct() {
     CORRADE_COMPARE(mesh.indexOffset(), 0);
     CORRADE_COMPARE(mesh.instanceCount(), 1);
     CORRADE_COMPARE(mesh.instanceOffset(), 0);
-    CORRADE_VERIFY(mesh.vertexBuffers().empty());
-    CORRADE_VERIFY(mesh.vertexBufferOffsets().empty());
-    CORRADE_VERIFY(mesh.vertexBufferStrides().empty());
+    CORRADE_VERIFY(mesh.vertexBuffers().isEmpty());
+    CORRADE_VERIFY(mesh.vertexBufferOffsets().isEmpty());
+    CORRADE_VERIFY(mesh.vertexBufferStrides().isEmpty());
     CORRADE_VERIFY(!mesh.isIndexed());
 }
 

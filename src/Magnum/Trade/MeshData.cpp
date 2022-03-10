@@ -69,9 +69,9 @@ MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexForma
        because I feel that makes more sense than duplicating the full assert
        logic */
     #ifndef CORRADE_NO_ASSERT
-    if(arraySize) CORRADE_ASSERT(data.empty()[0] || isVertexFormatImplementationSpecific(format) || data.size()[1] == vertexFormatSize(format)*arraySize,
+    if(arraySize) CORRADE_ASSERT(data.isEmpty()[0] || isVertexFormatImplementationSpecific(format) || data.size()[1] == vertexFormatSize(format)*arraySize,
         "Trade::MeshAttributeData: second view dimension size" << data.size()[1] << "doesn't match" << format << "and array size" << arraySize, );
-    else CORRADE_ASSERT(data.empty()[0] || isVertexFormatImplementationSpecific(format) || data.size()[1] == vertexFormatSize(format),
+    else CORRADE_ASSERT(data.isEmpty()[0] || isVertexFormatImplementationSpecific(format) || data.size()[1] == vertexFormatSize(format),
         "Trade::MeshAttributeData: second view dimension size" << data.size()[1] << "doesn't match" << format, );
     #endif
     CORRADE_ASSERT(data.isContiguous<1>(),
@@ -106,7 +106,7 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
     #ifndef CORRADE_NO_ASSERT
     UnsignedInt expectedAttributeVertexCount;
     #endif
-    if(_attributes.empty()) {
+    if(_attributes.isEmpty()) {
         CORRADE_ASSERT(vertexCount != ImplicitVertexCount,
             "Trade::MeshData: vertex count can't be implicit if there are no attributes", );
         _vertexCount = vertexCount;
@@ -131,7 +131,7 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
     }
 
     #ifndef CORRADE_NO_ASSERT
-    CORRADE_ASSERT(_indexCount || _indexData.empty(),
+    CORRADE_ASSERT(_indexCount || _indexData.isEmpty(),
         "Trade::MeshData: indexData passed for a non-indexed mesh", );
     if(_indexCount) {
         const UnsignedInt typeSize =
@@ -687,11 +687,11 @@ void MeshData::bitangentSignsInto(const Containers::StridedArrayView1D<Float>& d
     if(attribute._format == VertexFormat::Vector4)
         Utility::copy(Containers::arrayCast<2, const Float>(attributeData, 4).transposed<0, 1>()[3], destination);
     else if(attribute._format == VertexFormat::Vector4h)
-        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 4).suffix({0, 3}), destination1f);
+        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 4).exceptPrefix({0, 3}), destination1f);
     else if(attribute._format == VertexFormat::Vector4bNormalized)
-        Math::unpackInto(Containers::arrayCast<2, const Byte>(attributeData, 4).suffix({0, 3}), destination1f);
+        Math::unpackInto(Containers::arrayCast<2, const Byte>(attributeData, 4).exceptPrefix({0, 3}), destination1f);
     else if(attribute._format == VertexFormat::Vector4sNormalized)
-        Math::unpackInto(Containers::arrayCast<2, const Short>(attributeData, 4).suffix({0, 3}), destination1f);
+        Math::unpackInto(Containers::arrayCast<2, const Short>(attributeData, 4).exceptPrefix({0, 3}), destination1f);
     else CORRADE_ASSERT_UNREACHABLE("Trade::MeshData::bitangentSignsInto(): expected four-component tangents, but got" << attribute._format, );
 }
 

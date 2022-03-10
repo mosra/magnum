@@ -562,7 +562,7 @@ void AbstractImporter::populateCachedScenes() {
 
        Not ideal, especially regarding the 3D assumption, but better than
        nothing. */
-    if(!_cachedScenes->scenes.empty() && !_cachedScenes->object2DCount && !_cachedScenes->object3DCount)
+    if(!_cachedScenes->scenes.isEmpty() && !_cachedScenes->object2DCount && !_cachedScenes->object3DCount)
         _cachedScenes->object3DCount = objectCount();
 }
 
@@ -698,12 +698,12 @@ Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(const UnsignedInt
        in which order we decide on the legacy object type. */
     CORRADE_INTERNAL_ASSERT(camera.size() + mesh.size() <= 1);
 
-    if(!mesh.empty()) {
+    if(!mesh.isEmpty()) {
         return Containers::pointer(flags & ObjectFlag2D::HasTranslationRotationScaling ?
             new MeshObjectData2D{std::move(children),
                 trs->first(), trs->second(), trs->third(),
                 mesh.front().first(), mesh.front().second(),
-                skin.empty() ? -1  : Int(skin.front()),
+                skin.isEmpty() ? -1  : Int(skin.front()),
                 importerState ? *importerState : nullptr} :
             new MeshObjectData2D{std::move(children),
                 *transformation,
@@ -877,12 +877,12 @@ Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(const UnsignedInt
        doesn't matter in which order we decide on the legacy object type. */
     CORRADE_INTERNAL_ASSERT(camera.size() + light.size() + mesh.size() <= 1);
 
-    if(!mesh.empty()) {
+    if(!mesh.isEmpty()) {
         return Containers::pointer(flags & ObjectFlag3D::HasTranslationRotationScaling ?
             new MeshObjectData3D{std::move(children),
                 trs->first(), trs->second(), trs->third(),
                 mesh.front().first(), mesh.front().second(),
-                skin.empty() ? -1  : Int(skin.front()),
+                skin.isEmpty() ? -1  : Int(skin.front()),
                 importerState ? *importerState : nullptr} :
             new MeshObjectData3D{std::move(children),
                 *transformation,

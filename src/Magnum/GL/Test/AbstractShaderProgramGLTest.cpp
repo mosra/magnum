@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove when Shader is <string>-free */
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Resource.h>
@@ -188,7 +189,7 @@ void AbstractShaderProgramGLTest::label() {
 
     /* Test the string size gets correctly used, instead of relying on null
        termination */
-    shader.setLabel("DummyShader!"_s.except(1));
+    shader.setLabel("DummyShader!"_s.exceptSuffix(1));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(shader.label(), "DummyShader");
@@ -224,7 +225,7 @@ void AbstractShaderProgramGLTest::create() {
         Version::GLES200
         #endif
         , Shader::Type::Vertex);
-    vert.addSource(rs.get("MyShader.vert"));
+    vert.addSource(rs.getString("MyShader.vert"));
     const bool vertCompiled = vert.compile();
 
     Shader frag(
@@ -238,7 +239,7 @@ void AbstractShaderProgramGLTest::create() {
         Version::GLES200
         #endif
         , Shader::Type::Fragment);
-    frag.addSource(rs.get("MyShader.frag"));
+    frag.addSource(rs.getString("MyShader.frag"));
     const bool fragCompiled = frag.compile();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -289,7 +290,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
         Version::GL310
         #endif
         , Shader::Type::Vertex);
-    vert.addSource(rs.get("MyShader.vert"));
+    vert.addSource(rs.getString("MyShader.vert"));
     const bool vertCompiled = vert.compile();
 
     Shader frag(
@@ -299,7 +300,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
         Version::GL310
         #endif
         , Shader::Type::Fragment);
-    frag.addSource(rs.get("MyShaderFragmentOutputs.frag"));
+    frag.addSource(rs.getString("MyShaderFragmentOutputs.frag"));
     const bool fragCompiled = frag.compile();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -348,7 +349,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
         Version::GL310
         #endif
         , Shader::Type::Vertex);
-    vert.addSource(rs.get("MyShader.vert"));
+    vert.addSource(rs.getString("MyShader.vert"));
     const bool vertCompiled = vert.compile();
 
     Shader frag(
@@ -358,7 +359,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
         Version::GL310
         #endif
         , Shader::Type::Fragment);
-    frag.addSource(rs.get("MyShaderFragmentOutputs.frag"));
+    frag.addSource(rs.getString("MyShaderFragmentOutputs.frag"));
     const bool fragCompiled = frag.compile();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -496,8 +497,8 @@ MyShader::MyShader() {
         Version::GLES200
         #endif
         , Shader::Type::Fragment);
-    vert.addSource(rs.get("MyShader.vert"));
-    frag.addSource(rs.get("MyShader.frag"));
+    vert.addSource(rs.getString("MyShader.vert"));
+    frag.addSource(rs.getString("MyShader.frag"));
 
     Shader::compile({vert, frag});
 
@@ -580,8 +581,8 @@ MyDoubleShader::MyDoubleShader() {
 
     Shader vert(Version::GL320, Shader::Type::Vertex);
     Shader frag(Version::GL320, Shader::Type::Fragment);
-    vert.addSource(rs.get("MyDoubleShader.vert"));
-    frag.addSource(rs.get("MyDoubleShader.frag"));
+    vert.addSource(rs.getString("MyDoubleShader.vert"));
+    frag.addSource(rs.getString("MyDoubleShader.frag"));
 
     Shader::compile({vert, frag});
 
@@ -675,7 +676,7 @@ void AbstractShaderProgramGLTest::createUniformBlocks() {
         Version::GLES300
         #endif
         , Shader::Type::Vertex);
-    vert.addSource(rs.get("UniformBlockShader.vert"));
+    vert.addSource(rs.getString("UniformBlockShader.vert"));
     const bool vertCompiled = vert.compile();
 
     Shader frag(
@@ -685,7 +686,7 @@ void AbstractShaderProgramGLTest::createUniformBlocks() {
         Version::GLES300
         #endif
         , Shader::Type::Fragment);
-    frag.addSource(rs.get("UniformBlockShader.frag"));
+    frag.addSource(rs.getString("UniformBlockShader.frag"));
     const bool fragCompiled = frag.compile();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -783,8 +784,8 @@ UniformBlockShader::UniformBlockShader() {
         Version::GLES300
         #endif
         , Shader::Type::Fragment);
-    vert.addSource(rs.get("UniformBlockShader.vert"));
-    frag.addSource(rs.get("UniformBlockShader.frag"));
+    vert.addSource(rs.getString("UniformBlockShader.vert"));
+    frag.addSource(rs.getString("UniformBlockShader.frag"));
 
     Shader::compile({vert, frag});
     attachShaders({vert, frag});
@@ -833,7 +834,7 @@ void AbstractShaderProgramGLTest::compute() {
                 Version::GLES310,
                 #endif
                 Shader::Type::Compute);
-            compute.addSource(rs.get("ComputeShader.comp"));
+            compute.addSource(rs.getString("ComputeShader.comp"));
             CORRADE_INTERNAL_ASSERT_OUTPUT(compute.compile());
 
             attachShader(compute);

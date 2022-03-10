@@ -104,7 +104,7 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     CORRADE_ASSERT(normals.size() == positions.size(),
         "MeshTools::generateSmoothNormalsInto(): bad output size, expected" << positions.size() << "but got" << normals.size(), );
 
-    if(indices.empty()) return;
+    if(indices.isEmpty()) return;
 
     /* Gather count of triangles for every vertex. This abuses the output
        storage to avoid extra allocations, zero-initialize it first to avoid

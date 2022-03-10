@@ -118,7 +118,7 @@ namespace Implementation {
 
 Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
     /* Nothing to do here, bye! */
-    if(!data.attributeCount() && extra.empty()) return {};
+    if(!data.attributeCount() && extra.isEmpty()) return {};
 
     /* If we're not told to preserve the layout, treat the mesh as
        noninterleaved always, forcing a repack. Otherwise check if it's already
@@ -317,7 +317,7 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
        steal that data as well */
     Containers::Array<char> vertexData;
     Containers::Array<Trade::MeshAttributeData> attributeData;
-    if(interleaved && extra.empty() && (data.vertexDataFlags() & Trade::DataFlag::Owned)) {
+    if(interleaved && extra.isEmpty() && (data.vertexDataFlags() & Trade::DataFlag::Owned)) {
         attributeData = data.releaseAttributeData();
         vertexData = data.releaseVertexData();
 

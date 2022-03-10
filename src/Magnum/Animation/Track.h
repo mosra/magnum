@@ -290,7 +290,7 @@ template<class K, class V, class R
          * calculate combined duration for a set of tracks.
          */
         Math::Range1D<K> duration() const {
-            return _data.empty() ? Math::Range1D<K>{} : Math::Range1D<K>{_data.front().first, _data.back().first};
+            return _data.isEmpty() ? Math::Range1D<K>{} : Math::Range1D<K>{_data.front().first, _data.back().first};
         }
 
         /** @brief Keyframe count */
@@ -474,7 +474,7 @@ template<class K> class TrackViewStorage {
          * calculate combined duration for a set of tracks.
          */
         Math::Range1D<typename std::remove_const<K>::type> duration() const {
-            return _keys.empty() ? Math::Range1D<typename std::remove_const<K>::type>{} : Math::Range1D<typename std::remove_const<K>::type>{_keys.front(), _keys.back()};
+            return _keys.isEmpty() ? Math::Range1D<typename std::remove_const<K>::type>{} : Math::Range1D<typename std::remove_const<K>::type>{_keys.front(), _keys.back()};
         }
 
         /** @brief Keyframe count */

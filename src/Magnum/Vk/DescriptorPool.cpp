@@ -43,7 +43,7 @@ DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(const UnsignedInt maxSets, co
     /* On certain compilers, {} (empty initializer list) gets converted to an
        arrayview that's not null, interesting. Explicitly using .empty() to
        ensure the assert gets properly fired. */
-    CORRADE_ASSERT(!poolSizes.empty(),
+    CORRADE_ASSERT(!poolSizes.isEmpty(),
         "Vk::DescriptorPoolCreateInfo: there has to be at least one pool", );
 
     Containers::ArrayView<VkDescriptorPoolSize> poolSizesCopy;

@@ -115,7 +115,7 @@ template<class T> void tipsifyInPlaceImplementation(const Containers::StridedArr
         /* On dead-end */
         if(fanningVertex == 0xFFFFFFFFu) {
             /* Find vertex with live triangles in dead-end stack */
-            while(!deadEndStack.empty()) {
+            while(!deadEndStack.isEmpty()) {
                 UnsignedInt d = deadEndStack.back();
                 arrayRemoveSuffix(deadEndStack);
 

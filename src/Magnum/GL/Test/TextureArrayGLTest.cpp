@@ -213,10 +213,10 @@ const struct {
     std::size_t offset;
 } PixelStorage1DData[]{
     {"default pixel storage",
-        Containers::arrayView(Data1D).suffix(8), {},
-        Containers::arrayView(Data1D).suffix(8), 0},
+        Containers::arrayView(Data1D).exceptPrefix(8), {},
+        Containers::arrayView(Data1D).exceptPrefix(8), 0},
     {"skip Y",
-        Containers::arrayView(Data1D).suffix(8), PixelStorage{}.setSkip({0, 1, 0}),
+        Containers::arrayView(Data1D).exceptPrefix(8), PixelStorage{}.setSkip({0, 1, 0}),
         Containers::arrayView(Data1D), 8}};
 #endif
 
@@ -237,10 +237,10 @@ const struct {
     std::size_t offset;
 } PixelStorage2DData[]{
     {"default pixel storage",
-        Containers::arrayView(Data2D).suffix(16), {},
-        Containers::arrayView(Data2D).suffix(16), 0},
+        Containers::arrayView(Data2D).exceptPrefix(16), {},
+        Containers::arrayView(Data2D).exceptPrefix(16), 0},
     {"skip Z",
-        Containers::arrayView(Data2D).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
+        Containers::arrayView(Data2D).exceptPrefix(16), PixelStorage{}.setSkip({0, 0, 1}),
         Containers::arrayView(Data2D), 16}};
 
 /* Just 4x4x3 0x00 - 0x7f compressed using RGBA DXT3 by the driver */
@@ -263,14 +263,14 @@ const struct {
     std::size_t offset;
 } CompressedPixelStorage2DData[]{
     {"default pixel storage",
-        Containers::arrayView(CompressedData2D).suffix(16),
+        Containers::arrayView(CompressedData2D).exceptPrefix(16),
         #ifndef MAGNUM_TARGET_GLES
         {},
         #endif
-        Containers::arrayView(CompressedData2D).suffix(16), 0},
+        Containers::arrayView(CompressedData2D).exceptPrefix(16), 0},
     #ifndef MAGNUM_TARGET_GLES
     {"skip Y",
-        Containers::arrayView(CompressedData2D).suffix(16),
+        Containers::arrayView(CompressedData2D).exceptPrefix(16),
         CompressedPixelStorage{}
             .setCompressedBlockSize({4, 4, 1})
             .setCompressedBlockDataSize(16)
@@ -520,7 +520,7 @@ void TextureArrayGLTest::label1D() {
 
     /* Test the string size gets correctly used, instead of relying on null
        termination */
-    texture.setLabel("MyTexture!"_s.except(1));
+    texture.setLabel("MyTexture!"_s.exceptSuffix(1));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(texture.label(), "MyTexture");
@@ -540,7 +540,7 @@ void TextureArrayGLTest::label2D() {
 
     /* Test the string size gets correctly used, instead of relying on null
        termination */
-    texture.setLabel("MyTexture!"_s.except(1));
+    texture.setLabel("MyTexture!"_s.exceptSuffix(1));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(texture.label(), "MyTexture");
@@ -955,7 +955,7 @@ void TextureArrayGLTest::image1D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -982,7 +982,7 @@ void TextureArrayGLTest::image1DBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1008,7 +1008,7 @@ void TextureArrayGLTest::image1DQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1095,7 +1095,7 @@ void TextureArrayGLTest::subImage1DQuery() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1122,7 +1122,7 @@ void TextureArrayGLTest::subImage1DQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1151,7 +1151,7 @@ void TextureArrayGLTest::subImage1DQueryBuffer() {
     CORRADE_COMPARE(image.size(), Vector2i{2});
 
     /* Was broken on NV since 370.xx (May 2017), fixed in 390.25 (Mar 2018) */
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1213,7 +1213,7 @@ void TextureArrayGLTest::image2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
     #endif
@@ -1245,7 +1245,7 @@ void TextureArrayGLTest::image2DBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
     #endif
@@ -1274,7 +1274,7 @@ void TextureArrayGLTest::image2DQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1392,7 +1392,7 @@ void TextureArrayGLTest::subImage2DQuery() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{2});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1419,7 +1419,7 @@ void TextureArrayGLTest::subImage2DQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{2});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1446,7 +1446,7 @@ void TextureArrayGLTest::subImage2DQueryBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{2});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1491,7 +1491,7 @@ void TextureArrayGLTest::compressedImage2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
     #endif
@@ -1538,7 +1538,7 @@ void TextureArrayGLTest::compressedImage2DBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
     #endif
@@ -1571,7 +1571,7 @@ void TextureArrayGLTest::compressedImage2DQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1742,7 +1742,7 @@ void TextureArrayGLTest::compressedSubImage2DQuery() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1775,7 +1775,7 @@ void TextureArrayGLTest::compressedSubImage2DQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1811,7 +1811,7 @@ void TextureArrayGLTest::compressedSubImage2DQueryBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }

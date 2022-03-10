@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo drop when file callbacks are <string>-free */
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/FileCallback.h"

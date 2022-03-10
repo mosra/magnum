@@ -208,7 +208,7 @@ void TransformFeedbackGLTest::label() {
 
     /* Test the string size gets correctly used, instead of relying on null
        termination */
-    feedback.setLabel("MyXfb!"_s.except(1));
+    feedback.setLabel("MyXfb!"_s.exceptSuffix(1));
     {
         #ifdef MAGNUM_TARGET_GLES
         CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia &&

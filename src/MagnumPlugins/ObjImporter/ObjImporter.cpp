@@ -401,17 +401,17 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
     }
 
     /* There should be at least indexed position data */
-    if(positions.empty() || indices.empty()) {
+    if(positions.isEmpty() || indices.isEmpty()) {
         Error() << "Trade::ObjImporter::mesh(): incomplete position data";
         return Containers::NullOpt;
     }
 
     /* If there are index data, there should be also vertex data (and also the other way) */
-    if(normals.empty() != (normalIndexCount == 0)) {
+    if(normals.isEmpty() != (normalIndexCount == 0)) {
         Error() << "Trade::ObjImporter::mesh(): incomplete normal data";
         return Containers::NullOpt;
     }
-    if(textureCoordinates.empty() != (textureCoordinateIndexCount == 0)) {
+    if(textureCoordinates.isEmpty() != (textureCoordinateIndexCount == 0)) {
         Error() << "Trade::ObjImporter::mesh(): incomplete texture coordinate data";
         return Containers::NullOpt;
     }

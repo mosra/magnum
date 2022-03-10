@@ -974,7 +974,7 @@ bool Context::tryCreate(const Configuration& configuration) {
     Debug{output} << "OpenGL version:" << versionString();
 
     /* Print the extensions that were disabled above */
-    if(!_disabledExtensions.empty()) {
+    if(!_disabledExtensions.isEmpty()) {
         Debug{output} << "Disabling extensions:";
         for(const Extension& extension: _disabledExtensions)
             Debug{output} << "   " << extension.string();
@@ -985,7 +985,7 @@ bool Context::tryCreate(const Configuration& configuration) {
     _state = &state.second;
 
     /* Print a list of used workarounds */
-    if(!_driverWorkarounds.empty()) {
+    if(!_driverWorkarounds.isEmpty()) {
         Debug{output} << "Using driver workarounds:";
         for(const auto& workaround: _driverWorkarounds)
             if(!workaround.second) Debug(output) << "   " << workaround.first;

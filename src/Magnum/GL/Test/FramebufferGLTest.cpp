@@ -418,7 +418,7 @@ void FramebufferGLTest::label() {
 
     /* Test the string size gets correctly used, instead of relying on null
        termination */
-    framebuffer.setLabel("MyFramebuffer!"_s.except(1));
+    framebuffer.setLabel("MyFramebuffer!"_s.exceptSuffix(1));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(framebuffer.label(), "MyFramebuffer");

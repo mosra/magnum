@@ -1255,7 +1255,7 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::Triangles);
-    CORRADE_VERIFY(!data.attributeData().empty());
+    CORRADE_VERIFY(!data.attributeData().isEmpty());
     CORRADE_COMPARE(static_cast<const void*>(data.indexData() + 2), indexView.data());
     CORRADE_COMPARE(static_cast<const void*>(data.vertexData()), vertexView.data());
     CORRADE_COMPARE(static_cast<void*>(data.mutableIndexData() + 2), indexView.data());
@@ -2112,7 +2112,7 @@ void MeshDataTest::constructSpecialAttributeStrides() {
 
     MeshData mesh{MeshPrimitive::Points, std::move(vertexData), {
         MeshAttributeData{MeshAttribute::ObjectId, vertices.prefix(1).broadcasted<0>(4)},
-        MeshAttributeData{MeshAttribute::ObjectId, vertices.suffix(1).flipped<0>()},
+        MeshAttributeData{MeshAttribute::ObjectId, vertices.exceptPrefix(1).flipped<0>()},
     }};
 
     CORRADE_COMPARE(mesh.attributeStride(0), 0);
@@ -2168,7 +2168,7 @@ void MeshDataTest::constructSpecialAttributeStridesImplementationSpecificVertexF
 
     MeshData mesh{MeshPrimitive::Points, std::move(vertexData), {
         MeshAttributeData{MeshAttribute::ObjectId, vertexFormatWrap(0xdead), vertices.prefix(1).broadcasted<0>(4)},
-        MeshAttributeData{MeshAttribute::ObjectId, vertexFormatWrap(0xdead), vertices.suffix(1).flipped<0>()}
+        MeshAttributeData{MeshAttribute::ObjectId, vertexFormatWrap(0xdead), vertices.exceptPrefix(1).flipped<0>()}
     }};
 
     CORRADE_COMPARE(mesh.attributeStride(0), 0);

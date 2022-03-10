@@ -470,9 +470,9 @@ template<class T> void CompileGLTest::twoDimensions() {
 
     Trade::MeshIndexData indices;
     if(data.indexType)
-        indices = Trade::MeshIndexData{*data.indexType, Containers::stridedArrayView(Containers::arrayView(indexData).suffix(3))};
+        indices = Trade::MeshIndexData{*data.indexType, Containers::stridedArrayView(Containers::arrayView(indexData).exceptPrefix(3))};
     else
-        indices = Trade::MeshIndexData{Containers::arrayView(indexData).suffix(3)};
+        indices = Trade::MeshIndexData{Containers::arrayView(indexData).exceptPrefix(3)};
 
     Trade::MeshData meshData{MeshPrimitive::Triangles,
         {}, indexData, indices,
@@ -704,9 +704,9 @@ template<class T> void CompileGLTest::threeDimensions() {
 
     Trade::MeshIndexData indices;
     if(data.indexType)
-        indices = Trade::MeshIndexData{*data.indexType, Containers::stridedArrayView(Containers::arrayView(indexData).suffix(3))};
+        indices = Trade::MeshIndexData{*data.indexType, Containers::stridedArrayView(Containers::arrayView(indexData).exceptPrefix(3))};
     else
-        indices = Trade::MeshIndexData{Containers::arrayView(indexData).suffix(3)};
+        indices = Trade::MeshIndexData{Containers::arrayView(indexData).exceptPrefix(3)};
 
     Trade::MeshData meshData{MeshPrimitive::Triangles,
         {}, indexData, indices,

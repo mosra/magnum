@@ -290,7 +290,7 @@ void InstanceVkTest::createInfoExtensions() {
 }
 
 void InstanceVkTest::createInfoCopiedStrings() {
-    Containers::StringView globalButNotNullTerminated = "VK_LAYER_KHRONOS_validation3"_s.except(1);
+    Containers::StringView globalButNotNullTerminated = "VK_LAYER_KHRONOS_validation3"_s.exceptSuffix(1);
     Containers::String localButNullTerminated = Extensions::KHR::external_memory_capabilities::string();
 
     InstanceCreateInfo info{InstanceCreateInfo::Flag::NoImplicitExtensions};

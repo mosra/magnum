@@ -299,7 +299,7 @@ void ReferenceTest::ownedStridedIndices() {
 
     const UnsignedShort indices[7]{0, 3, 0, 7, 0, 15, 0};
     Trade::MeshData stuff{MeshPrimitive::Points,
-        {}, indices, Trade::MeshIndexData{data.type, Containers::stridedArrayView(indices).suffix(1).every(2)},
+        {}, indices, Trade::MeshIndexData{data.type, Containers::stridedArrayView(indices).exceptPrefix(1).every(2)},
         16};
 
     /* The full index data layout including whatever format should be

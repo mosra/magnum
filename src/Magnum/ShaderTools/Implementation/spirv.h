@@ -51,7 +51,7 @@ Containers::ArrayView<const UnsignedInt> spirvData(const void* code, UnsignedInt
     const UnsignedInt* const spirv = static_cast<const UnsignedInt*>(code);
     /* Not >= 5*4 because just the header alone is useless also */
     return size % 4 == 0 && size > 5*4 && spirv[0] == SpvMagicNumber ?
-        Containers::ArrayView<const UnsignedInt>{spirv, size/4}.suffix(5) : nullptr;
+        Containers::ArrayView<const UnsignedInt>{spirv, size/4}.exceptPrefix(5) : nullptr;
 }
 
 /* When an instruction is found, the `data` is advanced after it in order to
@@ -61,7 +61,7 @@ Containers::ArrayView<const UnsignedInt> spirvFindInstruction(Containers::ArrayV
     /* Copy the view and iterate that. If we find the instruction, update the
        passed `data` reference, if not, keep it as it was -- that way, if the
        find fails, `data` won't become empty and can be used further */
-    for(Containers::ArrayView<const UnsignedInt> dataIteration = data; !dataIteration.empty(); ) {
+    for(Containers::ArrayView<const UnsignedInt> dataIteration = data; !dataIteration.isEmpty(); ) {
         const UnsignedInt instructionSize = dataIteration[0] >> 16;
         const UnsignedInt instructionOp = dataIteration[0] & 0xffff;
 
@@ -75,12 +75,12 @@ Containers::ArrayView<const UnsignedInt> spirvFindInstruction(Containers::ArrayV
         /* This is the instruction we're looking for, return it and update the
            view to point after it. */
         if(instructionOp == op) {
-            data = dataIteration.suffix(instructionSize);
+            data = dataIteration.exceptPrefix(instructionSize);
             return dataIteration.prefix(instructionSize);
         }
 
         /* Otherwise advance the view for next round */
-        dataIteration = dataIteration.suffix(instructionSize);
+        dataIteration = dataIteration.exceptPrefix(instructionSize);
     }
 
     /* Nothing found. Leave the input data as-is. */
@@ -112,7 +112,7 @@ Containers::Optional<SpirvEntrypoint> spirvNextEntrypoint(Containers::ArrayView<
         Containers::ArrayView<const UnsignedInt> interfaces;
         for(std::size_t i = 3; i != entryPoint.size(); ++i) {
             if(entryPoint[i] >> 24 == 0) {
-                interfaces = entryPoint.suffix(i + 1);
+                interfaces = entryPoint.exceptPrefix(i + 1);
                 break;
             }
         }

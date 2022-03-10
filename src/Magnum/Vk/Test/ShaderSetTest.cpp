@@ -96,7 +96,7 @@ void ShaderSetTest::specializationConstructBool() {
 
 void ShaderSetTest::construct() {
     ShaderSet set;
-    CORRADE_VERIFY(set.stages().empty());
+    CORRADE_VERIFY(set.stages().isEmpty());
 
     /* The actually meaningful test done in addShader() and friends */
 }
@@ -114,7 +114,7 @@ void ShaderSetTest::constructMove() {
         /* The double reinterpret_cast is needed because the handle is an
            uint64_t instead of a pointer on 32-bit builds and only this works
            on both */
-        a.addShader(ShaderStage::Geometry, reinterpret_cast<VkShaderModule>(reinterpret_cast<void*>(0xdeadbeef)), "main!"_s.except(1), {
+        a.addShader(ShaderStage::Geometry, reinterpret_cast<VkShaderModule>(reinterpret_cast<void*>(0xdeadbeef)), "main!"_s.exceptSuffix(1), {
             {42, 1.15f}
         });
         CORRADE_COMPARE(a.stages().size(), 1);
@@ -127,7 +127,7 @@ void ShaderSetTest::constructMove() {
         CORRADE_COMPARE(*reinterpret_cast<const Float*>(a.stages()[0].pSpecializationInfo->pData), 1.15f);
 
         ShaderSet b = std::move(a);
-        CORRADE_VERIFY(a.stages().empty());
+        CORRADE_VERIFY(a.stages().isEmpty());
         CORRADE_COMPARE(b.stages().size(), 1);
         CORRADE_COMPARE(b.stages()[0].pName, "main"_s);
         CORRADE_VERIFY(b.stages()[0].pSpecializationInfo);
@@ -138,7 +138,7 @@ void ShaderSetTest::constructMove() {
         CORRADE_COMPARE(*reinterpret_cast<const Float*>(b.stages()[0].pSpecializationInfo->pData), 1.15f);
 
         c = std::move(b);
-        CORRADE_VERIFY(b.stages().empty());
+        CORRADE_VERIFY(b.stages().isEmpty());
     }
 
     /* Doing this in outer scope to verify that the internal state pointer got
@@ -170,7 +170,7 @@ void ShaderSetTest::addShader() {
 void ShaderSetTest::addShaderEntrypointCopy() {
     ShaderSet set;
     Containers::StringView entrypoint = "enterHere!"_s;
-    set.addShader(ShaderStage{}, {}, entrypoint.except(1));
+    set.addShader(ShaderStage{}, {}, entrypoint.exceptSuffix(1));
     CORRADE_COMPARE(set.stages().size(), 1);
     CORRADE_VERIFY(set.stages()[0].pName != entrypoint.data());
     CORRADE_COMPARE(set.stages()[0].pName, "enterHere"_s);
@@ -179,7 +179,7 @@ void ShaderSetTest::addShaderEntrypointCopy() {
 void ShaderSetTest::addShaderEntrypointCopyReallocation() {
     ShaderSet set;
     Containers::StringView entrypoint = "enterHere!"_s;
-    set.addShader(ShaderStage{}, {}, entrypoint.except(1));
+    set.addShader(ShaderStage{}, {}, entrypoint.exceptSuffix(1));
     CORRADE_COMPARE(set.stages().size(), 1);
     CORRADE_VERIFY(set.stages()[0].pName != entrypoint.data());
     CORRADE_COMPARE(set.stages()[0].pName, "enterHere"_s);

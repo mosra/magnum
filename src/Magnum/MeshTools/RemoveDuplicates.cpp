@@ -66,7 +66,7 @@ struct ArrayHash {
 std::size_t removeDuplicatesInto(const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
     /* Assuming the second dimension is contiguous so we can calculate the
        hashes easily */
-    CORRADE_ASSERT(data.empty()[0] || data.isContiguous<1>(),
+    CORRADE_ASSERT(data.isEmpty()[0] || data.isContiguous<1>(),
         "MeshTools::removeDuplicatesInto(): second data view dimension is not contiguous", {});
 
     const std::size_t dataSize = data.size()[0];
@@ -106,7 +106,7 @@ std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicates(const Co
 std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<char>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
     /* Assuming the second dimension is contiguous so we can calculate the
        hashes easily */
-    CORRADE_ASSERT(data.empty()[0] || data.isContiguous<1>(),
+    CORRADE_ASSERT(data.isEmpty()[0] || data.isContiguous<1>(),
         "MeshTools::removeDuplicatesInPlaceInto(): second data view dimension is not contiguous", {});
 
     const std::size_t dataSize = data.size()[0];

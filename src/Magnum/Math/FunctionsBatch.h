@@ -63,7 +63,7 @@ empty, returns @cpp false @ce or a @ref BoolVector with no bits set.
 @see @ref isInf(T), @ref Constants::inf()
 */
 template<class T> auto isInf(const Corrade::Containers::StridedArrayView1D<const T>& range) -> decltype(isInf(std::declval<T>())) {
-    if(range.empty()) return {};
+    if(range.isEmpty()) return {};
 
     /* For scalars, this loop exits once any value is infinity. For vectors
        the loop accumulates the bits and exits as soon as all bits are set
@@ -115,7 +115,7 @@ returns @cpp false @ce or a @ref BoolVector with no bits set.
 @see @ref isNan(T), @ref Constants::nan()
 */
 template<class T> inline auto isNan(const Corrade::Containers::StridedArrayView1D<const T>& range) -> decltype(isNan(std::declval<T>())) {
-    if(range.empty()) return {};
+    if(range.isEmpty()) return {};
 
     /* For scalars, this loop exits once any value is infinity. For vectors
        the loop accumulates the bits and exits as soon as all bits are set
@@ -200,7 +200,7 @@ ignored, unless the range is all <em>NaN</em>s.
 @see @ref min(T, T), @ref isNan(const Corrade::Containers::StridedArrayView1D<const T>&)
 */
 template<class T> inline T min(const Corrade::Containers::StridedArrayView1D<const T>& range) {
-    if(range.empty()) return {};
+    if(range.isEmpty()) return {};
 
     std::pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
     for(++iOut.first; iOut.first != range.size(); ++iOut.first)
@@ -245,7 +245,7 @@ ignored, unless the range is all <em>NaN</em>s.
 @see @ref max(T, T), @ref isNan(const Corrade::Containers::StridedArrayView1D<const T>&)
 */
 template<class T> inline T max(const Corrade::Containers::StridedArrayView1D<const T>& range) {
-    if(range.empty()) return {};
+    if(range.isEmpty()) return {};
 
     std::pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
     for(++iOut.first; iOut.first != range.size(); ++iOut.first)
@@ -305,7 +305,7 @@ ignored, unless the range is all <em>NaN</em>s.
     @ref isNan(const Corrade::Containers::StridedArrayView1D<const T>&)
 */
 template<class T> inline std::pair<T, T> minmax(const Corrade::Containers::StridedArrayView1D<const T>& range) {
-    if(range.empty()) return {};
+    if(range.isEmpty()) return {};
 
     std::pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
     T min{iOut.second}, max{iOut.second};

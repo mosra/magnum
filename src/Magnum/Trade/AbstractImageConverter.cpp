@@ -439,7 +439,7 @@ Containers::Array<char> AbstractImageConverter::convertToData(const ImageData3D&
 namespace {
 
 template<UnsignedInt dimensions> bool checkImageValidity(const char* const messagePrefix, const Containers::ArrayView<const BasicImageView<dimensions>> imageLevels) {
-    CORRADE_ASSERT(!imageLevels.empty(),
+    CORRADE_ASSERT(!imageLevels.isEmpty(),
         messagePrefix << "at least one image has to be specified", false);
 
     const PixelFormat format = imageLevels[0].format();
@@ -462,7 +462,7 @@ template<UnsignedInt dimensions> bool checkImageValidity(const char* const messa
 }
 
 template<UnsignedInt dimensions> bool checkImageValidity(const char* const messagePrefix, const Containers::ArrayView<const BasicCompressedImageView<dimensions>> imageLevels) {
-    CORRADE_ASSERT(!imageLevels.empty(),
+    CORRADE_ASSERT(!imageLevels.isEmpty(),
         messagePrefix << "at least one image has to be specified", false);
 
     const CompressedPixelFormat format = imageLevels[0].format();

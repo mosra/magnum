@@ -58,7 +58,7 @@ void TgaImporter::doOpenData(Containers::Array<char>&& data, const DataFlags dat
        can't do the full import here because then doImage2D() would need to
        copy the imported data instead anyway. This way it'll also work nicely
        with a future openMemory(). */
-    if(data.empty()) {
+    if(data.isEmpty()) {
         Error{} << "Trade::TgaImporter::openData(): the file is empty";
         return;
     }
@@ -134,7 +134,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
 
     /* Copy data directly if not RLE */
     Containers::Array<char> data{outputSize};
-    Containers::ArrayView<const char> srcPixels = _in.suffix(sizeof(Implementation::TgaHeader));
+    Containers::ArrayView<const char> srcPixels = _in.exceptPrefix(sizeof(Implementation::TgaHeader));
     if(!rle) {
         /* Files that are larger are allowed in this case (but not for RLE) */
         if(srcPixels.size() < outputSize) {
@@ -147,7 +147,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
     /* Otherwise decode */
     } else {
         Containers::ArrayView<char> dstPixels = data;
-        while(!srcPixels.empty()) {
+        while(!srcPixels.isEmpty()) {
             /* Reference: http://www.paulbourke.net/dataformats/tga/ */
 
             /* 8-bit RLE header. First bit denotes the operation, last 7 bits
@@ -181,8 +181,8 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
             Utility::copy(src, dst);
 
             /* Update views for the next round */
-            srcPixels = srcPixels.suffix(1 + dataSize);
-            dstPixels = dstPixels.suffix(count*pixelSize);
+            srcPixels = srcPixels.exceptPrefix(1 + dataSize);
+            dstPixels = dstPixels.exceptPrefix(count*pixelSize);
         }
     }
 

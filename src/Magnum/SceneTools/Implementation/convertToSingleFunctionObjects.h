@@ -179,8 +179,8 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
     }
 
     /* List new objects at the end of the extended parent field */
-    const Containers::StridedArrayView1D<UnsignedInt> newParentMapping = outParentMapping.suffix(scene.fieldSize(parentFieldId));
-    const Containers::StridedArrayView1D<Int> newParents = outParents.suffix(scene.fieldSize(parentFieldId));
+    const Containers::StridedArrayView1D<UnsignedInt> newParentMapping = outParentMapping.exceptPrefix(scene.fieldSize(parentFieldId));
+    const Containers::StridedArrayView1D<Int> newParents = outParents.exceptPrefix(scene.fieldSize(parentFieldId));
     for(std::size_t i = 0; i != newParentMapping.size(); ++i) {
         newParentMapping[i] = newObjectOffset + i;
         newParents[i] = -1;
@@ -221,8 +221,8 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
 
                         /* Views to put the mapping to and copy the data to */
                         const std::size_t newFieldToCopyOffset = scene.fieldSize(*fieldToCopyId);
-                        const Containers::StridedArrayView1D<UnsignedInt> newFieldToCopyMapping = out.mutableMapping<UnsignedInt>(*fieldToCopyId).suffix(newFieldToCopyOffset);
-                        const Containers::StridedArrayView2D<char> newFieldToCopy = out.mutableField(*fieldToCopyId).suffix(newFieldToCopyOffset);
+                        const Containers::StridedArrayView1D<UnsignedInt> newFieldToCopyMapping = out.mutableMapping<UnsignedInt>(*fieldToCopyId).exceptPrefix(newFieldToCopyOffset);
+                        const Containers::StridedArrayView2D<char> newFieldToCopy = out.mutableField(*fieldToCopyId).exceptPrefix(newFieldToCopyOffset);
 
                         /* As long as there are entries attached to the
                            original objects, copy them */

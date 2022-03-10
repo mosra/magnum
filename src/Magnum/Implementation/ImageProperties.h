@@ -70,7 +70,7 @@ template<UnsignedInt dimensions, class T, class Image, class Data> Containers::S
 
     static_assert(sizeof(decltype(image.data().front())) == 1,
         "pointer arithmetic expects image data type to have 1 byte");
-    return {data.suffix(properties.first[dimensions - 1]), data + properties.first.sum(), size, stride};
+    return {data.exceptPrefix(properties.first[dimensions - 1]), data + properties.first.sum(), size, stride};
 }
 
 }}

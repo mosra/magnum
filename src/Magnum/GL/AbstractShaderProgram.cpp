@@ -471,7 +471,7 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
 #endif
 
 AbstractShaderProgram& AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
-    if(meshes.empty()) return *this;
+    if(meshes.isEmpty()) return *this;
 
     use();
 

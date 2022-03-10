@@ -151,13 +151,13 @@ void ContextTest::configurationConstruct() {
        non-null-terminated which blocks the compiler from combining them
        together. */
     #ifndef MAGNUM_TARGET_GLES
-    const Containers::StringView a = "no-layout-qualifiers-on-old-glsl!"_s.except(1);
-    const Containers::StringView b = "nv-compressed-block-size-in-bits!"_s.except(1);
-    const Containers::StringView c = "nv-cubemap-inconsistent-compressed-image-size!"_s.except(1);
+    const Containers::StringView a = "no-layout-qualifiers-on-old-glsl!"_s.exceptSuffix(1);
+    const Containers::StringView b = "nv-compressed-block-size-in-bits!"_s.exceptSuffix(1);
+    const Containers::StringView c = "nv-cubemap-inconsistent-compressed-image-size!"_s.exceptSuffix(1);
     #elif !defined(MAGNUM_TARGET_WEBGL)
-    const Containers::StringView a = "swiftshader-no-empty-egl-context-flags!"_s.except(1);
-    const Containers::StringView b = "swiftshader-egl-context-needs-pbuffer!"_s.except(1);
-    const Containers::StringView c = "angle-chatty-shader-compiler!"_s.except(1);
+    const Containers::StringView a = "swiftshader-no-empty-egl-context-flags!"_s.exceptSuffix(1);
+    const Containers::StringView b = "swiftshader-egl-context-needs-pbuffer!"_s.exceptSuffix(1);
+    const Containers::StringView c = "angle-chatty-shader-compiler!"_s.exceptSuffix(1);
     #else
     /* No general WebGL workarounds to test */
     #endif
@@ -226,7 +226,7 @@ void ContextTest::configurationConstructUnknownWorkaround() {
     std::ostringstream out;
     Warning redirectWarning{&out};
     configuration.addDisabledWorkarounds({"all-drivers-are-shit"});
-    CORRADE_VERIFY(configuration.disabledWorkarounds().empty());
+    CORRADE_VERIFY(configuration.disabledWorkarounds().isEmpty());
     CORRADE_COMPARE(out.str(), "GL::Context::Configuration::addDisabledWorkarounds(): unknown workaround all-drivers-are-shit\n");
 }
 
@@ -299,8 +299,8 @@ void ContextTest::configurationConstructMove() {
 
     Context::Configuration b = std::move(a);
     CORRADE_COMPARE(UnsignedLong(b.flags()), UnsignedLong(Context::Configuration::Flag::VerboseLog));
-    CORRADE_VERIFY(a.disabledWorkarounds().empty());
-    CORRADE_VERIFY(a.disabledExtensions().empty());
+    CORRADE_VERIFY(a.disabledWorkarounds().isEmpty());
+    CORRADE_VERIFY(a.disabledExtensions().isEmpty());
     #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_COMPARE_AS(b.disabledWorkarounds(),
         Containers::arrayView({workaround}),

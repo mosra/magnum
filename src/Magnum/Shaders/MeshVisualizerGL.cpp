@@ -424,8 +424,8 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags
            the shader code */
         .addSource((flags & Flag::NoGeometryShader) || !(flags & Flag::Wireframe) ?
             "#define NO_GEOMETRY_SHADER\n" : "")
-        .addSource(rs.get("generic.glsl"))
-        .addSource(rs.get("MeshVisualizer.vert"));
+        .addSource(rs.getString("generic.glsl"))
+        .addSource(rs.getString("MeshVisualizer.vert"));
     frag
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
@@ -436,8 +436,8 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags
     if(flags >= Flag::UniformBuffers)
         frag.addSource("#define TWO_DIMENSIONS\n");
     #endif
-    frag.addSource(rs.get("generic.glsl"))
-        .addSource(rs.get("MeshVisualizer.frag"));
+    frag.addSource(rs.getString("generic.glsl"))
+        .addSource(rs.getString("MeshVisualizer.frag"));
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     Containers::Optional<GL::Shader> geom;
@@ -466,7 +466,7 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags
             geom->addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
         }
         #endif
-        geom->addSource(rs.get("MeshVisualizer.geom"));
+        geom->addSource(rs.getString("MeshVisualizer.geom"));
     }
     #else
     static_cast<void>(version);
@@ -745,8 +745,8 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
         .addSource(flags & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n" : "")
         #endif
         ;
-    vert.addSource(rs.get("generic.glsl"))
-        .addSource(rs.get("MeshVisualizer.vert"));
+    vert.addSource(rs.getString("generic.glsl"))
+        .addSource(rs.getString("MeshVisualizer.vert"));
     frag
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
@@ -764,8 +764,8 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
     if(flags >= Flag::UniformBuffers)
         frag.addSource("#define THREE_DIMENSIONS\n");
     #endif
-    frag.addSource(rs.get("generic.glsl"))
-        .addSource(rs.get("MeshVisualizer.frag"));
+    frag.addSource(rs.getString("generic.glsl"))
+        .addSource(rs.getString("MeshVisualizer.frag"));
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     Containers::Optional<GL::Shader> geom;
@@ -805,7 +805,7 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags
             geom->addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
         }
         #endif
-        geom->addSource(rs.get("MeshVisualizer.geom"));
+        geom->addSource(rs.getString("MeshVisualizer.geom"));
     }
     #else
     static_cast<void>(version);
