@@ -100,7 +100,7 @@ class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageCon
         explicit TgaImageConverter();
 
         /** @brief Plugin manager constructor */
-        explicit TgaImageConverter(PluginManager::AbstractManager& manager, const std::string& plugin);
+        explicit TgaImageConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
 
     private:
         ImageConverterFeatures MAGNUM_TGAIMAGECONVERTER_LOCAL doFeatures() const override;

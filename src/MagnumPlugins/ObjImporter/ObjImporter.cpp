@@ -84,7 +84,7 @@ template<std::size_t size> Math::Vector<size, Float> extractFloatData(const std:
 
 ObjImporter::ObjImporter() = default;
 
-ObjImporter::ObjImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
+ObjImporter::ObjImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractImporter{manager, plugin} {}
 
 ObjImporter::~ObjImporter() = default;
 

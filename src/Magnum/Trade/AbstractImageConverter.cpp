@@ -30,6 +30,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once PluginManager is <string>-free */
+#include <Corrade/PluginManager/Manager.hpp>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -43,18 +44,34 @@
 #include "Magnum/Trade/configure.h"
 #endif
 
+namespace Corrade { namespace PluginManager {
+
+/* On non-MinGW Windows the instantiations are already marked with extern
+   template. However Clang-CL doesn't propagate the export from the extern
+   template, it seems. */
+#if !defined(CORRADE_TARGET_WINDOWS) || defined(CORRADE_TARGET_MINGW) || defined(CORRADE_TARGET_CLANG_CL)
+#define MAGNUM_TRADE_EXPORT_HPP MAGNUM_TRADE_EXPORT
+#else
+#define MAGNUM_TRADE_EXPORT_HPP
+#endif
+template class MAGNUM_TRADE_EXPORT_HPP Manager<Magnum::Trade::AbstractImageConverter>;
+
+}}
+
 namespace Magnum { namespace Trade {
 
-std::string AbstractImageConverter::pluginInterface() {
+using namespace Containers::Literals;
+
+Containers::StringView AbstractImageConverter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractImageConverter/0.3.1"
+"cz.mosra.magnum.Trade.AbstractImageConverter/0.3.1"_s
 /* [interface] */
     ;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
-std::vector<std::string> AbstractImageConverter::pluginSearchPaths() {
+Containers::Array<Containers::String> AbstractImageConverter::pluginSearchPaths() {
     const Containers::Optional<Containers::String> libraryLocation = Utility::Path::libraryLocation(&pluginInterface);
     return PluginManager::implicitPluginSearchPaths(
         #ifndef MAGNUM_BUILD_STATIC
@@ -72,7 +89,7 @@ std::vector<std::string> AbstractImageConverter::pluginSearchPaths() {
         #else
         "magnum/"
         #endif
-        "imageconverters");
+        "imageconverters"_s);
 }
 #endif
 
@@ -80,7 +97,7 @@ AbstractImageConverter::AbstractImageConverter() = default;
 
 AbstractImageConverter::AbstractImageConverter(PluginManager::Manager<AbstractImageConverter>& manager): PluginManager::AbstractManagingPlugin<AbstractImageConverter>{manager} {}
 
-AbstractImageConverter::AbstractImageConverter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImageConverter>{manager, plugin} {}
+AbstractImageConverter::AbstractImageConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): PluginManager::AbstractManagingPlugin<AbstractImageConverter>{manager, plugin} {}
 
 void AbstractImageConverter::setFlags(ImageConverterFlags flags) {
     _flags = flags;

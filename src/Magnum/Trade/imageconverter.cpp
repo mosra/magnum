@@ -33,7 +33,6 @@
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
-#include <Corrade/Utility/String.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -456,7 +455,7 @@ key=true; configuration subgroups are delimited with /.)")
         } else {
             Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
             if(!importer) {
-                Debug{} << "Available importer plugins:" << Utility::String::join(importerManager.aliasList(), ", ");
+                Debug{} << "Available importer plugins:" << ", "_s.join(importerManager.aliasList());
                 return 1;
             }
 
@@ -905,7 +904,7 @@ key=true; configuration subgroups are delimited with /.)")
         Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths()[0])};
     Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
     if(!converter) {
-        Debug{} << "Available converter plugins:" << Utility::String::join(converterManager.aliasList(), ", ");
+        Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());
         return 2;
     }
 

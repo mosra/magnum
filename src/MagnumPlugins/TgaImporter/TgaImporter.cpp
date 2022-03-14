@@ -40,7 +40,7 @@ namespace Magnum { namespace Trade {
 
 TgaImporter::TgaImporter() = default;
 
-TgaImporter::TgaImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
+TgaImporter::TgaImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractImporter{manager, plugin} {}
 
 TgaImporter::~TgaImporter() = default;
 

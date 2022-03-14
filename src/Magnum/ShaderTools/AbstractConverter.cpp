@@ -25,11 +25,13 @@
 
 #include "AbstractConverter.h"
 
+#include <string> /** @todo remove once file callbacks are <string>-free */
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once file callbacks are <string>-free */
+#include <Corrade/PluginManager/Manager.hpp>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/FileCallback.h"
@@ -38,18 +40,34 @@
 #include "Magnum/ShaderTools/configure.h"
 #endif
 
+namespace Corrade { namespace PluginManager {
+
+/* On non-MinGW Windows the instantiations are already marked with extern
+   template. However Clang-CL doesn't propagate the export from the extern
+   template, it seems. */
+#if !defined(CORRADE_TARGET_WINDOWS) || defined(CORRADE_TARGET_MINGW) || defined(CORRADE_TARGET_CLANG_CL)
+#define MAGNUM_SHADERTOOLS_EXPORT_HPP MAGNUM_SHADERTOOLS_EXPORT
+#else
+#define MAGNUM_SHADERTOOLS_EXPORT_HPP
+#endif
+template class MAGNUM_SHADERTOOLS_EXPORT_HPP Manager<Magnum::ShaderTools::AbstractConverter>;
+
+}}
+
 namespace Magnum { namespace ShaderTools {
 
-std::string AbstractConverter::pluginInterface() {
+using namespace Containers::Literals;
+
+Containers::StringView AbstractConverter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.ShaderTools.AbstractConverter/0.1"
+"cz.mosra.magnum.ShaderTools.AbstractConverter/0.1"_s
 /* [interface] */
     ;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
-std::vector<std::string> AbstractConverter::pluginSearchPaths() {
+Containers::Array<Containers::String> AbstractConverter::pluginSearchPaths() {
     const Containers::Optional<Containers::String> libraryLocation = Utility::Path::libraryLocation(&pluginInterface);
     return PluginManager::implicitPluginSearchPaths(
         #ifndef MAGNUM_BUILD_STATIC
@@ -67,7 +85,7 @@ std::vector<std::string> AbstractConverter::pluginSearchPaths() {
         #else
         "magnum/"
         #endif
-        "shaderconverters");
+        "shaderconverters"_s);
 }
 #endif
 
@@ -75,7 +93,7 @@ AbstractConverter::AbstractConverter() = default;
 
 AbstractConverter::AbstractConverter(PluginManager::Manager<AbstractConverter>& manager): PluginManager::AbstractManagingPlugin<AbstractConverter>{manager} {}
 
-AbstractConverter::AbstractConverter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractConverter>{manager, plugin} {}
+AbstractConverter::AbstractConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): PluginManager::AbstractManagingPlugin<AbstractConverter>{manager, plugin} {}
 
 ConverterFeatures AbstractConverter::features() const {
     const ConverterFeatures features = doFeatures();

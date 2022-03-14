@@ -28,7 +28,6 @@
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
-#include <Corrade/Utility/String.h>
 
 #include "Magnum/Implementation/converterUtilities.h"
 #include "Magnum/Math/Functions.h"
@@ -365,7 +364,7 @@ see documentation of a particular converter for more information.)")
             args.arrayValue("converter", i) : "AnyShaderConverter";
         Containers::Pointer<ShaderTools::AbstractConverter> converter = converterManager.loadAndInstantiate(converterName);
         if(!converter) {
-            Debug{} << "Available converter plugins:" << Utility::String::join(converterManager.aliasList(), ", ");
+            Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());
             return 7;
         }
 

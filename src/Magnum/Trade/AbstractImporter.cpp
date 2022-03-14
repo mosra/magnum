@@ -29,9 +29,10 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once PluginManager is <string>-free */
+#include <Corrade/Containers/StringStl.h> /** @todo remove once file callbacks are <string>-free */
+#include <Corrade/PluginManager/Manager.hpp>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/FileCallback.h"
@@ -67,18 +68,34 @@
 #include "Magnum/Trade/configure.h"
 #endif
 
+namespace Corrade { namespace PluginManager {
+
+/* On non-MinGW Windows the instantiations are already marked with extern
+   template. However Clang-CL doesn't propagate the export from the extern
+   template, it seems. */
+#if !defined(CORRADE_TARGET_WINDOWS) || defined(CORRADE_TARGET_MINGW) || defined(CORRADE_TARGET_CLANG_CL)
+#define MAGNUM_TRADE_EXPORT_HPP MAGNUM_TRADE_EXPORT
+#else
+#define MAGNUM_TRADE_EXPORT_HPP
+#endif
+template class MAGNUM_TRADE_EXPORT_HPP Manager<Magnum::Trade::AbstractImporter>;
+
+}}
+
 namespace Magnum { namespace Trade {
 
-std::string AbstractImporter::pluginInterface() {
+using namespace Containers::Literals;
+
+Containers::StringView AbstractImporter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractImporter/0.4"
+"cz.mosra.magnum.Trade.AbstractImporter/0.4"_s
 /* [interface] */
     ;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
-std::vector<std::string> AbstractImporter::pluginSearchPaths() {
+Containers::Array<Containers::String> AbstractImporter::pluginSearchPaths() {
     const Containers::Optional<Containers::String> libraryLocation = Utility::Path::libraryLocation(&pluginInterface);
     return PluginManager::implicitPluginSearchPaths(
         #ifndef MAGNUM_BUILD_STATIC
@@ -96,7 +113,7 @@ std::vector<std::string> AbstractImporter::pluginSearchPaths() {
         #else
         "magnum/"
         #endif
-        "importers");
+        "importers"_s);
 }
 #endif
 
@@ -104,7 +121,7 @@ AbstractImporter::AbstractImporter() = default;
 
 AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& manager): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager} {}
 
-AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager, plugin} {}
+AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager, plugin} {}
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /* These twp needed because of the Array<CachedScenes> member */

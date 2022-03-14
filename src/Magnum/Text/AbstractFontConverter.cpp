@@ -30,9 +30,10 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once PluginManager and AbstractFontConverter is <string>-free */
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFontConverter is <string>-free */
+#include <Corrade/PluginManager/Manager.hpp>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once AbstractFontConverter is <string>-free */
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/Unicode.h>
 
@@ -42,7 +43,23 @@
 #include "Magnum/Text/configure.h"
 #endif
 
+namespace Corrade { namespace PluginManager {
+
+/* On non-MinGW Windows the instantiations are already marked with extern
+   template. However Clang-CL doesn't propagate the export from the extern
+   template, it seems. */
+#if !defined(CORRADE_TARGET_WINDOWS) || defined(CORRADE_TARGET_MINGW) || defined(CORRADE_TARGET_CLANG_CL)
+#define MAGNUM_TEXT_EXPORT_HPP MAGNUM_TEXT_EXPORT
+#else
+#define MAGNUM_TEXT_EXPORT_HPP
+#endif
+template class MAGNUM_TEXT_EXPORT_HPP Manager<Magnum::Text::AbstractFontConverter>;
+
+}}
+
 namespace Magnum { namespace Text {
+
+using namespace Containers::Literals;
 
 namespace {
 
@@ -60,16 +77,16 @@ std::u32string uniqueUnicode(const std::string& characters)
 
 }
 
-std::string AbstractFontConverter::pluginInterface() {
+Containers::StringView AbstractFontConverter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Text.AbstractFontConverter/0.2"
+"cz.mosra.magnum.Text.AbstractFontConverter/0.2"_s
 /* [interface] */
     ;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
-std::vector<std::string> AbstractFontConverter::pluginSearchPaths() {
+Containers::Array<Containers::String> AbstractFontConverter::pluginSearchPaths() {
     const Containers::Optional<Containers::String> libraryLocation = Utility::Path::libraryLocation(&pluginInterface);
     return PluginManager::implicitPluginSearchPaths(
         #ifndef MAGNUM_BUILD_STATIC
@@ -93,7 +110,7 @@ std::vector<std::string> AbstractFontConverter::pluginSearchPaths() {
 
 AbstractFontConverter::AbstractFontConverter() = default;
 
-AbstractFontConverter::AbstractFontConverter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractPlugin{manager, plugin} {}
+AbstractFontConverter::AbstractFontConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): PluginManager::AbstractPlugin{manager, plugin} {}
 
 std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConverter::exportFontToData(AbstractFont& font, AbstractGlyphCache& cache, const std::string& filename, const std::string& characters) const {
     CORRADE_ASSERT(features() >= (FontConverterFeature::ExportFont|FontConverterFeature::ConvertData),

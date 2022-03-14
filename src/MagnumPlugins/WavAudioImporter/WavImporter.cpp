@@ -42,7 +42,7 @@ using Implementation::WavHeaderChunk;
 
 WavImporter::WavImporter() = default;
 
-WavImporter::WavImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
+WavImporter::WavImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractImporter{manager, plugin} {}
 
 ImporterFeatures WavImporter::doFeatures() const { return ImporterFeature::OpenData; }
 

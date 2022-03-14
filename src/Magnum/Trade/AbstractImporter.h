@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Trade::AbstractImporter, enum @ref Magnum::Trade::ImporterFeature, enum set @ref Magnum::Trade::ImporterFeatures
  */
 
+#include <string> /** @todo remove once openState() doesn't have a default std::string argument */
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
@@ -447,7 +448,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * @snippet Magnum/Trade/AbstractImporter.cpp interface
          */
-        static std::string pluginInterface();
+        static Containers::StringView pluginInterface();
 
         #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         /**
@@ -463,7 +464,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * Not defined on platforms without
          * @ref CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT "dynamic plugin support".
          */
-        static std::vector<std::string> pluginSearchPaths();
+        static Containers::Array<Containers::String> pluginSearchPaths();
         #endif
 
         /** @brief Default constructor */
@@ -473,7 +474,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         explicit AbstractImporter(PluginManager::Manager<AbstractImporter>& manager);
 
         /** @brief Plugin manager constructor */
-        explicit AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin);
+        /* The plugin name is passed as a const& to make it possible for people
+           to implement plugins without even having to include the StringView
+           header. */
+        explicit AbstractImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
 
         #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(DOXYGEN_GENERATING_OUTPUT)
         /* These twp needed because of the Array<CachedScenes> member
@@ -2535,5 +2539,11 @@ template<class Callback, class T> void AbstractImporter::setFileCallback(Callbac
 #endif
 
 }}
+
+#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
+namespace Corrade { namespace PluginManager {
+    extern template class MAGNUM_TRADE_EXPORT Manager<Magnum::Trade::AbstractImporter>;
+}}
+#endif
 
 #endif

@@ -32,7 +32,6 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
-#include <Corrade/Utility/String.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Implementation/converterUtilities.h"
@@ -199,6 +198,7 @@ magnum-sceneconverter chair.obj --converter MeshOptimizerSceneConverter -c simpl
 }
 
 using namespace Magnum;
+using namespace Containers::Literals;
 
 namespace {
 
@@ -314,7 +314,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
     Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
     if(!importer) {
-        Debug{} << "Available importer plugins:" << Utility::String::join(importerManager.aliasList(), ", ");
+        Debug{} << "Available importer plugins:" << ", "_s.join(importerManager.aliasList());
         return 1;
     }
 
@@ -1112,7 +1112,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             "AnySceneConverter" : args.arrayValue("converter", i);
         Containers::Pointer<Trade::AbstractSceneConverter> converter = converterManager.loadAndInstantiate(converterName);
         if(!converter) {
-            Debug{} << "Available converter plugins:" << Utility::String::join(converterManager.aliasList(), ", ");
+            Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());
             return 2;
         }
 

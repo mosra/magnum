@@ -125,7 +125,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * @snippet Magnum/Audio/AbstractImporter.cpp interface
          */
-        static std::string pluginInterface();
+        static Containers::StringView pluginInterface();
 
         #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         /**
@@ -141,7 +141,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * Not defined on platforms without
          *      @ref CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT "dynamic plugin support".
          */
-        static std::vector<std::string> pluginSearchPaths();
+        static Containers::Array<Containers::String> pluginSearchPaths();
         #endif
 
         /** @brief Default constructor */
@@ -151,7 +151,10 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         explicit AbstractImporter(PluginManager::Manager<AbstractImporter>& manager);
 
         /** @brief Plugin manager constructor */
-        explicit AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin);
+        /* The plugin name is passed as a const& to make it possible for people
+           to implement plugins without even having to include the StringView
+           header. */
+        explicit AbstractImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
 
         /** @brief Features supported by this importer */
         ImporterFeatures features() const { return doFeatures(); }
@@ -231,5 +234,11 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 };
 
 }}
+
+#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
+namespace Corrade { namespace PluginManager {
+    extern template class MAGNUM_AUDIO_EXPORT Manager<Magnum::Audio::AbstractImporter>;
+}}
+#endif
 
 #endif

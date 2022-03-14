@@ -29,28 +29,49 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once PluginManager is <string>-free */
+#include <Corrade/PluginManager/Manager.hpp>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Trade/ArrayAllocator.h"
 #include "Magnum/Trade/MeshData.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* needed by deprecated convertToFile() that takes a std::string */
+#include <Corrade/Containers/StringStl.h>
+#endif
+
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 #include "Magnum/Trade/configure.h"
 #endif
 
+namespace Corrade { namespace PluginManager {
+
+/* On non-MinGW Windows the instantiations are already marked with extern
+   template. However Clang-CL doesn't propagate the export from the extern
+   template, it seems. */
+#if !defined(CORRADE_TARGET_WINDOWS) || defined(CORRADE_TARGET_MINGW) || defined(CORRADE_TARGET_CLANG_CL)
+#define MAGNUM_TRADE_EXPORT_HPP MAGNUM_TRADE_EXPORT
+#else
+#define MAGNUM_TRADE_EXPORT_HPP
+#endif
+template class MAGNUM_TRADE_EXPORT_HPP Manager<Magnum::Trade::AbstractSceneConverter>;
+
+}}
+
 namespace Magnum { namespace Trade {
 
-std::string AbstractSceneConverter::pluginInterface() {
+using namespace Containers::Literals;
+
+Containers::StringView AbstractSceneConverter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractSceneConverter/0.1.1"
+"cz.mosra.magnum.Trade.AbstractSceneConverter/0.1.1"_s
 /* [interface] */
     ;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
-std::vector<std::string> AbstractSceneConverter::pluginSearchPaths() {
+Containers::Array<Containers::String> AbstractSceneConverter::pluginSearchPaths() {
     const Containers::Optional<Containers::String> libraryLocation = Utility::Path::libraryLocation(&pluginInterface);
     return PluginManager::implicitPluginSearchPaths(
         #ifndef MAGNUM_BUILD_STATIC
@@ -68,7 +89,7 @@ std::vector<std::string> AbstractSceneConverter::pluginSearchPaths() {
         #else
         "magnum/"
         #endif
-        "sceneconverters");
+        "sceneconverters"_s);
 }
 #endif
 
@@ -76,7 +97,7 @@ AbstractSceneConverter::AbstractSceneConverter() = default;
 
 AbstractSceneConverter::AbstractSceneConverter(PluginManager::Manager<AbstractSceneConverter>& manager): PluginManager::AbstractManagingPlugin<AbstractSceneConverter>{manager} {}
 
-AbstractSceneConverter::AbstractSceneConverter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractSceneConverter>{manager, plugin} {}
+AbstractSceneConverter::AbstractSceneConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): PluginManager::AbstractManagingPlugin<AbstractSceneConverter>{manager, plugin} {}
 
 SceneConverterFeatures AbstractSceneConverter::features() const {
     const SceneConverterFeatures features = doFeatures();

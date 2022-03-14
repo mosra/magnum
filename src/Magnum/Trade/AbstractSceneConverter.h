@@ -272,7 +272,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * @snippet Magnum/Trade/AbstractSceneConverter.cpp interface
          */
-        static std::string pluginInterface();
+        static Containers::StringView pluginInterface();
 
         #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         /**
@@ -288,7 +288,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * Not defined on platforms without
          * @ref CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT "dynamic plugin support".
          */
-        static std::vector<std::string> pluginSearchPaths();
+        static Containers::Array<Containers::String> pluginSearchPaths();
         #endif
 
         /** @brief Default constructor */
@@ -298,7 +298,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         explicit AbstractSceneConverter(PluginManager::Manager<AbstractSceneConverter>& manager);
 
         /** @brief Plugin manager constructor */
-        explicit AbstractSceneConverter(PluginManager::AbstractManager& manager, const std::string& plugin);
+        /* The plugin name is passed as a const& to make it possible for people
+           to implement plugins without even having to include the StringView
+           header. */
+        explicit AbstractSceneConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
 
         /** @brief Features supported by this converter */
         SceneConverterFeatures features() const;
@@ -446,5 +449,11 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
 };
 
 }}
+
+#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
+namespace Corrade { namespace PluginManager {
+    extern template class MAGNUM_TRADE_EXPORT Manager<Magnum::Trade::AbstractSceneConverter>;
+}}
+#endif
 
 #endif

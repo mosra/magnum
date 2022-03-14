@@ -465,7 +465,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * @snippet Magnum/ShaderTools/AbstractConverter.cpp interface
          */
-        static std::string pluginInterface();
+        static Containers::StringView pluginInterface();
 
         #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         /**
@@ -481,7 +481,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * Not defined on platforms without
          * @ref CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT "dynamic plugin support".
          */
-        static std::vector<std::string> pluginSearchPaths();
+        static Containers::Array<Containers::String> pluginSearchPaths();
         #endif
 
         /** @brief Default constructor */
@@ -491,7 +491,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
         explicit AbstractConverter(PluginManager::Manager<AbstractConverter>& manager);
 
         /** @brief Plugin manager constructor */
-        explicit AbstractConverter(PluginManager::AbstractManager& manager, const std::string& plugin);
+        /* The plugin name is passed as a const& to make it possible for people
+           to implement plugins without even having to include the StringView
+           header. */
+        explicit AbstractConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
 
         /** @brief Features supported by this converter */
         ConverterFeatures features() const;
@@ -1144,5 +1147,11 @@ template<class Callback, class T> void AbstractConverter::setInputFileCallback(C
 #endif
 
 }}
+
+#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
+namespace Corrade { namespace PluginManager {
+    extern template class MAGNUM_SHADERTOOLS_EXPORT Manager<Magnum::ShaderTools::AbstractConverter>;
+}}
+#endif
 
 #endif

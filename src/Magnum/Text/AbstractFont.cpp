@@ -29,8 +29,9 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once PluginManager is <string>-free */
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once file callbacks are <string>-free */
+#include <Corrade/PluginManager/Manager.hpp>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once AbstractFont is <string>-free */
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/Unicode.h>
 
@@ -42,18 +43,34 @@
 #include "Magnum/Text/configure.h"
 #endif
 
+namespace Corrade { namespace PluginManager {
+
+/* On non-MinGW Windows the instantiations are already marked with extern
+   template. However Clang-CL doesn't propagate the export from the extern
+   template, it seems. */
+#if !defined(CORRADE_TARGET_WINDOWS) || defined(CORRADE_TARGET_MINGW) || defined(CORRADE_TARGET_CLANG_CL)
+#define MAGNUM_TEXT_EXPORT_HPP MAGNUM_TEXT_EXPORT
+#else
+#define MAGNUM_TEXT_EXPORT_HPP
+#endif
+template class MAGNUM_TEXT_EXPORT_HPP Manager<Magnum::Text::AbstractFont>;
+
+}}
+
 namespace Magnum { namespace Text {
 
-std::string AbstractFont::pluginInterface() {
+using namespace Containers::Literals;
+
+Containers::StringView AbstractFont::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Text.AbstractFont/0.3"
+"cz.mosra.magnum.Text.AbstractFont/0.3"_s
 /* [interface] */
     ;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
-std::vector<std::string> AbstractFont::pluginSearchPaths() {
+Containers::Array<Containers::String> AbstractFont::pluginSearchPaths() {
     const Containers::Optional<Containers::String> libraryLocation = Utility::Path::libraryLocation(&pluginInterface);
     return PluginManager::implicitPluginSearchPaths(
         #ifndef MAGNUM_BUILD_STATIC
@@ -71,13 +88,13 @@ std::vector<std::string> AbstractFont::pluginSearchPaths() {
         #else
         "magnum/"
         #endif
-        "fonts");
+        "fonts"_s);
 }
 #endif
 
 AbstractFont::AbstractFont() = default;
 
-AbstractFont::AbstractFont(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractPlugin{manager, plugin} {}
+AbstractFont::AbstractFont(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractPlugin{manager, plugin} {}
 
 void AbstractFont::setFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* const userData) {
     CORRADE_ASSERT(!isOpened(), "Text::AbstractFont::setFileCallback(): can't be set while a font is opened", );
