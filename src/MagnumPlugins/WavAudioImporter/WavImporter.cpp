@@ -26,6 +26,7 @@
 
 #include "WavImporter.h"
 
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/EndiannessBatch.h>
@@ -221,9 +222,8 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     _frequency = formatChunk->sampleRate;
 
     /* Copy the data */
-    const char* dataChunkPtr = reinterpret_cast<const char*>(dataChunk + 1);
-    _data = Containers::Array<char>(dataChunkSize);
-    std::copy(dataChunkPtr, dataChunkPtr+dataChunkSize, _data->begin());
+    _data = Containers::Array<char>{NoInit, dataChunkSize};
+    Utility::copy(Containers::arrayView(reinterpret_cast<const char*>(dataChunk + 1), dataChunkSize), *_data);
 
     /* Fix the data endianness */
     if(hasBigEndianData != Utility::Endianness::isBigEndian()) {
@@ -244,8 +244,8 @@ BufferFormat WavImporter::doFormat() const { return _format; }
 UnsignedInt WavImporter::doFrequency() const { return _frequency; }
 
 Containers::Array<char> WavImporter::doData() {
-    Containers::Array<char> copy(_data->size());
-    std::copy(_data->begin(), _data->end(), copy.begin());
+    Containers::Array<char> copy{NoInit, _data->size()};
+    Utility::copy(*_data, copy);
     return copy;
 }
 
