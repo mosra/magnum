@@ -116,12 +116,12 @@ class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
 
         MAGNUM_OBJIMPORTER_LOCAL bool doIsOpened() const override;
         MAGNUM_OBJIMPORTER_LOCAL void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override;
-        MAGNUM_OBJIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;
+        MAGNUM_OBJIMPORTER_LOCAL void doOpenFile(Containers::StringView filename) override;
         MAGNUM_OBJIMPORTER_LOCAL void doClose() override;
 
         MAGNUM_OBJIMPORTER_LOCAL UnsignedInt doMeshCount() const override;
-        MAGNUM_OBJIMPORTER_LOCAL Int doMeshForName(const std::string& name) override;
-        MAGNUM_OBJIMPORTER_LOCAL std::string doMeshName(UnsignedInt id) override;
+        MAGNUM_OBJIMPORTER_LOCAL Int doMeshForName(Containers::StringView name) override;
+        MAGNUM_OBJIMPORTER_LOCAL Containers::String doMeshName(UnsignedInt id) override;
         MAGNUM_OBJIMPORTER_LOCAL Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override;
 
         MAGNUM_OBJIMPORTER_LOCAL void parseMeshNames();

@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::Trade::AbstractImporter, enum @ref Magnum::Trade::ImporterFeature, enum set @ref Magnum::Trade::ImporterFeatures
  */
 
-#include <string> /** @todo remove once openState() doesn't have a default std::string argument */
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
@@ -38,6 +37,9 @@
 #include "Magnum/Trade/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+/* For APIs that used to take or return a std::string */
+#include <Corrade/Containers/StringStl.h>
+
 #include "Magnum/FileCallback.h"
 #endif
 
@@ -286,33 +288,34 @@ the name to an IDs first. In that case the function will return an empty
 name doesn't exist.
 
 -   Animation names can be retrieved using @ref animationName() and mapped to
-    an ID using @ref animationForName(), imported with @ref animation(const std::string&)
+    an ID using @ref animationForName(), imported with
+    @ref animation(Containers::StringView)
 -   Camera names using @ref cameraName() & @ref cameraForName(), imported with
-    @ref camera(const std::string&)
+    @ref camera(Containers::StringView)
 -   Image names using @ref image1DName() / @ref image2DName() /
     @ref image3DName() & @ref image1DForName() / @ref image2DForName() /
     @ref image3DForName(), imported with
-    @ref image1D(const std::string&, UnsignedInt) /
-    @ref image2D(const std::string&, UnsignedInt) /
-    @ref image3D(const std::string&, UnsignedInt)
+    @ref image1D(Containers::StringView, UnsignedInt) /
+    @ref image2D(Containers::StringView, UnsignedInt) /
+    @ref image3D(Containers::StringView, UnsignedInt)
 -   Light names using @ref lightName() & @ref lightForName(), imported with
-    @ref light(const std::string&)
+    @ref light(Containers::StringView)
 -   Material names using @ref materialName() & @ref materialForName(), imported
-    with @ref material(const std::string&)
+    with @ref material(Containers::StringView)
 -   Mesh names using @ref meshName() & @ref meshForName(), imported with
-    @ref mesh(const std::string&, UnsignedInt). Meshes themselves can have
+    @ref mesh(Containers::StringView, UnsignedInt). Meshes themselves can have
     custom attributes, for which the name mapping can be retrieved using
     @ref meshAttributeName() and @ref meshAttributeForName().
 -   Scene and object names using @ref sceneName() / @ref objectName() &
     @ref sceneForName() / @ref objectForName(), imported with
-    @ref scene(const std::string&). Scenes themselves can have custom fields,
-    for which the name mapping can be retrieved using @ref sceneFieldName() and
-    @ref sceneFieldForName().
+    @ref scene(Containers::StringView). Scenes themselves can have custom
+    fields, for which the name mapping can be retrieved using
+    @ref sceneFieldName() and @ref sceneFieldForName().
 -   Skin names using @ref skin2DName() / @ref skin3DName() &
     @ref skin2DForName() / @ref skin3DForName(), imported with
-    @ref skin2D(const std::string&) / @ref skin3D(const std::string&)
+    @ref skin2D(Containers::StringView) / @ref skin3D(Containers::StringView)
 -   Texture names using @ref textureName() & @ref textureForName(), imported
-    with @ref texture(const std::string&)
+    with @ref texture(Containers::StringView)
 
 @subsection Trade-AbstractImporter-usage-state Internal importer state
 
@@ -352,12 +355,13 @@ The `*Data` instances returned from various functions *by design* have no
 dependency on the importer instance and neither on the dynamic plugin module.
 In other words, you don't need to keep the importer instance (or the plugin
 manager instance) around in order to have the `*Data` instances valid.
-Moreover, all @relativeref{Corrade,Containers::Array} instances returned
-through @ref ImageData, @ref AnimationData, @ref MaterialData, @ref MeshData
-and @ref SkinData are only allowed to have default deleters (or be non-owning
-instances created from @relativeref{Corrade,Containers::ArrayView}) --- this is
-to avoid potential dangling function pointer calls when destructing such
-instances after the plugin module has been unloaded.
+Moreover, all returned @ref Corrade::Containers::String instances and all @relativeref{Corrade,Containers::Array} instances returned through
+@ref SceneData, @ref ImageData, @ref AnimationData, @ref MaterialData,
+@ref MeshData and @ref SkinData are only allowed to have default deleters (or
+be non-owning instances created from
+@relativeref{Corrade,Containers::ArrayView}) --- this is to avoid potential
+dangling function pointer calls when destructing such instances after the
+plugin module has been unloaded.
 
 The only exception are various `importerState()` functions
 @ref Trade-AbstractImporter-usage-state "described above", but in that case the
@@ -671,7 +675,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @see @ref features(), @ref openData(), @ref openMemory(),
          *      @ref openFile()
          */
-        bool openState(const void* state, const std::string& filePath = {});
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        bool openState(const void* state, Containers::StringView filePath = {});
+        #else
+        bool openState(const void* state, Containers::StringView filePath);
+        bool openState(const void* state);
+        #endif
 
         /**
          * @brief Open a file
@@ -686,7 +695,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @see @ref features(), @ref openData(), @ref openMemory(),
          *      @ref openState()
          */
-        bool openFile(const std::string& filename);
+        bool openFile(Containers::StringView filename);
 
         /**
          * @brief Close currently opened file
@@ -734,9 +743,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *      no scene for given name exists
          *
          * Expects that a file is opened.
-         * @see @ref sceneName(), @ref scene(const std::string&)
+         * @see @ref sceneName(), @ref scene(Containers::StringView)
          */
-        Int sceneForName(const std::string& name);
+        Int sceneForName(Containers::StringView name);
 
         /**
          * @brief Object ID for given name
@@ -746,7 +755,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * object can be present in multiple scenes at the same time.
          * @see @ref objectName()
          */
-        Long objectForName(const std::string& name);
+        Long objectForName(Containers::StringView name);
 
         /**
          * @brief Scene name
@@ -756,7 +765,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * names, returns an empty string. Expects that a file is opened.
          * @see @ref sceneForName()
          */
-        std::string sceneName(UnsignedInt id);
+        Containers::String sceneName(UnsignedInt id);
 
         /**
          * @brief Object name
@@ -768,7 +777,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * Expects that a file is opened.
          * @see @ref objectForName()
          */
-        std::string objectName(UnsignedLong id);
+        Containers::String objectName(UnsignedLong id);
 
         /**
          * @brief Scene
@@ -776,7 +785,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given scene or @ref Containers::NullOpt if import failed.
          * Expects that a file is opened.
-         * @see @ref scene(const std::string&)
+         * @see @ref scene(Containers::StringView)
          */
         Containers::Optional<SceneData> scene(UnsignedInt id);
 
@@ -790,7 +799,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * otherwise propagates the result from @ref scene(UnsignedInt).
          * Expects that a file is opened.
          */
-        Containers::Optional<SceneData> scene(const std::string& name);
+        Containers::Optional<SceneData> scene(Containers::StringView name);
 
         /**
          * @brief Scene field for given name
@@ -803,7 +812,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * documentation of a particular importer for more information.
          * @see @ref isSceneFieldCustom()
          */
-        SceneField sceneFieldForName(const std::string& name);
+        SceneField sceneFieldForName(Containers::StringView name);
 
         /**
          * @brief String name for given custom scene field
@@ -818,7 +827,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * particular importer for more information.
          * @see @ref isSceneFieldCustom()
          */
-        std::string sceneFieldName(SceneField name);
+        Containers::String sceneFieldName(SceneField name);
 
         /**
          * @brief Animation count
@@ -833,9 +842,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *      @cpp -1 @ce if no animation for given name exists
          *
          * Expects that a file is opened.
-         * @see @ref animationName(), @ref animation(const std::string&)
+         * @see @ref animationName(), @ref animation(Containers::StringView)
          */
-        Int animationForName(const std::string& name);
+        Int animationForName(Containers::StringView name);
 
         /**
          * @brief Animation name
@@ -845,7 +854,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * importer doesn't support animation names, returns an empty string.
          * @see @ref animationForName()
          */
-        std::string animationName(UnsignedInt id);
+        Containers::String animationName(UnsignedInt id);
 
         /**
          * @brief Animation
@@ -853,7 +862,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given animation or @ref Containers::NullOpt if importing
          * failed. Expects that a file is opened.
-         * @see @ref animation(const std::string&)
+         * @see @ref animation(Containers::StringView)
          */
         Containers::Optional<AnimationData> animation(UnsignedInt id);
 
@@ -867,7 +876,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref Containers::NullOpt, otherwise propagates the result from
          * @ref animation(UnsignedInt). Expects that a file is opened.
          */
-        Containers::Optional<AnimationData> animation(const std::string& name);
+        Containers::Optional<AnimationData> animation(Containers::StringView name);
 
         /**
          * @brief Light count
@@ -882,9 +891,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *      no light for given name exists
          *
          * Expects that a file is opened.
-         * @see @ref lightName(), @ref light(const std::string&)
+         * @see @ref lightName(), @ref light(Containers::StringView)
          */
-        Int lightForName(const std::string& name);
+        Int lightForName(Containers::StringView name);
 
         /**
          * @brief Light name
@@ -894,7 +903,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * importer doesn't support light names, returns an empty string.
          * @see @ref lightForName()
          */
-        std::string lightName(UnsignedInt id);
+        Containers::String lightName(UnsignedInt id);
 
         /**
          * @brief Light
@@ -902,7 +911,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given light or @ref Containers::NullOpt if importing failed.
          * Expects that a file is opened.
-         * @see @ref light(const std::string&)
+         * @see @ref light(Containers::StringView)
          */
         Containers::Optional<LightData> light(UnsignedInt id);
 
@@ -916,7 +925,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * otherwise propagates the result from @ref light(UnsignedInt).
          * Expects that a file is opened.
          */
-        Containers::Optional<LightData> light(const std::string& name);
+        Containers::Optional<LightData> light(Containers::StringView name);
 
         /**
          * @brief Camera count
@@ -931,9 +940,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *      if no camera for given name exists
          *
          * Expects that a file is opened.
-         * @see @ref cameraName(), @ref camera(const std::string&)
+         * @see @ref cameraName(), @ref camera(Containers::StringView)
          */
-        Int cameraForName(const std::string& name);
+        Int cameraForName(Containers::StringView name);
 
         /**
          * @brief Camera name
@@ -943,7 +952,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * importer doesn't support camera names, returns an empty string.
          * @see @ref cameraForName()
          */
-        std::string cameraName(UnsignedInt id);
+        Containers::String cameraName(UnsignedInt id);
 
         /**
          * @brief Camera
@@ -951,7 +960,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given camera or @ref Containers::NullOpt if importing
          * failed. Expects that a file is opened.
-         * @see @ref camera(const std::string&)
+         * @see @ref camera(Containers::StringView)
          */
         Containers::Optional<CameraData> camera(UnsignedInt id);
 
@@ -965,7 +974,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref Containers::NullOpt, otherwise propagates the result from
          * @ref camera(UnsignedInt). Expects that a file is opened.
          */
-        Containers::Optional<CameraData> camera(const std::string& name);
+        Containers::Optional<CameraData> camera(Containers::StringView name);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -1114,9 +1123,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * Expects that a file is opened.
-         * @see @ref skin2DName(), @ref skin2D(const std::string&)
+         * @see @ref skin2DName(), @ref skin2D(Containers::StringView)
          */
-        Int skin2DForName(const std::string& name);
+        Int skin2DForName(Containers::StringView name);
 
         /**
          * @brief Two-dimensional skin name
@@ -1127,7 +1136,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * returns an empty string. Expects that a file is opened.
          * @see @ref skin2DForName()
          */
-        std::string skin2DName(UnsignedInt id);
+        Containers::String skin2DName(UnsignedInt id);
 
         /**
          * @brief Two-dimensional skin
@@ -1136,7 +1145,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given skin or @ref Containers::NullOpt if importing failed.
          * Expects that a file is opened.
-         * @see @ref skin2D(const std::string&)
+         * @see @ref skin2D(Containers::StringView)
          */
         Containers::Optional<SkinData2D> skin2D(UnsignedInt id);
 
@@ -1150,7 +1159,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref Containers::NullOpt, otherwise propagates the result from
          * @ref skin2D(UnsignedInt). Expects that a file is opened.
          */
-        Containers::Optional<SkinData2D> skin2D(const std::string& name);
+        Containers::Optional<SkinData2D> skin2D(Containers::StringView name);
 
         /**
          * @brief Three-dimensional skin count
@@ -1167,9 +1176,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * Expects that a file is opened.
-         * @see @ref skin3DName(), @ref skin3D(const std::string&)
+         * @see @ref skin3DName(), @ref skin3D(Containers::StringView)
          */
-        Int skin3DForName(const std::string& name);
+        Int skin3DForName(Containers::StringView name);
 
         /**
          * @brief Three-dimensional skin name
@@ -1180,7 +1189,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * returns an empty string. Expects that a file is opened.
          * @see @ref skin3DForName()
          */
-        std::string skin3DName(UnsignedInt id);
+        Containers::String skin3DName(UnsignedInt id);
 
         /**
          * @brief Three-dimensional skin
@@ -1189,7 +1198,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given skin or @ref Containers::NullOpt if importing failed.
          * Expects that a file is opened.
-         * @see @ref skin3D(const std::string&)
+         * @see @ref skin3D(Containers::StringView)
          */
         Containers::Optional<SkinData3D> skin3D(UnsignedInt id);
 
@@ -1203,7 +1212,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref Containers::NullOpt, otherwise propagates the result from
          * @ref skin3D(UnsignedInt). Expects that a file is opened.
          */
-        Containers::Optional<SkinData3D> skin3D(const std::string& name);
+        Containers::Optional<SkinData3D> skin3D(Containers::StringView name);
 
         /**
          * @brief Mesh count
@@ -1231,9 +1240,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since{2020,06}
          *
          * Expects that a file is opened.
-         * @see @ref meshName(), @ref mesh(const std::string&, UnsignedInt)
+         * @see @ref meshName(), @ref mesh(Containers::StringView, UnsignedInt)
          */
-        Int meshForName(const std::string& name);
+        Int meshForName(Containers::StringView name);
 
         /**
          * @brief Mesh name
@@ -1244,7 +1253,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * returns an empty string. Expects that a file is opened.
          * @see @ref meshForName()
          */
-        std::string meshName(UnsignedInt id);
+        Containers::String meshName(UnsignedInt id);
 
         /**
          * @brief Mesh
@@ -1257,7 +1266,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * largely left as importer-specific --- for example allowing access to
          * per-instance, per-face or per-edge data. Expects that a file is
          * opened.
-         * @see @ref mesh(const std::string&, UnsignedInt),
+         * @see @ref mesh(Containers::StringView, UnsignedInt),
          *      @ref MeshPrimitive::Instances, @ref MeshPrimitive::Faces,
          *      @ref MeshPrimitive::Edges
          */
@@ -1273,7 +1282,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref Containers::NullOpt, otherwise propagates the result from
          * @ref mesh(UnsignedInt, UnsignedInt). Expects that a file is opened.
          */
-        Containers::Optional<MeshData> mesh(const std::string& name, UnsignedInt level = 0);
+        Containers::Optional<MeshData> mesh(Containers::StringView name, UnsignedInt level = 0);
 
         /**
          * @brief Mesh attribute for given name
@@ -1286,7 +1295,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * see documentation of a particular importer for more information.
          * @see @ref isMeshAttributeCustom()
          */
-        MeshAttribute meshAttributeForName(const std::string& name);
+        MeshAttribute meshAttributeForName(Containers::StringView name);
 
         /**
          * @brief String name for given custom mesh attribute
@@ -1301,7 +1310,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * particular importer for more information.
          * @see @ref isMeshAttributeCustom()
          */
-        std::string meshAttributeName(MeshAttribute name);
+        Containers::String meshAttributeName(MeshAttribute name);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -1400,7 +1409,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * Expects that a file is opened.
          * @see @ref materialName()
          */
-        Int materialForName(const std::string& name);
+        Int materialForName(Containers::StringView name);
 
         /**
          * @brief Material name
@@ -1408,9 +1417,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * If the material has no name or the importer doesn't support material
          * names, returns an empty string. Expects that a file is opened.
-         * @see @ref materialForName(), @ref material(const std::string&)
+         * @see @ref materialForName(), @ref material(Containers::StringView)
          */
-        std::string materialName(UnsignedInt id);
+        Containers::String materialName(UnsignedInt id);
 
         /**
          * @brief Material
@@ -1418,7 +1427,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given material or @ref Containers::NullOpt if importing
          * failed. Expects that a file is opened.
-         * @see @ref material(const std::string&)
+         * @see @ref material(Containers::StringView)
          */
         #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
         Containers::Optional<MaterialData>
@@ -1442,7 +1451,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         #else
         Implementation::OptionalButAlsoPointer<MaterialData>
         #endif
-        material(const std::string& name);
+        material(Containers::StringView name);
 
         /**
          * @brief Texture count
@@ -1457,9 +1466,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *      @cpp -1 @ce if no texture for given name exists
          *
          * Expects that a file is opened.
-         * @see @ref textureName(), @ref texture(const std::string&)
+         * @see @ref textureName(), @ref texture(Containers::StringView)
          */
-        Int textureForName(const std::string& name);
+        Int textureForName(Containers::StringView name);
 
         /**
          * @brief Texture name
@@ -1469,7 +1478,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * names, returns an empty string. Expects that a file is opened.
          * @see @ref textureForName()
          */
-        std::string textureName(UnsignedInt id);
+        Containers::String textureName(UnsignedInt id);
 
         /**
          * @brief Texture
@@ -1477,7 +1486,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given texture or @ref Containers::NullOpt if importing
          * failed. Expects that a file is opened.
-         * @see @ref texture(const std::string&)
+         * @see @ref texture(Containers::StringView)
          */
         Containers::Optional<TextureData> texture(UnsignedInt id);
 
@@ -1491,7 +1500,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref Containers::NullOpt, otherwise propagates the result from
          * @ref texture(UnsignedInt). Expects that a file is opened.
          */
-        Containers::Optional<TextureData> texture(const std::string& name);
+        Containers::Optional<TextureData> texture(Containers::StringView name);
 
         /**
          * @brief One-dimensional image count
@@ -1517,9 +1526,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *      if no image for given name exists
          *
          * Expects that a file is opened.
-         * @see @ref image1DName(), @ref image1D(const std::string&, UnsignedInt)
+         * @see @ref image1DName(), @ref image1D(Containers::StringView, UnsignedInt)
          */
-        Int image1DForName(const std::string& name);
+        Int image1DForName(Containers::StringView name);
 
         /**
          * @brief One-dimensional image name
@@ -1529,7 +1538,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * names, returns an empty string. Expects that a file is opened.
          * @see @ref image1DForName()
          */
-        std::string image1DName(UnsignedInt id);
+        Containers::String image1DName(UnsignedInt id);
 
         /**
          * @brief One-dimensional image
@@ -1538,7 +1547,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given image or @ref Containers::NullOpt if importing failed.
          * Expects that a file is opened.
-         * @see @ref image1D(const std::string&, UnsignedInt)
+         * @see @ref image1D(Containers::StringView, UnsignedInt)
          */
         Containers::Optional<ImageData1D> image1D(UnsignedInt id, UnsignedInt level = 0);
 
@@ -1553,7 +1562,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref image1D(UnsignedInt, UnsignedInt). Expects that a file is
          * opened.
          */
-        Containers::Optional<ImageData1D> image1D(const std::string& name, UnsignedInt level = 0);
+        Containers::Optional<ImageData1D> image1D(Containers::StringView name, UnsignedInt level = 0);
 
         /**
          * @brief Two-dimensional image count
@@ -1579,9 +1588,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *      if no image for given name exists
          *
          * Expects that a file is opened.
-         * @see @ref image2DName(), @ref image2D(const std::string&, UnsignedInt)
+         * @see @ref image2DName(), @ref image2D(Containers::StringView, UnsignedInt)
          */
-        Int image2DForName(const std::string& name);
+        Int image2DForName(Containers::StringView name);
 
         /**
          * @brief Two-dimensional image name
@@ -1591,7 +1600,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * names, returns an empty string. Expects that a file is opened.
          * @see @ref image2DForName()
          */
-        std::string image2DName(UnsignedInt id);
+        Containers::String image2DName(UnsignedInt id);
 
         /**
          * @brief Two-dimensional image
@@ -1600,7 +1609,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given image or @ref Containers::NullOpt if importing failed.
          * Expects that a file is opened.
-         * @see @ref image2D(const std::string&, UnsignedInt)
+         * @see @ref image2D(Containers::StringView, UnsignedInt)
          */
         Containers::Optional<ImageData2D> image2D(UnsignedInt id, UnsignedInt level = 0);
 
@@ -1615,7 +1624,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref image2D(UnsignedInt, UnsignedInt). Expects that a file is
          * opened.
          */
-        Containers::Optional<ImageData2D> image2D(const std::string& name, UnsignedInt level = 0);
+        Containers::Optional<ImageData2D> image2D(Containers::StringView name, UnsignedInt level = 0);
 
         /**
          * @brief Three-dimensional image count
@@ -1641,9 +1650,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *      if no image for given name exists
          *
          * Expects that a file is opened.
-         * @see @ref image3DName(), @ref image3D(const std::string&, UnsignedInt)
+         * @see @ref image3DName(), @ref image3D(Containers::StringView, UnsignedInt)
          */
-        Int image3DForName(const std::string& name);
+        Int image3DForName(Containers::StringView name);
 
         /**
          * @brief Three-dimensional image name
@@ -1653,7 +1662,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * names, returns an empty string. Expects that a file is opened.
          * @see @ref image3DForName()
          */
-        std::string image3DName(UnsignedInt id);
+        Containers::String image3DName(UnsignedInt id);
 
         /**
          * @brief Three-dimensional image
@@ -1662,7 +1671,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given image or @ref Containers::NullOpt if importing failed.
          * Expects that a file is opened.
-         * @see @ref image3D(const std::string&, UnsignedInt)
+         * @see @ref image3D(Containers::StringView, UnsignedInt)
          */
         Containers::Optional<ImageData3D> image3D(UnsignedInt id, UnsignedInt level = 0);
 
@@ -1677,7 +1686,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref image3D(UnsignedInt, UnsignedInt). Expects that a file is
          * opened.
          */
-        Containers::Optional<ImageData3D> image3D(const std::string& name, UnsignedInt level = 0);
+        Containers::Optional<ImageData3D> image3D(Containers::StringView name, UnsignedInt level = 0);
 
         /* Since 1.8.17, the original short-hand group closing doesn't work
            anymore. FFS. */
@@ -1718,7 +1727,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * supported --- instead, file is loaded though the callback and data
          * passed through to @ref doOpenData().
          */
-        virtual void doOpenFile(const std::string& filename);
+        virtual void doOpenFile(Containers::StringView filename);
 
     private:
         /** @brief Implementation for @ref features() */
@@ -1808,7 +1817,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         #endif
 
         /** @brief Implementation for @ref openState() */
-        virtual void doOpenState(const void* state, const std::string& filePath);
+        virtual void doOpenState(const void* state, Containers::StringView filePath);
 
         /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
@@ -1848,28 +1857,28 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Int doSceneForName(const std::string& name);
+        virtual Int doSceneForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref objectForName()
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Long doObjectForName(const std::string& name);
+        virtual Long doObjectForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref sceneName()
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doSceneName(UnsignedInt id);
+        virtual Containers::String doSceneName(UnsignedInt id);
 
         /**
          * @brief Implementation for @ref objectName()
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doObjectName(UnsignedLong id);
+        virtual Containers::String doObjectName(UnsignedLong id);
 
         /** @brief Implementation for @ref scene() */
         virtual Containers::Optional<SceneData> doScene(UnsignedInt id);
@@ -1880,7 +1889,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns an invalid (zero) value.
          */
-        virtual SceneField doSceneFieldForName(const std::string& name);
+        virtual SceneField doSceneFieldForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref sceneFieldName()
@@ -1889,7 +1898,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * Receives the custom ID extracted via @ref sceneFieldCustom(SceneField).
          * Default implementation returns an empty string.
          */
-        virtual std::string doSceneFieldName(UnsignedInt name);
+        virtual Containers::String doSceneFieldName(UnsignedInt name);
 
         /**
          * @brief Implementation for @ref animationCount()
@@ -1906,14 +1915,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Int doAnimationForName(const std::string& name);
+        virtual Int doAnimationForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref animationName()
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doAnimationName(UnsignedInt id);
+        virtual Containers::String doAnimationName(UnsignedInt id);
 
         /** @brief Implementation for @ref animation() */
         virtual Containers::Optional<AnimationData> doAnimation(UnsignedInt id);
@@ -1933,14 +1942,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Int doLightForName(const std::string& name);
+        virtual Int doLightForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref lightName()
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doLightName(UnsignedInt id);
+        virtual Containers::String doLightName(UnsignedInt id);
 
         /** @brief Implementation for @ref light() */
         virtual Containers::Optional<LightData> doLight(UnsignedInt id);
@@ -1960,14 +1969,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Int doCameraForName(const std::string& name);
+        virtual Int doCameraForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref cameraName()
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doCameraName(UnsignedInt id);
+        virtual Containers::String doCameraName(UnsignedInt id);
 
         /** @brief Implementation for @ref camera() */
         virtual Containers::Optional<CameraData> doCamera(UnsignedInt id);
@@ -2105,7 +2114,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Int doSkin2DForName(const std::string& name);
+        virtual Int doSkin2DForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref skin2DName()
@@ -2113,7 +2122,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doSkin2DName(UnsignedInt id);
+        virtual Containers::String doSkin2DName(UnsignedInt id);
 
         /**
          * @brief Implementation for @ref skin2D()
@@ -2138,7 +2147,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Int doSkin3DForName(const std::string& name);
+        virtual Int doSkin3DForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref skin3DName()
@@ -2146,7 +2155,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doSkin3DName(UnsignedInt id);
+        virtual Containers::String doSkin3DName(UnsignedInt id);
 
         /**
          * @brief Implementation for @ref skin3D()
@@ -2185,7 +2194,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Int doMeshForName(const std::string& name);
+        virtual Int doMeshForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref meshName()
@@ -2193,7 +2202,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doMeshName(UnsignedInt id);
+        virtual Containers::String doMeshName(UnsignedInt id);
 
         /**
          * @brief Implementation for @ref mesh()
@@ -2207,7 +2216,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns an invalid (zero) value.
          */
-        virtual MeshAttribute doMeshAttributeForName(const std::string& name);
+        virtual MeshAttribute doMeshAttributeForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref meshAttributeName()
@@ -2216,7 +2225,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * Receives the custom ID extracted via @ref meshAttributeCustom(MeshAttribute).
          * Default implementation returns an empty string.
          */
-        virtual std::string doMeshAttributeName(UnsignedShort name);
+        virtual Containers::String doMeshAttributeName(UnsignedShort name);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -2346,14 +2355,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Int doMaterialForName(const std::string& name);
+        virtual Int doMaterialForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref materialName()
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doMaterialName(UnsignedInt id);
+        virtual Containers::String doMaterialName(UnsignedInt id);
 
         /** @brief Implementation for @ref material() */
         virtual Containers::Optional<MaterialData> doMaterial(UnsignedInt id);
@@ -2373,14 +2382,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Int doTextureForName(const std::string& name);
+        virtual Int doTextureForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref textureName()
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doTextureName(UnsignedInt id);
+        virtual Containers::String doTextureName(UnsignedInt id);
 
         /** @brief Implementation for @ref texture() */
         virtual Containers::Optional<TextureData> doTexture(UnsignedInt id);
@@ -2409,14 +2418,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Int doImage1DForName(const std::string& name);
+        virtual Int doImage1DForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref image1DName()
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doImage1DName(UnsignedInt id);
+        virtual Containers::String doImage1DName(UnsignedInt id);
 
         /** @brief Implementation for @ref image1D() */
         virtual Containers::Optional<ImageData1D> doImage1D(UnsignedInt id, UnsignedInt level);
@@ -2453,14 +2462,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Int doImage2DForName(const std::string& name);
+        virtual Int doImage2DForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref image2DName()
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doImage2DName(UnsignedInt id);
+        virtual Containers::String doImage2DName(UnsignedInt id);
 
         /** @brief Implementation for @ref image2D() */
         virtual Containers::Optional<ImageData2D> doImage2D(UnsignedInt id, UnsignedInt level);
@@ -2489,14 +2498,14 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce.
          */
-        virtual Int doImage3DForName(const std::string& name);
+        virtual Int doImage3DForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref image3DName()
          *
          * Default implementation returns an empty string.
          */
-        virtual std::string doImage3DName(UnsignedInt id);
+        virtual Containers::String doImage3DName(UnsignedInt id);
 
         /** @brief Implementation for @ref image3D() */
         virtual Containers::Optional<ImageData3D> doImage3D(UnsignedInt id, UnsignedInt level);

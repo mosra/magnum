@@ -32,6 +32,8 @@
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once iostream is dropped */
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/String.h>
 
@@ -94,7 +96,7 @@ void ObjImporter::doClose() { _file.reset(); }
 
 bool ObjImporter::doIsOpened() const { return !!_file; }
 
-void ObjImporter::doOpenFile(const std::string& filename) {
+void ObjImporter::doOpenFile(const Containers::StringView filename) {
     Containers::Pointer<std::istream> in{new std::ifstream{filename, std::ios::binary}};
     if(!in->good()) {
         Error() << "Trade::ObjImporter::openFile(): cannot open file" << filename;
@@ -209,12 +211,12 @@ void ObjImporter::parseMeshNames() {
 
 UnsignedInt ObjImporter::doMeshCount() const { return _file->meshes.size(); }
 
-Int ObjImporter::doMeshForName(const std::string& name) {
+Int ObjImporter::doMeshForName(const Containers::StringView name) {
     const auto it = _file->meshesForName.find(name);
     return it == _file->meshesForName.end() ? -1 : it->second;
 }
 
-std::string ObjImporter::doMeshName(UnsignedInt id) {
+Containers::String ObjImporter::doMeshName(UnsignedInt id) {
     return _file->meshNames[id];
 }
 
@@ -487,4 +489,4 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
 }}
 
 CORRADE_PLUGIN_REGISTER(ObjImporter, Magnum::Trade::ObjImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.4")
+    "cz.mosra.magnum.Trade.AbstractImporter/0.5")

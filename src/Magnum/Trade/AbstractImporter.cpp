@@ -25,6 +25,7 @@
 
 #include "AbstractImporter.h"
 
+#include <string> /** @todo remove once file callbacks are <string>-free */
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
@@ -32,7 +33,6 @@
 #include <Corrade/Containers/StringStl.h> /** @todo remove once file callbacks are <string>-free */
 #include <Corrade/PluginManager/Manager.hpp>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/FileCallback.h"
@@ -48,8 +48,10 @@
 #include "Magnum/Trade/TextureData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <string> /* for object2DName() etc., not going to change those */
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Triple.h>
+#include <Corrade/Utility/DebugStl.h> /* for errors in object2DForName() etc. */
 
 /* This is a header-only tool, meaning no link-time dependency on SceneTools */
 /** @todo once this compat is dropped, drop the header-only implementation */
@@ -89,7 +91,7 @@ using namespace Containers::Literals;
 Containers::StringView AbstractImporter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractImporter/0.4"_s
+"cz.mosra.magnum.Trade.AbstractImporter/0.5"_s
 /* [interface] */
     ;
 }
@@ -198,7 +200,7 @@ bool AbstractImporter::openMemory(Containers::ArrayView<const void> memory) {
     return isOpened();
 }
 
-bool AbstractImporter::openState(const void* state, const std::string& filePath) {
+bool AbstractImporter::openState(const void* const state, const Containers::StringView filePath) {
     CORRADE_ASSERT(features() & ImporterFeature::OpenState,
         "Trade::AbstractImporter::openState(): feature not supported", {});
 
@@ -207,11 +209,15 @@ bool AbstractImporter::openState(const void* state, const std::string& filePath)
     return isOpened();
 }
 
-void AbstractImporter::doOpenState(const void*, const std::string&) {
+bool AbstractImporter::openState(const void* const state) {
+    return openState(state, {});
+}
+
+void AbstractImporter::doOpenState(const void*, const Containers::StringView) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::openState(): feature advertised but not implemented", );
 }
 
-bool AbstractImporter::openFile(const std::string& filename) {
+bool AbstractImporter::openFile(const Containers::StringView filename) {
     close();
 
     /* If file loading callbacks are not set or the importer supports handling
@@ -253,7 +259,7 @@ bool AbstractImporter::openFile(const std::string& filename) {
     return isOpened();
 }
 
-void AbstractImporter::doOpenFile(const std::string& filename) {
+void AbstractImporter::doOpenFile(const Containers::StringView filename) {
     CORRADE_ASSERT(features() & ImporterFeature::OpenData, "Trade::AbstractImporter::openFile(): not implemented", );
 
     /* If callbacks are set, use them. This is the same implementation as in
@@ -310,7 +316,7 @@ UnsignedLong AbstractImporter::objectCount() const {
 
 UnsignedLong AbstractImporter::doObjectCount() const { return 0; }
 
-Int AbstractImporter::sceneForName(const std::string& name) {
+Int AbstractImporter::sceneForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::sceneForName(): no file opened", -1);
     const Int id = doSceneForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doSceneCount(),
@@ -318,9 +324,9 @@ Int AbstractImporter::sceneForName(const std::string& name) {
     return id;
 }
 
-Int AbstractImporter::doSceneForName(const std::string&) { return -1; }
+Int AbstractImporter::doSceneForName(Containers::StringView) { return -1; }
 
-Long AbstractImporter::objectForName(const std::string& name) {
+Long AbstractImporter::objectForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::objectForName(): no file opened", {});
     const Long id = doObjectForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedLong(id) < doObjectCount(),
@@ -328,23 +334,29 @@ Long AbstractImporter::objectForName(const std::string& name) {
     return id;
 }
 
-Long AbstractImporter::doObjectForName(const std::string&) { return -1; }
+Long AbstractImporter::doObjectForName(Containers::StringView) { return -1; }
 
-std::string AbstractImporter::sceneName(const UnsignedInt id) {
+Containers::String AbstractImporter::sceneName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::sceneName(): no file opened", {});
     CORRADE_ASSERT(id < doSceneCount(), "Trade::AbstractImporter::sceneName(): index" << id << "out of range for" << doSceneCount() << "entries", {});
-    return doSceneName(id);
+    Containers::String name = doSceneName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::sceneName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doSceneName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doSceneName(UnsignedInt) { return {}; }
 
-std::string AbstractImporter::objectName(const UnsignedLong id) {
+Containers::String AbstractImporter::objectName(const UnsignedLong id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::objectName(): no file opened", {});
     CORRADE_ASSERT(id < doObjectCount(), "Trade::AbstractImporter::objectName(): index" << id << "out of range for" << doObjectCount() << "entries", {});
-    return doObjectName(id);
+    Containers::String name = doObjectName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::objectName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doObjectName(UnsignedLong) { return {}; }
+Containers::String AbstractImporter::doObjectName(UnsignedLong) { return {}; }
 
 Containers::Optional<SceneData> AbstractImporter::scene(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::scene(): no file opened", {});
@@ -361,7 +373,7 @@ Containers::Optional<SceneData> AbstractImporter::doScene(UnsignedInt) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::scene(): not implemented", {});
 }
 
-Containers::Optional<SceneData> AbstractImporter::scene(const std::string& name) {
+Containers::Optional<SceneData> AbstractImporter::scene(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::scene(): no file opened", {});
     const Int id = doSceneForName(name);
     if(id == -1) {
@@ -371,24 +383,27 @@ Containers::Optional<SceneData> AbstractImporter::scene(const std::string& name)
     return scene(id); /* not doScene(), so we get the range checks also */
 }
 
-SceneField AbstractImporter::sceneFieldForName(const std::string& name) {
+SceneField AbstractImporter::sceneFieldForName(const Containers::StringView name) {
     const SceneField out = doSceneFieldForName(name);
     CORRADE_ASSERT(out == SceneField{} || isSceneFieldCustom(out),
         "Trade::AbstractImporter::sceneFieldForName(): implementation-returned" << out << "is neither custom nor invalid", {});
     return out;
 }
 
-SceneField AbstractImporter::doSceneFieldForName(const std::string&) {
+SceneField AbstractImporter::doSceneFieldForName(const Containers::StringView) {
     return {};
 }
 
-std::string AbstractImporter::sceneFieldName(SceneField name) {
+Containers::String AbstractImporter::sceneFieldName(SceneField name) {
     CORRADE_ASSERT(isSceneFieldCustom(name),
         "Trade::AbstractImporter::sceneFieldName():" << name << "is not custom", {});
-    return doSceneFieldName(sceneFieldCustom(name));
+    Containers::String out = doSceneFieldName(sceneFieldCustom(name));
+    CORRADE_ASSERT(out.isSmall() || !out.deleter(),
+        "Trade::AbstractImporter::sceneFieldName(): implementation is not allowed to use a custom String deleter", {});
+    return out;
 }
 
-std::string AbstractImporter::doSceneFieldName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doSceneFieldName(UnsignedInt) { return {}; }
 
 UnsignedInt AbstractImporter::animationCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animationCount(): no file opened", {});
@@ -397,7 +412,7 @@ UnsignedInt AbstractImporter::animationCount() const {
 
 UnsignedInt AbstractImporter::doAnimationCount() const { return 0; }
 
-Int AbstractImporter::animationForName(const std::string& name) {
+Int AbstractImporter::animationForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animationForName(): no file opened", {});
     const Int id = doAnimationForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doAnimationCount(),
@@ -405,15 +420,18 @@ Int AbstractImporter::animationForName(const std::string& name) {
     return id;
 }
 
-Int AbstractImporter::doAnimationForName(const std::string&) { return -1; }
+Int AbstractImporter::doAnimationForName(Containers::StringView) { return -1; }
 
-std::string AbstractImporter::animationName(const UnsignedInt id) {
+Containers::String AbstractImporter::animationName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animationName(): no file opened", {});
     CORRADE_ASSERT(id < doAnimationCount(), "Trade::AbstractImporter::animationName(): index" << id << "out of range for" << doAnimationCount() << "entries", {});
-    return doAnimationName(id);
+    Containers::String name = doAnimationName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::animationName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doAnimationName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doAnimationName(UnsignedInt) { return {}; }
 
 Containers::Optional<AnimationData> AbstractImporter::animation(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animation(): no file opened", {});
@@ -430,7 +448,7 @@ Containers::Optional<AnimationData> AbstractImporter::doAnimation(UnsignedInt) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::animation(): not implemented", {});
 }
 
-Containers::Optional<AnimationData> AbstractImporter::animation(const std::string& name) {
+Containers::Optional<AnimationData> AbstractImporter::animation(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animation(): no file opened", {});
     const Int id = doAnimationForName(name);
     if(id == -1) {
@@ -447,7 +465,7 @@ UnsignedInt AbstractImporter::lightCount() const {
 
 UnsignedInt AbstractImporter::doLightCount() const { return 0; }
 
-Int AbstractImporter::lightForName(const std::string& name) {
+Int AbstractImporter::lightForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::lightForName(): no file opened", {});
     const Int id = doLightForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doLightCount(),
@@ -455,15 +473,18 @@ Int AbstractImporter::lightForName(const std::string& name) {
     return id;
 }
 
-Int AbstractImporter::doLightForName(const std::string&) { return -1; }
+Int AbstractImporter::doLightForName(Containers::StringView) { return -1; }
 
-std::string AbstractImporter::lightName(const UnsignedInt id) {
+Containers::String AbstractImporter::lightName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::lightName(): no file opened", {});
     CORRADE_ASSERT(id < doLightCount(), "Trade::AbstractImporter::lightName(): index" << id << "out of range for" << doLightCount() << "entries", {});
-    return doLightName(id);
+    Containers::String name = doLightName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::lightName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doLightName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doLightName(UnsignedInt) { return {}; }
 
 Containers::Optional<LightData> AbstractImporter::light(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::light(): no file opened", {});
@@ -475,7 +496,7 @@ Containers::Optional<LightData> AbstractImporter::doLight(UnsignedInt) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::light(): not implemented", {});
 }
 
-Containers::Optional<LightData> AbstractImporter::light(const std::string& name) {
+Containers::Optional<LightData> AbstractImporter::light(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::light(): no file opened", {});
     const Int id = doLightForName(name);
     if(id == -1) {
@@ -492,7 +513,7 @@ UnsignedInt AbstractImporter::cameraCount() const {
 
 UnsignedInt AbstractImporter::doCameraCount() const { return 0; }
 
-Int AbstractImporter::cameraForName(const std::string& name) {
+Int AbstractImporter::cameraForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::cameraForName(): no file opened", {});
     const Int id = doCameraForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doCameraCount(),
@@ -500,15 +521,18 @@ Int AbstractImporter::cameraForName(const std::string& name) {
     return id;
 }
 
-Int AbstractImporter::doCameraForName(const std::string&) { return -1; }
+Int AbstractImporter::doCameraForName(Containers::StringView) { return -1; }
 
-std::string AbstractImporter::cameraName(const UnsignedInt id) {
+Containers::String AbstractImporter::cameraName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::cameraName(): no file opened", {});
     CORRADE_ASSERT(id < doCameraCount(), "Trade::AbstractImporter::cameraName(): index" << id << "out of range for" << doCameraCount() << "entries", {});
-    return doCameraName(id);
+    Containers::String name = doCameraName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::cameraName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doCameraName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doCameraName(UnsignedInt) { return {}; }
 
 Containers::Optional<CameraData> AbstractImporter::camera(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::camera(): no file opened", {});
@@ -520,7 +544,7 @@ Containers::Optional<CameraData> AbstractImporter::doCamera(UnsignedInt) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::camera(): not implemented", {});
 }
 
-Containers::Optional<CameraData> AbstractImporter::camera(const std::string& name) {
+Containers::Optional<CameraData> AbstractImporter::camera(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::camera(): no file opened", {});
     const Int id = doCameraForName(name);
     if(id == -1) {
@@ -951,7 +975,7 @@ UnsignedInt AbstractImporter::skin2DCount() const {
 
 UnsignedInt AbstractImporter::doSkin2DCount() const { return 0; }
 
-Int AbstractImporter::skin2DForName(const std::string& name) {
+Int AbstractImporter::skin2DForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin2DForName(): no file opened", {});
     const Int id = doSkin2DForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doSkin2DCount(),
@@ -959,15 +983,18 @@ Int AbstractImporter::skin2DForName(const std::string& name) {
     return id;
 }
 
-Int AbstractImporter::doSkin2DForName(const std::string&) { return -1; }
+Int AbstractImporter::doSkin2DForName(Containers::StringView) { return -1; }
 
-std::string AbstractImporter::skin2DName(const UnsignedInt id) {
+Containers::String AbstractImporter::skin2DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin2DName(): no file opened", {});
     CORRADE_ASSERT(id < doSkin2DCount(), "Trade::AbstractImporter::skin2DName(): index" << id << "out of range for" << doSkin2DCount() << "entries", {});
-    return doSkin2DName(id);
+    Containers::String name = doSkin2DName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::skin2DName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doSkin2DName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doSkin2DName(UnsignedInt) { return {}; }
 
 Containers::Optional<SkinData2D> AbstractImporter::skin2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin2D(): no file opened", {});
@@ -984,7 +1011,7 @@ Containers::Optional<SkinData2D> AbstractImporter::doSkin2D(UnsignedInt) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::skin2D(): not implemented", {});
 }
 
-Containers::Optional<SkinData2D> AbstractImporter::skin2D(const std::string& name) {
+Containers::Optional<SkinData2D> AbstractImporter::skin2D(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin2D(): no file opened", {});
     const Int id = doSkin2DForName(name);
     if(id == -1) {
@@ -1001,7 +1028,7 @@ UnsignedInt AbstractImporter::skin3DCount() const {
 
 UnsignedInt AbstractImporter::doSkin3DCount() const { return 0; }
 
-Int AbstractImporter::skin3DForName(const std::string& name) {
+Int AbstractImporter::skin3DForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin3DForName(): no file opened", {});
     const Int id = doSkin3DForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doSkin3DCount(),
@@ -1009,15 +1036,18 @@ Int AbstractImporter::skin3DForName(const std::string& name) {
     return id;
 }
 
-Int AbstractImporter::doSkin3DForName(const std::string&) { return -1; }
+Int AbstractImporter::doSkin3DForName(Containers::StringView) { return -1; }
 
-std::string AbstractImporter::skin3DName(const UnsignedInt id) {
+Containers::String AbstractImporter::skin3DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin3DName(): no file opened", {});
     CORRADE_ASSERT(id < doSkin3DCount(), "Trade::AbstractImporter::skin3DName(): index" << id << "out of range for" << doSkin3DCount() << "entries", {});
-    return doSkin3DName(id);
+    Containers::String name = doSkin3DName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::skin3DName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doSkin3DName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doSkin3DName(UnsignedInt) { return {}; }
 
 Containers::Optional<SkinData3D> AbstractImporter::skin3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin3D(): no file opened", {});
@@ -1034,7 +1064,7 @@ Containers::Optional<SkinData3D> AbstractImporter::doSkin3D(UnsignedInt) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::skin3D(): not implemented", {});
 }
 
-Containers::Optional<SkinData3D> AbstractImporter::skin3D(const std::string& name) {
+Containers::Optional<SkinData3D> AbstractImporter::skin3D(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin3D(): no file opened", {});
     const Int id = doSkin3DForName(name);
     if(id == -1) {
@@ -1061,7 +1091,7 @@ UnsignedInt AbstractImporter::meshLevelCount(const UnsignedInt id) {
 
 UnsignedInt AbstractImporter::doMeshLevelCount(UnsignedInt) { return 1; }
 
-Int AbstractImporter::meshForName(const std::string& name) {
+Int AbstractImporter::meshForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::meshForName(): no file opened", {});
     const Int id = doMeshForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doMeshCount(),
@@ -1069,15 +1099,18 @@ Int AbstractImporter::meshForName(const std::string& name) {
     return id;
 }
 
-Int AbstractImporter::doMeshForName(const std::string&) { return -1; }
+Int AbstractImporter::doMeshForName(Containers::StringView) { return -1; }
 
-std::string AbstractImporter::meshName(const UnsignedInt id) {
+Containers::String AbstractImporter::meshName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::meshName(): no file opened", {});
     CORRADE_ASSERT(id < doMeshCount(), "Trade::AbstractImporter::meshName(): index" << id << "out of range for" << doMeshCount() << "entries", {});
-    return doMeshName(id);
+    Containers::String name = doMeshName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::meshName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doMeshName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doMeshName(UnsignedInt) { return {}; }
 
 Containers::Optional<MeshData> AbstractImporter::mesh(const UnsignedInt id, const UnsignedInt level) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh(): no file opened", {});
@@ -1106,7 +1139,7 @@ Containers::Optional<MeshData> AbstractImporter::doMesh(UnsignedInt, UnsignedInt
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::mesh(): not implemented", {});
 }
 
-Containers::Optional<MeshData> AbstractImporter::mesh(const std::string& name, const UnsignedInt level) {
+Containers::Optional<MeshData> AbstractImporter::mesh(const Containers::StringView name, const UnsignedInt level) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh(): no file opened", {});
     const Int id = doMeshForName(name);
     if(id == -1) {
@@ -1116,24 +1149,27 @@ Containers::Optional<MeshData> AbstractImporter::mesh(const std::string& name, c
     return mesh(id, level); /* not doMesh(), so we get the checks also */
 }
 
-MeshAttribute AbstractImporter::meshAttributeForName(const std::string& name) {
+MeshAttribute AbstractImporter::meshAttributeForName(const Containers::StringView name) {
     const MeshAttribute out = doMeshAttributeForName(name);
     CORRADE_ASSERT(out == MeshAttribute{} || isMeshAttributeCustom(out),
         "Trade::AbstractImporter::meshAttributeForName(): implementation-returned" << out << "is neither custom nor invalid", {});
     return out;
 }
 
-MeshAttribute AbstractImporter::doMeshAttributeForName(const std::string&) {
+MeshAttribute AbstractImporter::doMeshAttributeForName(Containers::StringView) {
     return {};
 }
 
-std::string AbstractImporter::meshAttributeName(MeshAttribute name) {
+Containers::String AbstractImporter::meshAttributeName(MeshAttribute name) {
     CORRADE_ASSERT(isMeshAttributeCustom(name),
         "Trade::AbstractImporter::meshAttributeName():" << name << "is not custom", {});
-    return doMeshAttributeName(meshAttributeCustom(name));
+    Containers::String out = doMeshAttributeName(meshAttributeCustom(name));
+    CORRADE_ASSERT(out.isSmall() || !out.deleter(),
+        "Trade::AbstractImporter::meshAttributeName(): implementation is not allowed to use a custom String deleter", {});
+    return out;
 }
 
-std::string AbstractImporter::doMeshAttributeName(UnsignedShort) { return {}; }
+Containers::String AbstractImporter::doMeshAttributeName(UnsignedShort) { return {}; }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 UnsignedInt AbstractImporter::mesh2DCount() const {
@@ -1232,7 +1268,7 @@ UnsignedInt AbstractImporter::materialCount() const {
 
 UnsignedInt AbstractImporter::doMaterialCount() const { return 0; }
 
-Int AbstractImporter::materialForName(const std::string& name) {
+Int AbstractImporter::materialForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::materialForName(): no file opened", {});
     const Int id = doMaterialForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doMaterialCount(),
@@ -1240,15 +1276,18 @@ Int AbstractImporter::materialForName(const std::string& name) {
     return id;
 }
 
-Int AbstractImporter::doMaterialForName(const std::string&) { return -1; }
+Int AbstractImporter::doMaterialForName(Containers::StringView) { return -1; }
 
-std::string AbstractImporter::materialName(const UnsignedInt id) {
+Containers::String AbstractImporter::materialName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::materialName(): no file opened", {});
     CORRADE_ASSERT(id < doMaterialCount(), "Trade::AbstractImporter::materialName(): index" << id << "out of range for" << doMaterialCount() << "entries", {});
-    return doMaterialName(id);
+    Containers::String name = doMaterialName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::materialName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doMaterialName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doMaterialName(UnsignedInt) { return {}; }
 
 #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
 Containers::Optional<MaterialData>
@@ -1282,7 +1321,7 @@ Containers::Optional<MaterialData>
 #else
 Implementation::OptionalButAlsoPointer<MaterialData>
 #endif
-AbstractImporter::material(const std::string& name) {
+AbstractImporter::material(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::material(): no file opened", {});
     const Int id = doMaterialForName(name);
     if(id == -1) {
@@ -1299,7 +1338,7 @@ UnsignedInt AbstractImporter::textureCount() const {
 
 UnsignedInt AbstractImporter::doTextureCount() const { return 0; }
 
-Int AbstractImporter::textureForName(const std::string& name) {
+Int AbstractImporter::textureForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::textureForName(): no file opened", {});
     const Int id = doTextureForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doTextureCount(),
@@ -1307,15 +1346,18 @@ Int AbstractImporter::textureForName(const std::string& name) {
     return id;
 }
 
-Int AbstractImporter::doTextureForName(const std::string&) { return -1; }
+Int AbstractImporter::doTextureForName(Containers::StringView) { return -1; }
 
-std::string AbstractImporter::textureName(const UnsignedInt id) {
+Containers::String AbstractImporter::textureName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::textureName(): no file opened", {});
     CORRADE_ASSERT(id < doTextureCount(), "Trade::AbstractImporter::textureName(): index" << id << "out of range for" << doTextureCount() << "entries", {});
-    return doTextureName(id);
+    Containers::String name = doTextureName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::textureName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doTextureName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doTextureName(UnsignedInt) { return {}; }
 
 Containers::Optional<TextureData> AbstractImporter::texture(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::texture(): no file opened", {});
@@ -1327,7 +1369,7 @@ Containers::Optional<TextureData> AbstractImporter::doTexture(UnsignedInt) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::texture(): not implemented", {});
 }
 
-Containers::Optional<TextureData> AbstractImporter::texture(const std::string& name) {
+Containers::Optional<TextureData> AbstractImporter::texture(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::texture(): no file opened", {});
     const Int id = doTextureForName(name);
     if(id == -1) {
@@ -1354,7 +1396,7 @@ UnsignedInt AbstractImporter::image1DLevelCount(const UnsignedInt id) {
 
 UnsignedInt AbstractImporter::doImage1DLevelCount(UnsignedInt) { return 1; }
 
-Int AbstractImporter::image1DForName(const std::string& name) {
+Int AbstractImporter::image1DForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1DForName(): no file opened", {});
     const Int id = doImage1DForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doImage1DCount(),
@@ -1362,15 +1404,18 @@ Int AbstractImporter::image1DForName(const std::string& name) {
     return id;
 }
 
-Int AbstractImporter::doImage1DForName(const std::string&) { return -1; }
+Int AbstractImporter::doImage1DForName(Containers::StringView) { return -1; }
 
-std::string AbstractImporter::image1DName(const UnsignedInt id) {
+Containers::String AbstractImporter::image1DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1DName(): no file opened", {});
     CORRADE_ASSERT(id < doImage1DCount(), "Trade::AbstractImporter::image1DName(): index" << id << "out of range for" << doImage1DCount() << "entries", {});
-    return doImage1DName(id);
+    Containers::String name = doImage1DName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::image1DName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doImage1DName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doImage1DName(UnsignedInt) { return {}; }
 
 Containers::Optional<ImageData1D> AbstractImporter::image1D(const UnsignedInt id, const UnsignedInt level) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1D(): no file opened", {});
@@ -1396,7 +1441,7 @@ Containers::Optional<ImageData1D> AbstractImporter::doImage1D(UnsignedInt, Unsig
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::image1D(): not implemented", {});
 }
 
-Containers::Optional<ImageData1D> AbstractImporter::image1D(const std::string& name, const UnsignedInt level) {
+Containers::Optional<ImageData1D> AbstractImporter::image1D(const Containers::StringView name, const UnsignedInt level) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1D(): no file opened", {});
     const Int id = doImage1DForName(name);
     if(id == -1) {
@@ -1424,7 +1469,7 @@ UnsignedInt AbstractImporter::image2DLevelCount(const UnsignedInt id) {
 
 UnsignedInt AbstractImporter::doImage2DLevelCount(UnsignedInt) { return 1; }
 
-Int AbstractImporter::image2DForName(const std::string& name) {
+Int AbstractImporter::image2DForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2DForName(): no file opened", {});
     const Int id = doImage2DForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doImage2DCount(),
@@ -1432,15 +1477,18 @@ Int AbstractImporter::image2DForName(const std::string& name) {
     return id;
 }
 
-Int AbstractImporter::doImage2DForName(const std::string&) { return -1; }
+Int AbstractImporter::doImage2DForName(Containers::StringView) { return -1; }
 
-std::string AbstractImporter::image2DName(const UnsignedInt id) {
+Containers::String AbstractImporter::image2DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2DName(): no file opened", {});
     CORRADE_ASSERT(id < doImage2DCount(), "Trade::AbstractImporter::image2DName(): index" << id << "out of range for" << doImage2DCount() << "entries", {});
-    return doImage2DName(id);
+    Containers::String name = doImage2DName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::image2DName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doImage2DName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doImage2DName(UnsignedInt) { return {}; }
 
 Containers::Optional<ImageData2D> AbstractImporter::image2D(const UnsignedInt id, const UnsignedInt level) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2D(): no file opened", {});
@@ -1466,7 +1514,7 @@ Containers::Optional<ImageData2D> AbstractImporter::doImage2D(UnsignedInt, Unsig
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::image2D(): not implemented", {});
 }
 
-Containers::Optional<ImageData2D> AbstractImporter::image2D(const std::string& name, const UnsignedInt level) {
+Containers::Optional<ImageData2D> AbstractImporter::image2D(const Containers::StringView name, const UnsignedInt level) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2D(): no file opened", {});
     const Int id = doImage2DForName(name);
     if(id == -1) {
@@ -1494,7 +1542,7 @@ UnsignedInt AbstractImporter::image3DLevelCount(const UnsignedInt id) {
 
 UnsignedInt AbstractImporter::doImage3DLevelCount(UnsignedInt) { return 1; }
 
-Int AbstractImporter::image3DForName(const std::string& name) {
+Int AbstractImporter::image3DForName(const Containers::StringView name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3DForName(): no file opened", {});
     const Int id = doImage3DForName(name);
     CORRADE_ASSERT(id == -1 || UnsignedInt(id) < doImage3DCount(),
@@ -1502,15 +1550,18 @@ Int AbstractImporter::image3DForName(const std::string& name) {
     return id;
 }
 
-Int AbstractImporter::doImage3DForName(const std::string&) { return -1; }
+Int AbstractImporter::doImage3DForName(Containers::StringView) { return -1; }
 
-std::string AbstractImporter::image3DName(const UnsignedInt id) {
+Containers::String AbstractImporter::image3DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3DName(): no file opened", {});
     CORRADE_ASSERT(id < doImage3DCount(), "Trade::AbstractImporter::image3DName(): index" << id << "out of range for" << doImage3DCount() << "entries", {});
-    return doImage3DName(id);
+    Containers::String name = doImage3DName(id);
+    CORRADE_ASSERT(name.isSmall() || !name.deleter(),
+        "Trade::AbstractImporter::image3DName(): implementation is not allowed to use a custom String deleter", {});
+    return name;
 }
 
-std::string AbstractImporter::doImage3DName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doImage3DName(UnsignedInt) { return {}; }
 
 Containers::Optional<ImageData3D> AbstractImporter::image3D(const UnsignedInt id, const UnsignedInt level) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3D(): no file opened", {});
@@ -1536,7 +1587,7 @@ Containers::Optional<ImageData3D> AbstractImporter::doImage3D(UnsignedInt, Unsig
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::image3D(): not implemented", {});
 }
 
-Containers::Optional<ImageData3D> AbstractImporter::image3D(const std::string& name, const UnsignedInt level) {
+Containers::Optional<ImageData3D> AbstractImporter::image3D(const Containers::StringView name, const UnsignedInt level) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3D(): no file opened", {});
     const Int id = doImage3DForName(name);
     if(id == -1) {

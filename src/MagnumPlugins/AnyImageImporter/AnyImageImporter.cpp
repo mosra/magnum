@@ -61,7 +61,7 @@ void AnyImageImporter::doClose() {
     _in = nullptr;
 }
 
-void AnyImageImporter::doOpenFile(const std::string& filename) {
+void AnyImageImporter::doOpenFile(const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
     /* We don't detect any double extensions yet, so we can normalize just the
@@ -291,4 +291,4 @@ Containers::Optional<ImageData3D> AnyImageImporter::doImage3D(const UnsignedInt 
 }}
 
 CORRADE_PLUGIN_REGISTER(AnyImageImporter, Magnum::Trade::AnyImageImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.4")
+    "cz.mosra.magnum.Trade.AbstractImporter/0.5")
