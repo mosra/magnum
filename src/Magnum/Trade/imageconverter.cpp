@@ -195,6 +195,7 @@ magnum-imageconverter cube-mips.exr --layer 2 --level 1 +x-128.exr
 }
 
 using namespace Magnum;
+using namespace Containers::Literals;
 
 namespace {
 
@@ -387,7 +388,7 @@ key=true; configuration subgroups are delimited with /.)")
            given format */
         /** @todo implement image slicing and then use `--slice "0 0 w h"` to
             specify non-rectangular size (and +x +y to specify padding?) */
-        if(Utility::String::beginsWith(args.value("importer"), "raw:")) {
+        if(args.value<Containers::StringView>("importer").hasPrefix("raw:"_s)) {
             if(dimensions != 2) {
                 Error{} << "Raw data inputs can be only used for 2D images";
                 return 1;
