@@ -97,6 +97,7 @@ void ObjImporter::doClose() { _file.reset(); }
 bool ObjImporter::doIsOpened() const { return !!_file; }
 
 void ObjImporter::doOpenFile(const Containers::StringView filename) {
+    /** @todo ARGH clean this up, won't work with UTF-8 */
     Containers::Pointer<std::istream> in{new std::ifstream{filename, std::ios::binary}};
     if(!in->good()) {
         Error() << "Trade::ObjImporter::openFile(): cannot open file" << filename;
