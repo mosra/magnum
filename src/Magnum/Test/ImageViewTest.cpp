@@ -608,7 +608,7 @@ void ImageViewTest::constructCompressedFromMutable() {
 }
 
 void ImageViewTest::constructNullptr() {
-    #ifdef CORRADE_BUILD_DEPRECATED
+    #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_SKIP("This is still allowed on a deprecated build, can't test.");
     #endif
 
