@@ -58,7 +58,7 @@ check() {
     cmake . -DBUILD_TESTS=ON -DBUILD_GL_TESTS=ON
     ninja
 
-    CORRADE_TEST_COLOR=ON ctest -j5 --output-on-failure -E ALTest
+    CORRADE_TEST_COLOR=ON ctest -j9 --output-on-failure -E ALTest
 }
 
 package() {
