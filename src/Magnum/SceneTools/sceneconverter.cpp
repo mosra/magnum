@@ -88,8 +88,8 @@ magnum-sceneconverter [-h|--help] [-I|--importer IMPORTER]
     [-c|--converter-options key=val,key2=val2,…]... [--mesh MESH]
     [--level LEVEL] [--concatenate-meshes] [--info-animations] [--info-images]
     [--info-lights] [--info-materials] [--info-meshes] [--info-skins]
-    [--info-textures] [--info] [--color on|off|auto] [--bounds] [-v|--verbose]
-    [--profile] [--] input output
+    [--info-textures] [--info] [--color on|4bit|off|auto] [--bounds]
+    [-v|--verbose] [--profile] [--] input output
 @endcode
 
 Arguments:
@@ -262,7 +262,7 @@ int main(int argc, char** argv) {
         .addBooleanOption("info-skins").setHelp("info-skins", "print info about skins in the input file and exit")
         .addBooleanOption("info-textures").setHelp("info-textures", "print info about textures in the input file and exit")
         .addBooleanOption("info").setHelp("info", "print info about everything in the input file and exit, same as specifying all other --info-* options together")
-        .addOption("color", "auto").setHelp("color", "colored output for --info", "on|off|auto")
+        .addOption("color", "auto").setHelp("color", "colored output for --info", "on|4bit|off|auto")
         .addBooleanOption("bounds").setHelp("bounds", "show bounds of known attributes in --info output")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .addBooleanOption("profile").setHelp("profile", "measure import and conversion time")
@@ -730,12 +730,28 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
         /* Colored output. Enable only if a TTY. */
         Debug::Flags useColor;
-        if(args.value("color") == "on")
+        bool useColor24;
+        if(args.value("color") == "on") {
             useColor = Debug::Flags{};
-        else if(args.value("color") == "off")
+            useColor24 = true;
+        } else if(args.value("color") == "4bit") {
+            useColor = Debug::Flags{};
+            useColor24 = false;
+        } else if(args.value("color") == "off") {
             useColor = Debug::Flag::DisableColors;
-        else
-            useColor = Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors;
+            useColor24 = false;
+        } else if(Debug::isTty()) {
+            useColor = Debug::Flags{};
+            /* https://unix.stackexchange.com/a/450366, not perfect but good
+               enough I'd say */
+            /** @todo make this more robust and put directly on Debug,
+                including a "Disable 24 colors" flag */
+            const Containers::StringView colorterm = std::getenv("COLORTERM");
+            useColor24 = colorterm == "truecolor"_s || colorterm == "24bit"_s;
+        } else {
+            useColor = Debug::Flag::DisableColors;
+            useColor24 = false;
+        }
 
         for(const SceneInfo& info: sceneInfos) {
             Debug d{useColor};
@@ -839,8 +855,10 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     << Deg(info.data.innerConeAngle()) << Debug::nospace
                     << "° -" << Debug::packed << Deg(info.data.outerConeAngle())
                     << Debug::nospace << "°";
-            d << Debug::newline << "  Color:" << Debug::packed
-                << info.data.color();
+            d << Debug::newline << "  Color:";
+            if(useColor24) d << Debug::color
+                << Math::pack<Color3ub>(info.data.color());
+            d << Debug::packed << info.data.color();
             if(!Math::equal(info.data.intensity(), 1.0f))
                 d << "*" << info.data.intensity();
             d << Debug::newline << "  Attenuation:" << Debug::packed
@@ -915,10 +933,24 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                         _c(Vector2)
                         _c(Vector2ui)
                         _c(Vector2i)
-                        _c(Vector3)
+                        case Trade::MaterialAttributeType::Vector3:
+                            /** @todo hasSuffix() might be more robust against
+                                false positives, but KHR_materials_specular in
+                                glTF uses ColorFactor :/ */
+                            if(useColor24 && info.data.attributeName(i, j).contains("Color"_s))
+                                d << Debug::color << Math::pack<Color3ub>(info.data.attribute<Vector3>(i, j));
+                            d << Debug::packed << info.data.attribute<Vector3>(i, j);
+                            break;
                         _c(Vector3ui)
                         _c(Vector3i)
-                        _c(Vector4)
+                        case Trade::MaterialAttributeType::Vector4:
+                            /** @todo hasSuffix() might be more robust against
+                                false positives, but KHR_materials_specular in
+                                glTF uses ColorFactor :/ */
+                            if(useColor24 && info.data.attributeName(i, j).contains("Color"_s))
+                                d << Debug::color << Math::pack<Color3ub>(info.data.attribute<Vector4>(i, j).rgb());
+                            d << Debug::packed << info.data.attribute<Vector4>(i, j);
+                            break;
                         _c(Vector4ui)
                         _c(Vector4i)
                         _c(Matrix2x2)
