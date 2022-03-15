@@ -1231,12 +1231,15 @@ operator/(const Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b)
 #ifndef CORRADE_NO_DEBUG
 /** @debugoperator{Vector} */
 template<std::size_t size, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Vector<size, T>& value) {
-    debug << "Vector(" << Corrade::Utility::Debug::nospace;
+    /** @todo might make sense to propagate the flags also, for hex value
+        printing etc */
+    const bool packed = debug.immediateFlags() >= Corrade::Utility::Debug::Flag::Packed;
+    debug << (packed ? "{" : "Vector(") << Corrade::Utility::Debug::nospace;
     for(std::size_t i = 0; i != size; ++i) {
         if(i != 0) debug << Corrade::Utility::Debug::nospace << ",";
         debug << value[i];
     }
-    return debug << Corrade::Utility::Debug::nospace << ")";
+    return debug << Corrade::Utility::Debug::nospace << (packed ? "}" : ")");
 }
 
 /* Explicit instantiation for commonly used types */

@@ -118,6 +118,7 @@ struct VectorTest: Corrade::TestSuite::Tester {
     void strictWeakOrdering();
 
     void debug();
+    void debugPacked();
 };
 
 typedef Math::Constants<Float> Constants;
@@ -191,7 +192,8 @@ VectorTest::VectorTest() {
 
               &VectorTest::strictWeakOrdering,
 
-              &VectorTest::debug});
+              &VectorTest::debug,
+              &VectorTest::debugPacked});
 }
 
 void VectorTest::construct() {
@@ -839,6 +841,13 @@ void VectorTest::debug() {
     o.str({});
     Debug(&o) << "a" << Vector4() << "b" << Vector4();
     CORRADE_COMPARE(o.str(), "a Vector(0, 0, 0, 0) b Vector(0, 0, 0, 0)\n");
+}
+
+void VectorTest::debugPacked() {
+    std::ostringstream out;
+    /* Second is not packed, the first should not make any flags persistent */
+    Debug{&out} << Debug::packed << Vector4(0.5f, 15.0f, 1.0f, 1.0f) << Vector4();
+    CORRADE_COMPARE(out.str(), "{0.5, 15, 1, 1} Vector(0, 0, 0, 0)\n");
 }
 
 }}}}

@@ -231,11 +231,15 @@ template<class T> constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(
 #ifndef CORRADE_NO_DEBUG
 /** @debugoperator{Rad} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Unit<Rad, T>& value) {
+    if(debug.immediateFlags() >= Corrade::Utility::Debug::Flag::Packed)
+        return debug << T(value);
     return debug << "Rad(" << Corrade::Utility::Debug::nospace << T(value) << Corrade::Utility::Debug::nospace << ")";
 }
 
 /** @debugoperator{Deg} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Unit<Deg, T>& value) {
+    if(debug.immediateFlags() >= Corrade::Utility::Debug::Flag::Packed)
+        return debug << T(value);
     return debug << "Deg(" << Corrade::Utility::Debug::nospace << T(value) << Corrade::Utility::Debug::nospace << ")";
 }
 

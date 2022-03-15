@@ -52,7 +52,9 @@ struct AngleTest: Corrade::TestSuite::Tester {
     void conversion();
 
     void debugDeg();
+    void debugDegPacked();
     void debugRad();
+    void debugRadPacked();
     #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     template<class T> void tweakable();
     template<class T> void tweakableError();
@@ -125,7 +127,9 @@ AngleTest::AngleTest() {
               &AngleTest::conversion,
 
               &AngleTest::debugDeg,
-              &AngleTest::debugRad});
+              &AngleTest::debugDegPacked,
+              &AngleTest::debugRad,
+              &AngleTest::debugRadPacked});
 
     #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     addInstancedTests<AngleTest>({
@@ -282,6 +286,14 @@ void AngleTest::debugDeg() {
     CORRADE_COMPARE(o.str(), "Deg(22)\n");
 }
 
+void AngleTest::debugDegPacked() {
+    std::ostringstream out;
+
+    /* Second is not packed, the first should not make any flags persistent */
+    Debug{&out} << Debug::packed << 90.0_degf << 45.0_degf;
+    CORRADE_COMPARE(out.str(), "90 Deg(45)\n");
+}
+
 void AngleTest::debugRad() {
     std::ostringstream o;
 
@@ -292,6 +304,14 @@ void AngleTest::debugRad() {
     o.str({});
     Debug(&o) << 1.5708_radf - 3.1416_radf;
     CORRADE_COMPARE(o.str(), "Rad(-1.5708)\n");
+}
+
+void AngleTest::debugRadPacked() {
+    std::ostringstream out;
+
+    /* Second is not packed, the first should not make any flags persistent */
+    Debug{&out} << Debug::packed << 1.5708_radf << 3.1416_radf;
+    CORRADE_COMPARE(out.str(), "1.5708 Rad(3.1416)\n");
 }
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)

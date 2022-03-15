@@ -660,15 +660,18 @@ template<std::size_t size, std::size_t cols, class T> inline RectangularMatrix<c
 #ifndef CORRADE_NO_DEBUG
 /** @debugoperator{RectangularMatrix} */
 template<std::size_t cols, std::size_t rows, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Magnum::Math::RectangularMatrix<cols, rows, T>& value) {
-    debug << "Matrix(" << Corrade::Utility::Debug::nospace;
+    /** @todo might make sense to propagate the flags also, for hex value
+        printing etc */
+    const bool packed = debug.immediateFlags() >= Corrade::Utility::Debug::Flag::Packed;
+    debug << (packed ? "{" : "Matrix(") << Corrade::Utility::Debug::nospace;
     for(std::size_t row = 0; row != rows; ++row) {
-        if(row != 0) debug << Corrade::Utility::Debug::nospace << ",\n      ";
+        if(row != 0) debug << Corrade::Utility::Debug::nospace << (packed ? ",\n" : ",\n      ");
         for(std::size_t col = 0; col != cols; ++col) {
             if(col != 0) debug << Corrade::Utility::Debug::nospace << ",";
             debug << value[col][row];
         }
     }
-    return debug << Corrade::Utility::Debug::nospace << ")";
+    return debug << Corrade::Utility::Debug::nospace << (packed ? "}" : ")");
 }
 
 /* Explicit instantiation for commonly used types */

@@ -97,6 +97,7 @@ struct RectangularMatrixTest: Corrade::TestSuite::Tester {
     void strictWeakOrdering();
 
     void debug();
+    void debugPacked();
 };
 
 typedef RectangularMatrix<4, 3, Float> Matrix4x3;
@@ -156,7 +157,8 @@ RectangularMatrixTest::RectangularMatrixTest() {
 
               &RectangularMatrixTest::strictWeakOrdering,
 
-              &RectangularMatrixTest::debug});
+              &RectangularMatrixTest::debug,
+              &RectangularMatrixTest::debugPacked});
 }
 
 void RectangularMatrixTest::construct() {
@@ -807,6 +809,22 @@ void RectangularMatrixTest::debug() {
                              "       0, 0, 0) b Matrix(0, 0, 0, 0,\n"
                              "       0, 0, 0, 0,\n"
                              "       0, 0, 0, 0)\n");
+}
+
+void RectangularMatrixTest::debugPacked() {
+    Matrix3x4 m(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
+                Vector4(4.0f,  4.0f, 7.0f, 3.0f),
+                Vector4(7.0f, -1.0f, 8.0f, 0.0f));
+
+    std::ostringstream out;
+    /* Second is not packed, the first should not make any flags persistent */
+    Debug{&out} << Debug::packed << m << Matrix2x2{};
+    CORRADE_COMPARE(out.str(),
+        "{3, 4, 7,\n"
+        " 5, 4, -1,\n"
+        " 8, 7, 8,\n"
+        " 4, 3, 0} Matrix(0, 0,\n"
+        "       0, 0)\n");
 }
 
 }}}}
