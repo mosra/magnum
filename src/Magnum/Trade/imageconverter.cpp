@@ -32,6 +32,7 @@
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
@@ -72,7 +73,7 @@ magnum-imageconverter [-h|--help] [-I|--importer PLUGIN]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…] [-D|--dimensions N]
     [--image N] [--level N] [--layer N] [--layers] [--levels] [--in-place]
-    [--info] [-v|--verbose] [--profile] [--] input output
+    [--info] [--color on|off|auto] [-v|--verbose] [--profile] [--] input output
 @endcode
 
 Arguments:
@@ -102,6 +103,7 @@ Arguments:
 -   `--levels` --- combine multiple image levels into a single file
 -   `--in-place` --- overwrite the input image with the output
 -   `--info` --- print info about the input file and exit
+-   `--color` --- colored output for `--info` (default: `auto`)
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
 -   `--profile` --- measure import and conversion time
 
@@ -287,6 +289,7 @@ int main(int argc, char** argv) {
         .addBooleanOption("levels").setHelp("layers", "combine multiple image levels into a single file")
         .addBooleanOption("in-place").setHelp("in-place", "overwrite the input image with the output")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
+        .addOption("color", "auto").setHelp("color", "colored output for --info", "on|off|auto")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .addBooleanOption("profile").setHelp("profile", "measure import and conversion time")
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
@@ -497,29 +500,43 @@ key=true; configuration subgroups are delimited with /.)")
                 }
 
                 /* Parse everything first to avoid errors interleaved with
-                   output. In case the images have all just a single level and
-                   no names, write them in a compact way without listing
-                   levels. */
-                bool error = false, compact = true;
+                   output */
+                bool error = false;
                 Containers::Array<Trade::Implementation::ImageInfo> infos =
-                    Trade::Implementation::imageInfo(*importer, error, compact, importTime);
+                    Trade::Implementation::imageInfo(*importer, error, importTime);
+
+                /* Colored output. Enable only if a TTY. */
+                Debug::Flags useColor;
+                if(args.value("color") == "on")
+                    useColor = Debug::Flags{};
+                else if(args.value("color") == "off")
+                    useColor = Debug::Flag::DisableColors;
+                else
+                    useColor = Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors;
 
                 for(const Trade::Implementation::ImageInfo& info: infos) {
-                    Debug d;
+                    Debug d{useColor};
                     if(info.level == 0) {
+                        d << Debug::boldColor(Debug::Color::White);
                         if(info.size.z()) d << "3D image";
                         else if(info.size.y()) d << "2D image";
                         else d << "1D image";
-                        d << info.image << Debug::nospace << ":";
-                        if(!info.name.empty()) d << info.name;
-                        if(!compact) d << Debug::newline;
+                        d << info.image << Debug::nospace << ":"
+                            << Debug::resetColor;
+                        if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow)
+                            << info.name << Debug::resetColor;
+                        d << Debug::newline;
                     }
-                    if(!compact) d << "  Level" << info.level << Debug::nospace << ":";
-                    if(info.compressed) d << info.compressedFormat;
-                    else d << info.format;
+                    d << "  Level" << info.level << Debug::nospace << ":"
+                        << Debug::packed;
                     if(info.size.z()) d << info.size;
                     else if(info.size.y()) d << info.size.xy();
                     else d << Math::Vector<1, Int>(info.size.x());
+                    d << Debug::color(Debug::Color::Blue) << "@" << Debug::resetColor;
+                    d << Debug::packed;
+                    if(info.compressed) d << Debug::color(Debug::Color::Yellow) << info.compressedFormat;
+                    else d << Debug::color(Debug::Color::Cyan) << info.format;
+                    d << Debug::resetColor << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB)";
                 }
 
                 if(args.isSet("profile")) {

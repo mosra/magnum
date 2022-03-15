@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <cctype> /* std::isupper() */
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
@@ -87,8 +88,8 @@ magnum-sceneconverter [-h|--help] [-I|--importer IMPORTER]
     [-c|--converter-options key=val,key2=val2,…]... [--mesh MESH]
     [--level LEVEL] [--concatenate-meshes] [--info-animations] [--info-images]
     [--info-lights] [--info-materials] [--info-meshes] [--info-skins]
-    [--info-textures] [--info] [--bounds] [-v|--verbose] [--profile]
-    [--] input output
+    [--info-textures] [--info] [--color on|off|auto] [--bounds] [-v|--verbose]
+    [--profile] [--] input output
 @endcode
 
 Arguments:
@@ -131,6 +132,7 @@ Arguments:
 -   `--info-textures` --- print into about textures in the input file and exit
 -   `--info` --- print info about everything in the input file and exit, same
     as specifying all other `--info-*` options together
+-   `--color` --- colored output for `--info` (default: `auto`)
 -   `--bounds` --- show bounds of known attributes in `--info` output
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
 -   `--profile` --- measure import and conversion time
@@ -260,6 +262,7 @@ int main(int argc, char** argv) {
         .addBooleanOption("info-skins").setHelp("info-skins", "print info about skins in the input file and exit")
         .addBooleanOption("info-textures").setHelp("info-textures", "print info about textures in the input file and exit")
         .addBooleanOption("info").setHelp("info", "print info about everything in the input file and exit, same as specifying all other --info-* options together")
+        .addOption("color", "auto").setHelp("color", "colored output for --info", "on|off|auto")
         .addBooleanOption("bounds").setHelp("bounds", "show bounds of known attributes in --info output")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .addBooleanOption("profile").setHelp("profile", "measure import and conversion time")
@@ -719,31 +722,40 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             }
         }
 
-        /* In case the images have all just a single level and no names, write
-           them in a compact way without listing levels. */
-        bool compactImages = true;
+
         Containers::Array<Trade::Implementation::ImageInfo> imageInfos;
         if(args.isSet("info") || args.isSet("info-images")) {
-            imageInfos = Trade::Implementation::imageInfo(*importer, error, compactImages, importTime);
+            imageInfos = Trade::Implementation::imageInfo(*importer, error, importTime);
         }
 
+        /* Colored output. Enable only if a TTY. */
+        Debug::Flags useColor;
+        if(args.value("color") == "on")
+            useColor = Debug::Flags{};
+        else if(args.value("color") == "off")
+            useColor = Debug::Flag::DisableColors;
+        else
+            useColor = Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors;
+
         for(const SceneInfo& info: sceneInfos) {
-            Debug d;
-            d << "Scene" << info.scene << Debug::nospace << ":";
-            if(!info.name.empty()) d << info.name;
+            Debug d{useColor};
+            d << Debug::boldColor(Debug::Color::White) << "Scene" << info.scene << Debug::nospace << ":" << Debug::resetColor;
+            if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
             d << Debug::newline;
-            d << "    bound:" << info.mappingBound << "objects," << info.mappingType
+            d << "  Bound:" << info.mappingBound << "objects" << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << info.mappingType << Debug::resetColor
                 << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB)";
 
+            d << Debug::newline << "  Fields:";
             for(const SceneFieldInfo& field: info.fields) {
-                d << Debug::newline << " " << field.name;
+                d << Debug::newline << "   " << Debug::packed << Debug::boldColor(Debug::Color::White) << field.name << Debug::resetColor;
                 if(Trade::isSceneFieldCustom(field.name)) {
-                    d << "(" << Debug::nospace << field.customName
-                        << Debug::nospace << ")";
+                    d << Debug::color(Debug::Color::Yellow) << field.customName
+                        << Debug::resetColor;
                 }
-                d << "@" << field.type;
+                d << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << field.type;
                 if(field.arraySize)
                     d << Debug::nospace << Utility::format("[{}]", field.arraySize);
+                d << Debug::resetColor;
                 d << Debug::nospace << "," << field.size << "entries";
                 if(field.flags)
                     d << Debug::newline << "   " << field.flags;
@@ -751,92 +763,125 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         }
 
         for(const AnimationInfo& info: animationInfos) {
-            Debug d;
-            d << "Animation" << info.animation << Debug::nospace << ":";
-            if(!info.name.empty()) d << info.name;
+            Debug d{useColor};
+            d << Debug::boldColor(Debug::Color::White) << "Animation" << info.animation << Debug::nospace << ":" << Debug::resetColor;
+            if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
 
-            d << Debug::newline << "  Duration:" << info.data.duration();
+            d << Debug::newline << "  Duration:" << info.data.duration()
+                << "(" << Debug::nospace << Utility::format("{:.1f}", info.data.data().size()/1024.0f) << "kB)";
 
             for(UnsignedInt i = 0; i != info.data.trackCount(); ++i) {
                 d << Debug::newline << "  Track" << i << Debug::nospace << ":"
-                    << info.data.trackType(i);
+                    << Debug::packed << Debug::boldColor(Debug::Color::White)
+                    << info.data.trackTargetType(i)
+                    << Debug::color(Debug::Color::Blue) << "@"
+                    << Debug::packed << Debug::color(Debug::Color::Cyan)
+                    << info.data.trackType(i) << Debug::resetColor;
                 if(info.data.trackType(i) != info.data.trackResultType(i))
-                    d << "->" << info.data.trackResultType(i);
+                    d << Debug::color(Debug::Color::Blue) << "->"
+                        << Debug::packed << Debug::color(Debug::Color::Cyan)
+                        << info.data.trackResultType(i) << Debug::resetColor;
                 d << Debug::nospace << "," << info.data.track(i).size()
                     << "keyframes";
                 if(info.data.track(i).duration() != info.data.duration())
                     d << Debug::nospace << "," << info.data.track(i).duration();
-                d << Debug::newline << "   "
-                    << info.data.track(i).interpolation();
-                d << Debug::newline << "   "
-                    << info.data.track(i).before() << Debug::nospace << ","
-                    << info.data.track(i).after();
-                d << Debug::newline << "    Target: object"
-                    << info.data.trackTarget(i) << Debug::nospace << ","
-                    << info.data.trackTargetType(i);
+                d << Debug::newline
+                    << "    Interpolation:"
+                    << Debug::packed << Debug::color(Debug::Color::Cyan)
+                    << info.data.track(i).interpolation() << Debug::resetColor
+                    << Debug::nospace << "," << Debug::packed
+                    << Debug::color(Debug::Color::Cyan)
+                    << info.data.track(i).before() << Debug::resetColor
+                    << Debug::nospace << "," << Debug::packed
+                    << Debug::color(Debug::Color::Cyan)
+                    << info.data.track(i).after() << Debug::resetColor;
                 /** @todo might be useful to show bounds here as well, though
                     not so much for things like complex numbers or quats */
             }
         }
         for(const SkinInfo& info: skinInfos) {
-            Debug d;
-            d << "Skin" << info.skin;
+            Debug d{useColor};
+            d << Debug::boldColor(Debug::Color::White) << "Skin" << info.skin
+                << Debug::resetColor;
 
             /* Print reference count only if there actually are scenes and they
                were parsed, otherwise this information is useless */
             if(skinReferenceCount)
                 d << Utility::format("(referenced by {} objects)", skinReferenceCount[info.skin]);
 
-            d << Debug::nospace << ":";
-            if(!info.name.empty()) d << info.name;
+            d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+                << Debug::resetColor;
+            if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow)
+                << info.name << Debug::resetColor;
 
-            d << Debug::newline << "  Joints:" << info.data.joints();
+            d << Debug::newline << " " << info.data.joints().size() << "joints";
         }
 
         for(const LightInfo& info: lightInfos) {
-            Debug d;
-            d << "Light" << info.light;
+            Debug d{useColor};
+            d << Debug::boldColor(Debug::Color::White) << "Light" << info.light << Debug::resetColor;
 
             /* Print reference count only if there actually are scenes and they
                were parsed, otherwise this information is useless */
             if(lightReferenceCount)
                 d << Utility::format("(referenced by {} objects)", lightReferenceCount[info.light]);
 
-            d << Debug::nospace << ":";
-            if(!info.name.empty()) d << info.name;
+            d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+                << Debug::resetColor;
+            if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow)
+                << info.name << Debug::resetColor;
 
-            d << Debug::newline << "  Type:" << info.data.type();
-            d << Debug::newline << "  Color:" << info.data.color();
-            d << Debug::newline << "  Intensity:" << info.data.intensity();
-            d << Debug::newline << "  Attenuation:" << info.data.attenuation();
-            d << Debug::newline << "  Range:" << info.data.range();
+            d << Debug::newline << "  Type:" << Debug::packed
+                << Debug::color(Debug::Color::Cyan)
+                << info.data.type() << Debug::resetColor;
             if(info.data.type() == Trade::LightData::Type::Spot)
-                d << Debug::newline << "  Cone angles:" << Deg(info.data.innerConeAngle()) << Deg(info.data.outerConeAngle());
+                d << Debug::nospace << "," << Debug::packed
+                    << Deg(info.data.innerConeAngle()) << Debug::nospace
+                    << "° -" << Debug::packed << Deg(info.data.outerConeAngle())
+                    << Debug::nospace << "°";
+            d << Debug::newline << "  Color:" << Debug::packed
+                << info.data.color();
+            if(!Math::equal(info.data.intensity(), 1.0f))
+                d << "*" << info.data.intensity();
+            d << Debug::newline << "  Attenuation:" << Debug::packed
+                << info.data.attenuation();
+            if(info.data.range() != Constants::inf())
+                d << Debug::newline << "  Range:" << Debug::packed
+                    << info.data.range();
         }
 
         for(const MaterialInfo& info: materialInfos) {
-            Debug d;
-            d << "Material" << info.material;
+            Debug d{useColor};
+            d << Debug::boldColor(Debug::Color::White) << "Material" << info.material << Debug::resetColor;
 
             /* Print reference count only if there actually are scenes and they
                were parsed, otherwise this information is useless */
             if(materialReferenceCount)
                 d << Utility::format("(referenced by {} objects)", materialReferenceCount[info.material]);
 
-            d << Debug::nospace << ":";
-            if(!info.name.empty()) d << info.name;
+            d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+                << Debug::resetColor;
+            if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
 
-            d << Debug::newline << "  Type:" << info.data.types();
+            d << Debug::newline << "  Type:" << Debug::packed << Debug::color(Debug::Color::Cyan) << info.data.types() << Debug::resetColor;
 
             for(UnsignedInt i = 0; i != info.data.layerCount(); ++i) {
                 /* Print extra layers with extra indent */
                 const char* indent;
                 if(info.data.layerCount() != 1 && i != 0) {
                     d << Debug::newline << "  Layer" << i << Debug::nospace << ":";
-                    if(!info.data.layerName(i).isEmpty())
-                        d << info.data.layerName(i);
+                    if(!info.data.layerName(i).isEmpty()) {
+                        if(std::isupper(info.data.layerName(i)[0]))
+                            d << Debug::boldColor(Debug::Color::White);
+                        else
+                            d << Debug::color(Debug::Color::Yellow);
+                        d << info.data.layerName(i) << Debug::resetColor;
+                    }
                     indent = "   ";
-                } else indent = " ";
+                } else {
+                    d << Debug::newline << "  Base layer:";
+                    indent = "   ";
+                }
 
                 for(UnsignedInt j = 0; j != info.data.attributeCount(i); ++j) {
                     /* Ignore layer name (which is always first) unless it's in
@@ -845,16 +890,20 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     if(i && !j && info.data.attributeName(i, j) == " LayerName")
                         continue;
 
-                    d << Debug::newline << indent
-                        << info.data.attributeName(i, j) << "@"
-                        << info.data.attributeType(i, j) << Debug::nospace
+                    d << Debug::newline << indent;
+                    if(std::isupper(info.data.attributeName(i, j)[0]))
+                        d << Debug::boldColor(Debug::Color::White);
+                    else
+                        d << Debug::color(Debug::Color::Yellow);
+                    d << info.data.attributeName(i, j) << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan)
+                        << info.data.attributeType(i, j) << Debug::resetColor << Debug::nospace
                         << ":";
                     switch(info.data.attributeType(i, j)) {
                         case Trade::MaterialAttributeType::Bool:
                             d << info.data.attribute<bool>(i, j);
                             break;
                         #define _c(type) case Trade::MaterialAttributeType::type: \
-                            d << info.data.attribute<type>(i, j);           \
+                            d << Debug::packed << info.data.attribute<type>(i, j);           \
                             break;
                         _c(Float)
                         _c(Deg)
@@ -891,7 +940,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                             d << info.data.attribute<Containers::StringView>(i, j);
                             break;
                         case Trade::MaterialAttributeType::TextureSwizzle:
-                            d << info.data.attribute<Trade::MaterialTextureSwizzle>(i, j);
+                            d << Debug::packed << info.data.attribute<Trade::MaterialTextureSwizzle>(i, j);
                             break;
                     }
                 }
@@ -899,76 +948,95 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         }
 
         for(const MeshInfo& info: meshInfos) {
-            Debug d;
+            Debug d{useColor};
             if(info.level == 0) {
-                d << "Mesh" << info.mesh;
+                d << Debug::boldColor(Debug::Color::White) << "Mesh" << info.mesh << Debug::resetColor;
 
                 /* Print reference count only if there actually are scenes and
                    they were parsed, otherwise this information is useless */
                 if(meshReferenceCount)
                     d << Utility::format("(referenced by {} objects)", meshReferenceCount[info.mesh]);
 
-                d << Debug::nospace << ":";
-                if(!info.name.empty()) d << info.name;
+                d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+                    << Debug::resetColor;
+                if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
                 d << Debug::newline;
             }
             d << "  Level" << info.level << Debug::nospace << ":"
-                << info.primitive << Debug::nospace << "," << info.vertexCount
-                << "vertices (" << Debug::nospace
+                << info.vertexCount << "vertices" << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << info.primitive << Debug::resetColor << "(" << Debug::nospace
                 << Utility::format("{:.1f}", info.vertexDataSize/1024.0f)
                 << "kB)";
-            if(info.indexType != MeshIndexType{}) {
-                d << Debug::newline << "   " << info.indexCount << "indices, offset" << info.indexOffset << "@"
-                    << info.indexType << Debug::nospace << ", stride" << info.indexStride << "(" << Debug::nospace
-                    << Utility::format("{:.1f}", info.indexDataSize/1024.0f)
-                    << "kB)";
-                if(!info.indexBounds.empty())
-                    d << Debug::newline << "      bounds:" << info.indexBounds;
-            }
 
             for(const MeshAttributeInfo& attribute: info.attributes) {
-                d << Debug::newline << "    Offset" << attribute.offset
-                    << Debug::nospace << ":" << attribute.name;
+                d << Debug::newline << "   " << Debug::packed << Debug::boldColor(Debug::Color::White) << attribute.name;
                 if(Trade::isMeshAttributeCustom(attribute.name)) {
-                    d << "(" << Debug::nospace << attribute.customName
-                        << Debug::nospace << ")";
+                    d << Debug::color(Debug::Color::Yellow) << attribute.customName << Debug::resetColor;
                 }
-                d << "@" << attribute.format;
+                d << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << attribute.format;
                 if(attribute.arraySize)
                     d << Debug::nospace << Utility::format("[{}]", attribute.arraySize);
+                d << Debug::resetColor;
+                d << Debug::nospace << ", offset" << attribute.offset;
                 d << Debug::nospace << ", stride"
                     << attribute.stride;
                 if(!attribute.bounds.empty())
                     d << Debug::newline << "      bounds:" << attribute.bounds;
             }
+
+            if(info.indexType != MeshIndexType{}) {
+                d << Debug::newline << "   " << info.indexCount << "indices" << Debug::color(Debug::Color::Blue) << "@"
+                    << Debug::packed << Debug::color(Debug::Color::Cyan) << info.indexType << Debug::resetColor << Debug::nospace << ", offset" << info.indexOffset << Debug::nospace << ", stride" << info.indexStride << "(" << Debug::nospace
+                    << Utility::format("{:.1f}", info.indexDataSize/1024.0f)
+                    << "kB)";
+                if(!info.indexBounds.empty())
+                    d << Debug::newline << "      bounds:" << info.indexBounds;
+            }
         }
 
         for(const TextureInfo& info: textureInfos) {
-            Debug d;
-            d << "Texture" << info.texture;
+            Debug d{useColor};
+            d << Debug::boldColor(Debug::Color::White) << "Texture" << info.texture << Debug::resetColor;
 
             /* Print reference count only if there actually are materials and
                they were parsed, otherwise this information is useless */
             if(textureReferenceCount)
                 d << Utility::format("(referenced by {} material attributes)", textureReferenceCount[info.texture]);
 
-            d << Debug::nospace << ":";
-            if(!info.name.empty()) d << info.name;
+            d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+                << Debug::resetColor;
+            if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow)
+                << info.name << Debug::resetColor;
             d << Debug::newline;
-            d << "  Type:" << info.data.type();
-            d << "\n  Minification:" << info.data.minificationFilter() << info.data.mipmapFilter();
-            d << "\n  Magnification:" << info.data.magnificationFilter();
-            d << "\n  Wrapping:" << info.data.wrapping();
-            d << "\n  Image:" << info.data.image();
+            d << "  Type:"
+                << Debug::packed
+                << Debug::color(Debug::Color::Cyan) << info.data.type()
+                << Debug::resetColor << Debug::nospace << ", image"
+                << info.data.image();
+            d << Debug::newline << "  Minification, mipmap and magnification:"
+                << Debug::packed << Debug::color(Debug::Color::Cyan)
+                << info.data.minificationFilter() << Debug::nospace << ","
+                << Debug::packed << Debug::color(Debug::Color::Cyan)
+                << info.data.mipmapFilter() << Debug::nospace << ","
+                << Debug::packed << Debug::color(Debug::Color::Cyan)
+                << info.data.magnificationFilter() << Debug::resetColor;
+            d << Debug::newline << "  Wrapping:" << Debug::resetColor << "{" << Debug::nospace
+                << Debug::packed << Debug::color(Debug::Color::Cyan)
+                << info.data.wrapping()[0] << Debug::resetColor
+                << Debug::nospace << "," << Debug::packed
+                << Debug::color(Debug::Color::Cyan) << info.data.wrapping()[1]
+                << Debug::resetColor << Debug::nospace << "," << Debug::packed
+                << Debug::color(Debug::Color::Cyan) << info.data.wrapping()[1]
+                << Debug::resetColor << Debug::nospace << "}";
         }
 
         for(const Trade::Implementation::ImageInfo& info: imageInfos) {
-            Debug d;
+            Debug d{useColor};
             if(info.level == 0) {
+                d << Debug::boldColor(Debug::Color::White);
                 if(info.size.z()) d << "3D image";
                 else if(info.size.y()) d << "2D image";
                 else d << "1D image";
-                d << info.image;
+                d << info.image << Debug::resetColor;
 
                 /* Print reference count only if there actually are textures
                    and they were parsed otherwise this information is
@@ -980,16 +1048,22 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 else if(image1DReferenceCount)
                     d << Utility::format("(referenced by {} textures)", image1DReferenceCount[info.image]);
 
-                d << Debug::nospace << ":";
-                if(!info.name.empty()) d << info.name;
-                if(!compactImages) d << Debug::newline;
+                d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+                    << Debug::resetColor;
+                if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow)
+                    << info.name << Debug::resetColor;
+                d << Debug::newline;
             }
-            if(!compactImages) d << "  Level" << info.level << Debug::nospace << ":";
-            if(info.compressed) d << info.compressedFormat;
-            else d << info.format;
+            d << "  Level" << info.level << Debug::nospace << ":"
+                << Debug::packed;
             if(info.size.z()) d << info.size;
             else if(info.size.y()) d << info.size.xy();
             else d << Math::Vector<1, Int>(info.size.x());
+            d << Debug::color(Debug::Color::Blue) << "@" << Debug::resetColor;
+            d << Debug::packed;
+            if(info.compressed) d << Debug::color(Debug::Color::Yellow) << info.compressedFormat;
+            else d << Debug::color(Debug::Color::Cyan) << info.format;
+            d << Debug::resetColor << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB)";
         }
 
         if(args.isSet("profile")) {

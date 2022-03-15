@@ -212,6 +212,8 @@ See also:
     experimental `--concatenate-meshes` option, which will flatten the mesh
     hierarchy and concatenate all meshes together. Note that it doesn't
     correctly handle all corner cases yet and may assert on certain inputs.
+-   The @ref magnum-sceneconverter "magnum-sceneconverter" `--info` output is
+    now more compact and colored for better readability
 
 @subsubsection changelog-latest-new-shaders Shaders library
 
@@ -288,6 +290,8 @@ See also:
     @ref magnum-imageconverter "magnum-imageconverter" utility, as well as
     combining layers into images of one dimension more (or vice versa) and
     creating multi-level images from separate input files
+-   The @ref magnum-imageconverter "magnum-imageconverter" `--info` output is
+    now more compact and colored for better readability
 
 @subsubsection changelog-latest-new-vk Vk library
 

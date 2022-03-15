@@ -54,15 +54,15 @@ struct ImageInfo {
     PixelFormat format;
     CompressedPixelFormat compressedFormat;
     Vector3i size;
+    std::size_t dataSize;
     std::string name;
 };
 
-Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, bool& compact, std::chrono::high_resolution_clock::duration& importTime) {
+Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, std::chrono::high_resolution_clock::duration& importTime) {
     Containers::Array<ImageInfo> infos;
     for(UnsignedInt i = 0; i != importer.image1DCount(); ++i) {
         const std::string name = importer.image1DName(i);
         const UnsignedInt levelCount = importer.image1DLevelCount(i);
-        if(!name.empty() || levelCount != 1) compact = false;
 
         for(UnsignedInt j = 0; j != levelCount; ++j) {
             Containers::Optional<Trade::ImageData1D> image;
@@ -80,13 +80,13 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                 image->isCompressed() ?
                     image->compressedFormat() : CompressedPixelFormat{},
                 Vector3i::pad(image->size()),
+                image->data().size(),
                 j ? "" : importer.image1DName(i));
         }
     }
     for(UnsignedInt i = 0; i != importer.image2DCount(); ++i) {
         const std::string name = importer.image2DName(i);
         const UnsignedInt levelCount = importer.image2DLevelCount(i);
-        if(!name.empty() || levelCount != 1) compact = false;
 
         for(UnsignedInt j = 0; j != levelCount; ++j) {
             Containers::Optional<Trade::ImageData2D> image;
@@ -104,13 +104,13 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                 image->isCompressed() ?
                     image->compressedFormat() : CompressedPixelFormat{},
                 Vector3i::pad(image->size()),
+                image->data().size(),
                 j ? "" : name);
         }
     }
     for(UnsignedInt i = 0; i != importer.image3DCount(); ++i) {
         const std::string name = importer.image3DName(i);
         const UnsignedInt levelCount = importer.image3DLevelCount(i);
-        if(!name.empty() || levelCount != 1) compact = false;
 
         for(UnsignedInt j = 0; j != levelCount; ++j) {
             Containers::Optional<Trade::ImageData3D> image;
@@ -128,6 +128,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                 image->isCompressed() ?
                     image->compressedFormat() : CompressedPixelFormat{},
                 image->size(),
+                image->data().size(),
                 j ? "" : name);
         }
     }
