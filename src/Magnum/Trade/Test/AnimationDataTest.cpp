@@ -62,7 +62,9 @@ struct AnimationDataTest: TestSuite::Tester {
     void release();
 
     void debugAnimationTrackType();
+    void debugAnimationTrackTypePacked();
     void debugAnimationTrackTargetType();
+    void debugAnimationTrackTargetTypePacked();
 };
 
 struct {
@@ -103,7 +105,9 @@ AnimationDataTest::AnimationDataTest() {
               &AnimationDataTest::release,
 
               &AnimationDataTest::debugAnimationTrackType,
-              &AnimationDataTest::debugAnimationTrackTargetType});
+              &AnimationDataTest::debugAnimationTrackTypePacked,
+              &AnimationDataTest::debugAnimationTrackTargetType,
+              &AnimationDataTest::debugAnimationTrackTargetTypePacked});
 }
 
 using namespace Math::Literals;
@@ -661,11 +665,25 @@ void AnimationDataTest::debugAnimationTrackType() {
     CORRADE_COMPARE(out.str(), "Trade::AnimationTrackType::DualQuaternion Trade::AnimationTrackType(0xde)\n");
 }
 
+void AnimationDataTest::debugAnimationTrackTypePacked() {
+    std::ostringstream out;
+    /* Second is not packed, the first should not make any flags persistent */
+    Debug{&out} << Debug::packed << AnimationTrackType::DualQuaternion << Debug::packed << AnimationTrackType(0xde) << AnimationTrackType::Float;
+    CORRADE_COMPARE(out.str(), "DualQuaternion 0xde Trade::AnimationTrackType::Float\n");
+}
+
 void AnimationDataTest::debugAnimationTrackTargetType() {
     std::ostringstream out;
 
     Debug{&out} << AnimationTrackTargetType::Rotation3D << AnimationTrackTargetType(135) << AnimationTrackTargetType(0x42);
     CORRADE_COMPARE(out.str(), "Trade::AnimationTrackTargetType::Rotation3D Trade::AnimationTrackTargetType::Custom(135) Trade::AnimationTrackTargetType(0x42)\n");
+}
+
+void AnimationDataTest::debugAnimationTrackTargetTypePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << AnimationTrackTargetType::Rotation3D << Debug::packed << AnimationTrackTargetType(135) << Debug::packed << AnimationTrackTargetType(0x42) << AnimationTrackType::Float;
+    CORRADE_COMPARE(out.str(), "Rotation3D Custom(135) 0x42 Trade::AnimationTrackType::Float\n");
 }
 
 }}}}

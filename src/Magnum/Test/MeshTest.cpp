@@ -54,9 +54,13 @@ struct MeshTest: TestSuite::Tester {
     void indexTypeSizeImplementationSpecific();
 
     void debugPrimitive();
+    void debugPrimitivePacked();
     void debugPrimitiveImplementationSpecific();
+    void debugPrimitiveImplementationSpecificPacked();
     void debugIndexType();
+    void debugIndexTypePacked();
     void debugIndexTypeImplementationSpecific();
+    void debugIndexTypeImplementationSpecificPacked();
 
     void configurationPrimitive();
     void configurationIndexType();
@@ -81,9 +85,13 @@ MeshTest::MeshTest() {
               &MeshTest::indexTypeSizeImplementationSpecific,
 
               &MeshTest::debugPrimitive,
+              &MeshTest::debugPrimitivePacked,
               &MeshTest::debugPrimitiveImplementationSpecific,
+              &MeshTest::debugPrimitiveImplementationSpecificPacked,
               &MeshTest::debugIndexType,
+              &MeshTest::debugIndexTypePacked,
               &MeshTest::debugIndexTypeImplementationSpecific,
+              &MeshTest::debugIndexTypeImplementationSpecificPacked,
 
               &MeshTest::configurationPrimitive,
               &MeshTest::configurationIndexType});
@@ -288,6 +296,13 @@ void MeshTest::debugPrimitive() {
     CORRADE_COMPARE(o.str(), "MeshPrimitive::TriangleFan MeshPrimitive(0x70fe)\n");
 }
 
+void MeshTest::debugPrimitivePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << MeshPrimitive::TriangleFan << Debug::packed << MeshPrimitive(0x70fe) << MeshPrimitive::Triangles;
+    CORRADE_COMPARE(out.str(), "TriangleFan 0x70fe MeshPrimitive::Triangles\n");
+}
+
 void MeshTest::debugPrimitiveImplementationSpecific() {
     std::ostringstream out;
     Debug{&out} << meshPrimitiveWrap(0xdead);
@@ -295,10 +310,24 @@ void MeshTest::debugPrimitiveImplementationSpecific() {
     CORRADE_COMPARE(out.str(), "MeshPrimitive::ImplementationSpecific(0xdead)\n");
 }
 
+void MeshTest::debugPrimitiveImplementationSpecificPacked() {
+    std::ostringstream out;
+    /* Second is not packed, the first should not make any flags persistent */
+    Debug{&out} << Debug::packed << meshPrimitiveWrap(0xdead) << MeshPrimitive::Triangles;
+    CORRADE_COMPARE(out.str(), "ImplementationSpecific(0xdead) MeshPrimitive::Triangles\n");
+}
+
 void MeshTest::debugIndexType() {
     std::ostringstream o;
     Debug(&o) << MeshIndexType::UnsignedShort << MeshIndexType(0x70fe);
-    CORRADE_COMPARE(o.str(), "MeshIndexType::UnsignedShort MeshIndexType(0xfe)\n");
+    CORRADE_COMPARE(o.str(), "MeshIndexType::UnsignedShort MeshIndexType(0x70fe)\n");
+}
+
+void MeshTest::debugIndexTypePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug(&out) << Debug::packed << MeshIndexType::UnsignedShort << Debug::packed << MeshIndexType(0x70fe) << MeshIndexType::UnsignedInt;
+    CORRADE_COMPARE(out.str(), "UnsignedShort 0x70fe MeshIndexType::UnsignedInt\n");
 }
 
 void MeshTest::debugIndexTypeImplementationSpecific() {
@@ -306,6 +335,13 @@ void MeshTest::debugIndexTypeImplementationSpecific() {
     Debug{&out} << meshIndexTypeWrap(0xdead);
 
     CORRADE_COMPARE(out.str(), "MeshIndexType::ImplementationSpecific(0xdead)\n");
+}
+
+void MeshTest::debugIndexTypeImplementationSpecificPacked() {
+    std::ostringstream out;
+    /* Second is not packed, the first should not make any flags persistent */
+    Debug{&out} << Debug::packed << meshIndexTypeWrap(0xdead) << MeshIndexType::UnsignedInt;
+    CORRADE_COMPARE(out.str(), "ImplementationSpecific(0xdead) MeshIndexType::UnsignedInt\n");
 }
 
 void MeshTest::configurationPrimitive() {

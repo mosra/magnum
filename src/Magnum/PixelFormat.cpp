@@ -132,17 +132,20 @@ constexpr const char* PixelFormatNames[] {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const PixelFormat value) {
-    debug << "PixelFormat" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "PixelFormat" << Debug::nospace;
 
     if(isPixelFormatImplementationSpecific(value)) {
-        return debug << "::ImplementationSpecific(" << Debug::nospace << reinterpret_cast<void*>(pixelFormatUnwrap(value)) << Debug::nospace << ")";
+        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << reinterpret_cast<void*>(pixelFormatUnwrap(value)) << Debug::nospace << ")";
     }
 
     if(UnsignedInt(value) - 1 < Containers::arraySize(PixelFormatNames)) {
-        return debug << "::" << Debug::nospace << PixelFormatNames[UnsignedInt(value) - 1];
+        return debug << (packed ? "" : "::") << Debug::nospace << PixelFormatNames[UnsignedInt(value) - 1];
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
 }
 #endif
 
@@ -198,17 +201,20 @@ UnsignedInt compressedBlockDataSize(const CompressedPixelFormat format) {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
-    debug << "CompressedPixelFormat" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "CompressedPixelFormat" << Debug::nospace;
 
     if(isCompressedPixelFormatImplementationSpecific(value)) {
-        return debug << "::ImplementationSpecific(" << Debug::nospace << reinterpret_cast<void*>(compressedPixelFormatUnwrap(value)) << Debug::nospace << ")";
+        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << reinterpret_cast<void*>(compressedPixelFormatUnwrap(value)) << Debug::nospace << ")";
     }
 
     if(UnsignedInt(value) - 1 < Containers::arraySize(CompressedPixelFormatNames)) {
-        return debug << "::" << Debug::nospace << CompressedPixelFormatNames[UnsignedInt(value) - 1];
+        return debug << (packed ? "" : "::") << Debug::nospace << CompressedPixelFormatNames[UnsignedInt(value) - 1];
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
 }
 #endif
 

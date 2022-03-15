@@ -61,10 +61,14 @@ struct PixelFormatTest: TestSuite::Tester {
     void compressedUnwrapInvalid();
 
     void debug();
+    void debugPacked();
     void debugImplementationSpecific();
+    void debugImplementationSpecificPacked();
 
     void compressedDebug();
+    void compressedDebugPacked();
     void compressedDebugImplementationSpecific();
+    void compressedDebugImplementationSpecificPacked();
 
     void configuration();
     void compresedConfiguration();
@@ -95,10 +99,14 @@ PixelFormatTest::PixelFormatTest() {
               &PixelFormatTest::compressedUnwrapInvalid,
 
               &PixelFormatTest::debug,
+              &PixelFormatTest::debugPacked,
               &PixelFormatTest::debugImplementationSpecific,
+              &PixelFormatTest::debugImplementationSpecificPacked,
 
               &PixelFormatTest::compressedDebug,
+              &PixelFormatTest::compressedDebugPacked,
               &PixelFormatTest::compressedDebugImplementationSpecific,
+              &PixelFormatTest::compressedDebugImplementationSpecificPacked,
 
               &PixelFormatTest::configuration,
               &PixelFormatTest::compresedConfiguration});
@@ -367,11 +375,27 @@ void PixelFormatTest::debug() {
     CORRADE_COMPARE(out.str(), "PixelFormat::RG16Snorm PixelFormat(0xdead)\n");
 }
 
+void PixelFormatTest::debugPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << PixelFormat::RG16Snorm << Debug::packed << PixelFormat(0xdead) << PixelFormat::RGBA8Unorm;
+
+    CORRADE_COMPARE(out.str(), "RG16Snorm 0xdead PixelFormat::RGBA8Unorm\n");
+}
+
 void PixelFormatTest::debugImplementationSpecific() {
     std::ostringstream out;
     Debug{&out} << pixelFormatWrap(0xdead);
 
     CORRADE_COMPARE(out.str(), "PixelFormat::ImplementationSpecific(0xdead)\n");
+}
+
+void PixelFormatTest::debugImplementationSpecificPacked() {
+    std::ostringstream out;
+    /* Second is not packed, the first should not make any flags persistent */
+    Debug{&out} << Debug::packed << pixelFormatWrap(0xdead) << PixelFormat::RGBA8Unorm;
+
+    CORRADE_COMPARE(out.str(), "ImplementationSpecific(0xdead) PixelFormat::RGBA8Unorm\n");
 }
 
 void PixelFormatTest::compressedDebug() {
@@ -381,11 +405,27 @@ void PixelFormatTest::compressedDebug() {
     CORRADE_COMPARE(out.str(), "CompressedPixelFormat::Bc3RGBAUnorm CompressedPixelFormat(0xdead)\n");
 }
 
+void PixelFormatTest::compressedDebugPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << CompressedPixelFormat::Bc3RGBAUnorm << Debug::packed << CompressedPixelFormat(0xdead) << CompressedPixelFormat::Astc10x10RGBAF;
+
+    CORRADE_COMPARE(out.str(), "Bc3RGBAUnorm 0xdead CompressedPixelFormat::Astc10x10RGBAF\n");
+}
+
 void PixelFormatTest::compressedDebugImplementationSpecific() {
     std::ostringstream out;
     Debug{&out} << compressedPixelFormatWrap(0xdead);
 
     CORRADE_COMPARE(out.str(), "CompressedPixelFormat::ImplementationSpecific(0xdead)\n");
+}
+
+void PixelFormatTest::compressedDebugImplementationSpecificPacked() {
+    std::ostringstream out;
+    /* Second is not packed, the first should not make any flags persistent */
+    Debug{&out} << compressedPixelFormatWrap(0xdead) << CompressedPixelFormat::Astc10x10RGBAF;
+
+    CORRADE_COMPARE(out.str(), "CompressedPixelFormat::ImplementationSpecific(0xdead) CompressedPixelFormat::Astc10x10RGBAF\n");
 }
 
 void PixelFormatTest::configuration() {

@@ -35,14 +35,20 @@ struct SamplerTest: TestSuite::Tester {
     explicit SamplerTest();
 
     void debugFilter();
+    void debugFilterPacked();
     void debugMipmap();
+    void debugMipmapPacked();
     void debugWrapping();
+    void debugWrappingPacked();
 };
 
 SamplerTest::SamplerTest() {
     addTests({&SamplerTest::debugFilter,
+              &SamplerTest::debugFilterPacked,
               &SamplerTest::debugMipmap,
-              &SamplerTest::debugWrapping});
+              &SamplerTest::debugMipmapPacked,
+              &SamplerTest::debugWrapping,
+              &SamplerTest::debugWrappingPacked});
 }
 
 void SamplerTest::debugFilter() {
@@ -52,6 +58,13 @@ void SamplerTest::debugFilter() {
     CORRADE_COMPARE(out.str(), "SamplerFilter::Linear SamplerFilter(0xdead)\n");
 }
 
+void SamplerTest::debugFilterPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug(&out) << Debug::packed << SamplerFilter::Linear << Debug::packed << SamplerFilter(0xdead) << SamplerFilter::Nearest;
+    CORRADE_COMPARE(out.str(), "Linear 0xdead SamplerFilter::Nearest\n");
+}
+
 void SamplerTest::debugMipmap() {
     std::ostringstream out;
 
@@ -59,11 +72,25 @@ void SamplerTest::debugMipmap() {
     CORRADE_COMPARE(out.str(), "SamplerMipmap::Base SamplerMipmap(0xdead)\n");
 }
 
+void SamplerTest::debugMipmapPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug(&out) << Debug::packed << SamplerMipmap::Base << Debug::packed << SamplerMipmap(0xdead) << SamplerMipmap::Nearest;
+    CORRADE_COMPARE(out.str(), "Base 0xdead SamplerMipmap::Nearest\n");
+}
+
 void SamplerTest::debugWrapping() {
     std::ostringstream out;
 
     Debug(&out) << SamplerWrapping::ClampToEdge << SamplerWrapping(0xdead);
     CORRADE_COMPARE(out.str(), "SamplerWrapping::ClampToEdge SamplerWrapping(0xdead)\n");
+}
+
+void SamplerTest::debugWrappingPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug(&out) << Debug::packed << SamplerWrapping::ClampToEdge << Debug::packed << SamplerWrapping(0xdead) << SamplerWrapping::Repeat;
+    CORRADE_COMPARE(out.str(), "ClampToEdge 0xdead SamplerWrapping::Repeat\n");
 }
 
 }}}

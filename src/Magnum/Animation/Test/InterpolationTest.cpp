@@ -85,7 +85,9 @@ struct InterpolationTest: TestSuite::Tester {
     void unpackEaseClamped();
 
     void debugInterpolation();
+    void debugInterpolationPacked();
     void debugExtrapolation();
+    void debugExtrapolationPacked();
 };
 
 using namespace Math::Literals;
@@ -207,7 +209,9 @@ InterpolationTest::InterpolationTest() {
               &InterpolationTest::unpackEaseClamped,
 
               &InterpolationTest::debugInterpolation,
-              &InterpolationTest::debugExtrapolation});
+              &InterpolationTest::debugInterpolationPacked,
+              &InterpolationTest::debugExtrapolation,
+              &InterpolationTest::debugExtrapolationPacked});
 }
 
 void InterpolationTest::interpolatorFor() {
@@ -654,12 +658,27 @@ void InterpolationTest::debugInterpolation() {
     CORRADE_COMPARE(out.str(), "Animation::Interpolation::Custom Animation::Interpolation(0xde)\n");
 }
 
+void InterpolationTest::debugInterpolationPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << Interpolation::Custom << Debug::packed << Interpolation(0xde) << Interpolation::Constant;
+    CORRADE_COMPARE(out.str(), "Custom 0xde Animation::Interpolation::Constant\n");
+}
+
 void InterpolationTest::debugExtrapolation() {
     std::ostringstream out;
 
     Debug{&out} << Extrapolation::DefaultConstructed << Extrapolation(0xde);
     CORRADE_COMPARE(out.str(), "Animation::Extrapolation::DefaultConstructed Animation::Extrapolation(0xde)\n");
 }
+
+void InterpolationTest::debugExtrapolationPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << Extrapolation::DefaultConstructed << Debug::packed << Extrapolation(0xde) << Extrapolation::Constant;
+    CORRADE_COMPARE(out.str(), "DefaultConstructed 0xde Animation::Extrapolation::Constant\n");
+}
+
 
 }}}}
 

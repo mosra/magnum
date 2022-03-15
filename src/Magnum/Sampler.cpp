@@ -31,26 +31,32 @@ namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const SamplerFilter value) {
-    debug << "SamplerFilter" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "SamplerFilter" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SamplerFilter::value: return debug << "::" #value;
+        #define _c(value) case SamplerFilter::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Nearest)
         _c(Linear)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const SamplerMipmap value) {
-    debug << "SamplerMipmap" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "SamplerMipmap" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SamplerMipmap::value: return debug << "::" #value;
+        #define _c(value) case SamplerMipmap::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Base)
         _c(Nearest)
         _c(Linear)
@@ -58,15 +64,18 @@ Debug& operator<<(Debug& debug, const SamplerMipmap value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const SamplerWrapping value) {
-    debug << "SamplerWrapping" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "SamplerWrapping" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SamplerWrapping::value: return debug << "::" #value;
+        #define _c(value) case SamplerWrapping::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Repeat)
         _c(MirroredRepeat)
         _c(ClampToEdge)
@@ -76,7 +85,7 @@ Debug& operator<<(Debug& debug, const SamplerWrapping value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
 }
 #endif
 

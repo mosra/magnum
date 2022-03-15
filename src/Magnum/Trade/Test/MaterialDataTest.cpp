@@ -152,17 +152,24 @@ class MaterialDataTest: public TestSuite::Tester {
         void templateLayerAccessMutable();
 
         void debugLayer();
+        /* No packed version, as layer name is stored as a string */
         void debugAttribute();
+        /* No packed version, as attribute name is stored as a string */
         void debugTextureSwizzle();
+        void debugTextureSwizzlePacked();
         void debugAttributeType();
+        void debugAttributeTypePacked();
 
         void debugType();
+        void debugTypePacked();
         void debugTypes();
+        void debugTypesPacked();
         #ifdef MAGNUM_BUILD_DEPRECATED
         void debugFlag();
         void debugFlags();
         #endif
         void debugAlphaMode();
+        void debugAlphaModePacked();
 };
 
 MaterialDataTest::MaterialDataTest() {
@@ -300,15 +307,20 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::debugLayer,
               &MaterialDataTest::debugAttribute,
               &MaterialDataTest::debugTextureSwizzle,
+              &MaterialDataTest::debugTextureSwizzlePacked,
               &MaterialDataTest::debugAttributeType,
+              &MaterialDataTest::debugAttributeTypePacked,
 
               &MaterialDataTest::debugType,
+              &MaterialDataTest::debugTypePacked,
               &MaterialDataTest::debugTypes,
+              &MaterialDataTest::debugTypesPacked,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &MaterialDataTest::debugFlag,
               &MaterialDataTest::debugFlags,
               #endif
-              &MaterialDataTest::debugAlphaMode});
+              &MaterialDataTest::debugAlphaMode,
+              &MaterialDataTest::debugAlphaModePacked});
 }
 
 using namespace Containers::Literals;
@@ -3016,11 +3028,25 @@ void MaterialDataTest::debugTextureSwizzle() {
     CORRADE_COMPARE(out.str(), "Trade::MaterialTextureSwizzle::BA Trade::MaterialTextureSwizzle::\n");
 }
 
+void MaterialDataTest::debugTextureSwizzlePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << MaterialTextureSwizzle::BA << Debug::packed << MaterialTextureSwizzle{} << MaterialTextureSwizzle::RG;
+    CORRADE_COMPARE(out.str(), "BA  Trade::MaterialTextureSwizzle::RG\n");
+}
+
 void MaterialDataTest::debugAttributeType() {
     std::ostringstream out;
 
     Debug{&out} << MaterialAttributeType::Matrix3x2 << MaterialAttributeType(0xfe);
     CORRADE_COMPARE(out.str(), "Trade::MaterialAttributeType::Matrix3x2 Trade::MaterialAttributeType(0xfe)\n");
+}
+
+void MaterialDataTest::debugAttributeTypePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << MaterialAttributeType::Matrix3x2 << Debug::packed << MaterialAttributeType(0xfe) << MaterialAttributeType::Float;
+    CORRADE_COMPARE(out.str(), "Matrix3x2 0xfe Trade::MaterialAttributeType::Float\n");
 }
 
 void MaterialDataTest::debugType() {
@@ -3030,11 +3056,25 @@ void MaterialDataTest::debugType() {
     CORRADE_COMPARE(out.str(), "Trade::MaterialType::Phong Trade::MaterialType(0xbe)\n");
 }
 
+void MaterialDataTest::debugTypePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << MaterialType::Phong << Debug::packed << MaterialType(0xbe) << MaterialType::Flat;
+    CORRADE_COMPARE(out.str(), "Phong 0xbe Trade::MaterialType::Flat\n");
+}
+
 void MaterialDataTest::debugTypes() {
     std::ostringstream out;
 
     Debug{&out} << (MaterialType::Phong|MaterialType(0xe0)) << MaterialTypes{};
     CORRADE_COMPARE(out.str(), "Trade::MaterialType::Phong|Trade::MaterialType(0xe0) Trade::MaterialTypes{}\n");
+}
+
+void MaterialDataTest::debugTypesPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (MaterialType::Phong|MaterialType(0xe0)) << Debug::packed << MaterialTypes{} << MaterialType::Flat;
+    CORRADE_COMPARE(out.str(), "Phong|0xe0 {} Trade::MaterialType::Flat\n");
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -3060,6 +3100,13 @@ void MaterialDataTest::debugAlphaMode() {
 
     Debug{&out} << MaterialAlphaMode::Opaque << MaterialAlphaMode(0xee);
     CORRADE_COMPARE(out.str(), "Trade::MaterialAlphaMode::Opaque Trade::MaterialAlphaMode(0xee)\n");
+}
+
+void MaterialDataTest::debugAlphaModePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << MaterialAlphaMode::Opaque << Debug::packed << MaterialAlphaMode(0xee) << MaterialAlphaMode::Blend;
+    CORRADE_COMPARE(out.str(), "Opaque 0xee Trade::MaterialAlphaMode::Blend\n");
 }
 
 }}}}

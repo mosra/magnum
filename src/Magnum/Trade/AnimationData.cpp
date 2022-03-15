@@ -145,11 +145,14 @@ template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<CubicHermiteComplex, 
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<CubicHermiteQuaternion, Quaternion>(Animation::Interpolation) -> Quaternion(*)(const CubicHermiteQuaternion&, const CubicHermiteQuaternion&, Float);
 
 Debug& operator<<(Debug& debug, const AnimationTrackType value) {
-    debug << "Trade::AnimationTrackType" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::AnimationTrackType" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case AnimationTrackType::value: return debug << "::" #value;
+        #define _c(value) case AnimationTrackType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Bool)
         _c(Float)
         _c(UnsignedInt)
@@ -178,16 +181,21 @@ Debug& operator<<(Debug& debug, const AnimationTrackType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const AnimationTrackTargetType value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::AnimationTrackTargetType" << Debug::nospace;
+
     if(UnsignedByte(value) >= UnsignedByte(AnimationTrackTargetType::Custom))
-        return debug << "Trade::AnimationTrackTargetType::Custom(" << Debug::nospace << UnsignedByte(value) << Debug::nospace << ")";
+        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << UnsignedByte(value) << Debug::nospace << ")";
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case AnimationTrackTargetType::value: return debug << "Trade::AnimationTrackTargetType::" #value;
+        #define _c(value) case AnimationTrackTargetType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Translation2D)
         _c(Translation3D)
         _c(Rotation2D)
@@ -201,7 +209,7 @@ Debug& operator<<(Debug& debug, const AnimationTrackTargetType value) {
         case AnimationTrackTargetType::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 
-    return debug << "Trade::AnimationTrackTargetType(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
 }
 #endif
 

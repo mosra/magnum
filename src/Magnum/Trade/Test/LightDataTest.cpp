@@ -46,6 +46,7 @@ struct LightDataTest: TestSuite::Tester {
     void constructMove();
 
     void debugType();
+    void debugTypePacked();
 };
 
 using namespace Math::Literals;
@@ -97,7 +98,8 @@ LightDataTest::LightDataTest() {
     addTests({&LightDataTest::constructCopy,
               &LightDataTest::constructMove,
 
-              &LightDataTest::debugType});
+              &LightDataTest::debugType,
+              &LightDataTest::debugTypePacked});
 }
 
 void LightDataTest::construct() {
@@ -439,6 +441,13 @@ void LightDataTest::debugType() {
 
     Debug(&out) << LightData::Type::Spot << LightData::Type(0xbe);
     CORRADE_COMPARE(out.str(), "Trade::LightData::Type::Spot Trade::LightData::Type(0xbe)\n");
+}
+
+void LightDataTest::debugTypePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug(&out) << Debug::packed << LightData::Type::Spot << Debug::packed << LightData::Type(0xbe) << LightData::Type::Ambient;
+    CORRADE_COMPARE(out.str(), "Spot 0xbe Trade::LightData::Type::Ambient\n");
 }
 
 }}}}

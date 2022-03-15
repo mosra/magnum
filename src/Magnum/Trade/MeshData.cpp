@@ -869,14 +869,17 @@ Containers::Array<char> MeshData::releaseVertexData() {
 }
 
 Debug& operator<<(Debug& debug, const MeshAttribute value) {
-    debug << "Trade::MeshAttribute" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::MeshAttribute" << Debug::nospace;
 
     if(UnsignedShort(value) >= UnsignedShort(MeshAttribute::Custom))
-        return debug << "::Custom(" << Debug::nospace << (UnsignedShort(value) - UnsignedShort(MeshAttribute::Custom)) << Debug::nospace << ")";
+        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << (UnsignedInt(value) - UnsignedInt(MeshAttribute::Custom)) << Debug::nospace << ")";
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case MeshAttribute::value: return debug << "::" #value;
+        #define _c(value) case MeshAttribute::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Position)
         _c(Tangent)
         _c(Bitangent)
@@ -891,7 +894,7 @@ Debug& operator<<(Debug& debug, const MeshAttribute value) {
         case MeshAttribute::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 }}

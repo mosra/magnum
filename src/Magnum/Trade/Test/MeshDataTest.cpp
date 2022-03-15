@@ -43,6 +43,7 @@ struct MeshDataTest: TestSuite::Tester {
     void customAttributeNameTooLarge();
     void customAttributeNameNotCustom();
     void debugAttributeName();
+    void debugAttributeNamePacked();
 
     void constructIndexContiguous();
     void constructIndexStrided();
@@ -215,6 +216,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::customAttributeNameTooLarge,
               &MeshDataTest::customAttributeNameNotCustom,
               &MeshDataTest::debugAttributeName,
+              &MeshDataTest::debugAttributeNamePacked,
 
               &MeshDataTest::constructIndexContiguous,
               &MeshDataTest::constructIndexStrided,
@@ -462,6 +464,13 @@ void MeshDataTest::debugAttributeName() {
     std::ostringstream out;
     Debug{&out} << MeshAttribute::Position << meshAttributeCustom(73) << MeshAttribute(0x73);
     CORRADE_COMPARE(out.str(), "Trade::MeshAttribute::Position Trade::MeshAttribute::Custom(73) Trade::MeshAttribute(0x73)\n");
+}
+
+void MeshDataTest::debugAttributeNamePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << MeshAttribute::Position << Debug::packed << meshAttributeCustom(73) << Debug::packed << MeshAttribute(0x73) << MeshAttribute::Normal;
+    CORRADE_COMPARE(out.str(), "Position Custom(73) 0x73 Trade::MeshAttribute::Normal\n");
 }
 
 using namespace Math::Literals;

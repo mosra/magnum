@@ -47,6 +47,7 @@ struct CameraDataTest: TestSuite::Tester {
     void fovNonPerspective();
 
     void debugType();
+    void debugTypePacked();
 };
 
 CameraDataTest::CameraDataTest() {
@@ -62,7 +63,8 @@ CameraDataTest::CameraDataTest() {
 
               &CameraDataTest::fovNonPerspective,
 
-              &CameraDataTest::debugType});
+              &CameraDataTest::debugType,
+              &CameraDataTest::debugTypePacked});
 }
 
 using namespace Math::Literals;
@@ -182,6 +184,13 @@ void CameraDataTest::debugType() {
 
     Debug{&out} << CameraType::Orthographic3D << CameraType(0xde);
     CORRADE_COMPARE(out.str(), "Trade::CameraType::Orthographic3D Trade::CameraType(0xde)\n");
+}
+
+void CameraDataTest::debugTypePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << CameraType::Orthographic3D << Debug::packed << CameraType(0xde) << CameraType::Perspective3D;
+    CORRADE_COMPARE(out.str(), "Orthographic3D 0xde Trade::CameraType::Perspective3D\n");
 }
 
 }}}}

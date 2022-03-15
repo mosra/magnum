@@ -30,11 +30,14 @@
 namespace Magnum { namespace Trade {
 
 Debug& operator<<(Debug& debug, const DataFlag value) {
-    debug << "Trade::DataFlag" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::DataFlag" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case DataFlag::v: return debug << "::" #v;
+        #define _c(v) case DataFlag::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
         _c(Owned)
         _c(ExternallyOwned)
         _c(Mutable)
@@ -42,11 +45,11 @@ Debug& operator<<(Debug& debug, const DataFlag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const DataFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::DataFlags{}", {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::DataFlags{}", {
         DataFlag::Owned,
         DataFlag::ExternallyOwned,
         DataFlag::Mutable});

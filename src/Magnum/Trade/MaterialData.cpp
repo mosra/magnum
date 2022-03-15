@@ -968,16 +968,24 @@ Debug& operator<<(Debug& debug, const MaterialTextureSwizzle value) {
        a char. Worst case this will print nothing or four garbage letters.
        Sorry in that case. GCC 4.8 doesn't understand just {}, wants to have
        a full MaterialTextureSwizzle{} here. */
-    MaterialTextureSwizzle values[]{value, MaterialTextureSwizzle{}};
-    return debug << "Trade::MaterialTextureSwizzle::" << Debug::nospace << reinterpret_cast<const char*>(values);
+    const MaterialTextureSwizzle values[]{value, MaterialTextureSwizzle{}};
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::MaterialTextureSwizzle::" << Debug::nospace;
+
+    return debug << reinterpret_cast<const char*>(values);
 }
 
 Debug& operator<<(Debug& debug, const MaterialAttributeType value) {
-    debug << "Trade::MaterialAttributeType" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::MaterialAttributeType" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case MaterialAttributeType::value: return debug << "::" #value;
+        #define _c(value) case MaterialAttributeType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Bool)
         _c(Float)
         _c(Deg)
@@ -1011,15 +1019,18 @@ Debug& operator<<(Debug& debug, const MaterialAttributeType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const MaterialType value) {
-    debug << "Trade::MaterialType" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::MaterialType" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case MaterialType::value: return debug << "::" #value;
+        #define _c(value) case MaterialType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Flat)
         _c(Phong)
         _c(PbrMetallicRoughness)
@@ -1029,11 +1040,11 @@ Debug& operator<<(Debug& debug, const MaterialType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const MaterialTypes value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::MaterialTypes{}", {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::MaterialTypes{}", {
         MaterialType::Flat,
         MaterialType::Phong,
         MaterialType::PbrMetallicRoughness,
@@ -1067,11 +1078,14 @@ CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 Debug& operator<<(Debug& debug, const MaterialAlphaMode value) {
-    debug << "Trade::MaterialAlphaMode" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::MaterialAlphaMode" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case MaterialAlphaMode::value: return debug << "::" #value;
+        #define _c(value) case MaterialAlphaMode::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Opaque)
         _c(Mask)
         _c(Blend)
@@ -1079,7 +1093,7 @@ Debug& operator<<(Debug& debug, const MaterialAlphaMode value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 }}

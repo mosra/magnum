@@ -40,6 +40,7 @@ class TextureDataTest: public TestSuite::Tester {
         void constructMove();
 
         void debugType();
+        void debugTypePacked();
 };
 
 TextureDataTest::TextureDataTest() {
@@ -47,7 +48,8 @@ TextureDataTest::TextureDataTest() {
               &TextureDataTest::constructCopy,
               &TextureDataTest::constructMove,
 
-              &TextureDataTest::debugType});
+              &TextureDataTest::debugType,
+              &TextureDataTest::debugTypePacked});
 }
 
 void TextureDataTest::construct() {
@@ -121,6 +123,13 @@ void TextureDataTest::debugType() {
 
     Debug(&out) << TextureType::Texture3D << TextureType(0xbe);
     CORRADE_COMPARE(out.str(), "Trade::TextureType::Texture3D Trade::TextureType(0xbe)\n");
+}
+
+void TextureDataTest::debugTypePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug(&out) << Debug::packed << TextureType::Texture3D << Debug::packed << TextureType(0xbe) << TextureType::Texture2D;
+    CORRADE_COMPARE(out.str(), "Texture3D 0xbe Trade::TextureType::Texture2D\n");
 }
 
 }}}}

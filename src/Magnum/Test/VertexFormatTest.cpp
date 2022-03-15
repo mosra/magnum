@@ -77,7 +77,9 @@ struct VertexFormatTest: TestSuite::Tester {
     void assembleMatrixImplementationSpecific();
 
     void debug();
+    void debugPacked();
     void debugImplementationSpecific();
+    void debugImplementationSpecificPacked();
     void configuration();
 };
 
@@ -171,7 +173,9 @@ VertexFormatTest::VertexFormatTest() {
               &VertexFormatTest::assembleMatrixImplementationSpecific,
 
               &VertexFormatTest::debug,
+              &VertexFormatTest::debugPacked,
               &VertexFormatTest::debugImplementationSpecific,
+              &VertexFormatTest::debugImplementationSpecificPacked,
               &VertexFormatTest::configuration});
 }
 
@@ -677,10 +681,24 @@ void VertexFormatTest::debug() {
     CORRADE_COMPARE(o.str(), "VertexFormat::Vector4 VertexFormat(0xdead)\n");
 }
 
+void VertexFormatTest::debugPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << VertexFormat::Vector4 << Debug::packed << VertexFormat(0xdead) << VertexFormat::Float;
+    CORRADE_COMPARE(out.str(), "Vector4 0xdead VertexFormat::Float\n");
+}
+
 void VertexFormatTest::debugImplementationSpecific() {
     std::ostringstream o;
     Debug(&o) << Magnum::vertexFormatWrap(0xdead);
     CORRADE_COMPARE(o.str(), "VertexFormat::ImplementationSpecific(0xdead)\n");
+}
+
+void VertexFormatTest::debugImplementationSpecificPacked() {
+    std::ostringstream out;
+    /* Second is not packed, the first should not make any flags persistent */
+    Debug{&out} << Debug::packed << Magnum::vertexFormatWrap(0xdead) << VertexFormat::Float;
+    CORRADE_COMPARE(out.str(), "ImplementationSpecific(0xdead) VertexFormat::Float\n");
 }
 
 void VertexFormatTest::configuration() {

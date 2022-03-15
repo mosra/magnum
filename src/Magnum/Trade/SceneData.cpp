@@ -51,11 +51,14 @@
 namespace Magnum { namespace Trade {
 
 Debug& operator<<(Debug& debug, const SceneMappingType value) {
-    debug << "Trade::SceneMappingType" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::SceneMappingType" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SceneMappingType::value: return debug << "::" #value;
+        #define _c(value) case SceneMappingType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(UnsignedByte)
         _c(UnsignedInt)
         _c(UnsignedShort)
@@ -64,7 +67,7 @@ Debug& operator<<(Debug& debug, const SceneMappingType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 UnsignedInt sceneMappingTypeSize(const SceneMappingType type) {
@@ -104,14 +107,17 @@ UnsignedInt sceneMappingTypeAlignment(const SceneMappingType type) {
 }
 
 Debug& operator<<(Debug& debug, const SceneField value) {
-    debug << "Trade::SceneField" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::SceneField" << Debug::nospace;
 
     if(UnsignedInt(value) >= UnsignedInt(SceneField::Custom))
-        return debug << "::Custom(" << Debug::nospace << (UnsignedInt(value) - UnsignedInt(SceneField::Custom)) << Debug::nospace << ")";
+        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << (UnsignedInt(value) - UnsignedInt(SceneField::Custom)) << Debug::nospace << ")";
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SceneField::value: return debug << "::" #value;
+        #define _c(value) case SceneField::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Parent)
         _c(Transformation)
         _c(Translation)
@@ -130,15 +136,18 @@ Debug& operator<<(Debug& debug, const SceneField value) {
         case SceneField::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const SceneFieldType value) {
-    debug << "Trade::SceneFieldType" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::SceneFieldType" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SceneFieldType::value: return debug << "::" #value;
+        #define _c(value) case SceneFieldType::value: return debug << (debug.immediateFlags() & Debug::Flag::Packed ? "" : "::") << Debug::nospace << #value;
         _c(Float)
         _c(Half)
         _c(Double)
@@ -236,7 +245,7 @@ Debug& operator<<(Debug& debug, const SceneFieldType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
@@ -477,11 +486,14 @@ UnsignedInt sceneFieldTypeAlignment(const SceneFieldType type) {
 }
 
 Debug& operator<<(Debug& debug, const SceneFieldFlag value) {
-    debug << "Trade::SceneFieldFlag" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::SceneFieldFlag" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SceneFieldFlag::value: return debug << "::" #value;
+        #define _c(value) case SceneFieldFlag::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(OffsetOnly)
         _c(ImplicitMapping)
         _c(OrderedMapping)
@@ -489,11 +501,11 @@ Debug& operator<<(Debug& debug, const SceneFieldFlag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const SceneFieldFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::SceneFieldFlags{}", {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::SceneFieldFlags{}", {
         SceneFieldFlag::OffsetOnly,
         SceneFieldFlag::ImplicitMapping,
         /* This one is implied by ImplicitMapping, so has to be after */

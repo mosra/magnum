@@ -65,11 +65,14 @@ LightData::LightData(const Type type, const Color3& color, const Float intensity
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const LightData::Type value) {
-    debug << "Trade::LightData::Type" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::LightData::Type" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case LightData::Type::value: return debug << "::" #value;
+        #define _c(value) case LightData::Type::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Ambient)
         _c(Directional)
         _c(Point)
@@ -78,7 +81,7 @@ Debug& operator<<(Debug& debug, const LightData::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
 }
 #endif
 

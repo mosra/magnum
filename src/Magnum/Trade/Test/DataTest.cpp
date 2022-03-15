@@ -35,12 +35,16 @@ struct DataTest: TestSuite::Tester {
     explicit DataTest();
 
     void debugDataFlag();
+    void debugDataFlagPacked();
     void debugDataFlags();
+    void debugDataFlagsPacked();
 };
 
 DataTest::DataTest() {
     addTests({&DataTest::debugDataFlag,
-              &DataTest::debugDataFlags});
+              &DataTest::debugDataFlagPacked,
+              &DataTest::debugDataFlags,
+              &DataTest::debugDataFlagsPacked});
 }
 
 void DataTest::debugDataFlag() {
@@ -50,11 +54,25 @@ void DataTest::debugDataFlag() {
     CORRADE_COMPARE(out.str(), "Trade::DataFlag::Owned Trade::DataFlag(0xf0)\n");
 }
 
+void DataTest::debugDataFlagPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << DataFlag::Owned << Debug::packed << DataFlag(0xf0) << DataFlag::Mutable;
+    CORRADE_COMPARE(out.str(), "Owned 0xf0 Trade::DataFlag::Mutable\n");
+}
+
 void DataTest::debugDataFlags() {
     std::ostringstream out;
 
     Debug{&out} << (DataFlag::Owned|DataFlag::Mutable) << DataFlags{};
     CORRADE_COMPARE(out.str(), "Trade::DataFlag::Owned|Trade::DataFlag::Mutable Trade::DataFlags{}\n");
+}
+
+void DataTest::debugDataFlagsPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (DataFlag::Owned|DataFlag::Mutable) << Debug::packed << DataFlags{} << (DataFlag::ExternallyOwned|DataFlag::Mutable);
+    CORRADE_COMPARE(out.str(), "Owned|Mutable {} Trade::DataFlag::ExternallyOwned|Trade::DataFlag::Mutable\n");
 }
 
 }}}}

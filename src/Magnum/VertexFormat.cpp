@@ -910,17 +910,20 @@ constexpr const char* VertexFormatNames[] {
 }
 
 Debug& operator<<(Debug& debug, const VertexFormat value) {
-    debug << "VertexFormat" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "VertexFormat" << Debug::nospace;
 
     if(isVertexFormatImplementationSpecific(value)) {
-        return debug << "::ImplementationSpecific(" << Debug::nospace << reinterpret_cast<void*>(vertexFormatUnwrap(value)) << Debug::nospace << ")";
+        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << reinterpret_cast<void*>(vertexFormatUnwrap(value)) << Debug::nospace << ")";
     }
 
     if(UnsignedInt(value) - 1 < Containers::arraySize(VertexFormatNames)) {
-        return debug << "::" << Debug::nospace << VertexFormatNames[UnsignedInt(value) - 1];
+        return debug << (packed ? "" : "::") << Debug::nospace << VertexFormatNames[UnsignedInt(value) - 1];
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 }

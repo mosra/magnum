@@ -44,17 +44,20 @@ constexpr const char* MeshPrimitiveNames[] {
 }
 
 Debug& operator<<(Debug& debug, const MeshPrimitive value) {
-    debug << "MeshPrimitive" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "MeshPrimitive" << Debug::nospace;
 
     if(isMeshPrimitiveImplementationSpecific(value)) {
-        return debug << "::ImplementationSpecific(" << Debug::nospace << reinterpret_cast<void*>(meshPrimitiveUnwrap(value)) << Debug::nospace << ")";
+        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << reinterpret_cast<void*>(meshPrimitiveUnwrap(value)) << Debug::nospace << ")";
     }
 
     if(UnsignedInt(value) - 1 < Containers::arraySize(MeshPrimitiveNames)) {
-        return debug << "::" << Debug::nospace << MeshPrimitiveNames[UnsignedInt(value) - 1];
+        return debug << (packed ? "" : "::") << Debug::nospace << MeshPrimitiveNames[UnsignedInt(value) - 1];
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 namespace {
@@ -68,17 +71,20 @@ constexpr const char* MeshIndexTypeNames[] {
 }
 
 Debug& operator<<(Debug& debug, const MeshIndexType value) {
-    debug << "MeshIndexType" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "MeshIndexType" << Debug::nospace;
 
     if(isMeshIndexTypeImplementationSpecific(value)) {
-        return debug << "::ImplementationSpecific(" << Debug::nospace << reinterpret_cast<void*>(meshIndexTypeUnwrap(value)) << Debug::nospace << ")";
+        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << reinterpret_cast<void*>(meshIndexTypeUnwrap(value)) << Debug::nospace << ")";
     }
 
     if(UnsignedInt(value) - 1 < Containers::arraySize(MeshIndexTypeNames)) {
-        return debug << "::" << Debug::nospace << MeshIndexTypeNames[UnsignedInt(value) - 1];
+        return debug << (packed ? "" : "::") << Debug::nospace << MeshIndexTypeNames[UnsignedInt(value) - 1];
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
 }
 #endif
 

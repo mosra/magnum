@@ -53,18 +53,23 @@ struct SceneDataTest: TestSuite::Tester {
     void mappingTypeSizeAlignment();
     void mappingTypeSizeAlignmentInvalid();
     void debugMappingType();
+    void debugMappingTypePacked();
 
     void customFieldName();
     void customFieldNameTooLarge();
     void customFieldNameNotCustom();
     void debugFieldName();
+    void debugFieldNamePacked();
 
     void fieldTypeSizeAlignment();
     void fieldTypeSizeAlignmentInvalid();
     void debugFieldType();
+    void debugFieldTypePacked();
 
     void debugFieldFlag();
+    void debugFieldFlagPacked();
     void debugFieldFlags();
+    void debugFieldFlagsPacked();
     void debugFieldFlagsSupersets();
 
     void constructField();
@@ -344,18 +349,23 @@ SceneDataTest::SceneDataTest() {
     addTests({&SceneDataTest::mappingTypeSizeAlignment,
               &SceneDataTest::mappingTypeSizeAlignmentInvalid,
               &SceneDataTest::debugMappingType,
+              &SceneDataTest::debugMappingTypePacked,
 
               &SceneDataTest::customFieldName,
               &SceneDataTest::customFieldNameTooLarge,
               &SceneDataTest::customFieldNameNotCustom,
               &SceneDataTest::debugFieldName,
+              &SceneDataTest::debugFieldNamePacked,
 
               &SceneDataTest::fieldTypeSizeAlignment,
               &SceneDataTest::fieldTypeSizeAlignmentInvalid,
               &SceneDataTest::debugFieldType,
+              &SceneDataTest::debugFieldTypePacked,
 
               &SceneDataTest::debugFieldFlag,
+              &SceneDataTest::debugFieldFlagPacked,
               &SceneDataTest::debugFieldFlags,
+              &SceneDataTest::debugFieldFlagsPacked,
               &SceneDataTest::debugFieldFlagsSupersets,
 
               &SceneDataTest::constructField,
@@ -605,6 +615,13 @@ void SceneDataTest::debugMappingType() {
     CORRADE_COMPARE(out.str(), "Trade::SceneMappingType::UnsignedLong Trade::SceneMappingType(0x73)\n");
 }
 
+void SceneDataTest::debugMappingTypePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << SceneMappingType::UnsignedLong << Debug::packed << SceneMappingType(0x73) << SceneMappingType::UnsignedInt;
+    CORRADE_COMPARE(out.str(), "UnsignedLong 0x73 Trade::SceneMappingType::UnsignedInt\n");
+}
+
 void SceneDataTest::customFieldName() {
     CORRADE_VERIFY(!isSceneFieldCustom(SceneField::Rotation));
     CORRADE_VERIFY(!isSceneFieldCustom(SceneField(0x0fffffffu)));
@@ -653,6 +670,13 @@ void SceneDataTest::debugFieldName() {
     std::ostringstream out;
     Debug{&out} << SceneField::Transformation << sceneFieldCustom(73) << SceneField(0xdeadda7);
     CORRADE_COMPARE(out.str(), "Trade::SceneField::Transformation Trade::SceneField::Custom(73) Trade::SceneField(0xdeadda7)\n");
+}
+
+void SceneDataTest::debugFieldNamePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << SceneField::Transformation << Debug::packed << sceneFieldCustom(73) << Debug::packed << SceneField(0xdeadda7) << SceneField::Parent;
+    CORRADE_COMPARE(out.str(), "Transformation Custom(73) 0xdeadda7 Trade::SceneField::Parent\n");
 }
 
 void SceneDataTest::fieldTypeSizeAlignment() {
@@ -711,6 +735,13 @@ void SceneDataTest::debugFieldType() {
     CORRADE_COMPARE(out.str(), "Trade::SceneFieldType::Matrix3x4h Trade::SceneFieldType(0xdead)\n");
 }
 
+void SceneDataTest::debugFieldTypePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << SceneFieldType::Matrix3x4h << Debug::packed << SceneFieldType(0xdead) << SceneFieldType::Float;
+    CORRADE_COMPARE(out.str(), "Matrix3x4h 0xdead Trade::SceneFieldType::Float\n");
+}
+
 void SceneDataTest::debugFieldFlag() {
     std::ostringstream out;
 
@@ -718,11 +749,25 @@ void SceneDataTest::debugFieldFlag() {
     CORRADE_COMPARE(out.str(), "Trade::SceneFieldFlag::OffsetOnly Trade::SceneFieldFlag(0xbe)\n");
 }
 
+void SceneDataTest::debugFieldFlagPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug(&out) << Debug::packed << SceneFieldFlag::OffsetOnly << Debug::packed << SceneFieldFlag(0xbe) << SceneFieldFlag::ImplicitMapping;
+    CORRADE_COMPARE(out.str(), "OffsetOnly 0xbe Trade::SceneFieldFlag::ImplicitMapping\n");
+}
+
 void SceneDataTest::debugFieldFlags() {
     std::ostringstream out;
 
     Debug{&out} << (SceneFieldFlag::OffsetOnly|SceneFieldFlag(0xe0)) << SceneFieldFlags{};
     CORRADE_COMPARE(out.str(), "Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag(0xe0) Trade::SceneFieldFlags{}\n");
+}
+
+void SceneDataTest::debugFieldFlagsPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (SceneFieldFlag::OffsetOnly|SceneFieldFlag(0xe0)) << Debug::packed << SceneFieldFlags{} << (SceneFieldFlag::OffsetOnly|SceneFieldFlag::ImplicitMapping);
+    CORRADE_COMPARE(out.str(), "OffsetOnly|0xe0 {} Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag::ImplicitMapping\n");
 }
 
 void SceneDataTest::debugFieldFlagsSupersets() {
