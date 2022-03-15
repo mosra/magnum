@@ -310,7 +310,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths()[0])};
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths().back())};
 
     Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
     if(!importer) {
@@ -1100,7 +1100,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
     /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractSceneConverter::pluginSearchPaths()[0])};
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractSceneConverter::pluginSearchPaths().back())};
 
     /* Assume there's always one passed --converter option less, and the last
        is implicitly AnySceneConverter. All converters except the last one are
