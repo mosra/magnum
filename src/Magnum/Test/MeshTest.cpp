@@ -284,8 +284,8 @@ void MeshTest::indexTypeSizeImplementationSpecific() {
 
 void MeshTest::debugPrimitive() {
     std::ostringstream o;
-    Debug(&o) << MeshPrimitive::TriangleFan << MeshPrimitive(0xfe);
-    CORRADE_COMPARE(o.str(), "MeshPrimitive::TriangleFan MeshPrimitive(0xfe)\n");
+    Debug(&o) << MeshPrimitive::TriangleFan << MeshPrimitive(0x70fe);
+    CORRADE_COMPARE(o.str(), "MeshPrimitive::TriangleFan MeshPrimitive(0x70fe)\n");
 }
 
 void MeshTest::debugPrimitiveImplementationSpecific() {
@@ -297,7 +297,7 @@ void MeshTest::debugPrimitiveImplementationSpecific() {
 
 void MeshTest::debugIndexType() {
     std::ostringstream o;
-    Debug(&o) << MeshIndexType::UnsignedShort << MeshIndexType(0xfe);
+    Debug(&o) << MeshIndexType::UnsignedShort << MeshIndexType(0x70fe);
     CORRADE_COMPARE(o.str(), "MeshIndexType::UnsignedShort MeshIndexType(0xfe)\n");
 }
 
