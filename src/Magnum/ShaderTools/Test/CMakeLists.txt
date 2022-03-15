@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/ShaderTools/Test")
+
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(SHADERTOOLS_TEST_DIR ".")
     set(SHADERTOOLS_TEST_OUTPUT_DIR "./write")
@@ -43,9 +47,3 @@ corrade_add_test(ShaderToolsSpirvTest SpirvTest.cpp
     FILES SpirvTestFiles/entrypoint-interface.spv)
 target_include_directories(ShaderToolsSpirvTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(ShaderToolsStageTest StageTest.cpp LIBRARIES MagnumShaderTools)
-
-set_target_properties(
-    ShaderToolsAbstractConverterTest
-    ShaderToolsSpirvTest
-    ShaderToolsStageTest
-    PROPERTIES FOLDER "Magnum/ShaderTools/Test")

@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Text/Test")
+
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(TEXT_TEST_DIR ".")
     set(TEXT_TEST_OUTPUT_DIR "./write")
@@ -45,21 +49,8 @@ target_include_directories(TextAbstractFontConverterTest PRIVATE ${CMAKE_CURRENT
 corrade_add_test(TextAbstractGlyphCacheTest AbstractGlyphCacheTest.cpp LIBRARIES MagnumTextTestLib)
 corrade_add_test(TextAbstractLayouterTest AbstractLayouterTest.cpp LIBRARIES Magnum MagnumText)
 
-set_target_properties(
-    TextAbstractFontTest
-    TextAbstractFontConverterTest
-    TextAbstractGlyphCacheTest
-    TextAbstractLayouterTest
-    PROPERTIES FOLDER "Magnum/Text/Test")
-
 if(TARGET_GL AND BUILD_GL_TESTS)
     corrade_add_test(TextDistanceFieldGlyphCacheGLTest DistanceFieldGlyphCacheGLTest.cpp LIBRARIES MagnumText MagnumOpenGLTester)
     corrade_add_test(TextGlyphCacheGLTest GlyphCacheGLTest.cpp LIBRARIES MagnumText MagnumOpenGLTester)
     corrade_add_test(TextRendererGLTest RendererGLTest.cpp LIBRARIES MagnumText MagnumOpenGLTester)
-
-    set_target_properties(
-        TextDistanceFieldGlyphCacheGLTest
-        TextGlyphCacheGLTest
-        TextRendererGLTest
-        PROPERTIES FOLDER "Magnum/Text/Test")
 endif()

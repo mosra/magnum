@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum")
+
 # Generate configure header
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
@@ -137,6 +141,7 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumMathObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+# Differs from CMAKE_FOLDER
 set_target_properties(MagnumMathObjects PROPERTIES FOLDER "Magnum/Math")
 
 # Objects shared between main and test library
@@ -154,7 +159,6 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(MagnumObjects PROPERTIES FOLDER "Magnum")
 
 # Main library
 add_library(Magnum ${SHARED_OR_STATIC}
@@ -162,9 +166,7 @@ add_library(Magnum ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumObjects>
     ${MagnumMath_GracefulAssert_SRCS}
     ${Magnum_GracefulAssert_SRCS})
-set_target_properties(Magnum PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum")
+set_target_properties(Magnum PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     set_target_properties(Magnum PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)
@@ -254,6 +256,7 @@ if(BUILD_TESTS)
         "CORRADE_GRACEFUL_ASSERT" "Magnum_EXPORTS")
     set_target_properties(MagnumMathTestLib PROPERTIES
         DEBUG_POSTFIX "-d"
+        # Differs from CMAKE_FOLDER
         FOLDER "Magnum/Math")
     target_link_libraries(MagnumMathTestLib Corrade::Utility)
 
@@ -267,9 +270,7 @@ if(BUILD_TESTS)
         ${PROJECT_BINARY_DIR}/src)
     target_compile_definitions(MagnumTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "Magnum_EXPORTS")
-    set_target_properties(MagnumTestLib PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum")
+    set_target_properties(MagnumTestLib PROPERTIES DEBUG_POSTFIX "-d")
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

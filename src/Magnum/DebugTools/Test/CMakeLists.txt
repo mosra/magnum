@@ -23,9 +23,12 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/DebugTools/Test")
+
 corrade_add_test(DebugToolsFrameProfilerTest FrameProfilerTest.cpp
     LIBRARIES MagnumDebugToolsTestLib)
-set_target_properties(DebugToolsFrameProfilerTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
 
 if(WITH_TRADE)
     # Otherwise CMake complains that Corrade::PluginManager is not found, wtf
@@ -73,7 +76,6 @@ if(WITH_TRADE)
             CompareImageActual.tga
             CompareImageExpected.tga
             CompareImageCompressed.dds)
-    set_target_properties(DebugToolsCompareImageTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
     target_include_directories(DebugToolsCompareImageTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGECONVERTER)
@@ -108,26 +110,21 @@ endif()
 if(TARGET_GL)
     if(WITH_SCENEGRAPH)
         corrade_add_test(DebugToolsForceRendererTest ForceRendererTest.cpp LIBRARIES MagnumMathTestLib)
-        set_target_properties(DebugToolsForceRendererTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
     endif()
 
     if(BUILD_GL_TESTS)
         corrade_add_test(DebugToolsFrameProfilerGLTest FrameProfilerGLTest.cpp
             LIBRARIES MagnumDebugTools MagnumOpenGLTester)
-        set_target_properties(DebugToolsFrameProfilerTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
-
-        corrade_add_test(DebugToolsTextureImageGLTest TextureImageGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
-        set_target_properties(DebugToolsTextureImageGLTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
+        corrade_add_test(DebugToolsTextureImageGLTest TextureImageGLTest.cpp
+            LIBRARIES MagnumDebugTools MagnumOpenGLTester)
 
         if(NOT MAGNUM_TARGET_WEBGL)
-            corrade_add_test(DebugToolsBufferDataGLTest BufferDataGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
-
-            set_target_properties(DebugToolsBufferDataGLTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
+            corrade_add_test(DebugToolsBufferDataGLTest BufferDataGLTest.cpp
+                LIBRARIES MagnumDebugTools MagnumOpenGLTester)
         endif()
 
         if(WITH_TRADE)
             corrade_add_test(DebugToolsScreenshotGLTest ScreenshotGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
-            set_target_properties(DebugToolsScreenshotGLTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
             # The configure.h file is provided for DebugToolsCompareImageTest
             # already
             target_include_directories(DebugToolsScreenshotGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
@@ -177,10 +174,6 @@ if(TARGET_GL)
             corrade_add_test(DebugToolsObjectRendererGLTest ObjectRendererGLTest.cpp
                 LIBRARIES MagnumDebugTools MagnumOpenGLTester
                 FILES ObjectRenderer2D.tga ObjectRenderer3D.tga)
-            set_target_properties(
-                DebugToolsForceRendererGLTest
-                DebugToolsObjectRendererGLTest
-            PROPERTIES FOLDER "Magnum/DebugTools/Test")
             target_include_directories(DebugToolsForceRendererGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
             target_include_directories(DebugToolsObjectRendererGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
             if(BUILD_PLUGINS_STATIC)

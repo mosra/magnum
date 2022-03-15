@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/GL/Test")
+
 corrade_add_test(GLAttributeTest AttributeTest.cpp LIBRARIES MagnumGLTestLib)
 corrade_add_test(GLAbstractShaderProgramTest AbstractShaderProgramTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLBufferTest BufferTest.cpp LIBRARIES MagnumGL)
@@ -40,28 +44,8 @@ corrade_add_test(GLTextureTest TextureTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLTimeQueryTest TimeQueryTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLVersionTest VersionTest.cpp LIBRARIES MagnumGL)
 
-set_target_properties(
-    GLAttributeTest
-    GLAbstractShaderProgramTest
-    GLBufferTest
-    GLContextTest
-    GLCubeMapTextureTest
-    GLDefaultFramebufferTest
-    GLFramebufferTest
-    GLMeshTest
-    GLPixelFormatTest
-    GLRendererTest
-    GLRenderbufferTest
-    GLSamplerTest
-    GLShaderTest
-    GLTextureTest
-    GLTimeQueryTest
-    GLVersionTest
-    PROPERTIES FOLDER "Magnum/GL/Test")
-
 if(NOT MAGNUM_TARGET_WEBGL)
     corrade_add_test(GLDebugOutputTest DebugOutputTest.cpp LIBRARIES MagnumGL)
-    set_target_properties(GLDebugOutputTest PROPERTIES FOLDER "Magnum/GL/Test")
 endif()
 
 if(NOT MAGNUM_TARGET_GLES2)
@@ -69,39 +53,21 @@ if(NOT MAGNUM_TARGET_GLES2)
     corrade_add_test(GLPrimitiveQueryTest PrimitiveQueryTest.cpp LIBRARIES MagnumGL)
     corrade_add_test(GLTextureArrayTest TextureArrayTest.cpp LIBRARIES MagnumGL)
     corrade_add_test(GLTransformFeedbackTest TransformFeedbackTest.cpp LIBRARIES MagnumGL)
-
-    set_target_properties(
-        GLBufferImageTest
-        GLPrimitiveQueryTest
-        GLTextureArrayTest
-        GLTransformFeedbackTest
-        PROPERTIES FOLDER "Magnum/GL/Test")
 endif()
 
 if(NOT MAGNUM_TARGET_GLES2 AND NOT MAGNUM_TARGET_WEBGL)
     corrade_add_test(GLBufferTextureTest BufferTextureTest.cpp LIBRARIES MagnumGL)
     corrade_add_test(GLCubeMapTextureArrayTest CubeMapTextureArrayTest.cpp LIBRARIES MagnumGL)
     corrade_add_test(GLMultisampleTextureTest MultisampleTextureTest.cpp LIBRARIES MagnumGL)
-
-    set_target_properties(
-        GLBufferTextureTest
-        GLCubeMapTextureArrayTest
-        GLMultisampleTextureTest
-        PROPERTIES FOLDER "Magnum/GL/Test")
 endif()
 
 if(NOT (MAGNUM_TARGET_WEBGL AND MAGNUM_TARGET_GLES2))
     corrade_add_test(GLSampleQueryTest SampleQueryTest.cpp LIBRARIES MagnumGL)
-    set_target_properties(GLSampleQueryTest PROPERTIES FOLDER "Magnum/GL/Test")
 endif()
 
 if(NOT MAGNUM_TARGET_GLES)
     corrade_add_test(GLPipelineStatisticsQueryTest PipelineStatisticsQueryTest.cpp LIBRARIES MagnumGL)
     corrade_add_test(GLRectangleTextureTest RectangleTextureTest.cpp LIBRARIES MagnumGL)
-    set_target_properties(
-        GLPipelineStatisticsQueryTest
-        GLRectangleTextureTest
-        PROPERTIES FOLDER "Magnum/GL/Test")
 endif()
 
 if(BUILD_GL_TESTS)
@@ -184,43 +150,15 @@ if(BUILD_GL_TESTS)
         FILES ShaderGLTestFiles/shader.glsl)
     target_include_directories(GLShaderGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 
-    set_target_properties(
-        GLAbstractTextureGLTest
-        GLBufferGLTest
-        GLContextGLTest
-        GLCubeMapTextureGLTest
-        GLFramebufferGLTest
-        GLMeshGLTest
-        GLRenderbufferGLTest
-        GLTextureGLTest
-        GLTimeQueryGLTest
-
-        GLAbstractShaderProgramGLTest
-        GLAbstractShaderProgramGLTest_RES-dependencies
-
-        GLShaderGLTest
-        PROPERTIES FOLDER "Magnum/GL/Test")
-
     if(NOT MAGNUM_TARGET_WEBGL)
         corrade_add_test(GLAbstractObjectGLTest AbstractObjectGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLDebugOutputGLTest DebugOutputGLTest.cpp LIBRARIES MagnumOpenGLTester)
-
-        set_target_properties(
-            GLAbstractObjectGLTest
-            GLDebugOutputGLTest
-            PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
 
     if(NOT (MAGNUM_TARGET_WEBGL AND MAGNUM_TARGET_GLES2))
         corrade_add_test(GLAbstractQueryGLTest AbstractQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLPixelStorageGLTest PixelStorageGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLSampleQueryGLTest SampleQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
-
-        set_target_properties(
-            GLAbstractQueryGLTest
-            GLPixelStorageGLTest
-            GLSampleQueryGLTest
-            PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
 
     if(NOT MAGNUM_TARGET_GLES2)
@@ -228,34 +166,17 @@ if(BUILD_GL_TESTS)
         corrade_add_test(GLPrimitiveQueryGLTest PrimitiveQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLTextureArrayGLTest TextureArrayGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLTransformFeedbackGLTest TransformFeedbackGLTest.cpp LIBRARIES MagnumOpenGLTester)
-
-        set_target_properties(
-            GLBufferImageGLTest
-            GLPrimitiveQueryGLTest
-            GLTextureArrayGLTest
-            GLTransformFeedbackGLTest
-            PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
 
     if(NOT MAGNUM_TARGET_GLES2 AND NOT MAGNUM_TARGET_WEBGL)
         corrade_add_test(GLBufferTextureGLTest BufferTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLCubeMapTextureArrayGLTest CubeMapTextureArrayGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLMultisampleTextureGLTest MultisampleTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
-
-        set_target_properties(
-            GLBufferTextureGLTest
-            GLCubeMapTextureArrayGLTest
-            GLMultisampleTextureGLTest
-            PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
 
     if(NOT MAGNUM_TARGET_GLES)
         corrade_add_test(GLPipelineStatisticsQueryGLTest PipelineStatisticsQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLRectangleTextureGLTest RectangleTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
-        set_target_properties(
-            GLPipelineStatisticsQueryGLTest
-            GLRectangleTextureGLTest
-            PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
 
     if(MAGNUM_BUILD_STATIC AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_WINDOWS_RT)
@@ -266,9 +187,5 @@ if(BUILD_GL_TESTS)
         corrade_add_test(GLGlobalStateAcrossLibrariesGLTest
             GlobalStateAcrossLibrariesGLTest.cpp
             LIBRARIES GLGlobalStateAcrossLibrariesLibrary MagnumOpenGLTester)
-        set_target_properties(
-            GLGlobalStateAcrossLibrariesLibrary
-            GLGlobalStateAcrossLibrariesGLTest
-            PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
 endif()

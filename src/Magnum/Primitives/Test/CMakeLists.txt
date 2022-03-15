@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Primitives/Test")
+
 corrade_add_test(PrimitivesAxisTest AxisTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesCapsuleTest CapsuleTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesCircleTest CircleTest.cpp LIBRARIES MagnumPrimitives)
@@ -37,20 +41,3 @@ corrade_add_test(PrimitivesLineTest LineTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesPlaneTest PlaneTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesSquareTest SquareTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesUVSphereTest UVSphereTest.cpp LIBRARIES MagnumPrimitives)
-
-set_target_properties(
-    PrimitivesAxisTest
-    PrimitivesCapsuleTest
-    PrimitivesCircleTest
-    PrimitivesCrosshairTest
-    PrimitivesCubeTest
-    PrimitivesConeTest
-    PrimitivesCylinderTest
-    PrimitivesGradientTest
-    PrimitivesGridTest
-    PrimitivesIcosphereTest
-    PrimitivesLineTest
-    PrimitivesPlaneTest
-    PrimitivesSquareTest
-    PrimitivesUVSphereTest
-    PROPERTIES FOLDER "Magnum/Primitives/Test")

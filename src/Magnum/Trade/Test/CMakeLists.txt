@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Trade/Test")
+
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(TRADE_TEST_DIR ".")
     set(TRADE_TEST_OUTPUT_DIR "./write")
@@ -69,34 +73,9 @@ set_property(TARGET
     TradeSceneDataTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
 
-set_target_properties(
-    TradeAbstractImageConverterTest
-    TradeAbstractImporterTest
-    TradeAbstractSceneConverterTest
-    TradeAnimationDataTest
-    TradeCameraDataTest
-    TradeFlatMaterialDataTest
-    TradeImageDataTest
-    TradeLightDataTest
-    TradeMaterialDataTest
-    TradePbrClearCoatMaterialDataTest
-    TradePbrMetallicRoughnessMate___Test
-    TradePbrSpecularGlossinessMat___Test
-    TradePhongMaterialDataTest
-    TradeSceneDataTest
-    TradeTextureDataTest
-    PROPERTIES FOLDER "Magnum/Trade/Test")
-
 if(MAGNUM_BUILD_DEPRECATED)
     corrade_add_test(TradeMeshData2DTest MeshData2DTest.cpp LIBRARIES MagnumTrade)
     corrade_add_test(TradeMeshData3DTest MeshData3DTest.cpp LIBRARIES MagnumTrade)
     corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES MagnumTradeTestLib)
     corrade_add_test(TradeObjectData3DTest ObjectData3DTest.cpp LIBRARIES MagnumTradeTestLib)
-
-    set_target_properties(
-        TradeMeshData2DTest
-        TradeMeshData3DTest
-        TradeObjectData2DTest
-        TradeObjectData3DTest
-        PROPERTIES FOLDER "Magnum/Trade/Test")
 endif()

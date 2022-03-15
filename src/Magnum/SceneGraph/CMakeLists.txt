@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/SceneGraph")
+
 # Files shared between main library and unit test library
 set(MagnumSceneGraph_SRCS
     Animable.cpp)
@@ -82,15 +86,13 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumSceneGraphObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(MagnumSceneGraphObjects PROPERTIES FOLDER "Magnum/SceneGraph")
 
 # Main SceneGraph library
 add_library(MagnumSceneGraph ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumSceneGraphObjects>
     ${MagnumSceneGraph_GracefulAssert_SRCS})
 set_target_properties(MagnumSceneGraph PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/SceneGraph")
+    DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     set_target_properties(MagnumSceneGraph PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)
@@ -110,8 +112,7 @@ if(BUILD_TESTS)
         $<TARGET_OBJECTS:MagnumSceneGraphObjects>
         ${MagnumSceneGraph_GracefulAssert_SRCS})
     set_target_properties(MagnumSceneGraphTestLib PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/SceneGraph")
+        DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumSceneGraphTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumSceneGraph_EXPORTS")
     target_link_libraries(MagnumSceneGraphTestLib MagnumMathTestLib)

@@ -24,6 +24,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Vk")
+
 find_package(Vulkan REQUIRED)
 
 set(MagnumVk_SRCS
@@ -159,16 +163,13 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumVkObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(MagnumVkObjects PROPERTIES FOLDER "Magnum/Vk")
 
 # Vk library
 add_library(MagnumVk ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumVkObjects>
     $<TARGET_OBJECTS:MagnumFlextVkObjects>
     ${MagnumVk_GracefulAssert_SRCS})
-set_target_properties(MagnumVk PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/Vk")
+set_target_properties(MagnumVk PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     target_compile_definitions(MagnumVk PRIVATE "FlextVk_EXPORTS")
     set_target_properties(MagnumVk PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
@@ -191,7 +192,6 @@ install(FILES ${MagnumVk_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Vk)
 if(WITH_VK_INFO)
     add_executable(magnum-vk-info vk-info.cpp)
     target_link_libraries(magnum-vk-info PRIVATE MagnumVk)
-    set_target_properties(magnum-vk-info PROPERTIES FOLDER "Magnum/Vk")
 
     install(TARGETS magnum-vk-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
@@ -215,9 +215,7 @@ if(WITH_VULKANTESTER)
     add_library(MagnumVulkanTester STATIC
         ${MagnumVulkanTester_SRCS}
         ${MagnumVulkanTester_HEADERS})
-    set_target_properties(MagnumVulkanTester PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/Vk")
+    set_target_properties(MagnumVulkanTester PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumVulkanTester PUBLIC MagnumVk Corrade::TestSuite)
 
     install(FILES ${MagnumVulkanTester_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Vk)
@@ -236,9 +234,7 @@ if(BUILD_TESTS)
         $<TARGET_OBJECTS:MagnumVkObjects>
         $<TARGET_OBJECTS:MagnumFlextVkObjects>
         ${MagnumVk_GracefulAssert_SRCS})
-    set_target_properties(MagnumVkTestLib PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/Vk")
+    set_target_properties(MagnumVkTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumVkTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumVk_EXPORTS" "FlextVk_EXPORTS")
     if(BUILD_STATIC_PIC)

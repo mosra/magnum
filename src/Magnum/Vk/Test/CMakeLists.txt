@@ -24,6 +24,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Vk/Test")
+
 # Inputs to configure.h needed only by Vulkan tests
 if(BUILD_VK_TESTS)
     # Otherwise CMake complains that Corrade::PluginManager is not found, wtf
@@ -139,13 +143,6 @@ if(CORRADE_TARGET_ANDROID)
         LIBRARIES MagnumVk)
     set_tests_properties(VkAssertTestFailAssertVkSuccessOr PROPERTIES
         PASS_REGULAR_EXPRESSION "Call a = s failed with Vk::Result::ErrorExtensionNotPresent at ")
-
-    set_target_properties(
-        VkAssertTestFailAssertSuccess
-        VkAssertTestFailAssertSuccessOr
-        VkAssertTestFailAssertVkSuccess
-        VkAssertTestFailAssertVkSuccessOr
-        PROPERTIES FOLDER "Magnum/Vk/Test")
 endif()
 
 # The same as above, but using CORRADE_STANDARD_ASSERT
@@ -160,48 +157,6 @@ target_compile_definitions(VkAssertStandardDisabledTest PRIVATE
     "CORRADE_STANDARD_ASSERT" "NDEBUG")
 
 corrade_add_test(VkVersionTest VersionTest.cpp LIBRARIES MagnumVk)
-
-set_target_properties(
-    VkAssertTest
-    VkAssertStandardTest
-    VkAssertDisabledTest
-    VkAssertStandardDisabledTest
-    VkBufferTest
-    VkCommandBufferTest
-    VkCommandPoolTest
-    VkDescriptorPoolTest
-    VkDescriptorSetTest
-    VkDescriptorSetLayoutTest
-    VkDescriptorTypeTest
-    VkDeviceTest
-    VkDeviceFeaturesTest
-    VkDevicePropertiesTest
-    VkExtensionsTest
-    VkExtensionPropertiesTest
-    VkFenceTest
-    VkFramebufferTest
-    VkHandleTest
-    VkImageTest
-    VkImageViewTest
-    VkInstanceTest
-    VkIntegrationTest
-    VkLayerPropertiesTest
-    VkMemoryTest
-    VkMeshTest
-    VkMeshLayoutTest
-    VkPipelineTest
-    VkPipelineLayoutTest
-    VkPixelFormatTest
-    VkQueueTest
-    VkResultTest
-    VkRenderPassTest
-    VkSamplerTest
-    VkShaderTest
-    VkShaderSetTest
-    VkStructureHelpersTest
-    VkVersionTest
-    VkVertexFormatTest
-    PROPERTIES FOLDER "Magnum/Vk/Test")
 
 if(BUILD_VK_TESTS)
     corrade_add_test(VkBufferVkTest BufferVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)
@@ -264,31 +219,4 @@ if(BUILD_VK_TESTS)
     target_include_directories(VkShaderVkTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 
     corrade_add_test(VkVersionVkTest VersionVkTest.cpp LIBRARIES MagnumVk)
-
-    set_target_properties(
-        VkBufferVkTest
-        VkCommandBufferVkTest
-        VkCommandPoolVkTest
-        VkDescriptorPoolVkTest
-        VkDescriptorSetVkTest
-        VkDescriptorSetLayoutVkTest
-        VkDeviceVkTest
-        VkDevicePropertiesVkTest
-        VkExtensionPropertiesVkTest
-        VkFenceVkTest
-        VkFramebufferVkTest
-        VkLayerPropertiesVkTest
-        VkImageVkTest
-        VkImageViewVkTest
-        VkInstanceVkTest
-        VkMemoryVkTest
-        VkMeshVkTest
-        VkPipelineVkTest
-        VkPipelineLayoutVkTest
-        VkQueueVkTest
-        VkRenderPassVkTest
-        VkSamplerVkTest
-        VkShaderVkTest
-        VkVersionVkTest
-        PROPERTIES FOLDER "Magnum/Vk/Test")
 endif()

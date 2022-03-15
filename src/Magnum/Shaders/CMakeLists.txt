@@ -23,12 +23,15 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Shaders")
+
 if(NOT WITH_GL)
     message(SEND_ERROR "Shaders are available only if WITH_GL is enabled")
 endif()
 
 corrade_add_resource(MagnumShaders_RESOURCES_GL resources-gl.conf)
-set_target_properties(MagnumShaders_RESOURCES_GL-dependencies PROPERTIES FOLDER "Magnum/Shaders")
 
 set(MagnumShaders_SRCS
     ${MagnumShaders_RESOURCES_GL})
@@ -87,15 +90,12 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumShadersObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(MagnumShadersObjects PROPERTIES FOLDER "Magnum/Shaders")
 
 # Main Shaders library
 add_library(MagnumShaders ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumShadersObjects>
     ${MagnumShaders_GracefulAssert_SRCS})
-set_target_properties(MagnumShaders PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/Shaders")
+set_target_properties(MagnumShaders PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     set_target_properties(MagnumShaders PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)
@@ -116,9 +116,7 @@ if(BUILD_TESTS)
     add_library(MagnumShadersTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumShadersObjects>
         ${MagnumShaders_GracefulAssert_SRCS})
-    set_target_properties(MagnumShadersTestLib PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/Shaders")
+    set_target_properties(MagnumShadersTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumShadersTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumShaders_EXPORTS")
     if(BUILD_STATIC_PIC)

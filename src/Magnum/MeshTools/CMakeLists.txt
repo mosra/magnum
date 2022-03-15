@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/MeshTools")
+
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
     Tipsify.cpp)
@@ -96,7 +100,6 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumMeshToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(MagnumMeshToolsObjects PROPERTIES FOLDER "Magnum/MeshTools")
 if(TARGET_GL)
     target_include_directories(MagnumMeshToolsObjects PUBLIC $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
 endif()
@@ -105,9 +108,7 @@ endif()
 add_library(MagnumMeshTools ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumMeshToolsObjects>
     ${MagnumMeshTools_GracefulAssert_SRCS})
-set_target_properties(MagnumMeshTools PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/MeshTools")
+set_target_properties(MagnumMeshTools PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     set_target_properties(MagnumMeshTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)
@@ -130,9 +131,7 @@ if(BUILD_TESTS)
     add_library(MagnumMeshToolsTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMeshToolsObjects>
         ${MagnumMeshTools_GracefulAssert_SRCS})
-    set_target_properties(MagnumMeshToolsTestLib PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/MeshTools")
+    set_target_properties(MagnumMeshToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumMeshToolsTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumMeshTools_EXPORTS")
     if(BUILD_STATIC_PIC)

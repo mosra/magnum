@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Trade")
+
 find_package(Corrade REQUIRED PluginManager)
 
 set(MagnumTrade_SRCS
@@ -125,15 +129,12 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumTradeObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(MagnumTradeObjects PROPERTIES FOLDER "Magnum/Trade")
 
 # Trade library
 add_library(MagnumTrade ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumTradeObjects>
     ${MagnumTrade_GracefulAssert_SRCS})
-set_target_properties(MagnumTrade PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/Trade")
+set_target_properties(MagnumTrade PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     set_target_properties(MagnumTrade PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)
@@ -160,7 +161,6 @@ if(WITH_IMAGECONVERTER)
         # BasisImageConverter uses these, and linking pthread to just the
         # plugin doesn't work. See its documentation for details.
         Threads::Threads)
-    set_target_properties(magnum-imageconverter PROPERTIES FOLDER "Magnum/Trade")
 
     install(TARGETS magnum-imageconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
@@ -175,9 +175,7 @@ if(BUILD_TESTS)
         ${MagnumTrade_GracefulAssert_SRCS})
     target_compile_definitions(MagnumTradeTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumTrade_EXPORTS")
-    set_target_properties(MagnumTradeTestLib PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum")
+    set_target_properties(MagnumTradeTestLib PROPERTIES DEBUG_POSTFIX "-d")
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumTradeTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

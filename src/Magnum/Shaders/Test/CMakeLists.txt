@@ -23,21 +23,16 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Shaders/Test")
+
 corrade_add_test(ShadersDistanceFieldVectorTest DistanceFieldVectorTest.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersFlatTest FlatTest.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersGenericTest GenericTest.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersMeshVisualizerTest MeshVisualizerTest.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersPhongTest PhongTest.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersVectorTest VectorTest.cpp LIBRARIES MagnumShaders)
-
-set_target_properties(
-    ShadersDistanceFieldVectorTest
-    ShadersFlatTest
-    ShadersGenericTest
-    ShadersMeshVisualizerTest
-    ShadersPhongTest
-    ShadersVectorTest
-    PROPERTIES FOLDER "Magnum/Shaders/Test")
 
 # There's an underscore between GL and Test to disambiguate from GLTest, which
 # is a common suffix used to mark tests that need a GL context. Ugly, I know.
@@ -48,16 +43,6 @@ corrade_add_test(ShadersMeshVisualizerGL_Test MeshVisualizerGL_Test.cpp LIBRARIE
 corrade_add_test(ShadersPhongGL_Test PhongGL_Test.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersVectorGL_Test VectorGL_Test.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersVertexColorGL_Test VertexColorGL_Test.cpp LIBRARIES MagnumShaders)
-
-set_target_properties(
-    ShadersDistanceFieldVectorGL_Test
-    ShadersFlatGL_Test
-    ShadersGenericGL_Test
-    ShadersMeshVisualizerGL_Test
-    ShadersPhongGL_Test
-    ShadersVectorGL_Test
-    ShadersVertexColorGL_Test
-    PROPERTIES FOLDER "Magnum/Shaders/Test")
 
 if(BUILD_GL_TESTS)
     # Otherwise CMake complains that Corrade::PluginManager is not found, wtf
@@ -460,14 +445,4 @@ if(BUILD_GL_TESTS)
             VertexColorTestFiles
             PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     endif()
-
-    set_target_properties(
-        ShadersDistanceFieldVectorGLTest
-        ShadersFlatGLTest
-        ShadersMeshVisualizerGLTest
-        ShadersPhongGLTest
-        ShadersVectorGLTest
-        ShadersVertexColorGLTest
-        ShadersGLBenchmark
-        PROPERTIES FOLDER "Magnum/Shaders/Test")
 endif()

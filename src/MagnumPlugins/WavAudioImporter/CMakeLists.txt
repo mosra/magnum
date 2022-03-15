@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "MagnumPlugins/WavAudioImporter")
+
 find_package(Corrade REQUIRED PluginManager)
 
 if(BUILD_PLUGINS_STATIC AND NOT DEFINED MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC)
@@ -45,7 +49,6 @@ endif()
 if(NOT MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(WavAudioImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(WavAudioImporterObjects PROPERTIES FOLDER "MagnumPlugins/WavAudioImporter")
 
 # WavAudioImporter plugin
 add_plugin(WavAudioImporter

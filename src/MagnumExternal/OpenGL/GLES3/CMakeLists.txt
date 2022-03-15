@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "MagnumExternal/OpenGL")
+
 # Desktop GLES on Windows still links to opengl32.dll so we have a special
 # function loading code that queries everything above OpenGL 1.1
 if(CORRADE_TARGET_WINDOWS AND MAGNUM_TARGET_DESKTOP_GLES)
@@ -51,7 +55,6 @@ if(NOT CORRADE_TARGET_EMSCRIPTEN)
     if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
         set_target_properties(MagnumFlextGLObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
-    set_target_properties(MagnumFlextGLObjects PROPERTIES FOLDER "MagnumExternal/OpenGL")
 endif()
 
 install(FILES ${MagnumOpenGL_HEADERS} DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GLES3)

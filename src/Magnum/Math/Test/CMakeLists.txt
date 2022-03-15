@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Math/Test")
+
 corrade_add_test(MathBoolVectorTest BoolVectorTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathConstantsTest ConstantsTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathFunctionsTest FunctionsTest.cpp LIBRARIES MagnumMathTestLib)
@@ -88,52 +92,3 @@ set_property(TARGET
     MathDistanceTest
     MathIntersectionTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
-
-set_target_properties(
-    MathBoolVectorTest
-    MathConstantsTest
-    MathFunctionsTest
-    MathFunctionsBatchTest
-    MathHalfTest
-    MathPackingTest
-    MathPackingBatchTest
-    MathTagsTest
-    MathTypeTraitsTest
-
-    MathVectorTest
-    MathVector2Test
-    MathVector3Test
-    MathVector4Test
-    MathColorTest
-
-    MathRectangularMatrixTest
-    MathMatrixTest
-    MathMatrix3Test
-    MathMatrix4Test
-
-    MathSwizzleTest
-    MathUnitTest
-    MathAngleTest
-    MathRangeTest
-
-    MathDualTest
-    MathComplexTest
-    MathDualComplexTest
-    MathQuaternionTest
-    MathDualQuaternionTest
-
-    MathBezierTest
-    MathCubicHermiteTest
-    MathFrustumTest
-
-    MathDistanceTest
-    MathIntersectionTest
-    MathIntersectionBenchmark
-
-    MathConfigurationValueTest
-    MathStrictWeakOrderingTest
-
-    MathVectorBenchmark
-    MathMatrixBenchmark
-    MathFunctionsBenchmark
-    PROPERTIES FOLDER "Magnum/Math/Test")

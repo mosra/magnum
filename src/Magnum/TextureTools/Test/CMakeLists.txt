@@ -23,8 +23,11 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/TextureTools/Test")
+
 corrade_add_test(TextureToolsAtlasTest AtlasTest.cpp LIBRARIES MagnumTextureTools)
-set_target_properties(TextureToolsAtlasTest PROPERTIES FOLDER "Magnum/TextureTools/Test")
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(DISTANCEFIELDGLTEST_FILES_DIR "DistanceFieldGLTestFiles")
@@ -68,7 +71,6 @@ if(BUILD_GL_TESTS)
         FILES
             DistanceFieldGLTestFiles/input.tga
             DistanceFieldGLTestFiles/output.tga)
-    set_target_properties(TextureToolsDistanceFieldGLTest PROPERTIES FOLDER "Magnum/TextureTools/Test")
     target_include_directories(TextureToolsDistanceFieldGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)

@@ -24,6 +24,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Platform/Test")
+
 find_package(Corrade REQUIRED Main)
 
 # Icons for SDL/GLFW
@@ -34,7 +38,6 @@ endif()
 if(WITH_ANDROIDAPPLICATION)
     add_library(PlatformAndroidApplicationTest SHARED AndroidApplicationTest.cpp)
     target_link_libraries(PlatformAndroidApplicationTest PRIVATE MagnumAndroidApplication)
-    set_target_properties(PlatformAndroidApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     if(CMAKE_ANDROID_NDK)
         android_create_apk(PlatformAndroidApplicationTest AndroidManifest.xml)
     endif()
@@ -50,7 +53,6 @@ if(WITH_EMSCRIPTENAPPLICATION)
         "-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0"
         # Enable memory runtime checks
         "-s ASSERTIONS=2 -s SAFE_HEAP=1")
-    set_target_properties(PlatformEmscriptenApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     add_custom_command(TARGET PlatformEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
@@ -68,7 +70,6 @@ if(WITH_EMSCRIPTENAPPLICATION)
         "-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1"
         "-s ASSERTIONS=2 -s SAFE_HEAP=1")
     target_compile_definitions(PlatformMultipleEmscriptenApplicationTest PRIVATE CUSTOM_CLEAR_COLOR=0x3bd267_rgbf)
-    set_target_properties(PlatformMultipleEmscriptenApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     add_custom_command(TARGET PlatformMultipleEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
@@ -86,7 +87,6 @@ if(WITH_GLFWAPPLICATION)
     # Window icon loading
     target_sources(PlatformGlfwApplicationTest PRIVATE ${Platform_RESOURCES})
     target_link_libraries(PlatformGlfwApplicationTest PRIVATE MagnumTrade)
-    set_target_properties(PlatformGlfwApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     if(CORRADE_TARGET_APPLE)
         # The plist is needed in order to mark the app as DPI-aware
         set_target_properties(PlatformGlfwApplicationTest PROPERTIES
@@ -99,7 +99,6 @@ endif()
 if(WITH_GLXAPPLICATION)
     add_executable(PlatformGlxApplicationTest GlxApplicationTest.cpp)
     target_link_libraries(PlatformGlxApplicationTest PRIVATE MagnumGlxApplication)
-    set_target_properties(PlatformGlxApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_SDL2APPLICATION)
@@ -117,7 +116,6 @@ if(WITH_SDL2APPLICATION)
         target_sources(PlatformSdl2ApplicationTest PRIVATE ${Platform_RESOURCES})
         target_link_libraries(PlatformSdl2ApplicationTest PRIVATE MagnumTrade)
     endif()
-    set_target_properties(PlatformSdl2ApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     if(CORRADE_TARGET_EMSCRIPTEN)
         add_custom_command(TARGET PlatformSdl2ApplicationTest POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -139,19 +137,16 @@ endif()
 if(WITH_XEGLAPPLICATION)
     add_executable(PlatformXEglApplicationTest XEglApplicationTest.cpp)
     target_link_libraries(PlatformXEglApplicationTest PRIVATE MagnumXEglApplication)
-    set_target_properties(PlatformXEglApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_WINDOWLESSCGLAPPLICATION)
     add_executable(PlatformWindowlessCglApplicationTest WindowlessCglApplicationTest.cpp)
     target_link_libraries(PlatformWindowlessCglApplicationTest PRIVATE MagnumWindowlessCglApplication)
-    set_target_properties(PlatformWindowlessCglApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_WINDOWLESSEGLAPPLICATION)
     add_executable(PlatformWindowlessEglApplicationTest WindowlessEglApplicationTest.cpp)
     target_link_libraries(PlatformWindowlessEglApplicationTest PRIVATE MagnumWindowlessEglApplication)
-    set_target_properties(PlatformWindowlessEglApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     if(CORRADE_TARGET_EMSCRIPTEN)
         add_custom_command(TARGET PlatformWindowlessEglApplicationTest POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -167,7 +162,6 @@ endif()
 if(WITH_WINDOWLESSGLXAPPLICATION)
     add_executable(PlatformWindowlessGlxApplicationTest WindowlessGlxApplicationTest.cpp)
     target_link_libraries(PlatformWindowlessGlxApplicationTest PRIVATE MagnumWindowlessGlxApplication)
-    set_target_properties(PlatformWindowlessGlxApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_WINDOWLESSIOSAPPLICATION)
@@ -175,18 +169,15 @@ if(WITH_WINDOWLESSIOSAPPLICATION)
     target_link_libraries(PlatformWindowlessIosApplicationTest PRIVATE MagnumWindowlessIosApplication)
     set_target_properties(PlatformWindowlessIosApplicationTest PROPERTIES
         MACOSX_BUNDLE ON
-        XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES"
-        FOLDER "Magnum/Platform/Test")
+        XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
 endif()
 
 if(WITH_WINDOWLESSWGLAPPLICATION)
     add_executable(PlatformWindowlessWglApplicationTest WindowlessWglApplicationTest.cpp)
     target_link_libraries(PlatformWindowlessWglApplicationTest PRIVATE MagnumWindowlessWglApplication)
-    set_target_properties(PlatformWindowlessWglApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
     add_executable(PlatformWindowlessWindowsEglApplicationTest WindowlessWindowsEglApplicationTest.cpp)
     target_link_libraries(PlatformWindowlessWindowsEglApplicationTest PRIVATE MagnumWindowlessWindowsEglApplication)
-    set_target_properties(PlatformWindowlessWindowsEglApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()

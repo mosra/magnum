@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "MagnumPlugins/ObjImporter/Test")
+
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(OBJIMPORTER_TEST_DIR ".")
 else()
@@ -70,7 +74,6 @@ else()
     # So the plugins get properly built when building the test
     add_dependencies(ObjImporterTest ObjImporter)
 endif()
-set_target_properties(ObjImporterTest PROPERTIES FOLDER "MagnumPlugins/ObjImporter/Test")
 if(CORRADE_BUILD_STATIC AND NOT MAGNUM_OBJIMPORTER_BUILD_STATIC)
     # CMake < 3.4 does this implicitly, but 3.4+ not anymore (see CMP0065).
     # That's generally okay, *except if* the build is static, the executable

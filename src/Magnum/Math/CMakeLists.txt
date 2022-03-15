@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Math")
+
 set(MagnumMath_HEADERS
     Angle.h
     Bezier.h
@@ -67,7 +71,6 @@ set(MagnumMath_INTERNAL_HEADERS
 add_custom_target(MagnumMath SOURCES
     ${MagnumMath_HEADERS}
     ${MagnumMath_INTERNAL_HEADERS})
-set_target_properties(MagnumMath PROPERTIES FOLDER "Magnum/Math")
 
 install(FILES ${MagnumMath_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math)
 

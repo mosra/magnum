@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/doc/snippets")
+
 # On MSVC remove /W3, as we are replacing it with /W4
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
     string(REPLACE "/W3" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -53,7 +57,6 @@ target_link_libraries(snippets-Magnum PRIVATE Magnum)
 if(MAGNUM_TARGET_GL)
     target_link_libraries(snippets-Magnum PRIVATE MagnumGL)
 endif()
-set_target_properties(snippets-Magnum PROPERTIES FOLDER "Magnum/doc/snippets")
 
 # This is taken from corrade/src/Corrade/Test/CMakeLists.txt, keep in sync
 if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0") OR
@@ -62,15 +65,12 @@ if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_VERSION VERS
    (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"))
     add_library(snippets-Magnum-cpp14 STATIC MagnumMath-cpp14.cpp)
     target_link_libraries(snippets-Magnum-cpp14 PRIVATE Magnum)
-    set_target_properties(snippets-Magnum-cpp14 PROPERTIES
-        CORRADE_CXX_STANDARD 14
-        FOLDER "Magnum/doc/snippets")
+    set_target_properties(snippets-Magnum-cpp14 PROPERTIES CORRADE_CXX_STANDARD 14)
 endif()
 
 if(WITH_AUDIO)
     add_library(snippets-MagnumAudio STATIC MagnumAudio.cpp)
     target_link_libraries(snippets-MagnumAudio PRIVATE MagnumAudio)
-    set_target_properties(snippets-MagnumAudio PROPERTIES FOLDER "Magnum/doc/snippets")
 
     if(WITH_SCENEGRAPH)
         add_library(snippets-MagnumAudio-scenegraph STATIC
@@ -78,7 +78,6 @@ if(WITH_AUDIO)
         target_link_libraries(snippets-MagnumAudio-scenegraph PRIVATE
             MagnumAudio
             MagnumSceneGraph)
-        set_target_properties(snippets-MagnumAudio-scenegraph PROPERTIES FOLDER "Magnum/doc/snippets")
     endif()
 endif()
 
@@ -89,7 +88,6 @@ if(WITH_GL)
         MagnumShaders-gl.cpp
         MagnumText.cpp)
     target_link_libraries(snippets-MagnumGL PRIVATE MagnumGL)
-    set_target_properties(snippets-MagnumGL PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 
 if(WITH_MESHTOOLS)
@@ -97,14 +95,12 @@ if(WITH_MESHTOOLS)
         MagnumMeshTools.cpp
         MagnumMeshTools-gl.cpp)
     target_link_libraries(snippets-MagnumMeshTools PRIVATE MagnumMeshTools)
-    set_target_properties(snippets-MagnumMeshTools PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 
 if(WITH_SHADERTOOLS)
     add_library(snippets-MagnumShaderTools STATIC
         MagnumShaderTools.cpp)
     target_link_libraries(snippets-MagnumShaderTools PRIVATE MagnumShaderTools)
-    set_target_properties(snippets-MagnumShaderTools PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 
 if(WITH_TRADE)
@@ -115,7 +111,6 @@ if(WITH_TRADE)
     if(MAGNUM_TARGET_GL)
         target_link_libraries(snippets-MagnumTrade PRIVATE MagnumGL)
     endif()
-    set_target_properties(snippets-MagnumTrade PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 
 find_package(Corrade COMPONENTS TestSuite)
@@ -124,7 +119,6 @@ if(WITH_DEBUGTOOLS)
     add_library(snippets-MagnumDebugTools STATIC
         MagnumDebugTools.cpp)
     target_link_libraries(snippets-MagnumDebugTools PRIVATE MagnumDebugTools)
-    set_target_properties(snippets-MagnumDebugTools PROPERTIES FOLDER "Magnum/doc/snippets")
 
     if(BUILD_GL_TESTS AND NOT MAGNUM_TARGET_GLES)
         add_executable(debugtools-frameprofiler debugtools-frameprofiler.cpp)
@@ -147,14 +141,12 @@ if(WITH_DEBUGTOOLS)
             MagnumDebugTools
             MagnumTrade)
         target_include_directories(debugtools-compareimage PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-        set_target_properties(debugtools-compareimage PROPERTIES FOLDER "Magnum/doc/snippets")
     endif()
 
     if(TARGET_GL)
         add_library(snippets-MagnumDebugTools-gl STATIC
             MagnumDebugTools-gl.cpp)
         target_link_libraries(snippets-MagnumDebugTools-gl PRIVATE MagnumDebugTools)
-        set_target_properties(snippets-MagnumDebugTools-gl PROPERTIES FOLDER "Magnum/doc/snippets")
     endif()
 endif()
 
@@ -162,16 +154,12 @@ if(WITH_PRIMITIVES)
     add_library(snippets-MagnumPrimitives STATIC
         MagnumPrimitives.cpp)
     target_link_libraries(snippets-MagnumPrimitives PRIVATE MagnumPrimitives)
-    set_target_properties(snippets-MagnumPrimitives
-        PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 
 if(WITH_SCENEGRAPH)
     add_library(snippets-MagnumSceneGraph STATIC
         MagnumSceneGraph.cpp)
     target_link_libraries(snippets-MagnumSceneGraph PRIVATE MagnumSceneGraph)
-    set_target_properties(snippets-MagnumSceneGraph
-        PROPERTIES FOLDER "Magnum/doc/snippets")
 
     if(WITH_SDL2APPLICATION AND WITH_GL AND WITH_PRIMITIVES AND WITH_SHADERS AND WITH_MESHTOOLS)
         add_library(snippets-MagnumSceneGraph-gl STATIC
@@ -183,8 +171,6 @@ if(WITH_SCENEGRAPH)
             MagnumSceneGraph
             MagnumSdl2Application
             MagnumShaders)
-        set_target_properties(snippets-MagnumSceneGraph-gl
-            PROPERTIES FOLDER "Magnum/doc/snippets")
     endif()
 endif()
 
@@ -192,15 +178,11 @@ if(WITH_SCENETOOLS)
     add_library(snippets-MagnumSceneTools STATIC
         MagnumSceneTools.cpp)
     target_link_libraries(snippets-MagnumSceneTools PRIVATE MagnumSceneTools)
-    set_target_properties(snippets-MagnumSceneTools
-        PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 
 if(WITH_VK)
     add_library(snippets-MagnumVk STATIC MagnumVk.cpp)
     target_link_libraries(snippets-MagnumVk PRIVATE MagnumVk)
-    set_target_properties(snippets-MagnumVk
-        PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 
 if(WITH_SDL2APPLICATION AND TARGET_GL)
@@ -213,12 +195,6 @@ if(WITH_SDL2APPLICATION AND TARGET_GL)
         MagnumPlatform.cpp
         MagnumGL-application.cpp)
     target_link_libraries(snippets-MagnumPlatform PRIVATE MagnumSdl2Application)
-
-    set_target_properties(
-        getting-started
-        getting-started-blue
-        snippets-MagnumPlatform
-        PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 
 if((NOT TARGET_GLES AND WITH_SDL2APPLICATION) OR (TARGET_GLES AND WITH_XEGLAPPLICATION))
@@ -228,10 +204,6 @@ if((NOT TARGET_GLES AND WITH_SDL2APPLICATION) OR (TARGET_GLES AND WITH_XEGLAPPLI
     else()
         target_link_libraries(snippets-MagnumPlatform-portability PRIVATE MagnumSdl2Application)
     endif()
-
-    set_target_properties(
-        snippets-MagnumPlatform-portability
-        PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 
 if(WITH_WINDOWLESSEGLAPPLICATION)
@@ -244,11 +216,4 @@ if(WITH_WINDOWLESSEGLAPPLICATION)
     target_link_libraries(snippets-MagnumPlatform-windowless PRIVATE MagnumWindowlessEglApplication)
     target_link_libraries(snippets-MagnumPlatform-windowless-custom PRIVATE MagnumWindowlessEglApplication)
     target_link_libraries(snippets-MagnumPlatform-windowless-thread PRIVATE MagnumWindowlessEglApplication)
-
-    set_target_properties(
-        snippets-MagnumPlatform-windowless
-        snippets-MagnumPlatform-windowless-custom
-        snippets-MagnumPlatform-windowless-thread
-        snippets-MagnumPlatform-custom
-        PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()

@@ -23,14 +23,11 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/SceneTools/Test")
+
 corrade_add_test(SceneToolsCombineTest CombineTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(SceneToolsConvertToSingleFun___Test ConvertToSingleFunctionObjectsTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(SceneToolsFlattenMeshHierarchyTest FlattenMeshHierarchyTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 corrade_add_test(SceneToolsOrderClusterParentsTest OrderClusterParentsTest.cpp LIBRARIES MagnumSceneToolsTestLib)
-
-set_target_properties(
-    SceneToolsCombineTest
-    SceneToolsConvertToSingleFun___Test
-    SceneToolsFlattenMeshHierarchyTest
-    SceneToolsOrderClusterParentsTest
-    PROPERTIES FOLDER "Magnum/SceneTools/Test")

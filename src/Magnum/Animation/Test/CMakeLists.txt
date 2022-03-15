@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Animation/Test")
+
 corrade_add_test(AnimationBenchmark Benchmark.cpp LIBRARIES Magnum)
 corrade_add_test(AnimationEasingTest EasingTest.cpp LIBRARIES Magnum)
 corrade_add_test(AnimationInterpolationTest InterpolationTest.cpp LIBRARIES MagnumTestLib)
@@ -34,13 +38,3 @@ corrade_add_test(AnimationTrackViewTest TrackViewTest.cpp LIBRARIES Magnum)
 set_property(TARGET
     AnimationInterpolationTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
-
-set_target_properties(
-    AnimationBenchmark
-    AnimationEasingTest
-    AnimationInterpolationTest
-    AnimationPlayerTest
-    AnimationPlayerCustomTest
-    AnimationTrackTest
-    AnimationTrackViewTest
-    PROPERTIES FOLDER "Magnum/Animation/Test")

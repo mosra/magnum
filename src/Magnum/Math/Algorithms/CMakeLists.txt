@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Math/Algorithms")
+
 set(MagnumMathAlgorithms_HEADERS
     GaussJordan.h
     GramSchmidt.h
@@ -32,7 +36,6 @@ set(MagnumMathAlgorithms_HEADERS
 
 # Force IDEs to display all header files in project view
 add_custom_target(MagnumMathAlgorithms SOURCES ${MagnumMathAlgorithms_HEADERS})
-set_target_properties(MagnumMathAlgorithms PROPERTIES FOLDER "Magnum/Math/Algorithms")
 
 install(FILES ${MagnumMathAlgorithms_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math/Algorithms)
 

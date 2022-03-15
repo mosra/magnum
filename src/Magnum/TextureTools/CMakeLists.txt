@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/TextureTools")
+
 set(MagnumTextureTools_SRCS
     Atlas.cpp)
 
@@ -33,7 +37,6 @@ set(MagnumTextureTools_HEADERS
 
 if(TARGET_GL)
     corrade_add_resource(MagnumTextureTools_RCS resources.conf)
-    set_target_properties(MagnumTextureTools_RCS-dependencies PROPERTIES FOLDER "Magnum/TextureTools")
     if(BUILD_STATIC)
         # On the static build we're importing the resources manually, so no
         # need to have the implicit initializers as well.
@@ -54,9 +57,7 @@ endif()
 add_library(MagnumTextureTools ${SHARED_OR_STATIC}
     ${MagnumTextureTools_SRCS}
     ${MagnumTextureTools_HEADERS})
-set_target_properties(MagnumTextureTools PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/TextureTools")
+set_target_properties(MagnumTextureTools PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     set_target_properties(MagnumTextureTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)
@@ -105,7 +106,6 @@ if(WITH_DISTANCEFIELDCONVERTER)
     else()
         message(FATAL_ERROR "magnum-distancefieldconverter is not available on this platform. Set WITH_DISTANCEFIELDCONVERTER to OFF to suppress this warning.")
     endif()
-    set_target_properties(magnum-distancefieldconverter PROPERTIES FOLDER "Magnum/TextureTools")
 
     install(TARGETS magnum-distancefieldconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 

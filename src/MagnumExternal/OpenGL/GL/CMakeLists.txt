@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "MagnumExternal/OpenGL")
+
 # flextGLPlatform.cpp is compiled as part of Magnum*Context libraries in Platform
 add_library(MagnumFlextGLObjects OBJECT flextGL.cpp)
 target_include_directories(MagnumFlextGLObjects PUBLIC $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
@@ -32,6 +36,5 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumFlextGLObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(MagnumFlextGLObjects PROPERTIES FOLDER "MagnumExternal/OpenGL")
 
 install(FILES flextGL.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GL)

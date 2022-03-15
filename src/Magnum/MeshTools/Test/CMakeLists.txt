@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/MeshTools/Test")
+
 corrade_add_test(MeshToolsCombineTest CombineTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsCompressIndicesTest CompressIndicesTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsConcatenateTest ConcatenateTest.cpp LIBRARIES MagnumMeshToolsTestLib)
@@ -47,30 +51,11 @@ set_property(TARGET
     MeshToolsSubdivideTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
 
-set_target_properties(
-    MeshToolsCombineTest
-    MeshToolsCompressIndicesTest
-    MeshToolsConcatenateTest
-    MeshToolsDuplicateTest
-    MeshToolsFilterAttributesTest
-    MeshToolsFlipNormalsTest
-    MeshToolsGenerateIndicesTest
-    MeshToolsGenerateNormalsTest
-    MeshToolsInterleaveTest
-    MeshToolsRemoveDuplicatesTest
-    MeshToolsSubdivideTest
-    MeshToolsTipsifyTest
-    MeshToolsTransformTest
-    PROPERTIES FOLDER "Magnum/MeshTools/Test")
-
 if(BUILD_DEPRECATED)
     corrade_add_test(MeshToolsCombineIndexedArraysTest CombineIndexedArraysTest.cpp LIBRARIES MagnumMeshToolsTestLib)
     set_property(TARGET
         MeshToolsCombineIndexedArraysTest
         APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
-    set_target_properties(
-        MeshToolsCombineIndexedArraysTest
-        PROPERTIES FOLDER "Magnum/MeshTools/Test")
 endif()
 
 if(BUILD_GL_TESTS)
@@ -78,7 +63,6 @@ if(BUILD_GL_TESTS)
     find_package(Corrade REQUIRED PluginManager)
 
     corrade_add_resource(FullScreenTriangleGLTest_RESOURCES resources.conf)
-    set_target_properties(FullScreenTriangleGLTest_RESOURCES-dependencies PROPERTIES FOLDER "Magnum/MeshTools/Test")
 
     corrade_add_test(MeshToolsFullScreenTriangleGLTest
         FullScreenTriangleGLTest.cpp ${FullScreenTriangleGLTest_RESOURCES}
@@ -127,7 +111,6 @@ if(BUILD_GL_TESTS)
             CompileTestFiles/phong-flat.tga
             CompileTestFiles/textured2D.tga
             CompileTestFiles/textured3D.tga)
-    set_target_properties(MeshToolsCompileGLTest PROPERTIES FOLDER "Magnum/MeshTools/Test")
     target_include_directories(MeshToolsCompileGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)

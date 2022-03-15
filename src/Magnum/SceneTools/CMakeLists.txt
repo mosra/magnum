@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/SceneTools")
+
 # Files shared between main library and unit test library
 set(MagnumSceneTools_SRCS )
 
@@ -54,7 +58,6 @@ set(MagnumSceneTools_PRIVATE_HEADERS
 #if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     #set_target_properties(MagnumSceneToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 #endif()
-#set_target_properties(MagnumSceneToolsObjects PROPERTIES FOLDER "Magnum/SceneTools")
 
 # Main SceneTools library
 add_library(MagnumSceneTools ${SHARED_OR_STATIC}
@@ -62,9 +65,7 @@ add_library(MagnumSceneTools ${SHARED_OR_STATIC}
     ${MagnumSceneTools_GracefulAssert_SRCS}
     ${MagnumSceneTools_HEADERS}
     ${MagnumSceneTools_PRIVATE_HEADERS})
-set_target_properties(MagnumSceneTools PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/SceneTools")
+set_target_properties(MagnumSceneTools PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     set_target_properties(MagnumSceneTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)
@@ -87,7 +88,6 @@ if(WITH_SCENECONVERTER)
         MagnumMeshTools
         MagnumSceneTools
         MagnumTrade)
-    set_target_properties(magnum-sceneconverter PROPERTIES FOLDER "Magnum/MeshTools")
 
     install(TARGETS magnum-sceneconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
@@ -100,9 +100,7 @@ if(BUILD_TESTS)
     add_library(MagnumSceneToolsTestLib ${SHARED_OR_STATIC}
         #$<TARGET_OBJECTS:MagnumSceneToolsObjects>
         ${MagnumSceneTools_GracefulAssert_SRCS})
-    set_target_properties(MagnumSceneToolsTestLib PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/SceneTools")
+    set_target_properties(MagnumSceneToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumSceneToolsTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumSceneTools_EXPORTS")
     if(BUILD_STATIC_PIC)

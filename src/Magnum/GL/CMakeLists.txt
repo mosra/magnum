@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/GL")
+
 set(MagnumGL_SRCS
     AbstractObject.cpp
     AbstractQuery.cpp
@@ -191,7 +195,6 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumGLObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(MagnumGLObjects PROPERTIES FOLDER "Magnum/GL")
 
 # Link in GL function pointer variables on platforms that support it
 if(NOT CORRADE_TARGET_EMSCRIPTEN)
@@ -203,9 +206,7 @@ add_library(MagnumGL ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumGLObjects>
     ${MagnumGL_FlextGL_SRCS}
     ${MagnumGL_GracefulAssert_SRCS})
-set_target_properties(MagnumGL PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/GL")
+set_target_properties(MagnumGL PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     target_compile_definitions(MagnumGL PRIVATE "FlextGL_EXPORTS")
     set_target_properties(MagnumGL PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
@@ -259,7 +260,6 @@ if(WITH_OPENGLTESTER)
         ${MagnumOpenGLTester_HEADERS})
     # Assuming that PIC is not needed because the Tester lib is always linked
     # to the executable and not to any intermediate shared lib
-    set_target_properties(MagnumOpenGLTesterObjects PROPERTIES FOLDER "Magnum/GL")
     target_include_directories(MagnumOpenGLTesterObjects PUBLIC
         $<TARGET_PROPERTY:Corrade::TestSuite,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>
@@ -268,9 +268,7 @@ if(WITH_OPENGLTESTER)
     add_library(MagnumOpenGLTester STATIC
         $<TARGET_OBJECTS:MagnumOpenGLTesterObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
-    set_target_properties(MagnumOpenGLTester PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/GL")
+    set_target_properties(MagnumOpenGLTester PROPERTIES DEBUG_POSTFIX "-d")
     # OPENGLTESTER_APPLICATION defined in the root CMakeLists, because it also
     # enables the application library dependencies
     target_link_libraries(MagnumOpenGLTester PUBLIC Magnum Corrade::TestSuite ${OPENGLTESTER_APPLICATION})
@@ -291,9 +289,7 @@ if(BUILD_TESTS)
         $<TARGET_OBJECTS:MagnumGLObjects>
         ${MagnumGL_FlextGL_SRCS}
         ${MagnumGL_GracefulAssert_SRCS})
-    set_target_properties(MagnumGLTestLib PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/GL")
+    set_target_properties(MagnumGLTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumGLTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumGL_EXPORTS" "FlextGL_EXPORTS")
     if(BUILD_STATIC_PIC)
@@ -323,9 +319,7 @@ if(BUILD_TESTS)
         add_library(MagnumOpenGLTesterTestLib STATIC
             $<TARGET_OBJECTS:MagnumOpenGLTesterObjects>
             ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
-        set_target_properties(MagnumOpenGLTesterTestLib PROPERTIES
-            DEBUG_POSTFIX "-d"
-            FOLDER "Magnum/GL")
+        set_target_properties(MagnumOpenGLTesterTestLib PROPERTIES DEBUG_POSTFIX "-d")
         target_link_libraries(MagnumOpenGLTesterTestLib PUBLIC Magnum Corrade::TestSuite)
         # On Windows the ${OPENGLTESTER_APPLICATION} links to MagnumGL, which
         # is causing asserts in GL::Context::current() due to two different

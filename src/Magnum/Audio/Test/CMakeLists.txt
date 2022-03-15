@@ -24,6 +24,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Audio/Test")
+
 if(CORRADE_TARGET_EMSCRIPTEN)
     set(AUDIO_TEST_DIR "")
 else()
@@ -42,35 +46,15 @@ corrade_add_test(AudioContextTest ContextTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioRendererTest RendererTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioSourceTest SourceTest.cpp LIBRARIES MagnumAudio)
 
-set_target_properties(
-    AudioAbstractImporterTest
-    AudioBufferFormatTest
-    AudioContextTest
-    AudioRendererTest
-    AudioSourceTest
-    PROPERTIES FOLDER "Magnum/Audio/Test")
-
 if(BUILD_AL_TESTS)
     corrade_add_test(AudioBufferALTest BufferALTest.cpp LIBRARIES MagnumAudio)
     corrade_add_test(AudioContextALTest ContextALTest.cpp LIBRARIES MagnumAudio)
     corrade_add_test(AudioRendererALTest RendererALTest.cpp LIBRARIES MagnumAudio)
     corrade_add_test(AudioSourceALTest SourceALTest.cpp LIBRARIES MagnumAudio)
 
-    set_target_properties(
-        AudioBufferALTest
-        AudioContextALTest
-        AudioRendererALTest
-        AudioSourceALTest
-        PROPERTIES FOLDER "Magnum/Audio/Test")
-
     if(WITH_SCENEGRAPH)
         corrade_add_test(AudioListenerALTest ListenerALTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
         corrade_add_test(AudioPlayableALTest PlayableALTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
-
-        set_target_properties(
-            AudioListenerALTest
-            AudioPlayableALTest
-            PROPERTIES FOLDER "Magnum/Audio/Test")
     endif()
 
     if(MAGNUM_BUILD_STATIC AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_WINDOWS_RT)
@@ -81,9 +65,5 @@ if(BUILD_AL_TESTS)
         corrade_add_test(AudioGlobalStateAcrossLibra___ALTest
             GlobalStateAcrossLibrariesALTest.cpp
             LIBRARIES AudioGlobalStateAcrossLibrariesLibrary)
-        set_target_properties(
-            AudioGlobalStateAcrossLibrariesLibrary
-            AudioGlobalStateAcrossLibra___ALTest
-            PROPERTIES FOLDER "Magnum/Audio/Test")
     endif()
 endif()

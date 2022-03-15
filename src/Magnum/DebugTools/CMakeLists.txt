@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/DebugTools")
+
 set(MagnumDebugTools_SRCS
     ColorMap.cpp)
 
@@ -112,7 +116,6 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumDebugToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(MagnumDebugToolsObjects PROPERTIES FOLDER "Magnum/DebugTools")
 if(TARGET_GL)
     target_include_directories(MagnumDebugToolsObjects PUBLIC $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
 endif()
@@ -121,9 +124,7 @@ endif()
 add_library(MagnumDebugTools ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumDebugToolsObjects>
     ${MagnumDebugTools_GracefulAssert_SRCS})
-set_target_properties(MagnumDebugTools PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/DebugTools")
+set_target_properties(MagnumDebugTools PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     set_target_properties(MagnumDebugTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)
@@ -157,9 +158,7 @@ if(BUILD_TESTS)
     add_library(MagnumDebugToolsTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumDebugToolsObjects>
         ${MagnumDebugTools_GracefulAssert_SRCS})
-    set_target_properties(MagnumDebugToolsTestLib PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/DebugTools")
+    set_target_properties(MagnumDebugToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumDebugToolsTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumDebugTools_EXPORTS")
     if(BUILD_STATIC_PIC)

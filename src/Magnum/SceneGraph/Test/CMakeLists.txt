@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/SceneGraph/Test")
+
 corrade_add_test(SceneGraphAnimableTest AnimableTest.cpp LIBRARIES MagnumSceneGraph)
 corrade_add_test(SceneGraphCameraTest CameraTest.cpp LIBRARIES MagnumSceneGraph)
 corrade_add_test(SceneGraphDualComplexTransfo___Test DualComplexTransformationTest.cpp LIBRARIES MagnumSceneGraphTestLib)
@@ -48,18 +52,3 @@ set_property(TARGET
     SceneGraphTranslationTransfo___Test
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
 
-set_target_properties(
-    SceneGraphAnimableTest
-    SceneGraphCameraTest
-    SceneGraphDualComplexTransfo___Test
-    SceneGraphDualQuaternionTran___Test
-    SceneGraphMatrixTransforma___2DTest
-    SceneGraphMatrixTransforma___3DTest
-    SceneGraphObjectTest
-    SceneGraphRigidMatrixTrans___2DTest
-    SceneGraphRigidMatrixTrans___3DTest
-    SceneGraphSceneTest
-    SceneGraphTranslationRotat___2DTest
-    SceneGraphTranslationRotat___3DTest
-    SceneGraphTranslationTransfo___Test
-    PROPERTIES FOLDER "Magnum/SceneGraph/Test")

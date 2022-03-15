@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/ShaderTools")
+
 find_package(Corrade REQUIRED PluginManager)
 
 # Files shared between main library and unit test library
@@ -60,7 +64,6 @@ endif()
 # if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
 #     set_target_properties(MagnumShaderToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 # endif()
-# set_target_properties(MagnumShaderToolsObjects PROPERTIES FOLDER "Magnum/ShaderTools")
 
 # Main ShaderTools library
 add_library(MagnumShaderTools ${SHARED_OR_STATIC}
@@ -68,9 +71,7 @@ add_library(MagnumShaderTools ${SHARED_OR_STATIC}
     ${MagnumShaderTools_GracefulAssert_SRCS}
     ${MagnumShaderTools_HEADERS}
     ${MagnumShaderTools_PRIVATE_HEADERS})
-set_target_properties(MagnumShaderTools PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/ShaderTools")
+set_target_properties(MagnumShaderTools PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     set_target_properties(MagnumShaderTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)
@@ -91,7 +92,6 @@ if(WITH_SHADERCONVERTER)
     target_link_libraries(magnum-shaderconverter PRIVATE
         Magnum
         MagnumShaderTools)
-    set_target_properties(magnum-shaderconverter PROPERTIES FOLDER "Magnum/ShaderTools")
 
     install(TARGETS magnum-shaderconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
@@ -104,9 +104,7 @@ if(BUILD_TESTS)
     add_library(MagnumShaderToolsTestLib ${SHARED_OR_STATIC}
 #         $<TARGET_OBJECTS:MagnumShaderToolsObjects>
         ${MagnumShaderTools_GracefulAssert_SRCS})
-    set_target_properties(MagnumShaderToolsTestLib PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/ShaderTools")
+    set_target_properties(MagnumShaderToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumShaderToolsTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumShaderTools_EXPORTS")
     if(BUILD_STATIC_PIC)

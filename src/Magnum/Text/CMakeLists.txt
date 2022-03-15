@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Text")
+
 find_package(Corrade REQUIRED PluginManager)
 
 # Files shared between main library and unit test library
@@ -78,15 +82,12 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumTextObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(MagnumTextObjects PROPERTIES FOLDER "Magnum/Text")
 
 # Text library
 add_library(MagnumText ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumTextObjects>
     ${MagnumText_GracefulAssert_SRCS})
-set_target_properties(MagnumText PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/Text")
+set_target_properties(MagnumText PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     set_target_properties(MagnumText PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)
@@ -137,7 +138,6 @@ if(WITH_FONTCONVERTER)
     else()
         message(FATAL_ERROR "magnum-fontconverter is not available on this platform. Set WITH_FONTCONVERTER to OFF to suppress this warning.")
     endif()
-    set_target_properties(magnum-fontconverter PROPERTIES FOLDER "Magnum/Text")
 
     install(TARGETS magnum-fontconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
@@ -150,9 +150,7 @@ if(BUILD_TESTS)
     add_library(MagnumTextTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumTextObjects>
         ${MagnumText_GracefulAssert_SRCS})
-    set_target_properties(MagnumTextTestLib PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/Text")
+    set_target_properties(MagnumTextTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumTextTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumText_EXPORTS")
     if(BUILD_STATIC_PIC)

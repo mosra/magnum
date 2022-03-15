@@ -23,16 +23,12 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Math/Algorithms/Test")
+
 corrade_add_test(MathAlgorithmsGaussJordanTest GaussJordanTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathAlgorithmsGramSchmidtTest GramSchmidtTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathAlgorithmsKahanSumTest KahanSumTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathAlgorithmsQrTest QrTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathAlgorithmsSvdTest SvdTest.cpp LIBRARIES MagnumMathTestLib)
-
-set_target_properties(
-    MathAlgorithmsGaussJordanTest
-    MathAlgorithmsGramSchmidtTest
-    MathAlgorithmsKahanSumTest
-    MathAlgorithmsQrTest
-    MathAlgorithmsSvdTest
-    PROPERTIES FOLDER "Magnum/Math/Algorithms/Test")

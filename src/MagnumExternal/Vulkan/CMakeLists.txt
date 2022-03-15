@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "MagnumExternal/Vulkan")
+
 add_library(MagnumFlextVkObjects OBJECT flextVk.cpp)
 target_include_directories(MagnumFlextVkObjects PUBLIC $<TARGET_PROPERTY:MagnumVk,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_STATIC)
@@ -31,6 +35,5 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumFlextVkObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(MagnumFlextVkObjects PROPERTIES FOLDER "MagnumExternal/Vulkan")
 
 install(FILES flextVk.h flextVkGlobal.h spirv.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/Vulkan)

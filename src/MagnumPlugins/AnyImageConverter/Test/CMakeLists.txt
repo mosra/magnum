@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "MagnumPlugins/AnyImageConverter/Test")
+
 # Needed to test verbose output from OpenExrImageConverter (detected thread
 # count), unfortunately no better option for testing flags right now
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
@@ -81,7 +85,6 @@ else()
         add_dependencies(AnyImageConverterTest TgaImageConverter)
     endif()
 endif()
-set_target_properties(AnyImageConverterTest PROPERTIES FOLDER "MagnumPlugins/AnyImageConverter/Test")
 if(CORRADE_BUILD_STATIC AND NOT MAGNUM_ANYIMAGECONVERTER_BUILD_STATIC)
     # CMake < 3.4 does this implicitly, but 3.4+ not anymore (see CMP0065).
     # That's generally okay, *except if* the build is static, the executable

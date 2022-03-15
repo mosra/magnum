@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Primitives")
+
 set(MagnumPrimitives_SRCS
     Axis.cpp
     Capsule.cpp
@@ -71,8 +75,7 @@ add_library(MagnumPrimitives ${SHARED_OR_STATIC}
     ${MagnumPrimitives_HEADERS}
     ${MagnumPrimitives_PRIVATE_HEADERS})
 set_target_properties(MagnumPrimitives PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/Primitives")
+    DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     set_target_properties(MagnumPrimitives PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)

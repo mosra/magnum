@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Audio")
+
 find_package(Corrade REQUIRED PluginManager)
 find_package(OpenAL REQUIRED)
 
@@ -80,16 +84,13 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumAudioObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-set_target_properties(MagnumAudioObjects PROPERTIES FOLDER "Magnum/Audio")
 
 # Audio library
 add_library(MagnumAudio ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumAudioObjects>
     ${MagnumAudio_GracefulAssert_SRCS})
 target_include_directories(MagnumAudio PUBLIC ${OPENAL_INCLUDE_DIR})
-set_target_properties(MagnumAudio PROPERTIES
-    DEBUG_POSTFIX "-d"
-    FOLDER "Magnum/Audio")
+set_target_properties(MagnumAudio PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
     set_target_properties(MagnumAudio PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)
@@ -132,7 +133,6 @@ add_library(Magnum::Audio ALIAS MagnumAudio)
 if(WITH_AL_INFO)
     add_executable(magnum-al-info al-info.cpp)
     target_link_libraries(magnum-al-info PRIVATE MagnumAudio)
-    set_target_properties(magnum-al-info PROPERTIES FOLDER "Magnum/Audio")
 
     if(NOT MAGNUM_TARGET_EMSCRIPTEN)
         install(TARGETS magnum-al-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
@@ -176,9 +176,7 @@ if(BUILD_TESTS)
     target_compile_definitions(MagnumAudioTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumAudio_EXPORTS")
     target_include_directories(MagnumAudioTestLib PUBLIC ${OPENAL_INCLUDE_DIR})
-    set_target_properties(MagnumAudioTestLib PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum")
+    set_target_properties(MagnumAudioTestLib PROPERTIES DEBUG_POSTFIX "-d")
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumAudioTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

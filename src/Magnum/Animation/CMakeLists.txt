@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "Magnum/Animation")
+
 set(MagnumAnimation_HEADERS
     Animation.h
     Easing.h
@@ -33,7 +37,6 @@ set(MagnumAnimation_HEADERS
 
 # Force IDEs to display all header files in project view
 add_custom_target(MagnumAnimation SOURCES ${MagnumAnimation_HEADERS})
-set_target_properties(MagnumAnimation PROPERTIES FOLDER "Magnum/Animation")
 
 install(FILES ${MagnumAnimation_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Animation)
 
