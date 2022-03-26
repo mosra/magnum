@@ -32,6 +32,8 @@
 
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
+#include <string>
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Trade/visibility.h"
