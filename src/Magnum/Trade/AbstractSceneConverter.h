@@ -36,6 +36,12 @@
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Trade/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* So deprecated APIs taking a std::string don't fail to compile */
+/** @todo remove once they are gone */
+#include <Corrade/Utility/StlForwardString.h>
+#endif
+
 namespace Magnum { namespace Trade {
 
 /**
