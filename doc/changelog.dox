@@ -585,6 +585,10 @@ See also:
 -   Updated Debian build instructions to pass `--no-sign` to
     `dpkg-buildpackage`, avoiding a confusing error message that might lead
     people to think the packaging failed (see [mosra/magnum-plugins#105](https://github.com/mosra/magnum-plugins/issues/105))
+-   Due to STL removal in @ref Corrade::PluginManager, deprecated APIs in
+    @ref Trade library that use @ref std::string stopped compiling on MSVC as
+    there was no remaining transitive @cpp #include <string> @ce left (see
+    [mosra/magnum#556](https://github.com/mosra/magnum/pull/556))
 
 @subsection changelog-latest-bugfixes Bug fixes
 

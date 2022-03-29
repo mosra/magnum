@@ -123,6 +123,7 @@ Are the below lists missing your name or something's wrong?
 -   **[\@DJQuardaboff](https://github.com/DJQuardaboff)** --- discovery of a
     silly mistake with @ref Frustumd debug output printer
 -   **[\@dlardi](https://github.com/dlardi)** --- WGL-related bugfixes
+-   **[\@EhWhoAmI](https://github.com/EhWhoAmI)** --- MSVC compilation fixes
 -   **Eliot Saba** ([\@staticfloat](https://github.com/staticfloat)) ---
     macOS-related updates to @ref Platform::GlfwApplication
 -   **Émile Grégoire** ([\@emgre](https://github.com/emgre)) --- documentation
