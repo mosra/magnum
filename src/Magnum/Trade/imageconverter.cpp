@@ -536,7 +536,12 @@ key=true; configuration subgroups are delimited with /.)")
                     d << Debug::packed;
                     if(info.compressed) d << Debug::color(Debug::Color::Yellow) << info.compressedFormat;
                     else d << Debug::color(Debug::Color::Cyan) << info.format;
-                    d << Debug::resetColor << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB)";
+                    d << Debug::resetColor << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB";
+                    if(info.dataFlags != (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))
+                        d << Debug::nospace << "," << Debug::packed
+                            << Debug::color(Debug::Color::Green)
+                            << info.dataFlags << Debug::resetColor;
+                    d << Debug::nospace << ")";
                 }
 
                 if(args.isSet("profile")) {

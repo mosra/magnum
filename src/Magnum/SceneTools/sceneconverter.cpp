@@ -399,6 +399,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             MeshIndexType indexType;
             Containers::Array<MeshAttributeInfo> attributes;
             std::size_t indexDataSize, vertexDataSize;
+            Trade::DataFlags indexDataFlags, vertexDataFlags;
             std::string name;
         };
 
@@ -417,6 +418,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             UnsignedLong mappingBound;
             Containers::Array<SceneFieldInfo> fields;
             std::size_t dataSize;
+            Trade::DataFlags dataFlags;
             std::string name;
             /** @todo object names? */
         };
@@ -452,6 +454,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 info.mappingType = scene->mappingType();
                 info.mappingBound = scene->mappingBound();
                 info.dataSize = scene->data().size();
+                info.dataFlags = scene->dataFlags();
                 info.name = importer->sceneName(i);
                 for(UnsignedInt j = 0; j != scene->fieldCount(); ++j) {
                     const Trade::SceneField name = scene->fieldName(j);
@@ -610,6 +613,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 info.primitive = mesh->primitive();
                 info.vertexCount = mesh->vertexCount();
                 info.vertexDataSize = mesh->vertexData().size();
+                info.vertexDataFlags = mesh->vertexDataFlags();
                 if(!j) {
                     info.name = importer->meshName(i);
                 }
@@ -619,6 +623,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     info.indexOffset = mesh->indexOffset();
                     info.indexStride = mesh->indexStride();
                     info.indexDataSize = mesh->indexData().size();
+                    info.indexDataFlags = mesh->indexDataFlags();
                     if(args.isSet("bounds"))
                         info.indexBounds = calculateBounds(mesh->indicesAsArray());
                 }
@@ -758,8 +763,16 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             d << Debug::boldColor(Debug::Color::White) << "Scene" << info.scene << Debug::nospace << ":" << Debug::resetColor;
             if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
             d << Debug::newline;
-            d << "  Bound:" << info.mappingBound << "objects" << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << info.mappingType << Debug::resetColor
-                << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB)";
+            d << "  Bound:" << info.mappingBound << "objects"
+                << Debug::color(Debug::Color::Blue) << "@" << Debug::packed
+                << Debug::color(Debug::Color::Cyan) << info.mappingType
+                << Debug::resetColor << "(" << Debug::nospace
+                << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB";
+            if(info.dataFlags != (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))
+                d << Debug::nospace << "," << Debug::packed
+                    << Debug::color(Debug::Color::Green) << info.dataFlags
+                    << Debug::resetColor;
+            d << Debug::nospace << ")";
 
             d << Debug::newline << "  Fields:";
             for(const SceneFieldInfo& field: info.fields) {
@@ -772,9 +785,10 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 if(field.arraySize)
                     d << Debug::nospace << Utility::format("[{}]", field.arraySize);
                 d << Debug::resetColor;
+                if(field.flags) d << Debug::nospace << ", flags:"
+                    << Debug::packed << Debug::color(Debug::Color::Green)
+                    << field.flags << Debug::resetColor;
                 d << Debug::nospace << "," << field.size << "entries";
-                if(field.flags)
-                    d << Debug::newline << "   " << field.flags;
             }
         }
 
@@ -784,7 +798,12 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
 
             d << Debug::newline << "  Duration:" << info.data.duration()
-                << "(" << Debug::nospace << Utility::format("{:.1f}", info.data.data().size()/1024.0f) << "kB)";
+                << "(" << Debug::nospace << Utility::format("{:.1f}", info.data.data().size()/1024.0f) << "kB";
+            if(info.data.dataFlags() != (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))
+                d << Debug::nospace << "," << Debug::packed
+                    << Debug::color(Debug::Color::Green)
+                    << info.data.dataFlags() << Debug::resetColor;
+            d << Debug::nospace << ")";
 
             for(UnsignedInt i = 0; i != info.data.trackCount(); ++i) {
                 d << Debug::newline << "  Track" << i << Debug::nospace << ":"
@@ -997,7 +1016,12 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             d << "  Level" << info.level << Debug::nospace << ":"
                 << info.vertexCount << "vertices" << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << info.primitive << Debug::resetColor << "(" << Debug::nospace
                 << Utility::format("{:.1f}", info.vertexDataSize/1024.0f)
-                << "kB)";
+                << "kB";
+            if(info.vertexDataFlags != (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))
+                d << Debug::nospace << ", flags:" << Debug::packed
+                    << Debug::color(Debug::Color::Green)
+                    << info.vertexDataFlags << Debug::resetColor;
+            d << Debug::nospace << ")";
 
             for(const MeshAttributeInfo& attribute: info.attributes) {
                 d << Debug::newline << "   " << Debug::packed << Debug::boldColor(Debug::Color::White) << attribute.name;
@@ -1019,7 +1043,11 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 d << Debug::newline << "   " << info.indexCount << "indices" << Debug::color(Debug::Color::Blue) << "@"
                     << Debug::packed << Debug::color(Debug::Color::Cyan) << info.indexType << Debug::resetColor << Debug::nospace << ", offset" << info.indexOffset << Debug::nospace << ", stride" << info.indexStride << "(" << Debug::nospace
                     << Utility::format("{:.1f}", info.indexDataSize/1024.0f)
-                    << "kB)";
+                    << "kB";
+                if(info.indexDataFlags != (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))
+                    d << Debug::nospace << ", flags:" << Debug::packed
+                        << Debug::color(Debug::Color::Green) << info.indexDataFlags << Debug::resetColor;
+                d << Debug::nospace << ")";
                 if(!info.indexBounds.empty())
                     d << Debug::newline << "      bounds:" << info.indexBounds;
             }
@@ -1095,7 +1123,12 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             d << Debug::packed;
             if(info.compressed) d << Debug::color(Debug::Color::Yellow) << info.compressedFormat;
             else d << Debug::color(Debug::Color::Cyan) << info.format;
-            d << Debug::resetColor << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB)";
+            d << Debug::resetColor << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB";
+            if(info.dataFlags != (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))
+                d << Debug::nospace << "," << Debug::packed
+                    << Debug::color(Debug::Color::Green) << info.dataFlags
+                    << Debug::resetColor;
+            d << Debug::nospace << ")";
         }
 
         if(args.isSet("profile")) {

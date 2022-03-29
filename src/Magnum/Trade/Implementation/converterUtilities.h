@@ -55,6 +55,7 @@ struct ImageInfo {
     CompressedPixelFormat compressedFormat;
     Vector3i size;
     std::size_t dataSize;
+    Trade::DataFlags dataFlags;
     std::string name;
 };
 
@@ -81,6 +82,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                     image->compressedFormat() : CompressedPixelFormat{},
                 Vector3i::pad(image->size()),
                 image->data().size(),
+                image->dataFlags(),
                 j ? "" : importer.image1DName(i));
         }
     }
@@ -105,6 +107,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                     image->compressedFormat() : CompressedPixelFormat{},
                 Vector3i::pad(image->size()),
                 image->data().size(),
+                image->dataFlags(),
                 j ? "" : name);
         }
     }
@@ -129,6 +132,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                     image->compressedFormat() : CompressedPixelFormat{},
                 image->size(),
                 image->data().size(),
+                image->dataFlags(),
                 j ? "" : name);
         }
     }
