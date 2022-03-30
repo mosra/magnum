@@ -29,7 +29,8 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Trade/AnimationData.h"
@@ -55,9 +56,11 @@
 
 namespace Magnum { namespace Trade {
 
+using namespace Containers::Literals;
+
 AnySceneImporter::AnySceneImporter(PluginManager::Manager<AbstractImporter>& manager): AbstractImporter{manager} {}
 
-AnySceneImporter::AnySceneImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
+AnySceneImporter::AnySceneImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractImporter{manager, plugin} {}
 
 AnySceneImporter::~AnySceneImporter() = default;
 
@@ -74,66 +77,68 @@ void AnySceneImporter::doClose() {
 void AnySceneImporter::doOpenFile(const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /** @todo lowercase only the extension, once Directory::split() is done */
-    const std::string normalized = Utility::String::lowercase(filename);
+    /* We don't detect any double extensions yet, so we can normalize just the
+       extension. In case we eventually might, it'd have to be split() instead
+       to save at least by normalizing just the filename and not the path. */
+    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
 
     /* Detect the plugin from extension */
-    std::string plugin;
-    if(Utility::String::endsWith(normalized, ".3ds") ||
-       Utility::String::endsWith(normalized, ".ase"))
-        plugin = "3dsImporter";
-    else if(Utility::String::endsWith(normalized, ".ac"))
-        plugin = "Ac3dImporter";
-    else if(Utility::String::endsWith(normalized, ".blend"))
-        plugin = "BlenderImporter";
-    else if(Utility::String::endsWith(normalized, ".bvh"))
-        plugin = "BvhImporter";
-    else if(Utility::String::endsWith(normalized, ".csm"))
-        plugin = "CsmImporter";
-    else if(Utility::String::endsWith(normalized, ".dae"))
-        plugin = "ColladaImporter";
-    else if(Utility::String::endsWith(normalized, ".x"))
-        plugin = "DirectXImporter";
-    else if(Utility::String::endsWith(normalized, ".dxf"))
-        plugin = "DxfImporter";
-    else if(Utility::String::endsWith(normalized, ".fbx"))
-        plugin = "FbxImporter";
-    else if(Utility::String::endsWith(normalized, ".gltf") ||
-            Utility::String::endsWith(normalized, ".glb"))
-        plugin = "GltfImporter";
-    else if(Utility::String::endsWith(normalized, ".ifc"))
-        plugin = "IfcImporter";
-    else if(Utility::String::endsWith(normalized, ".irrmesh") ||
-            Utility::String::endsWith(normalized, ".irr"))
-        plugin = "IrrlichtImporter";
-    else if(Utility::String::endsWith(normalized, ".lwo") ||
-            Utility::String::endsWith(normalized, ".lws"))
-        plugin = "LightWaveImporter";
-    else if(Utility::String::endsWith(normalized, ".lxo"))
-        plugin = "ModoImporter";
-    else if(Utility::String::endsWith(normalized, ".ms3d"))
-        plugin = "MilkshapeImporter";
-    else if(Utility::String::endsWith(normalized, ".obj"))
-        plugin = "ObjImporter";
-    else if(Utility::String::endsWith(normalized, ".xml"))
-        plugin = "OgreImporter";
-    else if(Utility::String::endsWith(normalized, ".ogex"))
-        plugin = "OpenGexImporter";
-    else if(Utility::String::endsWith(normalized, ".ply"))
-        plugin = "StanfordImporter";
-    else if(Utility::String::endsWith(normalized, ".stl"))
-        plugin = "StlImporter";
-    else if(Utility::String::endsWith(normalized, ".cob") ||
-            Utility::String::endsWith(normalized, ".scn"))
-        plugin = "TrueSpaceImporter";
-    else if(Utility::String::endsWith(normalized, ".3d"))
-        plugin = "UnrealImporter";
-    else if(Utility::String::endsWith(normalized, ".smd") ||
-            Utility::String::endsWith(normalized, ".vta"))
-        plugin = "ValveImporter";
-    else if(Utility::String::endsWith(normalized, ".xgl") ||
-            Utility::String::endsWith(normalized, ".zgl"))
-        plugin = "XglImporter";
+    Containers::StringView plugin;
+    if(normalizedExtension == ".3ds"_s ||
+       normalizedExtension == ".ase"_s)
+        plugin = "3dsImporter"_s;
+    else if(normalizedExtension == ".ac"_s)
+        plugin = "Ac3dImporter"_s;
+    else if(normalizedExtension == ".blend"_s)
+        plugin = "BlenderImporter"_s;
+    else if(normalizedExtension == ".bvh"_s)
+        plugin = "BvhImporter"_s;
+    else if(normalizedExtension == ".csm"_s)
+        plugin = "CsmImporter"_s;
+    else if(normalizedExtension == ".dae"_s)
+        plugin = "ColladaImporter"_s;
+    else if(normalizedExtension == ".x"_s)
+        plugin = "DirectXImporter"_s;
+    else if(normalizedExtension == ".dxf"_s)
+        plugin = "DxfImporter"_s;
+    else if(normalizedExtension == ".fbx"_s)
+        plugin = "FbxImporter"_s;
+    else if(normalizedExtension == ".gltf"_s ||
+            normalizedExtension == ".glb"_s)
+        plugin = "GltfImporter"_s;
+    else if(normalizedExtension == ".ifc"_s)
+        plugin = "IfcImporter"_s;
+    else if(normalizedExtension == ".irrmesh"_s ||
+            normalizedExtension == ".irr"_s)
+        plugin = "IrrlichtImporter"_s;
+    else if(normalizedExtension == ".lwo"_s ||
+            normalizedExtension == ".lws"_s)
+        plugin = "LightWaveImporter"_s;
+    else if(normalizedExtension == ".lxo"_s)
+        plugin = "ModoImporter"_s;
+    else if(normalizedExtension == ".ms3d"_s)
+        plugin = "MilkshapeImporter"_s;
+    else if(normalizedExtension == ".obj"_s)
+        plugin = "ObjImporter"_s;
+    else if(normalizedExtension == ".xml"_s)
+        plugin = "OgreImporter"_s;
+    else if(normalizedExtension == ".ogex"_s)
+        plugin = "OpenGexImporter"_s;
+    else if(normalizedExtension == ".ply"_s)
+        plugin = "StanfordImporter"_s;
+    else if(normalizedExtension == ".stl"_s)
+        plugin = "StlImporter"_s;
+    else if(normalizedExtension == ".cob"_s ||
+            normalizedExtension == ".scn"_s)
+        plugin = "TrueSpaceImporter"_s;
+    else if(normalizedExtension == ".3d"_s)
+        plugin = "UnrealImporter"_s;
+    else if(normalizedExtension == ".smd"_s ||
+            normalizedExtension == ".vta"_s)
+        plugin = "ValveImporter"_s;
+    else if(normalizedExtension == ".xgl"_s ||
+            normalizedExtension == ".zgl"_s)
+        plugin = "XglImporter"_s;
     else {
         Error{} << "Trade::AnySceneImporter::openFile(): cannot determine the format of" << filename;
         return;

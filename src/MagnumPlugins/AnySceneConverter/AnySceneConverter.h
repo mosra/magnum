@@ -111,7 +111,7 @@ class MAGNUM_ANYSCENECONVERTER_EXPORT AnySceneConverter: public AbstractSceneCon
         explicit AnySceneConverter(PluginManager::Manager<AbstractSceneConverter>& manager);
 
         /** @brief Plugin manager constructor */
-        explicit AnySceneConverter(PluginManager::AbstractManager& manager, const std::string& plugin);
+        explicit AnySceneConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
 
         ~AnySceneConverter();
 

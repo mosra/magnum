@@ -31,7 +31,7 @@
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
@@ -51,7 +51,7 @@ struct AnyConverter::State {
 
 AnyConverter::AnyConverter(PluginManager::Manager<AbstractConverter>& manager): AbstractConverter{manager} {}
 
-AnyConverter::AnyConverter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractConverter{manager, plugin}, _state{InPlaceInit} {}
+AnyConverter::AnyConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractConverter{manager, plugin}, _state{InPlaceInit} {}
 
 AnyConverter::~AnyConverter() = default;
 
@@ -186,7 +186,7 @@ std::pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage sta
     if(format.isEmpty()) return {};
 
     /* Decide on a plugin name based on the format */
-    const std::string plugin = Utility::formatString("{}ShaderConverter", format);
+    const Containers::String plugin = Utility::format("{}ShaderConverter", format);
 
     /* Try to load the plugin */
     if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
@@ -242,7 +242,7 @@ std::pair<bool, Containers::String> AnyConverter::doValidateData(const Stage sta
         Error{} << "ShaderTools::AnyConverter::validateData(): no input format specified";
         return {};
     }
-    const std::string plugin = Utility::formatString("{}ShaderConverter", stringForFormat(_state->inputFormat));
+    const Containers::String plugin = Utility::format("{}ShaderConverter", stringForFormat(_state->inputFormat));
 
     /* Try to load the plugin */
     if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
@@ -308,7 +308,7 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
     /* Decide on a plugin name based on the format. This might result in
        invalid combinations such as SpirvToGlslShaderConverter which can't be
        really handled yet but I think that's okay for now. */
-    const std::string plugin = Utility::formatString(
+    const Containers::String plugin = Utility::format(
         formatFrom == formatTo ? "{}ShaderConverter" : "{}To{}ShaderConverter",
         formatFrom, formatTo);
 
@@ -393,7 +393,7 @@ Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, con
     /* Decide on a plugin name based on the format. This might result in
        invalid combinations such as SpirvToGlslShaderConverter which can't be
        really handled yet but I think that's okay for now. */
-    const std::string plugin = Utility::formatString(
+    const Containers::String plugin = Utility::format(
         formatFrom == formatTo ? "{}ShaderConverter" : "{}To{}ShaderConverter",
         formatFrom, formatTo);
 
@@ -476,7 +476,7 @@ Containers::Array<char> AnyConverter::doConvertDataToData(const Stage stage, con
     }
     const Containers::StringView formatFrom = stringForFormat(_state->inputFormat);
     const Containers::StringView formatTo = stringForFormat(_state->outputFormat);
-    const std::string plugin = Utility::formatString(
+    const Containers::String plugin = Utility::format(
         formatFrom == formatTo ? "{}ShaderConverter" : "{}To{}ShaderConverter",
         formatFrom, formatTo);
 

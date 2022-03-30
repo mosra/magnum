@@ -43,7 +43,7 @@ using namespace Containers::Literals;
 
 AnySceneConverter::AnySceneConverter(PluginManager::Manager<AbstractSceneConverter>& manager): AbstractSceneConverter{manager} {}
 
-AnySceneConverter::AnySceneConverter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractSceneConverter{manager, plugin} {}
+AnySceneConverter::AnySceneConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractSceneConverter{manager, plugin} {}
 
 AnySceneConverter::~AnySceneConverter() = default;
 

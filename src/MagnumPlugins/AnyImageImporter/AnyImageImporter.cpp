@@ -31,8 +31,8 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h>
 
@@ -45,7 +45,7 @@ using namespace Containers::Literals;
 
 AnyImageImporter::AnyImageImporter(PluginManager::Manager<AbstractImporter>& manager): AbstractImporter{manager} {}
 
-AnyImageImporter::AnyImageImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
+AnyImageImporter::AnyImageImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractImporter{manager, plugin} {}
 
 AnyImageImporter::AnyImageImporter(AnyImageImporter&&) noexcept = default;
 
@@ -170,36 +170,36 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
     const Containers::ArrayView<const char> dataView = data;
     const Containers::StringView dataString = dataView;
 
-    std::string plugin;
+    Containers::StringView plugin;
     /* https://github.com/BinomialLLC/basis_universal/blob/7d784c728844c007d8c95d63231f7adcc0f65364/transcoder/basisu_file_headers.h#L78 */
     if(dataString.hasPrefix("sB"_s))
-        plugin = "BasisImporter";
+        plugin = "BasisImporter"_s;
     /* https://en.wikipedia.org/wiki/BMP_file_format#Bitmap_file_header */
     else if(dataString.hasPrefix("BM"_s))
-        plugin = "BmpImporter";
+        plugin = "BmpImporter"_s;
     /* https://docs.microsoft.com/cs-cz/windows/desktop/direct3ddds/dx-graphics-dds-pguide */
     else if(dataString.hasPrefix("DDS "_s))
-        plugin = "DdsImporter";
+        plugin = "DdsImporter"_s;
     /* http://www.openexr.com/openexrfilelayout.pdf */
     else if(dataString.hasPrefix("\x76\x2f\x31\x01"_s))
-        plugin = "OpenExrImporter";
+        plugin = "OpenExrImporter"_s;
     /* https://en.wikipedia.org/wiki/Radiance_(software)#HDR_image_format */
     else if(dataString.hasPrefix("#?RADIANCE"_s))
-        plugin = "HdrImporter";
+        plugin = "HdrImporter"_s;
     /* https://en.wikipedia.org/wiki/JPEG#Syntax_and_structure */
     else if(dataString.hasPrefix("\xff\xd8\xff"_s))
-        plugin = "JpegImporter";
+        plugin = "JpegImporter"_s;
     /* https://github.khronos.org/KTX-Specification/#_identifier */
     else if(dataString.hasPrefix("\xabKTX 20\xbb\r\n\x1a\n"_s))
-        plugin = "KtxImporter";
+        plugin = "KtxImporter"_s;
     /* https://en.wikipedia.org/wiki/Portable_Network_Graphics#File_header */
     else if(dataString.hasPrefix("\x89PNG\x0d\x0a\x1a\x0a"_s))
-        plugin = "PngImporter";
+        plugin = "PngImporter"_s;
     /* http://paulbourke.net/dataformats/tiff/,
        http://paulbourke.net/dataformats/tiff/tiff_summary.pdf */
     else if(dataString.hasPrefix("II\x2a\x00"_s) ||
             dataString.hasPrefix("MM\x00\x2a"_s))
-        plugin = "TiffImporter";
+        plugin = "TiffImporter"_s;
     /* https://github.com/file/file/blob/d04de269e0b06ccd0a7d1bf4974fed1d75be7d9e/magic/Magdir/images#L18-L22
        TGAs are a complete guesswork, so try after everything else fails. */
     else if([dataView]() {
@@ -221,7 +221,7 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
 
             /* Probably TGA, heh. Or random memory. */
             return true;
-        }()) plugin = "TgaImporter";
+        }()) plugin = "TgaImporter"_s;
     else if(!data.size()) {
         Error{} << "Trade::AnyImageImporter::openData(): file is empty";
         return;
@@ -233,7 +233,7 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
         if(data.size() > 2) signature |= UnsignedInt(UnsignedByte(data[2])) << 8;
         if(data.size() > 3) signature |= UnsignedInt(UnsignedByte(data[3]));
         /* If there's less than four bytes, cut the rest away */
-        Error{} << "Trade::AnyImageImporter::openData(): cannot determine the format from signature 0x" << Debug::nospace << Utility::formatString("{:.8x}", signature).substr(0, data.size() < 4 ? data.size()*2 : std::string::npos);
+        Error{} << "Trade::AnyImageImporter::openData(): cannot determine the format from signature 0x" << Debug::nospace << Utility::format("{:.8x}", signature).prefix(Math::min(data.size(), std::size_t{4})*2);
         return;
     }
 

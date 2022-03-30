@@ -128,7 +128,7 @@ class MAGNUM_ANYIMAGECONVERTER_EXPORT AnyImageConverter: public AbstractImageCon
         explicit AnyImageConverter(PluginManager::Manager<AbstractImageConverter>& manager);
 
         /** @brief Plugin manager constructor */
-        explicit AnyImageConverter(PluginManager::AbstractManager& manager, const std::string& plugin);
+        explicit AnyImageConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
 
         ~AnyImageConverter();
 

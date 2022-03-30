@@ -146,7 +146,7 @@ class MAGNUM_ANYSHADERCONVERTER_EXPORT AnyConverter: public AbstractConverter {
         explicit AnyConverter(PluginManager::Manager<AbstractConverter>& manager);
 
         /** @brief Plugin manager constructor */
-        explicit AnyConverter(PluginManager::AbstractManager& manager, const std::string& plugin);
+        explicit AnyConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
 
         ~AnyConverter();
 

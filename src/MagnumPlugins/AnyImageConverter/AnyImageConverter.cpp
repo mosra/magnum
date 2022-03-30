@@ -43,7 +43,7 @@ using namespace Containers::Literals;
 
 AnyImageConverter::AnyImageConverter(PluginManager::Manager<AbstractImageConverter>& manager): AbstractImageConverter{manager} {}
 
-AnyImageConverter::AnyImageConverter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImageConverter{manager, plugin} {}
+AnyImageConverter::AnyImageConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractImageConverter{manager, plugin} {}
 
 AnyImageConverter::~AnyImageConverter() = default;
 

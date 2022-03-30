@@ -137,6 +137,7 @@ const struct {
     /* There was a bug where the error message shifted a signed value,
        poisoning the output. It also was throwing away leading zero bytes. */
     {"leading zeros, negative char", "\x00\xff\x00\xff"_s, "00ff00ff"},
+    {"lots zero bytes", "\x00\x00\x00\x00"_s, "00000000"},
     {"just one byte", "\x33"_s, "33"},
     {"just one zero byte", "\x00"_s, "00"},
     {"DDS, but no space", "DDS!"_s, "44445321"},

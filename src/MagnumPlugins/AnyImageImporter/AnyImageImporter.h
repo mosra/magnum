@@ -154,7 +154,7 @@ class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
         explicit AnyImageImporter(PluginManager::Manager<AbstractImporter>& manager);
 
         /** @brief Plugin manager constructor */
-        explicit AnyImageImporter(PluginManager::AbstractManager& manager, const std::string& plugin);
+        explicit AnyImageImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
 
         /** @brief Copying is not allowed */
         AnyImageImporter(const AnyImageImporter&) = delete;
