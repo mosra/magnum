@@ -65,6 +65,7 @@ constexpr struct {
     const char* plugin;
 } DetectData[]{
     {"Stanford PLY", "bunny.ply", "StanfordSceneConverter"},
+    /* Have at least one test case with uppercase */
     {"Stanford PLY uppercase", "ARMADI~1.PLY", "StanfordSceneConverter"}
 };
 
