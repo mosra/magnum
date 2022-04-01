@@ -456,7 +456,10 @@ is specified as well, the IDs reference attributes of the first mesh.)")
            passed and the file has at least one scene). Texture reference count
            is calculated when parsing materials. */
         Containers::Array<SceneInfo> sceneInfos;
-        std::unordered_map<Trade::SceneField, Containers::String> sceneFieldNames;
+        /* Only the very latest GCC seems to support enum classes as keys and
+           I can't be bothered to write a std::hash specialization, so just
+           making the key typeless */
+        std::unordered_map<UnsignedInt, Containers::String> sceneFieldNames;
         Containers::Array<UnsignedInt> materialReferenceCount;
         Containers::Array<UnsignedInt> lightReferenceCount;
         Containers::Array<UnsignedInt> meshReferenceCount;
@@ -514,7 +517,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                        reused by object info as well. */
                     if(Trade::isSceneFieldCustom(name)) {
                         /* Fetch the name only if it's not already there */
-                        const auto inserted = sceneFieldNames.emplace(name, Containers::String{});
+                        const auto inserted = sceneFieldNames.emplace(UnsignedInt(name), Containers::String{});
                         if(inserted.second)
                             inserted.first->second = importer->sceneFieldName(name);
                     }
@@ -826,7 +829,8 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 d << Debug::newline << "   " << Debug::packed << Debug::boldColor(Debug::Color::White) << field.name << Debug::resetColor;
                 if(Trade::isSceneFieldCustom(field.name)) {
                     d << Debug::color(Debug::Color::Yellow)
-                        << sceneFieldNames[field.name] << Debug::resetColor;
+                        << sceneFieldNames[UnsignedInt(field.name)]
+                        << Debug::resetColor;
                 }
                 d << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << field.type;
                 if(field.arraySize)
@@ -866,7 +870,8 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     d << Debug::resetColor;
                     if(Trade::isSceneFieldCustom(nameCount.first())) {
                         d << Debug::color(Debug::Color::Yellow)
-                            << sceneFieldNames[nameCount.first()] << Debug::resetColor;
+                            << sceneFieldNames[UnsignedInt(nameCount.first())]
+                            << Debug::resetColor;
                     }
                 }
             }
