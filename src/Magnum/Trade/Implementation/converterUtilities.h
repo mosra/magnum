@@ -56,7 +56,7 @@ struct ImageInfo {
     Vector3i size;
     std::size_t dataSize;
     Trade::DataFlags dataFlags;
-    std::string name;
+    Containers::String name;
 };
 
 Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, std::chrono::high_resolution_clock::duration& importTime) {

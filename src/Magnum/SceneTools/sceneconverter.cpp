@@ -30,7 +30,7 @@
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Arguments.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Arguments is std::string-free */
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
@@ -205,7 +205,7 @@ using namespace Containers::Literals;
 namespace {
 
 /** @todo const Array& doesn't work, minmax() would fail to match */
-template<class T> std::string calculateBounds(Containers::Array<T>&& attribute) {
+template<class T> Containers::String calculateBounds(Containers::Array<T>&& attribute) {
     /** @todo clean up when Debug::toString() exists */
     std::ostringstream out;
     Debug{&out, Debug::Flag::NoNewlineAtTheEnd} << Math::minmax(attribute);
@@ -352,31 +352,31 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         struct AnimationInfo {
             UnsignedInt animation;
             Trade::AnimationData data{{}, {}};
-            std::string name;
+            Containers::String name;
         };
 
         struct SkinInfo {
             UnsignedInt skin;
             Trade::SkinData3D data{{}, {}};
-            std::string name;
+            Containers::String name;
         };
 
         struct LightInfo {
             UnsignedInt light;
             Trade::LightData data{{}, {}, {}};
-            std::string name;
+            Containers::String name;
         };
 
         struct MaterialInfo {
             UnsignedInt material;
             Trade::MaterialData data{{}, {}};
-            std::string name;
+            Containers::String name;
         };
 
         struct TextureInfo {
             UnsignedInt texture;
             Trade::TextureData data{{}, {}, {}, {}, {}, {}};
-            std::string name;
+            Containers::String name;
         };
 
         struct MeshAttributeInfo {
@@ -384,9 +384,9 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             Int stride;
             UnsignedInt arraySize;
             Trade::MeshAttribute name;
-            std::string customName;
+            Containers::String customName;
             VertexFormat format;
-            std::string bounds;
+            Containers::String bounds;
         };
 
         struct MeshInfo {
@@ -395,17 +395,17 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             UnsignedInt indexCount, vertexCount;
             std::size_t indexOffset;
             Int indexStride;
-            std::string indexBounds;
+            Containers::String indexBounds;
             MeshIndexType indexType;
             Containers::Array<MeshAttributeInfo> attributes;
             std::size_t indexDataSize, vertexDataSize;
             Trade::DataFlags indexDataFlags, vertexDataFlags;
-            std::string name;
+            Containers::String name;
         };
 
         struct SceneFieldInfo {
             Trade::SceneField name;
-            std::string customName;
+            Containers::String customName;
             Trade::SceneFieldFlags flags;
             Trade::SceneFieldType type;
             UnsignedInt arraySize;
@@ -419,7 +419,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             Containers::Array<SceneFieldInfo> fields;
             std::size_t dataSize;
             Trade::DataFlags dataFlags;
-            std::string name;
+            Containers::String name;
             /** @todo object names? */
         };
 
@@ -632,7 +632,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
                     /* Calculate bounds, if requested and this is not an
                        implementation-specific format */
-                    std::string bounds;
+                    Containers::String bounds;
                     if(args.isSet("bounds") && !isVertexFormatImplementationSpecific(mesh->attributeFormat(k))) switch(name) {
                         case Trade::MeshAttribute::Position:
                             bounds = calculateBounds(mesh->positions3DAsArray(namedAttributeId(*mesh, k)));
@@ -761,7 +761,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         for(const SceneInfo& info: sceneInfos) {
             Debug d{useColor};
             d << Debug::boldColor(Debug::Color::White) << "Scene" << info.scene << Debug::nospace << ":" << Debug::resetColor;
-            if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
+            if(info.name) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
             d << Debug::newline;
             d << "  Bound:" << info.mappingBound << "objects"
                 << Debug::color(Debug::Color::Blue) << "@" << Debug::packed
@@ -795,7 +795,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         for(const AnimationInfo& info: animationInfos) {
             Debug d{useColor};
             d << Debug::boldColor(Debug::Color::White) << "Animation" << info.animation << Debug::nospace << ":" << Debug::resetColor;
-            if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
+            if(info.name) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
 
             d << Debug::newline << "  Duration:" << info.data.duration()
                 << "(" << Debug::nospace << Utility::format("{:.1f}", info.data.data().size()/1024.0f) << "kB";
@@ -846,7 +846,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
             d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                 << Debug::resetColor;
-            if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow)
+            if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
                 << info.name << Debug::resetColor;
 
             d << Debug::newline << " " << info.data.joints().size() << "joints";
@@ -863,7 +863,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
             d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                 << Debug::resetColor;
-            if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow)
+            if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
                 << info.name << Debug::resetColor;
 
             d << Debug::newline << "  Type:" << Debug::packed
@@ -898,7 +898,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
             d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                 << Debug::resetColor;
-            if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
+            if(info.name) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
 
             d << Debug::newline << "  Type:" << Debug::packed << Debug::color(Debug::Color::Cyan) << info.data.types() << Debug::resetColor;
 
@@ -1010,7 +1010,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
                 d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                     << Debug::resetColor;
-                if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
+                if(info.name) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
                 d << Debug::newline;
             }
             d << "  Level" << info.level << Debug::nospace << ":"
@@ -1035,7 +1035,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 d << Debug::nospace << ", offset" << attribute.offset;
                 d << Debug::nospace << ", stride"
                     << attribute.stride;
-                if(!attribute.bounds.empty())
+                if(attribute.bounds)
                     d << Debug::newline << "      bounds:" << attribute.bounds;
             }
 
@@ -1048,7 +1048,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     d << Debug::nospace << ", flags:" << Debug::packed
                         << Debug::color(Debug::Color::Green) << info.indexDataFlags << Debug::resetColor;
                 d << Debug::nospace << ")";
-                if(!info.indexBounds.empty())
+                if(info.indexBounds)
                     d << Debug::newline << "      bounds:" << info.indexBounds;
             }
         }
@@ -1064,7 +1064,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
             d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                 << Debug::resetColor;
-            if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow)
+            if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
                 << info.name << Debug::resetColor;
             d << Debug::newline;
             d << "  Type:"
@@ -1247,8 +1247,8 @@ is specified as well, the IDs reference attributes of the first mesh.)")
        other. If the last converter supports ConvertMeshToFile instead of
        ConvertMesh, it's used instead of the last implicit AnySceneConverter. */
     for(std::size_t i = 0, converterCount = args.arrayValueCount("converter"); i <= converterCount; ++i) {
-        const std::string converterName = i == converterCount ?
-            "AnySceneConverter" : args.arrayValue("converter", i);
+        const Containers::StringView converterName = i == converterCount ?
+            "AnySceneConverter"_s : args.arrayValue<Containers::StringView>("converter", i);
         Containers::Pointer<Trade::AbstractSceneConverter> converter = converterManager.loadAndInstantiate(converterName);
         if(!converter) {
             Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());

@@ -31,7 +31,7 @@
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Arguments is std::string-free */
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
@@ -245,7 +245,7 @@ template<UnsignedInt dimensions> bool checkCommonFormatAndSize(const Utility::Ar
     return true;
 }
 
-template<template<UnsignedInt, class> class View, UnsignedInt dimensions> bool convertOneOrMoreImages(Trade::AbstractImageConverter& converter, const Containers::Array<Trade::ImageData<dimensions>>& outputImages, const std::string& output) {
+template<template<UnsignedInt, class> class View, UnsignedInt dimensions> bool convertOneOrMoreImages(Trade::AbstractImageConverter& converter, const Containers::Array<Trade::ImageData<dimensions>>& outputImages, const Containers::StringView output) {
     Containers::Array<View<dimensions, const char>> views;
     arrayReserve(views, outputImages.size());
     for(const Trade::ImageData<dimensions>& outputImage: outputImages)
@@ -253,7 +253,7 @@ template<template<UnsignedInt, class> class View, UnsignedInt dimensions> bool c
     return converter.convertToFile(views, output);
 }
 
-template<UnsignedInt dimensions> bool convertOneOrMoreImages(Trade::AbstractImageConverter& converter, const Containers::Array<Trade::ImageData<dimensions>>& outputImages, const std::string& output) {
+template<UnsignedInt dimensions> bool convertOneOrMoreImages(Trade::AbstractImageConverter& converter, const Containers::Array<Trade::ImageData<dimensions>>& outputImages, const Containers::StringView output) {
     /* If there's just one image, convert it using the single-level API.
        Otherwise the multi-level entrypoint would require the plugin to support
        multi-level conversion, and only some file formats have that. */
@@ -384,7 +384,7 @@ key=true; configuration subgroups are delimited with /.)")
     std::chrono::high_resolution_clock::duration importTime{};
 
     for(std::size_t i = 0, max = args.arrayValueCount("input"); i != max; ++i) {
-        const std::string input = args.arrayValue("input", i);
+        const Containers::StringView input = args.arrayValue<Containers::StringView>("input", i);
 
         /* Load raw data, if requested; assume it's a tightly-packed square of
            given format */
@@ -523,7 +523,7 @@ key=true; configuration subgroups are delimited with /.)")
                         else d << "1D image";
                         d << info.image << Debug::nospace << ":"
                             << Debug::resetColor;
-                        if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow)
+                        if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
                             << info.name << Debug::resetColor;
                         d << Debug::newline;
                     }
@@ -693,12 +693,12 @@ key=true; configuration subgroups are delimited with /.)")
     /* Wow, C++, you suck. This implicitly initializes to random shit?! */
     std::chrono::high_resolution_clock::duration conversionTime{};
 
-    std::string output;
+    Containers::StringView output;
     if(args.isSet("in-place")) {
         /* Should have been checked in a graceful way above */
         CORRADE_INTERNAL_ASSERT(args.arrayValueCount("input") == 1);
-        output = args.arrayValue("input", 0);
-    } else output = args.value("output");
+        output = args.arrayValue<Containers::StringView>("input", 0);
+    } else output = args.value<Containers::StringView>("output");
 
     Int outputDimensions;
     Containers::Array<Trade::ImageData1D> outputImages1D;

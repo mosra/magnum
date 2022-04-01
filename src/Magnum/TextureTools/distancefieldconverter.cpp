@@ -25,7 +25,7 @@
 
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Arguments.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Arguments is std::string-free */
 #include <Corrade/Utility/Path.h>
 #include <Corrade/PluginManager/Manager.h>
 
