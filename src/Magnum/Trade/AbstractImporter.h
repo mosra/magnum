@@ -31,7 +31,7 @@
 
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
-#include <Corrade/Utility/StlForwardString.h> /** @todo remove once file callbacks are <string>-free */
+#include <Corrade/Utility/StlForwardString.h> /** @todo remove once file callbacks are std::string-free */
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Trade/Trade.h"
