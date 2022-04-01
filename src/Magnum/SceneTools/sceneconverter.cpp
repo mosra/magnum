@@ -25,6 +25,7 @@
 
 #include <cctype> /* std::isupper() */
 #include <sstream>
+#include <unordered_map> /* sceneFieldNames */
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Reference.h>
@@ -87,9 +88,10 @@ magnum-sceneconverter [-h|--help] [-I|--importer IMPORTER]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]... [--mesh MESH]
     [--level LEVEL] [--concatenate-meshes] [--info-animations] [--info-images]
-    [--info-lights] [--info-materials] [--info-meshes] [--info-scenes]
-    [--info-skins] [--info-textures] [--info] [--color on|4bit|off|auto]
-    [--bounds] [-v|--verbose] [--profile] [--] input output
+    [--info-lights] [--info-materials] [--info-meshes] [--info-objects]
+    [--info-scenes] [--info-skins] [--info-textures] [--info]
+    [--color on|4bit|off|auto] [--bounds] [-v|--verbose] [--profile] [--] input
+    output
 @endcode
 
 Arguments:
@@ -128,6 +130,7 @@ Arguments:
 -   `--info-materials` --- print into about materials in the input file and
     exit
 -   `--info-meshes` --- print into about meshes in the input file and exit
+-   `--info-objects` --- print into about objects in the input file and exit
 -   `--info-scenes` --- print into about scenes in the input file and exit
 -   `--info-skins` --- print into about skins in the input file and exit
 -   `--info-textures` --- print into about textures in the input file and exit
@@ -228,6 +231,7 @@ bool isInfoRequested(const Utility::Arguments& args) {
            args.isSet("info-lights") ||
            args.isSet("info-materials") ||
            args.isSet("info-meshes") ||
+           args.isSet("info-objects") ||
            args.isSet("info-scenes") ||
            args.isSet("info-skins") ||
            args.isSet("info-textures") ||
@@ -259,6 +263,7 @@ int main(int argc, char** argv) {
         .addBooleanOption("info-lights").setHelp("info-lights", "print info about images in the input file and exit")
         .addBooleanOption("info-materials").setHelp("info-materials", "print info about materials in the input file and exit")
         .addBooleanOption("info-meshes").setHelp("info-meshes", "print info about meshes in the input file and exit")
+        .addBooleanOption("info-objects").setHelp("info-objects", "print info about objects in the input file and exit")
         .addBooleanOption("info-scenes").setHelp("info-scenes", "print info about scenes in the input file and exit")
         .addBooleanOption("info-skins").setHelp("info-skins", "print info about skins in the input file and exit")
         .addBooleanOption("info-textures").setHelp("info-textures", "print info about textures in the input file and exit")
@@ -406,7 +411,6 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
         struct SceneFieldInfo {
             Trade::SceneField name;
-            Containers::String customName;
             Trade::SceneFieldFlags flags;
             Trade::SceneFieldType type;
             UnsignedInt arraySize;
@@ -421,18 +425,38 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             std::size_t dataSize;
             Trade::DataFlags dataFlags;
             Containers::String name;
-            /** @todo object names? */
+        };
+
+        struct ObjectInfo {
+            UnsignedLong object;
+            /* A bitfield, assuming no more than 32 scenes */
+            /** @todo might be too little? */
+            UnsignedInt scenes;
+            Containers::Array<Containers::Pair<Trade::SceneField, UnsignedInt>> fields;
+            Containers::String name;
         };
 
         /* Parse everything first to avoid errors interleaved with output */
         bool error = false;
 
+        /* Object properties */
+        Containers::Array<ObjectInfo> objectInfos;
+        if(args.isSet("info") || args.isSet("info-objects")) {
+            objectInfos = Containers::Array<ObjectInfo>{std::size_t(importer->objectCount())};
+
+            for(UnsignedLong i = 0; i != importer->objectCount(); ++i) {
+                objectInfos[i].object = i;
+                objectInfos[i].name = importer->objectName(i);
+            }
+        }
+
         /* Scene properties, together with counting how much is each mesh /
-           light / material / skin shared (which gets used only if both
-           --info-scenes and --info-{lights,materials,skins} is passed and
-           the file has at least one scene). Texture reference count is
-           calculated when parsing materials. */
+           light / material / skin / object referenced (which gets used only if
+           both --info-scenes and --info-{lights,materials,skins,objects} is
+           passed and the file has at least one scene). Texture reference count
+           is calculated when parsing materials. */
         Containers::Array<SceneInfo> sceneInfos;
+        std::unordered_map<Trade::SceneField, Containers::String> sceneFieldNames;
         Containers::Array<UnsignedInt> materialReferenceCount;
         Containers::Array<UnsignedInt> lightReferenceCount;
         Containers::Array<UnsignedInt> meshReferenceCount;
@@ -480,12 +504,34 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
                     arrayAppend(info.fields, InPlaceInit,
                         name,
-                        Trade::isSceneFieldCustom(name) ?
-                            importer->sceneFieldName(name) : "",
                         scene->fieldFlags(j),
                         scene->fieldType(j),
                         scene->fieldArraySize(j),
                         scene->fieldSize(j));
+
+                    /* If the field has a custom name, save it into the map.
+                       Not putting it into the fields array as the map is
+                       reused by object info as well. */
+                    if(Trade::isSceneFieldCustom(name)) {
+                        /* Fetch the name only if it's not already there */
+                        const auto inserted = sceneFieldNames.emplace(name, Containers::String{});
+                        if(inserted.second)
+                            inserted.first->second = importer->sceneFieldName(name);
+                    }
+
+                    if(objectInfos) for(const UnsignedInt object: scene->mappingAsArray(j)) {
+                        if(object >= objectInfos.size()) continue;
+
+                        objectInfos[object].object = object;
+                        objectInfos[object].scenes |= 1 << i;
+
+                        /* If the field is repeated, increase the count
+                           instead */
+                        if(!objectInfos[object].fields.isEmpty() && objectInfos[object].fields.back().first() == name)
+                            ++objectInfos[object].fields.back().second();
+                        else
+                            arrayAppend(objectInfos[object].fields, InPlaceInit, name, 1u);
+                    }
                 }
 
                 arrayAppend(sceneInfos, std::move(info));
@@ -779,8 +825,8 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             for(const SceneFieldInfo& field: info.fields) {
                 d << Debug::newline << "   " << Debug::packed << Debug::boldColor(Debug::Color::White) << field.name << Debug::resetColor;
                 if(Trade::isSceneFieldCustom(field.name)) {
-                    d << Debug::color(Debug::Color::Yellow) << field.customName
-                        << Debug::resetColor;
+                    d << Debug::color(Debug::Color::Yellow)
+                        << sceneFieldNames[field.name] << Debug::resetColor;
                 }
                 d << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << field.type;
                 if(field.arraySize)
@@ -790,6 +836,39 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     << Debug::packed << Debug::color(Debug::Color::Green)
                     << field.flags << Debug::resetColor;
                 d << Debug::nospace << "," << field.size << "entries";
+            }
+        }
+
+        for(const ObjectInfo& info: objectInfos) {
+            /* Objects without a name and not referenced by any scenes are
+               useless, ignore */
+            if(!info.name && !info.scenes) continue;
+
+            Debug d{useColor};
+            d << Debug::boldColor(Debug::Color::White) << "Object" << info.object << Debug::resetColor;
+
+            if(sceneInfos)
+                d << "(referenced by" << Math::popcount(info.scenes) << "scenes)";
+
+            d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+                << Debug::resetColor;
+            if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
+                << info.name << Debug::resetColor;
+            if(info.scenes) {
+                d << Debug::newline << "  Fields:";
+
+                for(std::size_t i = 0; i != info.fields.size(); ++i) {
+                    if(i) d << Debug::nospace << ",";
+                    const Containers::Pair<Trade::SceneField, UnsignedInt> nameCount = info.fields[i];
+                    d << Debug::packed << Debug::color(Debug::Color::Cyan) << nameCount.first();
+                    if(nameCount.second() != 1)
+                        d << Debug::nospace << Utility::format("[{}]", nameCount.second());
+                    d << Debug::resetColor;
+                    if(Trade::isSceneFieldCustom(nameCount.first())) {
+                        d << Debug::color(Debug::Color::Yellow)
+                            << sceneFieldNames[nameCount.first()] << Debug::resetColor;
+                    }
+                }
             }
         }
 
@@ -1111,7 +1190,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
                 d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                     << Debug::resetColor;
-                if(!info.name.empty()) d << Debug::boldColor(Debug::Color::Yellow)
+                if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
                     << info.name << Debug::resetColor;
                 d << Debug::newline;
             }
