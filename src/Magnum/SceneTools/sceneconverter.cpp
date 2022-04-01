@@ -87,9 +87,9 @@ magnum-sceneconverter [-h|--help] [-I|--importer IMPORTER]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]... [--mesh MESH]
     [--level LEVEL] [--concatenate-meshes] [--info-animations] [--info-images]
-    [--info-lights] [--info-materials] [--info-meshes] [--info-skins]
-    [--info-textures] [--info] [--color on|4bit|off|auto] [--bounds]
-    [-v|--verbose] [--profile] [--] input output
+    [--info-lights] [--info-materials] [--info-meshes] [--info-scenes]
+    [--info-skins] [--info-textures] [--info] [--color on|4bit|off|auto]
+    [--bounds] [-v|--verbose] [--profile] [--] input output
 @endcode
 
 Arguments:
@@ -128,6 +128,7 @@ Arguments:
 -   `--info-materials` --- print into about materials in the input file and
     exit
 -   `--info-meshes` --- print into about meshes in the input file and exit
+-   `--info-scenes` --- print into about scenes in the input file and exit
 -   `--info-skins` --- print into about skins in the input file and exit
 -   `--info-textures` --- print into about textures in the input file and exit
 -   `--info` --- print info about everything in the input file and exit, same
@@ -258,7 +259,7 @@ int main(int argc, char** argv) {
         .addBooleanOption("info-lights").setHelp("info-lights", "print info about images in the input file and exit")
         .addBooleanOption("info-materials").setHelp("info-materials", "print info about materials in the input file and exit")
         .addBooleanOption("info-meshes").setHelp("info-meshes", "print info about meshes in the input file and exit")
-        .addBooleanOption("info-scenes").setHelp("info-scenes", "print info about textures in the input file and exit")
+        .addBooleanOption("info-scenes").setHelp("info-scenes", "print info about scenes in the input file and exit")
         .addBooleanOption("info-skins").setHelp("info-skins", "print info about skins in the input file and exit")
         .addBooleanOption("info-textures").setHelp("info-textures", "print info about textures in the input file and exit")
         .addBooleanOption("info").setHelp("info", "print info about everything in the input file and exit, same as specifying all other --info-* options together")
