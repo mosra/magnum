@@ -54,7 +54,7 @@ submodule to your project or fetch the contents any other way that suits your pr
 placed in a `toolchains/` subdirectory.
 
 @code{.sh}
-git submodule add git://github.com/mosra/toolchains
+git submodule add https://github.com/mosra/toolchains
 @endcode
 
 There are two toolchain files. The `generic/Emscripten.cmake` is for the

@@ -188,7 +188,7 @@ directory. They allow you to build and install the package directly from the
 source tree. Example usage:
 
 @code{.sh}
-git clone git://github.com/mosra/magnum && cd magnum
+git clone https://github.com/mosra/magnum && cd magnum
 cd package/archlinux
 makepkg -fp PKGBUILD # or any other PKGBUILD file
 @endcode
@@ -227,7 +227,7 @@ the currently checked out source tree. Both depend on a corresponding
 @ref building-corrade-packages-msys "Corrade MSYS2 package". Example usage:
 
 @code{.sh}
-git clone git://github.com/mosra/magnum && cd magnum
+git clone https://github.com/mosra/magnum && cd magnum
 cd package/msys
 makepkg -fp PKGBUILD
 @endcode
@@ -257,7 +257,7 @@ Building is easy, just change directory to package root, link or copy
 `package/debian` directory there and run `dpkg-buildpackage`:
 
 @code{.sh}
-git clone git://github.com/mosra/magnum && cd magnum
+git clone https://github.com/mosra/magnum && cd magnum
 ln -s package/debian .
 dpkg-buildpackage --no-sign
 @endcode
@@ -286,7 +286,7 @@ Gentoo Git ebuild is available in the `package/gentoo` directory. Get the
 build and install Magnum like this:
 
 @code{.sh}
-git clone git://github.com/mosra/magnum && cd magnum
+git clone https://github.com/mosra/magnum && cd magnum
 cd package/gentoo
 sudo ebuild dev-libs/magnum/magnum-9999.ebuild manifest clean merge
 @endcode
@@ -339,7 +339,7 @@ repository with your favorite IDE or Git GUI, download currrent snapshot as a
 compressed archive or use the command line:
 
 @code{.sh}
-git clone git://github.com/mosra/magnum.git
+git clone https://github.com/mosra/magnum.git
 @endcode
 
 Relevant information about CMake usage is described in

@@ -5,7 +5,7 @@ Build-Depends: debhelper (>= 9), cmake (>= 3.4), corrade-dev, libgl-dev, libopen
 Standards-Version: 3.9.2
 Section: libs
 Homepage: https://magnum.graphics
-Vcs-Git: git://github.com/mosra/magnum.git
+Vcs-Git: https://github.com/mosra/magnum.git
 Vcs-Browser: https://github.com/mosra/magnum
 
 Package: magnum-dev

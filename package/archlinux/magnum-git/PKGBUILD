@@ -10,7 +10,7 @@ depends=('corrade-git' 'openal' 'glfw' 'sdl2' 'vulkan-icd-loader')
 makedepends=('cmake' 'git' 'ninja')
 provides=('magnum')
 conflicts=('magnum')
-source=("git+git://github.com/mosra/magnum.git")
+source=("git+https://github.com/mosra/magnum.git")
 sha1sums=('SKIP')
 
 pkgver() {

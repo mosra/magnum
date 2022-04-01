@@ -4,7 +4,7 @@ class Magnum < Formula
   url "https://github.com/mosra/magnum/archive/v2020.06.tar.gz"
   # wget https://github.com/mosra/magnum/archive/v2020.06.tar.gz -O - | sha256sum
   sha256 "98dfe802e56614e4e6bf750d9b693de46a5ed0c6eb479b0268f1a20bf34268bf"
-  head "git://github.com/mosra/magnum.git"
+  head "https://github.com/mosra/magnum.git"
 
   depends_on "cmake"
   depends_on "corrade"
