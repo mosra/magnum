@@ -218,11 +218,12 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          *
          * Available only if @ref FontConverterFeature::ConvertData and
          * @ref FontConverterFeature::ExportFont is supported. Returns pairs of
-         * filename and data on success, empty vector otherwise. All data will
-         * be sharing common basename derived from @p filename. If the plugin
-         * doesn't have @ref FontConverterFeature::MultiFile, only one pair is
-         * returned, thus using @ref exportFontToSingleData() might be more
-         * convenient in that case.
+         * filename and data on success, prints a message to
+         * @relativeref{Magnum,Error} and returns an empty vector otherwise.
+         * All data will be sharing common basename derived from @p filename.
+         * If the plugin doesn't have @ref FontConverterFeature::MultiFile,
+         * only one pair is returned, thus using @ref exportFontToSingleData()
+         * might be more convenient in that case.
          * @see @ref features(), @ref exportFontToFile(),
          *      @ref exportGlyphCacheToData()
          */
@@ -233,9 +234,9 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          *
          * Available only if @ref FontConverterFeature::ConvertData and
          * @ref FontConverterFeature::ExportFont is supported and the plugin
-         * doesn't have @ref FontConverterFeature::MultiFile. Returns data on
-         * success, zero-sized array otherwise. See @ref exportFontToData() for
-         * more information.
+         * doesn't have @ref FontConverterFeature::MultiFile. On failure prints
+         * a message to @relativeref{Magnum,Error} and returns
+         * @cpp nullptr @ce. See @ref exportFontToData() for more information.
          * @see @ref features(), @ref exportFontToFile(),
          *      @ref exportGlyphCacheToSingleData()
          */
@@ -247,9 +248,9 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * Available only if @ref FontConverterFeature::ExportFont is
          * supported. If the plugin has @ref FontConverterFeature::MultiFile,
          * the function will create more than one file in given path, all
-         * sharing common basename derived from @p filename. Returns
-         * @cpp true @ce on success, @cpp false @ce otherwise. See
-         * @ref exportFontToData() for more information.
+         * sharing common basename derived from @p filename. On failure prints
+         * a message to @relativeref{Magnum,Error} and returns @cpp false @ce.
+         * See @ref exportFontToData() for more information.
          * @see @ref features(), @ref exportFontToData(),
          *      @ref exportGlyphCacheToFile()
          */
@@ -262,11 +263,13 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          *
          * Available only if @ref FontConverterFeature::ConvertData and
          * @ref FontConverterFeature::ExportGlyphCache is supported. Returns
-         * pairs of filename and data on success, empty vector otherwise. All
-         * data will be sharing common basename derived from @p filename. If
-         * the plugin doesn't have @ref FontConverterFeature::MultiFile, only
-         * one pair is returned, thus using @ref exportGlyphCacheToSingleData()
-         * might be more convenient in that case.
+         * pairs of filename and data on success, prints a message to
+         * @relativeref{Magnum,Error} and returns an empty vector otherwise.
+         * All data will be sharing common basename derived from @p filename.
+         * If the plugin doesn't have @ref FontConverterFeature::MultiFile,
+         * only one pair is returned, thus using
+         * @ref exportGlyphCacheToSingleData() might be more convenient in that
+         * case.
          *
          * All glyphs from given cache will be exported. If you want to export
          * smaller subset, fill the cache with less characters.
@@ -280,9 +283,10 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          *
          * Available only if @ref FontConverterFeature::ConvertData and
          * @ref FontConverterFeature::ExportGlyphCache is supported and the
-         * plugin doesn't have @ref FontConverterFeature::MultiFile. Returns
-         * data on success, zero-sized array otherwise. See
-         * @ref exportGlyphCacheToData() for more information.
+         * plugin doesn't have @ref FontConverterFeature::MultiFile. On failure
+         * prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp nullptr @ce. See @ref exportGlyphCacheToData() for more
+         * information.
          * @see @ref features(), @ref exportGlyphCacheToFile(),
          *      @ref importGlyphCacheFromSingleData()
          */
@@ -294,8 +298,8 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * Available only if @ref FontConverterFeature::ExportGlyphCache is
          * supported. If the plugin has @ref FontConverterFeature::MultiFile,
          * the function will create more than one file in given path, all
-         * sharing common basename derived from @p filename. Returns
-         * @cpp true @ce on success, @cpp false @ce otherwise.
+         * sharing common basename derived from @p filename. On failure prints
+         * a message to @relativeref{Magnum,Error} and returns @cpp false @ce.
          * @see @ref features(), @ref exportGlyphCacheToData(),
          *      @ref exportFontToFile()
          */
@@ -306,11 +310,12 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @param data      Pairs of filename and file data
          *
          * Available only if @ref FontConverterFeature::ConvertData and
-         * @ref FontConverterFeature::ImportGlyphCache is supported. Returns
-         * imported cache on success, @cpp nullptr @ce otherwise. If the plugin
-         * doesn't have @ref FontConverterFeature::MultiFile, only one file is
-         * needed, thus using @ref importGlyphCacheFromSingleData() might be
-         * more convenient in that case.
+         * @ref FontConverterFeature::ImportGlyphCache is supported. On failure
+         * prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp nullptr @ce. If the plugin doesn't have
+         * @ref FontConverterFeature::MultiFile, only one file is needed, thus
+         * using @ref importGlyphCacheFromSingleData() might be more convenient
+         * in that case.
          * @see @ref features(), @ref importGlyphCacheFromFile(),
          *      @ref exportGlyphCacheToData()
          */
@@ -321,9 +326,10 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          *
          * Available only if @ref FontConverterFeature::ConvertData and
          * @ref FontConverterFeature::ImportGlyphCache is supported and the
-         * plugin doesn't have @ref FontConverterFeature::MultiFile. Returns
-         * imported cache on success, @cpp nullptr @ce otherwise. See
-         * @ref importGlyphCacheFromData() for multi-file conversion.
+         * plugin doesn't have @ref FontConverterFeature::MultiFile. On failure
+         * prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp nullptr @ce. See @ref importGlyphCacheFromData() for multi-file
+         * conversion.
          * @see @ref features(), @ref importGlyphCacheFromFile(),
          *      @ref exportFontToSingleData()
          */
@@ -335,8 +341,8 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * Available only if @ref FontConverterFeature::ImportGlyphCache is
          * supported. If the plugin has @ref FontConverterFeature::MultiFile,
          * the function will use additional files in given path, all sharing
-         * common basename derived from @p filename. Returns imported cache on
-         * success, @cpp nullptr @ce otherwise.
+         * common basename derived from @p filename. On failure prints a
+         * message to @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
          * @see @ref features(), @ref importGlyphCacheFromData(),
          *      @ref exportGlyphCacheToFile()
          */

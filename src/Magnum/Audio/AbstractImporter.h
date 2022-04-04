@@ -167,7 +167,8 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Closes previous file, if it was opened, and tries to open given
          * file. Available only if @ref ImporterFeature::OpenData is supported.
-         * Returns @cpp true @ce on success, @cpp false @ce otherwise.
+         * On failure prints a message to @relativeref{Magnum,Error} and
+         * returns @cpp false @ce.
          * @see @ref features(), @ref openFile()
          */
         bool openData(Containers::ArrayView<const void> data);
@@ -176,7 +177,8 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Open file
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. Returns @cpp true @ce on success, @cpp false @ce otherwise.
+         * file. On failure prints a message to @relativeref{Magnum,Error} and
+         * returns @cpp false @ce.
          * @see @ref features(), @ref openData()
          */
         bool openFile(const std::string& filename);

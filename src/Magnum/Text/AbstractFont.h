@@ -318,7 +318,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *
          * Closes previous file, if it was opened, and tries to open given
          * file. Available only if @ref FontFeature::OpenData is supported.
-         * Returns @cpp true @ce on success, @cpp false @ce otherwise.
+         * On failure prints a message to @relativeref{Magnum,Error} and
+         * returns @cpp false @ce.
          * @see @ref features(), @ref openFile()
          */
         bool openData(Containers::ArrayView<const void> data, Float size);
@@ -343,7 +344,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size          Font size
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. Returns @cpp true @ce on success, @cpp false @ce otherwise.
+         * file. On failure prints a message to @relativeref{Magnum,Error} and
+         * returns @cpp false @ce.
          */
         bool openFile(const std::string& filename, Float size);
 

@@ -754,7 +754,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * -    @cpp false @ce if validation doesn't pass. If an external error
          *      occurs (for example a referenced file not being found), it may
          *      also happen that the returned string is empty and a message is
-         *      printed to error output instead.
+         *      printed to @relativeref{Magnum,Error} instead.
          *
          * @see @ref features(), @ref validateFile()
          */
@@ -773,7 +773,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * -    @cpp false @ce if validation doesn't pass. If an external error
          *      occurs (for example when a file cannot be read), it may also
          *      happen that the returned string is empty and a message is
-         *      printed to error output instead.
+         *      printed to @relativeref{Magnum,Error} instead.
          *
          * Corresponds to the `--validate` option in
          * @ref magnum-shaderconverter "magnum-shaderconverter".
@@ -785,8 +785,8 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @brief Convert shader data to a data
          *
          * Available only if @ref ConverterFeature::ConvertData is supported.
-         * On failure the function prints an error message and returns
-         * @cpp nullptr @ce.
+         * On failure prints a message to @relativeref{Magnum,Error} and
+         * returns @cpp nullptr @ce.
          * @see @ref features(), @ref convertDataToFile(),
          *      @ref convertFileToData(), @ref convertFileToFile()
          */
@@ -796,8 +796,8 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @brief Convert shader data to a file
          *
          * Available only if @ref ConverterFeature::ConvertData is supported.
-         * Returns @cpp true @ce on success, prints an error message and
-         * returns @cpp false @ce otherwise.
+         * On failure prints a message to @relativeref{Magnum,Error} and
+         * returns @cpp false @ce.
          * @see @ref features(), @ref convertDataToData(),
          *      @ref convertFileToData(), @ref convertFileToFile()
          */
@@ -807,9 +807,8 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @brief Convert shader file to a file
          *
          * Available only if @ref ConverterFeature::ConvertFile or
-         * @ref ConverterFeature::ConvertData is supported. Returns
-         * @cpp true @ce on success, prints an error message and returns
-         * @cpp false @ce otherwise.
+         * @ref ConverterFeature::ConvertData is supported. On failure prints a
+         * message to @relativeref{Magnum,Error} and returns @cpp false @ce.
          *
          * Corresponds to the default behavior of
          * @ref magnum-shaderconverter "magnum-shaderconverter" when neither
@@ -823,8 +822,8 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @brief Convert shader data to a file
          *
          * Available only if @ref ConverterFeature::ConvertData is supported.
-         * On failure the function prints an error message and returns
-         * @cpp nullptr @ce.
+         * On failure prints a message to @relativeref{Magnum,Error} and
+         * returns @cpp nullptr @ce.
          * @see @ref features(), @ref convertFileToFile(),
          *      @ref convertDataToFile(), @ref convertDataToData()
          */
@@ -834,7 +833,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @brief Link shader data together to a data
          *
          * Available only if @ref ConverterFeature::LinkData is supported. On
-         * failure the function prints an error message and returns
+         * failure prints a message to @relativeref{Magnum,Error} and returns
          * @cpp nullptr @ce. Can't be called if
          * @ref ConverterFlag::PreprocessOnly is set --- in that case
          * @ref convertDataToData() has to be used instead.
@@ -849,8 +848,8 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @brief Link shader data together to a file
          *
          * Available only if @ref ConverterFeature::LinkData is supported. On
-         * Returns @cpp true @ce on success, prints an error message and
-         * returns @cpp false @ce otherwise. Can't be called if
+         * failure prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp false @ce. Can't be called if
          * @ref ConverterFlag::PreprocessOnly is set --- in that case
          * @ref convertDataToFile() has to be used instead.
          * @see @ref features(), @ref linkFilesToFile(),
@@ -865,11 +864,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @brief Link shader files together to a file
          *
          * Available only if @ref ConverterFeature::LinkFile or
-         * @ref ConverterFeature::LinkData is supported. Returns @cpp true @ce
-         * on success, prints an error message and returns @cpp false @ce
-         * otherwise. Can't be called if @ref ConverterFlag::PreprocessOnly is
-         * set --- in that case  @ref convertFileToFile() has to be used
-         * instead.
+         * @ref ConverterFeature::LinkData is supported. On failure prints a
+         * message to @relativeref{Magnum,Error} and returns @cpp false @ce.
+         * Can't be called if @ref ConverterFlag::PreprocessOnly is set --- in
+         * that case @ref convertFileToFile() has to be used instead.
          *
          * Corresponds to the `--link` option in
          * @ref magnum-shaderconverter "magnum-shaderconverter".
@@ -884,8 +882,8 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
         /**
          * @brief Link shader files together to a data
          *
-         * Available only if @ref ConverterFeature::LinkData is supported, On
-         * failure the function prints an error message and returns
+         * Available only if @ref ConverterFeature::LinkData is supported. On
+         * failure prints a message to @relativeref{Magnum,Error} and returns
          * @cpp nullptr @ce. Can't be called if
          * @ref ConverterFlag::PreprocessOnly is set --- in that case
          * @ref convertFileToData() has to be used instead.

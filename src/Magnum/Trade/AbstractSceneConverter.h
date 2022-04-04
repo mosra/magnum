@@ -355,7 +355,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * Depending on the plugin, can perform for example vertex format
          * conversion, overdraw optimization or decimation / subdivision.
          * Available only if @ref SceneConverterFeature::ConvertMesh is
-         * supported.
+         * supported. On failure prints a message to @relativeref{Magnum,Error}
+         * and returns @ref Containers::NullOpt.
          * @see @ref features(), @ref convertInPlace(MeshData&)
          */
         Containers::Optional<MeshData> convert(const MeshData& mesh);
@@ -366,9 +367,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * Depending on the plugin, can perform for example index buffer
          * reordering for better vertex cache use or overdraw optimization.
          * Available only if @ref SceneConverterFeature::ConvertMeshInPlace is
-         * supported. Returns @cpp true @ce if the operation succeeded. On
-         * failure the function prints an error message and returns
-         * @cpp false @ce, @p mesh is guaranteed to stay unchanged.
+         * supported. On failure prints a message to @relativeref{Magnum,Error}
+         * and returns @cpp false @ce, @p mesh is guaranteed to stay unchanged.
          * @see @ref features(), @ref convert(const MeshData&)
          */
         bool convertInPlace(MeshData& mesh);
@@ -379,7 +379,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * Depending on the plugin, can convert the mesh to a file format that
          * can be saved to disk. Available only if
          * @ref SceneConverterFeature::ConvertMeshToData is supported. On
-         * failure the function prints an error message and returns
+         * failure prints a message to @relativeref{Magnum,Error} and returns
          * @cpp nullptr @ce.
          * @see @ref features(), @ref convertToFile()
          */
@@ -390,9 +390,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @m_since_latest
          *
          * Available only if @ref SceneConverterFeature::ConvertMeshToFile or
-         * @ref SceneConverterFeature::ConvertMeshToData is supported. Returns
-         * @cpp true @ce on success, prints an error message and returns
-         * @cpp false @ce otherwise.
+         * @ref SceneConverterFeature::ConvertMeshToData is supported. On
+         * failure prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp false @ce.
          * @see @ref features(), @ref convertToData()
          */
         bool convertToFile(const MeshData& mesh, Containers::StringView filename);
