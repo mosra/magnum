@@ -41,6 +41,13 @@
 /* For *ToData() APIs that used to return just an Array before */
 #include <Corrade/Containers/Optional.h>
 
+/* For validate*() that used to return a std::pair. Similar case is with
+   setDefinitions(), there a hope is that a std::initializer_list was used and
+   thus the type change won't break much code; lastly the link APIs that used
+   std::pair heavily are not implemented by any plugin yet so changing them
+   should be still fine. */
+#include <Corrade/Containers/PairStl.h>
+
 #include "Magnum/ShaderTools/Stage.h"
 #endif
 
@@ -720,10 +727,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * in @ref magnum-shaderconverter "magnum-shaderconverter".
          * @see @ref ConverterFlag::PreprocessOnly
          */
-        void setDefinitions(Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>> definitions);
+        void setDefinitions(Containers::ArrayView<const Containers::Pair<Containers::StringView, Containers::StringView>> definitions);
 
         /** @overload */
-        void setDefinitions(std::initializer_list<std::pair<Containers::StringView, Containers::StringView>> definitions);
+        void setDefinitions(std::initializer_list<Containers::Pair<Containers::StringView, Containers::StringView>> definitions);
 
         /**
          * @brief Set optimization level
@@ -778,7 +785,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * @see @ref features(), @ref validateFile()
          */
-        std::pair<bool, Containers::String> validateData(Stage stage, Containers::ArrayView<const void> data);
+        Containers::Pair<bool, Containers::String> validateData(Stage stage, Containers::ArrayView<const void> data);
 
         /**
          * @brief Validate a shader
@@ -799,7 +806,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @ref magnum-shaderconverter "magnum-shaderconverter".
          * @see @ref features(), @ref validateData()
          */
-        std::pair<bool, Containers::String> validateFile(Stage stage, Containers::StringView filename);
+        Containers::Pair<bool, Containers::String> validateFile(Stage stage, Containers::StringView filename);
 
         /**
          * @brief Convert shader data to a data
@@ -874,7 +881,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
         #else
         Implementation::OptionalButAlsoArray<char>
         #endif
-        linkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data);
+        linkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const void>>> data);
 
         /** @overload */
         #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
@@ -882,7 +889,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
         #else
         Implementation::OptionalButAlsoArray<char>
         #endif
-        linkDataToData(std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data);
+        linkDataToData(std::initializer_list<Containers::Pair<Stage, Containers::ArrayView<const void>>> data);
 
         /**
          * @brief Link shader data together to a file
@@ -895,10 +902,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @see @ref features(), @ref linkFilesToFile(),
          *      @ref linkFilesToData(), @ref linkDataToData()
          */
-        bool linkDataToFile(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView filename);
+        bool linkDataToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView filename);
 
         /** @overload */
-        bool linkDataToFile(std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView filename);
+        bool linkDataToFile(std::initializer_list<Containers::Pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView filename);
 
         /**
          * @brief Link shader files together to a file
@@ -914,10 +921,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @see @ref features(), @ref linkFilesToData(), @ref linkDataToFile(),
          *      @ref linkDataToData()
          */
-        bool linkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to);
+        bool linkFilesToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> from, Containers::StringView to);
 
         /** @overload */
-        bool linkFilesToFile(std::initializer_list<std::pair<Stage, Containers::StringView>> from, Containers::StringView to);
+        bool linkFilesToFile(std::initializer_list<Containers::Pair<Stage, Containers::StringView>> from, Containers::StringView to);
 
         /**
          * @brief Link shader files together to a data
@@ -935,7 +942,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
         #else
         Implementation::OptionalButAlsoArray<char>
         #endif
-        linkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
+        linkFilesToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> filenames);
 
         /** @overload */
         #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
@@ -943,7 +950,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
         #else
         Implementation::OptionalButAlsoArray<char>
         #endif
-        linkFilesToData(std::initializer_list<std::pair<Stage, Containers::StringView>> filenames);
+        linkFilesToData(std::initializer_list<Containers::Pair<Stage, Containers::StringView>> filenames);
 
     protected:
         /**
@@ -961,7 +968,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * is not supported --- instead, file is loaded though the callback and
          * data passed through to @ref doValidateData().
          */
-        virtual std::pair<bool, Containers::String> doValidateFile(Stage stage, Containers::StringView filename);
+        virtual Containers::Pair<bool, Containers::String> doValidateFile(Stage stage, Containers::StringView filename);
 
         /**
          * @brief Implementation for @ref convertFileToFile()
@@ -1012,7 +1019,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * is not supported --- instead, file is loaded though the callback and
          * data passed through to @ref doLinkDataToData().
          */
-        virtual bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to);
+        virtual bool doLinkFilesToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> from, Containers::StringView to);
 
         /**
          * @brief Implementation for @ref linkFilesToData()
@@ -1029,7 +1036,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * is not supported --- instead, file is loaded though the callback and
          * data passed through to @ref doConvertDataToData().
          */
-        virtual Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
+        virtual Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> filenames);
 
     private:
         /**
@@ -1100,7 +1107,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * Has to be implemented if @ref ConverterFeature::Preprocess is
          * supported. This function isn't expected to fail.
          */
-        virtual void doSetDefinitions(Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>> definitions);
+        virtual void doSetDefinitions(Containers::ArrayView<const Containers::Pair<Containers::StringView, Containers::StringView>> definitions);
 
         /**
          * @brief Implementation for @ref setOptimizationLevel()
@@ -1136,7 +1143,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * order to accept any type, this function gets it cast to
          * @cpp char @ce for more convenience.
          */
-        virtual std::pair<bool, Containers::String> doValidateData(Stage stage, Containers::ArrayView<const char> data);
+        virtual Containers::Pair<bool, Containers::String> doValidateData(Stage stage, Containers::ArrayView<const char> data);
 
         /* Used by convertFileToFile(), doConvertFileToFile(),
            convertFileToData() and doConvertFileToData() */
@@ -1154,7 +1161,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
 
         /* Used by linkFilesToFile(), doLinkFilesToFile(), linkFilesToData()
            and doLinkFilesToData() */
-        MAGNUM_SHADERTOOLS_LOCAL Containers::Optional<Containers::Array<char>> linkDataToDataUsingInputFileCallbacks(const char* prefix, Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
+        MAGNUM_SHADERTOOLS_LOCAL Containers::Optional<Containers::Array<char>> linkDataToDataUsingInputFileCallbacks(const char* prefix, Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> filenames);
 
         /**
          * @brief Implementation for @ref linkDataToData()
@@ -1164,7 +1171,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * order to accept any type, this function gets it cast to
          * @cpp char @ce for more convenience.
          */
-        virtual Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data);
+        virtual Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>> data);
 
         ConverterFlags _flags;
 

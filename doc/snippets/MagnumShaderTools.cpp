@@ -27,6 +27,7 @@
 #include <unordered_map>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h> /** @todo drop when file callbacks are <string>-free */
 #include <Corrade/Utility/Macros.h> /* CORRADE_LINE_STRING */
@@ -47,14 +48,13 @@ PluginManager::Manager<ShaderTools::AbstractConverter> manager;
 Containers::Pointer<ShaderTools::AbstractConverter> converter =
     manager.loadAndInstantiate("AnyShaderConverter");
 
-bool valid;
-Containers::String message;
-if(converter) std::tie(valid, message) =
+Containers::Pair<bool, Containers::String> validMessage;
+if(converter) validMessage =
     converter->validateFile(ShaderTools::Stage::Unspecified, "file.spv");
-if(!converter || !valid)
-    Error{} << "Validation failed:" << message;
-else if(!message.isEmpty())
-    Warning{} << "Validation succeeded with warnings:" << message;
+if(!converter || !validMessage.first())
+    Error{} << "Validation failed:" << validMessage.second();
+else if(!validMessage.second().isEmpty())
+    Warning{} << "Validation succeeded with warnings:" << validMessage.second();
 else
     Debug{} << "Validation passed";
 /* [AbstractConverter-usage-validation] */

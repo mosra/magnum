@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/TestSuite/Tester.h>
@@ -504,7 +505,7 @@ void AbstractConverterTest::setDefinitions() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        void doSetDefinitions(Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>> definitions) override {
+        void doSetDefinitions(Containers::ArrayView<const Containers::Pair<Containers::StringView, Containers::StringView>> definitions) override {
             howManyIsThere = definitions.size();
         }
 
@@ -679,14 +680,14 @@ void AbstractConverterTest::validateData() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        std::pair<bool, Containers::String> doValidateData(const Stage stage, const Containers::ArrayView<const char> data) override {
+        Containers::Pair<bool, Containers::String> doValidateData(const Stage stage, const Containers::ArrayView<const char> data) override {
             return {data.size() == 5*4 && stage == Stage::MeshTask, "Yes, this is valid"};
         }
     } converter;
 
-    std::pair<bool, Containers::String> out = converter.validateData(Stage::MeshTask, Containers::arrayView<UnsignedInt>({0x07230203, 99, 0xcafebabeu, 50, 0}));
-    CORRADE_VERIFY(out.first);
-    CORRADE_COMPARE(out.second, "Yes, this is valid");
+    Containers::Pair<bool, Containers::String> out = converter.validateData(Stage::MeshTask, Containers::arrayView<UnsignedInt>({0x07230203, 99, 0xcafebabeu, 50, 0}));
+    CORRADE_VERIFY(out.first());
+    CORRADE_COMPARE(out.second(), "Yes, this is valid");
 }
 
 void AbstractConverterTest::validateDataNotSupported() {
@@ -759,15 +760,8 @@ void AbstractConverterTest::validateDataCustomStringDeleter() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        std::pair<bool, Containers::String> doValidateData(Stage, const Containers::ArrayView<const char>) override {
-            /* libc++ and MSVC STL is STUPID and doing
-                `return {{}, Containers::String{...}};`
-               will do a COPY, even though not needed. That then of course
-               discards the custom deleter and makes the test fail. Oh C++, do
-               I really have to reimplement even std::pair, FFS?! */
-            std::pair<bool, Containers::String> out;
-            out.second = Containers::String{"", 0, [](char*, std::size_t){}};
-            return out;
+        Containers::Pair<bool, Containers::String> doValidateData(Stage, const Containers::ArrayView<const char>) override {
+            return {{}, Containers::String{"", 0, [](char*, std::size_t){}}};
         }
     } converter;
 
@@ -785,14 +779,14 @@ void AbstractConverterTest::validateFile() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        std::pair<bool, Containers::String> doValidateFile(const Stage stage, const Containers::StringView filename) override {
+        Containers::Pair<bool, Containers::String> doValidateFile(const Stage stage, const Containers::StringView filename) override {
             return {stage == Stage::Vertex && filename.size() == 8, "Yes, this is valid"};
         }
     } converter;
 
-    std::pair<bool, Containers::String> out = converter.validateFile(Stage::Vertex, "file.spv");
-    CORRADE_VERIFY(out.first);
-    CORRADE_COMPARE(out.second, "Yes, this is valid");
+    Containers::Pair<bool, Containers::String> out = converter.validateFile(Stage::Vertex, "file.spv");
+    CORRADE_VERIFY(out.first());
+    CORRADE_COMPARE(out.second(), "Yes, this is valid");
 }
 
 void AbstractConverterTest::validateFileAsData() {
@@ -803,14 +797,14 @@ void AbstractConverterTest::validateFileAsData() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        std::pair<bool, Containers::String> doValidateData(const Stage stage, const Containers::ArrayView<const char> data) override {
+        Containers::Pair<bool, Containers::String> doValidateData(const Stage stage, const Containers::ArrayView<const char> data) override {
             return {stage == Stage::Compute && data.size() == 5, "Yes, this is valid"};
         }
     } converter;
 
-    std::pair<bool, Containers::String> out = converter.validateFile(Stage::Compute, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"));
-    CORRADE_VERIFY(out.first);
-    CORRADE_COMPARE(out.second, "Yes, this is valid");
+    Containers::Pair<bool, Containers::String> out = converter.validateFile(Stage::Compute, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"));
+    CORRADE_VERIFY(out.first());
+    CORRADE_COMPARE(out.second(), "Yes, this is valid");
 }
 
 void AbstractConverterTest::validateFileAsDataNotFound() {
@@ -821,7 +815,7 @@ void AbstractConverterTest::validateFileAsDataNotFound() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        std::pair<bool, Containers::String> doValidateData(Stage, Containers::ArrayView<const char>) override {
+        Containers::Pair<bool, Containers::String> doValidateData(Stage, Containers::ArrayView<const char>) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
             return {};
         }
@@ -829,9 +823,9 @@ void AbstractConverterTest::validateFileAsDataNotFound() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    std::pair<bool, Containers::String> out2 = converter.validateFile({}, "nonexistent.bin");
-    CORRADE_VERIFY(!out2.first);
-    CORRADE_COMPARE(out2.second, "");
+    Containers::Pair<bool, Containers::String> out2 = converter.validateFile({}, "nonexistent.bin");
+    CORRADE_VERIFY(!out2.first());
+    CORRADE_COMPARE(out2.second(), "");
     /* There's an error message from Path::read() before */
     CORRADE_COMPARE_AS(out.str(),
         "\nShaderTools::AbstractConverter::validateFile(): cannot open file nonexistent.bin\n",
@@ -908,15 +902,8 @@ void AbstractConverterTest::validateFileCustomStringDeleter() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        std::pair<bool, Containers::String> doValidateFile(Stage, Containers::StringView) override {
-            /* libc++ and MSVC STL is STUPID and doing
-                `return {{}, Containers::String{...}};`
-               will do a COPY, even though not needed. That then of course
-               discards the custom deleter and makes the test fail. Oh C++, do
-               I really have to reimplement even std::pair, FFS?! */
-            std::pair<bool, Containers::String> out;
-            out.second = Containers::String{"", 0, [](char*, std::size_t){}};
-            return out;
+        Containers::Pair<bool, Containers::String> doValidateFile(Stage, Containers::StringView) override {
+            return {{}, Containers::String{"", 0, [](char*, std::size_t){}}};
         }
     } converter;
 
@@ -1412,11 +1399,11 @@ void AbstractConverterTest::linkDataToData() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>> data) override {
             CORRADE_COMPARE(data.size(), 2);
             return Containers::array({
-                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
-                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+                data[0].first() == Stage::Vertex ? data[0].second()[0] : ' ',
+                data[1].first() == Stage::Fragment ? data[1].second()[0] : ' '
             });
         }
     } converter;
@@ -1467,7 +1454,7 @@ void AbstractConverterTest::linkDataToDataNotImplemented() {
     std::ostringstream out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
-    converter.linkDataToData({std::pair<Stage, Containers::ArrayView<const void>>{}});
+    converter.linkDataToData({Containers::Pair<Stage, Containers::ArrayView<const void>>{}});
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
 }
 
@@ -1522,7 +1509,7 @@ void AbstractConverterTest::linkDataToDataCustomDeleter() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
             return Containers::Array<char>{nullptr, 0, [](char*, std::size_t){}};
         }
     } converter;
@@ -1530,7 +1517,7 @@ void AbstractConverterTest::linkDataToDataCustomDeleter() {
     std::ostringstream out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
-    converter.linkDataToData({std::pair<Stage, Containers::ArrayView<const void>>{}});
+    converter.linkDataToData({Containers::Pair<Stage, Containers::ArrayView<const void>>{}});
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1542,11 +1529,11 @@ void AbstractConverterTest::linkDataToFileThroughData() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>> data) override {
             CORRADE_COMPARE(data.size(), 2);
             return Containers::array({
-                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
-                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+                data[0].first() == Stage::Vertex ? data[0].second()[0] : ' ',
+                data[1].first() == Stage::Fragment ? data[1].second()[0] : ' '
             });
         }
     } converter;
@@ -1572,7 +1559,7 @@ void AbstractConverterTest::linkDataToFileThroughDataFailed() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
             return {};
         }
     } converter;
@@ -1587,7 +1574,7 @@ void AbstractConverterTest::linkDataToFileThroughDataFailed() {
     std::ostringstream out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
-    CORRADE_VERIFY(!converter.linkDataToFile({std::pair<Stage, Containers::ArrayView<const void>>{}}, filename));
+    CORRADE_VERIFY(!converter.linkDataToFile({Containers::Pair<Stage, Containers::ArrayView<const void>>{}}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(), "");
 }
@@ -1600,7 +1587,7 @@ void AbstractConverterTest::linkDataToFileThroughDataNotWritable() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
             return Containers::Array<char>{1};
         }
     } converter;
@@ -1608,7 +1595,7 @@ void AbstractConverterTest::linkDataToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
-    CORRADE_VERIFY(!converter.linkDataToFile({std::pair<Stage, Containers::ArrayView<const void>>{}}, "/some/path/that/does/not/exist"));
+    CORRADE_VERIFY(!converter.linkDataToFile({Containers::Pair<Stage, Containers::ArrayView<const void>>{}}, "/some/path/that/does/not/exist"));
     CORRADE_COMPARE_AS(out.str(),
         "ShaderTools::AbstractConverter::linkDataToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
@@ -1649,7 +1636,7 @@ void AbstractConverterTest::linkDataToFileNotImplemented() {
     std::ostringstream out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
-    converter.linkDataToFile({std::pair<Stage, Containers::ArrayView<const void>>{}}, "file.dat");
+    converter.linkDataToFile({Containers::Pair<Stage, Containers::ArrayView<const void>>{}}, "file.dat");
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
 }
 
@@ -1700,15 +1687,15 @@ void AbstractConverterTest::linkFilesToFile() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
+        bool doLinkFilesToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
             CORRADE_COMPARE(from.size(), 2);
-            Containers::Optional<Containers::Array<char>> first = Utility::Path::read(from[0].second);
-            Containers::Optional<Containers::Array<char>> second = Utility::Path::read(from[1].second);
+            Containers::Optional<Containers::Array<char>> first = Utility::Path::read(from[0].second());
+            Containers::Optional<Containers::Array<char>> second = Utility::Path::read(from[1].second());
             CORRADE_VERIFY(first);
             CORRADE_VERIFY(second);
             return Utility::Path::write(to, Containers::array({
-                from[0].first == Stage::Vertex ? (*first)[0] : ' ',
-                from[1].first == Stage::Fragment ? (*second)[0] : ' '
+                from[0].first() == Stage::Vertex ? (*first)[0] : ' ',
+                from[1].first() == Stage::Fragment ? (*second)[0] : ' '
             }));
         }
     } converter;
@@ -1736,11 +1723,11 @@ void AbstractConverterTest::linkFilesToFileThroughData() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>> data) override {
             CORRADE_COMPARE(data.size(), 2);
             return Containers::array({
-                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
-                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+                data[0].first() == Stage::Vertex ? data[0].second()[0] : ' ',
+                data[1].first() == Stage::Fragment ? data[1].second()[0] : ' '
             });
         }
     } converter;
@@ -1766,7 +1753,7 @@ void AbstractConverterTest::linkFilesToFileThroughDataNotFound() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
             return {};
         }
@@ -1792,7 +1779,7 @@ void AbstractConverterTest::linkFilesToFileThroughDataFailed() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
             return {};
         }
     } converter;
@@ -1821,7 +1808,7 @@ void AbstractConverterTest::linkFilesToFileThroughDataNotWritable() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
             return Containers::Array<char>{1};
         }
     } converter;
@@ -1871,7 +1858,7 @@ void AbstractConverterTest::linkFilesToFileNotImplemented() {
     std::ostringstream out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
-    converter.linkFilesToFile({std::pair<Stage, Containers::StringView>{}}, {});
+    converter.linkFilesToFile({Containers::Pair<Stage, Containers::StringView>{}}, {});
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): feature advertised but not implemented\n");
 }
 
@@ -1922,15 +1909,15 @@ void AbstractConverterTest::linkFilesToData() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
+        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> from) override {
             CORRADE_COMPARE(from.size(), 2);
-            Containers::Optional<Containers::Array<char>> first = Utility::Path::read(from[0].second);
-            Containers::Optional<Containers::Array<char>> second = Utility::Path::read(from[1].second);
+            Containers::Optional<Containers::Array<char>> first = Utility::Path::read(from[0].second());
+            Containers::Optional<Containers::Array<char>> second = Utility::Path::read(from[1].second());
             CORRADE_VERIFY(first);
             CORRADE_VERIFY(second);
             return Containers::array({
-                from[0].first == Stage::Vertex ? (*first)[0] : ' ',
-                from[1].first == Stage::Fragment ? (*second)[0] : ' '
+                from[0].first() == Stage::Vertex ? (*first)[0] : ' ',
+                from[1].first() == Stage::Fragment ? (*second)[0] : ' '
             });
         }
     } converter;
@@ -1954,11 +1941,11 @@ void AbstractConverterTest::linkFilesToDataAsData() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>> data) override {
             CORRADE_COMPARE(data.size(), 2);
             return Containers::array({
-                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
-                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+                data[0].first() == Stage::Vertex ? data[0].second()[0] : ' ',
+                data[1].first() == Stage::Fragment ? data[1].second()[0] : ' '
             });
         }
     } converter;
@@ -1982,7 +1969,7 @@ void AbstractConverterTest::linkFilesToDataAsDataNotFound() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
             return {};
         }
@@ -2092,7 +2079,7 @@ void AbstractConverterTest::linkFilesToDataCustomDeleter() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>>) override {
             return Containers::Array<char>{nullptr, 0, [](char*, std::size_t){}};
         }
     } converter;
@@ -2255,11 +2242,11 @@ void AbstractConverterTest::setInputFileCallbackValidateFileDirectly() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        std::pair<bool, Containers::String> doValidateFile(Stage, const Containers::StringView filename) override {
+        Containers::Pair<bool, Containers::String> doValidateFile(Stage, const Containers::StringView filename) override {
             return {filename == "file.dat" && inputFileCallback() && inputFileCallbackUserData(), "it's what it is!"};
         }
 
-        std::pair<bool, Containers::String> doValidateData(Stage, Containers::ArrayView<const char>) override {
+        Containers::Pair<bool, Containers::String> doValidateData(Stage, Containers::ArrayView<const char>) override {
             CORRADE_VERIFY(!"this should not be reached");
             return {};
         }
@@ -2271,7 +2258,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileDirectly() {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     }, &a);
 
-    CORRADE_COMPARE(converter.validateFile({}, "file.dat"), std::make_pair(true, "it's what it is!"));
+    CORRADE_COMPARE(converter.validateFile({}, "file.dat"), Containers::pair(true, Containers::String{"it's what it is!"}));
 }
 
 void AbstractConverterTest::setInputFileCallbackValidateFileThroughBaseImplementation() {
@@ -2282,7 +2269,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileThroughBaseImplement
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        std::pair<bool, Containers::String> doValidateFile(Stage stage, const Containers::StringView filename) override {
+        Containers::Pair<bool, Containers::String> doValidateFile(Stage stage, const Containers::StringView filename) override {
             validateFileCalled = true;
 
             if(filename != "file.dat" || !inputFileCallback() || !inputFileCallbackUserData())
@@ -2291,7 +2278,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileThroughBaseImplement
             return AbstractConverter::doValidateFile(stage, filename);
         }
 
-        std::pair<bool, Containers::String> doValidateData(Stage stage, Containers::ArrayView<const char> data) override {
+        Containers::Pair<bool, Containers::String> doValidateData(Stage stage, Containers::ArrayView<const char> data) override {
             return {stage == Stage::RayCallable && data.size() == 1 && data[0] == '\xb0', "yep!!"};
         }
 
@@ -2319,7 +2306,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileThroughBaseImplement
         return {};
     }, state);
 
-    CORRADE_COMPARE(converter.validateFile(Stage::RayCallable, "file.dat"), std::make_pair(true, "yep!!"));
+    CORRADE_COMPARE(converter.validateFile(Stage::RayCallable, "file.dat"), Containers::pair(true, Containers::String{"yep!!"}));
     CORRADE_VERIFY(converter.validateFileCalled);
     CORRADE_VERIFY(state.loaded);
     CORRADE_VERIFY(state.closed);
@@ -2333,7 +2320,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileThroughBaseImplement
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        std::pair<bool, Containers::String> doValidateFile(Stage stage, const Containers::StringView filename) override {
+        Containers::Pair<bool, Containers::String> doValidateFile(Stage stage, const Containers::StringView filename) override {
             validateFileCalled = true;
             return AbstractConverter::doValidateFile(stage, filename);
         }
@@ -2348,7 +2335,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileThroughBaseImplement
     std::ostringstream out;
     Error redirectError{&out};
 
-    CORRADE_COMPARE(converter.validateFile({}, "file.dat"), std::make_pair(false, ""));
+    CORRADE_COMPARE(converter.validateFile({}, "file.dat"), Containers::pair(false, Containers::String{}));
     CORRADE_VERIFY(converter.validateFileCalled);
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateFile(): cannot open file file.dat\n");
 }
@@ -2361,12 +2348,12 @@ void AbstractConverterTest::setInputFileCallbackValidateFileAsData() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        std::pair<bool, Containers::String> doValidateFile(Stage, const Containers::StringView) override {
+        Containers::Pair<bool, Containers::String> doValidateFile(Stage, const Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
             return {};
         }
 
-        std::pair<bool, Containers::String> doValidateData(Stage stage, Containers::ArrayView<const char> data) override {
+        Containers::Pair<bool, Containers::String> doValidateData(Stage stage, Containers::ArrayView<const char> data) override {
             return {stage == Stage::Fragment && data.size() == 1 && data[0] == '\xb0', "yep!!"};
         }
     } converter;
@@ -2392,7 +2379,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileAsData() {
         return {};
     }, state);
 
-    CORRADE_COMPARE(converter.validateFile(Stage::Fragment, "file.dat"), std::make_pair(true, "yep!!"));
+    CORRADE_COMPARE(converter.validateFile(Stage::Fragment, "file.dat"), Containers::pair(true, Containers::String{"yep!!"}));
     CORRADE_VERIFY(state.loaded);
     CORRADE_VERIFY(state.closed);
 }
@@ -2405,7 +2392,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileAsDataFailed() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        std::pair<bool, Containers::String> doValidateFile(Stage, const Containers::StringView) override {
+        Containers::Pair<bool, Containers::String> doValidateFile(Stage, const Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
             return {};
         }
@@ -2418,7 +2405,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileAsDataFailed() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    CORRADE_COMPARE(converter.validateFile({}, "file.dat"), std::make_pair(false, ""));
+    CORRADE_COMPARE(converter.validateFile({}, "file.dat"), Containers::pair(false, Containers::String{}));
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateFile(): cannot open file file.dat\n");
 }
 
@@ -2863,8 +2850,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileDirectly() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
-            return from.size() == 2 && from[0].first == Stage::Vertex && from[0].second == "another.dat" && from[1].first == Stage::Fragment && from[1].second == "file.dat" && to == "file.out" && inputFileCallback() && inputFileCallbackUserData();
+        bool doLinkFilesToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
+            return from.size() == 2 && from[0].first() == Stage::Vertex && from[0].second() == "another.dat" && from[1].first() == Stage::Fragment && from[1].second() == "file.dat" && to == "file.out" && inputFileCallback() && inputFileCallbackUserData();
         }
 
         Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
@@ -2893,20 +2880,20 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplem
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
+        bool doLinkFilesToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
             linkFilesToFileCalled = true;
 
-            if(from.size() != 2 || from[0].first != Stage::Vertex || from[0].second != "another.dat" || from[1].first != Stage::Fragment || from[1].second != "file.dat" || !to.hasSuffix("file.out") || !inputFileCallback() || !inputFileCallbackUserData())
+            if(from.size() != 2 || from[0].first() != Stage::Vertex || from[0].second() != "another.dat" || from[1].first() != Stage::Fragment || from[1].second() != "file.dat" || !to.hasSuffix("file.out") || !inputFileCallback() || !inputFileCallbackUserData())
                 return {};
 
             return AbstractConverter::doLinkFilesToFile(from, to);
         }
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>> data) override {
             CORRADE_COMPARE(data.size(), 2);
             return Containers::array({
-                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
-                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+                data[0].first() == Stage::Vertex ? data[0].second()[0] : ' ',
+                data[1].first() == Stage::Fragment ? data[1].second()[0] : ' '
             });
         }
 
@@ -2963,12 +2950,12 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplem
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
+        bool doLinkFilesToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
             linkFilesToFileCalled = true;
             return AbstractConverter::doLinkFilesToFile(from, to);
         }
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
             CORRADE_VERIFY(!"this shouldn't be called");
             return {};
         }
@@ -3022,16 +3009,16 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsData() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>, Containers::StringView) override {
+        bool doLinkFilesToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>>, Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
             return {};
         }
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>> data) override {
             CORRADE_COMPARE(data.size(), 2);
             return Containers::array({
-                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
-                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+                data[0].first() == Stage::Vertex ? data[0].second()[0] : ' ',
+                data[1].first() == Stage::Fragment ? data[1].second()[0] : ' '
             });
         }
     } converter;
@@ -3085,7 +3072,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataFailed() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>, Containers::StringView) override {
+        bool doLinkFilesToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>>, Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
             return {};
         }
@@ -3132,12 +3119,12 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataNotWritable
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>, Containers::StringView) override {
+        bool doLinkFilesToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>>, Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
             return {};
         }
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
             return Containers::Array<char>{1};
         }
     } converter;
@@ -3190,13 +3177,13 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataDirectly() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
-            if(from.size() == 2 && from[0].first == Stage::Vertex && from[0].second == "another.dat" && from[1].first == Stage::Fragment && from[1].second == "file.dat" && inputFileCallback() && inputFileCallbackUserData())
+        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> from) override {
+            if(from.size() == 2 && from[0].first() == Stage::Vertex && from[0].second() == "another.dat" && from[1].first() == Stage::Fragment && from[1].second() == "file.dat" && inputFileCallback() && inputFileCallbackUserData())
                 return Containers::array({'y', 'e', 'p'});
             return {};
         }
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
             CORRADE_VERIFY(!"this should not be reached");
             return {};
         }
@@ -3226,20 +3213,20 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplem
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
+        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> from) override {
             linkFilesToDataCalled = true;
 
-            if(from.size() != 2 || from[0].first != Stage::Vertex || from[0].second != "another.dat" || from[1].first != Stage::Fragment || from[1].second != "file.dat" || !inputFileCallback() || !inputFileCallbackUserData())
+            if(from.size() != 2 || from[0].first() != Stage::Vertex || from[0].second() != "another.dat" || from[1].first() != Stage::Fragment || from[1].second() != "file.dat" || !inputFileCallback() || !inputFileCallbackUserData())
                 return {};
 
             return AbstractConverter::doLinkFilesToData(from);
         }
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>> data) override {
             CORRADE_COMPARE(data.size(), 2);
             return Containers::array({
-                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
-                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+                data[0].first() == Stage::Vertex ? data[0].second()[0] : ' ',
+                data[1].first() == Stage::Fragment ? data[1].second()[0] : ' '
             });
         }
 
@@ -3294,7 +3281,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplem
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
+        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>> from) override {
             linkFilesToDataCalled = true;
             return AbstractConverter::doLinkFilesToData(from);
         }
@@ -3348,16 +3335,16 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsData() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>>) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
             return {};
         }
 
-        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>> data) override {
             CORRADE_COMPARE(data.size(), 2);
             return Containers::array({
-                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
-                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+                data[0].first() == Stage::Vertex ? data[0].second()[0] : ' ',
+                data[1].first() == Stage::Fragment ? data[1].second()[0] : ' '
             });
         }
     } converter;
@@ -3409,7 +3396,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsDataFailed() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>) override {
+        Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>>) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
             return {};
         }

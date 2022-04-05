@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
@@ -264,7 +265,7 @@ void AnyConverterTest::validateFile() {
 
     /* Make it print a warning so we know it's doing something */
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
-        std::make_pair(true, Utility::format("WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
+        Containers::pair(true, Utility::format("WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
 }
 
 void AnyConverterTest::validateFilePluginLoadFailed() {
@@ -273,7 +274,7 @@ void AnyConverterTest::validateFilePluginLoadFailed() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateFile({}, "file.glsl"),
-        std::make_pair(false, ""));
+        Containers::pair(false, Containers::String{}));
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(),
         "PluginManager::Manager::load(): plugin GlslShaderConverter is not static and was not found in nonexistent\n"
@@ -291,7 +292,7 @@ void AnyConverterTest::validateFileUnknown() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateFile({}, "dead.cg"),
-        std::make_pair(false, ""));
+        Containers::pair(false, Containers::String{}));
     CORRADE_COMPARE(out.str(), "ShaderTools::AnyConverter::validateFile(): cannot determine the format of dead.cg\n");
 }
 
@@ -317,7 +318,7 @@ void AnyConverterTest::validateFilePreprocessNotSupported() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateFile({}, Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv")),
-        std::make_pair(false, ""));
+        Containers::pair(false, Containers::String{}));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::validateFile(): SpirvToolsShaderConverter does not support preprocessing\n");
 }
@@ -342,7 +343,7 @@ void AnyConverterTest::validateFilePropagateFlags() {
     std::ostringstream out;
     Debug redirectDebug{&out};
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
-        std::make_pair(false, Utility::format("WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
+        Containers::pair(false, Utility::format("WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::validateFile(): using GlslShaderConverter (provided by GlslangShaderConverter)\n");
 }
@@ -366,7 +367,7 @@ void AnyConverterTest::validateFilePropagateInputVersion() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl")),
-        std::make_pair(false, ""));
+        Containers::pair(false, Containers::String{}));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::GlslangConverter::validateData(): input format version should be one of supported GLSL #version strings but got 100\n");
 }
@@ -390,7 +391,7 @@ void AnyConverterTest::validateFilePropagateOutputVersion() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl")),
-        std::make_pair(false, ""));
+        Containers::pair(false, Containers::String{}));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::GlslangConverter::validateData(): output format should be Spirv or Unspecified but got ShaderTools::Format::Glsl\n");
 }
@@ -417,7 +418,7 @@ void AnyConverterTest::validateFilePropagatePreprocess() {
     });
 
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
-        std::make_pair(true, Utility::format("WARNING: {}:10: 'different__but_also_wrong' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
+        Containers::pair(true, Utility::format("WARNING: {}:10: 'different__but_also_wrong' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
 }
 
 void AnyConverterTest::validateFilePropagateConfiguration() {
@@ -435,13 +436,13 @@ void AnyConverterTest::validateFilePropagateConfiguration() {
 
     {
         CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
-            std::make_pair(false, Utility::format("ERROR: {}:2: '#version' : must occur first in shader \nERROR: 1 compilation errors.  No code generated.", filename)));
+            Containers::pair(false, Utility::format("ERROR: {}:2: '#version' : must occur first in shader \nERROR: 1 compilation errors.  No code generated.", filename)));
     } {
         converter->configuration().setValue("permissive", true);
         /* Lol stupid thing, apparently it has two differently worded messages
            for the same thing? Dumpster fire. */
         CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
-            std::make_pair(true, "WARNING: 0:0: '#version' : Illegal to have non-comment, non-whitespace tokens before #version"));
+            Containers::pair(true, Containers::String{"WARNING: 0:0: '#version' : Illegal to have non-comment, non-whitespace tokens before #version"}));
     }
 }
 
@@ -462,7 +463,7 @@ void AnyConverterTest::validateFilePropagateConfigurationUnknown() {
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl")),
-        std::make_pair(true, ""));
+        Containers::pair(false, Containers::String{}));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::validateFile(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
@@ -484,7 +485,7 @@ void AnyConverterTest::validateData() {
     Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"));
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(converter->validateData(Stage::Fragment, *data),
-        std::make_pair(true, "WARNING: 0:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved"));
+        Containers::pair(true, Containers::String{"WARNING: 0:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved"}));
 }
 
 void AnyConverterTest::validateDataPluginLoadFailed() {
@@ -495,7 +496,7 @@ void AnyConverterTest::validateDataPluginLoadFailed() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateData({}, {}),
-        std::make_pair(false, ""));
+        Containers::pair(false, Containers::String{}));
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(),
         "PluginManager::Manager::load(): plugin GlslShaderConverter is not static and was not found in nonexistent\n"
@@ -513,7 +514,7 @@ void AnyConverterTest::validateDataNoFormatSet() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateData({}, "dead.cg"),
-        std::make_pair(false, ""));
+        Containers::pair(false, Containers::String{}));
     CORRADE_COMPARE(out.str(), "ShaderTools::AnyConverter::validateData(): no input format specified\n");
 }
 
@@ -544,7 +545,7 @@ void AnyConverterTest::validateDataPreprocessNotSupported() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateData({}, *data),
-        std::make_pair(false, ""));
+        Containers::pair(false, Containers::String{}));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::validateData(): SpirvToolsShaderConverter does not support preprocessing\n");
 }
@@ -572,7 +573,7 @@ void AnyConverterTest::validateDataPropagateFlags() {
     std::ostringstream out;
     Debug redirectDebug{&out};
     CORRADE_COMPARE(converter->validateData(Stage::Fragment, *data),
-        std::make_pair(false, "WARNING: 0:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved"));
+        Containers::pair(false, Containers::String{"WARNING: 0:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved"}));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::validateData(): using GlslShaderConverter (provided by GlslangShaderConverter)\n");
 }
@@ -601,7 +602,7 @@ void AnyConverterTest::validateDataPropagateInputVersion() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateData(Stage::Fragment, *data),
-        std::make_pair(false, ""));
+        Containers::pair(false, Containers::String{}));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::GlslangConverter::validateData(): input format version should be one of supported GLSL #version strings but got 100\n");
 }
@@ -630,7 +631,7 @@ void AnyConverterTest::validateDataPropagateOutputVersion() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateData(Stage::Fragment, *data),
-        std::make_pair(false, ""));
+        Containers::pair(false, Containers::String{}));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::GlslangConverter::validateData(): output format should be Spirv or Unspecified but got ShaderTools::Format::Glsl\n");
 }
@@ -660,7 +661,7 @@ void AnyConverterTest::validateDataPropagatePreprocess() {
     CORRADE_VERIFY(data);
 
     CORRADE_COMPARE(converter->validateData(Stage::Fragment, *data),
-        std::make_pair(true, "WARNING: 0:10: 'different__but_also_wrong' : identifiers containing consecutive underscores (\"__\") are reserved"));
+        Containers::pair(true, Containers::String{"WARNING: 0:10: 'different__but_also_wrong' : identifiers containing consecutive underscores (\"__\") are reserved"}));
 }
 
 void AnyConverterTest::validateDataPropagateConfiguration() {
@@ -680,13 +681,13 @@ void AnyConverterTest::validateDataPropagateConfiguration() {
 
     {
         CORRADE_COMPARE(converter->validateData(Stage::Fragment, *data),
-            std::make_pair(false, "ERROR: 0:2: '#version' : must occur first in shader \nERROR: 1 compilation errors.  No code generated."));
+            Containers::pair(false, Containers::String{"ERROR: 0:2: '#version' : must occur first in shader \nERROR: 1 compilation errors.  No code generated."}));
     } {
         converter->configuration().setValue("permissive", true);
         /* Lol stupid thing, apparently it has two differently worded messages
            for the same thing? Dumpster fire. */
         CORRADE_COMPARE(converter->validateData(Stage::Fragment, *data),
-            std::make_pair(true, Utility::format("WARNING: 0:0: '#version' : Illegal to have non-comment, non-whitespace tokens before #version")));
+            Containers::pair(true, Utility::format("WARNING: 0:0: '#version' : Illegal to have non-comment, non-whitespace tokens before #version")));
     }
 }
 
@@ -711,7 +712,7 @@ void AnyConverterTest::validateDataPropagateConfigurationUnknown() {
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_COMPARE(converter->validateData(Stage::Fragment, *data),
-        std::make_pair(true, ""));
+        Containers::pair(false, Containers::String{}));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::validateData(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
@@ -1856,7 +1857,7 @@ void AnyConverterTest::detectValidate() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateFile({}, data.filename),
-        std::make_pair(false, ""));
+        Containers::pair(false, Containers::String{}));
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
@@ -1877,7 +1878,7 @@ void AnyConverterTest::detectValidateExplicitFormat() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateFile({}, "file.spv"),
-        std::make_pair(false, ""));
+        Containers::pair(false, Containers::String{}));
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(),
         "PluginManager::Manager::load(): plugin HlslShaderConverter is not static and was not found in nonexistent\n"

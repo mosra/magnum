@@ -44,8 +44,8 @@ struct AnyConverter::State {
     Format inputFormat, outputFormat;
     Containers::String inputVersion, outputVersion;
 
-    Containers::Array<std::pair<Containers::String, Containers::String>> definitions;
-    Containers::Array<std::pair<Containers::StringView, Containers::StringView>> definitionViews;
+    Containers::Array<Containers::Pair<Containers::String, Containers::String>> definitions;
+    Containers::Array<Containers::Pair<Containers::StringView, Containers::StringView>> definitionViews;
 
     Containers::String debugInfoLevel, optimizationLevel;
 };
@@ -70,23 +70,23 @@ void AnyConverter::doSetOutputFormat(Format format, Containers::StringView versi
     _state->outputVersion = Containers::String::nullTerminatedGlobalView(version);
 }
 
-void AnyConverter::doSetDefinitions(const Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>> definitions) {
+void AnyConverter::doSetDefinitions(const Containers::ArrayView<const Containers::Pair<Containers::StringView, Containers::StringView>> definitions) {
     /* We have to make a local copy, unfortunately, and then a view on that
        local copy */
-    _state->definitions = Containers::Array<std::pair<Containers::String, Containers::String>>{definitions.size()};
-    _state->definitionViews = Containers::Array<std::pair<Containers::StringView, Containers::StringView>>{definitions.size()};
+    _state->definitions = Containers::Array<Containers::Pair<Containers::String, Containers::String>>{definitions.size()};
+    _state->definitionViews = Containers::Array<Containers::Pair<Containers::StringView, Containers::StringView>>{definitions.size()};
     for(std::size_t i = 0; i != definitions.size(); ++i) {
         /* Avoid a copy if the input is a global string literal */
         _state->definitions[i] = {
-            Containers::String::nullTerminatedGlobalView(definitions[i].first),
-            Containers::String::nullTerminatedGlobalView(definitions[i].second)
+            Containers::String::nullTerminatedGlobalView(definitions[i].first()),
+            Containers::String::nullTerminatedGlobalView(definitions[i].second())
         };
         /* Preserve the distinction between empty defines ("") and undefines
            (nullptr or default constructor) */
         _state->definitionViews[i] = {
-            _state->definitions[i].first,
-            definitions[i].second.data() ?
-                Containers::StringView{_state->definitions[i].second} :
+            _state->definitions[i].first(),
+            definitions[i].second().data() ?
+                Containers::StringView{_state->definitions[i].second()} :
                 Containers::StringView{}
         };
     }
@@ -175,7 +175,7 @@ Format formatForExtension(const char* prefix, const Containers::StringView filen
 
 }
 
-std::pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage stage, const Containers::StringView filename) {
+Containers::Pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage stage, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
     /* Prefer the explicitly set input format. If not set, fall back to
@@ -235,7 +235,7 @@ std::pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage sta
     return converter->validateFile(stage, filename);
 }
 
-std::pair<bool, Containers::String> AnyConverter::doValidateData(const Stage stage, const Containers::ArrayView<const char> data) {
+Containers::Pair<bool, Containers::String> AnyConverter::doValidateData(const Stage stage, const Containers::ArrayView<const char> data) {
     CORRADE_INTERNAL_ASSERT(manager());
 
     /* Decide on a plugin name based on the format */

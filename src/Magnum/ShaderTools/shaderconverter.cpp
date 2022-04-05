@@ -25,6 +25,7 @@
 
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
@@ -421,7 +422,7 @@ see documentation of a particular converter for more information.)")
 
         /* Options and flags applied just for the first converter; setting up
            file list for linking  */
-        Containers::Array<std::pair<ShaderTools::Stage, Containers::StringView>> linkInputs;
+        Containers::Array<Containers::Pair<ShaderTools::Stage, Containers::StringView>> linkInputs;
         if(i == 0) {
             if((args.isSet("preprocess-only") || args.arrayValueCount("define") || args.arrayValueCount("undefine"))) {
                 if(!(converter->features() >= ShaderTools::ConverterFeature::Preprocess)) {
@@ -432,7 +433,7 @@ see documentation of a particular converter for more information.)")
                 if(args.isSet("preprocess-only"))
                     flags |= ShaderTools::ConverterFlag::PreprocessOnly;
 
-                Containers::Array<std::pair<Containers::StringView, Containers::StringView>> definitions;
+                Containers::Array<Containers::Pair<Containers::StringView, Containers::StringView>> definitions;
                 arrayReserve(definitions, args.arrayValueCount("define") + args.arrayValueCount("undefine"));
                 for(std::size_t j = 0; j != args.arrayValueCount("define"); ++j) {
                     const Containers::Array3<Containers::StringView> define =
@@ -516,18 +517,18 @@ see documentation of a particular converter for more information.)")
                 return 13;
             }
 
-            std::pair<bool, Containers::String> out = converter->validateFile(ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", 0));
-            if(!out.first) {
+            Containers::Pair<bool, Containers::String> out = converter->validateFile(ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", 0));
+            if(!out.first()) {
                 if(args.isSet("verbose"))
                     Error{} << "Validation failed:";
-                if(!out.second.isEmpty()) Error{} << out.second;
-            } else if(!out.second.isEmpty()) {
+                if(!out.second().isEmpty()) Error{} << out.second();
+            } else if(!out.second().isEmpty()) {
                 if(args.isSet("verbose"))
                     Warning{} << "Validation succeeded with warnings:";
-                if(!out.second.isEmpty()) Warning{} << out.second;
+                if(!out.second().isEmpty()) Warning{} << out.second();
             } else if(args.isSet("verbose"))
                 Debug{} << "Validation passed";
-            return out.first ? 0 : 14;
+            return out.first() ? 0 : 14;
         }
 
         /** @todo ability to specify the stage (need a configurationvalue parser for this) */
