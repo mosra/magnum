@@ -30,6 +30,7 @@
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/Macros.h> /* CORRADE_THREAD_LOCAL */
 
 #include "Magnum/GL/AbstractFramebuffer.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
