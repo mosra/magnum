@@ -135,7 +135,7 @@ void TgaImageConverterTest::rgb() {
         Debug redirectOutput{&out};
         array = converter->convertToData(OriginalRGB);
     }
-    CORRADE_VERIFY(out);
+    CORRADE_VERIFY(array);
 
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
@@ -166,7 +166,7 @@ void TgaImageConverterTest::rgba() {
         Debug redirectOutput{&out};
         array = converter->convertToData(OriginalRGBA);
     }
-    CORRADE_VERIFY(out);
+    CORRADE_VERIFY(array);
 
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
