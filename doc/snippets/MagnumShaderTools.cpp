@@ -94,8 +94,8 @@ void main() {
 converter->setDefinitions({
     {"TEXTURED", ""}
 });
-Containers::Array<char> spirv = converter->convertDataToData(
-    ShaderTools::Stage::Fragment, glsl);
+Containers::Optional<Containers::Array<char>> spirv =
+    converter->convertDataToData(ShaderTools::Stage::Fragment, glsl);
 /* [AbstractConverter-usage-compilation] */
 }
 

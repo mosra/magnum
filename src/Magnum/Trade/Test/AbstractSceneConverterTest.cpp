@@ -401,8 +401,9 @@ void AbstractSceneConverterTest::convertMeshToData() {
         }
     } converter;
 
-    Containers::Array<char> data = converter.convertToData(MeshData{MeshPrimitive::Triangles, 6});
-    CORRADE_COMPARE(data.size(), 6);
+    Containers::Optional<Containers::Array<char>> data = converter.convertToData(MeshData{MeshPrimitive::Triangles, 6});
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(data->size(), 6);
 }
 
 void AbstractSceneConverterTest::convertMeshToDataNotImplemented() {

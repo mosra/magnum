@@ -130,7 +130,7 @@ void TgaImageConverterTest::rgb() {
     converter->setFlags(data.flags);
 
     std::ostringstream out;
-    Containers::Array<char> array;
+    Containers::Optional<Containers::Array<char>> array;
     {
         Debug redirectOutput{&out};
         array = converter->convertToData(OriginalRGB);
@@ -141,7 +141,7 @@ void TgaImageConverterTest::rgb() {
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
 
     Containers::Pointer<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
-    CORRADE_VERIFY(importer->openData(array));
+    CORRADE_VERIFY(importer->openData(*array));
     Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
     CORRADE_VERIFY(converted);
 
@@ -161,7 +161,7 @@ void TgaImageConverterTest::rgba() {
     converter->setFlags(data.flags);
 
     std::ostringstream out;
-    Containers::Array<char> array;
+    Containers::Optional<Containers::Array<char>> array;
     {
         Debug redirectOutput{&out};
         array = converter->convertToData(OriginalRGBA);
@@ -172,7 +172,7 @@ void TgaImageConverterTest::rgba() {
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
 
     Containers::Pointer<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
-    CORRADE_VERIFY(importer->openData(array));
+    CORRADE_VERIFY(importer->openData(*array));
     Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
     CORRADE_VERIFY(converted);
 

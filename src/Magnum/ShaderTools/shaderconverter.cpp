@@ -487,7 +487,9 @@ see documentation of a particular converter for more information.)")
                 return 18; /* same code as the same message below */
             }
 
-            if(!(data = converter->convertFileToData(ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", 0)))) {
+            if(Containers::Optional<Containers::Array<char>> out = converter->convertFileToData(ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", 0))) {
+                data = *std::move(out);
+            } else {
                 Error{} << "Cannot convert" << args.arrayValue<Containers::StringView>("input", 0);
                 return 20; /* same code as the same message below */
             }
@@ -569,14 +571,18 @@ see documentation of a particular converter for more information.)")
 
                 /* Linking */
                 if(args.isSet("link")) {
-                    if(!(data = converter->linkFilesToData(linkInputs))) {
+                    if(Containers::Optional<Containers::Array<char>> out = converter->linkFilesToData(linkInputs)) {
+                        data = *std::move(out);
+                    } else {
                         Error{} << "Cannot link" << args.arrayValue<Containers::StringView>("input", 0) << "and others to" << args.value<Containers::StringView>("output");
                         return 19;
                     }
 
                 /* Converting */
                 } else {
-                    if(!(data = converter->convertFileToData(ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", 0)))) {
+                    if(Containers::Optional<Containers::Array<char>> out = converter->convertFileToData(ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", 0))) {
+                        data = *std::move(out);
+                    } else {
                         Error{} << "Cannot convert" << args.arrayValue<Containers::StringView>("input", 0);
                         return 20;
                     }
@@ -591,7 +597,9 @@ see documentation of a particular converter for more information.)")
                 CORRADE_INTERNAL_ASSERT(data);
 
                 /* Subsequent operations are always a conversion, not link */
-                if(!(data = converter->convertDataToData(ShaderTools::Stage::Unspecified, data))) {
+                if(Containers::Optional<Containers::Array<char>> out = converter->convertDataToData(ShaderTools::Stage::Unspecified, data)) {
+                    data = *std::move(out);
+                } else {
                     Error{} << "Cannot convert shader data";
                     return 21;
                 }

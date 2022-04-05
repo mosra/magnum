@@ -993,8 +993,9 @@ void AbstractImageConverterTest::convert1DToData() {
     } converter;
 
     const char data[16]{};
-    Containers::Array<char> actual = converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 4, data});
-    CORRADE_COMPARE(actual.size(), 4);
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 4, data});
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 4);
 }
 
 void AbstractImageConverterTest::convert2DToData() {
@@ -1006,8 +1007,9 @@ void AbstractImageConverterTest::convert2DToData() {
     } converter;
 
     const char data[96]{};
-    Containers::Array<char> actual = converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, data});
-    CORRADE_COMPARE(actual.size(), 24);
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, data});
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 24);
 }
 
 void AbstractImageConverterTest::convert3DToData() {
@@ -1019,8 +1021,9 @@ void AbstractImageConverterTest::convert3DToData() {
     } converter;
 
     const char data[192]{};
-    Containers::Array<char> actual = converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {4, 6, 2}, data});
-    CORRADE_COMPARE(actual.size(), 48);
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {4, 6, 2}, data});
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 48);
 }
 
 void AbstractImageConverterTest::convert1DToDataInvalidImage() {
@@ -1198,8 +1201,9 @@ void AbstractImageConverterTest::convertCompressed1DToData() {
     } converter;
 
     const char data[32]{};
-    Containers::Array<char> actual = converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 16, data});
-    CORRADE_COMPARE(actual.size(), 16);
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 16, data});
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 16);
 }
 
 void AbstractImageConverterTest::convertCompressed2DToData() {
@@ -1211,8 +1215,9 @@ void AbstractImageConverterTest::convertCompressed2DToData() {
     } converter;
 
     const char data[64]{};
-    Containers::Array<char> actual = converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8}, data});
-    CORRADE_COMPARE(actual.size(), 128);
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8}, data});
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 128);
 }
 
 void AbstractImageConverterTest::convertCompressed3DToData() {
@@ -1224,8 +1229,9 @@ void AbstractImageConverterTest::convertCompressed3DToData() {
     } converter;
 
     const char data[128]{};
-    Containers::Array<char> actual = converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, data});
-    CORRADE_COMPARE(actual.size(), 256);
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, data});
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 256);
 }
 
 void AbstractImageConverterTest::convertCompressed1DToDataInvalidImage() {
@@ -1491,13 +1497,14 @@ void AbstractImageConverterTest::convertLevels1DToData() {
     } converter;
 
     const char data[96]{};
-    Containers::Array<char> actual = converter.convertToData({
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData({
         /* Arbitrary dimensions should be fine */
         ImageView1D{PixelFormat::RGBA8Unorm, 4, data},
         ImageView1D{PixelFormat::RGBA8Unorm, 2, data},
         ImageView1D{PixelFormat::RGBA8Unorm, 3, data},
     });
-    CORRADE_COMPARE(actual.size(), 4*3);
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 4*3);
 }
 
 void AbstractImageConverterTest::convertLevels2DToData() {
@@ -1509,13 +1516,14 @@ void AbstractImageConverterTest::convertLevels2DToData() {
     } converter;
 
     const char data[96]{};
-    Containers::Array<char> actual = converter.convertToData({
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData({
         /* Arbitrary dimensions should be fine */
         ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, data},
         ImageView2D{PixelFormat::RGBA8Unorm, {1, 3}, data},
         ImageView2D{PixelFormat::RGBA8Unorm, {4, 2}, data}
     });
-    CORRADE_COMPARE(actual.size(), 24*3);
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 24*3);
 }
 
 void AbstractImageConverterTest::convertLevels3DToData() {
@@ -1527,13 +1535,14 @@ void AbstractImageConverterTest::convertLevels3DToData() {
     } converter;
 
     const char data[192]{};
-    Containers::Array<char> actual = converter.convertToData({
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData({
         /* Arbitrary dimensions should be fine */
         ImageView3D{PixelFormat::RGBA8Unorm, {4, 6, 2}, data},
         ImageView3D{PixelFormat::RGBA8Unorm, {2, 3, 5}, data},
         ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}
     });
-    CORRADE_COMPARE(actual.size(), 48*3);
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 48*3);
 }
 
 void AbstractImageConverterTest::convertLevels1DToDataInvalidImage() {
@@ -1773,13 +1782,14 @@ void AbstractImageConverterTest::convertCompressedLevels1DToData() {
     } converter;
 
     const char data[32]{};
-    Containers::Array<char> actual = converter.convertToData({
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData({
         /* Arbitrary dimensions should be fine */
         CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 16, data},
         CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data},
         CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 12, data}
     });
-    CORRADE_COMPARE(actual.size(), 16*3);
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 16*3);
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToData() {
@@ -1791,13 +1801,14 @@ void AbstractImageConverterTest::convertCompressedLevels2DToData() {
     } converter;
 
     const char data[64]{};
-    Containers::Array<char> actual = converter.convertToData({
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData({
         /* Arbitrary dimensions should be fine */
         CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8}, data},
         CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 12}, data},
         CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}
     });
-    CORRADE_COMPARE(actual.size(), 128*3);
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 128*3);
 }
 
 void AbstractImageConverterTest::convertCompressedLevels3DToData() {
@@ -1809,13 +1820,14 @@ void AbstractImageConverterTest::convertCompressedLevels3DToData() {
     } converter;
 
     const char data[128]{};
-    Containers::Array<char> actual = converter.convertToData({
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData({
         /* Arbitrary dimensions should be fine */
         CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, data},
         CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 16, 1}, data},
         CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 4, 1}, data}
     });
-    CORRADE_COMPARE(actual.size(), 256*3);
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 256*3);
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToDataInvalidImage() {
@@ -2035,8 +2047,9 @@ void AbstractImageConverterTest::convert1DToDataThroughLevels() {
     } converter;
 
     const char data[16]{};
-    Containers::Array<char> actual = converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 4, data});
-    CORRADE_COMPARE(actual.size(), 4);
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 4, data});
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 4);
 }
 
 void AbstractImageConverterTest::convert2DToDataThroughLevels() {
@@ -2048,8 +2061,9 @@ void AbstractImageConverterTest::convert2DToDataThroughLevels() {
     } converter;
 
     const char data[96]{};
-    Containers::Array<char> actual = converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, data});
-    CORRADE_COMPARE(actual.size(), 24);
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, data});
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 24);
 }
 
 void AbstractImageConverterTest::convert3DToDataThroughLevels() {
@@ -2061,8 +2075,9 @@ void AbstractImageConverterTest::convert3DToDataThroughLevels() {
     } converter;
 
     const char data[192]{};
-    Containers::Array<char> actual = converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {4, 6, 2}, data});
-    CORRADE_COMPARE(actual.size(), 48);
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {4, 6, 2}, data});
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 48);
 }
 
 void AbstractImageConverterTest::convertCompressed1DToDataThroughLevels() {
@@ -2074,8 +2089,9 @@ void AbstractImageConverterTest::convertCompressed1DToDataThroughLevels() {
     } converter;
 
     const char data[32]{};
-    Containers::Array<char> actual = converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 16, data});
-    CORRADE_COMPARE(actual.size(), 16);
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 16, data});
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 16);
 }
 
 void AbstractImageConverterTest::convertCompressed2DToDataThroughLevels() {
@@ -2087,8 +2103,9 @@ void AbstractImageConverterTest::convertCompressed2DToDataThroughLevels() {
     } converter;
 
     const char data[64]{};
-    Containers::Array<char> actual = converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8}, data});
-    CORRADE_COMPARE(actual.size(), 128);
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8}, data});
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 128);
 }
 
 void AbstractImageConverterTest::convertCompressed3DToDataThroughLevels() {
@@ -2100,8 +2117,9 @@ void AbstractImageConverterTest::convertCompressed3DToDataThroughLevels() {
     } converter;
 
     const char data[128]{};
-    Containers::Array<char> actual = converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, data});
-    CORRADE_COMPARE(actual.size(), 256);
+    Containers::Optional<Containers::Array<char>> actual = converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, data});
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->size(), 256);
 }
 
 void AbstractImageConverterTest::convert1DToFile() {

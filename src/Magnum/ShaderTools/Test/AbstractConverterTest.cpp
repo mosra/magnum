@@ -940,8 +940,9 @@ void AbstractConverterTest::convertDataToData() {
     } converter;
 
     const char data[] = {'S', 'P', 'I', 'R', 'V'};
-    Containers::Array<char> out = converter.convertDataToData({}, data);
-    CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
+    Containers::Optional<Containers::Array<char>> out = converter.convertDataToData({}, data);
+    CORRADE_VERIFY(out);
+    CORRADE_COMPARE_AS(*out, Containers::arrayView({'V', 'S'}),
         TestSuite::Compare::Container);
 }
 
@@ -1293,8 +1294,9 @@ void AbstractConverterTest::convertFileToData() {
 
     CORRADE_VERIFY(true); /* Capture correct function name first */
 
-    Containers::Array<char> out = converter.convertFileToData({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"));
-    CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
+    Containers::Optional<Containers::Array<char>> out = converter.convertFileToData({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"));
+    CORRADE_VERIFY(out);
+    CORRADE_COMPARE_AS(*out, Containers::arrayView({'V', 'S'}),
         TestSuite::Compare::Container);
 }
 
@@ -1311,8 +1313,9 @@ void AbstractConverterTest::convertFileToDataAsData() {
         }
     } converter;
 
-    Containers::Array<char> out = converter.convertFileToData({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"));
-    CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
+    Containers::Optional<Containers::Array<char>> out = converter.convertFileToData({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"));
+    CORRADE_VERIFY(out);
+    CORRADE_COMPARE_AS(*out, Containers::arrayView({'V', 'S'}),
         TestSuite::Compare::Container);
 }
 
@@ -1420,11 +1423,12 @@ void AbstractConverterTest::linkDataToData() {
 
     CORRADE_VERIFY(true); /* so it picks up correct test case name */
 
-    Containers::Array<char> out = converter.linkDataToData({
+    Containers::Optional<Containers::Array<char>> out = converter.linkDataToData({
         {Stage::Vertex, Containers::arrayView({'V', 'E'})},
         {Stage::Fragment, Containers::arrayView({'S', 'A'})}
     });
-    CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
+    CORRADE_VERIFY(out);
+    CORRADE_COMPARE_AS(*out, Containers::arrayView({'V', 'S'}),
         TestSuite::Compare::Container);
 }
 
@@ -1933,11 +1937,12 @@ void AbstractConverterTest::linkFilesToData() {
 
     CORRADE_VERIFY(true); /* Capture correct function name first */
 
-    Containers::Array<char> out = converter.linkFilesToData({
+    Containers::Optional<Containers::Array<char>> out = converter.linkFilesToData({
         {Stage::Vertex, Utility::Path::join(SHADERTOOLS_TEST_DIR, "another.dat")},
         {Stage::Fragment, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     });
-    CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
+    CORRADE_VERIFY(out);
+    CORRADE_COMPARE_AS(*out, Containers::arrayView({'V', 'S'}),
         TestSuite::Compare::Container);
 }
 
@@ -1960,11 +1965,12 @@ void AbstractConverterTest::linkFilesToDataAsData() {
 
     CORRADE_VERIFY(true); /* Capture correct function name first */
 
-    Containers::Array<char> out = converter.linkFilesToData({
+    Containers::Optional<Containers::Array<char>> out = converter.linkFilesToData({
         {Stage::Vertex, Utility::Path::join(SHADERTOOLS_TEST_DIR, "another.dat")},
         {Stage::Fragment, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     });
-    CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
+    CORRADE_VERIFY(out);
+    CORRADE_COMPARE_AS(*out, Containers::arrayView({'V', 'S'}),
         TestSuite::Compare::Container);
 }
 

@@ -358,7 +358,8 @@ Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertT
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 Containers::Array<char> AbstractImageConverter::exportToData(const ImageView2D& image) {
-    return convertToData(image);
+    Containers::Optional<Containers::Array<char>> out = convertToData(image);
+    return out ? *std::move(out) : nullptr;
 }
 #endif
 
@@ -463,7 +464,8 @@ Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertT
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 Containers::Array<char> AbstractImageConverter::exportToData(const CompressedImageView2D& image) {
-    return convertToData(image);
+    Containers::Optional<Containers::Array<char>> out = convertToData(image);
+    return out ? *std::move(out) : nullptr;
 }
 #endif
 
@@ -520,7 +522,8 @@ AbstractImageConverter::convertToData(const ImageData2D& image) {
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 Containers::Array<char> AbstractImageConverter::exportToData(const ImageData2D& image) {
-    return convertToData(image);
+    Containers::Optional<Containers::Array<char>> out = convertToData(image);
+    return out ? *std::move(out) : nullptr;
 }
 #endif
 
