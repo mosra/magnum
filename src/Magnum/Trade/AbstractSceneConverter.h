@@ -53,7 +53,7 @@ namespace Magnum { namespace Trade {
 
 @see @ref SceneConverterFeatures, @ref AbstractSceneConverter::features()
 */
-enum class SceneConverterFeature: UnsignedByte {
+enum class SceneConverterFeature: UnsignedLong {
     /**
      * Convert a mesh with
      * @ref AbstractSceneConverter::convert(const MeshData&).

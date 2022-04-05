@@ -215,7 +215,7 @@ Debug& operator<<(Debug& debug, const SceneConverterFeature value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedLong(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const SceneConverterFeatures value) {
