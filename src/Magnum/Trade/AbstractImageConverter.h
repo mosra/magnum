@@ -36,6 +36,9 @@
 #include "Magnum/Trade/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+/* For *ToData() APIs that used to return just an Array before */
+#include <Corrade/Containers/Optional.h>
+
 /* So deprecated APIs taking a std::string don't fail to compile */
 /** @todo remove once they are gone */
 #include <Corrade/Utility/StlForwardString.h>
@@ -404,6 +407,23 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImageConverterFlag value);
 @m_since{2020,06}
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImageConverterFlags value);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+namespace Implementation {
+    /* Could be a concrete type as it's always only char, but that would mean
+       I'd need to include Optional and Array here. It's named like this
+       because AbstractSceneConverter and ShaderTools::AbstractConverter each
+       have its own and introducing a common header containing just deprecated
+       functionality seems silly. */
+    template<class T> struct ImageConverterOptionalButAlsoArray: Containers::Optional<Containers::Array<T>> {
+        /*implicit*/ ImageConverterOptionalButAlsoArray() = default;
+        /*implicit*/ ImageConverterOptionalButAlsoArray(Containers::Optional<Containers::Array<T>>&& optional): Containers::Optional<Containers::Array<T>>{std::move(optional)} {}
+        CORRADE_DEPRECATED("use Containers::Optional<Containers::Array<T>> instead") /*implicit*/ operator Containers::Array<T>() && {
+            return *this ? Containers::Array<T>{std::move(**this)} : nullptr;
+        }
+    };
+}
+#endif
 
 /**
 @brief Base for image converter plugins
@@ -864,12 +884,17 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @ref ImageConverterFeature::ConvertLevels1DToData is supported. The
          * image view is expected to not be @cpp nullptr @ce and to have a
          * non-zero size. On failure prints a message to
-         * @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
+         * @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToData(const CompressedImageView1D&),
          *      @ref convertToData(const ImageData1D&), @ref convert(),
          *      @ref convertToFile()
          */
-        Containers::Array<char> convertToData(const ImageView1D& image);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(const ImageView1D& image);
 
         /**
          * @brief Convert a 2D image to a raw data
@@ -879,12 +904,17 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @ref ImageConverterFeature::ConvertLevels2DToData is supported. The
          * image view is expected to not be @cpp nullptr @ce and to have a
          * non-zero size in all dimensions. On failure prints a message to
-         * @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
+         * @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToData(const CompressedImageView2D&),
          *      @ref convertToData(const ImageData2D&), @ref convert(),
          *      @ref convertToFile()
          */
-        Containers::Array<char> convertToData(const ImageView2D& image);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(const ImageView2D& image);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -903,12 +933,17 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @ref ImageConverterFeature::ConvertLevels3DToData is supported. The
          * image view is expected to not be @cpp nullptr @ce and to have a
          * non-zero size in all dimensions. On failure prints a message to
-         * @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
+         * @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToData(const CompressedImageView3D&),
          *      @ref convertToData(const ImageData3D&), @ref convert(),
          *      @ref convertToFile()
          */
-        Containers::Array<char> convertToData(const ImageView3D& image);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(const ImageView3D& image);
 
         /**
          * @brief Convert a compressed 1D image to a raw data
@@ -918,12 +953,17 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * or @ref ImageConverterFeature::ConvertCompressedLevels1DToData is
          * supported. The image view is expected to not be @cpp nullptr @ce and
          * to have a non-zero size. On failure prints a message to
-         * @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
+         * @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToData(const ImageView1D&),
          *      @ref convertToData(const ImageData1D&), @ref convert(),
          *      @ref convertToFile()
          */
-        Containers::Array<char> convertToData(const CompressedImageView1D& image);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(const CompressedImageView1D& image);
 
         /**
          * @brief Convert a compressed 2D image to a raw data
@@ -933,12 +973,18 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * or @ref ImageConverterFeature::ConvertCompressedLevels2DToData is
          * supported. The image view is expected to not be @cpp nullptr @ce and
          * to have a non-zero size in all dimensions. On failure prints a
-         * message to @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
+         * message to @relativeref{Magnum,Error} and returns
+         * @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToData(const ImageView2D&),
          *      @ref convertToData(const ImageData2D&), @ref convert(),
          *      @ref convertToFile()
          */
-        Containers::Array<char> convertToData(const CompressedImageView2D& image);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(const CompressedImageView2D& image);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -957,12 +1003,18 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * or @ref ImageConverterFeature::ConvertCompressedLevels3DToData is
          * supported. The image view is expected to not be @cpp nullptr @ce and
          * to have a non-zero size in all dimensions. On failure prints a
-         * message to @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
+         * message to @relativeref{Magnum,Error} and returns
+         * @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToData(const ImageView3D&),
          *      @ref convertToData(const ImageData3D&), @ref convert(),
          *      @ref convertToFile()
          */
-        Containers::Array<char> convertToData(const CompressedImageView3D& image);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(const CompressedImageView3D& image);
 
         /**
          * @brief Convert a 1D image data to a raw data
@@ -974,7 +1026,12 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * of these two functions for details.
          * @see @ref ImageData::isCompressed()
          */
-        Containers::Array<char> convertToData(const ImageData1D& image);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(const ImageData1D& image);
 
         /**
          * @brief Convert a 2D image data to a raw data
@@ -986,7 +1043,12 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * of these two functions for details.
          * @see @ref ImageData::isCompressed()
          */
-        Containers::Array<char> convertToData(const ImageData2D& image);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(const ImageData2D& image);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -1007,7 +1069,12 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * of these two functions for details.
          * @see @ref ImageData::isCompressed()
          */
-        Containers::Array<char> convertToData(const ImageData3D& image);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(const ImageData3D& image);
 
         /**
          * @brief Convert a set of 1D image levels to a raw data
@@ -1020,13 +1087,23 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * that certain converters may impose additional size and order
          * restrictions on the images, see documentation of a particular plugin
          * for more information. On failure prints a message to
-         * @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
+         * @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToData(Containers::ArrayView<const CompressedImageView1D>),
          *      @ref convert(), @ref convertToFile()
          */
-        Containers::Array<char> convertToData(Containers::ArrayView<const ImageView1D> imageLevels);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(Containers::ArrayView<const ImageView1D> imageLevels);
         /** @overload */
-        Containers::Array<char> convertToData(std::initializer_list<ImageView1D> imageLevels);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(std::initializer_list<ImageView1D> imageLevels);
 
         /**
          * @brief Convert a set of 2D image levels to a raw data
@@ -1039,13 +1116,23 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * pixel format. Note that certain converters may impose additional
          * size and order restrictions on the images, see documentation of a
          * particular plugin for more information. On failure prints a message
-         * to @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
+         * to @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToData(Containers::ArrayView<const CompressedImageView2D>),
          *      @ref convert(), @ref convertToFile()
          */
-        Containers::Array<char> convertToData(Containers::ArrayView<const ImageView2D> imageLevels);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(Containers::ArrayView<const ImageView2D> imageLevels);
         /** @overload */
-        Containers::Array<char> convertToData(std::initializer_list<ImageView2D> imageLevels);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(std::initializer_list<ImageView2D> imageLevels);
 
         /**
          * @brief Convert a set of 3D image levels to a raw data
@@ -1058,13 +1145,23 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * pixel format. Note that certain converters may impose additional
          * size and order restrictions on the images, see documentation of a
          * particular plugin for more information. On failure prints a message
-         * to @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
+         * to @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToData(Containers::ArrayView<const CompressedImageView3D>),
          *      @ref convert(), @ref convertToFile()
          */
-        Containers::Array<char> convertToData(Containers::ArrayView<const ImageView3D> imageLevels);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(Containers::ArrayView<const ImageView3D> imageLevels);
         /** @overload */
-        Containers::Array<char> convertToData(std::initializer_list<ImageView3D> imageLevels);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(std::initializer_list<ImageView3D> imageLevels);
 
         /**
          * @brief Convert a set of compressed 1D image levels to a raw data
@@ -1077,13 +1174,23 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * that certain converters may impose additional size and order
          * restrictions on the images, see documentation of a particular plugin
          * for more information. On failure prints a message to
-         * @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
+         * @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToData(Containers::ArrayView<const ImageView1D>),
          *      @ref convert(), @ref convertToFile()
          */
-        Containers::Array<char> convertToData(Containers::ArrayView<const CompressedImageView1D> imageLevels);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(Containers::ArrayView<const CompressedImageView1D> imageLevels);
         /** @overload */
-        Containers::Array<char> convertToData(std::initializer_list<CompressedImageView1D> imageLevels);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(std::initializer_list<CompressedImageView1D> imageLevels);
 
         /**
          * @brief Convert a set of compressed 2D image levels to a raw data
@@ -1096,13 +1203,23 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * pixel format. Note that certain converters may impose additional
          * size and order restrictions on the images, see documentation of a
          * particular plugin for more information. On failure prints a message
-         * to @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
+         * to @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToData(Containers::ArrayView<const ImageView2D>),
          *      @ref convert(), @ref convertToFile()
          */
-        Containers::Array<char> convertToData(Containers::ArrayView<const CompressedImageView2D> imageLevels);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(Containers::ArrayView<const CompressedImageView2D> imageLevels);
         /** @overload */
-        Containers::Array<char> convertToData(std::initializer_list<CompressedImageView2D> imageLevels);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(std::initializer_list<CompressedImageView2D> imageLevels);
 
         /**
          * @brief Convert a set of compressed 3D image levels to a raw data
@@ -1115,13 +1232,23 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * pixel format. Note that certain converters may impose additional
          * size and order restrictions on the images, see documentation of a
          * particular plugin for more information. On failure prints a message
-         * to @relativeref{Magnum,Error} and returns @cpp nullptr @ce.
+         * to @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToData(Containers::ArrayView<const ImageView3D>),
          *      @ref convert(), @ref convertToFile()
          */
-        Containers::Array<char> convertToData(Containers::ArrayView<const CompressedImageView3D> images);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(Containers::ArrayView<const CompressedImageView3D> images);
         /** @overload */
-        Containers::Array<char> convertToData(std::initializer_list<CompressedImageView3D> images);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::ImageConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(std::initializer_list<CompressedImageView3D> images);
 
         /**
          * @brief Convert a 1D image to a file
@@ -1648,7 +1775,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * default implementation calls @ref doConvertToData(Containers::ArrayView<const ImageView1D>)
          * with just the single @p image and propagates the result back.
          */
-        virtual Containers::Array<char> doConvertToData(const ImageView1D& image);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView1D& image);
 
         /**
          * @brief Implementation for @ref convertToData(const ImageView2D&)
@@ -1658,7 +1785,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * default implementation calls @ref doConvertToData(Containers::ArrayView<const ImageView2D>)
          * with just the single @p image and propagates the result back.
          */
-        virtual Containers::Array<char> doConvertToData(const ImageView2D& image);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D& image);
 
         /**
          * @brief Implementation for @ref convertToData(const ImageView3D&)
@@ -1668,7 +1795,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * default implementation calls @ref doConvertToData(Containers::ArrayView<const ImageView3D>)
          * with just the single @p image and propagates the result back.
          */
-        virtual Containers::Array<char> doConvertToData(const ImageView3D& image);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView3D& image);
 
         /**
          * @brief Implementation for @ref convertToData(const CompressedImageView1D&)
@@ -1679,7 +1806,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @ref doConvertToData(Containers::ArrayView<const CompressedImageView1D>)
          * with just the single @p image and propagates the result back.
          */
-        virtual Containers::Array<char> doConvertToData(const CompressedImageView1D& image);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView1D& image);
 
         /**
          * @brief Implementation for @ref convertToData(const CompressedImageView2D&)
@@ -1690,7 +1817,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @ref doConvertToData(Containers::ArrayView<const CompressedImageView2D>)
          * with just the single @p image and propagates the result back.
          */
-        virtual Containers::Array<char> doConvertToData(const CompressedImageView2D& image);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView2D& image);
 
         /**
          * @brief Implementation for @ref convertToData(const CompressedImageView3D&)
@@ -1701,43 +1828,43 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @ref doConvertToData(Containers::ArrayView<const CompressedImageView3D>)
          * with just the single @p image and propagates the result back.
          */
-        virtual Containers::Array<char> doConvertToData(const CompressedImageView3D& image);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView3D& image);
 
         /**
          * @brief Implementation for @ref convertToData(Containers::ArrayView<const ImageView1D>)
          * @m_since_latest
          */
-        virtual Containers::Array<char> doConvertToData(Containers::ArrayView<const ImageView1D> imageLevels);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D> imageLevels);
 
         /**
          * @brief Implementation for @ref convertToData(Containers::ArrayView<const ImageView2D>)
          * @m_since_latest
          */
-        virtual Containers::Array<char> doConvertToData(Containers::ArrayView<const ImageView2D> imageLevels);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D> imageLevels);
 
         /**
          * @brief Implementation for @ref convertToData(Containers::ArrayView<const ImageView3D>)
          * @m_since_latest
          */
-        virtual Containers::Array<char> doConvertToData(Containers::ArrayView<const ImageView3D> imageLevels);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D> imageLevels);
 
         /**
          * @brief Implementation for @ref convertToData(Containers::ArrayView<const CompressedImageView1D>)
          * @m_since_latest
          */
-        virtual Containers::Array<char> doConvertToData(Containers::ArrayView<const CompressedImageView1D> imageLevels);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D> imageLevels);
 
         /**
          * @brief Implementation for @ref convertToData(Containers::ArrayView<const CompressedImageView2D>)
          * @m_since_latest
          */
-        virtual Containers::Array<char> doConvertToData(Containers::ArrayView<const CompressedImageView2D> imageLevels);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D> imageLevels);
 
         /**
          * @brief Implementation for @ref convertToData(Containers::ArrayView<const CompressedImageView3D>)
          * @m_since_latest
          */
-        virtual Containers::Array<char> doConvertToData(Containers::ArrayView<const CompressedImageView3D> imageLevels);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D> imageLevels);
 
         ImageConverterFlags _flags;
 };

@@ -61,7 +61,7 @@ using namespace Containers::Literals;
 Containers::StringView AbstractConverter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.ShaderTools.AbstractConverter/0.1"_s
+"cz.mosra.magnum.ShaderTools.AbstractConverter/0.1.1"_s
 /* [interface] */
     ;
 }
@@ -272,18 +272,29 @@ std::pair<bool, Containers::String> AbstractConverter::doValidateFile(const Stag
     }
 }
 
-Containers::Array<char> AbstractConverter::convertDataToData(const Stage stage, const Containers::ArrayView<const void> data) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::OptionalButAlsoArray<char>
+#endif
+AbstractConverter::convertDataToData(const Stage stage, const Containers::ArrayView<const void> data) {
     CORRADE_ASSERT(features() >= ConverterFeature::ConvertData,
         "ShaderTools::AbstractConverter::convertDataToData(): feature not supported", {});
 
     /* Cast to a non-void type for more convenience */
-    Containers::Array<char> out = doConvertDataToData(stage, Containers::arrayCast<const char>(data));
-    CORRADE_ASSERT(!out.deleter(),
+    Containers::Optional<Containers::Array<char>> out = doConvertDataToData(stage, Containers::arrayCast<const char>(data));
+    CORRADE_ASSERT(!out || !out->deleter(),
         "ShaderTools::AbstractConverter::convertDataToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::OptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractConverter::doConvertDataToData(Stage, Containers::ArrayView<const char>) {
+Containers::Optional<Containers::Array<char>> AbstractConverter::doConvertDataToData(Stage, Containers::ArrayView<const char>) {
     CORRADE_ASSERT_UNREACHABLE("ShaderTools::AbstractConverter::convertDataToData(): feature advertised but not implemented", {});
 }
 
@@ -294,10 +305,10 @@ bool AbstractConverter::convertDataToFile(const Stage stage, const Containers::A
     /** @todo this needs expansion once output callbacks are supported as well */
 
     /* Cast to a non-void type for more convenience */
-    const Containers::Array<char> out = doConvertDataToData(stage, Containers::arrayCast<const char>(data));
+    const Containers::Optional<Containers::Array<char>> out = doConvertDataToData(stage, Containers::arrayCast<const char>(data));
     if(!out) return false;
 
-    if(!Utility::Path::write(filename, out)) {
+    if(!Utility::Path::write(filename, *out)) {
         Error{} << "ShaderTools::AbstractConverter::convertDataToFile(): cannot write to file" << filename;
         return false;
     }
@@ -305,13 +316,13 @@ bool AbstractConverter::convertDataToFile(const Stage stage, const Containers::A
     return true;
 }
 
-Containers::Array<char> AbstractConverter::convertDataToDataUsingInputFileCallbacks(const char* const prefix, const Stage stage, const Containers::StringView filename) {
+Containers::Optional<Containers::Array<char>> AbstractConverter::convertDataToDataUsingInputFileCallbacks(const char* const prefix, const Stage stage, const Containers::StringView filename) {
     const Containers::Optional<Containers::ArrayView<const char>> data = _inputFileCallback(filename, InputFileCallbackPolicy::LoadTemporary, _inputFileCallbackUserData);
     if(!data) {
         Error{} << prefix << "cannot open file" << filename;
         return {};
     }
-    Containers::Array<char> out = doConvertDataToData(stage, *data);
+    Containers::Optional<Containers::Array<char>> out = doConvertDataToData(stage, *data);
     _inputFileCallback(filename, InputFileCallbackPolicy::Close, _inputFileCallbackUserData);
     return out;
 }
@@ -341,10 +352,10 @@ bool AbstractConverter::convertFileToFile(const Stage stage, const Containers::S
               actual file loading to the default implementation (callback used
               in the base doConvertFileToFile() implementation, because this
               branch is never taken in that case) */
-        const Containers::Array<char> out = convertDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::convertFileToFile():", stage, from);
+        const Containers::Optional<Containers::Array<char>> out = convertDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::convertFileToFile():", stage, from);
         if(!out) return false;
 
-        if(!Utility::Path::write(to, out)) {
+        if(!Utility::Path::write(to, *out)) {
             Error{} << "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file" << to;
             return false;
         }
@@ -359,7 +370,7 @@ bool AbstractConverter::doConvertFileToFile(const Stage stage, const Containers:
     CORRADE_ASSERT(features() >= ConverterFeature::ConvertData, "ShaderTools::AbstractConverter::convertFileToFile(): feature advertised but not implemented", {});
 
     /** @todo this needs expansion once output callbacks are supported as well */
-    Containers::Array<char> out;
+    Containers::Optional<Containers::Array<char>> out;
 
     /* If callbacks are set, use them. This is the same implementation as in
        convertFileToFile(), see the comment there for details. */
@@ -379,7 +390,7 @@ bool AbstractConverter::doConvertFileToFile(const Stage stage, const Containers:
 
     if(!out) return false;
 
-    if(!Utility::Path::write(to, out)) {
+    if(!Utility::Path::write(to, *out)) {
         Error{} << "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file" << to;
         return false;
     }
@@ -387,11 +398,16 @@ bool AbstractConverter::doConvertFileToFile(const Stage stage, const Containers:
     return true;
 }
 
-Containers::Array<char> AbstractConverter::convertFileToData(const Stage stage, const Containers::StringView filename) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::OptionalButAlsoArray<char>
+#endif
+AbstractConverter::convertFileToData(const Stage stage, const Containers::StringView filename) {
     CORRADE_ASSERT(features() >= ConverterFeature::ConvertData,
         "ShaderTools::AbstractConverter::convertFileToData(): feature not supported", {});
 
-    Containers::Array<char> out;
+    Containers::Optional<Containers::Array<char>> out;
 
     /* If input file callbacks are not set or the converter supports handling
        them directly, call into the implementation */
@@ -415,12 +431,18 @@ Containers::Array<char> AbstractConverter::convertFileToData(const Stage stage, 
         out = convertDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::convertFileToData():", stage, filename);
     }
 
-    CORRADE_ASSERT(!out.deleter(),
+    CORRADE_ASSERT(!out || !out->deleter(),
         "ShaderTools::AbstractConverter::convertFileToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::OptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractConverter::doConvertFileToData(const Stage stage, const Containers::StringView filename) {
+Containers::Optional<Containers::Array<char>> AbstractConverter::doConvertFileToData(const Stage stage, const Containers::StringView filename) {
     /* If callbacks are set, use them. This is the same implementation as in
        convertFileToFile(), see the comment there for details. */
     if(_inputFileCallback) {
@@ -438,7 +460,12 @@ Containers::Array<char> AbstractConverter::doConvertFileToData(const Stage stage
     }
 }
 
-Containers::Array<char> AbstractConverter::linkDataToData(const Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::OptionalButAlsoArray<char>
+#endif
+AbstractConverter::linkDataToData(const Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data) {
     CORRADE_ASSERT(features() >= ConverterFeature::LinkData,
         "ShaderTools::AbstractConverter::linkDataToData(): feature not supported", {});
     CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
@@ -447,17 +474,28 @@ Containers::Array<char> AbstractConverter::linkDataToData(const Containers::Arra
         "ShaderTools::AbstractConverter::linkDataToData(): no data passed", {});
 
     /* Cast to a non-void type for more convenience */
-    Containers::Array<char> out = doLinkDataToData(Containers::arrayCast<const std::pair<Stage, Containers::ArrayView<const char>>>(data));
-    CORRADE_ASSERT(!out.deleter(),
+    Containers::Optional<Containers::Array<char>> out = doLinkDataToData(Containers::arrayCast<const std::pair<Stage, Containers::ArrayView<const char>>>(data));
+    CORRADE_ASSERT(!out || !out->deleter(),
         "ShaderTools::AbstractConverter::linkDataToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::OptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractConverter::linkDataToData(const std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::OptionalButAlsoArray<char>
+#endif
+AbstractConverter::linkDataToData(const std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data) {
     return linkDataToData(Containers::arrayView(data));
 }
 
-Containers::Array<char> AbstractConverter::doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) {
+Containers::Optional<Containers::Array<char>> AbstractConverter::doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) {
     CORRADE_ASSERT_UNREACHABLE("ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented", {});
 }
 
@@ -472,10 +510,10 @@ bool AbstractConverter::linkDataToFile(const Containers::ArrayView<const std::pa
     /** @todo this needs expansion once output callbacks are supported as well */
 
     /* Cast to a non-void type for more convenience */
-    const Containers::Array<char> out = doLinkDataToData(Containers::arrayCast<const std::pair<Stage, Containers::ArrayView<const char>>>(data));
+    const Containers::Optional<Containers::Array<char>> out = doLinkDataToData(Containers::arrayCast<const std::pair<Stage, Containers::ArrayView<const char>>>(data));
     if(!out) return false;
 
-    if(!Utility::Path::write(filename, out)) {
+    if(!Utility::Path::write(filename, *out)) {
         Error{} << "ShaderTools::AbstractConverter::linkDataToFile(): cannot write to file" << filename;
         return false;
     }
@@ -487,7 +525,7 @@ bool AbstractConverter::linkDataToFile(const std::initializer_list<std::pair<Sta
     return linkDataToFile(Containers::arrayView(data), filename);
 }
 
-Containers::Array<char> AbstractConverter::linkDataToDataUsingInputFileCallbacks(const char* const prefix, const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames) {
+Containers::Optional<Containers::Array<char>> AbstractConverter::linkDataToDataUsingInputFileCallbacks(const char* const prefix, const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames) {
     Containers::Array<std::pair<Stage, Containers::ArrayView<const char>>> data{NoInit, filenames.size()};
 
     /* First load all files. Remember how many of these succeeded so we can
@@ -502,7 +540,7 @@ Containers::Array<char> AbstractConverter::linkDataToDataUsingInputFileCallbacks
     }
 
     /* If all input files loaded successfully, process */
-    Containers::Array<char> out;
+    Containers::Optional<Containers::Array<char>> out;
     if(i == filenames.size()) out = doLinkDataToData(data);
 
     /* Close again all input files that loaded successfully */
@@ -551,10 +589,10 @@ bool AbstractConverter::linkFilesToFile(const Containers::ArrayView<const std::p
               actual file loading to the default implementation (callback used
               in the base doLinkFilesToFile() implementation, because this
               branch is never taken in that case) */
-        const Containers::Array<char> out = linkDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::linkFilesToFile():", from);
+        const Containers::Optional<Containers::Array<char>> out = linkDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::linkFilesToFile():", from);
         if(!out) return false;
 
-        if(!Utility::Path::write(to, out)) {
+        if(!Utility::Path::write(to, *out)) {
             Error{} << "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file" << to;
             return false;
         }
@@ -573,7 +611,7 @@ bool AbstractConverter::doLinkFilesToFile(const Containers::ArrayView<const std:
     CORRADE_ASSERT(features() >= ConverterFeature::LinkData, "ShaderTools::AbstractConverter::linkFilesToFile(): feature advertised but not implemented", {});
 
     /** @todo this needs expansion once output callbacks are supported as well */
-    Containers::Array<char> out;
+    Containers::Optional<Containers::Array<char>> out;
 
     /* If callbacks are set, use them. This is the same implementation as in
        convertFileToFile(), see the comment there for details. */
@@ -606,7 +644,7 @@ bool AbstractConverter::doLinkFilesToFile(const Containers::ArrayView<const std:
 
     if(!out) return false;
 
-    if(!Utility::Path::write(to, out)) {
+    if(!Utility::Path::write(to, *out)) {
         Error{} << "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file" << to;
         return false;
     }
@@ -614,7 +652,12 @@ bool AbstractConverter::doLinkFilesToFile(const Containers::ArrayView<const std:
     return true;
 }
 
-Containers::Array<char> AbstractConverter::linkFilesToData(const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::OptionalButAlsoArray<char>
+#endif
+AbstractConverter::linkFilesToData(const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames) {
     CORRADE_ASSERT(features() >= ConverterFeature::LinkData,
         "ShaderTools::AbstractConverter::linkFilesToData(): feature not supported", {});
     CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
@@ -622,7 +665,7 @@ Containers::Array<char> AbstractConverter::linkFilesToData(const Containers::Arr
     CORRADE_ASSERT(!filenames.isEmpty(),
         "ShaderTools::AbstractConverter::linkFilesToData(): no files passed", {});
 
-    Containers::Array<char> out;
+    Containers::Optional<Containers::Array<char>> out;
 
     /* If input file callbacks are not set or the converter supports handling
        them directly, call into the implementation */
@@ -646,16 +689,27 @@ Containers::Array<char> AbstractConverter::linkFilesToData(const Containers::Arr
         out = linkDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::linkFilesToData():", filenames);
     }
 
-    CORRADE_ASSERT(!out.deleter(),
+    CORRADE_ASSERT(!out || !out->deleter(),
         "ShaderTools::AbstractConverter::linkFilesToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::OptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractConverter::linkFilesToData(const std::initializer_list<std::pair<Stage, Containers::StringView>> filenames) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::OptionalButAlsoArray<char>
+#endif
+AbstractConverter::linkFilesToData(const std::initializer_list<std::pair<Stage, Containers::StringView>> filenames) {
     return linkFilesToData(Containers::arrayView(filenames));
 }
 
-Containers::Array<char> AbstractConverter::doLinkFilesToData(const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames) {
+Containers::Optional<Containers::Array<char>> AbstractConverter::doLinkFilesToData(const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames) {
     /* If callbacks are set, use them. This is the same implementation as in
        linkFilesToFile(), see the comment there for details. */
     if(_inputFileCallback) {

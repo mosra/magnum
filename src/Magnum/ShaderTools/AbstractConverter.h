@@ -38,6 +38,9 @@
 #include "Magnum/ShaderTools/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+/* For *ToData() APIs that used to return just an Array before */
+#include <Corrade/Containers/Optional.h>
+
 #include "Magnum/ShaderTools/Stage.h"
 #endif
 
@@ -268,6 +271,23 @@ enum class Format: UnsignedInt {
 @m_since_latest
 */
 MAGNUM_SHADERTOOLS_EXPORT Debug& operator<<(Debug& debug, Format value);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+namespace Implementation {
+    /* Could be a concrete type as it's always only char, but that would mean
+       I'd need to include Optional and Array here. There's a copy of this
+       class for Trade::AbstractSceneConverter and AbstractImageConverter as
+       introducing a common header containing just deprecated functionality
+       seems silly. */
+    template<class T> struct OptionalButAlsoArray: Containers::Optional<Containers::Array<T>> {
+        /*implicit*/ OptionalButAlsoArray() = default;
+        /*implicit*/ OptionalButAlsoArray(Containers::Optional<Containers::Array<T>>&& optional): Containers::Optional<Containers::Array<T>>{std::move(optional)} {}
+        CORRADE_DEPRECATED("use Containers::Optional<Containers::Array<T>> instead") /*implicit*/ operator Containers::Array<T>() && {
+            return *this ? Containers::Array<T>{std::move(**this)} : nullptr;
+        }
+    };
+}
+#endif
 
 /**
 @brief Base for shader converter plugins
@@ -790,7 +810,12 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @see @ref features(), @ref convertDataToFile(),
          *      @ref convertFileToData(), @ref convertFileToFile()
          */
-        Containers::Array<char> convertDataToData(Stage stage, Containers::ArrayView<const void> data);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::OptionalButAlsoArray<char>
+        #endif
+        convertDataToData(Stage stage, Containers::ArrayView<const void> data);
 
         /**
          * @brief Convert shader data to a file
@@ -823,26 +848,41 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * Available only if @ref ConverterFeature::ConvertData is supported.
          * On failure prints a message to @relativeref{Magnum,Error} and
-         * returns @cpp nullptr @ce.
+         * returns @ref Containers::NullOpt.
          * @see @ref features(), @ref convertFileToFile(),
          *      @ref convertDataToFile(), @ref convertDataToData()
          */
-        Containers::Array<char> convertFileToData(Stage stage, Containers::StringView filename);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::OptionalButAlsoArray<char>
+        #endif
+        convertFileToData(Stage stage, Containers::StringView filename);
 
         /**
          * @brief Link shader data together to a data
          *
          * Available only if @ref ConverterFeature::LinkData is supported. On
          * failure prints a message to @relativeref{Magnum,Error} and returns
-         * @cpp nullptr @ce. Can't be called if
+         * @ref Containers::NullOpt. Can't be called if
          * @ref ConverterFlag::PreprocessOnly is set --- in that case
          * @ref convertDataToData() has to be used instead.
          * @see @ref features() @ref linkDataToFile(), @ref linkFilesToFile()
          */
-        Containers::Array<char> linkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::OptionalButAlsoArray<char>
+        #endif
+        linkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data);
 
         /** @overload */
-        Containers::Array<char> linkDataToData(std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::OptionalButAlsoArray<char>
+        #endif
+        linkDataToData(std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data);
 
         /**
          * @brief Link shader data together to a file
@@ -884,16 +924,26 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * Available only if @ref ConverterFeature::LinkData is supported. On
          * failure prints a message to @relativeref{Magnum,Error} and returns
-         * @cpp nullptr @ce. Can't be called if
+         * @ref Containers::NullOpt. Can't be called if
          * @ref ConverterFlag::PreprocessOnly is set --- in that case
          * @ref convertFileToData() has to be used instead.
          * @see @ref features(), @ref linkFilesToFile(), @ref linkDataToFile(),
          *      @ref linkDataToData()
          */
-        Containers::Array<char> linkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::OptionalButAlsoArray<char>
+        #endif
+        linkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
 
         /** @overload */
-        Containers::Array<char> linkFilesToData(std::initializer_list<std::pair<Stage, Containers::StringView>> filenames);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::OptionalButAlsoArray<char>
+        #endif
+        linkFilesToData(std::initializer_list<std::pair<Stage, Containers::StringView>> filenames);
 
     protected:
         /**
@@ -945,7 +995,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * is not supported --- instead, file is loaded though the callback and
          * data passed through to @ref doConvertDataToData().
          */
-        virtual Containers::Array<char> doConvertFileToData(Stage stage, Containers::StringView filename);
+        virtual Containers::Optional<Containers::Array<char>> doConvertFileToData(Stage stage, Containers::StringView filename);
 
         /**
          * @brief Implementation for @ref linkFilesToFile()
@@ -979,7 +1029,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * is not supported --- instead, file is loaded though the callback and
          * data passed through to @ref doConvertDataToData().
          */
-        virtual Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
+        virtual Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
 
     private:
         /**
@@ -1090,7 +1140,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
 
         /* Used by convertFileToFile(), doConvertFileToFile(),
            convertFileToData() and doConvertFileToData() */
-        MAGNUM_SHADERTOOLS_LOCAL Containers::Array<char> convertDataToDataUsingInputFileCallbacks(const char* prefix, const Stage stage, Containers::StringView filename);
+        MAGNUM_SHADERTOOLS_LOCAL Containers::Optional<Containers::Array<char>> convertDataToDataUsingInputFileCallbacks(const char* prefix, const Stage stage, Containers::StringView filename);
 
         /**
          * @brief Implementation for @ref convertDataToData()
@@ -1100,11 +1150,11 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * in order to accept any type, this function gets it cast to
          * @cpp char @ce for more convenience.
          */
-        virtual Containers::Array<char> doConvertDataToData(Stage stage, Containers::ArrayView<const char> data);
+        virtual Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage stage, Containers::ArrayView<const char> data);
 
         /* Used by linkFilesToFile(), doLinkFilesToFile(), linkFilesToData()
            and doLinkFilesToData() */
-        MAGNUM_SHADERTOOLS_LOCAL Containers::Array<char> linkDataToDataUsingInputFileCallbacks(const char* prefix, Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
+        MAGNUM_SHADERTOOLS_LOCAL Containers::Optional<Containers::Array<char>> linkDataToDataUsingInputFileCallbacks(const char* prefix, Containers::ArrayView<const std::pair<Stage, Containers::StringView>> filenames);
 
         /**
          * @brief Implementation for @ref linkDataToData()
@@ -1114,7 +1164,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * order to accept any type, this function gets it cast to
          * @cpp char @ce for more convenience.
          */
-        virtual Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data);
+        virtual Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data);
 
         ConverterFlags _flags;
 

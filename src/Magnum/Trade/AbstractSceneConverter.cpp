@@ -65,7 +65,7 @@ using namespace Containers::Literals;
 Containers::StringView AbstractSceneConverter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractSceneConverter/0.1.1"_s
+"cz.mosra.magnum.Trade.AbstractSceneConverter/0.1.2"_s
 /* [interface] */
     ;
 }
@@ -148,17 +148,28 @@ bool AbstractSceneConverter::doConvertInPlace(MeshData&) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::convertInPlace(): mesh conversion advertised but not implemented", {});
 }
 
-Containers::Array<char> AbstractSceneConverter::convertToData(const MeshData& mesh) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::SceneConverterOptionalButAlsoArray<char>
+#endif
+AbstractSceneConverter::convertToData(const MeshData& mesh) {
     CORRADE_ASSERT(features() & SceneConverterFeature::ConvertMeshToData,
         "Trade::AbstractSceneConverter::convertToData(): mesh conversion not supported", {});
 
-    Containers::Array<char> out = doConvertToData(mesh);
-    CORRADE_ASSERT(!out || !out.deleter() || out.deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || out.deleter() == ArrayAllocator<char>::deleter,
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(mesh);
+    CORRADE_ASSERT(!out || !out->deleter() || out->deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || out->deleter() == ArrayAllocator<char>::deleter,
         "Trade::AbstractSceneConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::SceneConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractSceneConverter::doConvertToData(const MeshData&) {
+Containers::Optional<Containers::Array<char>> AbstractSceneConverter::doConvertToData(const MeshData&) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::convertToData(): mesh conversion advertised but not implemented", {});
 }
 
@@ -178,11 +189,11 @@ bool AbstractSceneConverter::convertToFile(const std::string& filename, const Me
 bool AbstractSceneConverter::doConvertToFile(const MeshData& mesh, const Containers::StringView filename) {
     CORRADE_ASSERT(features() >= SceneConverterFeature::ConvertMeshToData, "Trade::AbstractSceneConverter::convertToFile(): mesh conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(mesh);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(mesh);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractSceneConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }

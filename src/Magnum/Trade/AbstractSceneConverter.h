@@ -37,6 +37,9 @@
 #include "Magnum/Trade/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+/* For *ToData() APIs that used to return just an Array before */
+#include <Corrade/Containers/Optional.h>
+
 /* So deprecated APIs taking a std::string don't fail to compile */
 /** @todo remove once they are gone */
 #include <Corrade/Utility/StlForwardString.h>
@@ -134,6 +137,23 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFlag value);
 @m_since{2020,06}
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFlags value);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+namespace Implementation {
+    /* Could be a concrete type as it's always only char, but that would mean
+       I'd need to include Optional and Array here. It's named like this
+       because AbstractImageConverter and ShaderTools::AbstractConverter each
+       have its own and introducing a common header containing just deprecated
+       functionality seems silly. */
+    template<class T> struct SceneConverterOptionalButAlsoArray: Containers::Optional<Containers::Array<T>> {
+        /*implicit*/ SceneConverterOptionalButAlsoArray() = default;
+        /*implicit*/ SceneConverterOptionalButAlsoArray(Containers::Optional<Containers::Array<T>>&& optional): Containers::Optional<Containers::Array<T>>{std::move(optional)} {}
+        CORRADE_DEPRECATED("use Containers::Optional<Containers::Array<T>> instead") /*implicit*/ operator Containers::Array<T>() && {
+            return *this ? Containers::Array<T>{std::move(**this)} : nullptr;
+        }
+    };
+}
+#endif
 
 /**
 @brief Base for scene converter plugins
@@ -380,10 +400,15 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * can be saved to disk. Available only if
          * @ref SceneConverterFeature::ConvertMeshToData is supported. On
          * failure prints a message to @relativeref{Magnum,Error} and returns
-         * @cpp nullptr @ce.
+         * @ref Containers::NullOpt.
          * @see @ref features(), @ref convertToFile()
          */
-        Containers::Array<char> convertToData(const MeshData& mesh);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<Containers::Array<char>>
+        #else
+        Implementation::SceneConverterOptionalButAlsoArray<char>
+        #endif
+        convertToData(const MeshData& mesh);
 
         /**
          * @brief Convert a mesh to a file
@@ -449,7 +474,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         virtual bool doConvertInPlace(MeshData& mesh);
 
         /** @brief Implementation for @ref convertToData(const MeshData&) */
-        virtual Containers::Array<char> doConvertToData(const MeshData& mesh);
+        virtual Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData& mesh);
 
         SceneConverterFlags _flags;
 };

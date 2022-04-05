@@ -396,7 +396,7 @@ void AbstractSceneConverterTest::convertMeshToData() {
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
 
-        Containers::Array<char> doConvertToData(const MeshData& mesh) override {
+        Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData& mesh) override {
             return Containers::Array<char>{nullptr, mesh.vertexCount()};
         }
     } converter;
@@ -428,7 +428,7 @@ void AbstractSceneConverterTest::convertMeshToDataCustomDeleter() {
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
 
-        Containers::Array<char> doConvertToData(const MeshData&) override {
+        Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData&) override {
             return Containers::Array<char>{data, 1, [](char*, std::size_t) {}};
         }
 
@@ -464,7 +464,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughData() {
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
 
-        Containers::Array<char> doConvertToData(const MeshData& mesh) override {
+        Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData& mesh) override {
             return Containers::array({char(mesh.vertexCount())});
         }
     } converter;
@@ -484,7 +484,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataFailed() {
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
 
-        Containers::Array<char> doConvertToData(const MeshData&) override {
+        Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData&) override {
             return {};
         }
     } converter;
@@ -507,7 +507,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable() {
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
 
-        Containers::Array<char> doConvertToData(const MeshData& mesh) override {
+        Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData& mesh) override {
             return Containers::array({char(mesh.vertexCount())});
         }
     } converter;

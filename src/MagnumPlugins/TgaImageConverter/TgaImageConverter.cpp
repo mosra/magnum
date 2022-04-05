@@ -28,6 +28,7 @@
 #include <fstream>
 #include <tuple>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Endianness.h>
 
@@ -45,7 +46,7 @@ TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, co
 
 ImageConverterFeatures TgaImageConverter::doFeatures() const { return ImageConverterFeature::Convert2DToData; }
 
-Containers::Array<char> TgaImageConverter::doConvertToData(const ImageView2D& image) {
+Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData(const ImageView2D& image) {
     /* Initialize data buffer */
     const auto pixelSize = UnsignedByte(image.pixelSize());
     Containers::Array<char> data{ValueInit, sizeof(Implementation::TgaHeader) + pixelSize*image.size().product()};
@@ -62,7 +63,7 @@ Containers::Array<char> TgaImageConverter::doConvertToData(const ImageView2D& im
             break;
         default:
             Error() << "Trade::TgaImageConverter::convertToData(): unsupported pixel format" << image.format();
-            return nullptr;
+            return {};
     }
     header->bpp = pixelSize*8;
     header->width = UnsignedShort(Utility::Endianness::littleEndian(image.size().x()));
@@ -85,10 +86,11 @@ Containers::Array<char> TgaImageConverter::doConvertToData(const ImageView2D& im
             pixel = Math::gather<'b', 'g', 'r', 'a'>(pixel);
     }
 
-    return data;
+    /* GCC 4.8 and Clang 3.8 needs extra help here */
+    return Containers::optional(std::move(data));
 }
 
 }}
 
 CORRADE_PLUGIN_REGISTER(TgaImageConverter, Magnum::Trade::TgaImageConverter,
-    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3.1")
+    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3.2")

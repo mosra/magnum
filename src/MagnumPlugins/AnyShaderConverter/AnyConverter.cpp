@@ -26,6 +26,7 @@
 #include "AnyConverter.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
@@ -375,7 +376,7 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
     return converter->convertFileToFile(stage, from, to);
 }
 
-Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, const Containers::StringView filename) {
+Containers::Optional<Containers::Array<char>> AnyConverter::doConvertFileToData(const Stage stage, const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
     /* Prefer the explicitly set input format. If not set, fall back to
@@ -460,7 +461,7 @@ Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, con
     return converter->convertFileToData(stage, filename);
 }
 
-Containers::Array<char> AnyConverter::doConvertDataToData(const Stage stage, const Containers::ArrayView<const char> from) {
+Containers::Optional<Containers::Array<char>> AnyConverter::doConvertDataToData(const Stage stage, const Containers::ArrayView<const char> from) {
     CORRADE_INTERNAL_ASSERT(manager());
 
     /* Decide on a plugin name based on the format. This might result in
@@ -546,4 +547,4 @@ Containers::Array<char> AnyConverter::doConvertDataToData(const Stage stage, con
 }}
 
 CORRADE_PLUGIN_REGISTER(AnyShaderConverter, Magnum::ShaderTools::AnyConverter,
-    "cz.mosra.magnum.ShaderTools.AbstractConverter/0.1")
+    "cz.mosra.magnum.ShaderTools.AbstractConverter/0.1.1")

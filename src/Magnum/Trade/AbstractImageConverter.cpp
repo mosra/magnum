@@ -65,7 +65,7 @@ using namespace Containers::Literals;
 Containers::StringView AbstractImageConverter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractImageConverter/0.3.1"_s
+"cz.mosra.magnum.Trade.AbstractImageConverter/0.3.2"_s
 /* [interface] */
     ;
 }
@@ -290,9 +290,14 @@ template<UnsignedInt dimensions, template<UnsignedInt, class> class View> bool c
 }
 #endif
 
-Containers::Array<char> AbstractImageConverter::convertToData(const ImageView1D& image) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const ImageView1D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::Convert1DToData,
-        "Trade::AbstractImageConverter::convertToData(): 1D image conversion not supported", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): 1D image conversion not supported", {});
 
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
@@ -300,21 +305,32 @@ Containers::Array<char> AbstractImageConverter::convertToData(const ImageView1D&
         return {};
     #endif
 
-    Containers::Array<char> out = doConvertToData(image);
-    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(image);
+    CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(const ImageView1D& image) {
+Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertToData(const ImageView1D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels1DToData,
-        "Trade::AbstractImageConverter::convertToData(): 1D image conversion advertised but not implemented", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): 1D image conversion advertised but not implemented", {});
 
     return doConvertToData(Containers::arrayView({image}));
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const ImageView2D& image) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const ImageView2D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::Convert2DToData,
-        "Trade::AbstractImageConverter::convertToData(): 2D image conversion not supported", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): 2D image conversion not supported", {});
 
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
@@ -322,14 +338,20 @@ Containers::Array<char> AbstractImageConverter::convertToData(const ImageView2D&
         return {};
     #endif
 
-    Containers::Array<char> out = doConvertToData(image);
-    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(image);
+    CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(const ImageView2D& image) {
+Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertToData(const ImageView2D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels2DToData,
-        "Trade::AbstractImageConverter::convertToData(): 2D image conversion advertised but not implemented", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): 2D image conversion advertised but not implemented", {});
 
     return doConvertToData(Containers::arrayView({image}));
 }
@@ -340,9 +362,14 @@ Containers::Array<char> AbstractImageConverter::exportToData(const ImageView2D& 
 }
 #endif
 
-Containers::Array<char> AbstractImageConverter::convertToData(const ImageView3D& image) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const ImageView3D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::Convert3DToData,
-        "Trade::AbstractImageConverter::convertToData(): 3D image conversion not supported", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): 3D image conversion not supported", {});
 
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
@@ -350,21 +377,32 @@ Containers::Array<char> AbstractImageConverter::convertToData(const ImageView3D&
         return {};
     #endif
 
-    Containers::Array<char> out = doConvertToData(image);
-    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(image);
+    CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(const ImageView3D& image) {
+Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertToData(const ImageView3D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels3DToData,
-        "Trade::AbstractImageConverter::convertToData(): 3D image conversion advertised but not implemented", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): 3D image conversion advertised but not implemented", {});
 
     return doConvertToData(Containers::arrayView({image}));
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const CompressedImageView1D& image) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const CompressedImageView1D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressed1DToData,
-        "Trade::AbstractImageConverter::convertToData(): compressed 1D image conversion not supported", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): compressed 1D image conversion not supported", {});
 
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
@@ -372,21 +410,32 @@ Containers::Array<char> AbstractImageConverter::convertToData(const CompressedIm
         return {};
     #endif
 
-    Containers::Array<char> out = doConvertToData(image);
-    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(image);
+    CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(const CompressedImageView1D& image) {
+Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertToData(const CompressedImageView1D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels1DToData,
-        "Trade::AbstractImageConverter::convertToData(): compressed 1D image conversion advertised but not implemented", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): compressed 1D image conversion advertised but not implemented", {});
 
     return doConvertToData(Containers::arrayView({image}));
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const CompressedImageView2D& image) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const CompressedImageView2D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressed2DToData,
-        "Trade::AbstractImageConverter::convertToData(): compressed 2D image conversion not supported", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): compressed 2D image conversion not supported", {});
 
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
@@ -394,14 +443,20 @@ Containers::Array<char> AbstractImageConverter::convertToData(const CompressedIm
         return {};
     #endif
 
-    Containers::Array<char> out = doConvertToData(image);
-    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(image);
+    CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(const CompressedImageView2D& image) {
+Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertToData(const CompressedImageView2D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels2DToData,
-        "Trade::AbstractImageConverter::convertToData(): compressed 2D image conversion advertised but not implemented", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): compressed 2D image conversion advertised but not implemented", {});
 
     return doConvertToData(Containers::arrayView({image}));
 }
@@ -412,9 +467,14 @@ Containers::Array<char> AbstractImageConverter::exportToData(const CompressedIma
 }
 #endif
 
-Containers::Array<char> AbstractImageConverter::convertToData(const CompressedImageView3D& image) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const CompressedImageView3D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressed3DToData,
-        "Trade::AbstractImageConverter::convertToData(): compressed 3D image conversion not supported", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): compressed 3D image conversion not supported", {});
 
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
@@ -422,23 +482,39 @@ Containers::Array<char> AbstractImageConverter::convertToData(const CompressedIm
         return {};
     #endif
 
-    Containers::Array<char> out = doConvertToData(image);
-    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(image);
+    CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(const CompressedImageView3D& image) {
+Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertToData(const CompressedImageView3D& image) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels3DToData,
-        "Trade::AbstractImageConverter::convertToData(): compressed 3D image conversion advertised but not implemented", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): compressed 3D image conversion advertised but not implemented", {});
 
     return doConvertToData(Containers::arrayView({image}));
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const ImageData1D& image) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const ImageData1D& image) {
     return image.isCompressed() ? convertToData(CompressedImageView1D(image)) : convertToData(ImageView1D(image));
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const ImageData2D& image) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const ImageData2D& image) {
     return image.isCompressed() ? convertToData(CompressedImageView2D(image)) : convertToData(ImageView2D(image));
 }
 
@@ -448,7 +524,12 @@ Containers::Array<char> AbstractImageConverter::exportToData(const ImageData2D& 
 }
 #endif
 
-Containers::Array<char> AbstractImageConverter::convertToData(const ImageData3D& image) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const ImageData3D& image) {
     return image.isCompressed() ? convertToData(CompressedImageView3D(image)) : convertToData(ImageView3D(image));
 }
 
@@ -501,9 +582,14 @@ template<UnsignedInt dimensions> bool checkImageValidity(const char* const messa
 }
 #endif
 
-Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageView1D> imageLevels) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageView1D> imageLevels) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels1DToData,
-        "Trade::AbstractImageConverter::convertToData(): multi-level 1D image conversion not supported", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): multi-level 1D image conversion not supported", {});
 
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
@@ -511,22 +597,38 @@ Containers::Array<char> AbstractImageConverter::convertToData(const Containers::
         return {};
     #endif
 
-    Containers::Array<char> out = doConvertToData(imageLevels);
-    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(imageLevels);
+    CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const std::initializer_list<ImageView1D> imageLevels) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const std::initializer_list<ImageView1D> imageLevels) {
     return convertToData(Containers::arrayView(imageLevels));
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::ArrayView<const ImageView1D>) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level 1D image conversion advertised but not implemented", nullptr);
+Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertToData(Containers::ArrayView<const ImageView1D>) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level 1D image conversion advertised but not implemented", {});
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageView2D> imageLevels) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageView2D> imageLevels) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels2DToData,
-        "Trade::AbstractImageConverter::convertToData(): multi-level 2D image conversion not supported", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): multi-level 2D image conversion not supported", {});
 
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
@@ -534,22 +636,38 @@ Containers::Array<char> AbstractImageConverter::convertToData(const Containers::
         return {};
     #endif
 
-    Containers::Array<char> out = doConvertToData(imageLevels);
-    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(imageLevels);
+    CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const std::initializer_list<ImageView2D> imageLevels) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const std::initializer_list<ImageView2D> imageLevels) {
     return convertToData(Containers::arrayView(imageLevels));
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::ArrayView<const ImageView2D>) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level 2D image conversion advertised but not implemented", nullptr);
+Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertToData(Containers::ArrayView<const ImageView2D>) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level 2D image conversion advertised but not implemented", {});
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageView3D> imageLevels) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageView3D> imageLevels) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels3DToData,
-        "Trade::AbstractImageConverter::convertToData(): multi-level 3D image conversion not supported", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): multi-level 3D image conversion not supported", {});
 
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
@@ -557,22 +675,38 @@ Containers::Array<char> AbstractImageConverter::convertToData(const Containers::
         return {};
     #endif
 
-    Containers::Array<char> out = doConvertToData(imageLevels);
-    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(imageLevels);
+    CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const std::initializer_list<ImageView3D> imageLevels) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const std::initializer_list<ImageView3D> imageLevels) {
     return convertToData(Containers::arrayView(imageLevels));
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::ArrayView<const ImageView3D>) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level 3D image conversion advertised but not implemented", nullptr);
+Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertToData(Containers::ArrayView<const ImageView3D>) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level 3D image conversion advertised but not implemented", {});
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const CompressedImageView1D> imageLevels) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const Containers::ArrayView<const CompressedImageView1D> imageLevels) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels1DToData,
-        "Trade::AbstractImageConverter::convertToData(): multi-level compressed 1D image conversion not supported", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): multi-level compressed 1D image conversion not supported", {});
 
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
@@ -580,22 +714,38 @@ Containers::Array<char> AbstractImageConverter::convertToData(const Containers::
         return {};
     #endif
 
-    Containers::Array<char> out = doConvertToData(imageLevels);
-    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(imageLevels);
+    CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const std::initializer_list<CompressedImageView1D> imageLevels) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const std::initializer_list<CompressedImageView1D> imageLevels) {
     return convertToData(Containers::arrayView(imageLevels));
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::ArrayView<const CompressedImageView1D>) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level compressed 1D image conversion advertised but not implemented", nullptr);
+Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertToData(Containers::ArrayView<const CompressedImageView1D>) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level compressed 1D image conversion advertised but not implemented", {});
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const CompressedImageView2D> imageLevels) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const Containers::ArrayView<const CompressedImageView2D> imageLevels) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels2DToData,
-        "Trade::AbstractImageConverter::convertToData(): multi-level compressed 2D image conversion not supported", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): multi-level compressed 2D image conversion not supported", {});
 
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
@@ -603,22 +753,38 @@ Containers::Array<char> AbstractImageConverter::convertToData(const Containers::
         return {};
     #endif
 
-    Containers::Array<char> out = doConvertToData(imageLevels);
-    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(imageLevels);
+    CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const std::initializer_list<CompressedImageView2D> imageLevels) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const std::initializer_list<CompressedImageView2D> imageLevels) {
     return convertToData(Containers::arrayView(imageLevels));
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::ArrayView<const CompressedImageView2D>) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level compressed 2D image conversion advertised but not implemented", nullptr);
+Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertToData(Containers::ArrayView<const CompressedImageView2D>) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level compressed 2D image conversion advertised but not implemented", {});
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const Containers::ArrayView<const CompressedImageView3D> imageLevels) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const Containers::ArrayView<const CompressedImageView3D> imageLevels) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels3DToData,
-        "Trade::AbstractImageConverter::convertToData(): multi-level compressed 3D image conversion not supported", nullptr);
+        "Trade::AbstractImageConverter::convertToData(): multi-level compressed 3D image conversion not supported", {});
 
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds */
@@ -626,17 +792,28 @@ Containers::Array<char> AbstractImageConverter::convertToData(const Containers::
         return {};
     #endif
 
-    Containers::Array<char> out = doConvertToData(imageLevels);
-    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+    Containers::Optional<Containers::Array<char>> out = doConvertToData(imageLevels);
+    CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
+
+    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    #else
     return out;
+    #endif
 }
 
-Containers::Array<char> AbstractImageConverter::convertToData(const std::initializer_list<CompressedImageView3D> imageLevels) {
+#ifndef MAGNUM_BUILD_DEPRECATED
+Containers::Optional<Containers::Array<char>>
+#else
+Implementation::ImageConverterOptionalButAlsoArray<char>
+#endif
+AbstractImageConverter::convertToData(const std::initializer_list<CompressedImageView3D> imageLevels) {
     return convertToData(Containers::arrayView(imageLevels));
 }
 
-Containers::Array<char> AbstractImageConverter::doConvertToData(Containers::ArrayView<const CompressedImageView3D>) {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level compressed 3D image conversion advertised but not implemented", nullptr);
+Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertToData(Containers::ArrayView<const CompressedImageView3D>) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImageConverter::convertToData(): multi-level compressed 3D image conversion advertised but not implemented", {});
 }
 
 bool AbstractImageConverter::convertToFile(const ImageView1D& image, const Containers::StringView filename) {
@@ -661,11 +838,11 @@ bool AbstractImageConverter::doConvertToFile(const ImageView1D& image, const Con
 
     CORRADE_ASSERT(features() >= ImageConverterFeature::Convert1DToData, "Trade::AbstractImageConverter::convertToFile(): 1D image conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(image);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(image);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -695,11 +872,11 @@ bool AbstractImageConverter::doConvertToFile(const ImageView2D& image, const Con
 
     CORRADE_ASSERT(features() >= ImageConverterFeature::Convert2DToData, "Trade::AbstractImageConverter::convertToFile(): 2D image conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(image);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(image);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -735,11 +912,11 @@ bool AbstractImageConverter::doConvertToFile(const ImageView3D& image, const Con
 
     CORRADE_ASSERT(features() >= ImageConverterFeature::Convert3DToData, "Trade::AbstractImageConverter::convertToFile(): 3D image conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(image);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(image);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -769,11 +946,11 @@ bool AbstractImageConverter::doConvertToFile(const CompressedImageView1D& image,
 
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressed1DToData, "Trade::AbstractImageConverter::convertToFile(): compressed 1D image conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(image);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(image);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -803,11 +980,11 @@ bool AbstractImageConverter::doConvertToFile(const CompressedImageView2D& image,
 
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressed2DToData, "Trade::AbstractImageConverter::convertToFile(): compressed 2D image conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(image);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(image);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -843,11 +1020,11 @@ bool AbstractImageConverter::doConvertToFile(const CompressedImageView3D& image,
 
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressed3DToData, "Trade::AbstractImageConverter::convertToFile(): compressed 3D image conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(image);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(image);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -893,11 +1070,11 @@ bool AbstractImageConverter::convertToFile(const std::initializer_list<ImageView
 bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const ImageView1D> imageLevels, const Containers::StringView filename) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels1DToData, "Trade::AbstractImageConverter::convertToFile(): multi-level 1D image conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(imageLevels);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(imageLevels);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -925,11 +1102,11 @@ bool AbstractImageConverter::convertToFile(const std::initializer_list<ImageView
 bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const ImageView2D> imageLevels, const Containers::StringView filename) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels2DToData, "Trade::AbstractImageConverter::convertToFile(): multi-level 2D image conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(imageLevels);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(imageLevels);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -957,11 +1134,11 @@ bool AbstractImageConverter::convertToFile(const std::initializer_list<ImageView
 bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const ImageView3D> imageLevels, const Containers::StringView filename) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertLevels3DToData, "Trade::AbstractImageConverter::convertToFile(): multi-level 3D image conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(imageLevels);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(imageLevels);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -989,11 +1166,11 @@ bool AbstractImageConverter::convertToFile(const std::initializer_list<Compresse
 bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const CompressedImageView1D> imageLevels, Containers::StringView filename) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels1DToData, "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 1D image conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(imageLevels);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(imageLevels);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -1021,11 +1198,11 @@ bool AbstractImageConverter::convertToFile(const std::initializer_list<Compresse
 bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const CompressedImageView2D> imageLevels, Containers::StringView filename) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels2DToData, "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 2D image conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(imageLevels);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(imageLevels);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }
@@ -1053,11 +1230,11 @@ bool AbstractImageConverter::convertToFile(const std::initializer_list<Compresse
 bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const CompressedImageView3D> imageLevels, Containers::StringView filename) {
     CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedLevels3DToData, "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 3D image conversion advertised but not implemented", false);
 
-    const auto data = doConvertToData(imageLevels);
+    const Containers::Optional<Containers::Array<char>> data = doConvertToData(imageLevels);
     /* No deleter checks as it doesn't matter here */
     if(!data) return false;
 
-    if(!Utility::Path::write(filename, data)) {
+    if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
         return false;
     }

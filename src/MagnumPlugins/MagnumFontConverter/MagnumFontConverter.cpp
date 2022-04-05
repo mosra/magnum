@@ -28,6 +28,7 @@
 #include <algorithm> /* std::sort() */
 #include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/Path.h>
