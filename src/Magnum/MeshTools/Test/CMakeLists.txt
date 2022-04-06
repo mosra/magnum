@@ -27,6 +27,7 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/MeshTools/Test")
 
+corrade_add_test(MeshToolsBoundingVolumeTest BoundingVolumeTest.cpp LIBRARIES MagnumMeshToolsTestLib MagnumPrimitives)
 corrade_add_test(MeshToolsCombineTest CombineTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsCompressIndicesTest CompressIndicesTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsConcatenateTest ConcatenateTest.cpp LIBRARIES MagnumMeshToolsTestLib)
