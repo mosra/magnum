@@ -48,6 +48,7 @@ struct BoundingVolumeTest: TestSuite::Tester {
 
     void boxAxisAligned();
     void sphereBouncingBubble();
+    void sphereBouncingBubbleNaN();
 
     void benchmarkBoxAxisAligned();
     void benchmarkSphereBouncingBubble();
@@ -55,7 +56,8 @@ struct BoundingVolumeTest: TestSuite::Tester {
 
 BoundingVolumeTest::BoundingVolumeTest() {
     addTests({&BoundingVolumeTest::boxAxisAligned,
-              &BoundingVolumeTest::sphereBouncingBubble});
+              &BoundingVolumeTest::sphereBouncingBubble,
+              &BoundingVolumeTest::sphereBouncingBubbleNaN});
 
     addBenchmarks({&BoundingVolumeTest::benchmarkBoxAxisAligned,
                    &BoundingVolumeTest::benchmarkSphereBouncingBubble}, 150);
@@ -121,32 +123,6 @@ void BoundingVolumeTest::sphereBouncingBubble() {
         CORRADE_COMPARE(sphere.first(), (Vector3{0.0f, 0.0f, 0.0f}));
         CORRADE_COMPARE(sphere.second(), 2.0f);
 
-    /* NaN position -- ignored except for the first */
-    } {
-        const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(Containers::stridedArrayView({
-                Vector3{1.0f, 1.0f, 1.0f},
-                Vector3{Math::Constants<Float>::nan()},
-                Vector3{2.0f, 2.0f, 2.0f}
-            }));
-        CORRADE_COMPARE(sphere.first(), (Vector3{1.5f}));
-        CORRADE_COMPARE(sphere.second(), Vector3{0.5f}.length());
-
-    } {
-        const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(Containers::stridedArrayView({
-                Vector3{Math::Constants<Float>::nan()},
-                Vector3{1.0f, 1.0f, 1.0f},
-                Vector3{2.0f, 2.0f, 2.0f}
-            }));
-        {
-            CORRADE_EXPECT_FAIL("NaN in the first position is not ignored.");
-            CORRADE_COMPARE(sphere.first(), (Vector3{1.5f}));
-            CORRADE_COMPARE(sphere.second(), Vector3{0.5f}.length());
-        }
-        CORRADE_VERIFY(Math::isNan(sphere.first()));
-        CORRADE_COMPARE(sphere.second(), Math::TypeTraits<Float>::epsilon());
-
     /* Icosphere -- original/translated and scaled */
     } {
         const Trade::MeshData sphereMesh = Primitives::icosphereSolid(1);
@@ -194,6 +170,36 @@ void BoundingVolumeTest::sphereBouncingBubble() {
         const Containers::Pair<Vector3, Float> sphere =
             MeshTools::boundingSphereBouncingBubble(cubeMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
         CORRADE_COMPARE(sphere.second(), Constants::sqrt3());
+    }
+}
+
+void BoundingVolumeTest::sphereBouncingBubbleNaN() {
+    /* NaN is ignored except for the first position element */
+    {
+        const Containers::Pair<Vector3, Float> sphere =
+            MeshTools::boundingSphereBouncingBubble(Containers::stridedArrayView({
+                Vector3{1.0f, 1.0f, 1.0f},
+                Vector3{Constants::nan()},
+                Vector3{2.0f, 2.0f, 2.0f},
+                Vector3{Constants::nan()}
+            }));
+        CORRADE_COMPARE(sphere.first(), (Vector3{1.5f}));
+        CORRADE_COMPARE(sphere.second(), Vector3{0.5f}.length());
+
+    } {
+        const Containers::Pair<Vector3, Float> sphere =
+            MeshTools::boundingSphereBouncingBubble(Containers::stridedArrayView({
+                Vector3{Constants::nan()},
+                Vector3{1.0f, 1.0f, 1.0f},
+                Vector3{2.0f, 2.0f, 2.0f}
+            }));
+        {
+            CORRADE_EXPECT_FAIL("NaN in the first position is not ignored.");
+            CORRADE_COMPARE(sphere.first(), (Vector3{1.5f}));
+            CORRADE_COMPARE(sphere.second(), Vector3{0.5f}.length());
+        }
+        CORRADE_VERIFY(Math::isNan(sphere.first()));
+        CORRADE_COMPARE(sphere.second(), Math::TypeTraits<Float>::epsilon());
     }
 }
 
