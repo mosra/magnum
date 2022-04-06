@@ -47,6 +47,8 @@ struct BoundingVolumeTest: TestSuite::Tester {
     explicit BoundingVolumeTest();
 
     void boxAxisAligned();
+    void boxAxisAlignedNaN();
+
     void sphereBouncingBubble();
     void sphereBouncingBubbleNaN();
 
@@ -56,6 +58,7 @@ struct BoundingVolumeTest: TestSuite::Tester {
 
 BoundingVolumeTest::BoundingVolumeTest() {
     addTests({&BoundingVolumeTest::boxAxisAligned,
+              &BoundingVolumeTest::boxAxisAlignedNaN,
               &BoundingVolumeTest::sphereBouncingBubble,
               &BoundingVolumeTest::sphereBouncingBubbleNaN});
 
@@ -73,6 +76,28 @@ void BoundingVolumeTest::boxAxisAligned() {
 
     CORRADE_COMPARE(box.center(), (Vector3{}));
     CORRADE_COMPARE(box.size(), (Vector3{2.0f, cylinderLength + 2.0f, 2.0f}));
+}
+
+void BoundingVolumeTest::boxAxisAlignedNaN() {
+    /* NaNs are skipped (unless it's all NaNs), matching minmax() behaviour */
+    {
+        const Range3D box = MeshTools::boundingBoxAxisAligned(Containers::stridedArrayView({
+                Vector3{Constants::nan()},
+                Vector3{1.0f, 1.0f, 1.0f},
+                Vector3{Constants::nan()},
+                Vector3{2.0f, 2.0f, 2.0f},
+                Vector3{Constants::nan()}
+            }));
+        CORRADE_COMPARE(box.min(), (Vector3{1.0f, 1.0f, 1.0f}));
+        CORRADE_COMPARE(box.max(), (Vector3{2.0f, 2.0f, 2.0f}));
+    } {
+        const Range3D box = MeshTools::boundingBoxAxisAligned(Containers::stridedArrayView({
+                Vector3{Constants::nan()},
+                Vector3{Constants::nan()}
+            }));
+        CORRADE_VERIFY(Math::isNan(box.min()));
+        CORRADE_VERIFY(Math::isNan(box.max()));
+    }
 }
 
 void BoundingVolumeTest::sphereBouncingBubble() {
