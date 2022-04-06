@@ -33,6 +33,7 @@ set(MagnumMeshTools_SRCS
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumMeshTools_GracefulAssert_SRCS
+    BoundingVolume.cpp
     Combine.cpp
     CompressIndices.cpp
     Concatenate.cpp
@@ -47,6 +48,7 @@ set(MagnumMeshTools_GracefulAssert_SRCS
     Transform.cpp)
 
 set(MagnumMeshTools_HEADERS
+    BoundingVolume.h
     Combine.h
     CompressIndices.h
     Concatenate.h
