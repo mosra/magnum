@@ -49,6 +49,7 @@ struct BoundingVolumeTest: TestSuite::Tester {
     void boxAxisAligned();
     void sphereBouncingBubble();
 
+    void benchmarkBoxAxisAligned();
     void benchmarkSphereBouncingBubble();
 };
 
@@ -56,7 +57,8 @@ BoundingVolumeTest::BoundingVolumeTest() {
     addTests({&BoundingVolumeTest::boxAxisAligned,
               &BoundingVolumeTest::sphereBouncingBubble});
 
-    addBenchmarks({&BoundingVolumeTest::benchmarkSphereBouncingBubble}, 150);
+    addBenchmarks({&BoundingVolumeTest::benchmarkBoxAxisAligned,
+                   &BoundingVolumeTest::benchmarkSphereBouncingBubble}, 150);
 }
 
 void BoundingVolumeTest::boxAxisAligned() {
@@ -193,6 +195,21 @@ void BoundingVolumeTest::sphereBouncingBubble() {
             MeshTools::boundingSphereBouncingBubble(cubeMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
         CORRADE_COMPARE(sphere.second(), Constants::sqrt3());
     }
+}
+
+void BoundingVolumeTest::benchmarkBoxAxisAligned() {
+    Containers::Array<Vector3> points{NoInit, 500};
+    for(size_t i = 0; i < points.size(); ++i) {
+        points[i] = Vector3{Float(i)*0.01f};
+    }
+
+    Float r = 0.0f;
+    CORRADE_BENCHMARK(50) {
+        const Range3D box = MeshTools::boundingBoxAxisAligned(points);
+        r += box.size().x();
+    }
+
+    CORRADE_COMPARE_AS(r, 1.0f, TestSuite::Compare::Greater);
 }
 
 void BoundingVolumeTest::benchmarkSphereBouncingBubble() {
