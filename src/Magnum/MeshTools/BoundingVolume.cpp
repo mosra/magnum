@@ -54,7 +54,8 @@ Containers::Pair<Vector3, Float> boundingSphereBouncingBubble(const Containers::
             const Float ds = (p - center).dot();
             if(ds > radiusSquared) {
                 const Float alphaInv = radius/Math::sqrt(ds);
-                const Float alphaSqInv = alphaInv*alphaInv;
+                /* Not using alphaInv*alphaInv since that may lose precision */
+                const Float alphaSqInv = radiusSquared/ds;
                 radius = (1.0f/alphaInv + alphaInv)*0.5f*radius;
                 center = ((1.0f + alphaSqInv)*center + (1.0f - alphaSqInv)*p)*0.5f;
                 radiusSquared = radius*radius;
