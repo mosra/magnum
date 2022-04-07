@@ -626,7 +626,13 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         template<class Callback, class T> void setFileCallback(Callback callback, T& userData);
         #endif
 
-        /** @brief Whether any file is opened */
+        /**
+         * @brief Whether any file is opened
+         *
+         * Returns @cpp true @ce if a file is opened with @ref openData(),
+         * @ref openMemory(), @ref openState() or @ref openFile() and
+         * @ref close() wasn't called yet; @cpp false @ce otherwise.
+         */
         bool isOpened() const { return doIsOpened(); }
 
         /**
@@ -705,7 +711,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * On particular implementations an explicit call to this function may
          * result in freed memory. This call is also done automatically when
-         * the importer gets destructed or when another file is opened.
+         * the importer gets destructed or when another file is opened. If no
+         * file is opened, does nothing. After this function is called,
+         * @ref isOpened() is guaranteed to return @cpp false @ce.
          */
         void close();
 

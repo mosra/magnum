@@ -86,7 +86,7 @@ Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData
             pixel = Math::gather<'b', 'g', 'r', 'a'>(pixel);
     }
 
-    /* GCC 4.8 and Clang 3.8 needs extra help here */
+    /* GCC 4.8 and Clang 3.8 need extra help here */
     return Containers::optional(std::move(data));
 }
 
