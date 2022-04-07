@@ -66,6 +66,8 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
 
     void convertMeshToData();
     void convertMeshToDataNotImplemented();
+    void convertMeshToDataNonOwningDeleter();
+    void convertMeshToDataGrowableDeleter();
     void convertMeshToDataCustomDeleter();
 
     void convertMeshToFile();
@@ -102,6 +104,8 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
 
               &AbstractSceneConverterTest::convertMeshToData,
               &AbstractSceneConverterTest::convertMeshToDataNotImplemented,
+              &AbstractSceneConverterTest::convertMeshToDataNonOwningDeleter,
+              &AbstractSceneConverterTest::convertMeshToDataGrowableDeleter,
               &AbstractSceneConverterTest::convertMeshToDataCustomDeleter,
 
               &AbstractSceneConverterTest::convertMeshToFile,
@@ -419,6 +423,44 @@ void AbstractSceneConverterTest::convertMeshToDataNotImplemented() {
     Error redirectError{&out};
     converter.convertToData(MeshData{MeshPrimitive::Triangles, 6});
     CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::convertToData(): mesh conversion advertised but not implemented\n");
+}
+
+void AbstractSceneConverterTest::convertMeshToDataNonOwningDeleter() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
+
+        Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData&) override {
+            return Containers::Array<char>{data, 5, Implementation::nonOwnedArrayDeleter};
+        }
+
+        char data[5]{'h', 'e', 'l', 'l', 'o'};
+    } converter;
+
+    Containers::Optional<Containers::Array<char>> data = converter.convertToData(MeshData{MeshPrimitive::Triangles, 6});
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE_AS(*data,
+        Containers::arrayView({'h', 'e', 'l', 'l', 'o'}),
+        TestSuite::Compare::Container);
+}
+
+void AbstractSceneConverterTest::convertMeshToDataGrowableDeleter() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
+
+        Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData&) override {
+            Containers::Array<char> out;
+            Containers::arrayAppend<ArrayAllocator>(out, {'h', 'e', 'l', 'l', 'o'});
+
+            /* GCC 4.8 and Clang 3.8 need extra help here */
+            return Containers::optional(std::move(out));
+        }
+    } converter;
+
+    Containers::Optional<Containers::Array<char>> data = converter.convertToData(MeshData{MeshPrimitive::Triangles, 6});
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE_AS(*data,
+        Containers::arrayView({'h', 'e', 'l', 'l', 'o'}),
+        TestSuite::Compare::Container);
 }
 
 void AbstractSceneConverterTest::convertMeshToDataCustomDeleter() {
