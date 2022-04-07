@@ -329,6 +329,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
            header. */
         explicit AbstractSceneConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
 
+        ~AbstractSceneConverter();
+
         /** @brief Features supported by this converter */
         SceneConverterFeatures features() const;
 

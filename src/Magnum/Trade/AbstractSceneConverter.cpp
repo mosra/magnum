@@ -99,6 +99,8 @@ AbstractSceneConverter::AbstractSceneConverter(PluginManager::Manager<AbstractSc
 
 AbstractSceneConverter::AbstractSceneConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): PluginManager::AbstractManagingPlugin<AbstractSceneConverter>{manager, plugin} {}
 
+AbstractSceneConverter::~AbstractSceneConverter() = default;
+
 SceneConverterFeatures AbstractSceneConverter::features() const {
     const SceneConverterFeatures features = doFeatures();
     CORRADE_ASSERT(features, "Trade::AbstractSceneConverter::features(): implementation reported no features", {});
