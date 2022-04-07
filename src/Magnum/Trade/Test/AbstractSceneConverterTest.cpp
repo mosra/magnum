@@ -558,8 +558,9 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xef}, "/some/path/that/does/not/exist"));
+    /* There's an error from Path::write() before */
     CORRADE_COMPARE_AS(out.str(),
-        "Trade::AbstractSceneConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
+        "\nTrade::AbstractSceneConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
 }
 
