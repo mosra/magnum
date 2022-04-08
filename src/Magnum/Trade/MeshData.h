@@ -170,7 +170,8 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MeshAttribute value);
 Returns @cpp true @ce if @p name has a value larger or equal to
 @ref MeshAttribute::Custom, @cpp false @ce otherwise.
 @see @ref meshAttributeCustom(UnsignedShort),
-    @ref meshAttributeCustom(MeshAttribute)
+    @ref meshAttributeCustom(MeshAttribute),
+    @ref AbstractImporter::meshAttributeName()
 */
 constexpr bool isMeshAttributeCustom(MeshAttribute name) {
     return UnsignedShort(name) >= UnsignedShort(MeshAttribute::Custom);
@@ -198,7 +199,7 @@ constexpr MeshAttribute meshAttributeCustom(UnsignedShort id) {
 
 Inverse to @ref meshAttributeCustom(UnsignedShort). Expects that the attribute
 is custom.
-@see @ref isMeshAttributeCustom()
+@see @ref isMeshAttributeCustom(), @ref AbstractImporter::meshAttributeName()
 */
 constexpr UnsignedShort meshAttributeCustom(MeshAttribute name) {
     return CORRADE_CONSTEXPR_ASSERT(isMeshAttributeCustom(name),

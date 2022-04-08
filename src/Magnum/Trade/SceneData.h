@@ -330,7 +330,8 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneField value);
 
 Returns @cpp true @ce if @p name has a value larger or equal to
 @ref SceneField::Custom, @cpp false @ce otherwise.
-@see @ref sceneFieldCustom(UnsignedInt), @ref sceneFieldCustom(SceneField)
+@see @ref sceneFieldCustom(UnsignedInt), @ref sceneFieldCustom(SceneField),
+    @ref AbstractImporter::sceneFieldName()
 */
 constexpr bool isSceneFieldCustom(SceneField name) {
     return UnsignedInt(name) >= UnsignedInt(SceneField::Custom);
@@ -358,7 +359,7 @@ constexpr SceneField sceneFieldCustom(UnsignedInt id) {
 
 Inverse to @ref sceneFieldCustom(UnsignedInt). Expects that the field is
 custom.
-@see @ref isSceneFieldCustom()
+@see @ref isSceneFieldCustom(), @ref AbstractImporter::sceneFieldName()
 */
 constexpr UnsignedInt sceneFieldCustom(SceneField name) {
     return CORRADE_CONSTEXPR_ASSERT(isSceneFieldCustom(name),
