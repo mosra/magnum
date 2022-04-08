@@ -29,11 +29,11 @@ set(CMAKE_FOLDER "Magnum/MeshTools")
 
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
+    BoundingVolume.cpp
     Tipsify.cpp)
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumMeshTools_GracefulAssert_SRCS
-    BoundingVolume.cpp
     Combine.cpp
     CompressIndices.cpp
     Concatenate.cpp
