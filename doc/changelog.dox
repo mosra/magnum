@@ -172,6 +172,10 @@ See also:
 
 @subsubsection changelog-latest-new-meshtools MeshTools library
 
+-   New @ref MeshTools::boundingSphereBouncingBubble() algorithm for
+    calculating a tight bounding sphere for a mesh, along with a trivial
+    @ref MeshTools::boundingBoxAxisAligned() for AABBs (see
+    [mosra/magnum#557](https://github.com/mosra/magnum/pull/557))
 -   Added @ref MeshTools::generateQuadIndices() for quad triangulation
     including non-convex and non-planar quads
 -   New @ref MeshTools::filterOnlyAttributes() and
