@@ -76,7 +76,7 @@ void BoundingVolumeTest::boxAxisAligned() {
     const Range3D box = MeshTools::boundingBoxAxisAligned(
         cylinderMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
 
-    CORRADE_COMPARE(box.center(), (Vector3{}));
+    CORRADE_COMPARE(box.center(), Vector3{});
     CORRADE_COMPARE(box.size(), (Vector3{2.0f, cylinderLength + 2.0f, 2.0f}));
 }
 

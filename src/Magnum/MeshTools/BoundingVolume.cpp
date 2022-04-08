@@ -52,7 +52,7 @@ Containers::Pair<Vector3, Float> boundingSphereBouncingBubble(const Containers::
     Float radius = Math::TypeTraits<Float>::epsilon();
     Float radiusSquared = radius*radius;
 
-    for(int i = 0; i < 2; ++i) {
+    for(Int i = 0; i < 2; ++i) {
         for(const Vector3& p : points) {
             const Float ds = (p - center).dot();
             if(ds > radiusSquared) {
