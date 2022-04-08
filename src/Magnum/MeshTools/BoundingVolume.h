@@ -43,6 +43,9 @@ namespace Magnum { namespace MeshTools {
 @m_since_latest
 
 Same as @ref Math::minmax(const Corrade::Containers::StridedArrayView1D<const T>&).
+@see @ref Math::Intersection::rayRange(),
+    @ref Math::Intersection::rangeFrustum(),
+    @ref Math::Intersection::rangeCone()
 */
 MAGNUM_MESHTOOLS_EXPORT Range3D boundingRange(const Containers::StridedArrayView1D<const Vector3>& positions);
 
@@ -59,7 +62,11 @@ radius is never below @ref Math::TypeTraits::epsilon(), even for empty or
 entirely overlapping lists of points. <em>NaN</em>s are ignored, unless the
 first position is <em>NaN</em> in which case it is propagated. Algorithm used:
 * *Bo Tian --- Bouncing Bubble: A fast algorithm for Minimal Enclosing Ball
-problem, 2012, https://www.grin.com/document/204869*
+problem, 2012, https://www.grin.com/document/204869*.
+@see @ref Math::Intersection::pointSphere(),
+    @ref Math::Intersection::sphereFrustum(),
+    @ref Math::Intersection::sphereCone(),
+    @ref Math::Intersection::sphereConeView()
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Vector3, Float> boundingSphereBouncingBubble(const Containers::StridedArrayView1D<const Vector3>& positions);
 

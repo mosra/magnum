@@ -82,7 +82,8 @@ point @f$ \boldsymbol{p} @f$ intersects with a sphere of a center
     \end{array}
 @f]
 
-@see @ref Distance::pointPointSquared(), @ref Vector::dot(), @ref pow(T)
+@see @ref Distance::pointPointSquared(), @ref Vector::dot(), @ref pow(T),
+    @see @ref MeshTools::boundingSphereBouncingBubble()
 */
 template<class T> inline bool pointSphere(const Vector3<T>& point, const Vector3<T>& sphereCenter, T sphereRadius) {
     return (sphereCenter - point).dot() <= sphereRadius*sphereRadius;
@@ -215,7 +216,7 @@ condition for whether the plane is intersecting the box: @f[
 
 for plane normal @f$ \boldsymbol n @f$ and determinant @f$ w @f$.
 
-@see @ref aabbFrustum()
+@see @ref aabbFrustum(), @ref MeshTools::boundingRange()
 */
 template<class T> bool rangeFrustum(const Range3D<T>& range, const Frustum<T>& frustum);
 
@@ -234,6 +235,7 @@ a ray inverse, when doing multiple ray / range intersections (for example
 when traversing an AABB tree). The algorithm implemented is a version of the
 classical slabs algorithm, see *Listing 1* in
 [Majercik et al.](http://jcgt.org/published/0007/03/04/).
+@see @ref MeshTools::boundingRange()
 */
 template<class T> bool rayRange(const Vector3<T>& rayOrigin, const Vector3<T>& inverseRayDirection, const Range3D<T>& range);
 
@@ -261,6 +263,7 @@ template<class T> bool aabbFrustum(const Vector3<T>& aabbCenter, const Vector3<T
 Checks for each plane of the frustum whether the sphere is behind the plane
 (the points distance larger than the sphere's radius) using
 @ref Distance::pointPlaneScaled().
+@see @ref MeshTools::boundingSphereBouncingBubble()
 */
 template<class T> bool sphereFrustum(const Vector3<T>& sphereCenter, T sphereRadius, const Frustum<T>& frustum);
 
@@ -350,6 +353,8 @@ performs sphere-cone intersection with the zero-origin -Z axis-aligned cone.
 The @p sinAngle and @p tanAngle can be precomputed like this:
 
 @snippet MagnumMath.cpp Intersection-sinAngle-tanAngle
+
+@see @ref MeshTools::boundingSphereBouncingBubble()
 */
 template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, T sphereRadius, const Matrix4<T>& coneView, T sinAngle, T tanAngle);
 
@@ -389,6 +394,8 @@ testing whether the origin of the original cone intersects the sphere. The
 @p sinAngle and @p tanAngleSqPlusOne parameters can be precomputed like this:
 
 @snippet MagnumMath.cpp Intersection-sinAngle-tanAngleSqPlusOne
+
+@see @ref MeshTools::boundingSphereBouncingBubble()
 */
 template<class T> bool sphereCone(const Vector3<T>& sphereCenter, T sphereRadius, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, T sinAngle, T tanAngleSqPlusOne);
 
@@ -447,6 +454,7 @@ template<class T> bool aabbCone(const Vector3<T>& aabbCenter, const Vector3<T>& 
 
 Precomputes a portion of the intersection equation from @p coneAngle and calls
 @ref rangeCone(const Range3D<T>&, const Vector3<T>&, const Vector3<T>&, T).
+@see @ref MeshTools::boundingRange()
 */
 template<class T> bool rangeCone(const Range3D<T>& range, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const Rad<T> coneAngle);
 
