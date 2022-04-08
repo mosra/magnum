@@ -35,7 +35,7 @@
 
 namespace Magnum { namespace MeshTools {
 
-Range3D boundingBoxAxisAligned(const Containers::StridedArrayView1D<const Vector3>& points) {
+Range3D boundingRange(const Containers::StridedArrayView1D<const Vector3>& points) {
     return Math::minmax(points);
 }
 

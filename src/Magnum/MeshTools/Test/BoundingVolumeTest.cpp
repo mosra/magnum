@@ -48,42 +48,42 @@ namespace Magnum { namespace MeshTools { namespace Test { namespace {
 struct BoundingVolumeTest: TestSuite::Tester {
     explicit BoundingVolumeTest();
 
-    void boxAxisAligned();
-    void boxAxisAlignedNaN();
+    void range();
+    void rangeNaN();
 
     void sphereBouncingBubble();
     void sphereBouncingBubbleNaN();
 
-    void benchmarkBoxAxisAligned();
+    void benchmarkRange();
     void benchmarkSphereBouncingBubble();
 };
 
 BoundingVolumeTest::BoundingVolumeTest() {
-    addTests({&BoundingVolumeTest::boxAxisAligned,
-              &BoundingVolumeTest::boxAxisAlignedNaN,
+    addTests({&BoundingVolumeTest::range,
+              &BoundingVolumeTest::rangeNaN,
               &BoundingVolumeTest::sphereBouncingBubble,
               &BoundingVolumeTest::sphereBouncingBubbleNaN});
 
-    addBenchmarks({&BoundingVolumeTest::benchmarkBoxAxisAligned,
+    addBenchmarks({&BoundingVolumeTest::benchmarkRange,
                    &BoundingVolumeTest::benchmarkSphereBouncingBubble}, 150);
 }
 
-void BoundingVolumeTest::boxAxisAligned() {
+void BoundingVolumeTest::range() {
     /* boundingboxAxisAligned() is just a wrapper around minmax() so only test
        that the input and output are forwarded correctly */
     constexpr Float cylinderLength = 7.0f;
     const Trade::MeshData cylinderMesh = Primitives::capsule3DSolid(3, 1, 12, cylinderLength*0.5f);
-    const Range3D box = MeshTools::boundingBoxAxisAligned(
+    const Range3D box = MeshTools::boundingRange(
         cylinderMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
 
     CORRADE_COMPARE(box.center(), Vector3{});
     CORRADE_COMPARE(box.size(), (Vector3{2.0f, cylinderLength + 2.0f, 2.0f}));
 }
 
-void BoundingVolumeTest::boxAxisAlignedNaN() {
+void BoundingVolumeTest::rangeNaN() {
     /* NaNs are skipped (unless it's all NaNs), matching minmax() behaviour */
     {
-        const Range3D box = MeshTools::boundingBoxAxisAligned(Containers::stridedArrayView({
+        const Range3D box = MeshTools::boundingRange(Containers::stridedArrayView({
                 Vector3{Constants::nan()},
                 Vector3{1.0f, 1.0f, 1.0f},
                 Vector3{Constants::nan()},
@@ -93,7 +93,7 @@ void BoundingVolumeTest::boxAxisAlignedNaN() {
         CORRADE_COMPARE(box.min(), (Vector3{1.0f, 1.0f, 1.0f}));
         CORRADE_COMPARE(box.max(), (Vector3{2.0f, 2.0f, 2.0f}));
     } {
-        const Range3D box = MeshTools::boundingBoxAxisAligned(Containers::stridedArrayView({
+        const Range3D box = MeshTools::boundingRange(Containers::stridedArrayView({
                 Vector3{Constants::nan()},
                 Vector3{Constants::nan()}
             }));
@@ -230,7 +230,7 @@ void BoundingVolumeTest::sphereBouncingBubbleNaN() {
     }
 }
 
-void BoundingVolumeTest::benchmarkBoxAxisAligned() {
+void BoundingVolumeTest::benchmarkRange() {
     Containers::Array<Vector3> points{NoInit, 500};
     for(size_t i = 0; i < points.size(); ++i) {
         points[i] = Vector3{Float(i)*0.01f};
@@ -238,7 +238,7 @@ void BoundingVolumeTest::benchmarkBoxAxisAligned() {
 
     Float r = 0.0f;
     CORRADE_BENCHMARK(50) {
-        const Range3D box = MeshTools::boundingBoxAxisAligned(points);
+        const Range3D box = MeshTools::boundingRange(points);
         r += box.size().x();
     }
 

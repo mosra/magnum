@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::boundingBoxAxisAligned(), @ref Magnum::MeshTools::boundingSphereBouncingBubble()
+ * @brief Function @ref Magnum::MeshTools::boundingRange(), @ref Magnum::MeshTools::boundingSphereBouncingBubble()
  * @m_since_latest
  */
 
@@ -37,14 +37,14 @@
 namespace Magnum { namespace MeshTools {
 
 /**
-@brief Calculate an axis-aligned bounding box
+@brief Calculate a bounding range
 @param positions    Vertex positions
-@return Bounding box
+@return Bounding range
 @m_since_latest
 
 Same as @ref Math::minmax(const Corrade::Containers::StridedArrayView1D<const T>&).
 */
-MAGNUM_MESHTOOLS_EXPORT Range3D boundingBoxAxisAligned(const Containers::StridedArrayView1D<const Vector3>& positions);
+MAGNUM_MESHTOOLS_EXPORT Range3D boundingRange(const Containers::StridedArrayView1D<const Vector3>& positions);
 
 /**
 @brief Calculate an approximate bounding sphere using the Bouncing Bubble
