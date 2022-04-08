@@ -390,11 +390,11 @@ SceneField AbstractImporter::sceneFieldForName(const Containers::StringView name
     return out;
 }
 
-SceneField AbstractImporter::doSceneFieldForName(const Containers::StringView) {
+SceneField AbstractImporter::doSceneFieldForName(Containers::StringView) {
     return {};
 }
 
-Containers::String AbstractImporter::sceneFieldName(SceneField name) {
+Containers::String AbstractImporter::sceneFieldName(const SceneField name) {
     CORRADE_ASSERT(isSceneFieldCustom(name),
         "Trade::AbstractImporter::sceneFieldName():" << name << "is not custom", {});
     Containers::String out = doSceneFieldName(sceneFieldCustom(name));
@@ -1160,7 +1160,7 @@ MeshAttribute AbstractImporter::doMeshAttributeForName(Containers::StringView) {
     return {};
 }
 
-Containers::String AbstractImporter::meshAttributeName(MeshAttribute name) {
+Containers::String AbstractImporter::meshAttributeName(const MeshAttribute name) {
     CORRADE_ASSERT(isMeshAttributeCustom(name),
         "Trade::AbstractImporter::meshAttributeName():" << name << "is not custom", {});
     Containers::String out = doMeshAttributeName(meshAttributeCustom(name));
