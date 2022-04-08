@@ -25,6 +25,7 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
@@ -32,6 +33,7 @@
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/TypeTraits.h"
 #include "Magnum/Math/Angle.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/BoundingVolume.h"
 #include "Magnum/MeshTools/Reference.h"

@@ -26,8 +26,11 @@
 
 #include "BoundingVolume.h"
 
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
+#include "Magnum/Math/Range.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/Math/FunctionsBatch.h"
 
 namespace Magnum { namespace MeshTools {

@@ -31,11 +31,7 @@
  * @m_since_latest
  */
 
-#include <Corrade/Containers/Pair.h>
-
 #include "Magnum/Magnum.h"
-#include "Magnum/Math/Range.h"
-#include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/visibility.h"
 
 namespace Magnum { namespace MeshTools {
