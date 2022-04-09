@@ -97,6 +97,7 @@ Supported formats:
 -   Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst` or data with
     corresponding signature), loaded with @ref TgaImporter or any other plugin
     that provides it
+-   OpenVDB (`*.vdb`), loaded with any plugin that provides `OpenVdbImporter`
 
 Detecting file type through @ref openData() is supported only for a subset of
 formats that are marked as such in the list above.

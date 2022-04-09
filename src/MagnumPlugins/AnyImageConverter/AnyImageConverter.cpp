@@ -186,6 +186,8 @@ bool AnyImageConverter::doConvertToFile(const ImageView3D& image, const Containe
         plugin = "OpenExrImageConverter"_s;
     else if(normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
+    else if(normalizedExtension == ".vdb"_s)
+        plugin = "OpenVdbImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a 3D image";
         return false;

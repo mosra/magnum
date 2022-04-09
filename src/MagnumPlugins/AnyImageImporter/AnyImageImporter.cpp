@@ -125,6 +125,8 @@ void AnyImageImporter::doOpenFile(const Containers::StringView filename) {
             normalizedExtension == ".icb"_s ||
             normalizedExtension == ".vst"_s)
         plugin = "TgaImporter"_s;
+    else if(normalizedExtension == ".vdb"_s)
+        plugin = "OpenVdbImporter"_s;
     else {
         Error{} << "Trade::AnyImageImporter::openFile(): cannot determine the format of" << filename;
         return;

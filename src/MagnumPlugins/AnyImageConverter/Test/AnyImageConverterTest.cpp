@@ -171,6 +171,7 @@ constexpr struct {
     {"Basis Universal", "file.basis", "BasisImageConverter"},
     {"EXR", "file.exr", "OpenExrImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
+    {"OpenVDB", "volume.vdb", "OpenVdbImageConverter"},
     /* Have at least one test case with uppercase */
     {"EXR uppercase", "FIL~1.EXR", "OpenExrImageConverter"}
 };

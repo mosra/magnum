@@ -122,7 +122,8 @@ constexpr struct {
     {"TIFF", "image.tiff", false, "TiffImporter"},
     {"TIFF data", "image.tiff", true, "TiffImporter"},
     {"Basis", "rgb.basis", false, "BasisImporter"},
-    {"Basis data", "rgb.basis", true, "BasisImporter"}
+    {"Basis data", "rgb.basis", true, "BasisImporter"},
+    {"OpenVDB", "volume.vdb", false, "OpenVdbImporter"}
     /* Not testing everything, just the most important ones */
 };
 
