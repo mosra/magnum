@@ -65,8 +65,8 @@ Supported formats:
     with @ref DdsImporter or any other plugin that provides it
 -   Graphics Interchange Format (`*.gif`), loaded with any plugin that provides
     `GifImporter`
--   OpenEXR (`*.exr` or data with corresponding signature), loaded with any
-    plugin that provides `OpenExrImporter`
+-   OpenEXR (`*.exr` or data with corresponding signature), loaded with
+    @ref OpenExrImporter or any other plugin that provides it
 -   Radiance HDR (`*.hdr` or data with corresponding signature), loaded with
     any plugin that provides `HdrImporter`
 -   Windows icon/cursor (`*.ico`, `*.cur`), loaded with @ref IcoImporter or any

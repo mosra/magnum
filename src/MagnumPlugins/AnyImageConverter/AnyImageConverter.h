@@ -61,8 +61,8 @@ tries to convert the file with it. Supported formats for uncompressed data:
     2D/3D images.
 -   Windows Bitmap (`*.bmp`), converted with any plugin that provides
     `BmpImageConverter`. Only uncompressed 2D images.
--   OpenEXR (`*.exr`), converted with any plugin that provides
-    `OpenExrImageConverter`. Only uncompressed 2D/3D and multi-level 2D/3D
+-   OpenEXR (`*.exr`), converted with @ref OpenExrImageConverter or any other
+    plugin that provides it. Only uncompressed 2D/3D and multi-level 2D/3D
     images.
 -   Radiance HDR (`*.hdr`), converted with any plugin that provides
     `HdrImageConverter`. Only uncompressed 2D images.
