@@ -58,6 +58,8 @@ tries to open the file with it. Supported formats:
 
 -   3ds Max 3DS and ASE (`*.3ds`, `*.ase`), loaded with any plugin that
     provides `3dsImporter`
+-   3D Manufacturing Format (`*.3mf`), loaded with any plugin that provides
+    `3mfImporter`
 -   AC3D (`*.ac`), loaded with any plugin that provides `Ac3dImporter`
 -   Blender 3D (`*.blend`), loaded with any plugin that provides
     `BlenderImporter`

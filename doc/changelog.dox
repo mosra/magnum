@@ -488,6 +488,7 @@ See also:
     [mosra/magnum#529](https://github.com/mosra/magnum/pull/529))
 -   Recognizing KTX2 for (compressed) 1D/2D/3D and multi-level 1D/2D/3D images
     in @relativeref{Trade,AnyImageConverter}
+-   Recognizing 3MF files in @relativeref{Trade,AnySceneImporter}
 -   @ref Audio::AnyImporter "AnyAudioImporter",
     @relativeref{Trade,AnyImageImporter}, @relativeref{Trade,AnyImageConverter},
     @relativeref{Trade,AnySceneImporter}, @relativeref{Trade,AnySceneConverter}

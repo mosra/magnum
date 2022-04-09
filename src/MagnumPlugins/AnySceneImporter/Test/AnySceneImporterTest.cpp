@@ -81,6 +81,7 @@ constexpr struct {
 } DetectData[]{
     {"Blender", "suzanne.blend", "BlenderImporter"},
     {"COLLADA", "xml.dae", "ColladaImporter"},
+    {"3MF", "print.3mf", "3mfImporter"},
     {"FBX", "autodesk.fbx", "FbxImporter"},
     {"glTF", "khronos.gltf", "GltfImporter"},
     {"OpenGEX", "eric.ogex", "OpenGexImporter"},

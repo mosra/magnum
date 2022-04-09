@@ -87,6 +87,8 @@ void AnySceneImporter::doOpenFile(const Containers::StringView filename) {
     if(normalizedExtension == ".3ds"_s ||
        normalizedExtension == ".ase"_s)
         plugin = "3dsImporter"_s;
+    else if(normalizedExtension == ".3mf"_s)
+        plugin = "3mfImporter"_s;
     else if(normalizedExtension == ".ac"_s)
         plugin = "Ac3dImporter"_s;
     else if(normalizedExtension == ".blend"_s)
