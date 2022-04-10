@@ -214,11 +214,12 @@ void AbstractSceneConverterTest::convertMesh() {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMesh; }
 
         Containers::Optional<MeshData> doConvert(const MeshData& mesh) override {
-            if(mesh.primitive() == MeshPrimitive::Triangles)
-                return MeshData{MeshPrimitive::Lines, mesh.vertexCount()*2};
-            return {};
+            CORRADE_COMPARE(mesh.primitive(), MeshPrimitive::Triangles);
+            return MeshData{MeshPrimitive::Lines, mesh.vertexCount()*2};
         }
     } converter;
+
+    CORRADE_VERIFY(true); /* capture correct function name */
 
     Containers::Optional<MeshData> out = converter.convert(MeshData{MeshPrimitive::Triangles, 6});
     CORRADE_VERIFY(out);
