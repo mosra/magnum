@@ -190,7 +190,7 @@ void AbstractSceneConverterTest::thingNotSupported() {
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override {
             /* Assuming this bit is unused */
-            return SceneConverterFeature(1ull << 63);
+            return SceneConverterFeature(1 << 7);
         }
     } converter;
 
@@ -582,16 +582,8 @@ void AbstractSceneConverterTest::convertMeshToFileNotImplemented() {
 void AbstractSceneConverterTest::debugFeature() {
     std::ostringstream out;
 
-    Debug{&out} << SceneConverterFeature::ConvertMeshInPlace << SceneConverterFeature(0xbafabafadeaddead);
-    {
-        #ifdef CORRADE_TARGET_32BIT
-        CORRADE_EXPECT_FAIL("Debug has shitty hex printing currently, using just the low 32 bits on 32-bit platforms.");
-        #endif
-        CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMeshInPlace Trade::SceneConverterFeature(0xbafabafadeaddead)\n");
-    }
-    #ifdef CORRADE_TARGET_32BIT
-    CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMeshInPlace Trade::SceneConverterFeature(0xdeaddead)\n");
-    #endif
+    Debug{&out} << SceneConverterFeature::ConvertMeshInPlace << SceneConverterFeature(0xf0);
+    CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMeshInPlace Trade::SceneConverterFeature(0xf0)\n");
 }
 
 void AbstractSceneConverterTest::debugFeatures() {
