@@ -1097,7 +1097,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         Implementation::ImageConverterOptionalButAlsoArray<char>
         #endif
         convertToData(Containers::ArrayView<const ImageView1D> imageLevels);
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
         Containers::Optional<Containers::Array<char>>
         #else
@@ -1126,7 +1129,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         Implementation::ImageConverterOptionalButAlsoArray<char>
         #endif
         convertToData(Containers::ArrayView<const ImageView2D> imageLevels);
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
         Containers::Optional<Containers::Array<char>>
         #else
@@ -1155,7 +1161,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         Implementation::ImageConverterOptionalButAlsoArray<char>
         #endif
         convertToData(Containers::ArrayView<const ImageView3D> imageLevels);
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
         Containers::Optional<Containers::Array<char>>
         #else
@@ -1184,7 +1193,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         Implementation::ImageConverterOptionalButAlsoArray<char>
         #endif
         convertToData(Containers::ArrayView<const CompressedImageView1D> imageLevels);
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
         Containers::Optional<Containers::Array<char>>
         #else
@@ -1213,7 +1225,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         Implementation::ImageConverterOptionalButAlsoArray<char>
         #endif
         convertToData(Containers::ArrayView<const CompressedImageView2D> imageLevels);
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
         Containers::Optional<Containers::Array<char>>
         #else
@@ -1242,7 +1257,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         Implementation::ImageConverterOptionalButAlsoArray<char>
         #endif
         convertToData(Containers::ArrayView<const CompressedImageView3D> images);
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
         Containers::Optional<Containers::Array<char>>
         #else
@@ -1434,7 +1452,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *      @ref convert(), @ref convertToData()
          */
         bool convertToFile(Containers::ArrayView<const ImageView1D> imageLevels, Containers::StringView filename);
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         bool convertToFile(std::initializer_list<ImageView1D> imageLevels, Containers::StringView filename);
 
         /**
@@ -1453,7 +1474,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *      @ref convert(), @ref convertToData()
          */
         bool convertToFile(Containers::ArrayView<const ImageView2D> imageLevels, Containers::StringView filename);
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         bool convertToFile(std::initializer_list<ImageView2D> imageLevels, Containers::StringView filename);
 
         /**
@@ -1472,7 +1496,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *      @ref convert(), @ref convertToData()
          */
         bool convertToFile(Containers::ArrayView<const ImageView3D> imageLevels, Containers::StringView filename);
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         bool convertToFile(std::initializer_list<ImageView3D> imageLevels, Containers::StringView filename);
 
         /**
@@ -1491,7 +1518,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *      @ref convert(), @ref convertToData()
          */
         bool convertToFile(Containers::ArrayView<const CompressedImageView1D> imageLevels, Containers::StringView filename);
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         bool convertToFile(std::initializer_list<CompressedImageView1D> imageLevels, Containers::StringView filename);
 
         /**
@@ -1510,7 +1540,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *      @ref convert(), @ref convertToData()
          */
         bool convertToFile(Containers::ArrayView<const CompressedImageView2D> imageLevels, Containers::StringView filename);
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         bool convertToFile(std::initializer_list<CompressedImageView2D> imageLevels, Containers::StringView filename);
 
         /**
@@ -1529,7 +1562,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *      @ref convert(), @ref convertToData()
          */
         bool convertToFile(Containers::ArrayView<const CompressedImageView3D> imageLevels, Containers::StringView filename);
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         bool convertToFile(std::initializer_list<CompressedImageView3D> imageLevels, Containers::StringView filename);
 
     protected:
