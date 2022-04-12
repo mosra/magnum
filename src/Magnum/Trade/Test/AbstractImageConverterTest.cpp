@@ -59,6 +59,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convert1D();
     void convert2D();
     void convert3D();
+    void convert1DFailed();
+    void convert2DFailed();
+    void convert3DFailed();
     void convert1DNotImplemented();
     void convert2DNotImplemented();
     void convert3DNotImplemented();
@@ -69,6 +72,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressed1D();
     void convertCompressed2D();
     void convertCompressed3D();
+    void convertCompressed1DFailed();
+    void convertCompressed2DFailed();
+    void convertCompressed3DFailed();
     void convertCompressed1DNotImplemented();
     void convertCompressed2DNotImplemented();
     void convertCompressed3DNotImplemented();
@@ -83,6 +89,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convert1DToData();
     void convert2DToData();
     void convert3DToData();
+    void convert1DToDataFailed();
+    void convert2DToDataFailed();
+    void convert3DToDataFailed();
     /* 1D/2D/3D share the same image validity check function, so only verify
        one dimension thoroughly and for others just that the check is used */
     void convert1DToDataInvalidImage();
@@ -99,6 +108,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressed1DToData();
     void convertCompressed2DToData();
     void convertCompressed3DToData();
+    void convertCompressed1DToDataFailed();
+    void convertCompressed2DToDataFailed();
+    void convertCompressed3DToDataFailed();
     /* Compressed share the same image validity check function with
        uncompressed, so only verify it's used */
     void convertCompressed1DToDataInvalidImage();
@@ -118,6 +130,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertLevels1DToData();
     void convertLevels2DToData();
     void convertLevels3DToData();
+    void convertLevels1DToDataFailed();
+    void convertLevels2DToDataFailed();
+    void convertLevels3DToDataFailed();
     /* 1D/2D/3D share the same image list validity check function, so only
        verify one dimension thoroughly and for others just that the check is
        used */
@@ -138,6 +153,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressedLevels1DToData();
     void convertCompressedLevels2DToData();
     void convertCompressedLevels3DToData();
+    void convertCompressedLevels1DToDataFailed();
+    void convertCompressedLevels2DToDataFailed();
+    void convertCompressedLevels3DToDataFailed();
     /* Compressed have different format checks for uncompressed so it's tested
        again; 1D/2D/3D share the same image list validity check function, so
        only verify one dimension thoroughly and for others just that the check
@@ -166,6 +184,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convert1DToFile();
     void convert2DToFile();
     void convert3DToFile();
+    void convert1DToFileFailed();
+    void convert2DToFileFailed();
+    void convert3DToFileFailed();
     void convert1DToFileThroughData();
     void convert2DToFileThroughData();
     void convert3DToFileThroughData();
@@ -187,6 +208,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressed1DToFile();
     void convertCompressed2DToFile();
     void convertCompressed3DToFile();
+    void convertCompressed1DToFileFailed();
+    void convertCompressed2DToFileFailed();
+    void convertCompressed3DToFileFailed();
     void convertCompressed1DToFileThroughData();
     void convertCompressed2DToFileThroughData();
     void convertCompressed3DToFileThroughData();
@@ -212,6 +236,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertLevels1DToFile();
     void convertLevels2DToFile();
     void convertLevels3DToFile();
+    void convertLevels1DToFileFailed();
+    void convertLevels2DToFileFailed();
+    void convertLevels3DToFileFailed();
     void convertLevels1DToFileThroughData();
     void convertLevels2DToFileThroughData();
     void convertLevels3DToFileThroughData();
@@ -233,6 +260,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressedLevels1DToFile();
     void convertCompressedLevels2DToFile();
     void convertCompressedLevels3DToFile();
+    void convertCompressedLevels1DToFileFailed();
+    void convertCompressedLevels2DToFileFailed();
+    void convertCompressedLevels3DToFileFailed();
     void convertCompressedLevels1DToFileThroughData();
     void convertCompressedLevels2DToFileThroughData();
     void convertCompressedLevels3DToFileThroughData();
@@ -278,6 +308,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convert1D,
               &AbstractImageConverterTest::convert2D,
               &AbstractImageConverterTest::convert3D,
+              &AbstractImageConverterTest::convert1DFailed,
+              &AbstractImageConverterTest::convert2DFailed,
+              &AbstractImageConverterTest::convert3DFailed,
               &AbstractImageConverterTest::convert1DNotImplemented,
               &AbstractImageConverterTest::convert2DNotImplemented,
               &AbstractImageConverterTest::convert3DNotImplemented,
@@ -288,6 +321,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressed1D,
               &AbstractImageConverterTest::convertCompressed2D,
               &AbstractImageConverterTest::convertCompressed3D,
+              &AbstractImageConverterTest::convertCompressed1DFailed,
+              &AbstractImageConverterTest::convertCompressed2DFailed,
+              &AbstractImageConverterTest::convertCompressed3DFailed,
               &AbstractImageConverterTest::convertCompressed1DNotImplemented,
               &AbstractImageConverterTest::convertCompressed2DNotImplemented,
               &AbstractImageConverterTest::convertCompressed3DNotImplemented,
@@ -302,6 +338,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convert1DToData,
               &AbstractImageConverterTest::convert2DToData,
               &AbstractImageConverterTest::convert3DToData,
+              &AbstractImageConverterTest::convert1DToDataFailed,
+              &AbstractImageConverterTest::convert2DToDataFailed,
+              &AbstractImageConverterTest::convert3DToDataFailed,
               &AbstractImageConverterTest::convert1DToDataInvalidImage,
               &AbstractImageConverterTest::convert2DToDataZeroSize,
               &AbstractImageConverterTest::convert2DToDataNullptr,
@@ -316,6 +355,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressed1DToData,
               &AbstractImageConverterTest::convertCompressed2DToData,
               &AbstractImageConverterTest::convertCompressed3DToData,
+              &AbstractImageConverterTest::convertCompressed1DToDataFailed,
+              &AbstractImageConverterTest::convertCompressed2DToDataFailed,
+              &AbstractImageConverterTest::convertCompressed3DToDataFailed,
               &AbstractImageConverterTest::convertCompressed1DToDataInvalidImage,
               &AbstractImageConverterTest::convertCompressed2DToDataInvalidImage,
               &AbstractImageConverterTest::convertCompressed3DToDataInvalidImage,
@@ -333,6 +375,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertLevels1DToData,
               &AbstractImageConverterTest::convertLevels2DToData,
               &AbstractImageConverterTest::convertLevels3DToData,
+              &AbstractImageConverterTest::convertLevels1DToDataFailed,
+              &AbstractImageConverterTest::convertLevels2DToDataFailed,
+              &AbstractImageConverterTest::convertLevels3DToDataFailed,
               &AbstractImageConverterTest::convertLevels1DToDataInvalidImage,
               &AbstractImageConverterTest::convertLevels2DToDataNoLevels,
               &AbstractImageConverterTest::convertLevels2DToDataZeroSize,
@@ -350,6 +395,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressedLevels1DToData,
               &AbstractImageConverterTest::convertCompressedLevels2DToData,
               &AbstractImageConverterTest::convertCompressedLevels3DToData,
+              &AbstractImageConverterTest::convertCompressedLevels1DToDataFailed,
+              &AbstractImageConverterTest::convertCompressedLevels2DToDataFailed,
+              &AbstractImageConverterTest::convertCompressedLevels3DToDataFailed,
               &AbstractImageConverterTest::convertCompressedLevels1DToDataInvalidImage,
               &AbstractImageConverterTest::convertCompressedLevels2DToDataNoLevels,
               &AbstractImageConverterTest::convertCompressedLevels2DToDataZeroSize,
@@ -374,6 +422,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convert1DToFile,
               &AbstractImageConverterTest::convert2DToFile,
               &AbstractImageConverterTest::convert3DToFile,
+              &AbstractImageConverterTest::convert1DToFileFailed,
+              &AbstractImageConverterTest::convert2DToFileFailed,
+              &AbstractImageConverterTest::convert3DToFileFailed,
               &AbstractImageConverterTest::convert1DToFileThroughData,
               &AbstractImageConverterTest::convert2DToFileThroughData,
               &AbstractImageConverterTest::convert3DToFileThroughData,
@@ -393,6 +444,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressed1DToFile,
               &AbstractImageConverterTest::convertCompressed2DToFile,
               &AbstractImageConverterTest::convertCompressed3DToFile,
+              &AbstractImageConverterTest::convertCompressed1DToFileFailed,
+              &AbstractImageConverterTest::convertCompressed2DToFileFailed,
+              &AbstractImageConverterTest::convertCompressed3DToFileFailed,
               &AbstractImageConverterTest::convertCompressed1DToFileThroughData,
               &AbstractImageConverterTest::convertCompressed2DToFileThroughData,
               &AbstractImageConverterTest::convertCompressed3DToFileThroughData,
@@ -416,6 +470,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertLevels1DToFile,
               &AbstractImageConverterTest::convertLevels2DToFile,
               &AbstractImageConverterTest::convertLevels3DToFile,
+              &AbstractImageConverterTest::convertLevels1DToFileFailed,
+              &AbstractImageConverterTest::convertLevels2DToFileFailed,
+              &AbstractImageConverterTest::convertLevels3DToFileFailed,
               &AbstractImageConverterTest::convertLevels1DToFileThroughData,
               &AbstractImageConverterTest::convertLevels2DToFileThroughData,
               &AbstractImageConverterTest::convertLevels3DToFileThroughData,
@@ -435,6 +492,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressedLevels1DToFile,
               &AbstractImageConverterTest::convertCompressedLevels2DToFile,
               &AbstractImageConverterTest::convertCompressedLevels3DToFile,
+              &AbstractImageConverterTest::convertCompressedLevels1DToFileFailed,
+              &AbstractImageConverterTest::convertCompressedLevels2DToFileFailed,
+              &AbstractImageConverterTest::convertCompressedLevels3DToFileFailed,
               &AbstractImageConverterTest::convertCompressedLevels1DToFileThroughData,
               &AbstractImageConverterTest::convertCompressedLevels2DToFileThroughData,
               &AbstractImageConverterTest::convertCompressedLevels3DToFileThroughData,
@@ -645,6 +705,57 @@ void AbstractImageConverterTest::convert3D() {
     CORRADE_COMPARE(actual->size(), (Vector3i{4, 6, 1}));
 }
 
+void AbstractImageConverterTest::convert1DFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1D;
+        }
+        Containers::Optional<ImageData1D> doConvert(const ImageView1D&) override {
+            return {};
+        }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convert(ImageView1D{PixelFormat::RGBA8Unorm, 1, {nullptr, 4}}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convert2DFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2D;
+        }
+        Containers::Optional<ImageData2D> doConvert(const ImageView2D&) override {
+            return {};
+        }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convert(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, {nullptr, 4}}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convert3DFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3D;
+        }
+        Containers::Optional<ImageData3D> doConvert(const ImageView3D&) override {
+            return {};
+        }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convert(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {nullptr, 4}}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractImageConverterTest::convert1DNotImplemented() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -787,6 +898,57 @@ void AbstractImageConverterTest::convertCompressed3D() {
     CORRADE_VERIFY(actual->isCompressed());
     CORRADE_COMPARE(actual->data().size(), 64);
     CORRADE_COMPARE(actual->size(), (Vector3i{16, 8, 1}));
+}
+
+void AbstractImageConverterTest::convertCompressed1DFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1D;
+        }
+        Containers::Optional<ImageData1D> doConvert(const CompressedImageView1D&) override {
+            return {};
+        }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convert(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, {nullptr, 4*4}}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertCompressed2DFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2D;
+        }
+        Containers::Optional<ImageData2D> doConvert(const CompressedImageView2D&) override {
+            return {};
+        }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convert(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, {nullptr, 4*4}}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertCompressed3DFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3D;
+        }
+        Containers::Optional<ImageData3D> doConvert(const CompressedImageView3D&) override {
+            return {};
+        }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convert(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, {nullptr, 4*4}}));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImageConverterTest::convertCompressed1DNotImplemented() {
@@ -1026,6 +1188,63 @@ void AbstractImageConverterTest::convert3DToData() {
     CORRADE_COMPARE(actual->size(), 48);
 }
 
+void AbstractImageConverterTest::convert1DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView1D&) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convert2DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D&) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convert3DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView3D&) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractImageConverterTest::convert1DToDataInvalidImage() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1232,6 +1451,63 @@ void AbstractImageConverterTest::convertCompressed3DToData() {
     Containers::Optional<Containers::Array<char>> actual = converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, data});
     CORRADE_VERIFY(actual);
     CORRADE_COMPARE(actual->size(), 256);
+}
+
+void AbstractImageConverterTest::convertCompressed1DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView1D&) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, imageData}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertCompressed2DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView2D&) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertCompressed3DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView3D&) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImageConverterTest::convertCompressed1DToDataInvalidImage() {
@@ -1545,6 +1821,63 @@ void AbstractImageConverterTest::convertLevels3DToData() {
     CORRADE_COMPARE(actual->size(), 48*3);
 }
 
+void AbstractImageConverterTest::convertLevels1DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertLevels1DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D>) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData({ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertLevels2DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertLevels2DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D>) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData({ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertLevels3DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertLevels3DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D>) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData({ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractImageConverterTest::convertLevels1DToDataInvalidImage() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1828,6 +2161,63 @@ void AbstractImageConverterTest::convertCompressedLevels3DToData() {
     });
     CORRADE_VERIFY(actual);
     CORRADE_COMPARE(actual->size(), 256*3);
+}
+
+void AbstractImageConverterTest::convertCompressedLevels1DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressedLevels1DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D>) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, imageData}}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels2DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressedLevels2DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D>) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels3DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressedLevels3DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D>) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}}));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToDataInvalidImage() {
@@ -2179,6 +2569,63 @@ void AbstractImageConverterTest::convert3DToFile() {
         "\x0f\x0d\x02", TestSuite::Compare::FileToString);
 }
 
+void AbstractImageConverterTest::convert1DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToFile;
+        }
+        bool doConvertToFile(const ImageView1D&, Containers::StringView) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convert2DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToFile;
+        }
+        bool doConvertToFile(const ImageView2D&, Containers::StringView) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convert3DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToFile;
+        }
+        bool doConvertToFile(const ImageView3D&, Containers::StringView) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractImageConverterTest::convert1DToFileThroughData() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert1DToData; }
@@ -2516,6 +2963,63 @@ void AbstractImageConverterTest::convertCompressed3DToFile() {
     CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x02}, Containers::Array<char>{64}}, filename));
     CORRADE_COMPARE_AS(filename,
         "\x0f\x0d\x02", TestSuite::Compare::FileToString);
+}
+
+void AbstractImageConverterTest::convertCompressed1DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToFile;
+        }
+        bool doConvertToFile(const CompressedImageView1D&, Containers::StringView) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, imageData}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertCompressed2DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToFile;
+        }
+        bool doConvertToFile(const CompressedImageView2D&, Containers::StringView) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertCompressed3DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToFile;
+        }
+        bool doConvertToFile(const CompressedImageView3D&, Containers::StringView) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImageConverterTest::convertCompressed1DToFileThroughData() {
@@ -2914,6 +3418,63 @@ void AbstractImageConverterTest::convertLevels3DToFile() {
         "\x0f\x0d\x0e\x02", TestSuite::Compare::FileToString);
 }
 
+void AbstractImageConverterTest::convertLevels1DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertLevels1DToFile;
+        }
+        bool doConvertToFile(Containers::ArrayView<const ImageView1D>, Containers::StringView) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile({ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertLevels2DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertLevels2DToFile;
+        }
+        bool doConvertToFile(Containers::ArrayView<const ImageView2D>, Containers::StringView) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile({ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertLevels3DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertLevels3DToFile;
+        }
+        bool doConvertToFile(Containers::ArrayView<const ImageView3D>, Containers::StringView) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile({ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractImageConverterTest::convertLevels1DToFileThroughData() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
@@ -3278,6 +3839,63 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFile() {
     }, filename));
     CORRADE_COMPARE_AS(filename,
         "\x0f\x0d\x0e\x02", TestSuite::Compare::FileToString);
+}
+
+void AbstractImageConverterTest::convertCompressedLevels1DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressedLevels1DToFile;
+        }
+        bool doConvertToFile(Containers::ArrayView<const CompressedImageView1D>, Containers::StringView) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, imageData}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels2DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressedLevels2DToFile;
+        }
+        bool doConvertToFile(Containers::ArrayView<const CompressedImageView2D>, Containers::StringView) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels3DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressedLevels3DToFile;
+        }
+        bool doConvertToFile(Containers::ArrayView<const CompressedImageView3D>, Containers::StringView) override {
+            return {};
+        }
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughData() {

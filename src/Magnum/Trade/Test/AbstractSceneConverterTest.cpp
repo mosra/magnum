@@ -54,6 +54,7 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void thingNotSupported();
 
     void convertMesh();
+    void convertMeshFailed();
     void convertMeshNotImplemented();
     void convertMeshNonOwningDeleters();
     void convertMeshGrowableDeleters();
@@ -62,15 +63,18 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void convertMeshCustomAttributeDataDeleter();
 
     void convertMeshInPlace();
+    void convertMeshInPlaceFailed();
     void convertMeshInPlaceNotImplemented();
 
     void convertMeshToData();
+    void convertMeshToDataFailed();
     void convertMeshToDataNotImplemented();
     void convertMeshToDataNonOwningDeleter();
     void convertMeshToDataGrowableDeleter();
     void convertMeshToDataCustomDeleter();
 
     void convertMeshToFile();
+    void convertMeshToFileFailed();
     void convertMeshToFileThroughData();
     void convertMeshToFileThroughDataFailed();
     void convertMeshToFileThroughDataNotWritable();
@@ -92,6 +96,7 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
               &AbstractSceneConverterTest::thingNotSupported,
 
               &AbstractSceneConverterTest::convertMesh,
+              &AbstractSceneConverterTest::convertMeshFailed,
               &AbstractSceneConverterTest::convertMeshNotImplemented,
               &AbstractSceneConverterTest::convertMeshNonOwningDeleters,
               &AbstractSceneConverterTest::convertMeshGrowableDeleters,
@@ -100,15 +105,18 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
               &AbstractSceneConverterTest::convertMeshCustomAttributeDataDeleter,
 
               &AbstractSceneConverterTest::convertMeshInPlace,
+              &AbstractSceneConverterTest::convertMeshInPlaceFailed,
               &AbstractSceneConverterTest::convertMeshInPlaceNotImplemented,
 
               &AbstractSceneConverterTest::convertMeshToData,
+              &AbstractSceneConverterTest::convertMeshToDataFailed,
               &AbstractSceneConverterTest::convertMeshToDataNotImplemented,
               &AbstractSceneConverterTest::convertMeshToDataNonOwningDeleter,
               &AbstractSceneConverterTest::convertMeshToDataGrowableDeleter,
               &AbstractSceneConverterTest::convertMeshToDataCustomDeleter,
 
               &AbstractSceneConverterTest::convertMeshToFile,
+              &AbstractSceneConverterTest::convertMeshToFileFailed,
               &AbstractSceneConverterTest::convertMeshToFileThroughData,
               &AbstractSceneConverterTest::convertMeshToFileThroughDataFailed,
               &AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable,
@@ -225,6 +233,24 @@ void AbstractSceneConverterTest::convertMesh() {
     CORRADE_VERIFY(out);
     CORRADE_COMPARE(out->primitive(), MeshPrimitive::Lines);
     CORRADE_COMPARE(out->vertexCount(), 12);
+}
+
+void AbstractSceneConverterTest::convertMeshFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMesh;
+        }
+
+        Containers::Optional<MeshData> doConvert(const MeshData&) override {
+            return {};
+        }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convert(MeshData{MeshPrimitive::Triangles, 0}));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractSceneConverterTest::convertMeshNotImplemented() {
@@ -380,6 +406,26 @@ void AbstractSceneConverterTest::convertMeshInPlace() {
         TestSuite::Compare::Container);
 }
 
+void AbstractSceneConverterTest::convertMeshInPlaceFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMeshInPlace;
+        }
+
+        bool doConvertInPlace(MeshData&) override {
+            return {};
+        }
+    } converter;
+
+    MeshData mesh{MeshPrimitive::Triangles, 0};
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertInPlace(mesh));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractSceneConverterTest::convertMeshInPlaceNotImplemented() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -409,6 +455,24 @@ void AbstractSceneConverterTest::convertMeshToData() {
     Containers::Optional<Containers::Array<char>> data = converter.convertToData(MeshData{MeshPrimitive::Triangles, 6});
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->size(), 6);
+}
+
+void AbstractSceneConverterTest::convertMeshToDataFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMeshToData;
+        }
+
+        Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData&) override {
+            return {};
+        }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(MeshData{MeshPrimitive::Triangles, 0}));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractSceneConverterTest::convertMeshToDataNotImplemented() {
@@ -502,6 +566,24 @@ void AbstractSceneConverterTest::convertMeshToFile() {
     CORRADE_VERIFY(converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xef}, filename));
     CORRADE_COMPARE_AS(filename,
         "\xef", TestSuite::Compare::FileToString);
+}
+
+void AbstractSceneConverterTest::convertMeshToFileFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMeshToFile;
+        }
+
+        bool doConvertToFile(const MeshData&, Containers::StringView) override {
+            return false;
+        }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out")));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractSceneConverterTest::convertMeshToFileThroughData() {

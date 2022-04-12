@@ -80,14 +80,18 @@ struct AbstractImporterTest: TestSuite::Tester {
     void setFlagsNotImplemented();
 
     void openData();
+    void openDataFailed();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void openDataDeprecatedFallback();
     #endif
     void openMemory();
+    void openMemoryFailed();
     void openFile();
+    void openFileFailed();
     void openFileAsData();
     void openFileAsDataNotFound();
     void openState();
+    void openStateFailed();
 
     void openFileNotImplemented();
     void openDataNotSupported();
@@ -121,6 +125,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void defaultSceneOutOfRange();
 
     void scene();
+    void sceneFailed();
     void object();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void sceneDeprecatedFallback2D();
@@ -155,6 +160,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void sceneFieldNameCustomDeleter();
 
     void animation();
+    void animationFailed();
     void animationNameNotImplemented();
     void animationForNameOutOfRange();
     void animationNameOutOfRange();
@@ -167,6 +173,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void animationCustomTrackDeleter();
 
     void light();
+    void lightFailed();
     void lightNameNotImplemented();
     void lightForNameOutOfRange();
     void lightNameOutOfRange();
@@ -175,6 +182,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void lightOutOfRange();
 
     void camera();
+    void cameraFailed();
     void cameraNameNotImplemented();
     void cameraForNameOutOfRange();
     void cameraNameOutOfRange();
@@ -213,6 +221,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     #endif
 
     void skin2D();
+    void skin2DFailed();
     void skin2DNameNotImplemented();
     void skin2DForNameOutOfRange();
     void skin2DNameOutOfRange();
@@ -224,6 +233,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void skin2DCustomInverseBindMatrixDataDeleter();
 
     void skin3D();
+    void skin3DFailed();
     void skin3DNameNotImplemented();
     void skin3DForNameOutOfRange();
     void skin3DNameOutOfRange();
@@ -235,6 +245,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void skin3DCustomInverseBindMatrixDataDeleter();
 
     void mesh();
+    void meshFailed();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void meshDeprecatedFallback();
     #endif
@@ -286,6 +297,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     #endif
 
     void material();
+    void materialFailed();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void materialDeprecatedFallback();
     #endif
@@ -300,6 +312,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void materialCustomLayerDataDeleter();
 
     void texture();
+    void textureFailed();
     void textureForNameOutOfRange();
     void textureNameNotImplemented();
     void textureNameOutOfRange();
@@ -308,6 +321,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void textureOutOfRange();
 
     void image1D();
+    void image1DFailed();
     void image1DLevelCountNotImplemented();
     void image1DLevelCountOutOfRange();
     void image1DLevelCountZero();
@@ -323,6 +337,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image1DCustomDeleter();
 
     void image2D();
+    void image2DFailed();
     void image2DLevelCountNotImplemented();
     void image2DLevelCountOutOfRange();
     void image2DLevelCountZero();
@@ -338,6 +353,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image2DCustomDeleter();
 
     void image3D();
+    void image3DFailed();
     void image3DLevelCountNotImplemented();
     void image3DLevelCountOutOfRange();
     void image3DLevelCountZero();
@@ -381,14 +397,18 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::setFlagsNotImplemented,
 
               &AbstractImporterTest::openData,
+              &AbstractImporterTest::openDataFailed,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &AbstractImporterTest::openDataDeprecatedFallback,
               #endif
               &AbstractImporterTest::openMemory,
+              &AbstractImporterTest::openMemoryFailed,
               &AbstractImporterTest::openFile,
+              &AbstractImporterTest::openFileFailed,
               &AbstractImporterTest::openFileAsData,
               &AbstractImporterTest::openFileAsDataNotFound,
               &AbstractImporterTest::openState,
+              &AbstractImporterTest::openStateFailed,
 
               &AbstractImporterTest::openFileNotImplemented,
               &AbstractImporterTest::openDataNotSupported,
@@ -425,6 +445,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::defaultSceneNotImplemented,
 
               &AbstractImporterTest::scene,
+              &AbstractImporterTest::sceneFailed,
               &AbstractImporterTest::object,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &AbstractImporterTest::sceneDeprecatedFallback2D,
@@ -459,6 +480,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::sceneFieldNameCustomDeleter,
 
               &AbstractImporterTest::animation,
+              &AbstractImporterTest::animationFailed,
               &AbstractImporterTest::animationForNameOutOfRange,
               &AbstractImporterTest::animationNameNotImplemented,
               &AbstractImporterTest::animationNameOutOfRange,
@@ -471,6 +493,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::animationCustomTrackDeleter,
 
               &AbstractImporterTest::light,
+              &AbstractImporterTest::lightFailed,
               &AbstractImporterTest::lightForNameOutOfRange,
               &AbstractImporterTest::lightNameNotImplemented,
               &AbstractImporterTest::lightNameOutOfRange,
@@ -479,6 +502,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::lightOutOfRange,
 
               &AbstractImporterTest::camera,
+              &AbstractImporterTest::cameraFailed,
               &AbstractImporterTest::cameraForNameOutOfRange,
               &AbstractImporterTest::cameraNameNotImplemented,
               &AbstractImporterTest::cameraNameOutOfRange,
@@ -523,6 +547,7 @@ AbstractImporterTest::AbstractImporterTest() {
     #endif
 
     addTests({&AbstractImporterTest::skin2D,
+              &AbstractImporterTest::skin2DFailed,
               &AbstractImporterTest::skin2DForNameOutOfRange,
               &AbstractImporterTest::skin2DNameNotImplemented,
               &AbstractImporterTest::skin2DNameOutOfRange,
@@ -534,6 +559,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::skin2DCustomInverseBindMatrixDataDeleter,
 
               &AbstractImporterTest::skin3D,
+              &AbstractImporterTest::skin3DFailed,
               &AbstractImporterTest::skin3DForNameOutOfRange,
               &AbstractImporterTest::skin3DNameNotImplemented,
               &AbstractImporterTest::skin3DNameOutOfRange,
@@ -545,6 +571,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::skin3DCustomInverseBindMatrixDataDeleter,
 
               &AbstractImporterTest::mesh,
+              &AbstractImporterTest::meshFailed,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &AbstractImporterTest::meshDeprecatedFallback,
               #endif
@@ -596,6 +623,7 @@ AbstractImporterTest::AbstractImporterTest() {
               #endif
 
               &AbstractImporterTest::material,
+              &AbstractImporterTest::materialFailed,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &AbstractImporterTest::materialDeprecatedFallback,
               #endif
@@ -610,6 +638,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::materialCustomLayerDataDeleter,
 
               &AbstractImporterTest::texture,
+              &AbstractImporterTest::textureFailed,
               &AbstractImporterTest::textureForNameOutOfRange,
               &AbstractImporterTest::textureNameNotImplemented,
               &AbstractImporterTest::textureNameOutOfRange,
@@ -618,6 +647,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::textureOutOfRange,
 
               &AbstractImporterTest::image1D,
+              &AbstractImporterTest::image1DFailed,
               &AbstractImporterTest::image1DLevelCountNotImplemented,
               &AbstractImporterTest::image1DLevelCountOutOfRange,
               &AbstractImporterTest::image1DLevelCountZero,
@@ -633,6 +663,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image1DCustomDeleter,
 
               &AbstractImporterTest::image2D,
+              &AbstractImporterTest::image2DFailed,
               &AbstractImporterTest::image2DLevelCountNotImplemented,
               &AbstractImporterTest::image2DLevelCountOutOfRange,
               &AbstractImporterTest::image2DLevelCountZero,
@@ -648,6 +679,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image2DCustomDeleter,
 
               &AbstractImporterTest::image3D,
+              &AbstractImporterTest::image3DFailed,
               &AbstractImporterTest::image3DLevelCountNotImplemented,
               &AbstractImporterTest::image3DLevelCountOutOfRange,
               &AbstractImporterTest::image3DLevelCountZero,
@@ -792,6 +824,24 @@ void AbstractImporterTest::openData() {
     CORRADE_VERIFY(!importer.isOpened());
 }
 
+void AbstractImporterTest::openDataFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override {
+            return ImporterFeature::OpenData;
+        }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doOpenData(Containers::Array<char>&&, DataFlags) override {}
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.openData(nullptr));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 void AbstractImporterTest::openDataDeprecatedFallback() {
     struct: AbstractImporter {
@@ -847,6 +897,24 @@ void AbstractImporterTest::openMemory() {
     CORRADE_VERIFY(!importer.isOpened());
 }
 
+void AbstractImporterTest::openMemoryFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override {
+            return ImporterFeature::OpenData;
+        }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doOpenData(Containers::Array<char>&&, DataFlags) override {}
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.openMemory(nullptr));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractImporterTest::openFile() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -867,6 +935,22 @@ void AbstractImporterTest::openFile() {
 
     importer.close();
     CORRADE_VERIFY(!importer.isOpened());
+}
+
+void AbstractImporterTest::openFileFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doOpenFile(Containers::StringView) override {}
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.openFile({}));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImporterTest::openFileAsData() {
@@ -944,6 +1028,24 @@ void AbstractImporterTest::openState() {
 
     importer.close();
     CORRADE_VERIFY(!importer.isOpened());
+}
+
+void AbstractImporterTest::openStateFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override {
+            return ImporterFeature::OpenState;
+        }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doOpenState(const void*, Containers::StringView) override {}
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.openState({}));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImporterTest::openFileNotImplemented() {
@@ -1808,6 +1910,25 @@ void AbstractImporterTest::scene() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::sceneFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 1; }
+        Containers::Optional<SceneData> doScene(UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.scene(0));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImporterTest::object() {
@@ -3789,6 +3910,25 @@ void AbstractImporterTest::animation() {
     }
 }
 
+void AbstractImporterTest::animationFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doAnimationCount() const override { return 1; }
+        Containers::Optional<AnimationData> doAnimation(UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.animation(0));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractImporterTest::animationForNameOutOfRange() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -4034,6 +4174,25 @@ void AbstractImporterTest::light() {
     }
 }
 
+void AbstractImporterTest::lightFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doLightCount() const override { return 1; }
+        Containers::Optional<LightData> doLight(UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.light(0));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractImporterTest::lightForNameOutOfRange() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -4182,6 +4341,25 @@ void AbstractImporterTest::camera() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::cameraFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doCameraCount() const override { return 1; }
+        Containers::Optional<CameraData> doCamera(UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.camera(0));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImporterTest::cameraForNameOutOfRange() {
@@ -4898,6 +5076,25 @@ void AbstractImporterTest::skin2D() {
     }
 }
 
+void AbstractImporterTest::skin2DFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin2DCount() const override { return 1; }
+        Containers::Optional<SkinData2D> doSkin2D(UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.skin2D(0));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractImporterTest::skin2DForNameOutOfRange() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -5130,6 +5327,25 @@ void AbstractImporterTest::skin3D() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::skin3DFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin3DCount() const override { return 1; }
+        Containers::Optional<SkinData3D> doSkin3D(UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.skin3D(0));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImporterTest::skin3DForNameOutOfRange() {
@@ -5369,6 +5585,25 @@ void AbstractImporterTest::mesh() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::meshFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 1; }
+        Containers::Optional<MeshData> doMesh(UnsignedInt, UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.mesh(0));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -6298,6 +6533,25 @@ void AbstractImporterTest::material() {
     }
 }
 
+void AbstractImporterTest::materialFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMaterialCount() const override { return 1; }
+        Containers::Optional<MaterialData> doMaterial(UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.material(0));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 void AbstractImporterTest::materialDeprecatedFallback() {
     struct: AbstractImporter {
@@ -6573,6 +6827,25 @@ void AbstractImporterTest::texture() {
     }
 }
 
+void AbstractImporterTest::textureFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doTextureCount() const override { return 1; }
+        Containers::Optional<TextureData> doTexture(UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.texture(0));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractImporterTest::textureForNameOutOfRange() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -6726,6 +6999,25 @@ void AbstractImporterTest::image1D() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::image1DFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage1DCount() const override { return 1; }
+        Containers::Optional<ImageData1D> doImage1D(UnsignedInt, UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.image1D(0));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImporterTest::image1DLevelCountNotImplemented() {
@@ -7031,6 +7323,25 @@ void AbstractImporterTest::image2D() {
     }
 }
 
+void AbstractImporterTest::image2DFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage2DCount() const override { return 1; }
+        Containers::Optional<ImageData2D> doImage2D(UnsignedInt, UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.image2D(0));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractImporterTest::image2DLevelCountNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7332,6 +7643,25 @@ void AbstractImporterTest::image3D() {
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     }
+}
+
+void AbstractImporterTest::image3DFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage3DCount() const override { return 1; }
+        Containers::Optional<ImageData3D> doImage3D(UnsignedInt, UnsignedInt) override {
+            return {};
+        }
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.image3D(0));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImporterTest::image3DForNameOutOfRange() {
