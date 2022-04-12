@@ -492,11 +492,10 @@ what the particular converter supports, @ref convertToFile(),
 As each converter has different requirements and supports different pixel
 formats, you're expected to perform error handling on the application side ---
 if a conversion fails, you get an empty
-@relativeref{Corrade,Containers::Optional} /
-@relativeref{Corrade,Containers::Array} or @cpp false @ce and a reason printed
-to the error output. Everything else (using a feature not implemented in the
-converter, ...) is treated as a programmer error and will produce the usual
-assertions.
+@relativeref{Corrade,Containers::Optional} or @cpp false @ce and a reason
+printed to @relativeref{Magnum,Error}. Everything else (using a feature not
+implemented in the converter, ...) is treated as a programmer error and will
+produce the usual assertions.
 
 @subsection Trade-AbstractImageConverter-usage-file Saving an image to a file
 

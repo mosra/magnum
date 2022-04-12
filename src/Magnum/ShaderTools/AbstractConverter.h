@@ -336,11 +336,10 @@ converter plugins.
 As each converter has different requirements on the source, its format and
 options set, you're expected to perform error handling on the application side
 --- if a conversion or linking fails, you get an empty
-@relativeref{Corrade,Containers::Optional} /
-@relativeref{Corrade,Containers::Array} or @cpp false @ce and a reason printed
-to the error output. Everything else (using a feature not implemented in the
-converter, ...) is treated as a programmer error and will produce the usual
-assertions.
+@relativeref{Corrade,Containers::Optional} or @cpp false @ce and a reason
+printed to @relativeref{Magnum,Error}. Everything else (using a feature not
+implemented in the converter, ...) is treated as a programmer error and will
+produce the usual assertions.
 
 @m_class{m-note m-success}
 
