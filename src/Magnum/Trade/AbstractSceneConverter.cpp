@@ -925,9 +925,17 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(references, name);
 }
 
+// Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<ImageView1D> imageLevels, const Containers::StringView name) {
+//     return add(Containers::arrayView(imageLevels), name);
+// }
+
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::ArrayView<const ImageView1D> imageLevels) {
     return add(imageLevels, {});
 }
+
+// Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<ImageView1D> imageLevels) {
+//     return add(Containers::arrayView(imageLevels), {});
+// }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::ArrayView<const CompressedImageView1D> imageLevels, const Containers::StringView name) {
     /** @todo ArrayTuple or StaticAllocator? */
@@ -942,9 +950,17 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(references, name);
 }
 
+// Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<CompressedImageView1D> imageLevels, const Containers::StringView name) {
+//     return add(Containers::arrayView(imageLevels), name);
+// }
+
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::ArrayView<const CompressedImageView1D> imageLevels) {
     return add(imageLevels, {});
 }
+/*
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<CompressedImageView1D> imageLevels) {
+    return add(Containers::arrayView(imageLevels), {});
+}*/
 
 UnsignedInt AbstractSceneConverter::image2DCount() const {
     CORRADE_ASSERT(_state, "Trade::AbstractSceneConverter::image2DCount(): no conversion in progress", {});
@@ -1040,9 +1056,17 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(references, name);
 }
 
+// Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<ImageView2D> imageLevels, const Containers::StringView name) {
+//     return add(Containers::arrayView(imageLevels), name);
+// }
+
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::ArrayView<const ImageView2D> imageLevels) {
     return add(imageLevels, {});
 }
+
+// Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<ImageView2D> imageLevels) {
+//     return add(Containers::arrayView(imageLevels), {});
+// }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::ArrayView<const CompressedImageView2D> imageLevels, const Containers::StringView name) {
     /** @todo ArrayTuple or StaticAllocator? */
@@ -1057,9 +1081,17 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(references, name);
 }
 
+// Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<CompressedImageView2D> imageLevels, const Containers::StringView name) {
+//     return add(Containers::arrayView(imageLevels), name);
+// }
+
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::ArrayView<const CompressedImageView2D> imageLevels) {
     return add(imageLevels, {});
 }
+
+// Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<CompressedImageView2D> imageLevels) {
+//     return add(Containers::arrayView(imageLevels), {});
+// }
 
 UnsignedInt AbstractSceneConverter::image3DCount() const {
     CORRADE_ASSERT(_state, "Trade::AbstractSceneConverter::image3DCount(): no conversion in progress", {});
@@ -1155,9 +1187,17 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(references, name);
 }
 
+// Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<ImageView3D> imageLevels, const Containers::StringView name) {
+//     return add(Containers::arrayView(imageLevels), name);
+// }
+
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::ArrayView<const ImageView3D> imageLevels) {
     return add(imageLevels, {});
 }
+
+// Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<ImageView3D> imageLevels) {
+//     return add(Containers::arrayView(imageLevels), {});
+// }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::ArrayView<const CompressedImageView3D> imageLevels, const Containers::StringView name) {
     /** @todo ArrayTuple or StaticAllocator? */
@@ -1172,9 +1212,17 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(references, name);
 }
 
+// Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<CompressedImageView3D> imageLevels, const Containers::StringView name) {
+//     return add(Containers::arrayView(imageLevels), name);
+// }
+
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::ArrayView<const CompressedImageView3D> imageLevels) {
     return add(imageLevels, {});
 }
+
+// Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<CompressedImageView3D> imageLevels) {
+//     return add(Containers::arrayView(imageLevels), {});
+// }
 
 Debug& operator<<(Debug& debug, const SceneConverterFeature value) {
     debug << "Trade::SceneConverterFeature" << Debug::nospace;

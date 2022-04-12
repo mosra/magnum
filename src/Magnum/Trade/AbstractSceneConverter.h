@@ -1345,6 +1345,18 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         Containers::Optional<UnsignedInt> add(Containers::ArrayView<const ImageView1D> imageLevels);
         #endif
 
+// TODO makes passing {ImageData} ambiguous, what to do?!
+//         /**
+//          * @overload
+//          * @m_since_latest
+//          */
+//         #ifdef DOXYGEN_GENERATING_OUTPUT
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<ImageView1D> imageLevels, Containers::StringView name = {});
+//         #else
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<ImageView1D> imageLevels, Containers::StringView name);
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<ImageView1D> imageLevels);
+//         #endif
+
         /**
          * @overload
          * @m_since_latest
@@ -1355,6 +1367,18 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         Containers::Optional<UnsignedInt> add(Containers::ArrayView<const CompressedImageView1D> imageLevels, Containers::StringView name);
         Containers::Optional<UnsignedInt> add(Containers::ArrayView<const CompressedImageView1D> imageLevels);
         #endif
+
+// TODO makes passing {ImageData} ambiguous, what to do?!
+//         /**
+//          * @overload
+//          * @m_since_latest
+//          */
+//         #ifdef DOXYGEN_GENERATING_OUTPUT
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<CompressedImageView1D> imageLevels, Containers::StringView name = {});
+//         #else
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<CompressedImageView1D> imageLevels, Containers::StringView name);
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<CompressedImageView1D> imageLevels);
+//         #endif
 
         /**
          * @brief Count of added 2D images
@@ -1473,6 +1497,18 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         Containers::Optional<UnsignedInt> add(Containers::ArrayView<const ImageView2D> imageLevels);
         #endif
 
+// TODO makes passing {ImageData} ambiguous, what to do?!
+//         /**
+//          * @overload
+//          * @m_since_latest
+//          */
+//         #ifdef DOXYGEN_GENERATING_OUTPUT
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<ImageView2D> imageLevels, Containers::StringView name = {});
+//         #else
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<ImageView2D> imageLevels, Containers::StringView name);
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<ImageView2D> imageLevels);
+//         #endif
+
         /**
          * @overload
          * @m_since_latest
@@ -1483,6 +1519,18 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         Containers::Optional<UnsignedInt> add(Containers::ArrayView<const CompressedImageView2D> imageLevels, Containers::StringView name);
         Containers::Optional<UnsignedInt> add(Containers::ArrayView<const CompressedImageView2D> imageLevels);
         #endif
+
+// TODO makes passing {ImageData} ambiguous, what to do?!
+//         /**
+//          * @overload
+//          * @m_since_latest
+//          */
+//         #ifdef DOXYGEN_GENERATING_OUTPUT
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<CompressedImageView2D> imageLevels, Containers::StringView name = {});
+//         #else
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<CompressedImageView2D> imageLevels, Containers::StringView name);
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<CompressedImageView2D> imageLevels);
+//         #endif
 
         /**
          * @brief Count of added 3D images
@@ -1601,6 +1649,18 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         Containers::Optional<UnsignedInt> add(Containers::ArrayView<const ImageView3D> imageLevels);
         #endif
 
+// TODO makes passing {ImageData} ambiguous, what to do?!
+//         /**
+//          * @overload
+//          * @m_since_latest
+//          */
+//         #ifdef DOXYGEN_GENERATING_OUTPUT
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<ImageView3D> imageLevels, Containers::StringView name = {});
+//         #else
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<ImageView3D> imageLevels, Containers::StringView name);
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<ImageView3D> imageLevels);
+//         #endif
+
         /**
          * @overload
          * @m_since_latest
@@ -1611,6 +1671,18 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         Containers::Optional<UnsignedInt> add(Containers::ArrayView<const CompressedImageView3D> imageLevels, Containers::StringView name);
         Containers::Optional<UnsignedInt> add(Containers::ArrayView<const CompressedImageView3D> imageLevels);
         #endif
+
+// TODO makes passing {ImageData} ambiguous, what to do?!
+//         /**
+//          * @overload
+//          * @m_since_latest
+//          */
+//         #ifdef DOXYGEN_GENERATING_OUTPUT
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<CompressedImageView3D> imageLevels, Containers::StringView name = {});
+//         #else
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<CompressedImageView3D> imageLevels, Containers::StringView name);
+//         Containers::Optional<UnsignedInt> add(std::initializer_list<CompressedImageView3D> imageLevels);
+//         #endif
 
     protected:
         /**
