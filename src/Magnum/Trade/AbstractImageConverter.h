@@ -241,6 +241,9 @@ enum class ImageConverterFeature: UnsignedInt {
      */
     ConvertCompressed3DToData = ConvertCompressed3DToFile|(1 << 13),
 
+//     Levels = 1 << 14,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
     /**
      * Convert a set of 1D image levels to a file with
      * @ref AbstractImageConverter::convertToFile(Containers::ArrayView<const ImageView1D>, Containers::StringView).
@@ -348,6 +351,7 @@ enum class ImageConverterFeature: UnsignedInt {
      * @m_since_latest
      */
     ConvertCompressedLevels3DToData = ConvertCompressedLevels3DToFile|ConvertCompressed3DToData|(1 << 14)
+    #endif
 };
 
 /**
