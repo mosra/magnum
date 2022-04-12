@@ -665,8 +665,8 @@ void AbstractSceneConverterTest::convertMeshToFileNotImplemented() {
 void AbstractSceneConverterTest::debugFeature() {
     std::ostringstream out;
 
-    Debug{&out} << SceneConverterFeature::ConvertMeshInPlace << SceneConverterFeature(0xf0);
-    CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMeshInPlace Trade::SceneConverterFeature(0xf0)\n");
+    Debug{&out} << SceneConverterFeature::ConvertMeshInPlace << SceneConverterFeature(0xdeaddead);
+    CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMeshInPlace Trade::SceneConverterFeature(0xdeaddead)\n");
 }
 
 void AbstractSceneConverterTest::debugFeatures() {
