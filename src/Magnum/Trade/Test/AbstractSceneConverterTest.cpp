@@ -84,6 +84,9 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
 
     void convertMeshToData();
     void convertMeshToDataFailed();
+    void convertMeshToDataThroughBatch();
+    void convertMeshToDataThroughBatchAddFailed();
+    void convertMeshToDataThroughBatchEndFailed();
     void convertMeshToDataNotImplemented();
     void convertMeshToDataNonOwningDeleter();
     void convertMeshToDataGrowableDeleter();
@@ -94,6 +97,9 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void convertMeshToFileThroughData();
     void convertMeshToFileThroughDataFailed();
     void convertMeshToFileThroughDataNotWritable();
+    void convertMeshToFileThroughBatch();
+    void convertMeshToFileThroughBatchAddFailed();
+    void convertMeshToFileThroughBatchEndFailed();
     void convertMeshToFileNotImplemented();
 
     void beginEnd();
@@ -288,6 +294,9 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
 
               &AbstractSceneConverterTest::convertMeshToData,
               &AbstractSceneConverterTest::convertMeshToDataFailed,
+              &AbstractSceneConverterTest::convertMeshToDataThroughBatch,
+              &AbstractSceneConverterTest::convertMeshToDataThroughBatchAddFailed,
+              &AbstractSceneConverterTest::convertMeshToDataThroughBatchEndFailed,
               &AbstractSceneConverterTest::convertMeshToDataNotImplemented,
               &AbstractSceneConverterTest::convertMeshToDataNonOwningDeleter,
               &AbstractSceneConverterTest::convertMeshToDataGrowableDeleter,
@@ -298,6 +307,9 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
               &AbstractSceneConverterTest::convertMeshToFileThroughData,
               &AbstractSceneConverterTest::convertMeshToFileThroughDataFailed,
               &AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable,
+              &AbstractSceneConverterTest::convertMeshToFileThroughBatch,
+              &AbstractSceneConverterTest::convertMeshToFileThroughBatchAddFailed,
+              &AbstractSceneConverterTest::convertMeshToFileThroughBatchEndFailed,
               &AbstractSceneConverterTest::convertMeshToFileNotImplemented,
 
               &AbstractSceneConverterTest::beginEnd,
@@ -934,6 +946,85 @@ void AbstractSceneConverterTest::convertMeshToDataFailed() {
     CORRADE_COMPARE(out.str(), "");
 }
 
+void AbstractSceneConverterTest::convertMeshToDataThroughBatch() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple|
+                   SceneConverterFeature::AddMeshes;
+        }
+
+        void doBeginData() override {}
+
+        bool doAdd(UnsignedInt id, const MeshData& mesh, Containers::StringView) override {
+            CORRADE_COMPARE(id, 0);
+            CORRADE_COMPARE(mesh.primitive(), MeshPrimitive::Triangles);
+            _vertexCount = mesh.vertexCount();
+            return true;
+        }
+
+        Containers::Optional<Containers::Array<char>> doEndData() override {
+            return Containers::Array<char>{nullptr, _vertexCount};
+        }
+
+        std::size_t _vertexCount = 0;
+    } converter;
+
+    Containers::Optional<Containers::Array<char>> data = converter.convertToData(MeshData{MeshPrimitive::Triangles, 6});
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(data->size(), 6);
+}
+
+void AbstractSceneConverterTest::convertMeshToDataThroughBatchAddFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple|
+                   SceneConverterFeature::AddMeshes;
+        }
+
+        void doBeginData() override {}
+
+        bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
+            return false;
+        }
+
+        Containers::Optional<Containers::Array<char>> doEndData() override {
+            CORRADE_FAIL_IF(true, "doEndData() shouldn't be called");
+            return {};
+        }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(MeshData{MeshPrimitive::Triangles, 6}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractSceneConverterTest::convertMeshToDataThroughBatchEndFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple|
+                   SceneConverterFeature::AddMeshes;
+        }
+
+        void doBeginData() override {}
+
+        bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
+            return true;
+        }
+
+        Containers::Optional<Containers::Array<char>> doEndData() override {
+            return {};
+        }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(MeshData{MeshPrimitive::Triangles, 6}));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractSceneConverterTest::convertMeshToDataNotImplemented() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1104,6 +1195,15 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable() {
     CORRADE_COMPARE_AS(out.str(),
         "\nTrade::AbstractSceneConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
+}
+
+void AbstractSceneConverterTest::convertMeshToFileThroughBatch() {
+}
+
+void AbstractSceneConverterTest::convertMeshToFileThroughBatchAddFailed() {
+}
+
+void AbstractSceneConverterTest::convertMeshToFileThroughBatchEndFailed() {
 }
 
 void AbstractSceneConverterTest::convertMeshToFileNotImplemented() {

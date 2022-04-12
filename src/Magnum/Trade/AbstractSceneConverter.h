@@ -59,26 +59,26 @@ enum class SceneConverterFeature: UnsignedInt {
      * Convert a single mesh instance with
      * @ref AbstractSceneConverter::convert(const MeshData&).
      */
-    ConvertMesh = 1 << 0,
+    ConvertMesh = 1 << 0, // TODO mention behavior w/ begin
 
     /**
      * Convert a single mesh instance in-place with
      * @ref AbstractSceneConverter::convertInPlace(MeshData&).
      */
-    ConvertMeshInPlace = 1 << 1,
+    ConvertMeshInPlace = 1u << 1,
 
     /**
      * Convert a single mesh instance to a file with
      * @ref AbstractSceneConverter::convertToFile(const MeshData&, Containers::StringView).
      */
-    ConvertMeshToFile = 1 << 2,
+    ConvertMeshToFile = 1 << 2, // TODO mention behavior w/ beginFile
 
     /**
      * Convert a single mesh instance to raw data with
      * @ref AbstractSceneConverter::convertToData(const MeshData&). Implies
      * @ref SceneConverterFeature::ConvertMeshToFile.
      */
-    ConvertMeshToData = ConvertMeshToFile|(1 << 3),
+    ConvertMeshToData = ConvertMeshToFile|(1 << 3), // TODO mention behavior w/ beginData
 
     /**
      * Convert multiple data with
@@ -158,7 +158,7 @@ enum class SceneConverterFeature: UnsignedInt {
      * @m_since_latest
      * @see @ref SceneConverterFeature::MeshLevels
      */
-    AddMeshes = 1 << 13,
+    AddMeshes = 1 << 13, // TODO mention behavior with convert()
 
     /**
      * Add material instances with
@@ -712,6 +712,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref SceneConverterFeature::ConvertMultiple is supported.
          * @see @ref features(), @ref beginData(), @ref beginFile()
          */
+        // TODO mention behavior with ConvertMesh
         void begin();
 
         /**
@@ -727,6 +728,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * earlier. On failure prints a message to @relativeref{Magnum,Error}
          * and returns @cpp nullptr @ce.
          */
+        // TODO mention behavior with ConvertMesh, especially with the importer
+        //  behavior, also test that to be more graceful
         Containers::Pointer<AbstractImporter> end();
 
         /**
@@ -739,6 +742,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref SceneConverterFeature::ConvertMultipleToData is supported.
          * @see @ref features(), @ref begin(), @ref beginFile()
          */
+        // TODO mention behavior with ConvertMeshToData
         void beginData();
 
         /**
@@ -749,6 +753,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * message to @relativeref{Magnum,Error} and returns
          * @ref Containers::NullOpt.
          */
+        // TODO mention behavior with ConvertMeshToData
         Containers::Optional<Containers::Array<char>> endData();
 
         /**
@@ -761,6 +766,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref SceneConverterFeature::ConvertMultipleToFile is supported.
          * @see @ref features(), @ref begin(), @ref beginData()
          */
+        // TODO mention behavior with ConvertMeshToFile
         void beginFile(Containers::StringView filename);
 
         /**
@@ -770,6 +776,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * Expects that @ref beginData() was called before. On failure prints a
          * message to @relativeref{Magnum,Error} and returns @cpp false @ce.
          */
+        // TODO mention behavior with ConvertMeshToFile, especially about when the file gets saved
         bool endFile();
 
         /**
@@ -1083,6 +1090,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @see @ref isConverting(), @ref features(),
          *      @ref setMeshAttributeName()
          */
+        // TODO mention behavior with ConvertMeshToFile, especially when the file gets saved
         #ifdef DOXYGEN_GENERATING_OUTPUT
         Containers::Optional<UnsignedInt> add(const MeshData& mesh, Containers::StringView name = {});
         #else

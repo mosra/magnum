@@ -240,7 +240,14 @@ AbstractSceneConverter::convertToData(const MeshData& mesh) {
     #endif
 }
 
-Containers::Optional<Containers::Array<char>> AbstractSceneConverter::doConvertToData(const MeshData&) {
+Containers::Optional<Containers::Array<char>> AbstractSceneConverter::doConvertToData(const MeshData& data) {
+    if(features() >= (SceneConverterFeature::ConvertMultipleToData|SceneConverterFeature::AddMeshes)) {
+        beginData();
+        Containers::Optional<Containers::Array<char>> out;
+        if(add(data) && (out = endData())) return out;
+        return {};
+    }
+
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::convertToData(): mesh conversion advertised but not implemented", {});
 }
 
@@ -258,6 +265,7 @@ bool AbstractSceneConverter::convertToFile(const std::string& filename, const Me
 #endif
 
 bool AbstractSceneConverter::doConvertToFile(const MeshData& mesh, const Containers::StringView filename) {
+    // TODO delegate to batch
     CORRADE_ASSERT(features() >= SceneConverterFeature::ConvertMeshToData, "Trade::AbstractSceneConverter::convertToFile(): mesh conversion advertised but not implemented", false);
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(mesh);
