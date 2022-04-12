@@ -156,7 +156,7 @@ Containers::Optional<Containers::Array<char>>
 Implementation::SceneConverterOptionalButAlsoArray<char>
 #endif
 AbstractSceneConverter::convertToData(const MeshData& mesh) {
-    CORRADE_ASSERT(features() & SceneConverterFeature::ConvertMeshToData,
+    CORRADE_ASSERT(features() >= SceneConverterFeature::ConvertMeshToData,
         "Trade::AbstractSceneConverter::convertToData(): mesh conversion not supported", {});
 
     Containers::Optional<Containers::Array<char>> out = doConvertToData(mesh);
