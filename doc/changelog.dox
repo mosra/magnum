@@ -285,6 +285,9 @@ See also:
 -   New @ref Trade::SkinData class and @ref Trade::AbstractImporter::skin2D() /
     @ref Trade::AbstractImporter::skin3D() family of APIs for skin import, as
     well as support in @ref Trade::AnySceneImporter "AnySceneImporter"
+-   The @ref Trade::AbstractSceneConverter plugin interface gained support for
+    batch conversion of whole scenes --- meshes, hierarchies, materials,
+    textures, animations and other data
 -   1D and 3D image support in @ref Trade::AbstractImageConverter
 -   @ref Trade::LightData got extended to support light attenuation and range
     parameters as well and spot light inner and outer angle
