@@ -810,6 +810,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *      @ref setSceneFieldName(), @ref setObjectName(),
          *      @ref setDefaultScene()
          */
+        // TODO checking IDs?? should maybe document that it should be called
+        //  after all meshes etc are added, and that various converters might be checking some stuff but ignoring other (check dcs)
+        // TODO document behavior of custom properties -- ignored?
         #ifdef DOXYGEN_GENERATING_OUTPUT
         Containers::Optional<UnsignedInt> add(const SceneData& data, Containers::StringView name = {});
         #else
@@ -1722,6 +1725,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * detection based on file extension.
          */
         virtual void doBeginFile(Containers::StringView filename);
+            // TODO guarantee (and a test) that the string pointed to by
+            //  filename stays in scope until doEndFile()
+            // TODO and that it's null-terminated (?)
 
         /**
          * @brief Implementation for @ref endFile()
