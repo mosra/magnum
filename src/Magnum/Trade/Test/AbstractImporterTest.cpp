@@ -84,8 +84,10 @@ struct AbstractImporterTest: TestSuite::Tester {
     void openDataDeprecatedFallback();
     #endif
     void openMemory();
+    void openFile();
     void openFileAsData();
     void openFileAsDataNotFound();
+    void openState();
 
     void openFileNotImplemented();
     void openDataNotSupported();
@@ -383,8 +385,10 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::openDataDeprecatedFallback,
               #endif
               &AbstractImporterTest::openMemory,
+              &AbstractImporterTest::openFile,
               &AbstractImporterTest::openFileAsData,
               &AbstractImporterTest::openFileAsDataNotFound,
+              &AbstractImporterTest::openState,
 
               &AbstractImporterTest::openFileNotImplemented,
               &AbstractImporterTest::openDataNotSupported,
@@ -843,6 +847,28 @@ void AbstractImporterTest::openMemory() {
     CORRADE_VERIFY(!importer.isOpened());
 }
 
+void AbstractImporterTest::openFile() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        void doOpenFile(Containers::StringView filename) override {
+            CORRADE_COMPARE(filename, "yello.foo");
+            _opened = true;
+        }
+
+        bool _opened = false;
+    } importer;
+
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_VERIFY(importer.openFile("yello.foo"));
+    CORRADE_VERIFY(importer.isOpened());
+
+    importer.close();
+    CORRADE_VERIFY(!importer.isOpened());
+}
+
 void AbstractImporterTest::openFileAsData() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
@@ -893,6 +919,31 @@ void AbstractImporterTest::openFileAsDataNotFound() {
     CORRADE_COMPARE_AS(out.str(),
         "\nTrade::AbstractImporter::openFile(): cannot open file nonexistent.bin\n",
         TestSuite::Compare::StringHasSuffix);
+}
+
+void AbstractImporterTest::openState() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override {
+            return ImporterFeature::OpenState;
+        }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        void doOpenState(const void* state, Containers::StringView filePath) override {
+            CORRADE_COMPARE(state, reinterpret_cast<const void*>(0xbadcafe));
+            CORRADE_COMPARE(filePath, "yello/foo/");
+            _opened = true;
+        }
+
+        bool _opened = false;
+    } importer;
+
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_VERIFY(importer.openState(reinterpret_cast<const void*>(0xbadcafe), "yello/foo/"));
+    CORRADE_VERIFY(importer.isOpened());
+
+    importer.close();
+    CORRADE_VERIFY(!importer.isOpened());
 }
 
 void AbstractImporterTest::openFileNotImplemented() {
