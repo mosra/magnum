@@ -98,4 +98,4 @@ bool AnySceneConverter::doConvertToFile(const MeshData& mesh, const Containers::
 }}
 
 CORRADE_PLUGIN_REGISTER(AnySceneConverter, Magnum::Trade::AnySceneConverter,
-    "cz.mosra.magnum.Trade.AbstractSceneConverter/0.1.2")
+    "cz.mosra.magnum.Trade.AbstractSceneConverter/0.2")
