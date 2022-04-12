@@ -269,13 +269,13 @@ The plugin needs to implement the @ref doFeatures() function and one or more of
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   The function @ref doConvert(const MeshData&) is called only if
+-   The @ref doConvert(const MeshData&) function is called only if
     @ref SceneConverterFeature::ConvertMesh is supported.
--   The function @ref doConvertInPlace(MeshData&) is called only if
+-   The @ref doConvertInPlace(MeshData&) function is called only if
     @ref SceneConverterFeature::ConvertMeshInPlace is supported.
--   The function @ref doConvertToData(const MeshData&) is called only if
+-   The @ref doConvertToData(const MeshData&) function is called only if
     @ref SceneConverterFeature::ConvertMeshToData is supported.
--   The function @ref doConvertToFile(const MeshData&, Containers::StringView)
+-   The @ref doConvertToFile(const MeshData&, Containers::StringView) function
     is called only if @ref SceneConverterFeature::ConvertMeshToFile is
     supported.
 
@@ -283,7 +283,7 @@ checked by the implementation:
 
 @par Dangling function pointers on plugin unload
     As @ref Trade-AbstractSceneConverter-data-dependency "mentioned above",
-    @ref Corrade::Containers::Array instances returned from plugin
+    @relativeref{Corrade::Containers,Array} instances returned from plugin
     implementations are not allowed to use anything else than the default
     deleter or the deleter used by @ref Trade::ArrayAllocator, otherwise this
     could cause dangling function pointer call on array destruction if the

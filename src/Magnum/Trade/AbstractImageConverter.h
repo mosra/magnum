@@ -610,7 +610,7 @@ checked by the implementation:
     implementation doesn't work with any of those, it's expected to check that
     on its own and produce a runtime error.
 -   All @ref doConvertToData() and @ref doConvertToFile() functions taking
-    multiple (compressed) images are called only the list has at least one
+    multiple (compressed) images are called only if the list has at least one
     image, each of the images has a non-zero size, the views are not
     @cpp nullptr @ce and additionally all views have the same pixel format.
     Since file formats have varying requirements on image level sizes and their
