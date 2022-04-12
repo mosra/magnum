@@ -1015,6 +1015,8 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         #endif
         convertToData(const CompressedImageView3D& image);
 
+        /** @todo with extras, this all needs to take a Data */
+
         /**
          * @brief Convert a 1D image data to a raw data
          * @m_since_latest

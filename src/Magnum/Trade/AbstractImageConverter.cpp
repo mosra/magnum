@@ -272,6 +272,8 @@ Containers::Optional<ImageData3D> AbstractImageConverter::convert(const ImageDat
 #ifndef CORRADE_NO_ASSERT
 namespace {
 
+/** @todo reuse from AbstractSceneConverter when both take ImageData and not
+    views */
 template<UnsignedInt dimensions, template<UnsignedInt, class> class View> bool checkImageValidity(const char* const messagePrefix, const View<dimensions, const char>& image) {
     /* At some point there might be a file format that allows zero-sized
        images, but so far I don't know about any. When such format appears,
@@ -539,6 +541,8 @@ AbstractImageConverter::convertToData(const ImageData3D& image) {
 #ifndef CORRADE_NO_ASSERT
 namespace {
 
+/** @todo reuse from AbstractSceneConverter when both take ImageData and not
+    views */
 template<UnsignedInt dimensions> bool checkImageValidity(const char* const messagePrefix, const Containers::ArrayView<const BasicImageView<dimensions>> imageLevels) {
     CORRADE_ASSERT(!imageLevels.isEmpty(),
         messagePrefix << "at least one image has to be specified", false);
@@ -562,6 +566,8 @@ template<UnsignedInt dimensions> bool checkImageValidity(const char* const messa
     return true;
 }
 
+/** @todo reuse from AbstractSceneConverter when both take ImageData and not
+    views */
 template<UnsignedInt dimensions> bool checkImageValidity(const char* const messagePrefix, const Containers::ArrayView<const BasicCompressedImageView<dimensions>> imageLevels) {
     CORRADE_ASSERT(!imageLevels.isEmpty(),
         messagePrefix << "at least one image has to be specified", false);
