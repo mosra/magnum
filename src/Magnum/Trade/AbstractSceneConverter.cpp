@@ -39,7 +39,9 @@
 #include "Magnum/Trade/ArrayAllocator.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/MeshData.h"
+#include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/SceneData.h"
+#include "Magnum/Trade/TextureData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /* needed by deprecated convertToFile() that takes a std::string */
@@ -1223,6 +1225,113 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
 // Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const std::initializer_list<CompressedImageView3D> imageLevels) {
 //     return add(Containers::arrayView(imageLevels), {});
 // }
+
+bool AbstractSceneConverter::addImporterContents(AbstractImporter& importer, const SceneConverterContents contents) {
+    // TODO assert if begin called
+    // TODO assert if importer opened
+    // TODO assert about features? or leave that on the called funs
+
+    if(contents & SceneConverterContent::Scenes) {
+        /* Propagate object names, skip ones that are empty */
+        for(UnsignedLong i = 0, iMax = importer.objectCount(); i != iMax; ++i) {
+            if(const Containers::String name = importer.objectName(i))
+                setObjectName(i, name);
+        }
+
+        for(UnsignedInt i = 0, iMax = importer.sceneCount(); i != iMax; ++i) {
+            Containers::Optional<Trade::SceneData> scene = importer.scene(i);
+            if(!scene) return false;
+
+            for(UnsignedInt j = 0; j != scene->fieldCount(); ++j) {
+                // TODO how to filter them to not call the name again and again?!
+                const Trade::SceneField name = scene->fieldName(j);
+                if(!isSceneFieldCustom(name)) continue;
+                if(const Containers::String nameString = importer.sceneFieldName(name)) {
+                    !Debug{};
+                    setSceneFieldName(name, nameString);
+                }
+            }
+
+            if(!scene || !add(*scene, importer.sceneName(i)))
+                return false;
+        }
+    }
+
+    if(contents & SceneConverterContent::Meshes) {
+        // TODO levels?!
+        for(UnsignedInt i = 0, iMax = importer.meshCount(); i != iMax; ++i) {
+            // TODO attribute names, how to filter them to not call the name again
+            //  and again?!
+            Containers::Optional<Trade::MeshData> mesh = importer.mesh(i);
+            if(!mesh || !add(*mesh, importer.meshName(i)))
+                return false;
+        }
+    }
+
+    if(contents & (SceneConverterContent::Images3D|SceneConverterContent::CompressedImages3D)) {
+        // TODO levels?!
+        for(UnsignedInt i = 0, iMax = importer.image3DCount(); i != iMax; ++i) {
+            // TODO skip what's compressed (and converter doesn't support) and
+            //  vice versa
+            Containers::Optional<Trade::ImageData3D> image = importer.image3D(i);
+            if(!image || !add(*image, importer.image3DName(i)))
+                return false;
+        }
+    }
+
+    if(contents & SceneConverterContent::Textures) {
+        for(UnsignedInt i = 0, iMax = importer.textureCount(); i != iMax; ++i) {
+            Containers::Optional<Trade::TextureData> texture = importer.texture(i);
+            if(!texture || !add(*texture, importer.textureName(i)))
+                return false;
+        }
+    }
+
+    if(contents & SceneConverterContent::Materials) {
+        for(UnsignedInt i = 0, iMax = importer.materialCount(); i != iMax; ++i) {
+            // TODO attribute names, how to filter them to not call the name again
+            //  and again?!
+            Containers::Optional<Trade::MaterialData> material = importer.material(i);
+            if(!material || !add(*material, importer.materialName(i)))
+                return false;
+        }
+    }
+
+    // TODO rest
+
+    return true;
+}
+
+bool AbstractSceneConverter::addSupportedImporterContents(AbstractImporter& importer, const SceneConverterContents contents) {
+    SceneConverterContents filteredContents;
+    const SceneConverterFeatures features = this->features();
+    #define _c(name)                                                        \
+        if(features & SceneConverterFeature::Add ## name)                   \
+            filteredContents |= SceneConverterContent::name;
+    _c(Scenes)
+    _c(Animations)
+    _c(Lights)
+    _c(Cameras)
+    _c(Skins2D)
+    _c(Skins3D)
+    _c(Meshes)
+    _c(Materials)
+    _c(Textures)
+    _c(Images1D)
+    _c(Images2D)
+    _c(Images3D)
+    _c(CompressedImages1D)
+    _c(CompressedImages2D)
+    _c(CompressedImages2D)
+    #undef _c
+    if(features & SceneConverterFeature::MeshLevels)
+        filteredContents |= SceneConverterContent::ExtraMeshLevels;
+    if(features & SceneConverterFeature::ImageLevels)
+        filteredContents |= SceneConverterContent::ExtraImageLevels;
+
+    // TODO be sure to test this
+    return addImporterContents(importer, filteredContents & contents);
+}
 
 Debug& operator<<(Debug& debug, const SceneConverterFeature value) {
     debug << "Trade::SceneConverterFeature" << Debug::nospace;

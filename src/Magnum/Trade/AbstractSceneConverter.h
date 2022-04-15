@@ -311,6 +311,49 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFlag value);
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFlags value);
 
+/**
+@brief Contents to use for scene conversion
+@m_since_latest
+
+@see @ref SceneConverterContents,
+    @ref AbstractSceneConverter::addImporterContents(),
+    @ref AbstractSceneConverter::addSupportedImporterContents()
+*/
+enum class SceneConverterContent: UnsignedInt {
+    Scenes = 1 << 0, // TODO ... and default scene?
+    Animations = 1 << 1,
+    Lights = 1 << 2,
+    Cameras = 1 << 3,
+    Skins2D = 1 << 4,
+    Skins3D = 1 << 5,
+    Meshes = 1 << 6,
+    Materials = 1 << 7,
+    Textures = 1 << 8,
+    Images1D = 1 << 9,
+    Images2D = 1 << 10,
+    Images3D = 1 << 11,
+    CompressedImages1D = 1 << 12,
+    CompressedImages2D = 1 << 13,
+    CompressedImages3D = 1 << 14,
+    ExtraMeshLevels = 1 << 15, // TODO what to do here? just the first one if not?
+    ExtraImageLevels = 1 << 16
+    // TODO Names ?! or, rather, NoNames?!
+    // TODO or have that as a global flag, IgnoreNames, for smaller output?
+
+    // TODO what about scene parts? "only mesh and material assignment", "no custom fields", ...? i guess better done separately
+};
+
+/**
+@brief Parts to import for scene conversion
+@m_since_latest
+
+@see @ref AbstractSceneConverter::addImporterContents(),
+    @ref AbstractSceneConverter::addSupportedImporterContents()
+*/
+typedef Containers::EnumSet<SceneConverterContent> SceneConverterContents;
+
+CORRADE_ENUMSET_OPERATORS(SceneConverterContents)
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 namespace Implementation {
     /* Could be a concrete type as it's always only char, but that would mean
@@ -1686,6 +1729,39 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
 //         Containers::Optional<UnsignedInt> add(std::initializer_list<CompressedImageView3D> imageLevels, Containers::StringView name);
 //         Containers::Optional<UnsignedInt> add(std::initializer_list<CompressedImageView3D> imageLevels);
 //         #endif
+
+        /**
+         * @brief Add importer contents
+         * @m_since_latest
+         *
+         * Convenience function for querying @p importer for particular data
+         * and feeding them to various `add*()` and `set*()` functions.
+         *
+         * Expects that a conversion is currently in progress and for every
+         * @ref SceneConverterContent in @p contents a corresponding feature is
+         * supported.
+         * @see @ref addSupportedImporterContents()
+         */
+        bool addImporterContents(AbstractImporter& importer, SceneConverterContents contents);
+        // TODO mention that Count gets updated after (?!)
+        // TODO document behavior if something fails -- continue or abruptly fail? uhhh
+        //  take this as a convenience feature and if more detailed behavior is
+        //  needed, use the functions directly?!
+
+        // TODO some doAddImporter() thing for e.g. glTF JSON
+    //  being directly reused (or not)? or not at all?
+        //  seems like needless pain, honestly :(
+        // TODO or maybe if it would just get some importer-specific extras
+        //  and leave the rest on the base implementation?
+
+        /**
+         * @brief Add supported importer contents
+         * @m_since_latest
+         *
+         * Filters @p contents based on supported @ref features() and delegates
+         * to @ref addImporterContents().
+         */
+        bool addSupportedImporterContents(AbstractImporter& importer, SceneConverterContents contents = ~SceneConverterContents{});
 
     protected:
         /**
