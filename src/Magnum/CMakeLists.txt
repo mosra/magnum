@@ -41,10 +41,20 @@ if(Git_FOUND)
     execute_process(COMMAND ${GIT_EXECUTABLE} describe --match "v*" --long
         OUTPUT_VARIABLE MAGNUM_VERSION_STRING
         RESULT_VARIABLE _MAGNUM_VERSION_RESULT
+        ERROR_VARIABLE _MAGNUM_VERSION_ERROR
         # Otherwise this gets executed in the build dir, which might be inside
-        # a totally different Git working copy
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+        # a totally different Git working copy. But that's not enough, if it
+        # would be run in ${CMAKE_CURRENT_SOURCE_DIR}, on Windows the
+        # `--match "v*"` would get expanded to the `version.h.cmake` file,
+        # causing Git to obviously not find any such tag. The reason is
+        # probably that on Windows the wildcard expansion is done on the
+        # application side and not by the shell, thus being performed even
+        # though CMake docs say `execute_process()` doesn't involve a shell.
+        # The package/git directory is thus dedicated for that operation,
+        # *guaranteed* to never contain any file starting with `v` (or `V` for
+        # that matter because, again, HELLO WINDOWS).
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/package/git
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
     if(MAGNUM_VERSION_STRING MATCHES "^v([0-9][0-9][0-9][0-9])\\.0?([0-9][0-9]?)-([0-9]+)-g([a-f0-9]+)$")
         set(MAGNUM_VERSION_YEAR ${CMAKE_MATCH_1})
         set(MAGNUM_VERSION_MONTH ${CMAKE_MATCH_2})
@@ -54,6 +64,8 @@ if(Git_FOUND)
         set(MAGNUM_VERSION_HASH ${CMAKE_MATCH_4})
     elseif(_MAGNUM_VERSION_RESULT EQUAL 0)
         message(WARNING "Can't match Git version from ${MAGNUM_VERSION_STRING}")
+    else()
+        message(WARNING "Can't match Git version: ${_MAGNUM_VERSION_ERROR}")
     endif()
 endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.h.cmake
