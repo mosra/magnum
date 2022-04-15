@@ -101,7 +101,7 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
 
     /* Save command-line arguments */
     if(args.value("log") == "verbose") _verboseLog = true;
-    const std::string dpiScaling = args.value("dpi-scaling");
+    const Containers::String dpiScaling = args.value("dpi-scaling");
     if(dpiScaling == "default")
         _commandLineDpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Default;
     #ifdef CORRADE_TARGET_APPLE
@@ -113,7 +113,7 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     else if(dpiScaling == "physical")
         _commandLineDpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Physical;
     #endif
-    else if(dpiScaling.find_first_of(" \t\n") != std::string::npos)
+    else if(dpiScaling.find(' ') || dpiScaling.find('\t') || dpiScaling.find('\n'))
         _commandLineDpiScaling = args.value<Vector2>("dpi-scaling");
     else
         _commandLineDpiScaling = Vector2{args.value<Float>("dpi-scaling")};
@@ -243,8 +243,8 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) {
     #endif
 }
 
-void GlfwApplication::setWindowTitle(const std::string& title) {
-    glfwSetWindowTitle(_window, title.data());
+void GlfwApplication::setWindowTitle(const Containers::StringView title) {
+    glfwSetWindowTitle(_window, String::nullTerminatedView(title).data());
 }
 
 #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
@@ -348,7 +348,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
     #endif
 
     /* Create the window */
-    _window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().c_str(), monitor, nullptr);
+    _window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().data(), monitor, nullptr);
     if(!_window) {
         Error() << "Platform::GlfwApplication::tryCreate(): cannot create window";
         glfwTerminate();
@@ -505,7 +505,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         glfwWindowHint(GLFW_VISIBLE, false);
     else if(_verboseLog)
         Warning{} << "Platform::GlfwApplication: Wayland detected, GL context has to be created with the window visible and may cause flicker on startup";
-    if((_window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().c_str(), monitor, nullptr)))
+    if((_window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().data(), monitor, nullptr)))
         glfwMakeContextCurrent(_window);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -544,7 +544,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
            just 2.1) and I assume on others as well. */
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, false);
 
-        _window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().c_str(), monitor, nullptr);
+        _window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().data(), monitor, nullptr);
     }
     #endif
 
@@ -909,12 +909,11 @@ GlfwApplication::Configuration::Configuration():
 GlfwApplication::Configuration::~Configuration() = default;
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
-std::string GlfwApplication::KeyEvent::keyName(const Key key) {
-    /* It can return null, so beware */
-    return Utility::String::fromArray(glfwGetKeyName(int(key), 0));
+Containers::StringView GlfwApplication::KeyEvent::keyName(const Key key) {
+    return glfwGetKeyName(int(key), 0);
 }
 
-std::string GlfwApplication::KeyEvent::keyName() const {
+Containers::StringView GlfwApplication::KeyEvent::keyName() const {
     return keyName(_key);
 }
 #endif
