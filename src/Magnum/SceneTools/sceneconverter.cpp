@@ -826,12 +826,18 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
             d << Debug::newline << "  Fields:";
             for(const SceneFieldInfo& field: info.fields) {
-                d << Debug::newline << "   " << Debug::packed << Debug::boldColor(Debug::Color::White) << field.name << Debug::resetColor;
+                d << Debug::newline << "   "
+                    << Debug::boldColor(Debug::Color::White);
                 if(Trade::isSceneFieldCustom(field.name)) {
-                    d << Debug::color(Debug::Color::Yellow)
+                    d << "Custom(" << Debug::nospace
+                        << Trade::sceneFieldCustom(field.name)
+                        << Debug::nospace << ":" << Debug::nospace
+                        << Debug::color(Debug::Color::Yellow)
                         << sceneFieldNames[UnsignedInt(field.name)]
-                        << Debug::resetColor;
-                }
+                        << Debug::nospace
+                        << Debug::boldColor(Debug::Color::White) << ")";
+                } else d << Debug::packed << field.name;
+
                 d << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << field.type;
                 if(field.arraySize)
                     d << Debug::nospace << Utility::format("[{}]", field.arraySize);
@@ -864,15 +870,19 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 for(std::size_t i = 0; i != info.fields.size(); ++i) {
                     if(i) d << Debug::nospace << ",";
                     const Containers::Pair<Trade::SceneField, UnsignedInt> nameCount = info.fields[i];
-                    d << Debug::packed << Debug::color(Debug::Color::Cyan) << nameCount.first();
+                    d << Debug::color(Debug::Color::Cyan);
+                    if(Trade::isSceneFieldCustom(nameCount.first())) {
+                        d << "Custom(" << Debug::nospace
+                            << Trade::sceneFieldCustom(nameCount.first())
+                            << Debug::nospace << ":" << Debug::nospace
+                            << Debug::color(Debug::Color::Yellow)
+                            << sceneFieldNames[UnsignedInt(nameCount.first())]
+                            << Debug::nospace
+                            << Debug::color(Debug::Color::Cyan) << ")";
+                    } else d << Debug::packed << nameCount.first();
                     if(nameCount.second() != 1)
                         d << Debug::nospace << Utility::format("[{}]", nameCount.second());
                     d << Debug::resetColor;
-                    if(Trade::isSceneFieldCustom(nameCount.first())) {
-                        d << Debug::color(Debug::Color::Yellow)
-                            << sceneFieldNames[UnsignedInt(nameCount.first())]
-                            << Debug::resetColor;
-                    }
                 }
             }
         }
@@ -1109,10 +1119,17 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             d << Debug::nospace << ")";
 
             for(const MeshAttributeInfo& attribute: info.attributes) {
-                d << Debug::newline << "   " << Debug::packed << Debug::boldColor(Debug::Color::White) << attribute.name;
+                d << Debug::newline << "   "
+                    << Debug::boldColor(Debug::Color::White);
                 if(Trade::isMeshAttributeCustom(attribute.name)) {
-                    d << Debug::color(Debug::Color::Yellow) << attribute.customName << Debug::resetColor;
-                }
+                    d << "Custom(" << Debug::nospace
+                        << Trade::meshAttributeCustom(attribute.name)
+                        << Debug::nospace << ":" << Debug::nospace
+                        << Debug::color(Debug::Color::Yellow)
+                        << attribute.customName << Debug::nospace
+                        << Debug::boldColor(Debug::Color::White) << ")";
+                } else d << Debug::packed << attribute.name;
+
                 d << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << attribute.format;
                 if(attribute.arraySize)
                     d << Debug::nospace << Utility::format("[{}]", attribute.arraySize);
