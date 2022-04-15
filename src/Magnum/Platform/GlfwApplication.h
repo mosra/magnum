@@ -32,9 +32,9 @@
  * @brief Class @ref Magnum::Platform::GlfwApplication, macro @ref MAGNUM_GLFWAPPLICATION_MAIN()
  */
 
-#include <string>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h> /** @todo PIMPL Configuration instead? */
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -49,6 +49,11 @@
 #define GLFW_INCLUDE_NONE
 #endif
 #include <GLFW/glfw3.h>
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Some APIs used to take or return a std::string before */
+#include <Corrade/Containers/StringStl.h>
+#endif
 
 namespace Magnum { namespace Platform {
 
@@ -474,7 +479,7 @@ class GlfwApplication {
          *
          * The @p title is expected to be encoded in UTF-8.
          */
-        void setWindowTitle(const std::string& title);
+        void setWindowTitle(Containers::StringView title);
 
         #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302 || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
@@ -1218,8 +1223,14 @@ class GlfwApplication::Configuration {
         /*implicit*/ Configuration();
         ~Configuration();
 
-        /** @brief Window title */
-        std::string title() const { return _title; }
+        /**
+         * @brief Window title
+         *
+         * The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * is valid until the next call to @ref setTitle().
+         */
+        Containers::StringView title() const { return _title; }
 
         /**
          * @brief Set window title
@@ -1227,8 +1238,8 @@ class GlfwApplication::Configuration {
          *
          * Default is @cpp "Magnum GLFW Application" @ce.
          */
-        Configuration& setTitle(std::string title) {
-            _title = std::move(title);
+        Configuration& setTitle(Containers::StringView title) {
+            _title = Containers::String::nullTerminatedGlobalView(title);
             return *this;
         }
 
@@ -1368,7 +1379,7 @@ class GlfwApplication::Configuration {
         #endif
 
     private:
-        std::string _title;
+        Containers::String _title;
         Vector2i _size;
         WindowFlags _windowFlags;
         DpiScalingPolicy _dpiScalingPolicy;
@@ -1814,11 +1825,14 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
          *
          * Human-readable localized UTF-8 name for given @p key, intended for
          * displaying to the user in e.g. key binding configuration. If there
-         * is no name for given key, empty string is returned.
+         * is no name for given key, empty string is returned. The returned
+         * view is always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * and is valid until the keyboard layout is changed or the application
+         * exits.
          * @see @ref keyName(Key)
          * @note Supported since GLFW 3.2.
          */
-        static std::string keyName(Key key);
+        static Containers::StringView keyName(Key key);
         #endif
 
         /** @copydoc Sdl2Application::KeyEvent::key() */
@@ -1831,11 +1845,14 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
          * Human-readable localized UTF-8 name for the key returned by
          * @ref key(), intended for displaying to the user in e.g.
          * key binding configuration. If there is no name for that key, empty
-         * string is returned.
+         * string is returned. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * is valid until the keyboard layout is changed or the application
+         * exits.
          * @see @ref keyName(Key)
          * @note Supported since GLFW 3.2.
          */
-        std::string keyName() const;
+        Containers::StringView keyName() const;
         #endif
 
         /** @brief Modifiers */

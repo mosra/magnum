@@ -37,6 +37,8 @@
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
+using namespace Containers::Literals;
+
 struct GlfwApplicationTest: Platform::Application {
     explicit GlfwApplicationTest(const Arguments& arguments);
 
@@ -72,7 +74,7 @@ struct GlfwApplicationTest: Platform::Application {
             stopTextInput();
         } else if(event.key() == KeyEvent::Key::T) {
             Debug{} << "setting window title";
-            setWindowTitle("This is a UTF-8 Window Title™!");
+            setWindowTitle("This is a UTF-8 Window Title™ and it should have no exclamation mark!!"_s.exceptSuffix(2));
         } else if(event.key() == KeyEvent::Key::S) {
             Debug{} << "setting window size, which should trigger a viewport event";
             setWindowSize(Vector2i{300, 200});
@@ -123,7 +125,8 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
     }
 
     Configuration conf;
-    conf.setWindowFlags(Configuration::WindowFlag::Resizable);
+    conf.setTitle("Window title that should have no exclamation mark!!"_s.exceptSuffix(2))
+        .setWindowFlags(Configuration::WindowFlag::Resizable);
     if(!args.value("dpi-scaling").empty())
         conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
     if(args.isSet("borderless"))
