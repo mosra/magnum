@@ -90,6 +90,7 @@ digraph "Magnum library dependency order" {
 
     MagnumShaders -> MagnumGL
     MagnumShaderTools -> Magnum
+    MagnumShaderTools -> CorradePluginManager
 
     MagnumText -> MagnumTextureTools
     MagnumText -> MagnumGL [style=dotted]
