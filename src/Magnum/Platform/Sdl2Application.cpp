@@ -159,7 +159,7 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
 
     /* Save command-line arguments */
     if(args.value("log") == "verbose") _verboseLog = true;
-    const std::string dpiScaling = args.value("dpi-scaling");
+    const Containers::String dpiScaling = args.value("dpi-scaling");
     if(dpiScaling == "default")
         _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Default;
     #ifdef CORRADE_TARGET_APPLE
@@ -174,7 +174,7 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     else if(dpiScaling == "physical")
         _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Physical;
     #endif
-    else if(dpiScaling.find_first_of(" \t\n") != std::string::npos)
+    else if(dpiScaling.find(' ') || dpiScaling.find('\t') || dpiScaling.find('\n'))
         _commandLineDpiScaling = args.value<Vector2>("dpi-scaling");
     else
         _commandLineDpiScaling = Vector2{args.value<Float>("dpi-scaling")};
@@ -322,13 +322,15 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
     #endif
 }
 
-void Sdl2Application::setWindowTitle(const std::string& title) {
+void Sdl2Application::setWindowTitle(const Containers::StringView title) {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    SDL_SetWindowTitle(_window, title.data());
+    SDL_SetWindowTitle(_window,
+        Containers::String::nullTerminatedGlobalView(title).data());
     #else
     /* We don't have the _window because SDL_CreateWindow() doesn't exist in
        the SDL1/2 hybrid. But it's not used anyway, so pass nullptr there. */
-    SDL_SetWindowTitle(nullptr, title.data());
+    SDL_SetWindowTitle(nullptr,
+        Containers::String::nullTerminatedGlobalView(title).data());
     #endif
 }
 
@@ -743,7 +745,7 @@ Vector2i Sdl2Application::framebufferSize() const {
 #endif
 
 #ifdef CORRADE_TARGET_EMSCRIPTEN
-void Sdl2Application::setContainerCssClass(const std::string& cssClass) {
+void Sdl2Application::setContainerCssClass(const Containers::StringView cssClass) {
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
     EM_ASM_({
@@ -752,7 +754,7 @@ void Sdl2Application::setContainerCssClass(const std::string& cssClass) {
            no way to look for it anymore. */
         (Module['canvas'].closest('.mn-container') ||
          document.getElementById('container')).className = (['mn-container', AsciiToString($0)]).join(' ');
-    }, cssClass.data());
+    }, Containers::String::nullTerminatedGlobalView(cssClass).data());
     #pragma GCC diagnostic pop
 }
 #endif
@@ -1212,11 +1214,11 @@ Sdl2Application::Configuration::Configuration():
 
 Sdl2Application::Configuration::~Configuration() = default;
 
-std::string Sdl2Application::KeyEvent::keyName(const Key key) {
+Containers::StringView Sdl2Application::KeyEvent::keyName(const Key key) {
     return SDL_GetKeyName(SDL_Keycode(key));
 }
 
-std::string Sdl2Application::KeyEvent::keyName() const {
+Containers::StringView Sdl2Application::KeyEvent::keyName() const {
     return keyName(_key);
 }
 

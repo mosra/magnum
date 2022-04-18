@@ -31,7 +31,11 @@
  * @brief Class @ref Magnum::Platform::Sdl2Application, macro @ref MAGNUM_SDL2APPLICATION_MAIN()
  */
 
-#include <string>
+#include <Corrade/Containers/String.h>
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Some APIs used to take or return a std::string before */
+#include <Corrade/Containers/StringStl.h>
+#endif
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Optional.h>
@@ -805,7 +809,7 @@ class Sdl2Application {
          *
          * The @p title is expected to be encoded in UTF-8.
          */
-        void setWindowTitle(const std::string& title);
+        void setWindowTitle(Containers::StringView title);
 
         #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005 || defined(DOXYGEN_GENERATING_OUTPUT))
         /**
@@ -853,7 +857,7 @@ class Sdl2Application {
          *      @cb{.html} <div class="mn-container"> @ce is not found. This
          *      compatibility is scheduled to be removed in the future.
          */
-        void setContainerCssClass(const std::string& cssClass);
+        void setContainerCssClass(Containers::StringView cssClass);
         #endif
 
         /**
@@ -1819,10 +1823,13 @@ class Sdl2Application::Configuration {
         /**
          * @brief Window title
          *
+         * The returned string view is valid at least until the next call to
+         * @ref setTitle() or until the @ref Sdl2Application is destroyed.
+         *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
          *      and @ref CORRADE_TARGET_IOS "iOS".
          */
-        std::string title() const { return _title; }
+        Containers::StringView title() const { return _title; }
         #endif
 
         /**
@@ -1840,8 +1847,8 @@ class Sdl2Application::Configuration {
          *      application state change) using @ref setWindowTitle().
          */
         #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
-        Configuration& setTitle(std::string title) {
-            _title = std::move(title);
+        Configuration& setTitle(const Containers::StringView title) {
+            _title = Containers::String::nullTerminatedGlobalView(title);
             return *this;
         }
         #else
@@ -1954,7 +1961,7 @@ class Sdl2Application::Configuration {
 
     private:
         #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
-        std::string _title;
+        Containers::String _title;
         #endif
         Vector2i _size;
         DpiScalingPolicy _dpiScalingPolicy;
@@ -2469,9 +2476,13 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
          * Human-readable localized UTF-8 name for given @p key, intended for
          * displaying to the user in e.g. key binding configuration. If there
          * is no name for given key, empty string is returned.
+         *
+         * The returned string view is valid at least until the next call
+         * to this function.
+         *
          * @see @ref keyName(Key)
          */
-        static std::string keyName(Key key);
+        static Containers::StringView keyName(Key key);
 
         /**
          * @brief Key
@@ -2487,9 +2498,13 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
          * @ref key(), intended for displaying to the user in e.g.
          * key binding configuration. If there is no name for that key, empty
          * string is returned.
+         *
+         * The returned string view is valid at least until the next call
+         * to this function.
+         *
          * @see @ref keyName(Key)
          */
-        std::string keyName() const;
+        Containers::StringView keyName() const;
 
         /** @brief Modifiers */
         Modifiers modifiers() const { return _modifiers; }
