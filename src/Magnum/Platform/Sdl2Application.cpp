@@ -159,22 +159,22 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
 
     /* Save command-line arguments */
     if(args.value("log") == "verbose") _verboseLog = true;
-    const std::string dpiScaling = args.value("dpi-scaling");
-    if(dpiScaling == "default")
+    const Containers::StringView dpiScaling = args.value<Containers::StringView>("dpi-scaling");
+    if(dpiScaling == "default"_s)
         _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Default;
     #ifdef CORRADE_TARGET_APPLE
-    else if(dpiScaling == "framebuffer")
+    else if(dpiScaling == "framebuffer"_s)
         _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Framebuffer;
     #endif
     #ifndef CORRADE_TARGET_APPLE
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
-    else if(dpiScaling == "virtual")
+    else if(dpiScaling == "virtual"_s)
         _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Virtual;
     #endif
-    else if(dpiScaling == "physical")
+    else if(dpiScaling == "physical"_s)
         _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Physical;
     #endif
-    else if(dpiScaling.find_first_of(" \t\n") != std::string::npos)
+    else if(dpiScaling.containsAny(" \t\n"_s))
         _commandLineDpiScaling = args.value<Vector2>("dpi-scaling");
     else
         _commandLineDpiScaling = Vector2{args.value<Float>("dpi-scaling")};
@@ -322,13 +322,15 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
     #endif
 }
 
-void Sdl2Application::setWindowTitle(const std::string& title) {
+void Sdl2Application::setWindowTitle(const Containers::StringView title) {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    SDL_SetWindowTitle(_window, title.data());
+    SDL_SetWindowTitle(_window,
+        Containers::String::nullTerminatedGlobalView(title).data());
     #else
     /* We don't have the _window because SDL_CreateWindow() doesn't exist in
        the SDL1/2 hybrid. But it's not used anyway, so pass nullptr there. */
-    SDL_SetWindowTitle(nullptr, title.data());
+    SDL_SetWindowTitle(nullptr,
+        Containers::String::nullTerminatedGlobalView(title).data());
     #endif
 }
 
@@ -743,16 +745,20 @@ Vector2i Sdl2Application::framebufferSize() const {
 #endif
 
 #ifdef CORRADE_TARGET_EMSCRIPTEN
-void Sdl2Application::setContainerCssClass(const std::string& cssClass) {
+void Sdl2Application::setContainerCssClass(const Containers::StringView cssClass) {
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
     EM_ASM_({
         /* Handle also the classic #container for backwards compatibility. We
            also need to preserve the mn-container otherwise next time we'd have
-           no way to look for it anymore. */
+           no way to look for it anymore.
+
+           Using UTF8ToString() instead of AsciiToString() as it has an
+           explicit size parameter and thus doesn't need a null-terminated
+           input, which would potentially require yet another allocation. */
         (Module['canvas'].closest('.mn-container') ||
-         document.getElementById('container')).className = (['mn-container', AsciiToString($0)]).join(' ');
-    }, cssClass.data());
+         document.getElementById('container')).className = (['mn-container', UTF8ToString($0, $1)]).join(' ');
+    }, cssClass.data(), cssClass.size());
     #pragma GCC diagnostic pop
 }
 #endif
@@ -1201,7 +1207,7 @@ Sdl2Application::GLConfiguration::~GLConfiguration() = default;
 
 Sdl2Application::Configuration::Configuration():
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
-    _title("Magnum SDL2 Application"),
+    _title(Containers::String::nullTerminatedGlobalView("Magnum SDL2 Application"_s)),
     #endif
     #if !defined(CORRADE_TARGET_IOS) && !defined(CORRADE_TARGET_EMSCRIPTEN)
     _size{800, 600},
@@ -1212,11 +1218,11 @@ Sdl2Application::Configuration::Configuration():
 
 Sdl2Application::Configuration::~Configuration() = default;
 
-std::string Sdl2Application::KeyEvent::keyName(const Key key) {
+Containers::StringView Sdl2Application::KeyEvent::keyName(const Key key) {
     return SDL_GetKeyName(SDL_Keycode(key));
 }
 
-std::string Sdl2Application::KeyEvent::keyName() const {
+Containers::StringView Sdl2Application::KeyEvent::keyName() const {
     return keyName(_key);
 }
 

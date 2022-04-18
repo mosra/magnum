@@ -53,6 +53,8 @@
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
+using namespace Containers::Literals;
+
 struct Sdl2ApplicationTest: Platform::Application {
     explicit Sdl2ApplicationTest(const Arguments& arguments);
 
@@ -107,7 +109,7 @@ struct Sdl2ApplicationTest: Platform::Application {
             stopTextInput();
         } else if(event.key() == KeyEvent::Key::T) {
             Debug{} << "setting window title";
-            setWindowTitle("This is a UTF-8 Window Title™!");
+            setWindowTitle("This is a UTF-8 Window Title™ and it should have no exclamation mark!!"_s.exceptSuffix(2));
         }
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         else if(event.key() == KeyEvent::Key::S) {
@@ -181,7 +183,8 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     }
 
     Configuration conf;
-    conf.setWindowFlags(Configuration::WindowFlag::Resizable);
+    conf.setTitle("Window title that should have no exclamation mark!!"_s.exceptSuffix(2))
+        .setWindowFlags(Configuration::WindowFlag::Resizable);
     if(!args.value("dpi-scaling").empty())
         conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
     #ifndef CORRADE_TARGET_EMSCRIPTEN
