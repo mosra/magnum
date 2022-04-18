@@ -36,6 +36,7 @@
 
 namespace Magnum { namespace Platform { namespace Test {
 
+using namespace Containers::Literals;
 using namespace Math::Literals;
 
 struct EmscriptenApplicationTest: Platform::Application {
@@ -108,10 +109,10 @@ struct EmscriptenApplicationTest: Platform::Application {
             stopTextInput();
         } else if(event.key() == KeyEvent::Key::F) {
             Debug{} << "toggling fullscreen";
-            setContainerCssClass((_fullscreen ^= true) ? "mn-fullsize" : "");
+            setContainerCssClass((_fullscreen ^= true) ? "mn-fullsizeX"_s.exceptSuffix(1) : "");
         } else if(event.key() == KeyEvent::Key::T) {
             Debug{} << "setting window title";
-            setWindowTitle("This is a UTF-8 Window Title™!");
+            setWindowTitle("This is a UTF-8 Window Title™ and it should have no exclamation mark!!"_s.exceptSuffix(2));
         } else if(event.key() == KeyEvent::Key::H) {
             Debug{} << "toggling hand cursor";
             setCursor(cursor() == Cursor::Arrow ? Cursor::Hand : Cursor::Arrow);

@@ -34,12 +34,11 @@
  */
 #endif
 
-#include <string>
 #include <Corrade/Containers/ArrayView.h>
-
 /* Needed by the MAGNUM_EMSCRIPTENAPPLICATION_MAIN() macro */
 /** @todo use an Optional */
 #include <Corrade/Containers/Pointer.h>
+#include <Corrade/Containers/String.h> /** @todo PIMPL Configuration instead? */
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -50,6 +49,11 @@
 #include <Corrade/Containers/Optional.h>
 
 #include "Magnum/Platform/GLContext.h"
+#endif
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Some APIs used to take or return a std::string before */
+#include <Corrade/Containers/StringStl.h>
 #endif
 
 #if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
@@ -521,7 +525,7 @@ class EmscriptenApplication {
          *
          * The @p title is expected to be encoded in UTF-8.
          */
-        void setWindowTitle(const std::string& title);
+        void setWindowTitle(Containers::StringView title);
 
         /**
          * @brief Set container CSS class
@@ -542,7 +546,7 @@ class EmscriptenApplication {
          *      @cb{.html} <div class="mn-container"> @ce is not found. This
          *      compatibility is scheduled to be removed in the future.
          */
-        void setContainerCssClass(const std::string& cssClass);
+        void setContainerCssClass(Containers::StringView cssClass);
 
         /**
          * @brief Swap buffers
@@ -906,7 +910,7 @@ class EmscriptenApplication {
         Cursor _cursor;
 
         bool _deprecatedTargetBehavior{};
-        std::string _canvasTarget;
+        Containers::String _canvasTarget;
 
         #ifdef MAGNUM_TARGET_GL
         EMSCRIPTEN_WEBGL_CONTEXT_HANDLE _glContext{};
@@ -1845,8 +1849,14 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
          */
         Key key() const;
 
-        /** @brief Key name */
-        std::string keyName() const;
+        /**
+         * @brief Key name
+         *
+         * The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * is valid until the event is destroyed.
+         */
+        Containers::StringView keyName() const;
 
         /** @brief Modifiers */
         Modifiers modifiers() const;

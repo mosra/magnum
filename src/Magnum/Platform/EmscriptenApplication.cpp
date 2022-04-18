@@ -51,6 +51,8 @@
 
 namespace Magnum { namespace Platform {
 
+using namespace Containers::Literals;
+
 namespace {
     typedef EmscriptenApplication::KeyEvent::Key Key;
 
@@ -181,7 +183,7 @@ namespace {
         return Key::Unknown;
     }
 
-    std::string canvasId() {
+    Containers::String canvasId() {
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
         /* Note: can't use let or const, as that breaks closure compiler:
@@ -195,9 +197,7 @@ namespace {
             return memory;
         }));
         #pragma GCC diagnostic pop
-        std::string str = id;
-        std::free(id);
-        return str;
+        return Containers::String{id, [](char* data, std::size_t) { std::free(data); }};
     }
 
     bool checkForDeprecatedEmscriptenTargetBehavior() {
@@ -243,18 +243,18 @@ EmscriptenApplication::EmscriptenApplication(const Arguments& arguments, NoCreat
 
     /* Save command-line arguments */
     if(args.value("log") == "verbose") _verboseLog = true;
-    const std::string dpiScaling = args.value("dpi-scaling");
+    const Containers::StringView dpiScaling = args.value<Containers::StringView>("dpi-scaling");
 
     /* Use physical DPI scaling */
-    if(dpiScaling == "default" || dpiScaling == "physical") {
+    if(dpiScaling == "default"_s || dpiScaling == "physical"_s) {
 
     /* Use explicit dpi scaling vector */
-    } else if(dpiScaling.find_first_of(" \t\n") != std::string::npos)
-        _commandLineDpiScaling = args.value<Vector2>("dpi-scaling");
+    } else if(dpiScaling.containsAny(" \t\n"_s))
+        _commandLineDpiScaling = args.value<Vector2>("dpi-scaling"_s);
 
     /* Use explicit dpi scaling scalar */
     else
-        _commandLineDpiScaling = Vector2{args.value<Float>("dpi-scaling")};
+        _commandLineDpiScaling = Vector2{args.value<Float>("dpi-scaling"_s)};
 }
 
 EmscriptenApplication::~EmscriptenApplication() {
@@ -318,7 +318,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
         Debug{verbose} << "Platform::EmscriptenApplication::tryCreate(): using old Emscripten target behavior";
     }
 
-    _canvasTarget = (_deprecatedTargetBehavior ? "" : "#") + canvasId();
+    _canvasTarget = (_deprecatedTargetBehavior ? canvasId() : "#"_s + canvasId());
 
     /* Get CSS canvas size and cache it. This is used later to detect canvas
        resizes in emscripten_set_resize_callback() and fire viewport events,
@@ -408,7 +408,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
 
     /* Get the canvas ID from Module.canvas, either set by EmscriptenApplication.js
        or overridden/manually set by the user. */
-    _canvasTarget = (_deprecatedTargetBehavior ? "" : "#") + canvasId();
+    _canvasTarget = (_deprecatedTargetBehavior ? canvasId() : "#"_s + canvasId());
 
     /* Get CSS canvas size and cache it. This is used later to detect canvas
        resizes in emscripten_set_resize_callback() and fire viewport events,
@@ -469,23 +469,27 @@ Vector2i EmscriptenApplication::framebufferSize() const {
 }
 #endif
 
-void EmscriptenApplication::setWindowTitle(const std::string& title) {
+void EmscriptenApplication::setWindowTitle(const Containers::StringView title) {
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
-    EM_ASM_({document.title = UTF8ToString($0);}, title.data());
+    EM_ASM_({document.title = UTF8ToString($0, $1);}, title.data(), title.size());
     #pragma GCC diagnostic pop
 }
 
-void EmscriptenApplication::setContainerCssClass(const std::string& cssClass) {
+void EmscriptenApplication::setContainerCssClass(const Containers::StringView cssClass) {
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
     EM_ASM_({
         /* Handle also the classic #container for backwards compatibility. We
            also need to preserve the mn-container otherwise next time we'd have
-           no way to look for it anymore. */
+           no way to look for it anymore.
+
+           Using UTF8ToString() instead of AsciiToString() as it has an
+           explicit size parameter and thus doesn't need a null-terminated
+           input, which would potentially require yet another allocation. */
         (Module['canvas'].closest('.mn-container') ||
-         document.getElementById('container')).className = (['mn-container', AsciiToString($0)]).join(' ');
-    }, cssClass.data());
+         document.getElementById('container')).className = (['mn-container', UTF8ToString($0, $1)]).join(' ');
+    }, cssClass.data(), cssClass.size());
     #pragma GCC diagnostic pop
 
     /* Trigger a potential viewport event -- we don't poll the canvas size like
@@ -605,17 +609,15 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
     }));
     #pragma GCC diagnostic pop
 
-    std::string keyboardListeningElementString;
+    Containers::String keyboardListeningElementStorage;
     if(keyboardListeningElement == EMSCRIPTEN_EVENT_TARGET_DOCUMENT) {
         keyboardListeningElement = _deprecatedTargetBehavior ? "#document" : keyboardListeningElement;
     } else if(keyboardListeningElement == EMSCRIPTEN_EVENT_TARGET_WINDOW) {
         keyboardListeningElement = _deprecatedTargetBehavior ? "#window" : keyboardListeningElement;
-    } else if(keyboardListeningElement) {
-        if(!_deprecatedTargetBehavior)
-            keyboardListeningElementString = "#";
-        keyboardListeningElementString += keyboardListeningElement;
+    } else if(keyboardListeningElement && !_deprecatedTargetBehavior) {
+        keyboardListeningElementStorage = "#"_s + Containers::StringView{keyboardListeningElement};
         std::free(const_cast<char*>(keyboardListeningElement));
-        keyboardListeningElement = keyboardListeningElementString.data();
+        keyboardListeningElement = keyboardListeningElementStorage.data();
     }
 
     /* Happens only if keyboardListeningElement was set, but did not have an
@@ -918,7 +920,7 @@ Key EmscriptenApplication::KeyEvent::key() const {
     return toKey(_event.key, _event.code);
 }
 
-std::string EmscriptenApplication::KeyEvent::keyName() const {
+Containers::StringView EmscriptenApplication::KeyEvent::keyName() const {
     if((_event.key[0] >= 'a' && _event.key[0] <= 'z') ||
        (_event.key[0] >= 'A' && _event.key[0] <= 'Z')) return _event.key;
 
