@@ -181,7 +181,7 @@ namespace {
         return Key::Unknown;
     }
 
-    std::string canvasId() {
+    Containers::String canvasId() {
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
         /* Note: can't use let or const, as that breaks closure compiler:
@@ -195,9 +195,7 @@ namespace {
             return memory;
         }));
         #pragma GCC diagnostic pop
-        std::string str = id;
-        std::free(id);
-        return str;
+        return Containers::String{id, std::strlen(id), &std::free};
     }
 
     bool checkForDeprecatedEmscriptenTargetBehavior() {
@@ -243,13 +241,13 @@ EmscriptenApplication::EmscriptenApplication(const Arguments& arguments, NoCreat
 
     /* Save command-line arguments */
     if(args.value("log") == "verbose") _verboseLog = true;
-    const std::string dpiScaling = args.value("dpi-scaling");
+    const Containers::String dpiScaling = args.value("dpi-scaling");
 
     /* Use physical DPI scaling */
     if(dpiScaling == "default" || dpiScaling == "physical") {
 
     /* Use explicit dpi scaling vector */
-    } else if(dpiScaling.find_first_of(" \t\n") != std::string::npos)
+    } else if(dpiScaling.find(' ') || dpiScaling.find('\t') || dpiScaling.find('\n'))
         _commandLineDpiScaling = args.value<Vector2>("dpi-scaling");
 
     /* Use explicit dpi scaling scalar */
@@ -469,14 +467,14 @@ Vector2i EmscriptenApplication::framebufferSize() const {
 }
 #endif
 
-void EmscriptenApplication::setWindowTitle(const std::string& title) {
+void EmscriptenApplication::setWindowTitle(const Containers::StringView title) {
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
     EM_ASM_({document.title = UTF8ToString($0);}, title.data());
     #pragma GCC diagnostic pop
 }
 
-void EmscriptenApplication::setContainerCssClass(const std::string& cssClass) {
+void EmscriptenApplication::setContainerCssClass(const Containers::StringView cssClass) {
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
     EM_ASM_({
@@ -605,7 +603,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
     }));
     #pragma GCC diagnostic pop
 
-    std::string keyboardListeningElementString;
+    Containers::StringView keyboardListeningElementString;
     if(keyboardListeningElement == EMSCRIPTEN_EVENT_TARGET_DOCUMENT) {
         keyboardListeningElement = _deprecatedTargetBehavior ? "#document" : keyboardListeningElement;
     } else if(keyboardListeningElement == EMSCRIPTEN_EVENT_TARGET_WINDOW) {
@@ -615,7 +613,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
             keyboardListeningElementString = "#";
         keyboardListeningElementString += keyboardListeningElement;
         std::free(const_cast<char*>(keyboardListeningElement));
-        keyboardListeningElement = keyboardListeningElementString.data();
+        keyboardListeningElement = keyboardListeningElementString;
     }
 
     /* Happens only if keyboardListeningElement was set, but did not have an
@@ -626,7 +624,8 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
 
     /* keypress_callback does not fire for most of the keys and the modifiers
        don't seem to work, keydown on the other hand works fine for all */
-    emscripten_set_keydown_callback(keyboardListeningElement, this, false,
+    CORRADE_INTERNAL_ASSERT(keyboardListeningElement.flags() & Containers::StringViewFlag::NullTerminated);
+    emscripten_set_keydown_callback(keyboardListeningElement.data(), this, false,
         ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
             EmscriptenApplication& app = *static_cast<EmscriptenApplication*>(userData);
             const std::size_t keyLen = std::strlen(event->key);
@@ -642,7 +641,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
             return e.isAccepted();
         }));
 
-    emscripten_set_keyup_callback(keyboardListeningElement, this, false,
+    emscripten_set_keyup_callback(keyboardListeningElement.data(), this, false,
         ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
             KeyEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->keyReleaseEvent(e);
@@ -918,7 +917,7 @@ Key EmscriptenApplication::KeyEvent::key() const {
     return toKey(_event.key, _event.code);
 }
 
-std::string EmscriptenApplication::KeyEvent::keyName() const {
+Containers::StringView EmscriptenApplication::KeyEvent::keyName() const {
     if((_event.key[0] >= 'a' && _event.key[0] <= 'z') ||
        (_event.key[0] >= 'A' && _event.key[0] <= 'Z')) return _event.key;
 
