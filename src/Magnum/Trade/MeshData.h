@@ -81,8 +81,8 @@ enum class MeshAttribute: UnsignedShort {
      * @ref VertexFormat::Vector4bNormalized,
      * @ref VertexFormat::Vector4sNormalized) and the fourth component is a
      * sign value (@cpp -1.0f @ce or @cpp +1.0f @ce) defining handedness of the
-     * tangent basis. Reconstruct the @ref MeshAttribute::Bitangent can be then
-     * done like this:
+     * tangent basis. Reconstructing the @ref MeshAttribute::Bitangent can be
+     * then done like this:
      *
      * @snippet MagnumTrade.cpp MeshAttribute-bitangent-from-tangent
      *
