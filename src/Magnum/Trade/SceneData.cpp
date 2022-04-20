@@ -112,8 +112,8 @@ Debug& operator<<(Debug& debug, const SceneField value) {
     if(!packed)
         debug << "Trade::SceneField" << Debug::nospace;
 
-    if(UnsignedInt(value) >= UnsignedInt(SceneField::Custom))
-        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << (UnsignedInt(value) - UnsignedInt(SceneField::Custom)) << Debug::nospace << ")";
+    if(isSceneFieldCustom(value))
+        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << sceneFieldCustom(value) << Debug::nospace << ")";
 
     switch(value) {
         /* LCOV_EXCL_START */

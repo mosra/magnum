@@ -884,8 +884,8 @@ Debug& operator<<(Debug& debug, const MeshAttribute value) {
     if(!packed)
         debug << "Trade::MeshAttribute" << Debug::nospace;
 
-    if(UnsignedShort(value) >= UnsignedShort(MeshAttribute::Custom))
-        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << (UnsignedInt(value) - UnsignedInt(MeshAttribute::Custom)) << Debug::nospace << ")";
+    if(isMeshAttributeCustom(value))
+        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << meshAttributeCustom(value) << Debug::nospace << ")";
 
     switch(value) {
         /* LCOV_EXCL_START */
