@@ -899,9 +899,6 @@ Debug& operator<<(Debug& debug, const MeshAttribute value) {
         _c(ObjectId)
         #undef _c
         /* LCOV_EXCL_STOP */
-
-        /* To silence compiler warning about unhandled values */
-        case MeshAttribute::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 
     return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");

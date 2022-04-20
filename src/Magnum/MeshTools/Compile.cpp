@@ -125,7 +125,6 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
             #ifdef MAGNUM_TARGET_GLES2
             case Trade::MeshAttribute::ObjectId:
             #endif
-            case Trade::MeshAttribute::Custom:
                 break;
              /* LCOV_EXCL_STOP */
         }

@@ -625,14 +625,14 @@ void SceneDataTest::debugMappingTypePacked() {
 void SceneDataTest::customFieldName() {
     CORRADE_VERIFY(!isSceneFieldCustom(SceneField::Rotation));
     CORRADE_VERIFY(!isSceneFieldCustom(SceneField(0x0fffffffu)));
-    CORRADE_VERIFY(isSceneFieldCustom(SceneField::Custom));
+    CORRADE_VERIFY(isSceneFieldCustom(SceneField(Implementation::SceneFieldCustom)));
     CORRADE_VERIFY(isSceneFieldCustom(SceneField(0x80000000u)));
 
     CORRADE_COMPARE(UnsignedInt(sceneFieldCustom(0)), 0x80000000u);
     CORRADE_COMPARE(UnsignedInt(sceneFieldCustom(0xabcd)), 0x8000abcdu);
     CORRADE_COMPARE(UnsignedInt(sceneFieldCustom(0x7fffffff)), 0xffffffffu);
 
-    CORRADE_COMPARE(sceneFieldCustom(SceneField::Custom), 0);
+    CORRADE_COMPARE(sceneFieldCustom(SceneField(Implementation::SceneFieldCustom)), 0);
     CORRADE_COMPARE(sceneFieldCustom(SceneField(0x8000abcdu)), 0xabcd);
     CORRADE_COMPARE(sceneFieldCustom(SceneField(0xffffffffu)), 0x7fffffffu);
 

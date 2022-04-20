@@ -131,9 +131,6 @@ Debug& operator<<(Debug& debug, const SceneField value) {
         _c(ImporterState)
         #undef _c
         /* LCOV_EXCL_STOP */
-
-        /* To silence compiler warning about unhandled values */
-        case SceneField::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 
     return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");

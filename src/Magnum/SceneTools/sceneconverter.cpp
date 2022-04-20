@@ -680,8 +680,9 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 for(UnsignedInt k = 0; k != mesh->attributeCount(); ++k) {
                     const Trade::MeshAttribute name = mesh->attributeName(k);
 
-                    /* Calculate bounds, if requested and this is not an
-                       implementation-specific format */
+                    /* Calculate bounds, if requested, if this is not an
+                       implementation-specific format and if it's not a custom
+                       attribute */
                     Containers::String bounds;
                     if(args.isSet("bounds") && !isVertexFormatImplementationSpecific(mesh->attributeFormat(k))) switch(name) {
                         case Trade::MeshAttribute::Position:
@@ -705,12 +706,6 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                         case Trade::MeshAttribute::ObjectId:
                             Debug{} << mesh->objectIdsAsArray(namedAttributeId(*mesh, k));
                             bounds = calculateBounds(mesh->objectIdsAsArray(namedAttributeId(*mesh, k)));
-                            break;
-
-                        /* And also all other custom attribs. Not saying
-                           default: here so we get notified when we forget to
-                           handle newly added attribute names */
-                        case Trade::MeshAttribute::Custom:
                             break;
                     }
 

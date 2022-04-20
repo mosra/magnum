@@ -533,7 +533,6 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
                 /* These have unbounded range. Do nothing but enumerate all
                    these here to silence warnings about unused enum values. */
                 case Trade::MeshAttribute::Position:
-                case Trade::MeshAttribute::Custom:
                     break;
 
                 /* These shouldn't be floating point */

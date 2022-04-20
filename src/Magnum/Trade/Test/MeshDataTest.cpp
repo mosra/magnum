@@ -419,14 +419,14 @@ MeshDataTest::MeshDataTest() {
 void MeshDataTest::customAttributeName() {
     CORRADE_VERIFY(!isMeshAttributeCustom(MeshAttribute::Position));
     CORRADE_VERIFY(!isMeshAttributeCustom(MeshAttribute(32767)));
-    CORRADE_VERIFY(isMeshAttributeCustom(MeshAttribute::Custom));
+    CORRADE_VERIFY(isMeshAttributeCustom(MeshAttribute(Implementation::MeshAttributeCustom)));
     CORRADE_VERIFY(isMeshAttributeCustom(MeshAttribute(65535)));
 
     CORRADE_COMPARE(UnsignedShort(meshAttributeCustom(0)), 32768);
     CORRADE_COMPARE(UnsignedShort(meshAttributeCustom(8290)), 41058);
     CORRADE_COMPARE(UnsignedShort(meshAttributeCustom(32767)), 65535);
 
-    CORRADE_COMPARE(meshAttributeCustom(MeshAttribute::Custom), 0);
+    CORRADE_COMPARE(meshAttributeCustom(MeshAttribute(Implementation::MeshAttributeCustom)), 0);
     CORRADE_COMPARE(meshAttributeCustom(MeshAttribute(41058)), 8290);
     CORRADE_COMPARE(meshAttributeCustom(MeshAttribute(65535)), 32767);
 

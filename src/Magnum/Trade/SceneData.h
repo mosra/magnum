@@ -85,14 +85,30 @@ Returns the same value as @ref sceneMappingTypeSize().
 */
 MAGNUM_TRADE_EXPORT UnsignedInt sceneMappingTypeAlignment(SceneMappingType type);
 
+namespace Implementation {
+    enum: UnsignedInt { SceneFieldCustom = 0x80000000u };
+}
+
 /**
 @brief Scene field name
 @m_since_latest
 
 See @ref SceneData for more information.
-@see @ref SceneFieldData, @ref SceneFieldType,
-    @ref AbstractImporter::sceneFieldForName(),
-    @ref AbstractImporter::sceneFieldName()
+
+Apart from the builtin field names it's possible to have custom ones, which use
+the upper 31 bits of the enum range. While it's unlikely to have billions of
+custom fields, the enum intentionally reserves a full 31-bit range to avoid the
+need to remap field identifiers coming from 3rd party ECS frameworks, for
+example.
+
+Custom fields are detected via @ref isSceneFieldCustom() and can be converted
+to and from a numeric identifier using @ref sceneFieldCustom(SceneField) and
+@ref sceneFieldCustom(UnsignedInt). Unlike the builtin ones, these can be of
+any type. An importer that exposes custom fields then may also provide a string
+mapping using @ref AbstractImporter::sceneFieldForName() and
+@ref AbstractImporter::sceneFieldName(). See documentation of a particular
+importer for details.
+@see @ref SceneFieldData, @ref SceneFieldType
 */
 enum class SceneField: UnsignedInt {
     /* Zero used for an invalid value */
@@ -303,19 +319,7 @@ enum class SceneField: UnsignedInt {
      * @see @ref SceneData::importerStateAsArray(),
      *      @ref SceneData::importerStateFor()
      */
-    ImporterState,
-
-    /**
-     * This and all higher values are for importer-specific fields. Can be
-     * of any type. See documentation of a particular importer for details.
-     *
-     * While it's unlikely to have billions of custom fields, the enum
-     * intentionally reserves a full 31-bit range to avoid the need to remap
-     * field identifiers coming from 3rd party ECS frameworks, for example.
-     * @see @ref isSceneFieldCustom(), @ref sceneFieldCustom(SceneField),
-     *      @ref sceneFieldCustom(UnsignedInt)
-     */
-    Custom = 0x80000000u
+    ImporterState
 };
 
 /**
@@ -328,29 +332,28 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneField value);
 @brief Whether a scene field is custom
 @m_since_latest
 
-Returns @cpp true @ce if @p name has a value larger or equal to
-@ref SceneField::Custom, @cpp false @ce otherwise.
+Returns @cpp true @ce if @p name has a value in the upper 31 bits of the enum
+range, @cpp false @ce otherwise.
 @see @ref sceneFieldCustom(UnsignedInt), @ref sceneFieldCustom(SceneField),
     @ref AbstractImporter::sceneFieldName()
 */
 constexpr bool isSceneFieldCustom(SceneField name) {
-    return UnsignedInt(name) >= UnsignedInt(SceneField::Custom);
+    return UnsignedInt(name) >= Implementation::SceneFieldCustom;
 }
 
 /**
 @brief Create a custom scene field
 @m_since_latest
 
-Returns a custom scene field with index @p id. The index is expected to be less
-than the value of @ref SceneField::Custom. Use @ref sceneFieldCustom(SceneField)
-to get the index back.
+Returns a custom scene field with index @p id. The index is expected to fit
+into 31 bits. Use @ref sceneFieldCustom(SceneField) to get the index back.
 */
 /* Constexpr so it's usable for creating compile-time SceneFieldData
    instances */
 constexpr SceneField sceneFieldCustom(UnsignedInt id) {
-    return CORRADE_CONSTEXPR_ASSERT(id < UnsignedInt(SceneField::Custom),
+    return CORRADE_CONSTEXPR_ASSERT(id < Implementation::SceneFieldCustom,
         "Trade::sceneFieldCustom(): index" << id << "too large"),
-        SceneField(UnsignedInt(SceneField::Custom) + id);
+        SceneField(Implementation::SceneFieldCustom + id);
 }
 
 /**
@@ -364,7 +367,7 @@ custom.
 constexpr UnsignedInt sceneFieldCustom(SceneField name) {
     return CORRADE_CONSTEXPR_ASSERT(isSceneFieldCustom(name),
         "Trade::sceneFieldCustom():" << name << "is not custom"),
-        UnsignedInt(name) - UnsignedInt(SceneField::Custom);
+        UnsignedInt(name) - Implementation::SceneFieldCustom;
 }
 
 /**

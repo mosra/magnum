@@ -40,13 +40,26 @@
 
 namespace Magnum { namespace Trade {
 
+namespace Implementation {
+    enum: UnsignedShort { MeshAttributeCustom = 32768 };
+}
+
 /**
 @brief Mesh attribute name
 @m_since{2020,06}
 
-@see @ref MeshData, @ref MeshAttributeData, @ref VertexFormat,
-    @ref AbstractImporter::meshAttributeForName(),
-    @ref AbstractImporter::meshAttributeName()
+See @ref MeshData for more information.
+
+Apart from the builtin attribute names it's possible to have custom ones,
+which use the upper 15 bits of the enum range. Those are detected via
+@ref isMeshAttributeCustom() and can be converted to and from a numeric
+identifier using @ref meshAttributeCustom(MeshAttribute) and
+@ref meshAttributeCustom(UnsignedShort). Unlike the builtin ones, these can
+be of any type. An importer that exposes custom attributes then may also
+provide a string mapping using @ref AbstractImporter::meshAttributeForName()
+and @ref AbstractImporter::meshAttributeName(). See documentation of a
+particular importer for details.
+@see @ref MeshAttributeData, @ref VertexFormat
 */
 /* 16 bits because 8 bits is not enough to cover all potential per-edge,
    per-face, per-instance and per-meshlet attributes */
@@ -145,16 +158,7 @@ enum class MeshAttribute: UnsignedShort {
      * Corresponds to @ref Shaders::GenericGL::ObjectId.
      * @see @ref MeshData::objectIdsAsArray()
      */
-    ObjectId,
-
-    /**
-     * This and all higher values are for importer-specific attributes. Can be
-     * of any type. See documentation of a particular importer for details.
-     * @see @ref isMeshAttributeCustom(),
-     *      @ref meshAttributeCustom(MeshAttribute),
-     *      @ref meshAttributeCustom(UnsignedShort)
-     */
-    Custom = 32768
+    ObjectId
 };
 
 /**
@@ -167,30 +171,30 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MeshAttribute value);
 @brief Whether a mesh attribute is custom
 @m_since{2020,06}
 
-Returns @cpp true @ce if @p name has a value larger or equal to
-@ref MeshAttribute::Custom, @cpp false @ce otherwise.
+Returns @cpp true @ce if @p name has a value in the upper 15 bits of the enum
+range, @cpp false @ce otherwise.
 @see @ref meshAttributeCustom(UnsignedShort),
     @ref meshAttributeCustom(MeshAttribute),
     @ref AbstractImporter::meshAttributeName()
 */
 constexpr bool isMeshAttributeCustom(MeshAttribute name) {
-    return UnsignedShort(name) >= UnsignedShort(MeshAttribute::Custom);
+    return UnsignedShort(name) >= Implementation::MeshAttributeCustom;
 }
 
 /**
 @brief Create a custom mesh attribute
 @m_since{2020,06}
 
-Returns a custom mesh attribute with index @p id. The index is expected to be
-less than the value of @ref MeshAttribute::Custom. Use
-@ref meshAttributeCustom(MeshAttribute) to get the index back.
+Returns a custom mesh attribute with index @p id. The index is expected to fit
+into 15 bits. Use @ref meshAttributeCustom(MeshAttribute) to get the index
+back.
 */
 /* Constexpr so it's usable for creating compile-time MeshAttributeData
    instances */
 constexpr MeshAttribute meshAttributeCustom(UnsignedShort id) {
-    return CORRADE_CONSTEXPR_ASSERT(id < UnsignedShort(MeshAttribute::Custom),
+    return CORRADE_CONSTEXPR_ASSERT(id < Implementation::MeshAttributeCustom,
         "Trade::meshAttributeCustom(): index" << id << "too large"),
-        MeshAttribute(UnsignedShort(MeshAttribute::Custom) + id);
+        MeshAttribute(Implementation::MeshAttributeCustom + id);
 }
 
 /**
@@ -204,7 +208,7 @@ is custom.
 constexpr UnsignedShort meshAttributeCustom(MeshAttribute name) {
     return CORRADE_CONSTEXPR_ASSERT(isMeshAttributeCustom(name),
         "Trade::meshAttributeCustom():" << name << "is not custom"),
-        UnsignedShort(name) - UnsignedShort(MeshAttribute::Custom);
+        UnsignedShort(name) - Implementation::MeshAttributeCustom;
 }
 
 /**
