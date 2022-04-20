@@ -346,6 +346,16 @@ MeshAttribute MeshData::attributeName(const UnsignedInt id) const {
     return _attributes[id]._name;
 }
 
+UnsignedInt MeshData::attributeId(const UnsignedInt id) const {
+    CORRADE_ASSERT(id < _attributes.size(),
+        "Trade::MeshData::attributeId(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
+    const MeshAttribute name = _attributes[id]._name;
+    UnsignedInt count = 0;
+    for(UnsignedInt i = 0; i != id; ++i)
+        if(_attributes[i]._name == name) ++count;
+    return count;
+}
+
 VertexFormat MeshData::attributeFormat(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeFormat(): index" << id << "out of range for" << _attributes.size() << "attributes", {});

@@ -1323,6 +1323,18 @@ class MAGNUM_TRADE_EXPORT MeshData {
         MeshAttribute attributeName(UnsignedInt id) const;
 
         /**
+         * @brief Attribute ID in a set of attributes of the same name
+         * @m_since_latest
+         *
+         * The @p id is expected to be smaller than @ref attributeCount() const.
+         * Returns the number of attributes of the same @ref attributeName()
+         * preceeding @p id, or @cpp 0 @ce if it's the first attribute of
+         * given name.
+         * @see @ref attributeId(MeshAttribute, UnsignedInt) const
+         */
+        UnsignedInt attributeId(UnsignedInt id) const;
+
+        /**
          * @brief Attribute format
          *
          * The @p id is expected to be smaller than @ref attributeCount() const.
@@ -1417,6 +1429,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * Like @ref findAttributeId(), but the @p id is expected to be smaller
          * than @ref attributeCount(MeshAttribute) const.
+         * @see @ref attributeId(UnsignedInt) const
          */
         UnsignedInt attributeId(MeshAttribute name, UnsignedInt id = 0) const;
 

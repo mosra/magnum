@@ -1295,6 +1295,11 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.attributeName(2), MeshAttribute::Normal);
     CORRADE_COMPARE(data.attributeName(3), MeshAttribute::TextureCoordinates);
     CORRADE_COMPARE(data.attributeName(4), meshAttributeCustom(13));
+    CORRADE_COMPARE(data.attributeId(0), 0);
+    CORRADE_COMPARE(data.attributeId(1), 0);
+    CORRADE_COMPARE(data.attributeId(2), 0);
+    CORRADE_COMPARE(data.attributeId(3), 1);
+    CORRADE_COMPARE(data.attributeId(4), 0);
     CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector3);
     CORRADE_COMPARE(data.attributeFormat(1), VertexFormat::Vector2);
     CORRADE_COMPARE(data.attributeFormat(2), VertexFormat::Vector3);
@@ -3474,6 +3479,7 @@ void MeshDataTest::attributeNotFound() {
     Error redirectError{&out};
     data.attributeData(2);
     data.attributeName(2);
+    data.attributeId(2);
     data.attributeFormat(2);
     data.attributeOffset(2);
     data.attributeStride(2);
@@ -3520,6 +3526,7 @@ void MeshDataTest::attributeNotFound() {
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData::attributeData(): index 2 out of range for 2 attributes\n"
         "Trade::MeshData::attributeName(): index 2 out of range for 2 attributes\n"
+        "Trade::MeshData::attributeId(): index 2 out of range for 2 attributes\n"
         "Trade::MeshData::attributeFormat(): index 2 out of range for 2 attributes\n"
         "Trade::MeshData::attributeOffset(): index 2 out of range for 2 attributes\n"
         "Trade::MeshData::attributeStride(): index 2 out of range for 2 attributes\n"
