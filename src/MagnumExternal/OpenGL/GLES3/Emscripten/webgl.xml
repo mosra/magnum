@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<registry>
+    <comment>
+        This contains signatures of functions that are in WebGL 2 but not in ES
+        and (of course) gl.xml doesn't bother adding any WebGL-specific special
+        case.
+    </comment>
+
+    <!-- SECTION: GL command definitions. -->
+   <commands namespace="GL">
+        <!-- glGetBufferSubData is defined in gl.xml already, so nothing to do
+             here. It only needs to be required from some extension that's then
+             listed in extensions.txt. -->
+    </commands>
+
+    <!-- SECTION: MAGNUM extension interface definitions -->
+    <extensions>
+        <extension name="GL_MAGNUM_what_webgl_has_but_es_not" supported="gles2">
+            <require>
+                <command name="glGetBufferSubData"/>
+            </require>
+        </extension>
+    </extensions>
+</registry>

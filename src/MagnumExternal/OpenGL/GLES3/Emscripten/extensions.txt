@@ -5,6 +5,7 @@
 version 3.0 es
 
 extraspec https://raw.githubusercontent.com/google/angle/master/scripts/gl_angle_ext.xml
+extraspec webgl.xml
 
 extension EXT_texture_filter_anisotropic        optional
 # It's actually EXT_disjoint_timer_query_webgl2, but that's not known to gl.xml
@@ -34,6 +35,8 @@ extension ANGLE_base_vertex_base_instance       optional
 # Haha you wish, OF COURSE it's not included in gl_angle_ext.xml. But
 # fortunately ES3 defines these constants on its own so I don't need it anyway.
 # extension ANGLE_compressed_texture_etc        optional
+
+extension MAGNUM_what_webgl_has_but_es_not      optional
 
 begin functions blacklist
     # Not present in WEBGL_blend_equation_advanced_coherent

@@ -1173,6 +1173,10 @@ GLAPI void glDisableiEXT(GLenum, GLuint);
 GLAPI void glEnableiEXT(GLenum, GLuint);
 GLAPI GLboolean glIsEnablediEXT(GLenum, GLuint);
 
+/* GL_MAGNUM_what_webgl_has_but_es_not */
+
+GLAPI void glGetBufferSubData(GLenum, GLintptr, GLsizeiptr, void *);
+
 /* GL_OVR_multiview */
 
 GLAPI void glFramebufferTextureMultiviewOVR(GLenum, GLenum, GLuint, GLint, GLint, GLsizei);
