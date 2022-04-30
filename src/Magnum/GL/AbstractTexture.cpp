@@ -551,7 +551,7 @@ void AbstractTexture::bindInternal() {
 namespace {
 
 PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
@@ -888,7 +888,7 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #endif
             return PixelFormat::DepthStencil;
     }
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
     #endif
 
@@ -896,7 +896,7 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
 }
 
 PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
@@ -1183,7 +1183,7 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
             return PixelType::Float32UnsignedInt248Rev;
         #endif
     }
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
     #endif
 

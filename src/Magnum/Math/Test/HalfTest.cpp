@@ -625,7 +625,7 @@ void HalfTest::debug() {
 
     Debug{&out} << -36.41_h << Half{Constants::inf()}
         << Math::Vector3<Half>{3.14159_h, -1.4142_h, 1.618_h};
-    #ifdef _MSC_VER
+    #ifdef CORRADE_TARGET_MSVC
     CORRADE_COMPARE(out.str(), "-36.41 inf Vector(3.141, -1.414, 1.618)\n");
     #else
     CORRADE_COMPARE(out.str(), "-36.41 inf Vector(3.141, -1.414, 1.618)\n");

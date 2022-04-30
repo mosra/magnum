@@ -32,7 +32,7 @@
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/OpenGL.h"
 
-#ifdef _MSC_VER
+#ifdef CORRADE_TARGET_MSVC
 #include "Magnum/GL/AbstractTexture.h"
 
 #ifndef MAGNUM_TARGET_GLES2

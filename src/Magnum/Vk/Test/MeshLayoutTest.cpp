@@ -126,7 +126,7 @@ void MeshLayoutTest::mapMeshPrimitive() {
        too much. */
     for(UnsignedInt i = 1; i <= 0xffff; ++i) {
         const auto primitive = Magnum::MeshPrimitive(i);
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -139,7 +139,7 @@ void MeshLayoutTest::mapMeshPrimitive() {
             #include "Magnum/Implementation/meshPrimitiveMapping.hpp"
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
     }

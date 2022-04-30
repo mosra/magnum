@@ -151,7 +151,7 @@ void PipelineTest::dynamicRasterizationStateMapping() {
            - that the entries are ordered by number by comparing a function to
              expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range) */
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -168,7 +168,7 @@ void PipelineTest::dynamicRasterizationStateMapping() {
             #include "Magnum/Vk/Implementation/dynamicRasterizationStateMapping.hpp"
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
 

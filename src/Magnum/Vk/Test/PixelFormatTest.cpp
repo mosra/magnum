@@ -80,7 +80,7 @@ void PixelFormatTest::map() {
            - that there was no gap (unhandled value inside the range)
            - that a particular generic format maps to a particular format
            - that the debug output matches what was converted */
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -116,7 +116,7 @@ void PixelFormatTest::map() {
             #undef _s
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
 
@@ -188,7 +188,7 @@ void PixelFormatTest::mapCompressed() {
            - that there was no gap (unhandled value inside the range)
            - that a particular generic format maps to a particular format
            - that the debug output matches what was converted */
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -224,7 +224,7 @@ void PixelFormatTest::mapCompressed() {
             #undef _s
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
 

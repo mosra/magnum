@@ -134,7 +134,7 @@ namespace {
    Windows not handled yet, as it needs a workaround using DllMain() and
    GetProcAddress(). */
 CORRADE_VISIBILITY_EXPORT
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     __attribute__((weak))
     #else
     /* uh oh? the test will fail, probably */

@@ -58,7 +58,7 @@ void DeviceFeaturesTest::mapping() {
              expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range)
            - that the Debug output is equivalent to the name */
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -80,7 +80,7 @@ void DeviceFeaturesTest::mapping() {
             #undef _cver
             #undef _cext
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
 

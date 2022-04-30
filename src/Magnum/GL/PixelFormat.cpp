@@ -124,7 +124,7 @@ TextureFormat textureFormat(const Magnum::PixelFormat format) {
 
 UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
     std::size_t size = 0;
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
@@ -184,11 +184,11 @@ UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
             return 8;
         #endif
     }
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
     #endif
 
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
@@ -254,7 +254,7 @@ UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
         case PixelFormat::DepthStencil:
             CORRADE_ASSERT_UNREACHABLE("GL::pixelSize(): invalid" << type << "specified for" << format, 0);
     }
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
     #endif
 
@@ -265,7 +265,7 @@ UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
 Debug& operator<<(Debug& debug, const PixelFormat value) {
     debug << "GL::PixelFormat" << Debug::nospace;
 
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
@@ -322,7 +322,7 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
         #undef _c
         /* LCOV_EXCL_STOP */
     }
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
     #endif
 
@@ -332,7 +332,7 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
 Debug& operator<<(Debug& debug, const PixelType value) {
     debug << "GL::PixelType" << Debug::nospace;
 
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
@@ -388,7 +388,7 @@ Debug& operator<<(Debug& debug, const PixelType value) {
         #undef _c
         /* LCOV_EXCL_STOP */
     }
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
     #endif
 
@@ -458,7 +458,7 @@ TextureFormat textureFormat(const Magnum::CompressedPixelFormat format) {
 Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
     debug << "GL::CompressedPixelFormat" << Debug::nospace;
 
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
@@ -570,7 +570,7 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         #undef _c
         /* LCOV_EXCL_STOP */
     }
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
     #endif
 

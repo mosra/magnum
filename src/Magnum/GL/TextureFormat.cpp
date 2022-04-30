@@ -42,7 +42,7 @@ namespace Magnum { namespace GL {
 Debug& operator<<(Debug& debug, const TextureFormat value) {
     debug << "GL::TextureFormat" << Debug::nospace;
 
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
@@ -293,7 +293,7 @@ Debug& operator<<(Debug& debug, const TextureFormat value) {
         #undef _c
         /* LCOV_EXCL_STOP */
     }
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
     #endif
 

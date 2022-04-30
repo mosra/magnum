@@ -161,7 +161,7 @@ template<class T> inline T cos(Unit<Rad, T> angle) { return std::cos(T(angle)); 
 template<class T> inline T cos(Unit<Deg, T> angle) { return cos(Rad<T>(angle)); }
 #endif
 
-#if defined(__GNUC__) && !defined(__clang__)
+#if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG)
 namespace Implementation {
     /* GCC builtin since 3.4 (https://stackoverflow.com/a/2742861),
        unfortunately either Clang nor MSVC have any alternative which wouldn't
@@ -192,7 +192,7 @@ instruction as well.
 template<class T> inline std::pair<T, T> sincos(Rad<T> angle);
 #else
 template<class T> inline std::pair<T, T> sincos(Unit<Rad, T> angle) {
-    #if defined(__GNUC__) && !defined(__clang__)
+    #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG)
     std::pair<T, T> out;
     Implementation::sincos(T(angle), out.first, out.second);
     return out;

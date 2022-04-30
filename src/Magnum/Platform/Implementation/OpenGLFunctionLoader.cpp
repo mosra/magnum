@@ -37,7 +37,7 @@
 
 /* WGL-specific stuff */
 #elif defined(CORRADE_TARGET_WINDOWS)
-#ifdef _MSC_VER
+#ifdef CORRADE_TARGET_MSVC
 #pragma warning(disable: 4055)
 #pragma warning(disable: 4054)
 #endif

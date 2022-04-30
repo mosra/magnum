@@ -31,7 +31,7 @@
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/OpenGL.h"
 
-#ifdef _MSC_VER
+#ifdef CORRADE_TARGET_MSVC
 /* Otherwise the member function pointers will have different size based on
    whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
    IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */

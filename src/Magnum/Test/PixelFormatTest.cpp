@@ -123,7 +123,7 @@ void PixelFormatTest::mapping() {
            - that the entries are ordered by number by comparing a function to
              expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range) */
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -138,7 +138,7 @@ void PixelFormatTest::mapping() {
             #include "Magnum/Implementation/pixelFormatMapping.hpp"
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
 
@@ -162,7 +162,7 @@ void PixelFormatTest::compressedMapping() {
            - that the entries are ordered by number by comparing a function to
              expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range) */
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -184,7 +184,7 @@ void PixelFormatTest::compressedMapping() {
             #include "Magnum/Implementation/compressedPixelFormatMapping.hpp"
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
 

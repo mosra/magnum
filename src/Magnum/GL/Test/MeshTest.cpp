@@ -175,7 +175,7 @@ void MeshTest::mapPrimitive() {
        too much. */
     for(UnsignedInt i = 1; i <= 0xffff; ++i) {
         const auto primitive = Magnum::MeshPrimitive(i);
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -188,7 +188,7 @@ void MeshTest::mapPrimitive() {
             #include "Magnum/Implementation/meshPrimitiveMapping.hpp"
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
     }
@@ -236,7 +236,7 @@ void MeshTest::mapIndexType() {
        too much. */
     for(UnsignedInt i = 1; i <= 0xffff; ++i) {
         const auto type = Magnum::MeshIndexType(i);
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -248,7 +248,7 @@ void MeshTest::mapIndexType() {
             #include "Magnum/Implementation/meshIndexTypeMapping.hpp"
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
     }

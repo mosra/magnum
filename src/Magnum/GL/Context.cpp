@@ -631,7 +631,7 @@ CORRADE_THREAD_LOCAL
    it's apparently enough to just export, macOS needs the weak attribute.
    Windows handled differently below. */
 CORRADE_VISIBILITY_EXPORT
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     __attribute__((weak))
     #else
     /* uh oh? the test will fail, probably */

@@ -122,7 +122,7 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
            - that there was no gap (unhandled value inside the range)
            - that a particular pixel format maps to a particular GL format
            - that a particular pixel type maps to a particular GL type */
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -177,7 +177,7 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
             #undef _n
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
 
@@ -381,7 +381,7 @@ void PixelFormatTest::mapCompressedFormatTextureFormat() {
            - that there was no gap (unhandled value inside the range)
            - that a particular pixel format maps to a particular GL format
            - that a particular pixel type maps to a particular GL type */
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -416,7 +416,7 @@ void PixelFormatTest::mapCompressedFormatTextureFormat() {
             #undef _s
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
 

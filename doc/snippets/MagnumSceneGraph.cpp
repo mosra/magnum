@@ -256,7 +256,7 @@ class MyObject: MyFeature, public Object3D {
 /* [feature-construction-order-crash] */
 }
 {
-#ifdef __GNUC__
+#ifdef CORRADE_TARGET_GCC
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreorder"
 #endif
@@ -269,7 +269,7 @@ class MyObject: MyFeature, public Object3D {
 };
 /* [feature-construction-order-crash-destruction] */
 }
-#ifdef __GNUC__
+#ifdef CORRADE_TARGET_GCC
 #pragma GCC diagnostic pop
 #endif
 }

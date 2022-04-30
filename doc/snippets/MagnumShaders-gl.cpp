@@ -74,7 +74,7 @@ int main() {
 
 /* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
    on GCC 4.8 in the [60] array */
-#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
+#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [shaders-setup] */
 struct Vertex {
@@ -343,7 +343,7 @@ shader
 
 /* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
    on GCC 4.8 in the [60] array */
-#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
+#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [DistanceFieldVectorGL-usage1] */
 struct Vertex {
@@ -420,7 +420,7 @@ shader
 
 /* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
    on GCC 4.8 in the [60] array */
-#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
+#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [FlatGL-usage-colored1] */
 struct Vertex {
@@ -633,7 +633,7 @@ mesh.setInstanceCount(Containers::arraySize(instancedTransformations))
 
 /* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
    on GCC 4.8 in the [60] array */
-#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
+#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [MeshVisualizerGL3D-usage-geom1] */
 struct Vertex {
@@ -679,7 +679,7 @@ mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizerGL3D::VertexIndex{
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 /* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
    on GCC 4.8 in the [60] array */
-#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
+#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [MeshVisualizerGL3D-usage-tbn1] */
 struct Vertex {
@@ -841,7 +841,7 @@ mesh.setInstanceCount(Containers::arraySize(instanceData))
 }
 #endif
 
-#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
+#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [PhongGL-usage-colored1] */
 struct Vertex {
@@ -1000,7 +1000,7 @@ shader
 }
 #endif
 
-#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
+#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [VectorGL-usage1] */
 struct Vertex {
@@ -1064,7 +1064,7 @@ shader
 }
 #endif
 
-#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
+#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [VertexColorGL-usage1] */
 struct Vertex {

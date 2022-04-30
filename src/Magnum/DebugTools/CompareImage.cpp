@@ -109,7 +109,7 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(expected.format()),
         "DebugTools::CompareImage: can't compare implementation-specific pixel formats", {});
 
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
@@ -189,7 +189,7 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
         case PixelFormat::Depth32FStencil8UI:
             CORRADE_ASSERT_UNREACHABLE("DebugTools::CompareImage: packed depth/stencil formats are not supported yet", {});
     }
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
     #endif
 
@@ -261,7 +261,7 @@ namespace {
 void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& pixels, const Vector2i& pos, const PixelFormat format) {
     const char* const pixel = &pixels[pos.y()][pos.x()][0];
 
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
@@ -344,7 +344,7 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
             /* Already handled by a printing assert before */
             CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
     #endif
 }

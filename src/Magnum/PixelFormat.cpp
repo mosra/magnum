@@ -38,7 +38,7 @@ UnsignedInt pixelSize(const PixelFormat format) {
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
         "pixelSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
 
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
@@ -111,7 +111,7 @@ UnsignedInt pixelSize(const PixelFormat format) {
         case PixelFormat::RGBA32F:
             return 16;
     }
-    #ifdef __GNUC__
+    #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
     #endif
 

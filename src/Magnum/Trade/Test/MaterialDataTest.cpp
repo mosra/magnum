@@ -374,7 +374,7 @@ void MaterialDataTest::attributeMap() {
         /* Attribute 0 reserved for an invalid value */
 
         const auto attribute = MaterialAttribute(i);
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -400,7 +400,7 @@ void MaterialDataTest::attributeMap() {
             #undef _ct
             #undef _cnt
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
     }
@@ -417,7 +417,7 @@ void MaterialDataTest::layerMap() {
         /* Attribute 0 reserved for an invalid value */
 
         const auto attribute = MaterialLayer(i);
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -429,7 +429,7 @@ void MaterialDataTest::layerMap() {
             #include "Magnum/Trade/Implementation/materialLayerProperties.hpp"
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
     }

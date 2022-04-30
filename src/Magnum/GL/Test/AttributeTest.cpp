@@ -877,7 +877,7 @@ void AttributeTest::hasVertexFormat() {
         const auto format = Magnum::VertexFormat(i);
         /* Each case only verifies that hasVertexFormat() handles the format
            and doesn't fall into unreachable code */
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -889,7 +889,7 @@ void AttributeTest::hasVertexFormat() {
             #include "Magnum/Implementation/vertexFormatMapping.hpp"
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
     }

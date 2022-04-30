@@ -818,9 +818,9 @@ warning: '$' in identifier
 @endcode
 
 Solution is to disable the warning for the offending lines, below for example
-when modifying a title element contents through DOM. No @cpp #ifdef __clang__ @ce
-is necessary, as the code in question is only ever compiled by Emscripten's
-Clang anyway:
+when modifying a title element contents through DOM. No
+@cpp #ifdef CORRADE_TARGET_CLANG @ce is necessary, as the code in question is
+only ever compiled by Emscripten's Clang anyway:
 
 @snippet platforms-html5.cpp emasm-dollar
 

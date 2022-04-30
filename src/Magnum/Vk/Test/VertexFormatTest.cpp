@@ -71,7 +71,7 @@ void VertexFormatTest::map() {
            - that a particular generic format maps to a particular format
            - that the debug output matches what was converted
         */
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
         #endif
@@ -107,7 +107,7 @@ void VertexFormatTest::map() {
             #undef _s
             #undef _c
         }
-        #ifdef __GNUC__
+        #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic pop
         #endif
 

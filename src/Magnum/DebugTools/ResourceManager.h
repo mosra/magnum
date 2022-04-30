@@ -40,7 +40,7 @@
 #include "Magnum/SceneGraph/SceneGraph.h"
 
 /** @todo fix this better */
-#ifdef _MSC_VER /* This is not a bug, this is a feature :( Not even /permissive- helps. */
+#ifdef CORRADE_TARGET_MSVC /* This is not a bug, this is a feature :( Not even /permissive- helps. */
 #include "Magnum/DebugTools/ForceRenderer.h"
 #include "Magnum/DebugTools/ObjectRenderer.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
