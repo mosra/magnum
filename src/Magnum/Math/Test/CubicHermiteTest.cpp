@@ -434,7 +434,10 @@ void CubicHermiteTest::constructNoInitScalar() {
     CubicHermite1D spline{2.0f, -2.0f, -0.5f};
     new(&spline) CubicHermite1D{Magnum::NoInit};
     {
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        /* Explicitly check we're not on Clang because certain Clang-based IDEs
+           inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+           Clang itself does */
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
         CORRADE_COMPARE(spline, (CubicHermite1D{2.0f, -2.0f, -0.5f}));
@@ -450,7 +453,10 @@ void CubicHermiteTest::constructNoInitVector() {
     CubicHermite2D spline{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}};
     new(&spline) CubicHermite2D{Magnum::NoInit};
     {
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        /* Explicitly check we're not on Clang because certain Clang-based IDEs
+           inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+           Clang itself does */
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
         CORRADE_COMPARE(spline, (CubicHermite2D{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}}));
@@ -466,7 +472,10 @@ void CubicHermiteTest::constructNoInitComplex() {
     CubicHermiteComplex spline{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}};
     new(&spline) CubicHermiteComplex{Magnum::NoInit};
     {
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        /* Explicitly check we're not on Clang because certain Clang-based IDEs
+           inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+           Clang itself does */
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
         CORRADE_COMPARE(spline, (CubicHermiteComplex{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}}));
@@ -485,7 +494,10 @@ void CubicHermiteTest::constructNoInitQuaternion() {
         {{3.0f, -0.5f, 1.2f}, 0.3f}};
     new(&spline) CubicHermiteQuaternion{Magnum::NoInit};
     {
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        /* Explicitly check we're not on Clang because certain Clang-based IDEs
+           inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+           Clang itself does */
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
         CORRADE_COMPARE(spline, (CubicHermiteQuaternion{

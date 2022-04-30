@@ -157,7 +157,10 @@ void GenericTest::projectionUniform2DConstructNoInit() {
 
     new(&a) ProjectionUniform2D{NoInit};
     {
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        /* Explicitly check we're not on Clang because certain Clang-based IDEs
+           inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+           Clang itself does */
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
         CORRADE_COMPARE(a.projectionMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
@@ -223,7 +226,10 @@ void GenericTest::projectionUniform3DConstructNoInit() {
 
     new(&a) ProjectionUniform3D{NoInit};
     {
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        /* Explicitly check we're not on Clang because certain Clang-based IDEs
+           inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+           Clang itself does */
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
         CORRADE_COMPARE(a.projectionMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
@@ -281,7 +287,10 @@ void GenericTest::transformationUniform2DConstructNoInit() {
 
     new(&a) TransformationUniform2D{NoInit};
     {
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        /* Explicitly check we're not on Clang because certain Clang-based IDEs
+           inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+           Clang itself does */
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
         CORRADE_COMPARE(a.transformationMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
@@ -347,7 +356,10 @@ void GenericTest::transformationUniform3DConstructNoInit() {
 
     new(&a) TransformationUniform3D{NoInit};
     {
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        /* Explicitly check we're not on Clang because certain Clang-based IDEs
+           inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+           Clang itself does */
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
         CORRADE_COMPARE(a.transformationMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
@@ -411,7 +423,10 @@ void GenericTest::textureTransformationUniformConstructNoInit() {
 
     new(&a) TextureTransformationUniform{NoInit};
     {
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        /* Explicitly check we're not on Clang because certain Clang-based IDEs
+           inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+           Clang itself does */
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
         CORRADE_COMPARE(a.rotationScaling[1], (Vector2{2.5f, -3.0f}));

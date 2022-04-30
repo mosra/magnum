@@ -151,7 +151,10 @@ void DualTest::constructNoInit() {
     new(&a) Dual{Magnum::NoInit};
     new(&b) Math::Dual<Math::Quaternion<Float>>{Magnum::NoInit};
     {
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        /* Explicitly check we're not on Clang because certain Clang-based IDEs
+           inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+           Clang itself does */
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
         CORRADE_COMPARE(a, Dual(2.0f, -7.5f));

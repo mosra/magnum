@@ -188,7 +188,10 @@ void AngleTest::constructNoInit() {
     new(&a) Deg{Magnum::NoInit};
     new(&b) Rad{Magnum::NoInit};
     {
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601
+        /* Explicitly check we're not on Clang because certain Clang-based IDEs
+           inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+           Clang itself does */
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601
         /* The warning is reported for both debug and release build */
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
@@ -198,7 +201,7 @@ void AngleTest::constructNoInit() {
         #endif
         CORRADE_COMPARE(Float(a), 25.0f);
         CORRADE_COMPARE(Float(b), 3.14f);
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601
         #pragma GCC diagnostic pop
         #endif
     }

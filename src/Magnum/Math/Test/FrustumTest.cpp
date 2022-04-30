@@ -192,7 +192,10 @@ void FrustumTest::constructNoInit() {
 
     new(&a) Frustum{Magnum::NoInit};
     {
-        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        /* Explicitly check we're not on Clang because certain Clang-based IDEs
+           inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+           Clang itself does */
+        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
 
@@ -311,7 +314,7 @@ void FrustumTest::data() {
     /* Using default-constructed to verify that the planes are in correct order */
     constexpr Frustum a;
 
-    #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
+    #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
     constexpr
     #endif
     Vector4 right = a.cbegin()[1];
@@ -323,7 +326,7 @@ void FrustumTest::data() {
     constexpr Vector4 near = a.near();
     CORRADE_COMPARE(near, (Vector4{0.0f, 0.0f, 1.0f, 1.0f}));
 
-    #if !defined(CORRADE_MSVC2015_COMPATIBILITY) && (!defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ >= 500)
+    #if !defined(CORRADE_MSVC2015_COMPATIBILITY) && (!defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5)
     constexpr
     #endif
     Vector4 far = *(a.cend() - 1);
