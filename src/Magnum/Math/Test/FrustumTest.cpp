@@ -78,6 +78,7 @@ struct FrustumTest: Corrade::TestSuite::Tester {
     void convert();
 
     void data();
+    void dataOutOfRange();
     void rangeFor();
 
     void compare();
@@ -102,6 +103,7 @@ FrustumTest::FrustumTest() {
               &FrustumTest::convert,
 
               &FrustumTest::data,
+              &FrustumTest::dataOutOfRange,
               &FrustumTest::rangeFor,
 
               &FrustumTest::compare,
@@ -307,10 +309,6 @@ void FrustumTest::convert() {
 }
 
 void FrustumTest::data() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
     /* Using default-constructed to verify that the planes are in correct order */
     constexpr Frustum a;
 
@@ -337,11 +335,23 @@ void FrustumTest::data() {
     #endif
     Float b = *a.data();
     CORRADE_COMPARE(b, 1.0f);
+}
+
+void FrustumTest::dataOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Frustum a;
+    constexpr Frustum ca;
 
     std::ostringstream out;
     Error redirectError{&out};
     a[6];
-    CORRADE_COMPARE(out.str(), "Math::Frustum::operator[](): index 6 out of range\n");
+    ca[6];
+    CORRADE_COMPARE(out.str(),
+        "Math::Frustum::operator[](): index 6 out of range\n"
+        "Math::Frustum::operator[](): index 6 out of range\n");
 }
 
 void FrustumTest::rangeFor() {
