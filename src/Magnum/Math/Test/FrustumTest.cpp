@@ -310,31 +310,42 @@ void FrustumTest::convert() {
 
 void FrustumTest::data() {
     /* Using default-constructed to verify that the planes are in correct order */
-    constexpr Frustum a;
+    constexpr Frustum ca;
 
     #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
     constexpr
     #endif
-    Vector4 right = a.cbegin()[1];
+    Vector4 right = ca.cbegin()[1];
     CORRADE_COMPARE(right, (Vector4{-1.0f, 0.0f, 0.0f, 1.0f}));
 
-    constexpr Vector4 bottom = a[2];
+    constexpr Vector4 bottom = ca[2];
     CORRADE_COMPARE(bottom, (Vector4{0.0f, 1.0f, 0.0f, 1.0f}));
 
-    constexpr Vector4 near = a.near();
+    constexpr Vector4 near = ca.near();
     CORRADE_COMPARE(near, (Vector4{0.0f, 0.0f, 1.0f, 1.0f}));
 
     #if !defined(CORRADE_MSVC2015_COMPATIBILITY) && (!defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5)
     constexpr
     #endif
-    Vector4 far = *(a.cend() - 1);
+    Vector4 far = *(ca.cend() - 1);
     CORRADE_COMPARE(far, (Vector4{0.0f, 0.0f, -1.0f, 1.0f}));
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing pointer is verboten */
-    constexpr
-    #endif
-    Float b = *a.data();
-    CORRADE_COMPARE(b, 1.0f);
+    constexpr Frustum a{
+        {-1.0f,  2.0f, -3.0f, 0.1f},
+        { 1.0f, -2.0f,  3.0f, 0.2f},
+        {-4.0f,  5.0f, -6.0f, 0.3f},
+        { 4.0f, -5.0f,  6.0f, 0.4f},
+        {-7.0f,  8.0f, -9.0f, 0.5f},
+        { 7.0f,  8.0f,  9.0f, 0.6f}};
+
+    /* Not constexpr anymore, as it has to reinterpret to return a
+       correctly-sized array */
+    CORRADE_COMPARE(a.data()[9], 5.0f);
+    CORRADE_COMPARE(ca.data()[4], -1.0f);
+
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 24);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 24);
 }
 
 void FrustumTest::dataOutOfRange() {

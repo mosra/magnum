@@ -334,13 +334,14 @@ void QuaternionTest::data() {
     a.scalar() = 1.1f;
     CORRADE_COMPARE(a, (Quaternion{{1.0f, 4.3f, 3.0f}, 1.1f}));
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing a pointer is verboten */
-    constexpr
-    #endif
-    Float b = *ca.data();
-    Float c = a.data()[3];
-    CORRADE_COMPARE(b, 1.0f);
-    CORRADE_COMPARE(c, 1.1f);
+    /* Not constexpr anymore, as it has to reinterpret to return a
+       correctly-sized array */
+    CORRADE_COMPARE(a.data()[3], 1.1f);
+    CORRADE_COMPARE(ca.data()[1], 2.0f);
+
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 4);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 4);
 }
 
 void QuaternionTest::compare() {

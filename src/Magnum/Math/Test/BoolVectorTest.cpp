@@ -207,32 +207,37 @@ void BoolVectorTest::convert() {
 
 void BoolVectorTest::data() {
     /* 0b00001000, 0b00000011, 0b100 */
-    constexpr BoolVector19 a(0x08, 0x03, 0x04);
+    constexpr BoolVector19 ca(0x08, 0x03, 0x04);
 
-    CORRADE_VERIFY(!a[0] && !a[1] && !a[2]);
-    CORRADE_VERIFY(a[3]);
-    CORRADE_VERIFY(!a[4] && !a[5] && !a[6] && !a[7]);
-    CORRADE_VERIFY(a[8]);
-    CORRADE_VERIFY(a[9]);
-    CORRADE_VERIFY(!a[10] && !a[11] && !a[12] && !a[13] && !a[14] && !a[15] && !a[16] && !a[17]);
-    CORRADE_VERIFY(a[18]);
+    CORRADE_VERIFY(!ca[0] && !ca[1] && !ca[2]);
+    CORRADE_VERIFY(ca[3]);
+    CORRADE_VERIFY(!ca[4] && !ca[5] && !ca[6] && !ca[7]);
+    CORRADE_VERIFY(ca[8]);
+    CORRADE_VERIFY(ca[9]);
+    CORRADE_VERIFY(!ca[10] && !ca[11] && !ca[12] && !ca[13] && !ca[14] && !ca[15] && !ca[16] && !ca[17]);
+    CORRADE_VERIFY(ca[18]);
 
-    constexpr bool b = a[9];
+    constexpr bool b = ca[9];
     CORRADE_COMPARE(b, true);
+
+    BoolVector19 a(0x08, 0x03, 0x04);
+    a.set(15, true);
+    CORRADE_VERIFY(a[15]);
+    CORRADE_COMPARE(a, BoolVector19(0x08, 0x83, 0x04));
+    a.set(15, false);
+    CORRADE_VERIFY(!a[15]);
+    CORRADE_COMPARE(a, BoolVector19(0x08, 0x03, 0x04));
 
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing pointer is verboten */
     constexpr
     #endif
-    UnsignedByte c = *a.data();
+    UnsignedByte c = *ca.data();
+    CORRADE_COMPARE(a.data()[1], 0x03);
     CORRADE_COMPARE(c, 0x08);
 
-    BoolVector19 d(0x08, 0x03, 0x04);
-    d.set(15, true);
-    CORRADE_VERIFY(d[15]);
-    CORRADE_COMPARE(d, BoolVector19(0x08, 0x83, 0x04));
-    d.set(15, false);
-    CORRADE_VERIFY(!d[15]);
-    CORRADE_COMPARE(d, BoolVector19(0x08, 0x03, 0x04));
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 3);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 3);
 }
 
 void BoolVectorTest::compare() {

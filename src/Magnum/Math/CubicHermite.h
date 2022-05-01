@@ -146,12 +146,30 @@ template<class T> class CubicHermite {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of three elements
          *
+         * Contrary to what Doxygen shows, returns reference to an
+         * one-dimensional fixed-size array of three elements, i.e.
+         * @cpp T(&)[3] @ce.
          * @see @ref inTangent(), @ref point(), @ref outTangent()
+         * @todoc Fix once there's a possibility to patch the signature in a
+         *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
-        T* data() { return &_inTangent; }
-        constexpr const T* data() const { return &_inTangent; } /**< @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        T* data();
+        const T* data() const; /**< @overload */
+        #else
+        auto data() -> T(&)[3] {
+            return reinterpret_cast<T(&)[3]>(_inTangent);
+        }
+        /* Can't be constexpr anymore, the only other solution would be to
+           store `T _data[3]` instead of the three variables, but that may make
+           the internal implementation too error prone. Similarly as with
+           RectangularMatrix::data(), having a statically sized array returned
+           is a far more useful property than constexpr, so that wins. */
+        auto data() const -> const T(&)[3] {
+            return reinterpret_cast<const T(&)[3]>(_inTangent);
+        }
+        #endif
 
         /** @brief Equality comparison */
         bool operator==(const CubicHermite<T>& other) const;

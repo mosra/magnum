@@ -218,13 +218,33 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of `cols*rows` length in column-major
-         *      order.
          *
+         * Contrary to what Doxygen shows, returns reference to an
+         * one-dimensional fixed-size array of @cpp cols*rows @ce elements,
+         * i.e. @cpp T(&)[cols*rows] @ce.
          * @see @ref operator[]()
+         * @todoc Fix once there's a possibility to patch the signature in a
+         *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
-        T* data() { return _data[0].data(); }
-        constexpr const T* data() const { return _data[0].data(); } /**< @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        T* data();
+        const T* data() const; /**< @overload */
+        #else
+        auto data() -> T(&)[cols*rows] {
+            return reinterpret_cast<T(&)[cols*rows]>(_data);
+        }
+        /* Can't really be constexpr anymore, the only other solution is having
+           an union with `T _rawData[cols*rows]` and return that, but in a
+           constexpr context it'd mean we'd have to initialize it instead of
+           `_data` in the constructor ... and then operator[]() could not be
+           constexpr anymore. I can't think of a practical use case where
+           constexpr data() would be needed and operator[]() could not be used
+           instead. Having a statically sized array returned is a far more
+           useful property than constexpr, so that wins. */
+        auto data() const -> const T(&)[cols*rows] {
+            return reinterpret_cast<const T(&)[cols*rows]>(_data);
+        }
+        #endif
 
         /**
          * @brief Column at given position

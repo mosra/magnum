@@ -402,37 +402,40 @@ void RectangularMatrixTest::convert() {
 }
 
 void RectangularMatrixTest::data() {
-    Matrix3x4 m;
+    Matrix3x4 a;
     Vector4 vector(4.0f, 5.0f, 6.0f, 7.0f);
 
-    m[2] = vector;
-    m[1][1] = 1.0f;
-    m[0][2] = 1.5f;
+    a[2] = vector;
+    a[1][1] = 1.0f;
+    a[0][2] = 1.5f;
 
-    CORRADE_COMPARE(m[1][1], 1.0f);
-    CORRADE_COMPARE(m[0][2], 1.5f);
-    CORRADE_COMPARE(m[2], vector);
+    CORRADE_COMPARE(a[1][1], 1.0f);
+    CORRADE_COMPARE(a[0][2], 1.5f);
+    CORRADE_COMPARE(a[2], vector);
 
-    CORRADE_COMPARE(m, Matrix3x4(Vector4(0.0f, 0.0f, 1.5f, 0.0f),
+    CORRADE_COMPARE(a, Matrix3x4(Vector4(0.0f, 0.0f, 1.5f, 0.0f),
                                  Vector4(0.0f, 1.0f, 0.0f, 0.0f),
                                  Vector4(4.0f, 5.0f, 6.0f, 7.0f)));
 
-    /* Pointer chasings, i.e. *(b.data()[1]), are not possible */
-    constexpr Matrix3x4 a(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
-                          Vector4(4.5f,  4.0f, 7.0f, 3.0f),
-                          Vector4(7.0f, -1.7f, 8.0f, 0.0f));
+    constexpr Matrix3x4 ca(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
+                           Vector4(4.5f,  4.0f, 7.0f, 3.0f),
+                           Vector4(7.0f, -1.7f, 8.0f, 0.0f));
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
     constexpr
     #endif
-    Vector4 b = a[2];
-    constexpr Float c = a[1][2];
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing pointer is verboten */
-    constexpr
-    #endif
-    Float d = *a.data();
+    Vector4 b = ca[2];
+    constexpr Float c = ca[1][2];
     CORRADE_COMPARE(b, Vector4(7.0f, -1.7f, 8.0f, 0.0f));
     CORRADE_COMPARE(c, 7.0f);
-    CORRADE_COMPARE(d, 3.0f);
+
+    /* Not constexpr anymore, as it has to reinterpret to return a
+       correctly-sized array */
+    CORRADE_COMPARE(a.data()[8], 4.0f);
+    CORRADE_COMPARE(ca.data()[1], 5.0f);
+
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 12);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 12);
 }
 
 void RectangularMatrixTest::row() {

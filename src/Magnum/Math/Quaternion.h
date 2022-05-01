@@ -362,12 +362,33 @@ template<class T> class Quaternion {
         /**
          * @brief Raw data
          *
-         * Returns one-dimensional array of four elements, vector part first,
-         * scalar after.
+         * Contrary to what Doxygen shows, returns reference to an
+         * one-dimensional fixed-size array of four elements, i.e.
+         * @cpp T(&)[4] @ce, vector part first, scalar after.
          * @see @ref vector(), @ref scalar()
+         * @todoc Fix once there's a possibility to patch the signature in a
+         *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
-        T* data() { return _vector.data(); }
-        constexpr const T* data() const { return _vector.data(); } /**< @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        T* data();
+        const T* data() const; /**< @overload */
+        #else
+        auto data() -> T(&)[4] {
+            return reinterpret_cast<T(&)[4]>(_vector);
+        }
+        /* Can't really be constexpr anymore, the only other solution is having
+           an union with `T _rawData[4]` and return that, but in a constexpr
+           context it'd mean we'd have to initialize it instead of `_data` in
+           the constructor ... and then operator[]() could not be constexpr
+           anymore. I can't think of a practical use case where constexpr
+           data() would be needed and operator[]() could not be used instead.
+           Similarly to RectangularMatrix::data(), having a statically sized
+           array returned is a far more useful property than constexpr, so that
+           wins. */
+        auto data() const -> const T(&)[4] {
+            return reinterpret_cast<const T(&)[4]>(_vector);
+        }
+        #endif
 
         /** @brief Equality comparison */
         bool operator==(const Quaternion<T>& other) const {

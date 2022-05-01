@@ -233,12 +233,21 @@ template<std::size_t size, class T> class Vector {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of `size` length.
          *
+         * Contrary to what Doxygen shows, returns reference to an
+         * one-dimensional fixed-size array of `size` elements, i.e.
+         * @cpp T(&)[size] @ce.
          * @see @ref operator[]()
+         * @todoc Fix once there's a possibility to patch the signature in a
+         *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
-        T* data() { return _data; }
-        constexpr const T* data() const { return _data; } /**< @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        T* data();
+        constexpr const T* data() const; /**< @overload */
+        #else
+        auto data() -> T(&)[size] { return _data; }
+        constexpr auto data() const -> const T(&)[size] { return _data; }
+        #endif
 
         /**
          * @brief Value at given position

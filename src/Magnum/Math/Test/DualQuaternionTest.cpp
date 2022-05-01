@@ -322,13 +322,14 @@ void DualQuaternionTest::data() {
 
     DualQuaternion a{{{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}};
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing a pointer is verboten */
-    constexpr
-    #endif
-    Float d = *ca.data();
-    Float e = a.data()[7];
-    CORRADE_COMPARE(d, 1.0f);
-    CORRADE_COMPARE(e, 2.0f);
+    /* Not constexpr anymore, as it has to reinterpret to return a
+       correctly-sized array */
+    CORRADE_COMPARE(a.data()[7], 2.0f);
+    CORRADE_COMPARE(ca.data()[4], 0.5f);
+
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 8);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 8);
 }
 
 void DualQuaternionTest::isNormalized() {

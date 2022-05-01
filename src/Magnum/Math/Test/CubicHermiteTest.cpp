@@ -672,10 +672,14 @@ void CubicHermiteTest::dataScalar() {
     a.outTangent() = 2.1f;
     CORRADE_COMPARE(a, (CubicHermite1D{3.0f, 1.0f, 2.1f}));
 
-    constexpr Float b = *ca.data();
-    Float c = a.data()[2];
-    CORRADE_COMPARE(b, 2.0f);
-    CORRADE_COMPARE(c, 2.1f);
+    /* Not constexpr anymore, as it has to reinterpret to return a
+       correctly-sized array */
+    CORRADE_COMPARE(*ca.data(), 2.0f);
+    CORRADE_COMPARE(a.data()[2], 2.1f);
+
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 3);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 3);
 }
 
 void CubicHermiteTest::dataVector() {
@@ -693,10 +697,14 @@ void CubicHermiteTest::dataVector() {
     a.outTangent().y() = 2.0f;
     CORRADE_COMPARE(a, (CubicHermite2D{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}}));
 
-    constexpr Vector2 b = *ca.data();
-    Vector2 c = a.data()[2];
-    CORRADE_COMPARE(b, (Vector2{1.0f, 2.0f}));
-    CORRADE_COMPARE(c, (Vector2{3.0f, 2.0f}));
+    /* Not constexpr anymore, as it has to reinterpret to return a
+       correctly-sized array */
+    CORRADE_COMPARE(a.data()[2], (Vector2{3.0f, 2.0f}));
+    CORRADE_COMPARE(*ca.data(), (Vector2{1.0f, 2.0f}));
+
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 3);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 3);
 }
 
 void CubicHermiteTest::dataComplex() {
@@ -714,10 +722,14 @@ void CubicHermiteTest::dataComplex() {
     a.outTangent().imaginary() = 2.0f;
     CORRADE_COMPARE(a, (CubicHermiteComplex{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}}));
 
-    constexpr Complex b = *ca.data();
-    Complex c = a.data()[2];
-    CORRADE_COMPARE(b, (Complex{1.0f, 2.0f}));
-    CORRADE_COMPARE(c, (Complex{3.0f, 2.0f}));
+    /* Not constexpr anymore, as it has to reinterpret to return a
+       correctly-sized array */
+    CORRADE_COMPARE(a.data()[2], (Complex{3.0f, 2.0f}));
+    CORRADE_COMPARE(*ca.data(), (Complex{1.0f, 2.0f}));
+
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 3);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 3);
 }
 
 void CubicHermiteTest::dataQuaternion() {
@@ -745,10 +757,14 @@ void CubicHermiteTest::dataQuaternion() {
         {{1.5f, -2.0f, 0.1f}, 1.0f},
         {{3.0f, -0.5f, 2.0f}, 0.3f}}));
 
-    constexpr Quaternion b = *ca.data();
-    Quaternion c = a.data()[2];
-    CORRADE_COMPARE(b, (Quaternion{{1.0f, 2.0f, -1.0f}, 3.0f}));
-    CORRADE_COMPARE(c, (Quaternion{{3.0f, -0.5f, 2.0f}, 0.3f}));
+    /* Not constexpr anymore, as it has to reinterpret to return a
+       correctly-sized array */
+    CORRADE_COMPARE(a.data()[2], (Quaternion{{3.0f, -0.5f, 2.0f}, 0.3f}));
+    CORRADE_COMPARE(*ca.data(), (Quaternion{{1.0f, 2.0f, -1.0f}, 3.0f}));
+
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 3);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 3);
 }
 
 void CubicHermiteTest::compareScalar() {

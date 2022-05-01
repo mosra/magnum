@@ -130,12 +130,21 @@ template<std::size_t size> class BoolVector {
 
         /**
          * @brief Raw data
-         * @return Array of DataSize length
          *
+         * Contrary to what Doxygen shows, returns reference to an
+         * one-dimensional fixed-size array of @ref DataSize elements, i.e.
+         * @cpp UnsignedByte(&)[DataSize] @ce.
          * @see @ref operator[](), @ref set()
+         * @todoc Fix once there's a possibility to patch the signature in a
+         *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
-        UnsignedByte* data() { return _data; }
-        constexpr const UnsignedByte* data() const { return _data; } /**< @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        UnsignedByte* data();
+        constexpr const UnsignedByte* data() const; /**< @overload */
+        #else
+        auto data() -> UnsignedByte(&)[DataSize] { return _data; }
+        constexpr auto data() const -> const UnsignedByte(&)[DataSize] { return _data; }
+        #endif
 
         /** @brief Bit at given position */
         constexpr bool operator[](std::size_t i) const {

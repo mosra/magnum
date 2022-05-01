@@ -191,12 +191,26 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of four elements
          *
+         * Contrary to what Doxygen shows, returns reference to an
+         * one-dimensional fixed-size array of four elements, i.e.
+         * @cpp T(&)[4] @ce.
          * @see @ref real(), @ref dual()
+         * @todoc Fix once there's a possibility to patch the signature in a
+         *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
-        T* data() { return Dual<Complex<T>>::data()->data(); }
-        constexpr const T* data() const { return Dual<Complex<T>>::data()->data(); } /**< @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        T* data();
+        const T* data() const; /**< @overload */
+        #else
+        auto data() -> T(&)[4] {
+            return reinterpret_cast<T(&)[4]>(Dual<Complex<T>>::data());
+        }
+        /* Can't be constexpr anymore, see base implementation for details */
+        auto data() const -> const T(&)[4] {
+            return reinterpret_cast<const T(&)[4]>(Dual<Complex<T>>::data());
+        }
+        #endif
 
         /**
          * @brief Whether the dual complex number is normalized

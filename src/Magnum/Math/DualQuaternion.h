@@ -338,12 +338,26 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of eight elements
          *
+         * Contrary to what Doxygen shows, returns reference to an
+         * one-dimensional fixed-size array of eight elements, i.e.
+         * @cpp T(&)[8] @ce.
          * @see @ref real(), @ref dual()
+         * @todoc Fix once there's a possibility to patch the signature in a
+         *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
-        T* data() { return Dual<Quaternion<T>>::data()->data(); }
-        constexpr const T* data() const { return Dual<Quaternion<T>>::data()->data(); } /**< @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        T* data();
+        const T* data() const; /**< @overload */
+        #else
+        auto data() -> T(&)[8] {
+            return reinterpret_cast<T(&)[8]>(Dual<Quaternion<T>>::data());
+        }
+        /* Can't be constexpr anymore, see base implementation for details */
+        auto data() const -> const T(&)[8] {
+            return reinterpret_cast<const T(&)[8]>(Dual<Quaternion<T>>::data());
+        }
+        #endif
 
         /**
          * @brief Whether the dual quaternion is normalized

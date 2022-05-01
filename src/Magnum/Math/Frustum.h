@@ -127,10 +127,34 @@ template<class T> class Frustum {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of length `24`.
+         *
+         * Contrary to what Doxygen shows, returns reference to an
+         * one-dimensional fixed-size array of 24 elements, i.e.
+         * @cpp T(&)[24] @ce.
+         * @see @ref operator[]()
+         * @todoc Fix once there's a possibility to patch the signature in a
+         *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
-        T* data() { return _data[0].data(); }
-        constexpr const T* data() const { return _data[0].data(); } /**< @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        T* data();
+        const T* data() const; /**< @overload */
+        #else
+        auto data() -> T(&)[24] {
+            return reinterpret_cast<T(&)[24]>(_data);
+        }
+        /* Can't really be constexpr anymore, the only other solution is having
+           an union with `T _rawData[24]` and return that, but in a constexpr
+           context it'd mean we'd have to initialize it instead of `_data` in
+           the constructor ... and then operator[]() could not be constexpr
+           anymore. I can't think of a practical use case where constexpr
+           data() would be needed and operator[]() could not be used instead.
+           Similarly to RectangularMatrix::data(), having a statically sized
+           array returned is a far more useful property than constexpr, so that
+           wins. */
+        auto data() const -> const T(&)[24] {
+            return reinterpret_cast<const T(&)[24]>(_data);
+        }
+        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**

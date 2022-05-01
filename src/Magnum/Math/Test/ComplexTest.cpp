@@ -295,10 +295,14 @@ void ComplexTest::data() {
     a.imaginary() = -3.5f;
     CORRADE_COMPARE(a, (Complex{2.0f, -3.5f}));
 
-    constexpr Float b = *ca.data();
-    Float c = a.data()[1];
-    CORRADE_COMPARE(b, 1.5f);
-    CORRADE_COMPARE(c, -3.5f);
+    /* Not constexpr anymore, as it has to reinterpret to return a
+       correctly-sized array */
+    CORRADE_COMPARE(a.data()[1], -3.5f);
+    CORRADE_COMPARE(*ca.data(), 1.5f);
+
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 2);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 2);
 }
 
 void ComplexTest::compare() {

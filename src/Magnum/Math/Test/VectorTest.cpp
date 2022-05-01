@@ -341,23 +341,29 @@ void VectorTest::isNormalized() {
 }
 
 void VectorTest::data() {
-    Vector4 vector(4.0f, 5.0f, 6.0f, 7.0f);
-    vector[2] = 1.0f;
-    vector[3] = 1.5f;
+    Vector4 a(4.0f, 5.0f, 6.0f, 7.0f);
+    a[2] = 1.0f;
+    a[3] = 1.5f;
 
-    CORRADE_COMPARE(vector[2], 1.0f);
-    CORRADE_COMPARE(vector[3], 1.5f);
-    CORRADE_COMPARE(vector, Vector4(4.0f, 5.0f, 1.0f, 1.5f));
+    CORRADE_COMPARE(a[2], 1.0f);
+    CORRADE_COMPARE(a[3], 1.5f);
+    CORRADE_COMPARE(a, Vector4(4.0f, 5.0f, 1.0f, 1.5f));
+
+    constexpr Vector4 ca(1.0f, 2.0f, -3.0f, 4.5f);
+    constexpr Float f = ca[3];
+    CORRADE_COMPARE(f, 4.5f);
 
     /* Pointer chasings, i.e. *(b.data()[3]), are not possible */
-    constexpr Vector4 a(1.0f, 2.0f, -3.0f, 4.5f);
-    constexpr Float f = a[3];
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing a pointer is verboten */
     constexpr
     #endif
-    Float g = *a.data();
-    CORRADE_COMPARE(f, 4.5f);
+    Float g = *ca.data();
+    CORRADE_COMPARE(a.data()[1], 5.0f);
     CORRADE_COMPARE(g, 1.0f);
+
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 4);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 4);
 }
 
 void VectorTest::compare() {

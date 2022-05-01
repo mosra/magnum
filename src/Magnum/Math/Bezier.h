@@ -137,12 +137,21 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of @cpp order + 1 @ce elements
          *
+         * Contrary to what Doxygen shows, returns reference to an
+         * one-dimensional fixed-size array of @cpp order + 1 @ce elements,
+         * i.e. @cpp T(&)[size] @ce.
          * @see @ref operator[]()
+         * @todoc Fix once there's a possibility to patch the signature in a
+         *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
-        Vector<dimensions, T>* data() { return _data; }
-        constexpr const Vector<dimensions, T>* data() const { return _data; } /**< @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<dimensions, T>* data();
+        constexpr const Vector<dimensions, T>* data() const; /**< @overload */
+        #else
+        auto data() -> Vector<dimensions, T>(&)[order + 1] { return _data; }
+        constexpr auto data() const -> const Vector<dimensions, T>(&)[order + 1] { return _data; }
+        #endif
 
         /** @brief Equality comparison */
         bool operator==(const Bezier<order, dimensions, T>& other) const {

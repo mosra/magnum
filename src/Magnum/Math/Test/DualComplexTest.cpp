@@ -288,10 +288,14 @@ void DualComplexTest::data() {
 
     DualComplex a{{-1.0f, 2.5f}, {3.0f, -7.5f}};
 
-    constexpr Float d = *ca.data();
-    Float e = a.data()[3];
-    CORRADE_COMPARE(d, -1.0f);
-    CORRADE_COMPARE(e, -7.5f);
+    /* Not constexpr anymore, as it has to reinterpret to return a
+       correctly-sized array */
+    CORRADE_COMPARE(*ca.data(), -1.0f);
+    CORRADE_COMPARE(a.data()[3], -7.5f);
+
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 4);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 4);
 }
 
 void DualComplexTest::isNormalized() {

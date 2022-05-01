@@ -111,6 +111,7 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void constructCopy();
     void convert();
 
+    void data();
     void access();
     void compare();
     void dimensionSlice();
@@ -167,6 +168,7 @@ RangeTest::RangeTest() {
               &RangeTest::constructCopy,
               &RangeTest::convert,
 
+              &RangeTest::data,
               &RangeTest::access,
               &RangeTest::compare,
               &RangeTest::dimensionSlice,
@@ -425,7 +427,7 @@ void RangeTest::convert() {
     CORRADE_VERIFY(!std::is_convertible<Range3D, Box>::value);
 }
 
-void RangeTest::access() {
+void RangeTest::data() {
     Range1Di line(34, 47);
     Range2Di rect({34, 23}, {47, 30});
     Range3Di cube({34, 23, -17}, {47, 30, 12});
@@ -434,21 +436,32 @@ void RangeTest::access() {
     constexpr Range2Di crect({34, 23}, {47, 30});
     constexpr Range3Di ccube({34, 23, -17}, {47, 30, 12});
 
-    CORRADE_COMPARE(line.data(), static_cast<void*>(&line));
-    CORRADE_COMPARE(rect.data(), static_cast<void*>(&rect));
-    CORRADE_COMPARE(cube.data(), static_cast<void*>(&cube));
-    constexpr Int lineData = *cline.data();
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing a pointer is verboten */
-    constexpr
-    #endif
-    Int rectData = *crect.data();
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing a pointer is verboten */
-    constexpr
-    #endif
-    Int cubeData = *ccube.data();
-    CORRADE_COMPARE(lineData, 34);
-    CORRADE_COMPARE(rectData, 34);
-    CORRADE_COMPARE(cubeData, 34);
+    /* Not constexpr anymore, as it has to reinterpret to return a
+       correctly-sized array */
+    CORRADE_COMPARE(line.data()[1], 47);
+    CORRADE_COMPARE(cline.data()[1], 47);
+    CORRADE_COMPARE(*rect.data(), 34);
+    CORRADE_COMPARE(*crect.data(), 34);
+    CORRADE_COMPARE(cube.data()[2], -17);
+    CORRADE_COMPARE(ccube.data()[2], -17);
+
+    /* It actually returns an array */
+    CORRADE_COMPARE(Corrade::Containers::arraySize(line.data()), 2);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(cline.data()), 2);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(rect.data()), 4);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(crect.data()), 4);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(cube.data()), 6);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(ccube.data()), 6);
+}
+
+void RangeTest::access() {
+    Range1Di line(34, 47);
+    Range2Di rect({34, 23}, {47, 30});
+    Range3Di cube({34, 23, -17}, {47, 30, 12});
+
+    constexpr Range1Di cline(34, 47);
+    constexpr Range2Di crect({34, 23}, {47, 30});
+    constexpr Range3Di ccube({34, 23, -17}, {47, 30, 12});
 
     CORRADE_COMPARE(line.min(), 34);
     CORRADE_COMPARE(cline.min(), 34);

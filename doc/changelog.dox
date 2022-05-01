@@ -385,6 +385,15 @@ See also:
     matrices, and with the default on @ref Math::RectangularMatrix being
     zero-fill while @ref Math::Matrix stays with the identity for consistency
     with other constructors.
+-   @ref Math::Bezier::data(), @ref Math::BoolVector::data(),
+    @ref Math::Complex::data(), @ref Math::CubicHermite::data(),
+    @ref Math::Dual::data(), @ref Math::DualComplex::data(),
+    @ref Math::DualQuaternion::data(), @ref Math::Frustum::data(),
+    @ref Math::Quaternion::data(), @ref Math::Range::data(),
+    @ref Math::RectangularMatrix::data() and @ref Math::Vector::data() now
+    return a reference to a fixed-size array instead of a pointer (i.e.,
+    @cpp T(&)[size] @ce instead of @cpp T* @ce) for more convenient usage in
+    APIs that take sized views.
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
@@ -946,6 +955,13 @@ See also:
     process. Existing code that calls these with unsanitized inputs now
     additionally needs to account for reflection as suggested in the
     documentation.
+-   @ref Math::Complex::data(), @ref Math::CubicHermite::data(),
+    @ref Math::Dual::data(), @ref Math::DualComplex::data(),
+    @ref Math::DualQuaternion::data(), @ref Math::Frustum::data(),
+    @ref Math::Quaternion::data(), @ref Math::Range::data() and
+    @ref Math::RectangularMatrix::data() are no longer @cpp constexpr @ce in
+    order to make them return a reference to a fixed-size array instead of a
+    pointer, which was deemed a more useful property.
 -   @ref SceneGraph::Object::addChild() no longer requires the type constructor
     to have the last parameter a parent object object pointer, as that was
     quite limiting. Instead it's calling @ref SceneGraph::Object::setParent()

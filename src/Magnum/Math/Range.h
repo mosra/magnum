@@ -186,14 +186,34 @@ template<UnsignedInt dimensions, class T> class Range {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of `dimensions`*2 length.
+         *
+         * Contrary to what Doxygen shows, returns reference to an
+         * one-dimensional fixed-size array of @cpp dimensions*2 @ce elements,
+         * i.e. @cpp T(&)[dimensions*2] @ce.
+         * @ref min(), @ref max()
+         * @todoc Fix once there's a possibility to patch the signature in a
+         *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
-        T* data() {
-            return dataInternal(typename std::conditional<dimensions == 1, void*, T*>::type{});
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        T* data();
+        const T* data() const; /**< @overload */
+        #else
+        auto data() -> T(&)[dimensions*2] {
+            return reinterpret_cast<T(&)[dimensions*2]>(_min);
         }
-        constexpr const T* data() const {
-            return dataInternal(typename std::conditional<dimensions == 1, void*, T*>::type{});
-        } /**< @overload */
+        /* Can't really be constexpr anymore, the only other solution is having
+           an union with `T _rawData[24]` and return that, but in a constexpr
+           context it'd mean we'd have to initialize it instead of `_data` in
+           the constructor ... and then operator[]() could not be constexpr
+           anymore. I can't think of a practical use case where constexpr
+           data() would be needed and operator[]() could not be used instead.
+           Similarly to RectangularMatrix::data(), having a statically sized
+           array returned is a far more useful property than constexpr, so that
+           wins. */
+        auto data() const -> const T(&)[dimensions*2] {
+            return reinterpret_cast<const T(&)[dimensions*2]>(_min);
+        }
+        #endif
 
         /**
          * @brief Minimal coordinates (inclusive)
@@ -327,12 +347,6 @@ template<UnsignedInt dimensions, class T> class Range {
            available) or not doing anything */
         explicit Range(Magnum::NoInitT, Magnum::NoInitT*) noexcept: _min{Magnum::NoInit}, _max{Magnum::NoInit} {}
         explicit Range(Magnum::NoInitT, void*) noexcept {}
-
-        /* Called from data(), always returning a T* */
-        constexpr const VectorType* dataInternal(void*) const { return &_min; }
-        VectorType* dataInternal(void*) { return &_min; }
-        constexpr const T* dataInternal(T*) const { return _min.data(); }
-        T* dataInternal(T*) { return _min.data(); }
 
         VectorType _min, _max;
 };

@@ -183,12 +183,30 @@ template<class T> class Complex {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of two elements
          *
+         * Contrary to what Doxygen shows, returns reference to an
+         * one-dimensional fixed-size array of two elements, i.e.
+         * @cpp T(&)[2] @ce.
          * @see @ref real(), @ref imaginary()
+         * @todoc Fix once there's a possibility to patch the signature in a
+         *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
-        T* data() { return &_real; }
-        constexpr const T* data() const { return &_real; } /**< @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        T* data();
+        const T* data() const; /**< @overload */
+        #else
+        auto data() -> T(&)[2] {
+            return reinterpret_cast<T(&)[2]>(_real);
+        }
+        /* Can't be constexpr anymore, the only other solution would be to
+           store `T _data[2]` instead of the two variables, but that may make
+           the internal implementation too error prone. Similarly as with
+           RectangularMatrix::data(), having a statically sized array returned
+           is a far more useful property than constexpr, so that wins. */
+        auto data() const -> const T(&)[2] {
+            return reinterpret_cast<const T(&)[2]>(_real);
+        }
+        #endif
 
         /** @brief Equality comparison */
         bool operator==(const Complex<T>& other) const {
