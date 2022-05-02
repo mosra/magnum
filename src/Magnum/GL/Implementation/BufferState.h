@@ -59,7 +59,7 @@ struct BufferState {
     void(Buffer::*storageImplementation)(Containers::ArrayView<const void>, Buffer::StorageFlags);
     #endif
     void(Buffer::*getParameterImplementation)(GLenum, GLint*);
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
     void(Buffer::*getSubDataImplementation)(GLintptr, GLsizeiptr, GLvoid*);
     #endif
     void(Buffer::*dataImplementation)(GLsizeiptr, const GLvoid*, BufferUsage);

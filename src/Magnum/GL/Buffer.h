@@ -1089,7 +1089,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          */
         Int size();
 
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
         /**
          * @brief Buffer data
          *
@@ -1101,9 +1101,11 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *      eventually @fn_gl{BindBuffer} and @fn_gl{GetBufferParameter}
          *      with @def_gl{BUFFER_SIZE}, then @fn_gl2_keyword{GetNamedBufferSubData,GetBufferSubData},
          *      eventually @fn_gl_keyword{GetBufferSubData}
-         * @requires_gl Buffer data queries are not available in OpenGL ES and
-         *      WebGL. Use @ref map(), @ref mapRead() or @ref DebugTools::bufferData()
-         *      in OpenGL ES instead.
+         * @requires_gl Buffer data queries are not available in OpenGL ES. Use
+         *      @ref map(), @ref mapRead() or @ref DebugTools::bufferData()
+         *      instead.
+         * @requires_webgl20 Buffer data queries are not available in
+         *      WebGL 1.0. Emscripten 2.0.17 or higher is required in WebGL2.
          */
         Containers::Array<char> data();
 
@@ -1119,9 +1121,11 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @see @ref size(), @ref data(), @ref setSubData(), @ref setTargetHint(),
          *      @fn_gl2_keyword{GetNamedBufferSubData,GetBufferSubData},
          *      eventually @fn_gl{BindBuffer} and @fn_gl_keyword{GetBufferSubData}
-         * @requires_gl Buffer data queries are not available in OpenGL ES and
-         *      WebGL. Use @ref map(), @ref mapRead() or @ref DebugTools::bufferData()
-         *      in OpenGL ES instead.
+         * @requires_gl Buffer data queries are not available in OpenGL ES. Use
+         *      @ref map(), @ref mapRead() or @ref DebugTools::bufferData() in
+         *      OpenGL ES instead.
+         * @requires_webgl20 Buffer data queries are not available in
+         *      WebGL 1.0. Emscripten 2.0.17 or higher is required in WebGL2.
          */
         Containers::Array<char> subData(GLintptr offset, GLsizeiptr size);
         #endif
@@ -1357,8 +1361,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         void MAGNUM_GL_LOCAL getParameterImplementationDSA(GLenum value, GLint* data);
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
         void MAGNUM_GL_LOCAL getSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, GLvoid* data);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL getSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, GLvoid* data);
         #endif
 
