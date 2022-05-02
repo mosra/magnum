@@ -47,7 +47,8 @@ namespace Implementation {
 @brief Buffer subdata
 
 Emulates @ref GL::Buffer::subData() call on platforms that don't support it
-(such as OpenGL ES) by using @ref GL::Buffer::map().
+(such as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL it's
+just an alias to @ref GL::Buffer::subData().
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
@@ -58,16 +59,23 @@ Emulates @ref GL::Buffer::subData() call on platforms that don't support it
 @requires_gles Buffer mapping is not available in WebGL.
 */
 template<class T> Containers::Array<T> inline bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+    #ifndef MAGNUM_TARGET_GLES
+    Containers::Array<char> data = buffer.subData(offset, size*sizeof(T));
+    CORRADE_INTERNAL_ASSERT(!data.deleter());
+    return Containers::Array<T>{reinterpret_cast<T*>(data.release()), std::size_t(size)};
+    #else
     Containers::Array<T> data{std::size_t(size)};
     if(size) Implementation::bufferSubData(buffer, offset, size*sizeof(T), data);
     return data;
+    #endif
 }
 
 /**
 @brief Buffer data
 
 Emulates @ref GL::Buffer::data() call on platforms that don't support it (such
-as OpenGL ES) by using @ref GL::Buffer::map().
+as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL it's just an
+alias to @ref GL::Buffer::data().
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
