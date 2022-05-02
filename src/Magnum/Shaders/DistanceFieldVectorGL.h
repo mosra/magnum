@@ -260,7 +260,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
             other is too error-prone, so it needs some other solution
             (accepting pairs of parameter type and value like in GL context
             creation, e.g., which will probably need a new enum as reusing Flag
-            for this might be too confusing) */
+            for this might be too confusing); what if some parameters won't be
+            (unsigned) integers? like a string with shader extensions? make a
+            whole Configuration class? */
         explicit DistanceFieldVectorGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
         #endif
 
