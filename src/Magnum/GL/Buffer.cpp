@@ -329,7 +329,7 @@ Int Buffer::size() {
     return size;
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
 Containers::Array<char> Buffer::data() {
     return subData(0, size());
 }
@@ -372,7 +372,7 @@ Buffer& Buffer::flushMappedRange(const GLintptr offset, const GLsizeiptr length)
 bool Buffer::unmap() { return (this->*Context::current().state().buffer.unmapImplementation)(); }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
 Containers::Array<char> Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
     Containers::Array<char> data(size);
     if(size) (this->*Context::current().state().buffer.getSubDataImplementation)(offset, size, data);
@@ -468,11 +468,13 @@ void Buffer::getParameterImplementationDSA(const GLenum value, GLint* const data
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
 void Buffer::getSubDataImplementationDefault(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
     glGetBufferSubData(GLenum(bindSomewhereInternal(_targetHint)), offset, size, data);
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
 void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
     glGetNamedBufferSubData(_id, offset, size, data);
 }
