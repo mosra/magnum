@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#if defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_WEBGL)
+#if defined(MAGNUM_TARGET_GL) && !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 /** @file
  * @brief Function @ref Magnum::DebugTools::bufferData(), @ref Magnum::DebugTools::bufferSubData()
  */
@@ -36,7 +36,7 @@
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/DebugTools/visibility.h"
 
-#if defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_WEBGL)
+#if defined(MAGNUM_TARGET_GL) && !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 namespace Magnum { namespace DebugTools {
 
 namespace Implementation {
@@ -47,8 +47,8 @@ namespace Implementation {
 @brief Buffer subdata
 
 Emulates @ref GL::Buffer::subData() call on platforms that don't support it
-(such as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL it's
-just an alias to @ref GL::Buffer::subData().
+(such as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL and
+WebGL 2.0 it's just an alias to @ref GL::Buffer::subData().
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
@@ -56,10 +56,11 @@ just an alias to @ref GL::Buffer::subData().
 
 @requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in OpenGL ES
     2.0.
-@requires_gles Buffer mapping is not available in WebGL.
+@requires_webgl20 Buffer data queries or buffer mapping are not available in
+    WebGL 1.0.
 */
 template<class T> Containers::Array<T> inline bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_WEBGL)
     Containers::Array<char> data = buffer.subData(offset, size*sizeof(T));
     CORRADE_INTERNAL_ASSERT(!data.deleter());
     return Containers::Array<T>{reinterpret_cast<T*>(data.release()), std::size_t(size)};
@@ -74,8 +75,8 @@ template<class T> Containers::Array<T> inline bufferSubData(GL::Buffer& buffer, 
 @brief Buffer data
 
 Emulates @ref GL::Buffer::data() call on platforms that don't support it (such
-as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL it's just an
-alias to @ref GL::Buffer::data().
+as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL and WebGL 2.0
+it's just an alias to @ref GL::Buffer::data().
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
@@ -83,7 +84,8 @@ alias to @ref GL::Buffer::data().
 
 @requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in OpenGL ES
     2.0.
-@requires_gles Buffer mapping is not available in WebGL.
+@requires_webgl20 Buffer data queries or buffer mapping are not available in
+    WebGL 1.0.
 */
 template<class T = char> Containers::Array<T> inline bufferData(GL::Buffer& buffer) {
     const Int bufferSize = buffer.size();
@@ -93,7 +95,7 @@ template<class T = char> Containers::Array<T> inline bufferData(GL::Buffer& buff
 
 }}
 #else
-#error this header is available only in the OpenGL (ES) build and not available in the WebGL build
+#error this header is not available in the WebGL 1.0 build
 #endif
 
 #endif
