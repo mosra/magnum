@@ -34,6 +34,10 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
 
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/DebugTools/BufferData.h"
+#endif
+
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
@@ -138,15 +142,14 @@ void BufferGLTest::constructFromData() {
     CORRADE_COMPARE(c.size(), 5*4);
     CORRADE_COMPARE(d.size(), 5*4);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(a.data()),
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(DebugTools::bufferData(a)),
         Containers::arrayView(data),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(b.data()),
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(DebugTools::bufferData(b)),
         Containers::arrayView(data),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(c.data()),
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(DebugTools::bufferData(c)),
         Containers::arrayView(data),
         TestSuite::Compare::Container);
     /* d's data is undefined, not testing */
@@ -307,10 +310,9 @@ void BufferGLTest::data() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(buffer.data()),
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(DebugTools::bufferData(buffer)),
         Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
@@ -320,10 +322,9 @@ void BufferGLTest::data() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(buffer.data()),
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(DebugTools::bufferData(buffer)),
         Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
@@ -334,10 +335,9 @@ void BufferGLTest::data() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(buffer.subData(4, 3*4)),
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(DebugTools::bufferSubData(buffer, 4, 3*4)),
         Containers::arrayView(subData),
         TestSuite::Compare::Container);
     #endif
@@ -347,10 +347,9 @@ void BufferGLTest::data() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(buffer.subData(4, 3*4)),
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(DebugTools::bufferSubData(buffer, 4, 3*4)),
         Containers::arrayView(subData),
         TestSuite::Compare::Container);
     #endif
@@ -385,9 +384,8 @@ void BufferGLTest::map() {
     CORRADE_VERIFY(buffer.unmap());
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
-    Containers::Array<char> changedContents = buffer.data();
+    #ifndef MAGNUM_TARGET_GLES2
+    Containers::Array<char> changedContents = DebugTools::bufferData(buffer);
     CORRADE_COMPARE(changedContents.size(), 5);
     CORRADE_COMPARE(changedContents[3], 107);
     #endif
@@ -417,9 +415,8 @@ void BufferGLTest::mapRange() {
     CORRADE_VERIFY(buffer.unmap());
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
-    Containers::Array<char> changedContents = buffer.data();
+    #ifndef MAGNUM_TARGET_GLES2
+    Containers::Array<char> changedContents = DebugTools::bufferData(buffer);
     CORRADE_COMPARE(changedContents.size(), 5);
     CORRADE_COMPARE(changedContents[4], 107);
     #endif
@@ -457,9 +454,8 @@ void BufferGLTest::mapRangeExplicitFlush() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Flushed range should be changed */
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
-    Containers::Array<char> changedContents = buffer.data();
+    #ifndef MAGNUM_TARGET_GLES2
+    Containers::Array<char> changedContents = DebugTools::bufferData(buffer);
     CORRADE_COMPARE(changedContents.size(), 5);
     CORRADE_COMPARE(changedContents[4], 107);
     #endif
@@ -478,9 +474,8 @@ void BufferGLTest::copy() {
     Buffer::copy(buffer1, buffer2, 1, 2, 3);
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
-    const Containers::Array<char> subContents = buffer2.subData(2, 3);
+    #ifndef MAGNUM_TARGET_GLES2
+    const Containers::Array<char> subContents = DebugTools::bufferSubData(buffer2, 2, 3);
     CORRADE_COMPARE_AS(subContents, Containers::arrayView(data).slice(1, 4),
         TestSuite::Compare::Container);
     #endif

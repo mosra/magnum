@@ -24,8 +24,11 @@
 */
 
 #include <tuple>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 
+#include "Magnum/DebugTools/BufferData.h"
 #include "Magnum/Image.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Buffer.h"
@@ -307,14 +310,11 @@ void TransformFeedbackGLTest::attachBase() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    #ifdef MAGNUM_TARGET_WEBGL
-    CORRADE_SKIP("Can't map buffers on WebGL.");
-    #else
-    auto data = Containers::arrayCast<const Vector2>(output.mapRead(0, 2*sizeof(Vector2)));
-    CORRADE_COMPARE(data[0], Vector2(1.0f, -1.0f));
-    CORRADE_COMPARE(data[1], Vector2(0.0f, 0.0f));
-    output.unmap();
-    #endif
+    auto data = DebugTools::bufferData(output);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_AS(Containers::arrayCast<Vector2>(data),
+        Containers::arrayView<Vector2>({{1.0f, -1.0f}, {0.0f, 0.0f}}),
+        TestSuite::Compare::Container);
 }
 
 void TransformFeedbackGLTest::attachRange() {
@@ -354,14 +354,11 @@ void TransformFeedbackGLTest::attachRange() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    #ifdef MAGNUM_TARGET_WEBGL
-    CORRADE_SKIP("Can't map buffers on WebGL.");
-    #else
-    auto data = Containers::arrayCast<const Vector2>(output.mapRead(256, 2*sizeof(Vector2)));
-    CORRADE_COMPARE(data[0], Vector2(1.0f, -1.0f));
-    CORRADE_COMPARE(data[1], Vector2(0.0f, 0.0f));
-    output.unmap();
-    #endif
+    auto data = DebugTools::bufferSubData(output, 256, 2*sizeof(Vector2));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_AS(Containers::arrayCast<Vector2>(data),
+        Containers::arrayView<Vector2>({{1.0f, -1.0f}, {0.0f, 0.0f}}),
+        TestSuite::Compare::Container);
 }
 
 struct XfbMultiShader: AbstractShaderProgram {
@@ -445,19 +442,17 @@ void TransformFeedbackGLTest::attachBases() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    #ifdef MAGNUM_TARGET_WEBGL
-    CORRADE_SKIP("Can't map buffers on WebGL.");
-    #else
-    auto data1 = Containers::arrayCast<const Vector2>(output1.mapRead(0, 2*sizeof(Vector2)));
-    CORRADE_COMPARE(data1[0], Vector2(1.0f, -1.0f));
-    CORRADE_COMPARE(data1[1], Vector2(0.0f, 0.0f));
-    output1.unmap();
+    auto data1 = DebugTools::bufferData(output1);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_AS(Containers::arrayCast<Vector2>(data1),
+        Containers::arrayView<Vector2>({{1.0f, -1.0f}, {0.0f, 0.0f}}),
+        TestSuite::Compare::Container);
 
-    auto data2 = Containers::arrayCast<const Float>(output2.mapRead(0, 2*sizeof(Float)));
-    CORRADE_COMPARE(data2[0], 0.0f);
-    CORRADE_COMPARE(data2[1], -2.0f);
-    output2.unmap();
-    #endif
+    auto data2 = DebugTools::bufferData(output2);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_AS(Containers::arrayCast<Float>(data2),
+        Containers::arrayView({0.0f, -2.0f}),
+        TestSuite::Compare::Container);
 }
 
 void TransformFeedbackGLTest::attachRanges() {
@@ -502,19 +497,17 @@ void TransformFeedbackGLTest::attachRanges() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    #ifdef MAGNUM_TARGET_WEBGL
-    CORRADE_SKIP("Can't map buffers on WebGL.");
-    #else
-    auto data1 = Containers::arrayCast<const Vector2>(output1.mapRead(256, 2*sizeof(Vector2)));
-    CORRADE_COMPARE(data1[0], Vector2(1.0f, -1.0f));
-    CORRADE_COMPARE(data1[1], Vector2(0.0f, 0.0f));
-    output1.unmap();
+    auto data1 = DebugTools::bufferSubData(output1, 256, 2*sizeof(Vector2));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_AS(Containers::arrayCast<Vector2>(data1),
+        Containers::arrayView<Vector2>({{1.0f, -1.0f}, {0.0f, 0.0f}}),
+        TestSuite::Compare::Container);
 
-    auto data2 = Containers::arrayCast<const Float>(output2.mapRead(512, 2*sizeof(Float)));
-    CORRADE_COMPARE(data2[0], 0.0f);
-    CORRADE_COMPARE(data2[1], -2.0f);
-    output2.unmap();
-    #endif
+    auto data2 = DebugTools::bufferSubData(output2, 512, 2*sizeof(Float));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_AS(Containers::arrayCast<Float>(data2),
+        Containers::arrayView({0.0f, -2.0f}),
+        TestSuite::Compare::Container);
 }
 
 #ifndef MAGNUM_TARGET_GLES

@@ -32,6 +32,10 @@
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/Renderer.h"
 
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/DebugTools/BufferData.h"
+#endif
+
 namespace Magnum { namespace Text { namespace Test { namespace {
 
 struct RendererGLTest: GL::OpenGLTester {
@@ -187,10 +191,9 @@ void RendererGLTest::renderMesh() {
     /* Bounds */
     CORRADE_COMPARE(bounds, Range2D({0.0f, -0.5f}, {5.0f, 1.0f}).translated(offset));
 
-    /** @todo How to verify this on ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     /* Vertex buffer contents */
-    Containers::Array<char> vertices = vertexBuffer.data();
+    Containers::Array<char> vertices = DebugTools::bufferData(vertexBuffer);
     CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(vertices),
         Containers::arrayView<Float>({
             0.0f + offset.x(),  0.5f + offset.y(), 0.0f, 10.0f,
@@ -208,8 +211,8 @@ void RendererGLTest::renderMesh() {
             5.0f + offset.x(),   1.0f + offset.y(), 18.0f, 10.0f,
             5.0f + offset.x(),  -0.5f + offset.y(), 18.0f,  0.0f
         }), TestSuite::Compare::Container);
-
-    Containers::Array<char> indices = indexBuffer.data();
+    /* Index buffer contents */
+    Containers::Array<char> indices = DebugTools::bufferData(indexBuffer);
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indices),
         Containers::arrayView<UnsignedByte>({
             0,  1,  2,  1,  3,  2,
@@ -220,10 +223,11 @@ void RendererGLTest::renderMesh() {
 }
 
 void RendererGLTest::renderMeshIndexType() {
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     TestFont font;
     GL::Mesh mesh{NoCreate};
-    GL::Buffer vertexBuffer, indexBuffer;
+    GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array};
+    GL::Buffer indexBuffer{GL::Buffer::TargetHint::ElementArray};
 
     /* Sizes: four vertices per glyph, each vertex has 2D position and 2D
        texture coordinates, each float is four bytes; six indices per glyph. */
@@ -232,7 +236,7 @@ void RendererGLTest::renderMeshIndexType() {
     std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, nullGlyphCache,
         1.0f, std::string(64, 'a'), vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_GL_ERROR();
-    Containers::Array<char> indicesByte = indexBuffer.data();
+    Containers::Array<char> indicesByte = DebugTools::bufferData(indexBuffer);
     CORRADE_COMPARE(vertexBuffer.size(), 256*(2 + 2)*4);
     CORRADE_COMPARE(indicesByte.size(), 64*6);
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indicesByte).prefix(18),
@@ -246,7 +250,7 @@ void RendererGLTest::renderMeshIndexType() {
     std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, nullGlyphCache,
         1.0f, std::string(65, 'a'), vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_GL_ERROR();
-    Containers::Array<char> indicesShort = indexBuffer.data();
+    Containers::Array<char> indicesShort = DebugTools::bufferData(indexBuffer);
     CORRADE_COMPARE(vertexBuffer.size(), 260*(2 + 2)*4);
     CORRADE_COMPARE(indicesShort.size(), 65*6*2);
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedShort>(indicesShort).prefix(18),
@@ -256,7 +260,7 @@ void RendererGLTest::renderMeshIndexType() {
             8,  9, 10,  9, 11, 10
         }), TestSuite::Compare::Container);
     #else
-    CORRADE_SKIP("Can't verify buffer contents on OpenGL ES.");
+    CORRADE_SKIP("Can't verify buffer contents on OpenGL ES 2.0.");
     #endif
 }
 
@@ -280,9 +284,9 @@ void RendererGLTest::mutableText() {
     renderer.reserve(4, GL::BufferUsage::DynamicDraw, GL::BufferUsage::DynamicDraw);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 4);
-    /** @todo How to verify this on ES? */
-    #ifndef MAGNUM_TARGET_GLES
-    Containers::Array<char> indices = renderer.indexBuffer().data();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    Containers::Array<char> indices = DebugTools::bufferData(renderer.indexBuffer());
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indices).prefix(24),
         Containers::arrayView<UnsignedByte>({
              0,  1,  2,  1,  3,  2,
@@ -301,9 +305,8 @@ void RendererGLTest::mutableText() {
 
     /* Aligned to line/left, no offset needed */
 
-    /** @todo How to verify this on ES? */
-    #ifndef MAGNUM_TARGET_GLES
-    Containers::Array<char> vertices = renderer.vertexBuffer().data();
+    #ifndef MAGNUM_TARGET_GLES2
+    Containers::Array<char> vertices = DebugTools::bufferData(renderer.vertexBuffer());
     CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(vertices).prefix(48),
         Containers::arrayView<Float>({
             0.0f,  0.5f, 0.0f, 10.0f,

@@ -58,6 +58,10 @@
 #include "Magnum/GL/RectangleTexture.h"
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/DebugTools/BufferData.h"
+#endif
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct FramebufferGLTest: OpenGLTester {
@@ -1742,9 +1746,9 @@ void FramebufferGLTest::readBuffer() {
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    /** @todo How to test this on ES? */
-    #ifndef MAGNUM_TARGET_GLES
-    auto colorData = colorImage.buffer().data();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    auto colorData = DebugTools::bufferData(colorImage.buffer());
     CORRADE_COMPARE(colorData.size(), (DataOffset + 8*16)*sizeof(Color4ub));
     CORRADE_COMPARE(Containers::arrayCast<Color4ub>(colorData)[DataOffset], Color4ub(128, 64, 32, 17));
     #endif
