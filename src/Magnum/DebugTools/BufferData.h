@@ -59,7 +59,7 @@ WebGL 2.0 it's just an alias to @ref GL::Buffer::subData().
 @requires_webgl20 Buffer data queries or buffer mapping are not available in
     WebGL 1.0.
 */
-template<class T> Containers::Array<T> inline bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+template<class T = char> Containers::Array<T> inline bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
     if(!size) return {};
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_WEBGL)
     Containers::Array<char> data = buffer.subData(offset, size*sizeof(T));

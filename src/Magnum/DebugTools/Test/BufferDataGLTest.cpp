@@ -59,9 +59,15 @@ void BufferDataGLTest::data() {
     CORRADE_VERIFY(emptyContents.isEmpty());
 
     buffer.setData(Data, GL::BufferUsage::StaticDraw);
-    const Containers::Array<Int> contents = bufferData<Int>(buffer);
+
+    const Containers::Array<char> contents = bufferData(buffer);
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE_AS(contents, Containers::arrayView(Data),
+    CORRADE_COMPARE_AS(contents,
+        Containers::arrayCast<const char>(Containers::arrayView(Data)),
+        TestSuite::Compare::Container);
+    const Containers::Array<Int> intContents = bufferData<Int>(buffer);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_AS(intContents, Containers::arrayView(Data),
         TestSuite::Compare::Container);
 }
 
@@ -73,11 +79,16 @@ void BufferDataGLTest::subData() {
 
     GL::Buffer buffer;
     buffer.setData(Data, GL::BufferUsage::StaticDraw);
-    const Containers::Array<Int> contents = bufferSubData<Int>(buffer, 4, 3);
-    MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE_AS(contents, Containers::arrayView(Data).slice(1, 4),
-        TestSuite::Compare::Container);
 
+    const Containers::Array<char> contents = bufferSubData(buffer, 4, 3*4);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_AS(contents,
+        Containers::arrayCast<const char>(Containers::arrayView(Data).slice(1, 4)),
+        TestSuite::Compare::Container);
+    const Containers::Array<Int> intContents = bufferSubData<Int>(buffer, 4, 3);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_AS(intContents, Containers::arrayView(Data).slice(1, 4),
+        TestSuite::Compare::Container);
     const Containers::Array<Int> emptyContents = bufferSubData<Int>(buffer, 4, 0);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(emptyContents.isEmpty());
