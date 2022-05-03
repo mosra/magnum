@@ -75,9 +75,7 @@ if(BUILD_GL_TESTS)
     find_package(Corrade REQUIRED PluginManager)
 
     corrade_add_test(GLAbstractTextureGLTest AbstractTextureGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
-    corrade_add_test(GLBufferGLTest BufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLCubeMapTextureGLTest CubeMapTextureGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
-    corrade_add_test(GLFramebufferGLTest FramebufferGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
     corrade_add_test(GLMeshGLTest MeshGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
     corrade_add_test(GLRenderbufferGLTest RenderbufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLTextureGLTest TextureGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
@@ -88,6 +86,16 @@ if(BUILD_GL_TESTS)
         AbstractShaderProgramGLTest.cpp
         ${GLAbstractShaderProgramGLTest_RES}
         LIBRARIES MagnumOpenGLTester)
+
+    corrade_add_test(GLBufferGLTest BufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
+    if(NOT MAGNUM_TARGET_GLES2)
+        target_link_libraries(GLBufferGLTest PRIVATE MagnumDebugTools)
+    endif()
+
+    corrade_add_test(GLFramebufferGLTest FramebufferGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
+    if(NOT MAGNUM_TARGET_GLES2)
+        target_link_libraries(GLFramebufferGLTest PRIVATE MagnumDebugTools)
+    endif()
 
     corrade_add_test(GLContextGLTest ContextGLTest.cpp LIBRARIES MagnumOpenGLTester)
     if(NOT CORRADE_TARGET_EMSCRIPTEN)
@@ -162,10 +170,10 @@ if(BUILD_GL_TESTS)
     endif()
 
     if(NOT MAGNUM_TARGET_GLES2)
-        corrade_add_test(GLBufferImageGLTest BufferImageGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
+        corrade_add_test(GLBufferImageGLTest BufferImageGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib MagnumDebugTools)
         corrade_add_test(GLPrimitiveQueryGLTest PrimitiveQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLTextureArrayGLTest TextureArrayGLTest.cpp LIBRARIES MagnumOpenGLTester)
-        corrade_add_test(GLTransformFeedbackGLTest TransformFeedbackGLTest.cpp LIBRARIES MagnumOpenGLTester)
+        corrade_add_test(GLTransformFeedbackGLTest TransformFeedbackGLTest.cpp LIBRARIES MagnumOpenGLTester MagnumDebugTools)
     endif()
 
     if(NOT MAGNUM_TARGET_GLES2 AND NOT MAGNUM_TARGET_WEBGL)

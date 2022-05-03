@@ -33,6 +33,10 @@
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/OpenGLTester.h"
 
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/DebugTools/BufferData.h"
+#endif
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct BufferImageGLTest: OpenGLTester {
@@ -98,10 +102,6 @@ void BufferImageGLTest::construct() {
     BufferImage2D a{PixelStorage{}.setAlignment(1),
         PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data, BufferUsage::StaticDraw};
 
-    #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data();
-    #endif
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(a.storage().alignment(), 1);
@@ -110,8 +110,9 @@ void BufferImageGLTest::construct() {
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.dataSize(), 3);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    const auto imageData = DebugTools::bufferData(a.buffer());
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
@@ -122,10 +123,6 @@ void BufferImageGLTest::constructGeneric() {
     BufferImage2D a{PixelStorage{}.setAlignment(1),
         Magnum::PixelFormat::R8Unorm, {1, 3}, data, BufferUsage::StaticDraw};
 
-    #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data();
-    #endif
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(a.storage().alignment(), 1);
@@ -134,8 +131,9 @@ void BufferImageGLTest::constructGeneric() {
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.dataSize(), 3);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    const auto imageData = DebugTools::bufferData(a.buffer());
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
@@ -150,10 +148,6 @@ void BufferImageGLTest::constructCompressed() {
         CompressedPixelFormat::RGBAS3tcDxt1,
         {4, 4}, data, BufferUsage::StaticDraw};
 
-    #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data();
-    #endif
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -163,8 +157,9 @@ void BufferImageGLTest::constructCompressed() {
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.dataSize(), 8);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    const auto imageData = DebugTools::bufferData(a.buffer());
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
@@ -179,10 +174,6 @@ void BufferImageGLTest::constructCompressedGeneric() {
         Magnum::CompressedPixelFormat::Bc1RGBAUnorm,
         {4, 4}, data, BufferUsage::StaticDraw};
 
-    #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data();
-    #endif
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -192,8 +183,9 @@ void BufferImageGLTest::constructCompressedGeneric() {
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.dataSize(), 8);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    const auto imageData = DebugTools::bufferData(a.buffer());
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
@@ -208,10 +200,6 @@ void BufferImageGLTest::constructBuffer() {
     BufferImage2D a{PixelStorage{}.setAlignment(1),
         PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, std::move(buffer), sizeof(data)};
 
-    #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data();
-    #endif
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_VERIFY(!buffer.id());
@@ -222,8 +210,9 @@ void BufferImageGLTest::constructBuffer() {
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.dataSize(), 3);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    const auto imageData = DebugTools::bufferData(a.buffer());
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
@@ -238,10 +227,6 @@ void BufferImageGLTest::constructBufferGeneric() {
     BufferImage2D a{PixelStorage{}.setAlignment(1),
         Magnum::PixelFormat::R8Unorm, {1, 3}, std::move(buffer), sizeof(data)};
 
-    #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data();
-    #endif
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_VERIFY(!buffer.id());
@@ -252,8 +237,9 @@ void BufferImageGLTest::constructBufferGeneric() {
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.dataSize(), 3);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    const auto imageData = DebugTools::bufferData(a.buffer());
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
@@ -272,10 +258,6 @@ void BufferImageGLTest::constructBufferCompressed() {
         CompressedPixelFormat::RGBAS3tcDxt1,
         {4, 4}, std::move(buffer), sizeof(data)};
 
-    #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data();
-    #endif
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -287,8 +269,9 @@ void BufferImageGLTest::constructBufferCompressed() {
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.dataSize(), 8);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    const auto imageData = DebugTools::bufferData(a.buffer());
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
@@ -307,10 +290,6 @@ void BufferImageGLTest::constructBufferCompressedGeneric() {
         Magnum::CompressedPixelFormat::Bc1RGBAUnorm,
         {4, 4}, std::move(buffer), sizeof(data)};
 
-    #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data();
-    #endif
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -322,8 +301,9 @@ void BufferImageGLTest::constructBufferCompressedGeneric() {
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.dataSize(), 8);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    const auto imageData = DebugTools::bufferData(a.buffer());
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
@@ -487,10 +467,6 @@ void BufferImageGLTest::setData() {
     const UnsignedShort data2[2*4] = { 1, 2, 3, 4, 5, 6, 7, 8 };
     a.setData(PixelFormat::RGBA, PixelType::UnsignedShort, {1, 2}, data2, BufferUsage::StaticDraw);
 
-    #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data();
-    #endif
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(a.storage().alignment(), 4);
@@ -499,8 +475,9 @@ void BufferImageGLTest::setData() {
     CORRADE_COMPARE(a.size(), Vector2i(1, 2));
     CORRADE_COMPARE(a.dataSize(), 16);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    const auto imageData = DebugTools::bufferData(a.buffer());
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(imageData),
         Containers::arrayView(data2),
         TestSuite::Compare::Container);
@@ -515,10 +492,6 @@ void BufferImageGLTest::setDataGeneric() {
     const UnsignedShort data2[2*4] = { 1, 2, 3, 4, 5, 6, 7, 8 };
     a.setData(Magnum::PixelFormat::RGBA16Unorm, {1, 2}, data2, BufferUsage::StaticDraw);
 
-    #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data();
-    #endif
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(a.storage().alignment(), 4);
@@ -527,8 +500,9 @@ void BufferImageGLTest::setDataGeneric() {
     CORRADE_COMPARE(a.size(), Vector2i(1, 2));
     CORRADE_COMPARE(a.dataSize(), 16);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    const auto imageData = DebugTools::bufferData(a.buffer());
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(imageData),
         Containers::arrayView(data2),
         TestSuite::Compare::Container);
@@ -546,10 +520,6 @@ void BufferImageGLTest::setDataCompressed() {
         #endif
         CompressedPixelFormat::RGBAS3tcDxt3, {8, 4}, data2, BufferUsage::StaticDraw);
 
-    #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data();
-    #endif
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -559,8 +529,9 @@ void BufferImageGLTest::setDataCompressed() {
     CORRADE_COMPARE(a.size(), Vector2i(8, 4));
     CORRADE_COMPARE(a.dataSize(), 16);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    const auto imageData = DebugTools::bufferData(a.buffer());
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(imageData, Containers::arrayView(data2),
         TestSuite::Compare::Container);
     #endif
@@ -577,10 +548,6 @@ void BufferImageGLTest::setDataCompressedGeneric() {
         #endif
         Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {8, 4}, data2, BufferUsage::StaticDraw);
 
-    #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data();
-    #endif
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -590,8 +557,9 @@ void BufferImageGLTest::setDataCompressedGeneric() {
     CORRADE_COMPARE(a.size(), Vector2i(8, 4));
     CORRADE_COMPARE(a.dataSize(), 16);
 
-    /** @todo How to verify the contents in ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    const auto imageData = DebugTools::bufferData(a.buffer());
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(imageData, Containers::arrayView(data2),
         TestSuite::Compare::Container);
     #endif
