@@ -60,13 +60,14 @@ WebGL 2.0 it's just an alias to @ref GL::Buffer::subData().
     WebGL 1.0.
 */
 template<class T> Containers::Array<T> inline bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+    if(!size) return {};
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_WEBGL)
     Containers::Array<char> data = buffer.subData(offset, size*sizeof(T));
     CORRADE_INTERNAL_ASSERT(!data.deleter());
     return Containers::Array<T>{reinterpret_cast<T*>(data.release()), std::size_t(size)};
     #else
     Containers::Array<T> data{std::size_t(size)};
-    if(size) Implementation::bufferSubData(buffer, offset, size*sizeof(T), data);
+    Implementation::bufferSubData(buffer, offset, size*sizeof(T), data);
     return data;
     #endif
 }

@@ -53,6 +53,11 @@ void BufferDataGLTest::data() {
     #endif
 
     GL::Buffer buffer;
+
+    const Containers::Array<Int> emptyContents = bufferData<Int>(buffer);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_VERIFY(emptyContents.isEmpty());
+
     buffer.setData(Data, GL::BufferUsage::StaticDraw);
     const Containers::Array<Int> contents = bufferData<Int>(buffer);
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -72,6 +77,10 @@ void BufferDataGLTest::subData() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(contents, Containers::arrayView(Data).slice(1, 4),
         TestSuite::Compare::Container);
+
+    const Containers::Array<Int> emptyContents = bufferSubData<Int>(buffer, 4, 0);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_VERIFY(emptyContents.isEmpty());
 }
 
 }}}}
