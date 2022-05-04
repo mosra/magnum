@@ -852,8 +852,12 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             Debug d{useColor};
             d << Debug::boldColor(Debug::Color::White) << "Object" << info.object << Debug::resetColor;
 
-            if(sceneInfos)
-                d << "(referenced by" << Math::popcount(info.scenes) << "scenes)";
+            if(sceneInfos) {
+                const UnsignedInt count = Math::popcount(info.scenes);
+                if(!count) d << Debug::color(Debug::Color::Red);
+                d << "(referenced by" << count << "scenes)";
+                if(!count) d << Debug::resetColor;
+            }
 
             d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                 << Debug::resetColor;
@@ -931,8 +935,12 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
             /* Print reference count only if there actually are scenes and they
                were parsed, otherwise this information is useless */
-            if(skinReferenceCount)
-                d << Utility::format("(referenced by {} objects)", skinReferenceCount[info.skin]);
+            if(skinReferenceCount) {
+                const UnsignedInt count = skinReferenceCount[info.skin];
+                if(!count) d << Debug::color(Debug::Color::Red);
+                d << "(referenced by" << count << "objects)";
+                if(!count) d << Debug::resetColor;
+            }
 
             d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                 << Debug::resetColor;
@@ -948,8 +956,12 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
             /* Print reference count only if there actually are scenes and they
                were parsed, otherwise this information is useless */
-            if(lightReferenceCount)
-                d << Utility::format("(referenced by {} objects)", lightReferenceCount[info.light]);
+            if(lightReferenceCount) {
+                const UnsignedInt count = lightReferenceCount[info.light];
+                if(!count) d << Debug::color(Debug::Color::Red);
+                d << "(referenced by" << count << "objects)";
+                if(!count) d << Debug::resetColor;
+            }
 
             d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                 << Debug::resetColor;
@@ -983,8 +995,12 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
             /* Print reference count only if there actually are scenes and they
                were parsed, otherwise this information is useless */
-            if(materialReferenceCount)
-                d << Utility::format("(referenced by {} objects)", materialReferenceCount[info.material]);
+            if(materialReferenceCount) {
+                const UnsignedInt count = materialReferenceCount[info.material];
+                if(!count) d << Debug::color(Debug::Color::Red);
+                d << "(referenced by" << count << "objects)";
+                if(!count) d << Debug::resetColor;
+            }
 
             d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                 << Debug::resetColor;
@@ -1095,8 +1111,12 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
                 /* Print reference count only if there actually are scenes and
                    they were parsed, otherwise this information is useless */
-                if(meshReferenceCount)
-                    d << Utility::format("(referenced by {} objects)", meshReferenceCount[info.mesh]);
+                if(meshReferenceCount) {
+                    const UnsignedInt count = meshReferenceCount[info.mesh];
+                    if(!count) d << Debug::color(Debug::Color::Red);
+                    d << "(referenced by" << count << "objects)";
+                    if(!count) d << Debug::resetColor;
+                }
 
                 d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                     << Debug::resetColor;
@@ -1156,8 +1176,12 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
             /* Print reference count only if there actually are materials and
                they were parsed, otherwise this information is useless */
-            if(textureReferenceCount)
-                d << Utility::format("(referenced by {} material attributes)", textureReferenceCount[info.texture]);
+            if(textureReferenceCount) {
+                const UnsignedInt count = textureReferenceCount[info.texture];
+                if(!count) d << Debug::color(Debug::Color::Red);
+                d << "(referenced by" << count << "material attributes)";
+                if(!count) d << Debug::resetColor;
+            }
 
             d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                 << Debug::resetColor;
@@ -1198,12 +1222,19 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 /* Print reference count only if there actually are textures
                    and they were parsed otherwise this information is
                    useless */
-                if(info.size.z() && image3DReferenceCount)
-                    d << Utility::format("(referenced by {} textures)", image3DReferenceCount[info.image]);
-                else if(info.size.y() && image2DReferenceCount)
-                    d << Utility::format("(referenced by {} textures)", image2DReferenceCount[info.image]);
-                else if(image1DReferenceCount)
-                    d << Utility::format("(referenced by {} textures)", image1DReferenceCount[info.image]);
+                Containers::Optional<UnsignedInt> count;
+                if(info.size.z() && image3DReferenceCount) {
+                    count = image3DReferenceCount[info.image];
+                } else if(info.size.y() && image2DReferenceCount) {
+                    count = image2DReferenceCount[info.image];
+                } else if(image1DReferenceCount) {
+                    count = image1DReferenceCount[info.image];
+                }
+                if(count) {
+                    if(!*count) d << Debug::color(Debug::Color::Red);
+                    d << "(referenced by" << *count << "textures)";
+                    if(!*count) d << Debug::resetColor;
+                }
 
                 d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
                     << Debug::resetColor;
