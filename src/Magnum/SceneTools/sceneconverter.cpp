@@ -52,6 +52,7 @@
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/SkinData.h"
 #include "Magnum/Trade/TextureData.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractSceneConverter.h"
 #include "Magnum/Trade/Implementation/converterUtilities.h"
 
@@ -1385,10 +1386,18 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             Debug{} << "Fuzzy duplicate removal:" << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";
     }
 
-    /* Load converter plugin */
+    /* Image converter manager for potential dependencies. Needs to be
+       constructed before the scene converter manager for proper destruction
+       order. */
+    PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager{
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths().back())};
+
+    /* Scene converter manager, register the image converter manager with it */
     PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
         Utility::Path::join(args.value("plugin-dir"), Trade::AbstractSceneConverter::pluginSearchPaths().back())};
+    converterManager.registerExternalManager(imageConverterManager);
 
     /* Assume there's always one passed --converter option less, and the last
        is implicitly AnySceneConverter. All converters except the last one are
@@ -1411,13 +1420,20 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
         /* This is the last --converter (or the implicit AnySceneConverter at
            the end), output to a file and exit the loop */
-        if(i + 1 >= converterCount && (converter->features() & Trade::SceneConverterFeature::ConvertMeshToFile)) {
+        if(i + 1 >= converterCount && (converter->features() & (Trade::SceneConverterFeature::ConvertMeshToFile|Trade::SceneConverterFeature::ConvertMultipleToFile))) { // TODO fuck, the flags should be implicitly inheriting, this is fucked
             /* No verbose output for just one converter */
             if(converterCount > 1 && args.isSet("verbose"))
                 Debug{} << "Saving output with" << converterName << Debug::nospace << "...";
 
+            // TODO F, here the import and conversion time will conflate
             Trade::Implementation::Duration d{conversionTime};
-            if(!converter->convertToFile(*mesh, args.value("output"))) {
+//             if(!converter->convertToFile(*mesh, args.value("output"))) {
+//                 Error{} << "Cannot save file" << args.value("output");
+//                 return 5;
+//             }
+
+            converter->beginFile(args.value("output"));
+            if(!converter->addSupportedImporterContents(*importer) || !converter->endFile()) {
                 Error{} << "Cannot save file" << args.value("output");
                 return 5;
             }
