@@ -477,14 +477,14 @@ Together with @ref file-formats-image-importers "image importers" derived from
 <tr>
 <th rowspan="3">glTF<br/>(`*.gltf`, `*.glb`)</th>
 <td rowspan="3">`GltfImporter`</td>
-<td>@ref Trade::CgltfImporter "CgltfImporter"</td>
-<td class="m-text-center m-success">@ref Trade-CgltfImporter-behavior "minor"</td>
-<td class="m-text-center m-primary">bundled</td>
-<td class="m-text-center m-success">MIT</td>
+<td>@relativeref{Trade,GltfImporter}</td>
+<td class="m-text-center m-success">@ref Trade-GltfImporter-behavior "minor"</td>
+<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center"></td>
 </tr>
 <tr>
-<td>@ref Trade::TinyGltfImporter "TinyGltfImporter"</td>
-<td class="m-text-center m-success">@ref Trade-TinyGltfImporter-behavior "minor"</td>
+<td>@ref Trade::TinyGltfImporter "TinyGltfImporter" @m_class{m-label m-danger} **deprecated**</td>
+<td class="m-text-center m-warning">@ref Trade-TinyGltfImporter-behavior "some"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-success">MIT</td>
 </tr>

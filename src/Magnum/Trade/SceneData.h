@@ -1070,7 +1070,7 @@ However, since each @ref SceneField can be in a variety of types, you're
 expected to either check that the type is indeed what you expect using
 @ref fieldType(SceneField) const, or at least check with documentation of the
 corresponding importer. For example, because glTF files represent the scene
-in a textual form, @ref CgltfImporter will always parse the data into canonical
+in a textual form, @ref GltfImporter will always parse the data into canonical
 32-bit types. With that assumption, the above snippet that used
 @ref transformations3DAsArray() can be rewritten to a zero-copy form like this:
 
