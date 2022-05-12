@@ -32,6 +32,7 @@
 
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
+#include <Corrade/Utility/StlForwardString.h> /** @todo remove once file callbacks are std::string-free */
 
 #include "Magnum/Magnum.h"
 #include "Magnum/ShaderTools/ShaderTools.h"

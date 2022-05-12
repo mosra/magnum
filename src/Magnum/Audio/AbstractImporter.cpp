@@ -25,6 +25,7 @@
 
 #include "AbstractImporter.h"
 
+#include <string>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>

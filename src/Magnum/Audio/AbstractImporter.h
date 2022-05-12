@@ -30,6 +30,7 @@
  */
 
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
+#include <Corrade/Utility/StlForwardString.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Audio/BufferFormat.h"
