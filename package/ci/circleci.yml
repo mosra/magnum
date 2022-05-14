@@ -19,7 +19,7 @@ executors:
   xcode-11_6:
     macos:
       xcode: 11.6.0
-  emscripten:
+  emscripten1:
     docker:
     # 1.39.0 is the oldest on Docker. Anything before 1.39.2 is useless as emar
     # randomly asserts: https://github.com/emscripten-core/emscripten/pull/9742
@@ -28,6 +28,12 @@ executors:
     # https://github.com/mosra/magnum/issues/413,
     # https://github.com/emscripten-core/emscripten/pull/10161
     - image: emscripten/emsdk:1.39.6-upstream
+  emscripten2:
+    docker:
+    # Used by the webgl2 job. First version that exposes glGetBufferSubData()
+    # so GLES3 tests can read buffer data without having to check the
+    # Emscripten version.
+    - image: emscripten/emsdk:2.0.17
   android-29:
     machine:
       image: android:202102-01
@@ -512,7 +518,7 @@ jobs:
     - lcov
 
   emscripten-webgl1:
-    executor: emscripten
+    executor: emscripten1
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "ON"
@@ -523,7 +529,7 @@ jobs:
         script: emscripten.sh
 
   emscripten-webgl2:
-    executor: emscripten
+    executor: emscripten2
     environment:
       # STUPID yml interprets unquoted OFF as a boolean
       TARGET_GLES2: "OFF"
