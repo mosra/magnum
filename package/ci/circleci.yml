@@ -30,10 +30,13 @@ executors:
     - image: emscripten/emsdk:1.39.6-upstream
   emscripten2:
     docker:
-    # Used by the webgl2 job. First version that exposes glGetBufferSubData()
-    # so GLES3 tests can read buffer data without having to check the
-    # Emscripten version.
-    - image: emscripten/emsdk:2.0.17
+    # Used by the webgl2 job. 2.0.17 is the first version that exposes
+    # glGetBufferSubData() so GLES3 tests can read buffer data without having
+    # to check the Emscripten version. 2.0.17 dies midway compiling however, so
+    # using some newer version. 2.0.18 to 2.0.24 then fails due to an
+    # unresolved malloc dependency of glGetString() (!!!), in 2.0.25 it
+    # mysteriously disappears. See https://github.com/mosra/magnum/issues/507.
+    - image: emscripten/emsdk:2.0.25
   android-29:
     machine:
       image: android:202102-01
