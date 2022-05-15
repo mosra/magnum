@@ -370,6 +370,10 @@ See also:
 -   The @ref GL::defaultFramebuffer global now deduplicates its state when a
     statically-built Magnum is linked to multiple shared libraries, following
     what the global @ref GL::Context::current() already does
+-   Added @ref Framebuffer::InvalidationAttachment::DepthStencil to complement
+    @relativeref{Framebuffer::InvalidationAttachment,Depth} and
+    @relativeref{Framebuffer::InvalidationAttachment,Stencil} (see
+    [mosra/magnum#554](https://github.com/mosra/magnum/pull/554))
 
 @subsubsection changelog-latest-changes-math Math library
 
