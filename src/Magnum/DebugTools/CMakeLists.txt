@@ -181,6 +181,32 @@ if(BUILD_TESTS)
         endif()
     endif()
 
+    # A subset of DebugTools used by GL's own tests that link to
+    # MagnumGLTestLib (or MagnumOpenGLTesterTestLib), linking also to
+    # MagnumGLTestLibMagnumGL. We can't link those to MagnumDebugToolsTestLib
+    # because it depends on MagnumGL instead, which would lead to the
+    # GL::Context global to be duplicated, causing the dreaded
+    #
+    #   GL::Context::current(): no current context
+    #
+    # assertion. We however also can't link MagnumDebugToolsTestLib to
+    # MagnumGLTestLib, because the other libraries it depends on (MeshTools,
+    # Shaders...) link to MagnumGL and so the same problem would just reappear
+    # elsewhere.
+    if(TARGET_GL AND BUILD_GL_TESTS AND NOT (MAGNUM_TARGET_WEBGL AND MAGNUM_TARGET_GLES2))
+        add_library(MagnumDebugToolsGLTestLibSubset ${SHARED_OR_STATIC}
+            # Add more files if needed
+            BufferData.cpp
+            BufferData.h)
+        set_target_properties(MagnumDebugToolsGLTestLibSubset PROPERTIES DEBUG_POSTFIX "-d")
+        target_compile_definitions(MagnumDebugToolsGLTestLibSubset PRIVATE
+            "CORRADE_GRACEFUL_ASSERT" "MagnumDebugTools_EXPORTS")
+        if(BUILD_STATIC_PIC)
+            set_target_properties(MagnumDebugToolsGLTestLibSubset PROPERTIES POSITION_INDEPENDENT_CODE ON)
+        endif()
+        target_link_libraries(MagnumDebugToolsGLTestLibSubset PUBLIC Magnum MagnumGLTestLib)
+    endif()
+
     add_subdirectory(Test)
 endif()
 
