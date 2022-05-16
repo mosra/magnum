@@ -1054,7 +1054,8 @@ See also:
     @ref platforms-windows "Windows platform docs" (see [mosra/magnum#227](https://github.com/mosra/magnum/issues/227) and
     [mosra/magnum#439](https://github.com/mosra/magnum/issues/439))
 -   Various documentation fixes (see [mosra/magnum#492](https://github.com/mosra/magnum/issues/492),
-    [mosra/magnum#521](https://github.com/mosra/magnum/pull/521))
+    [mosra/magnum#521](https://github.com/mosra/magnum/pull/521),
+    [mosra/magnum#563](https://github.com/mosra/magnum/pull/563))
 -   @ref Corrade::Utility::Debug and friends were always brought to the
     @ref Magnum namespace via a @cpp using @ce directive, but this was never
     reflected in the docs and thus hidden from users. Now it's shown in the
