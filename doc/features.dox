@@ -97,7 +97,7 @@ incomplete type. For example:
 Of course not all headers can be written with just forward declarations, so
 there still are some transitive dependencies between headers (for example, the
 @ref Magnum/Math/Matrix4.h header pulls in @ref Magnum/Math/Vector4.h as well).
-But from most part this is an implementation detail and as such shouldn't be
+But for the most part this is an implementation detail and as such shouldn't be
 relied on.
 
 For happy compile times you're encouraged to rely on forward declarations in
