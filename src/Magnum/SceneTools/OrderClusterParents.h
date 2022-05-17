@@ -56,6 +56,9 @@ complexity, with @f$ n @f$ being @ref Trade::SceneData::mappingBound(). The
 @ref Trade::SceneField::Parent field is expected to be contained in the scene,
 having no cycles (i.e., every node listed just once) and not being sparse
 (i.e., every node listed in the field reachable from the root).
+
+@experimental
+
 @see @ref Trade::SceneData::hasField()
 */
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Pair<UnsignedInt, Int>> orderClusterParents(const Trade::SceneData& scene);
@@ -68,6 +71,9 @@ Like @ref orderClusterParents(), but puts the result into
 @p mappingDestination and @p parentDestination instead of allocating a new
 array. Expect that both views have a size equal to size of the
 @ref Trade::SceneField::Parent view in @p scene.
+
+@experimental
+
 @see @ref Trade::SceneData::fieldSize(SceneField) const
 */
 MAGNUM_SCENETOOLS_EXPORT void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Int>& parentDestination);

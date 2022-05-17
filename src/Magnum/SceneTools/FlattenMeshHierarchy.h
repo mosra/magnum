@@ -55,6 +55,9 @@ The operation is done in an @f$ \mathcal{O}(m + n) @f$ execution time and
 memory complexity, with @f$ m @f$ being size of the @ref Trade::SceneField::Mesh
 field and @f$ n @f$ being @ref Trade::SceneData::mappingBound(). The function
 calls @ref orderClusterParents() internally.
+
+@experimental
+
 @see @ref Trade::SceneData::hasField(), @ref Trade::SceneData::is2D(),
     @ref MeshTools::concatenate()
 */
@@ -64,6 +67,8 @@ MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, 
 @m_since_latest
 
 Same as above with @p globalTransformation set to an identity matrix.
+
+@experimental
 */
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene);
 
@@ -86,6 +91,9 @@ The operation is done in an @f$ \mathcal{O}(m + n) @f$ execution time and
 memory complexity, with @f$ m @f$ being size of the @ref Trade::SceneField::Mesh
 field and @f$ n @f$ being @ref Trade::SceneData::mappingBound(). The function
 calls @ref orderClusterParents() internally.
+
+@experimental
+
 @see @ref Trade::SceneData::hasField(), @ref Trade::SceneData::is3D(),
     @ref MeshTools::concatenate()
 */
@@ -95,6 +103,8 @@ MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, 
 @m_since_latest
 
 Same as above with @p globalTransformation set to an identity matrix.
+
+@experimental
 */
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene);
 
