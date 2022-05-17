@@ -118,7 +118,7 @@ void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::St
                 which nodes are parented more than once (OTOH maybe that's
                 unnecessary extra work which isn't desired to be done here but
                 should be instead in a dedicated cycle/sparse checker utility?) */
-            CORRADE_ASSERT_OUTPUT(outputOffset < parents.size(),
+            CORRADE_ASSERT(outputOffset < parents.size(),
                 "SceneTools::orderClusterParents(): hierarchy is cyclic", );
             parentsToProcess[outputOffset + 1] = children[j];
             mappingDestination[outputOffset] = children[j];
