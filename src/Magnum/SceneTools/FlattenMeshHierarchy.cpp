@@ -85,13 +85,12 @@ Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions,
         /* Above transformations but indexed by object ID */
         {ValueInit, std::size_t(scene.mappingBound() + 1), absoluteTransformations}
     };
-    /* Explicit slice() template parameters needed by GCC 4.8 and MSVC 2015 */
     orderClusterParentsInto(scene,
-        stridedArrayView(orderedClusteredParents).slice<UnsignedInt>(&Containers::Pair<UnsignedInt, Int>::first),
-        stridedArrayView(orderedClusteredParents).slice<Int>(&Containers::Pair<UnsignedInt, Int>::second));
+        stridedArrayView(orderedClusteredParents).slice(&decltype(orderedClusteredParents)::Type::first),
+        stridedArrayView(orderedClusteredParents).slice(&decltype(orderedClusteredParents)::Type::second));
     SceneDataDimensionTraits<dimensions>::transformationsInto(scene,
-        stridedArrayView(transformations).template slice<UnsignedInt>(&Containers::Pair<UnsignedInt, MatrixTypeFor<dimensions, Float>>::first),
-        stridedArrayView(transformations).template slice<MatrixTypeFor<dimensions, Float>>(&Containers::Pair<UnsignedInt, MatrixTypeFor<dimensions, Float>>::second));
+        stridedArrayView(transformations).slice(&decltype(transformations)::Type::first),
+        stridedArrayView(transformations).slice(&decltype(transformations)::Type::second));
 
     /* Retrieve transformations of all objects, indexed by object ID. Since not
        all nodes in the hierarchy may have a transformation assigned, the whole
@@ -117,11 +116,11 @@ Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions,
     /** @todo skip meshes that aren't part of the hierarchy once we have a
         BitArray to efficiently mark what's in the hierarchy and what not */
     Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions, Float>>> out{NoInit, scene.fieldSize(Trade::SceneField::Mesh)};
-    Containers::StridedArrayView1D<UnsignedInt> meshes{out, &out.data()->first(), out.size(), sizeof(typename decltype(out)::Type)};
-    Containers::StridedArrayView1D<Int> meshMaterials{out, &out.data()->second(), out.size(), sizeof(typename decltype(out)::Type)};
-    Containers::StridedArrayView1D<MatrixTypeFor<dimensions, Float>> matrices{out, &out.data()->third(), out.size(), sizeof(typename decltype(out)::Type)};
-    Containers::StridedArrayView1D<UnsignedInt> mapping = Containers::arrayCast<UnsignedInt>(matrices);
-    scene.meshesMaterialsInto(mapping, meshes, meshMaterials);
+    const auto matrices = stridedArrayView(out).slice(&decltype(out)::Type::third);
+    const auto mapping = Containers::arrayCast<UnsignedInt>(matrices);
+    scene.meshesMaterialsInto(mapping,
+        stridedArrayView(out).slice(&decltype(out)::Type::first),
+        stridedArrayView(out).slice(&decltype(out)::Type::second));
     for(std::size_t i = 0; i != out.size(); ++i) {
         CORRADE_INTERNAL_ASSERT(mapping[i] < scene.mappingBound());
         matrices[i] = absoluteTransformations[mapping[i] + 1];

@@ -39,9 +39,9 @@ Containers::Array<Containers::Pair<UnsignedInt, Int>> orderClusterParents(const 
     CORRADE_ASSERT(parentFieldId,
         "SceneTools::orderClusterParents(): the scene has no hierarchy", {});
     Containers::Array<Containers::Pair<UnsignedInt, Int>> out{NoInit, scene.fieldSize(*parentFieldId)};
-    Containers::StridedArrayView1D<UnsignedInt> mapping{out, &out.data()->first(), out.size(), sizeof(decltype(out)::Type)};
-    Containers::StridedArrayView1D<Int> parentOffset{out, &out.data()->second(), out.size(), sizeof(decltype(out)::Type)};
-    orderClusterParentsInto(scene, mapping, parentOffset);
+    orderClusterParentsInto(scene,
+        stridedArrayView(out).slice(&decltype(out)::Type::first),
+        stridedArrayView(out).slice(&decltype(out)::Type::second));
     return out;
 }
 
@@ -72,11 +72,10 @@ void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::St
         {NoInit, parentFieldSize + 1, parentsToProcess}
     };
 
-    /* Convert the parent list to a child list to sort them toplogically.
-       Explicit slice() template parameters needed by GCC 4.8 and MSVC 2015 */
+    /* Convert the parent list to a child list to sort them toplogically */
     scene.parentsInto(
-        stridedArrayView(parents).slice<UnsignedInt>(&Containers::Pair<UnsignedInt, Int>::first),
-        stridedArrayView(parents).slice<Int>(&Containers::Pair<UnsignedInt, Int>::second)
+        stridedArrayView(parents).slice(&decltype(parents)::Type::first),
+        stridedArrayView(parents).slice(&decltype(parents)::Type::second)
     );
 
     /* Children offset for each node including root. First calculate the count
