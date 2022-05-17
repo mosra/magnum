@@ -166,9 +166,9 @@ ftp://ftp.fox-toolkit.org/pub/fasthalffloatconversion.pdf*
 MAGNUM_EXPORT void unpackHalfInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
 
 /**
-@brief Cast integer values into a floating-point representation
+@brief Cast integer values into a 32-bit floating-point representation
 @param[in]  src     Source integral values
-@param[out] dst     Destination floating-point values
+@param[out] dst     Destination float values
 @m_since{2020,06}
 
 Unlike @ref packInto(), this function performs only an equivalent of
@@ -178,7 +178,7 @@ of 1 for scalars. Expects that @p src and @p dst have the same size and that
 the second dimension in both is contiguous.
 
 @attention Numbers with more than 23 bits of precision will not be represented
-    accurately when cast into a @ref Magnum::Float "Float".
+    accurately when cast into a @relativeref{Magnum,Float}.
 
 @see @ref castInto(const Corrade::Containers::StridedArrayView2D<const Float>&, const Corrade::Containers::StridedArrayView2D<UnsignedByte>&),
     @ref Corrade::Containers::StridedArrayView::isContiguous()
@@ -216,21 +216,21 @@ MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const 
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
 
 /**
-@brief Cast floating-point values into an integer representation
-@param[in]  src     Source floating-point values
+@brief Cast 32-bit floating-point values into an integer representation
+@param[in]  src     Source float values
 @param[out] dst     Destination integral values
 @m_since{2020,06}
 
 Unlike @ref packInto(), this function performs only an equivalent of
-@cpp Float(a) @ce over the range, so e.g. @cpp 135 @ce becomes @cpp 135.0f @ce.
+@cpp T(a) @ce over the range, so e.g. @cpp 135.0f @ce becomes @cpp 135 @ce.
 Second dimension is meant to contain vector/matrix components, or have a size
 of 1 for scalars. Expects that @p src and @p dst have the same size and that
 the second dimension in both is contiguous.
 
-@attention Numbers with more than 23 bits of precision will not be represented
-    accurately when cast into a @ref Magnum::Float "Float".
+@attention Fractional part of the @relativeref{Magnum,Float} input will be
+    silently discarded when cast into an integer type.
 
-@see @ref castInto(const Corrade::Containers::StridedArrayView2D<const Float>&, const Corrade::Containers::StridedArrayView2D<UnsignedByte>&),
+@see @ref castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>&, const Corrade::Containers::StridedArrayView2D<Float>&),
     @ref Corrade::Containers::StridedArrayView::isContiguous()
 */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
