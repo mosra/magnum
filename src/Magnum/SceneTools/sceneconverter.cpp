@@ -803,6 +803,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             useColor24 = false;
         }
 
+        std::size_t totalSceneDataSize = 0;
         for(const SceneInfo& info: sceneInfos) {
             Debug d{useColor};
             d << Debug::boldColor(Debug::Color::White) << "Scene" << info.scene << Debug::nospace << ":" << Debug::resetColor;
@@ -842,7 +843,11 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     << field.flags << Debug::resetColor;
                 d << Debug::nospace << "," << field.size << "entries";
             }
+
+            totalSceneDataSize += info.dataSize;
         }
+        if(!sceneInfos.isEmpty())
+            Debug{} << "Total scene data size:" << Utility::format("{:.1f}", totalSceneDataSize/1024.0f) << "kB";
 
         for(const ObjectInfo& info: objectInfos) {
             /* Objects without a name and not referenced by any scenes are
@@ -886,6 +891,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             }
         }
 
+        std::size_t totalAnimationDataSize = 0;
         for(const AnimationInfo& info: animationInfos) {
             Debug d{useColor};
             d << Debug::boldColor(Debug::Color::White) << "Animation" << info.animation << Debug::nospace << ":" << Debug::resetColor;
@@ -927,7 +933,12 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 /** @todo might be useful to show bounds here as well, though
                     not so much for things like complex numbers or quats */
             }
+
+            totalAnimationDataSize += info.data.data().size();
         }
+        if(!animationInfos.isEmpty())
+            Debug{} << "Total animation data size:" << Utility::format("{:.1f}", totalAnimationDataSize/1024.0f) << "kB";
+
         for(const SkinInfo& info: skinInfos) {
             Debug d{useColor};
             d << Debug::boldColor(Debug::Color::White) << "Skin" << info.skin
@@ -1104,6 +1115,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             }
         }
 
+        std::size_t totalMeshDataSize = 0;
         for(const MeshInfo& info: meshInfos) {
             Debug d{useColor};
             if(info.level == 0) {
@@ -1168,7 +1180,11 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 if(info.indexBounds)
                     d << Debug::newline << "      bounds:" << info.indexBounds;
             }
+
+            totalMeshDataSize += info.vertexDataSize + info.indexDataSize;
         }
+        if(!meshInfos.isEmpty())
+            Debug{} << "Total mesh data size:" << Utility::format("{:.1f}", totalMeshDataSize/1024.0f) << "kB";
 
         for(const TextureInfo& info: textureInfos) {
             Debug d{useColor};
@@ -1210,6 +1226,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 << Debug::resetColor << Debug::nospace << "}";
         }
 
+        std::size_t totalImageDataSize = 0;
         for(const Trade::Implementation::ImageInfo& info: imageInfos) {
             Debug d{useColor};
             if(info.level == 0) {
@@ -1257,7 +1274,11 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     << Debug::color(Debug::Color::Green) << info.dataFlags
                     << Debug::resetColor;
             d << Debug::nospace << ")";
+
+            totalImageDataSize += info.dataSize;
         }
+        if(!imageInfos.isEmpty())
+            Debug{} << "Total (uncompressed) image data size:" << Utility::format("{:.1f}", totalImageDataSize/1024.0f) << "kB";
 
         if(args.isSet("profile")) {
             Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds";
