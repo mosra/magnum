@@ -216,6 +216,56 @@ MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const 
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
 
 /**
+@brief Cast integer values into a 64-bit floating-point representation
+@param[in]  src     Source integral values
+@param[out] dst     Destination float values
+@m_since_latest
+
+Unlike @ref packInto(), this function performs only an equivalent of
+@cpp Double(a) @ce over the range, so e.g. @cpp 135 @ce becomes @cpp 135.0 @ce.
+Second dimension is meant to contain vector/matrix components, or have a size
+of 1 for scalars. Expects that @p src and @p dst have the same size and that
+the second dimension in both is contiguous.
+
+@attention Numbers with more than 52 bits of precision will not be represented
+    accurately when cast into a @relativeref{Magnum,Double}.
+
+@see @ref castInto(const Corrade::Containers::StridedArrayView2D<const Double>&, const Corrade::Containers::StridedArrayView2D<UnsignedByte>&),
+    @ref Corrade::Containers::StridedArrayView::isContiguous()
+*/
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+
+/**
 @brief Cast 32-bit floating-point values into an integer representation
 @param[in]  src     Source float values
 @param[out] dst     Destination integral values
@@ -264,6 +314,56 @@ MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const 
  * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
+
+/**
+@brief Cast 64-bit floating-point values into an integer representation
+@param[in]  src     Source double values
+@param[out] dst     Destination integral values
+@m_since_latest
+
+Unlike @ref packInto(), this function performs only an equivalent of
+@cpp T(a) @ce over the range, so e.g. @cpp 135.0 @ce becomes @cpp 135 @ce.
+Second dimension is meant to contain vector/matrix components, or have a size
+of 1 for scalars. Expects that @p src and @p dst have the same size and that
+the second dimension in both is contiguous.
+
+@attention Fractional part of the @relativeref{Magnum,Double} input will be
+    silently discarded when cast into an integer type.
+
+@see @ref castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>&, const Corrade::Containers::StridedArrayView2D<Double>&),
+    @ref Corrade::Containers::StridedArrayView::isContiguous()
+*/
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
 
 /**
 @brief Cast integer values into a differently sized type

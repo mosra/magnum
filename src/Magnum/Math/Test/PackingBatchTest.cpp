@@ -51,8 +51,8 @@ struct PackingBatchTest: Corrade::TestSuite::Tester {
     void unpackHalf();
     void packHalf();
 
-    template<class T> void castUnsignedFloat();
-    template<class T> void castSignedFloat();
+    template<class FloatingPoint, class Integral> void castUnsignedFloatingPoint();
+    template<class FloatingPoint, class Integral> void castSignedFloatingPoint();
 
     template<class T, class U> void castUnsignedInteger();
     template<class T, class U> void castSignedInteger();
@@ -77,12 +77,18 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::unpackHalf,
               &PackingBatchTest::packHalf,
 
-              &PackingBatchTest::castUnsignedFloat<UnsignedByte>,
-              &PackingBatchTest::castUnsignedFloat<UnsignedShort>,
-              &PackingBatchTest::castUnsignedFloat<UnsignedInt>,
-              &PackingBatchTest::castSignedFloat<Byte>,
-              &PackingBatchTest::castSignedFloat<Short>,
-              &PackingBatchTest::castSignedFloat<Int>,
+              &PackingBatchTest::castUnsignedFloatingPoint<Float, UnsignedByte>,
+              &PackingBatchTest::castUnsignedFloatingPoint<Float, UnsignedShort>,
+              &PackingBatchTest::castUnsignedFloatingPoint<Float, UnsignedInt>,
+              &PackingBatchTest::castUnsignedFloatingPoint<Double, UnsignedByte>,
+              &PackingBatchTest::castUnsignedFloatingPoint<Double, UnsignedShort>,
+              &PackingBatchTest::castUnsignedFloatingPoint<Double, UnsignedInt>,
+              &PackingBatchTest::castSignedFloatingPoint<Float, Byte>,
+              &PackingBatchTest::castSignedFloatingPoint<Float, Short>,
+              &PackingBatchTest::castSignedFloatingPoint<Float, Int>,
+              &PackingBatchTest::castSignedFloatingPoint<Double, Byte>,
+              &PackingBatchTest::castSignedFloatingPoint<Double, Short>,
+              &PackingBatchTest::castSignedFloatingPoint<Double, Int>,
 
               &PackingBatchTest::castUnsignedInteger<UnsignedByte, UnsignedShort>,
               &PackingBatchTest::castUnsignedInteger<UnsignedByte, UnsignedInt>,
@@ -109,6 +115,12 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::assertionsCast<Float, Short>,
               &PackingBatchTest::assertionsCast<Float, UnsignedInt>,
               &PackingBatchTest::assertionsCast<Float, Int>,
+              &PackingBatchTest::assertionsCast<Double, UnsignedByte>,
+              &PackingBatchTest::assertionsCast<Double, Byte>,
+              &PackingBatchTest::assertionsCast<Double, UnsignedShort>,
+              &PackingBatchTest::assertionsCast<Double, Short>,
+              &PackingBatchTest::assertionsCast<Double, UnsignedInt>,
+              &PackingBatchTest::assertionsCast<Double, Int>,
               &PackingBatchTest::assertionsCast<UnsignedShort, UnsignedByte>,
               &PackingBatchTest::assertionsCast<UnsignedInt, UnsignedByte>,
               &PackingBatchTest::assertionsCast<UnsignedInt, UnsignedShort>,
@@ -433,12 +445,12 @@ void PackingBatchTest::packHalf() {
         CORRADE_COMPARE(Math::packHalf(data[i].src), data[i].dst);
 }
 
-template<class T> void PackingBatchTest::castUnsignedFloat() {
-    setTestCaseTemplateName(TypeTraits<T>::name());
+template<class FloatingPoint, class Integral> void PackingBatchTest::castUnsignedFloatingPoint() {
+    setTestCaseTemplateName({TypeTraits<FloatingPoint>::name(), TypeTraits<Integral>::name()});
 
     struct Data {
-        Math::Vector2<T> src;
-        Vector2 dst;
+        Math::Vector2<Integral> src;
+        Math::Vector2<FloatingPoint> dst;
     } data[]{
         {{0, 89}, {}},
         {{149, 22}, {}},
@@ -447,38 +459,38 @@ template<class T> void PackingBatchTest::castUnsignedFloat() {
 
     /* GCC 4.8 doesn't like constexpr here (cannot initialize aggregate of type
        ‘const Vector2 [3]’ with a compound literal), wtf */
-    const Vector2 expectedFloat[] {
-        {0.0f, 89.0f},
-        {149.0f, 22.0f},
-        {13.0f, 255.0f}
+    const Math::Vector2<FloatingPoint> expectedFloatingPoint[] {
+        {FloatingPoint(0.0), FloatingPoint(89.0)},
+        {FloatingPoint(149.0), FloatingPoint(22.0)},
+        {FloatingPoint(13.0), FloatingPoint(255.0)}
     };
 
-    constexpr Math::Vector2<T> expectedInteger[] {
+    constexpr Math::Vector2<Integral> expectedIntegral[] {
         {0, 89},
         {149, 22},
         {13, 255}
     };
 
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Corrade::Containers::arrayCast<2, T>(src),
-             Corrade::Containers::arrayCast<2, Float>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedFloat),
+    Corrade::Containers::StridedArrayView1D<Math::Vector2<Integral>> src{data, &data[0].src, 3, sizeof(Data)};
+    Corrade::Containers::StridedArrayView1D<Math::Vector2<FloatingPoint>> dst{data, &data[0].dst, 3, sizeof(Data)};
+    castInto(Corrade::Containers::arrayCast<2, Integral>(src),
+             Corrade::Containers::arrayCast<2, FloatingPoint>(dst));
+    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedFloatingPoint),
         Corrade::TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Corrade::Containers::arrayCast<2, Float>(dst),
-             Corrade::Containers::arrayCast<2, T>(src));
-    CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedInteger),
+    castInto(Corrade::Containers::arrayCast<2, FloatingPoint>(dst),
+             Corrade::Containers::arrayCast<2, Integral>(src));
+    CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedIntegral),
         Corrade::TestSuite::Compare::Container);
 }
 
-template<class T> void PackingBatchTest::castSignedFloat() {
-    setTestCaseTemplateName(TypeTraits<T>::name());
+template<class FloatingPoint, class Integral> void PackingBatchTest::castSignedFloatingPoint() {
+    setTestCaseTemplateName({TypeTraits<FloatingPoint>::name(), TypeTraits<Integral>::name()});
 
     struct Data {
-        Math::Vector2<T> src;
-        Vector2 dst;
+        Math::Vector2<Integral> src;
+        Math::Vector2<FloatingPoint> dst;
     } data[]{
         {{0, -89}, {}},
         {{-119, 22}, {}},
@@ -487,29 +499,29 @@ template<class T> void PackingBatchTest::castSignedFloat() {
 
     /* GCC 4.8 doesn't like constexpr here (cannot initialize aggregate of type
        ‘const Vector2 [3]’ with a compound literal), wtf */
-    const Vector2 expectedFloat[] {
-        {0.0f, -89.0f},
-        {-119.0f, 22.0f},
-        {13.0f, 127.0f}
+    const Math::Vector2<FloatingPoint> expectedFloatingPoint[] {
+        {FloatingPoint(0.0), FloatingPoint(-89.0)},
+        {FloatingPoint(-119.0), FloatingPoint(22.0)},
+        {FloatingPoint(13.0), FloatingPoint(127.0)}
     };
 
-    constexpr Math::Vector2<T> expectedInteger[] {
+    constexpr Math::Vector2<Integral> expectedIntegral[] {
         {0, -89},
         {-119, 22},
         {13, 127}
     };
 
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Corrade::Containers::arrayCast<2, T>(src),
-             Corrade::Containers::arrayCast<2, Float>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedFloat),
+    Corrade::Containers::StridedArrayView1D<Math::Vector2<Integral>> src{data, &data[0].src, 3, sizeof(Data)};
+    Corrade::Containers::StridedArrayView1D<Math::Vector2<FloatingPoint>> dst{data, &data[0].dst, 3, sizeof(Data)};
+    castInto(Corrade::Containers::arrayCast<2, Integral>(src),
+             Corrade::Containers::arrayCast<2, FloatingPoint>(dst));
+    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedFloatingPoint),
         Corrade::TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Corrade::Containers::arrayCast<2, Float>(dst),
-             Corrade::Containers::arrayCast<2, T>(src));
-    CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedInteger),
+    castInto(Corrade::Containers::arrayCast<2, FloatingPoint>(dst),
+             Corrade::Containers::arrayCast<2, Integral>(src));
+    CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedIntegral),
         Corrade::TestSuite::Compare::Container);
 }
 
