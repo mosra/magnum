@@ -73,8 +73,8 @@ all members.
 @section vulkan-wrapping-instance-device Instance and device wrappers
 
 Compared to OpenGL, which has a concept of "current context", Vulkan doesn't
-have any implicit globals. The @ref Vk library follows that, with each object
-carrying a reference to a corresponding instance or device along. This was
+have any implicit globals. In the @ref Vk library, each object
+contains a reference to a corresponding instance or device. This was
 chosen as a reasonable tradeoff between requiring an explicit instance/device
 parameter in each API (which would be too error-prone and annoying to use) and
 having an implicit thread-local instance/device (which would repeat the
