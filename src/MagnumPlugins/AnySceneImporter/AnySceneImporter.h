@@ -177,6 +177,8 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doSceneName(UnsignedInt id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doObjectName(UnsignedLong id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<SceneData> doScene(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL SceneField doSceneFieldForName(Containers::StringView name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doSceneFieldName(Magnum::UnsignedInt name) override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doLightCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doLightForName(Containers::StringView name) override;

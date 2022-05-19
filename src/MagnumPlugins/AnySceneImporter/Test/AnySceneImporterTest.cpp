@@ -63,6 +63,9 @@ struct AnySceneImporterTest: TestSuite::Tester {
     void propagateConfigurationUnknown();
     void propagateFileCallback();
 
+    void sceneFieldNameNoFileOpened();
+    void meshAttributeNameNoFileOpened();
+
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
@@ -107,7 +110,10 @@ AnySceneImporterTest::AnySceneImporterTest() {
               &AnySceneImporterTest::propagateFlags,
               &AnySceneImporterTest::propagateConfiguration,
               &AnySceneImporterTest::propagateConfigurationUnknown,
-              &AnySceneImporterTest::propagateFileCallback});
+              &AnySceneImporterTest::propagateFileCallback,
+
+              &AnySceneImporterTest::sceneFieldNameNoFileOpened,
+              &AnySceneImporterTest::meshAttributeNameNoFileOpened});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -301,6 +307,12 @@ void AnySceneImporterTest::propagateFileCallback() {
 
     importer->close();
     CORRADE_VERIFY(!importer->isOpened());
+}
+
+void AnySceneImporterTest::sceneFieldNameNoFileOpened() {
+}
+
+void AnySceneImporterTest::meshAttributeNameNoFileOpened() {
 }
 
 }}}}
