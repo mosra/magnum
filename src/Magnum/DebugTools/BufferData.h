@@ -31,17 +31,30 @@
  */
 #endif
 
+#include <Corrade/Containers/Containers.h>
+
+#include "Magnum/Magnum.h"
+#include "Magnum/GL/GL.h"
+#include "Magnum/GL/OpenGL.h"
+#include "Magnum/DebugTools/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Macros.h>
 
 #include "Magnum/GL/Buffer.h"
-#include "Magnum/DebugTools/visibility.h"
+#endif
 
 #if defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_WEBGL)
 namespace Magnum { namespace DebugTools {
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 namespace Implementation {
+    /* Used only by deprecated bufferSubData<T>() */
+    /** @todo remove when not used anymore */
     MAGNUM_DEBUGTOOLS_EXPORT void bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size, void* output);
 }
+#endif
 
 /**
 @brief Buffer subdata
@@ -58,11 +71,27 @@ Emulates @ref GL::Buffer::subData() call on platforms that don't support it
     2.0.
 @requires_gles Buffer mapping is not available in WebGL.
 */
-template<class T> Containers::Array<T> inline bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+MAGNUM_DEBUGTOOLS_EXPORT Containers::Array<char> bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@copybrief bufferSubData()
+@m_deprecated_since_latest Use non-templated @ref bufferSubData() and
+    @ref Containers::arrayCast() instead
+
+@requires_gl30 Extension @gl_extension{ARB,map_buffer_range}
+@requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in OpenGL ES
+    2.0.
+@requires_gles Buffer mapping is not available in WebGL.
+*/
+template<class T> CORRADE_DEPRECATED("use non-templated bufferSubData() and Containers::arrayCast() instead") Containers::Array<T> inline bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+    /* Yes, this should have NoInit, but let's preserve the deprecated API in
+       its original form */
     Containers::Array<T> data{std::size_t(size)};
     if(size) Implementation::bufferSubData(buffer, offset, size*sizeof(T), data);
     return data;
 }
+#endif
 
 /**
 @brief Buffer data
@@ -79,11 +108,29 @@ as OpenGL ES) by using @ref GL::Buffer::map().
     2.0.
 @requires_gles Buffer mapping is not available in WebGL.
 */
-template<class T = char> Containers::Array<T> inline bufferData(GL::Buffer& buffer) {
+MAGNUM_DEBUGTOOLS_EXPORT Containers::Array<char> bufferData(GL::Buffer& buffer);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@copybrief bufferData()
+@m_deprecated_since_latest Use non-templated @ref bufferData() and
+    @ref Containers::arrayCast() instead
+
+@requires_gl30 Extension @gl_extension{ARB,map_buffer_range}
+@requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in OpenGL ES
+    2.0.
+@requires_gles Buffer mapping is not available in WebGL.
+*/
+template<class T = char> CORRADE_DEPRECATED("use non-templated bufferData() and Containers::arrayCast() instead") Containers::Array<T> inline bufferData(GL::Buffer& buffer) {
     const Int bufferSize = buffer.size();
+    /* Yes, the assert prefix is wrong, but let's preserve the deprecated API
+       in its original form */
     CORRADE_ASSERT(bufferSize%sizeof(T) == 0, "Buffer::data(): the buffer size is" << bufferSize << "bytes, which can't be expressed as array of types with size" << sizeof(T), nullptr);
+    CORRADE_IGNORE_DEPRECATED_PUSH
     return bufferSubData<T>(buffer, 0, bufferSize/sizeof(T));
+    CORRADE_IGNORE_DEPRECATED_POP
 }
+#endif
 
 }}
 #else

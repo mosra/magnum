@@ -25,15 +25,37 @@
 
 #include "BufferData.h"
 
-#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Algorithms.h>
 
-namespace Magnum { namespace DebugTools { namespace Implementation {
+#include "Magnum/GL/Buffer.h"
 
+namespace Magnum { namespace DebugTools {
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+namespace Implementation {
+
+/* Used only by deprecated bufferSubData<T>() */
+/** @todo remove when not used anymore */
 void bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size, void* output) {
     Utility::copy(buffer.mapRead(offset, size), Containers::ArrayView<char>{static_cast<char*>(output), std::size_t(size)});
     buffer.unmap();
 }
 
-}}}
+}
 #endif
+
+Containers::Array<char> bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+    Containers::Array<char> data{NoInit, std::size_t(size)};
+    if(size) {
+        Utility::copy(buffer.mapRead(offset, size), data);
+        buffer.unmap();
+    }
+    return data;
+}
+
+Containers::Array<char> bufferData(GL::Buffer& buffer) {
+    return bufferSubData(buffer, 0, buffer.size());
+}
+
+}}

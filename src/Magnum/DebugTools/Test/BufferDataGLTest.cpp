@@ -23,9 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/DebugTools/BufferData.h"
+#include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
