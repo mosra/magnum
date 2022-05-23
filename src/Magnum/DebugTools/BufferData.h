@@ -87,7 +87,13 @@ MAGNUM_DEBUGTOOLS_EXPORT Containers::Array<char> bufferSubData(GL::Buffer& buffe
     2.0.
 @requires_gles Buffer mapping is not available in WebGL.
 */
-template<class T> CORRADE_DEPRECATED("use non-templated bufferSubData() and Containers::arrayCast() instead") Containers::Array<T> inline bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+template<class T> CORRADE_DEPRECATED("use non-templated bufferSubData() and Containers::arrayCast() instead") Containers::Array<T> inline bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    /* HELLO FUCKING CRAP TOOL, WHY CAN'T YOU DISTINGUISH A TEMPLATED FUNCTION
+       FROM A NON-TEMPLATE, SMASHING THE DOCUMENTATION TOGETHER??! */
+    , void* doxygenIsCrapAtOverloadResolution = nullptr
+    #endif
+) {
     /* Yes, this should have NoInit, but let's preserve the deprecated API in
        its original form */
     Containers::Array<T> data{std::size_t(size)};
@@ -126,7 +132,13 @@ MAGNUM_DEBUGTOOLS_EXPORT Containers::Array<char> bufferData(GL::Buffer& buffer);
     2.0.
 @requires_gles Buffer mapping is not available in WebGL.
 */
-template<class T = char> CORRADE_DEPRECATED("use non-templated bufferData() and Containers::arrayCast() instead") Containers::Array<T> inline bufferData(GL::Buffer& buffer) {
+template<class T> CORRADE_DEPRECATED("use non-templated bufferData() and Containers::arrayCast() instead") Containers::Array<T> inline bufferData(GL::Buffer& buffer
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    /* HELLO FUCKING CRAP TOOL, WHY CAN'T YOU DISTINGUISH A TEMPLATED FUNCTION
+       FROM A NON-TEMPLATE, SMASHING THE DOCUMENTATION TOGETHER??! */
+    , void* doxygenIsCrapAtOverloadResolution = nullptr
+    #endif
+) {
     const Int bufferSize = buffer.size();
     /* Yes, the assert prefix is wrong, but let's preserve the deprecated API
        in its original form */
