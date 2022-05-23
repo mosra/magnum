@@ -117,13 +117,15 @@ void TextureImageGLTest::subImage2DBuffer() {
     texture.setImage(0, GL::TextureFormat::RGBA8, ImageView2D{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D});
 
     GL::BufferImage2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte}, GL::BufferUsage::StaticRead);
-    Containers::Array<UnsignedByte> data = bufferData<UnsignedByte>(image.buffer());
+    Containers::Array<char> data = bufferData(image.buffer());
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE(image.format(), GL::PixelFormat::RGBA);
     CORRADE_COMPARE(image.type(), GL::PixelType::UnsignedByte);
     CORRADE_COMPARE(image.pixelSize(), 4);
-    CORRADE_COMPARE_AS(data, Containers::arrayView(Data2D),
+    CORRADE_COMPARE_AS(
+        Containers::arrayCast<UnsignedByte>(data),
+        Containers::arrayView(Data2D),
         TestSuite::Compare::Container);
 }
 #endif
@@ -188,13 +190,15 @@ void TextureImageGLTest::subImageCubeBuffer() {
            .setImage(GL::CubeMapCoordinate::NegativeZ, 0, GL::TextureFormat::RGBA8, view);
 
     GL::BufferImage2D image = textureSubImage(texture, GL::CubeMapCoordinate::PositiveX, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte}, GL::BufferUsage::StaticRead);
-    Containers::Array<UnsignedByte> data = bufferData<UnsignedByte>(image.buffer());
+    Containers::Array<char> data = bufferData(image.buffer());
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE(image.format(), GL::PixelFormat::RGBA);
     CORRADE_COMPARE(image.type(), GL::PixelType::UnsignedByte);
     CORRADE_COMPARE(image.pixelSize(), 4);
-    CORRADE_COMPARE_AS(data, Containers::arrayView(Data2D),
+    CORRADE_COMPARE_AS(
+        Containers::arrayCast<UnsignedByte>(data),
+        Containers::arrayView(Data2D),
         TestSuite::Compare::Container);
 }
 #endif
