@@ -517,7 +517,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                        reused by object info as well. */
                     if(Trade::isSceneFieldCustom(name)) {
                         /* Fetch the name only if it's not already there */
-                        const auto inserted = sceneFieldNames.emplace(UnsignedInt(name), Containers::String{});
+                        const auto inserted = sceneFieldNames.emplace(sceneFieldCustom(name), Containers::String{});
                         if(inserted.second)
                             inserted.first->second = importer->sceneFieldName(name);
                     }
@@ -829,7 +829,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                         << Trade::sceneFieldCustom(field.name)
                         << Debug::nospace << ":" << Debug::nospace
                         << Debug::color(Debug::Color::Yellow)
-                        << sceneFieldNames[UnsignedInt(field.name)]
+                        << sceneFieldNames[sceneFieldCustom(field.name)]
                         << Debug::nospace
                         << Debug::boldColor(Debug::Color::White) << ")";
                 } else d << Debug::packed << field.name;
@@ -880,7 +880,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                             << Trade::sceneFieldCustom(nameCount.first())
                             << Debug::nospace << ":" << Debug::nospace
                             << Debug::color(Debug::Color::Yellow)
-                            << sceneFieldNames[UnsignedInt(nameCount.first())]
+                            << sceneFieldNames[sceneFieldCustom(nameCount.first())]
                             << Debug::nospace
                             << Debug::color(Debug::Color::Cyan) << ")";
                     } else d << Debug::packed << nameCount.first();
