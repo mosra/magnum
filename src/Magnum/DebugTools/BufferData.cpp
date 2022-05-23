@@ -26,9 +26,12 @@
 #include "BufferData.h"
 
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/GL/Buffer.h"
+
+#if defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_BUILD_DEPRECATED)
+#include <Corrade/Utility/Algorithms.h>
+#endif
 
 namespace Magnum { namespace DebugTools {
 
@@ -46,12 +49,16 @@ void bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size, void* o
 #endif
 
 Containers::Array<char> bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+    #ifndef MAGNUM_TARGET_GLES
+    return buffer.subData(offset, size);
+    #else
     Containers::Array<char> data{NoInit, std::size_t(size)};
     if(size) {
         Utility::copy(buffer.mapRead(offset, size), data);
         buffer.unmap();
     }
     return data;
+    #endif
 }
 
 Containers::Array<char> bufferData(GL::Buffer& buffer) {

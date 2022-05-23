@@ -60,13 +60,13 @@ namespace Implementation {
 @brief Buffer subdata
 
 Emulates @ref GL::Buffer::subData() call on platforms that don't support it
-(such as OpenGL ES) by using @ref GL::Buffer::map().
+(such as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL it's
+just an alias to @ref GL::Buffer::subData().
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
     @ref building-features for more information.
 
-@requires_gl30 Extension @gl_extension{ARB,map_buffer_range}
 @requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in OpenGL ES
     2.0.
 @requires_gles Buffer mapping is not available in WebGL.
@@ -97,13 +97,13 @@ template<class T> CORRADE_DEPRECATED("use non-templated bufferSubData() and Cont
 @brief Buffer data
 
 Emulates @ref GL::Buffer::data() call on platforms that don't support it (such
-as OpenGL ES) by using @ref GL::Buffer::map().
+as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL it's just an
+alias to @ref GL::Buffer::data().
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
     @ref building-features for more information.
 
-@requires_gl30 Extension @gl_extension{ARB,map_buffer_range}
 @requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in OpenGL ES
     2.0.
 @requires_gles Buffer mapping is not available in WebGL.
