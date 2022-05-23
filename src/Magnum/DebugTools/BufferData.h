@@ -60,8 +60,9 @@ namespace Implementation {
 @brief Buffer subdata
 
 Emulates @ref GL::Buffer::subData() call on platforms that don't support it
-(such as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL and
-WebGL 2.0 it's just an alias to @ref GL::Buffer::subData().
+(such as OpenGL ES) by using @ref GL::Buffer::mapRead() and copying the memory
+to a newly-allocated array. On desktop GL and WebGL 2.0 it's just an alias to
+@ref GL::Buffer::subData().
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
@@ -98,8 +99,9 @@ template<class T> CORRADE_DEPRECATED("use non-templated bufferSubData() and Cont
 @brief Buffer data
 
 Emulates @ref GL::Buffer::data() call on platforms that don't support it (such
-as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL and WebGL 2.0
-it's just an alias to @ref GL::Buffer::data().
+as OpenGL ES) by using @ref GL::Buffer::mapRead() and copying the memory to a
+newly-allocated array. On desktop GL and WebGL 2.0 it's just an alias to
+@ref GL::Buffer::data().
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
