@@ -326,6 +326,10 @@ See also:
 
 @subsubsection changelog-latest-changes-debugtools DebugTools library
 
+-   @ref DebugTools::bufferData() and @ref DebugTools::bufferSubData() now
+    falls back to @ref GL::Buffer::subData() on desktop GL instead of always
+    relying on memory-mapping, and is now available on WebGL 2 as well (see
+    [mosra/magnum#560](https://github.com/mosra/magnum/pull/560))
 -   @ref DebugTools::CompareImage now supports comparing half-float pixel
     formats as well
 
@@ -343,6 +347,9 @@ See also:
 -   Added an @ref GL::AbstractShaderProgram::setTransformFeedbackOutputs()
     overload taking a @relativeref{Corrade,Containers::ArrayView} instead of
     a @ref std::initializer_list
+-   @ref GL::Buffer::data() and @ref GL::Buffer::subData() is now available on
+    WebGL 2.0 as well if Emscripten 2.0.17+ is used (see
+    [mosra/magnum#560](https://github.com/mosra/magnum/pull/560))
 -   The @ref GL::Context class got significantly optimized in terms of compile
     time, header size and runtime as well, significantly reducing the amount of
     allocations done at startup.
