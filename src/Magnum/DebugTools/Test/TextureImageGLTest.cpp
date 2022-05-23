@@ -38,7 +38,7 @@
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Range.h"
 
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/DebugTools/BufferData.h"
 #include "Magnum/GL/BufferImage.h"
 #endif
@@ -48,14 +48,18 @@ namespace Magnum { namespace DebugTools { namespace Test { namespace {
 struct TextureImageGLTest: GL::OpenGLTester {
     explicit TextureImageGLTest();
 
+    /* To avoid complex ifdefing on Esmcripten, assumes that tests are built
+       on 2.0.17+. On older versions the linker will fail due to missing
+       glGetBufferSubData(). */
+
     void subImage2D();
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES2
     void subImage2DBuffer();
     #endif
     void subImage2DGeneric();
 
     void subImageCube();
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES2
     void subImageCubeBuffer();
     #endif
 
@@ -68,13 +72,13 @@ struct TextureImageGLTest: GL::OpenGLTester {
 
 TextureImageGLTest::TextureImageGLTest() {
     addTests({&TextureImageGLTest::subImage2D,
-              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              #ifndef MAGNUM_TARGET_GLES2
               &TextureImageGLTest::subImage2DBuffer,
               #endif
               &TextureImageGLTest::subImage2DGeneric,
 
               &TextureImageGLTest::subImageCube,
-              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              #ifndef MAGNUM_TARGET_GLES2
               &TextureImageGLTest::subImageCubeBuffer,
               #endif
 
@@ -111,7 +115,7 @@ void TextureImageGLTest::subImage2D() {
         Containers::arrayView(Data2D), TestSuite::Compare::Container);
 }
 
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#ifndef MAGNUM_TARGET_GLES2
 void TextureImageGLTest::subImage2DBuffer() {
     GL::Texture2D texture;
     texture.setImage(0, GL::TextureFormat::RGBA8, ImageView2D{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D});
@@ -177,7 +181,7 @@ void TextureImageGLTest::subImageCube() {
         Containers::arrayView(Data2D), TestSuite::Compare::Container);
 }
 
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#ifndef MAGNUM_TARGET_GLES2
 void TextureImageGLTest::subImageCubeBuffer() {
     ImageView2D view{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D};
 

@@ -29,13 +29,14 @@
 
 #include "Magnum/GL/Buffer.h"
 
-#if defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_BUILD_DEPRECATED)
+#if !defined(MAGNUM_TARGET_WEBGL) && (defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_BUILD_DEPRECATED))
 #include <Corrade/Utility/Algorithms.h>
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && (defined(MAGNUM_TARGET_GLES2) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 20017))
 namespace Magnum { namespace DebugTools {
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_WEBGL)
 namespace Implementation {
 
 /* Used only by deprecated bufferSubData<T>() */
@@ -49,7 +50,7 @@ void bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size, void* o
 #endif
 
 Containers::Array<char> bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size) {
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_WEBGL)
     return buffer.subData(offset, size);
     #else
     Containers::Array<char> data{NoInit, std::size_t(size)};
@@ -66,3 +67,4 @@ Containers::Array<char> bufferData(GL::Buffer& buffer) {
 }
 
 }}
+#endif

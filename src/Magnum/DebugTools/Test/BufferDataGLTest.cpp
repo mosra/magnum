@@ -37,6 +37,10 @@ namespace Magnum { namespace DebugTools { namespace Test { namespace {
 struct BufferDataGLTest: GL::OpenGLTester {
     explicit BufferDataGLTest();
 
+    /* To avoid complex ifdefing on Esmcripten, assumes that tests are built
+       on 2.0.17+. On older versions the linker will fail due to missing
+       glGetBufferSubData(). */
+
     void data();
     void subData();
 };

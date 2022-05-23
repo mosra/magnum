@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#if defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_WEBGL)
+#if defined(MAGNUM_TARGET_GL) && !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 /** @file
  * @brief Function @ref Magnum::DebugTools::bufferData(), @ref Magnum::DebugTools::bufferSubData()
  */
@@ -45,7 +45,7 @@
 #include "Magnum/GL/Buffer.h"
 #endif
 
-#if defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_WEBGL)
+#if defined(MAGNUM_TARGET_GL) && !(defined(MAGNUM_TARGET_WEBGL) && (defined(MAGNUM_TARGET_GLES2) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 20017))
 namespace Magnum { namespace DebugTools {
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -60,8 +60,8 @@ namespace Implementation {
 @brief Buffer subdata
 
 Emulates @ref GL::Buffer::subData() call on platforms that don't support it
-(such as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL it's
-just an alias to @ref GL::Buffer::subData().
+(such as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL and
+WebGL 2.0 it's just an alias to @ref GL::Buffer::subData().
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
@@ -69,11 +69,12 @@ just an alias to @ref GL::Buffer::subData().
 
 @requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in OpenGL ES
     2.0.
-@requires_gles Buffer mapping is not available in WebGL.
+@requires_webgl20 Buffer data queries or buffer mapping are not available in
+    WebGL 1.0. Emscripten 2.0.17 or higher is required in WebGL2.
 */
 MAGNUM_DEBUGTOOLS_EXPORT Containers::Array<char> bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_WEBGL)
 /**
 @copybrief bufferSubData()
 @m_deprecated_since_latest Use non-templated @ref bufferSubData() and
@@ -97,8 +98,8 @@ template<class T> CORRADE_DEPRECATED("use non-templated bufferSubData() and Cont
 @brief Buffer data
 
 Emulates @ref GL::Buffer::data() call on platforms that don't support it (such
-as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL it's just an
-alias to @ref GL::Buffer::data().
+as OpenGL ES) by using @ref GL::Buffer::mapRead(). On desktop GL and WebGL 2.0
+it's just an alias to @ref GL::Buffer::data().
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
@@ -106,11 +107,12 @@ alias to @ref GL::Buffer::data().
 
 @requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in OpenGL ES
     2.0.
-@requires_gles Buffer mapping is not available in WebGL.
+@requires_webgl20 Buffer data queries or buffer mapping are not available in
+    WebGL 1.0. Emscripten 2.0.17 or higher is required in WebGL2.
 */
 MAGNUM_DEBUGTOOLS_EXPORT Containers::Array<char> bufferData(GL::Buffer& buffer);
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_WEBGL)
 /**
 @copybrief bufferData()
 @m_deprecated_since_latest Use non-templated @ref bufferData() and
@@ -134,7 +136,7 @@ template<class T = char> CORRADE_DEPRECATED("use non-templated bufferData() and 
 
 }}
 #else
-#error this header is available only in the OpenGL (ES) build and not available in the WebGL build
+#error this header is not available in a WebGL 1.0 build or on Emscripten < 2.0.17
 #endif
 
 #endif

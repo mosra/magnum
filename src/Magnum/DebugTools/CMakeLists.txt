@@ -72,7 +72,7 @@ if(TARGET_GL)
         endif()
     endif()
 
-    if(NOT MAGNUM_TARGET_WEBGL)
+    if(NOT (MAGNUM_TARGET_WEBGL AND MAGNUM_TARGET_GLES2))
         list(APPEND MagnumDebugTools_SRCS
             BufferData.cpp)
 
