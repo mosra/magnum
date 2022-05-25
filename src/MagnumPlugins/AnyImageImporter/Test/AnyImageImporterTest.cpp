@@ -108,8 +108,6 @@ constexpr struct {
     {"JPEG data", "gray.jpg", true, "JpegImporter"},
     {"JPEG uppercase", "uppercase.JPG", false, "JpegImporter"},
     {"JPEG2000", "image.jp2", false, "Jpeg2000Importer"},
-    {"KTX2", "image.ktx2", false, "KtxImporter"},
-    /** @todo KTX2 data once we have some */
     {"HDR", "rgb.hdr", false, "HdrImporter"},
     {"HDR data", "rgb.hdr", true, "HdrImporter"},
     {"ICO", "pngs.ico", false, "IcoImporter"},
