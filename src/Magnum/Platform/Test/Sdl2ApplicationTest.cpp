@@ -26,7 +26,6 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Arguments.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/ImageView.h"
@@ -142,7 +141,7 @@ struct Sdl2ApplicationTest: Platform::Application {
     }
 
     void textInputEvent(TextInputEvent& event) override {
-        Debug{} << "text input event:" << std::string{event.text(), event.text().size()};
+        Debug{} << "text input event:" << event.text();
     }
 
     /* Should fire on currently not handled events, such as minimize/maximize

@@ -32,7 +32,6 @@
  * @brief Class @ref Magnum::Platform::GlfwApplication, macro @ref MAGNUM_GLFWAPPLICATION_MAIN()
  */
 
-#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h> /** @todo PIMPL Configuration instead? */
 
@@ -2050,15 +2049,20 @@ class GlfwApplication::TextInputEvent {
          */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
-        /** @brief Input text in UTF-8 */
-        Containers::ArrayView<const char> text() const { return _text; }
+        /**
+         * @brief Input text
+         *
+         * The returned view is in UTF-8 and is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}.
+         */
+        Containers::StringView text() const { return _text; }
 
     private:
         friend GlfwApplication;
 
-        explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
+        explicit TextInputEvent(Containers::StringView text): _text{text}, _accepted{false} {}
 
-        const Containers::ArrayView<const char> _text;
+        const Containers::StringView _text;
         bool _accepted;
 };
 

@@ -31,7 +31,6 @@
  * @brief Class @ref Magnum::Platform::Sdl2Application, macro @ref MAGNUM_SDL2APPLICATION_MAIN()
  */
 
-#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h> /** @todo PIMPL Configuration instead? */
@@ -2798,8 +2797,13 @@ class Sdl2Application::TextInputEvent {
          */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
-        /** @brief Input text in UTF-8 */
-        Containers::ArrayView<const char> text() const { return _text; }
+        /**
+         * @brief Input text
+         *
+         * The returned view is in UTF-8 and is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}.
+         */
+        Containers::StringView text() const { return _text; }
 
         /**
          * @brief Underlying SDL event
@@ -2812,10 +2816,10 @@ class Sdl2Application::TextInputEvent {
     private:
         friend Sdl2Application;
 
-        explicit TextInputEvent(const SDL_Event& event, Containers::ArrayView<const char> text): _event(event), _text{text}, _accepted{false} {}
+        explicit TextInputEvent(const SDL_Event& event, Containers::StringView text): _event(event), _text{text}, _accepted{false} {}
 
         const SDL_Event& _event;
-        const Containers::ArrayView<const char> _text;
+        const Containers::StringView _text;
         bool _accepted;
 };
 
@@ -2851,8 +2855,13 @@ class Sdl2Application::TextEditingEvent {
          */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
-        /** @brief Input text in UTF-8 */
-        Containers::ArrayView<const char> text() const { return _text; }
+        /**
+         * @brief Input text
+         *
+         * The returned view is in UTF-8 and is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}.
+         */
+        Containers::StringView text() const { return _text; }
 
         /** @brief Location to begin editing from */
         Int start() const { return _start; }
@@ -2871,10 +2880,10 @@ class Sdl2Application::TextEditingEvent {
     private:
         friend Sdl2Application;
 
-        explicit TextEditingEvent(const SDL_Event& event, Containers::ArrayView<const char> text, Int start, Int length): _event(event), _text{text}, _start{start}, _length{length}, _accepted{false} {}
+        explicit TextEditingEvent(const SDL_Event& event, Containers::StringView text, Int start, Int length): _event(event), _text{text}, _start{start}, _length{length}, _accepted{false} {}
 
         const SDL_Event& _event;
-        const Containers::ArrayView<const char> _text;
+        const Containers::StringView _text;
         const Int _start;
         const Int _length;
         bool _accepted;

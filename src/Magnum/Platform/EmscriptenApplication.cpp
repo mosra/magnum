@@ -631,11 +631,11 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
     emscripten_set_keydown_callback(keyboardListeningElement, this, false,
         ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
             EmscriptenApplication& app = *static_cast<EmscriptenApplication*>(userData);
-            const std::size_t keyLen = std::strlen(event->key);
+            const Containers::StringView key = event->key;
             /* If the key name is a single letter or a start of an UTF-8
-               sequence, pass it to the text input even tas well */
-            if(app.isTextInputActive() && (std::strlen(event->key) == 1 || (std::strlen(event->key) >= 1 && UnsignedByte(event->key[0]) > 127))) {
-                TextInputEvent e{*event, {event->key, keyLen}};
+               sequence, pass it to the text input event as well */
+            if(app.isTextInputActive() && key.size() == 1 || (key.size() >= 1 && UnsignedByte(key[0]) > 127)) {
+                TextInputEvent e{*event, key};
                 app.textInputEvent(e);
                 return e.isAccepted();
             }

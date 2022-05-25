@@ -34,7 +34,6 @@
  */
 #endif
 
-#include <Corrade/Containers/ArrayView.h>
 /* Needed by the MAGNUM_EMSCRIPTENAPPLICATION_MAIN() macro */
 /** @todo use an Optional */
 #include <Corrade/Containers/Pointer.h>
@@ -1897,8 +1896,13 @@ class EmscriptenApplication::TextInputEvent {
         /** @copydoc EmscriptenApplication::InputEvent::setAccepted() */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
-        /** @brief Input text in UTF-8 */
-        Containers::ArrayView<const char> text() const { return _text; }
+        /**
+         * @brief Input text
+         *
+         * The returned view is in UTF-8 and is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}.
+         */
+        Containers::StringView text() const { return _text; }
 
         /** @brief Underlying Emscripten event */
         const EmscriptenKeyboardEvent& event() const { return _event; }
@@ -1906,10 +1910,10 @@ class EmscriptenApplication::TextInputEvent {
     private:
         friend EmscriptenApplication;
 
-        explicit TextInputEvent(const EmscriptenKeyboardEvent& event, Containers::ArrayView<const char> text): _event(event), _text{text}, _accepted{false} {}
+        explicit TextInputEvent(const EmscriptenKeyboardEvent& event, Containers::StringView text): _event(event), _text{text}, _accepted{false} {}
 
         const EmscriptenKeyboardEvent& _event;
-        const Containers::ArrayView<const char> _text;
+        const Containers::StringView _text;
         bool _accepted;
 };
 

@@ -654,9 +654,10 @@ void GlfwApplication::setupCallbacks() {
 
         if(!(app._flags & Flag::TextInputActive)) return;
 
-        char utf8[4]{};
-        const std::size_t size = Utility::Unicode::utf8(codepoint, utf8);
-        TextInputEvent e{{utf8, size}};
+        /* One extra byte to ensure it gets always null-terminated */
+        char utf8[4 + 1]{};
+        const std::size_t size = Utility::Unicode::utf8(codepoint, Containers::staticArrayView(utf8).prefix<4>());
+        TextInputEvent e{{utf8, size, Containers::StringViewFlag::NullTerminated}};
         app.textInputEvent(e);
     });
 }

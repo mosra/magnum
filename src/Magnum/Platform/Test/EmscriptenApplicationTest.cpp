@@ -26,7 +26,6 @@
 */
 
 #include <Corrade/Utility/Arguments.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Platform/EmscriptenApplication.h"
 #include "Magnum/GL/Renderer.h"
@@ -140,7 +139,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     }
 
     void textInputEvent(TextInputEvent& event) override {
-        Debug{} << "text input event:" << std::string{event.text(), event.text().size()};
+        Debug{} << "text input event:" << event.text();
 
         event.setAccepted();
     }

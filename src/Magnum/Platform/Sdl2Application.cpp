@@ -27,7 +27,6 @@
 
 #include "Sdl2Application.h"
 
-#include <cstring> /** @todo remove, needed for std::strlen() in TextInputEvent */
 #ifdef CORRADE_TARGET_CLANG_CL
 /* SDL does #pragma pack(push,8) and #pragma pack(pop,8) in different headers
    (begin_code.h and end_code.h) and clang-cl doesn't like that, even though it
@@ -963,12 +962,12 @@ bool Sdl2Application::mainLoopIteration() {
             }
 
             case SDL_TEXTINPUT: {
-                TextInputEvent e{event, {event.text.text, std::strlen(event.text.text)}};
+                TextInputEvent e{event, event.text.text};
                 textInputEvent(e);
             } break;
 
             case SDL_TEXTEDITING: {
-                TextEditingEvent e{event, {event.edit.text, std::strlen(event.text.text)}, event.edit.start, event.edit.length};
+                TextEditingEvent e{event, event.edit.text, event.edit.start, event.edit.length};
                 textEditingEvent(e);
             } break;
 
