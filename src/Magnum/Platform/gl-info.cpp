@@ -25,8 +25,6 @@
 
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/String.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Buffer.h"
@@ -465,6 +463,11 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         while(versions[future] != GL::Version::None && c.isVersionSupported(versions[future]))
             ++future;
 
+    constexpr Containers::StringView NewlineAndManySpaces =
+        /* 123456789_123456789_123456789_123456789_123456789_123456789_ */
+        "\n                                                            "
+          "        "_s;
+
     /* Display supported OpenGL extensions from unsupported versions */
     for(std::size_t i = future; i != versions.size(); ++i) {
         if(versions[i] != GL::Version::None)
@@ -472,9 +475,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         else Debug{} << "Vendor extension support:";
 
         for(const auto& extension: GL::Extension::extensions(versions[i])) {
-            std::string extensionName = extension.string();
+            Containers::StringView extensionName = extension.string();
             Debug d;
-            d << "   " << extensionName << std::string(60-extensionName.size(), ' ');
+            d << "   " << extensionName << NewlineAndManySpaces.slice(1, 61 - extensionName.size());
             if(c.isExtensionSupported(extension))
                 d << "SUPPORTED";
             else if(c.isExtensionDisabled(extension))
@@ -492,8 +495,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     /* Limits and implementation-defined values */
     #define _h(val) Debug{} << "\n " << GL::Extensions::val::string() << Debug::nospace << ":";
-    #define _l(val) Debug{} << "   " << #val << (sizeof(#val) > 64 ? "\n" + std::string(68, ' ') : std::string(64 - sizeof(#val), ' ')) << val;
-    #define _lvec(val) Debug{} << "   " << #val << (sizeof(#val) > 42 ? "\n" + std::string(46, ' ') : std::string(42 - sizeof(#val), ' ')) << val;
+    #define _l(val) Debug{} << "   " << #val << (sizeof(#val) > 64 ? NewlineAndManySpaces.slice(0, 69) : NewlineAndManySpaces.slice(1, 65 - sizeof(#val))) << val;
+    #define _lvec(val) Debug{} << "   " << #val << (sizeof(#val) > 42 ? NewlineAndManySpaces.slice(0, 47) : NewlineAndManySpaces.slice(1, 43 - sizeof(#val))) << val;
 
     Debug{} << "Limits and implementation-defined values:";
     _lvec(GL::AbstractFramebuffer::maxViewportSize())
