@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
@@ -211,11 +212,10 @@ void AnySceneImporterTest::propagateFlags() {
         CORRADE_VERIFY(importer->mesh(0));
     }
 
-    Containers::StringView expected =
+    CORRADE_COMPARE_AS(out.str(),
         "Trade::AnySceneImporter::openFile(): using StanfordImporter (provided by AssimpImporter)\n"
-        "Trade::AssimpImporter: Info,  T0: Load " PLY_FILE "\n";
-    /** @todo use Compare::StringPrefix(?) when it exists */
-    CORRADE_COMPARE(out.str().substr(0, expected.size()), expected);
+        "Trade::AssimpImporter: Info,  T0: Load " PLY_FILE "\n",
+        TestSuite::Compare::StringHasPrefix);
 }
 
 void AnySceneImporterTest::propagateConfiguration() {
