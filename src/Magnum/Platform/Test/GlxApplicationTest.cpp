@@ -29,6 +29,8 @@
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
+using namespace Containers::Literals;
+
 struct GlxApplicationTest: Platform::Application {
     explicit GlxApplicationTest(const Arguments& arguments);
 
@@ -50,10 +52,12 @@ GlxApplicationTest::GlxApplicationTest(const Arguments& arguments): Platform::Ap
         return;
     }
 
+    Configuration conf;
+    conf.setTitle("Window title that should have no exclamation mark!!"_s.exceptSuffix(2));
     if(args.isSet("quiet"))
-        create(Configuration{}, GLConfiguration{}.addFlags(GLConfiguration::Flag::QuietLog));
+        create(conf, GLConfiguration{}.addFlags(GLConfiguration::Flag::QuietLog));
     else
-        create();
+        create(conf);
 }
 
 }}}}

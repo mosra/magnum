@@ -37,6 +37,8 @@
 
 namespace Magnum { namespace Platform {
 
+using namespace Containers::Literals;
+
 AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration): AbstractXApplication{contextHandler, arguments, NoCreate} {
     create(configuration, glConfiguration);
 }
@@ -202,7 +204,8 @@ AbstractXApplication::GLConfiguration::GLConfiguration(): _version(GL::Version::
 AbstractXApplication::GLConfiguration::~GLConfiguration() = default;
 
 AbstractXApplication::Configuration::Configuration():
-    _title("Magnum X Application"), _size(800, 600) {}
+    _title{Containers::String::nullTerminatedGlobalView("Magnum X Application"_s)},
+    _size(800, 600) {}
 AbstractXApplication::Configuration::~Configuration() = default;
 
 }}

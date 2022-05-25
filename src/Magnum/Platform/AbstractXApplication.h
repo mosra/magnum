@@ -33,10 +33,10 @@
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include <string>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pointer.h>
+#include <Corrade/Containers/String.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -63,6 +63,11 @@ typedef int Bool;
 #include "Magnum/Tags.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/GLContext.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Some APIs used to take or return a std::string before */
+#include <Corrade/Containers/StringStl.h>
+#endif
 
 namespace Magnum { namespace Platform {
 
@@ -457,8 +462,14 @@ class AbstractXApplication::Configuration {
         /*implicit*/ Configuration();
         ~Configuration();
 
-        /** @brief Window title */
-        std::string title() const { return _title; }
+        /**
+         * @brief Window title
+         *
+         * The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * is valid until the next call to @ref setTitle().
+         */
+        Containers::StringView title() const { return _title; }
 
         /**
          * @brief Set window title
@@ -466,8 +477,8 @@ class AbstractXApplication::Configuration {
          *
          * Default is @cpp "Magnum X Application" @ce.
          */
-        Configuration& setTitle(std::string title) {
-            _title = std::move(title);
+        Configuration& setTitle(Containers::StringView title) {
+            _title = Containers::String::nullTerminatedGlobalView(title);
             return *this;
         }
 
@@ -486,7 +497,7 @@ class AbstractXApplication::Configuration {
         }
 
     private:
-        std::string _title;
+        Containers::String _title;
         Vector2i _size;
 };
 
