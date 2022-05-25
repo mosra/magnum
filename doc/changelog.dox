@@ -826,6 +826,14 @@ See also:
     @ref MAGNUM_BUILD_DEPRECATED is enabled, the returned type acts as a
     @ref Corrade::Containers::Optional but has (deprecated) implicit conversion
     to a @ref Corrade::Containers::Pointer to avoid breaking user code.
+-   All @ref Platform APIs that used to take or return a @ref std::string are
+    ported to use @relativeref{Corrade,Containers::StringView}
+    or @relativeref{Corrade,Containers::String} instead. If
+    @ref MAGNUM_BUILD_DEPRECATED is enabled, implicit conversion from and to a
+    @ref std::string is provided by including the
+    @ref Corrade/Containers/StringStl.h header. Include it explicitly in your
+    code if you want to keep using a @ref std::string. See also
+    [mosra/magnum#559](https://github.com/mosra/magnum/pull/559).
 -   All @ref Trade::AbstractImporter APIs that used to take or return a
     @ref std::string are ported to use @relativeref{Corrade,Containers::StringView}
     or @relativeref{Corrade,Containers::String} instead. If
