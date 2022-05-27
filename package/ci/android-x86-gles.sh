@@ -113,7 +113,13 @@ circle-android wait-for-boot
 if [[ "$TARGET_GLES2" == "OFF" ]]; then
     EXCLUDE_GL_TESTS="-E (GLTest|GLBenchmark)"
 fi
-CORRADE_TEST_COLOR=ON ctest -V $EXCLUDE_GL_TESTS
+# `adb push` uploads timeout quite often, and then CircleCI waits 10 minutes
+# until it aborts the job due to no output. CTest can do timeouts on its own,
+# but somehow the default is 10M seconds, which is quite a lot honestly.
+# Instead set the timeout to 120 seconds (to account for GL tests), and try ten
+# more times if it gets stuck. We're sending quite a few files for shader
+# tests, so three isn't enough.
+CORRADE_TEST_COLOR=ON ctest -V $EXCLUDE_GL_TESTS --timeout 120 --repeat after-timeout:10
 
 # Test install, after running the tests as for them it shouldn't be needed
 ninja install

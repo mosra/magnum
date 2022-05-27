@@ -101,7 +101,12 @@ ninja $NINJA_JOBS
 
 # Wait for emulator to start (done in parallel to build) and run tests
 circle-android wait-for-boot
-CORRADE_TEST_COLOR=ON ctest -V
+# `adb push` uploads timeout quite often, and then CircleCI waits 10 minutes
+# until it aborts the job due to no output. CTest can do timeouts on its own,
+# but somehow the default is 10M seconds, which is quite a lot honestly.
+# Instead set the timeout to 15 seconds which should be enough even for very
+# heavy future benchmarks, and try two more times if it gets stuck.
+CORRADE_TEST_COLOR=ON ctest -V --timeout 15 --repeat after-timeout:3
 
 # Test install, after running the tests as for them it shouldn't be needed
 ninja install

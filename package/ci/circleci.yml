@@ -568,6 +568,11 @@ jobs:
       TARGET_GLES2: "ON"
     steps:
     - install-base-android
+    # We need ctest --timeout for flaky adb push, which is since 3.17. The
+    # image had 3.16.3 by default, so it's just a small jump.
+    - install-cmake:
+        version: "3.17.5"
+        sudo: sudo
     - build:
         script: android-x86-gles.sh
 
@@ -578,6 +583,11 @@ jobs:
       TARGET_GLES2: "OFF"
     steps:
     - install-base-android
+    # We need ctest --timeout for flaky adb push, which is since 3.17. The
+    # image had 3.16.3 by default, so it's just a small jump.
+    - install-cmake:
+        version: "3.17.5"
+        sudo: sudo
     - build:
         script: android-x86-gles.sh
 
@@ -585,6 +595,11 @@ jobs:
     executor: android-29
     steps:
     - install-base-android
+    # We need ctest --timeout for flaky adb push, which is since 3.17. The
+    # image had 3.16.3 by default, so it's just a small jump.
+    - install-cmake:
+        version: "3.17.5"
+        sudo: sudo
     - build:
         script: android-x86-vulkan.sh
 
