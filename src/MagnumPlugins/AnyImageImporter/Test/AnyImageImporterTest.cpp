@@ -102,6 +102,8 @@ constexpr struct {
     bool asData;
     const char* plugin;
 } DetectData[]{
+    {"ASTC", "8x8.astc", false, "AstcImporter"},
+    {"ASTC data", "8x8.astc", true, "AstcImporter"},
     {"PNG", "rgb.png", false, "PngImporter"},
     {"PNG data", "rgb.png", true, "PngImporter"},
     {"JPEG", "gray.jpg", false, "JpegImporter"},

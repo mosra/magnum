@@ -71,6 +71,16 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <tr><td colspan="6"></td></tr>
 
 <tr>
+<th>ASTC (`*.astc`)</th>
+<td>`AstcImporter`</td>
+<td>@relativeref{Trade,AstcImporter}</td>
+<td class="m-text-center m-dim">@ref Trade-AstcImporter-behavior "none"</td>
+<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center"></td>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
 <th>Basis Universal (`*.basis`)</th>
 <td>`BasisImporter`</td>
 <td>@ref Trade::BasisImporter "BasisImporter"</td>

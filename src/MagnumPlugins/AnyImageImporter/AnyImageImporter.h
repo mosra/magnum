@@ -57,6 +57,9 @@ Detects file type based on file extension or a signature at the start of the
 file, loads corresponding plugin and then tries to open the file with it.
 Supported formats:
 
+-   Adaptive Scalable Texture Compression (`*.astc` or data with corresponding
+    signature), loaded with @ref AstcImporter or any other plugin that provides
+    it
 -   Basis Universal (`*.basis` or data with corresponding signature), loaded
     with @ref BasisImporter or any other plugin that provides it
 -   Windows Bitmap (`*.bmp` or data with corresponding signature), loaded with

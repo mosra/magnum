@@ -71,7 +71,9 @@ void AnyImageImporter::doOpenFile(const Containers::StringView filename) {
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalizedExtension == ".basis"_s)
+    if(normalizedExtension == ".astc"_s)
+        plugin = "AstcImporter"_s;
+    else if(normalizedExtension == ".basis"_s)
         plugin = "BasisImporter"_s;
     else if(normalizedExtension == ".bmp"_s)
         plugin = "BmpImporter"_s;
@@ -173,8 +175,12 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
     const Containers::StringView dataString = dataView;
 
     Containers::StringView plugin;
+    /* https://stackoverflow.com/questions/22600678/determine-internal-format-of-given-astc-compressed-image-through-its-header
+       unfortunately it being in LE means it's SCALABLE in reverse :) */
+    if(dataString.hasPrefix("\x13\xAB\xA1\x5C"_s))
+        plugin = "AstcImporter"_s;
     /* https://github.com/BinomialLLC/basis_universal/blob/7d784c728844c007d8c95d63231f7adcc0f65364/transcoder/basisu_file_headers.h#L78 */
-    if(dataString.hasPrefix("sB"_s))
+    else if(dataString.hasPrefix("sB"_s))
         plugin = "BasisImporter"_s;
     /* https://en.wikipedia.org/wiki/BMP_file_format#Bitmap_file_header */
     else if(dataString.hasPrefix("BM"_s))
