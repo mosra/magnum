@@ -74,7 +74,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <th>Basis Universal (`*.basis`)</th>
 <td>`BasisImporter`</td>
 <td>@ref Trade::BasisImporter "BasisImporter"</td>
-<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center m-dim">@ref Trade-BasisImporter-behavior "none"</td>
 <td class="m-text-center m-success">bundleable, tiny</td>
 <td class="m-text-center m-success">Apache-2.0</td>
 </tr>
@@ -90,7 +90,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 </tr>
 <tr>
 <td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
-<td class="m-text-center m-dim">unknown</td>
+<td class="m-text-center m-dim">@ref Trade-DevIlImageImporter-behavior "unknown"</td>
 <td class="m-text-center m-danger">external</td>
 <td class="m-text-center m-warning">LGPLv2.1</td>
 </tr>
@@ -148,13 +148,13 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <th rowspan="2">Radiance HDR<br/>(`*.hdr`)</th>
 <td rowspan="2">`HdrImporter`</td>
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
-<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center m-dim">@ref Trade-StbImageImporter-behavior "none"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr>
 <td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
-<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center m-dim">@ref Trade-DevIlImageImporter-behavior "none"</td>
 <td class="m-text-center m-danger">external</td>
 <td class="m-text-center m-warning">LGPLv2.1</td>
 </tr>
@@ -192,7 +192,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 </tr>
 <tr>
 <td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
-<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center m-dim">@ref Trade-DevIlImageImporter-behavior "none"</td>
 <td class="m-text-center m-danger">external</td>
 <td class="m-text-center m-warning">LGPLv2.1</td>
 </tr>
@@ -218,7 +218,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 </tr>
 <tr>
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
-<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center m-dim">@ref Trade-StbImageImporter-behavior-png "none"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -256,13 +256,13 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 </tr>
 <tr>
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
-<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center m-dim">@ref Trade-StbImageImporter-behavior "none"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr>
 <td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
-<td class="m-text-center m-dim">unknown</td>
+<td class="m-text-center m-dim">@ref Trade-DevIlImageImporter-behavior "unknown"</td>
 <td class="m-text-center m-danger">external</td>
 <td class="m-text-center m-warning">LGPLv2.1</td>
 </tr>
@@ -308,7 +308,7 @@ Derived from @ref Trade::AbstractImageConverter.
 <th>Windows Bitmap (`*.bmp`)</th>
 <td>`BmpImageConverter`</td>
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
-<td class="m-text-center m-dim">unknown</td>
+<td class="m-text-center m-dim">@ref Trade-StbImageConverter-behavior "unknown"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -334,7 +334,7 @@ Derived from @ref Trade::AbstractImageConverter.
 <th>Radiance HDR (`*.hdr`)</th>
 <td>`HdrImageConverter`</td>
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
-<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center m-dim">@ref Trade-StbImageConverter-behavior "none"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -392,7 +392,7 @@ Derived from @ref Trade::AbstractImageConverter.
 </tr>
 <tr>
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
-<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center m-dim">@ref Trade-StbImageConverter-behavior "none"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -436,7 +436,7 @@ Together with @ref file-formats-image-importers "image importers" derived from
 <th>Autodesk FBX (`*.fbx`)</th>
 <td>`FbxImporter`</td>
 <td>@ref Trade::AssimpImporter "AssimpImporter"</td>
-<td class="m-text-center m-dim">unknown</td>
+<td class="m-text-center m-dim">@ref Trade-AssimpImporter-behavior "unknown"</td>
 <td class="m-text-center m-warning">bundleable</td>
 <td class="m-text-center m-success">BSD 3-clause</td>
 </tr>
@@ -468,7 +468,7 @@ Together with @ref file-formats-image-importers "image importers" derived from
 </tr>
 <tr>
 <td>@ref Trade::AssimpImporter "AssimpImporter"</td>
-<td class="m-text-center m-dim">unknown</td>
+<td class="m-text-center m-dim">@ref Trade-AssimpImporter-behavior "unknown"</td>
 <td class="m-text-center m-warning">bundleable</td>
 <td class="m-text-center m-success">BSD 3-clause</td>
 </tr>
@@ -522,7 +522,7 @@ Together with @ref file-formats-image-importers "image importers" derived from
 </tr>
 <tr>
 <td>@ref Trade::AssimpImporter "AssimpImporter"</td>
-<td class="m-text-center m-dim">unknown</td>
+<td class="m-text-center m-dim">@ref Trade-AssimpImporter-behavior "unknown"</td>
 <td class="m-text-center m-warning">bundleable</td>
 <td class="m-text-center m-success">BSD 3-clause</td>
 </tr>
