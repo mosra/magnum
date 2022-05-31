@@ -24,6 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* Don't compile this file on Emscripten < 2.0.17. Because it's easier to do
+   that here than through CMake. */
+#if !defined(__EMSCRIPTEN_major__) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017
 #include "BufferData.h"
 
 #include <Corrade/Containers/Array.h>
@@ -34,7 +37,6 @@
 #include <Corrade/Utility/Algorithms.h>
 #endif
 
-#if !(defined(MAGNUM_TARGET_WEBGL) && (defined(MAGNUM_TARGET_GLES2) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 20017))
 namespace Magnum { namespace DebugTools {
 
 #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_WEBGL)
