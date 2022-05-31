@@ -110,7 +110,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <th rowspan="2">DirectDraw Surface<br/>(`*.dds`)</th>
 <td rowspan="2">`DdsImporter`</td>
 <td>@ref Trade::DdsImporter "DdsImporter"</td>
-<td class="m-text-center m-warning">@ref Trade-DdsImporter-behavior "some"</td>
+<td class="m-text-center m-dim">@ref Trade-DdsImporter-behavior "none"</td>
 <td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
 <td class="m-text-center"></td>
 </tr>
