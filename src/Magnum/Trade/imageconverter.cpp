@@ -514,6 +514,7 @@ key=true; configuration subgroups are delimited with /.)")
                 else
                     useColor = Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors;
 
+                std::size_t totalImageDataSize = 0;
                 for(const Trade::Implementation::ImageInfo& info: infos) {
                     Debug d{useColor};
                     if(info.level == 0) {
@@ -542,7 +543,11 @@ key=true; configuration subgroups are delimited with /.)")
                             << Debug::color(Debug::Color::Green)
                             << info.dataFlags << Debug::resetColor;
                     d << Debug::nospace << ")";
+
+                    totalImageDataSize += info.dataSize;
                 }
+                if(!infos.isEmpty())
+                    Debug{} << "Total image data size:" << Utility::format("{:.1f}", totalImageDataSize/1024.0f) << "kB";
 
                 if(args.isSet("profile")) {
                     Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds";

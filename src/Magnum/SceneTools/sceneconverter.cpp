@@ -1278,7 +1278,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             totalImageDataSize += info.dataSize;
         }
         if(!imageInfos.isEmpty())
-            Debug{} << "Total (uncompressed) image data size:" << Utility::format("{:.1f}", totalImageDataSize/1024.0f) << "kB";
+            Debug{} << "Total image data size:" << Utility::format("{:.1f}", totalImageDataSize/1024.0f) << "kB";
 
         if(args.isSet("profile")) {
             Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds";
