@@ -27,6 +27,7 @@
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/Device.h"
@@ -107,50 +108,112 @@ void ShaderSetTest::constructCopy() {
 }
 
 void ShaderSetTest::constructMove() {
+    VkSpecializationInfo externalSpecializationInfo1,
+        externalSpecializationInfo2;
+
     ShaderSet c;
+    c.addShader(ShaderStage::RayAnyHit, VkShaderModule{}, "mine", {
+        {57, 0.3f}
+    });
+    /* This one has an externally-supplied specialization pointer, to
+        verify it's preserved on move (the first has to be redirected) */
+    c.addShader(ShaderStage::Vertex, VkShaderModule{}, "theirs");
+    c.stages()[1].pSpecializationInfo = &externalSpecializationInfo1;
 
     {
         ShaderSet a;
+
         /* The double reinterpret_cast is needed because the handle is an
            uint64_t instead of a pointer on 32-bit builds and only this works
            on both */
         a.addShader(ShaderStage::Geometry, reinterpret_cast<VkShaderModule>(reinterpret_cast<void*>(0xdeadbeef)), "main!"_s.exceptSuffix(1), {
             {42, 1.15f}
         });
-        CORRADE_COMPARE(a.stages().size(), 1);
+
+        /* This one has an externally-supplied specialization pointer, to
+           verify it's preserved on move (others will have it redirected) */
+        a.addShader(ShaderStage::Fragment, reinterpret_cast<VkShaderModule>(reinterpret_cast<void*>(0xbadf00d)), "yours");
+        a.stages()[1].pSpecializationInfo = &externalSpecializationInfo2;
+
+        CORRADE_COMPARE(a.stages().size(), 2);
         CORRADE_COMPARE(a.stages()[0].pName, "main"_s);
-        CORRADE_VERIFY(a.stages()[0].pSpecializationInfo);
+        /* This specialization info is stored inside the instance */
+        CORRADE_COMPARE_AS(reinterpret_cast<const void*>(a.stages()[0].pSpecializationInfo),
+            reinterpret_cast<const void*>(&a),
+            TestSuite::Compare::GreaterOrEqual);
+        CORRADE_COMPARE_AS(reinterpret_cast<const void*>(a.stages()[0].pSpecializationInfo),
+            reinterpret_cast<const void*>(&a + 1),
+            TestSuite::Compare::Less);
         CORRADE_COMPARE(a.stages()[0].pSpecializationInfo->mapEntryCount, 1);
         CORRADE_VERIFY(a.stages()[0].pSpecializationInfo->pMapEntries);
         CORRADE_COMPARE(a.stages()[0].pSpecializationInfo->pMapEntries[0].constantID, 42);
         CORRADE_VERIFY(a.stages()[0].pSpecializationInfo->pData);
         CORRADE_COMPARE(*reinterpret_cast<const Float*>(a.stages()[0].pSpecializationInfo->pData), 1.15f);
 
+        CORRADE_COMPARE(a.stages()[1].pName, "yours"_s);
+        /* This specialization info points elsewhere */
+        CORRADE_COMPARE(a.stages()[1].pSpecializationInfo, &externalSpecializationInfo2);
+
         ShaderSet b = std::move(a);
         CORRADE_VERIFY(a.stages().isEmpty());
-        CORRADE_COMPARE(b.stages().size(), 1);
+        CORRADE_COMPARE(b.stages().size(), 2);
         CORRADE_COMPARE(b.stages()[0].pName, "main"_s);
-        CORRADE_VERIFY(b.stages()[0].pSpecializationInfo);
+        /* This specialization info should be redirected inside the new
+           instance */
+        CORRADE_COMPARE_AS(reinterpret_cast<const void*>(b.stages()[0].pSpecializationInfo),
+            reinterpret_cast<const void*>(&b),
+            TestSuite::Compare::GreaterOrEqual);
+        CORRADE_COMPARE_AS(reinterpret_cast<const void*>(b.stages()[0].pSpecializationInfo),
+            reinterpret_cast<const void*>(&b + 1),
+            TestSuite::Compare::Less);
         CORRADE_COMPARE(b.stages()[0].pSpecializationInfo->mapEntryCount, 1);
         CORRADE_VERIFY(b.stages()[0].pSpecializationInfo->pMapEntries);
         CORRADE_COMPARE(b.stages()[0].pSpecializationInfo->pMapEntries[0].constantID, 42);
         CORRADE_VERIFY(b.stages()[0].pSpecializationInfo->pData);
         CORRADE_COMPARE(*reinterpret_cast<const Float*>(b.stages()[0].pSpecializationInfo->pData), 1.15f);
 
+        CORRADE_COMPARE(b.stages()[1].pName, "yours"_s);
+        /* This specialization info should not be redirected anywhere */
+        CORRADE_COMPARE(b.stages()[1].pSpecializationInfo, &externalSpecializationInfo2);
+
         c = std::move(b);
-        CORRADE_VERIFY(b.stages().isEmpty());
+        CORRADE_COMPARE(b.stages().size(), 2);
+        CORRADE_COMPARE(b.stages()[0].pName, "mine"_s);
+        /* The two classes got swapped, so the original C content should now
+           point to inside the B instance */
+        CORRADE_COMPARE_AS(reinterpret_cast<const void*>(b.stages()[0].pSpecializationInfo),
+            reinterpret_cast<const void*>(&b),
+            TestSuite::Compare::GreaterOrEqual);
+        CORRADE_COMPARE_AS(reinterpret_cast<const void*>(b.stages()[0].pSpecializationInfo),
+            reinterpret_cast<const void*>(&b + 1),
+            TestSuite::Compare::Less);
+        CORRADE_COMPARE(b.stages()[1].pName, "theirs"_s);
+        /* This specialization info should not be redirected anywhere */
+        CORRADE_COMPARE(b.stages()[1].pSpecializationInfo, &externalSpecializationInfo1);
     }
 
     /* Doing this in outer scope to verify that the internal state pointer got
        properly transferred as well and we're not referencing destroyed data */
-    CORRADE_COMPARE(c.stages().size(), 1);
+    CORRADE_COMPARE(c.stages().size(), 2);
+
     CORRADE_COMPARE(c.stages()[0].pName, "main"_s);
-    CORRADE_VERIFY(c.stages()[0].pSpecializationInfo);
+    /* The specialization info should be redirected inside the new instance
+       again */
+    CORRADE_COMPARE_AS(reinterpret_cast<const void*>(c.stages()[0].pSpecializationInfo),
+        reinterpret_cast<const void*>(&c),
+        TestSuite::Compare::GreaterOrEqual);
+    CORRADE_COMPARE_AS(reinterpret_cast<const void*>(c.stages()[0].pSpecializationInfo),
+        reinterpret_cast<const void*>(&c + 1),
+        TestSuite::Compare::Less);
     CORRADE_COMPARE(c.stages()[0].pSpecializationInfo->mapEntryCount, 1);
     CORRADE_VERIFY(c.stages()[0].pSpecializationInfo->pMapEntries);
     CORRADE_COMPARE(c.stages()[0].pSpecializationInfo->pMapEntries[0].constantID, 42);
     CORRADE_VERIFY(c.stages()[0].pSpecializationInfo->pData);
     CORRADE_COMPARE(*reinterpret_cast<const Float*>(c.stages()[0].pSpecializationInfo->pData), 1.15f);
+
+    CORRADE_COMPARE(c.stages()[1].pName, "yours"_s);
+    /* This specialization info should not be redirected anywhere */
+    CORRADE_COMPARE(c.stages()[1].pSpecializationInfo, &externalSpecializationInfo2);
 }
 
 void ShaderSetTest::addShader() {

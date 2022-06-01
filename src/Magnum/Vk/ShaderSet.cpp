@@ -48,6 +48,14 @@ ShaderSet::ShaderSet(ShaderSet&& other) noexcept: _stageCount{other._stageCount}
        you?! */
     Utility::copy(other._stages, _stages);
     Utility::copy(other._specializations, _specializations);
+
+    /* Redirect the specialization pointers to our state if they point to the
+       original object */
+    for(std::size_t i = 0; i != _stageCount; ++i) {
+        if(_stages[i].pSpecializationInfo == &other._specializations[i])
+            _stages[i].pSpecializationInfo = &_specializations[i];
+    }
+
     /* The easiest is to just make the original stage list empty and leave
        whatever dangling internal pointers are there. Otherwise we'd need to
        clear even the entrypoint field in case the name is owned, which would
@@ -63,6 +71,20 @@ ShaderSet& ShaderSet::operator=(ShaderSet&& other) noexcept {
     swap(other._specializations, _specializations);
     swap(other._stageCount, _stageCount);
     swap(other._state, _state);
+
+    /* Redirect the specialization pointers to our state if they point to the
+       original object */
+    for(std::size_t i = 0; i != _stageCount; ++i) {
+        if(_stages[i].pSpecializationInfo == &other._specializations[i])
+            _stages[i].pSpecializationInfo = &_specializations[i];
+    }
+
+    /* Vice versa for the original object */
+    for(std::size_t i = 0; i != other._stageCount; ++i) {
+        if(other._stages[i].pSpecializationInfo == &_specializations[i])
+            other._stages[i].pSpecializationInfo = &other._specializations[i];
+    }
+
     return *this;
 }
 
