@@ -338,7 +338,8 @@ jobs:
     - install-base-linux:
         extra: libsdl2-dev libglfw3-dev wget unzip
     # It crashes with the default setting. Only on GCC, usually when the huge
-    # TradeAbstractImporterTest / TradeMaterialDataTest get involved.
+    # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
+    # get involved.
     # TODO: revisit when we get rid of more STL
     - cap-ninja-jobs
     - install-gcc-4_8
@@ -363,7 +364,8 @@ jobs:
     - install-base-linux:
         extra: libsdl2-dev libglfw3-dev wget unzip
     # It crashes with the default setting. Only on GCC, usually when the huge
-    # TradeAbstractImporterTest / TradeMaterialDataTest get involved.
+    # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
+    # get involved.
     # TODO: revisit when we get rid of more STL
     - cap-ninja-jobs
     - install-gcc-4_8
@@ -412,7 +414,8 @@ jobs:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
     # It crashes with the default setting. Only on GCC, usually when the huge
-    # TradeAbstractImporterTest / TradeMaterialDataTest get involved.
+    # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
+    # get involved.
     # TODO: revisit when we get rid of more STL
     - cap-ninja-jobs
     - install-gcc-4_8
