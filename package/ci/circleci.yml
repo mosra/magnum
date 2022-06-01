@@ -308,6 +308,7 @@ jobs:
     executor: ubuntu-18_04
     environment:
       CMAKE_CXX_FLAGS: --coverage
+      LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
     steps:
     - install-base-linux:
@@ -317,6 +318,7 @@ jobs:
     # get involved.
     # TODO: revisit when we get rid of more STL
     - cap-ninja-jobs
+    - install-gcc-4_8
     - install-swiftshader-vulkan:
         build: ubuntu-18.04
     - build:
