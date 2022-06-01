@@ -569,6 +569,9 @@ See also:
 
 @subsection changelog-latest-buildsystem Build system
 
+-   The oldest supported Clang version is now 6.0 (available on Ubuntu 18.04),
+    or equivalently Apple Clang 10.0 (Xcode 10). Oldest supported GCC version
+    is still 4.8.
 -   Fixed compilation of the @ref GL library on macOS with ANGLE --- new code
     assumed macOS is always desktop GL (see [mosra/magnum#452](https://github.com/mosra/magnum/issues/452))
 -   Avoiding conflicts of Magnum's own GL headers with `GLES3/gl32.h` (see

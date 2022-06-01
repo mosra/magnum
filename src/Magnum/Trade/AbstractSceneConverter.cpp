@@ -163,7 +163,7 @@ AbstractSceneConverter::convertToData(const MeshData& mesh) {
     CORRADE_ASSERT(!out || !out->deleter() || out->deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || out->deleter() == ArrayAllocator<char>::deleter,
         "Trade::AbstractSceneConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::SceneConverterOptionalButAlsoArray<char>{std::move(out)};
     #else

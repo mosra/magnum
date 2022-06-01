@@ -287,7 +287,7 @@ AbstractConverter::convertDataToData(const Stage stage, const Containers::ArrayV
     CORRADE_ASSERT(!out || !out->deleter(),
         "ShaderTools::AbstractConverter::convertDataToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::OptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -435,7 +435,7 @@ AbstractConverter::convertFileToData(const Stage stage, const Containers::String
     CORRADE_ASSERT(!out || !out->deleter(),
         "ShaderTools::AbstractConverter::convertFileToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::OptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -479,7 +479,7 @@ AbstractConverter::linkDataToData(const Containers::ArrayView<const Containers::
     CORRADE_ASSERT(!out || !out->deleter(),
         "ShaderTools::AbstractConverter::linkDataToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::OptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -693,7 +693,7 @@ AbstractConverter::linkFilesToData(const Containers::ArrayView<const Containers:
     CORRADE_ASSERT(!out || !out->deleter(),
         "ShaderTools::AbstractConverter::linkFilesToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::OptionalButAlsoArray<char>{std::move(out)};
     #else

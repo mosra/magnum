@@ -308,7 +308,7 @@ AbstractImageConverter::convertToData(const ImageView1D& image) {
     Containers::Optional<Containers::Array<char>> out = doConvertToData(image);
     CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -341,7 +341,7 @@ AbstractImageConverter::convertToData(const ImageView2D& image) {
     Containers::Optional<Containers::Array<char>> out = doConvertToData(image);
     CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -381,7 +381,7 @@ AbstractImageConverter::convertToData(const ImageView3D& image) {
     Containers::Optional<Containers::Array<char>> out = doConvertToData(image);
     CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -414,7 +414,7 @@ AbstractImageConverter::convertToData(const CompressedImageView1D& image) {
     Containers::Optional<Containers::Array<char>> out = doConvertToData(image);
     CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -447,7 +447,7 @@ AbstractImageConverter::convertToData(const CompressedImageView2D& image) {
     Containers::Optional<Containers::Array<char>> out = doConvertToData(image);
     CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -487,7 +487,7 @@ AbstractImageConverter::convertToData(const CompressedImageView3D& image) {
     Containers::Optional<Containers::Array<char>> out = doConvertToData(image);
     CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -603,7 +603,7 @@ AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageVie
     Containers::Optional<Containers::Array<char>> out = doConvertToData(imageLevels);
     CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -642,7 +642,7 @@ AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageVie
     Containers::Optional<Containers::Array<char>> out = doConvertToData(imageLevels);
     CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -681,7 +681,7 @@ AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageVie
     Containers::Optional<Containers::Array<char>> out = doConvertToData(imageLevels);
     CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -720,7 +720,7 @@ AbstractImageConverter::convertToData(const Containers::ArrayView<const Compress
     Containers::Optional<Containers::Array<char>> out = doConvertToData(imageLevels);
     CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -759,7 +759,7 @@ AbstractImageConverter::convertToData(const Containers::ArrayView<const Compress
     Containers::Optional<Containers::Array<char>> out = doConvertToData(imageLevels);
     CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
     #else
@@ -798,7 +798,7 @@ AbstractImageConverter::convertToData(const Containers::ArrayView<const Compress
     Containers::Optional<Containers::Array<char>> out = doConvertToData(imageLevels);
     CORRADE_ASSERT(!out || !out->deleter(), "Trade::AbstractImageConverter::convertToData(): implementation is not allowed to use a custom Array deleter", {});
 
-    /* GCC 4.8 and Clang 3.8 need an explicit conversion here */
+    /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
     return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
     #else
