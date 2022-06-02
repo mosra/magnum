@@ -129,6 +129,8 @@ void AnyImageImporter::doOpenFile(const Containers::StringView filename) {
         plugin = "TgaImporter"_s;
     else if(normalizedExtension == ".vdb"_s)
         plugin = "OpenVdbImporter"_s;
+    else if(normalizedExtension == ".webp"_s)
+        plugin = "WebPImporter"_s;
     else {
         Error{} << "Trade::AnyImageImporter::openFile(): cannot determine the format of" << filename;
         return;
@@ -208,6 +210,11 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
     else if(dataString.hasPrefix("II\x2a\x00"_s) ||
             dataString.hasPrefix("MM\x00\x2a"_s))
         plugin = "TiffImporter"_s;
+    /* https://developers.google.com/speed/webp/docs/riff_container#webp_file_header */
+    else if(dataString.size() >= 12 &&
+            dataString.slice(0,  4) == "RIFF"_s &&
+            dataString.slice(8, 12) == "WEBP"_s)
+        plugin = "WebPImporter"_s;
     /* https://github.com/file/file/blob/d04de269e0b06ccd0a7d1bf4974fed1d75be7d9e/magic/Magdir/images#L18-L22
        TGAs are a complete guesswork, so try after everything else fails. */
     else if([dataView]() {

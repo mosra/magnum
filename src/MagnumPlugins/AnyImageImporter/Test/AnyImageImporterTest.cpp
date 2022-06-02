@@ -123,7 +123,9 @@ constexpr struct {
     {"TIFF data", "image.tiff", true, "TiffImporter"},
     {"Basis", "rgb.basis", false, "BasisImporter"},
     {"Basis data", "rgb.basis", true, "BasisImporter"},
-    {"OpenVDB", "volume.vdb", false, "OpenVdbImporter"}
+    {"OpenVDB", "volume.vdb", false, "OpenVdbImporter"},
+    {"WebP", "rgb-lossless.webp", false, "WebPImporter"},
+    {"WebP data", "rgb-lossless.webp", true, "WebPImporter"}
     /* Not testing everything, just the most important ones */
 };
 
@@ -144,7 +146,9 @@ const struct {
     {"DDS, but no space", "DDS!"_s, "44445321"},
     {"TIFF, but too short", "II\x2a"_s, "49492a"},
     {"TIFF, but no zero byte", "MM\xff\x2a"_s, "4d4dff2a"},
-    {"KTX, but wrong version", "\xabKTX 30\xbb\r\n\x1a\n"_s, "ab4b5458"}
+    {"KTX, but wrong version", "\xabKTX 30\xbb\r\n\x1a\n"_s, "ab4b5458"},
+    {"RIFF (for WebP), but only 4 bytes", "RIFF"_s, "52494646"},
+    {"WebP, but only 11 bytes", "RIFF    WEB"_s, "52494646"}
 };
 
 constexpr struct {

@@ -77,7 +77,9 @@ corrade_add_test(AnyImageImporterTest AnyImageImporterTest.cpp
         rgb.hdr
         rgb.png
         rgb.tga
-        rgba_dxt1.dds)
+        rgba_dxt1.dds
+        # From WebPImporter test data
+        rgb-lossless.webp)
 target_include_directories(AnyImageImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_ANYIMAGEIMPORTER_BUILD_STATIC)
     target_link_libraries(AnyImageImporterTest PRIVATE AnyImageImporter)
