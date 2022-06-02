@@ -276,6 +276,17 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <td class="m-text-center m-danger">external</td>
 <td class="m-text-center m-warning">LGPLv2.1</td>
 </tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
+<th>WebP (`*.webp`)</th>
+<td>`WebPImporter`</td>
+<td>@relativeref{Trade,WebPImporter}</td>
+<td class="m-text-center m-success">@ref Trade-WebPImporter-behavior "minor"</td>
+<td class="m-text-center m-danger">external</td>
+<td class="m-text-center m-success">BSD 3-clause</td>
+</tr>
+
 </table>
 
 @endparblock
