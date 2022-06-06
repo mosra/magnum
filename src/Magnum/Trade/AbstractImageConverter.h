@@ -1906,12 +1906,4 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
 
 }}
 
-/* clang-cl complains about "explicit instantiation of undefined template"
-   here, so don't define anything */
-#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG)) && !defined(CORRADE_TARGET_CLANG_CL)
-namespace Corrade { namespace PluginManager {
-    extern template class MAGNUM_TRADE_EXPORT Manager<Magnum::Trade::AbstractImageConverter>;
-}}
-#endif
-
 #endif
