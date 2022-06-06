@@ -95,7 +95,8 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * @ref MaterialAttribute::NormalTextureMatrix or
          * @ref MaterialAttribute::TextureMatrix attributes are present in this
          * layer or if @ref MaterialAttribute::TextureMatrix is present in the
-         * base material, @cpp false @ce otherwise
+         * base material, @cpp false @ce otherwise.
+         * @see @ref hasCommonTextureTransformation()
          */
         bool hasTextureTransformation() const;
 
@@ -108,6 +109,7 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * otherwise. In particular, returns @cpp true @ce also if there's no
          * texture transformation at all. Use @ref hasTextureTransformation()
          * to distinguish that case.
+         * @see @ref commonTextureMatrix()
          */
         bool hasCommonTextureTransformation() const;
 
@@ -122,6 +124,7 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * this material and have a non-zero value or if
          * @ref MaterialAttribute::TextureCoordinates is present in the base
          * material and has a non-zero value, @cpp false @ce otherwise.
+         * @see @ref hasCommonTextureCoordinates()
          */
         bool hasTextureCoordinates() const;
 
@@ -135,6 +138,7 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * otherwise. In particular, returns @cpp true @ce also if there's no
          * extra texture coordinate set used at all. Use
          * @ref hasTextureCoordinates() to distinguish that case.
+         * @see @ref commonTextureCoordinates()
          */
         bool hasCommonTextureCoordinates() const;
 
@@ -154,7 +158,7 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          *
          * Available only if @ref MaterialAttribute::RoughnessTexture is
          * present in this layer. Meant to be multiplied with @ref roughness().
-         * @see @ref AbstractImporter::texture()
+         * @see @ref hasAttribute(), @ref AbstractImporter::texture()
          */
         UnsignedInt roughnessTexture() const;
 
@@ -260,7 +264,7 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * @brief Common texture coordinate transformation matrix for all textures
          *
          * Expects that @ref hasCommonTextureTransformation() is @cpp true @ce;
-         * returns a coordinate set index that's the same for all of
+         * returns a matrix that's the same for all of
          * @ref layerFactorTextureMatrix(), @ref roughnessTextureMatrix() and
          * @ref normalTextureMatrix() where a texture is present. If no texture
          * is present, returns an identity matrix.
@@ -268,13 +272,14 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
         Matrix3 commonTextureMatrix() const;
 
         /**
-         * @brief Common texture coordinate set index for all textures
+         * @brief Common texture coordinate set for all textures
          *
          * Expects that @ref hasCommonTextureCoordinates() is @cpp true @ce;
-         * returns a coordinate set index that's the same for all of
-         * @ref layerFactorTextureCoordinates(), @ref roughnessTextureCoordinates()
-         * and @ref normalTextureCoordinates() where a texture is present. If
-         * no texture is present, returns @cpp 0 @ce.
+         * returns a coordinate set that's the same for all of
+         * @ref layerFactorTextureCoordinates(),
+         * @ref roughnessTextureCoordinates() and
+         * @ref normalTextureCoordinates() where a texture is present. If no
+         * texture is present, returns @cpp 0 @ce.
          */
         UnsignedInt commonTextureCoordinates() const;
 };

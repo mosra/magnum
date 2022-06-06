@@ -63,6 +63,7 @@ class MAGNUM_TRADE_EXPORT FlatMaterialData: public MaterialData {
          * @ref MaterialAttribute::BaseColorTexture or
          * @ref MaterialAttribute::DiffuseTexture attributes is present,
          * @cpp false @ce otherwise.
+         * @see @ref texture()
          */
         bool hasTexture() const;
 
@@ -77,6 +78,7 @@ class MAGNUM_TRADE_EXPORT FlatMaterialData: public MaterialData {
          * example a @ref MaterialAttribute::BaseColorTexture but only a
          * @ref MaterialAttribute::DiffuseTextureMatrix,
          * returns @cpp false @ce.
+         * @see @ref textureMatrix()
          */
         bool hasTextureTransformation() const;
 
@@ -87,15 +89,16 @@ class MAGNUM_TRADE_EXPORT FlatMaterialData: public MaterialData {
         /**
          * @brief Whether the material uses extra texture coordinate sets
          *
-         * Returns @cpp true @ce if the material is textured an a
+         * Returns @cpp true @ce if the material is textured and a
          * @ref MaterialAttribute::BaseColorTextureCoordinates,
          * @ref MaterialAttribute::DiffuseTextureCoordinates or
          * @ref MaterialAttribute::TextureCoordinates attribute matching the
          * texture is present and has a non-zero value, @cpp false @ce
          * otherwise. In particular, if there's for example a
-         * @ref MaterialAttribute::BaseColorTexture but
-         * only a @ref MaterialAttribute::DiffuseTextureCoordinates, returns
+         * @ref MaterialAttribute::BaseColorTexture but only a
+         * @ref MaterialAttribute::DiffuseTextureCoordinates, returns
          * @cpp false @ce.
+         * @see @ref textureCoordinates()
          */
         bool hasTextureCoordinates() const;
 

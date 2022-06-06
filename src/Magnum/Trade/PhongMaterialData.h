@@ -267,6 +267,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
          * same value, @cpp false @ce otherwise. In particular, returns
          * @cpp true @ce also if there's no texture transformation at all. Use
          * @ref hasTextureTransformation() to distinguish that case.
+         * @see @ref commonTextureMatrix()
          */
         bool hasCommonTextureTransformation() const;
 
@@ -296,6 +297,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
          * returns @cpp true @ce also if there's no extra texture coordinate
          * set used at all. Use @ref hasTextureCoordinates() to distinguish
          * that case.
+         * @see @ref commonTextureCoordinates()
          */
         bool hasCommonTextureCoordinates() const;
 
@@ -335,7 +337,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
          *
          * Available only if @ref MaterialAttribute::AmbientTexture is
          * present. Meant to be multiplied with @ref ambientColor().
-         * @see @ref hasAttribute()
+         * @see @ref hasAttribute(), @ref AbstractImporter::texture()
          */
         UnsignedInt ambientTexture() const;
 
@@ -572,7 +574,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
          * @m_since_latest
          *
          * Expects that @ref hasCommonTextureTransformation() is @cpp true @ce;
-         * returns a coordinate set index that's the same for all of
+         * returns a matrix that's the same for all of
          * @ref ambientTextureMatrix(), @ref diffuseTextureMatrix(),
          * @ref specularTextureMatrix() and @ref normalTextureMatrix() where a
          * texture is present. If no texture is present, returns an identity
@@ -595,15 +597,15 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
         #endif
 
         /**
-         * @brief Common texture coordinate set index for all textures
+         * @brief Common texture coordinate set for all textures
          * @m_since_latest
          *
          * Expects that @ref hasCommonTextureCoordinates() is @cpp true @ce;
-         * returns a coordinate set index that's the same for all of
+         * returns a coordinate set that's the same for all of
          * @ref ambientTextureCoordinates(), @ref diffuseTextureCoordinates(),
-         * @ref specularTextureCoordinates() and @ref normalTextureCoordinates()
-         * where a texture is present. If no texture is present, returns
-         * @cpp 0 @ce.
+         * @ref specularTextureCoordinates() and
+         * @ref normalTextureCoordinates() where a texture is present. If no
+         * texture is present, returns @cpp 0 @ce.
          */
         UnsignedInt commonTextureCoordinates() const;
 

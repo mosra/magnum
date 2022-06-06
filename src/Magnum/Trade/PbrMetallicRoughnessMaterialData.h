@@ -62,7 +62,8 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @ref MaterialAttribute::MetalnessTexture or
          * @ref MaterialAttribute::NoneRoughnessMetallicTexture attributes is
          * present, @cpp false @ce otherwise.
-         * @see @ref hasRoughnessTexture(), @ref hasNoneRoughnessMetallicTexture()
+         * @see @ref metalnessTexture(), @ref hasRoughnessTexture(),
+         *      @ref hasNoneRoughnessMetallicTexture()
          */
         bool hasMetalnessTexture() const;
 
@@ -73,7 +74,8 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @ref MaterialAttribute::RoughnessTexture or
          * @ref MaterialAttribute::NoneRoughnessMetallicTexture attributes is
          * present, @cpp false @ce otherwise.
-         * @see @ref hasMetalnessTexture(), @ref hasNoneRoughnessMetallicTexture()
+         * @see @ref roughnessTexture(), @ref hasMetalnessTexture(),
+         *      @ref hasNoneRoughnessMetallicTexture()
          */
         bool hasRoughnessTexture() const;
 
@@ -260,6 +262,7 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * the same value, @cpp false @ce otherwise. In particular, returns
          * @cpp true @ce also if there's no texture transformation at all. Use
          * @ref hasTextureTransformation() to distinguish that case.
+         * @see @ref commonTextureMatrix()
          */
         bool hasCommonTextureTransformation() const;
 
@@ -290,6 +293,7 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * returns @cpp true @ce also if there's no extra texture coordinate
          * set used at all. Use @ref hasTextureCoordinates() to distinguish
          * that case.
+         * @see @ref commonTextureCoordinates()
          */
         bool hasCommonTextureCoordinates() const;
 
@@ -492,10 +496,10 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @brief Normal texture coordinate set
          *
          * Convenience access to the @ref MaterialAttribute::NormalTextureCoordinates
-         * / @ref MaterialAttribute::TextureCoordinates attributes. If neither is
-         * present, the default is @cpp 0 @ce. Available only if the material
-         * has @ref MaterialAttribute::NormalTexture.
-         * @see @ref hasAttribute(), @ref AbstractImporter::texture()
+         * / @ref MaterialAttribute::TextureCoordinates attributes. If neither
+         * is present, the default is @cpp 0 @ce. Available only if the
+         * material has @ref MaterialAttribute::NormalTexture.
+         * @see @ref hasAttribute()
          */
         UnsignedInt normalTextureCoordinates() const;
 
@@ -600,7 +604,7 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @brief Common texture coordinate transformation matrix for all textures
          *
          * Expects that @ref hasCommonTextureTransformation() is @cpp true @ce;
-         * returns a coordinate set index that's the same for all of
+         * returns a matrix that's the same for all of
          * @ref baseColorTextureMatrix(), @ref metalnessTextureMatrix(),
          * @ref roughnessTextureMatrix(), @ref normalTextureMatrix(),
          * @ref occlusionTextureMatrix() and @ref emissiveTextureMatrix() where
@@ -610,7 +614,7 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
         Matrix3 commonTextureMatrix() const;
 
         /**
-         * @brief Common texture coordinate set index for all textures
+         * @brief Common texture coordinate set for all textures
          *
          * Expects that @ref hasCommonTextureCoordinates() is @cpp true @ce;
          * returns a coordinate set index that's the same for all of

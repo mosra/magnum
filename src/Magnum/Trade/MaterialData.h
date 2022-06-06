@@ -2044,7 +2044,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * Convenience access to the @ref MaterialAttribute::LayerFactorTextureCoordinates
          * / @ref MaterialAttribute::TextureCoordinates attributes in given
          * layer or a @ref MaterialAttribute::TextureCoordinates attribute in
-         * the base material. If not present, the default is @cpp 0 @ce.
+         * the base material. If neither is present, the default is @cpp 0 @ce.
          * Available only if the @ref MaterialAttribute::LayerFactorTexture
          * attribute is present. The @p layer is expected to exist.
          * @see @ref hasLayer(), @ref hasAttribute()

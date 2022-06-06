@@ -126,7 +126,7 @@ bool PbrMetallicRoughnessMaterialData::hasTextureTransformation() const {
         hasAttribute(MaterialAttribute::RoughnessTextureMatrix) ||
         hasAttribute(MaterialAttribute::NormalTextureMatrix) ||
         hasAttribute(MaterialAttribute::OcclusionTextureMatrix) ||
-        hasAttribute(MaterialAttribute::EmissiveTextureMatrix);;
+        hasAttribute(MaterialAttribute::EmissiveTextureMatrix);
 }
 
 bool PbrMetallicRoughnessMaterialData::hasCommonTextureTransformation() const {
