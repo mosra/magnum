@@ -67,11 +67,11 @@ bool PbrClearCoatMaterialData::hasCommonTextureTransformation() const {
 }
 
 bool PbrClearCoatMaterialData::hasTextureCoordinates() const {
-    return hasAttribute(MaterialAttribute::LayerFactorTextureCoordinates) ||
-        hasAttribute(MaterialAttribute::RoughnessTextureCoordinates) ||
-        hasAttribute(MaterialAttribute::NormalTextureCoordinates) ||
-        hasAttribute(MaterialAttribute::TextureCoordinates) ||
-        hasAttribute(0, MaterialAttribute::TextureCoordinates);
+    return attributeOr(MaterialAttribute::LayerFactorTextureCoordinates, 0u) ||
+        attributeOr(MaterialAttribute::RoughnessTextureCoordinates, 0u) ||
+        attributeOr(MaterialAttribute::NormalTextureCoordinates, 0u) ||
+        attributeOr(MaterialAttribute::TextureCoordinates, 0u) ||
+        attributeOr(0, MaterialAttribute::TextureCoordinates, 0u);
 }
 
 bool PbrClearCoatMaterialData::hasCommonTextureCoordinates() const {

@@ -44,9 +44,9 @@ bool FlatMaterialData::hasTextureTransformation() const {
 }
 
 bool FlatMaterialData::hasTextureCoordinates() const {
-    return (hasAttribute(MaterialAttribute::BaseColorTexture) && hasAttribute(MaterialAttribute::BaseColorTextureCoordinates)) ||
-        (hasAttribute(MaterialAttribute::DiffuseTexture) && hasAttribute(MaterialAttribute::DiffuseTextureCoordinates)) ||
-        hasAttribute(MaterialAttribute::TextureCoordinates);
+    return (hasAttribute(MaterialAttribute::BaseColorTexture) && attributeOr(MaterialAttribute::BaseColorTextureCoordinates, 0u)) ||
+        (hasAttribute(MaterialAttribute::DiffuseTexture) && attributeOr(MaterialAttribute::DiffuseTextureCoordinates, 0u)) ||
+        attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
 Color4 FlatMaterialData::color() const {

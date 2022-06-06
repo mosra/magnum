@@ -119,8 +119,9 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * @ref MaterialAttribute::RoughnessTextureCoordinates,
          * @ref MaterialAttribute::NormalTextureCoordinates or
          * @ref MaterialAttribute::TextureCoordinates attributes are present in
-         * this material or if @ref MaterialAttribute::TextureCoordinates is
-         * present in the base material, @cpp false @ce otherwise.
+         * this material and have a non-zero value or if
+         * @ref MaterialAttribute::TextureCoordinates is present in the base
+         * material and has a non-zero value, @cpp false @ce otherwise.
          */
         bool hasTextureCoordinates() const;
 

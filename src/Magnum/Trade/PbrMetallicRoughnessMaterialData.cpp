@@ -157,13 +157,13 @@ bool PbrMetallicRoughnessMaterialData::hasCommonTextureTransformation() const {
 }
 
 bool PbrMetallicRoughnessMaterialData::hasTextureCoordinates() const {
-    return hasAttribute(MaterialAttribute::TextureCoordinates) ||
-        hasAttribute(MaterialAttribute::BaseColorTextureCoordinates) ||
-        hasAttribute(MaterialAttribute::MetalnessTextureCoordinates) ||
-        hasAttribute(MaterialAttribute::RoughnessTextureCoordinates) ||
-        hasAttribute(MaterialAttribute::NormalTextureCoordinates) ||
-        hasAttribute(MaterialAttribute::OcclusionTextureCoordinates) ||
-        hasAttribute(MaterialAttribute::EmissiveTextureCoordinates);
+    return attributeOr(MaterialAttribute::TextureCoordinates, 0u) ||
+        attributeOr(MaterialAttribute::BaseColorTextureCoordinates, 0u) ||
+        attributeOr(MaterialAttribute::MetalnessTextureCoordinates, 0u) ||
+        attributeOr(MaterialAttribute::RoughnessTextureCoordinates, 0u) ||
+        attributeOr(MaterialAttribute::NormalTextureCoordinates, 0u) ||
+        attributeOr(MaterialAttribute::OcclusionTextureCoordinates, 0u) ||
+        attributeOr(MaterialAttribute::EmissiveTextureCoordinates, 0u);
 }
 
 bool PbrMetallicRoughnessMaterialData::hasCommonTextureCoordinates() const {
