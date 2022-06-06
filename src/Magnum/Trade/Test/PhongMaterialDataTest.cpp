@@ -58,6 +58,7 @@ class PhongMaterialDataTest: public TestSuite::Tester {
         void commonTransformationCoordinatesNoTextures();
         void commonTransformationCoordinatesOneTexture();
         void commonTransformationCoordinatesOneDifferentTexture();
+        void commonCoordinatesImplicit();
         void noCommonTransformationCoordinates();
 
         #ifdef MAGNUM_BUILD_DEPRECATED
@@ -96,7 +97,8 @@ PhongMaterialDataTest::PhongMaterialDataTest() {
 
     addInstancedTests({
         &PhongMaterialDataTest::commonTransformationCoordinatesOneTexture,
-        &PhongMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture},
+        &PhongMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture,
+        &PhongMaterialDataTest::commonCoordinatesImplicit},
         Containers::arraySize(PhongTextureData));
 
     addTests({
@@ -581,6 +583,24 @@ void PhongMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture()
     CORRADE_COMPARE(data.textureMatrix(), Matrix3::translation({0.5f, 0.0f}));
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
+}
+
+void PhongMaterialDataTest::commonCoordinatesImplicit() {
+    Containers::StringView textureName = PhongTextureData[testCaseInstanceId()];
+    setTestCaseDescription(textureName);
+
+    /* The transformation doesn't have this behavior, because there checking an
+       identity is rather expensive */
+
+    PhongMaterialData data{{}, {
+        {textureName, 5u},
+        {std::string{textureName} + "Coordinates", 0u}
+    }};
+
+    /* Zero is treated same as if there would be no attribute at all */
+    CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(data.commonTextureCoordinates(), 0u);
 }
 
 void PhongMaterialDataTest::noCommonTransformationCoordinates() {

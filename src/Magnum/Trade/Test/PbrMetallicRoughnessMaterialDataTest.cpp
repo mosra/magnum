@@ -52,6 +52,7 @@ class PbrMetallicRoughnessMaterialDataTest: public TestSuite::Tester {
         void commonTransformationCoordinatesNoTextures();
         void commonTransformationCoordinatesOneTexture();
         void commonTransformationCoordinatesOneDifferentTexture();
+        void commonCoordinatesImplicit();
         void noCommonTransformationCoordinates();
 };
 
@@ -80,7 +81,8 @@ PbrMetallicRoughnessMaterialDataTest::PbrMetallicRoughnessMaterialDataTest() {
 
     addInstancedTests({
         &PbrMetallicRoughnessMaterialDataTest::commonTransformationCoordinatesOneTexture,
-        &PbrMetallicRoughnessMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture},
+        &PbrMetallicRoughnessMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture,
+        &PbrMetallicRoughnessMaterialDataTest::commonCoordinatesImplicit},
         Containers::arraySize(PbrMetallicRoughnessTextureData));
 
     addTests({&PbrMetallicRoughnessMaterialDataTest::noCommonTransformationCoordinates});
@@ -817,6 +819,24 @@ void PbrMetallicRoughnessMaterialDataTest::commonTransformationCoordinatesOneDif
 
     CORRADE_VERIFY(!data.hasCommonTextureTransformation());
     CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+}
+
+void PbrMetallicRoughnessMaterialDataTest::commonCoordinatesImplicit() {
+    Containers::StringView textureName = PbrMetallicRoughnessTextureData[testCaseInstanceId()];
+    setTestCaseDescription(textureName);
+
+    /* The transformation doesn't have this behavior, because there checking an
+       identity is rather expensive */
+
+    PbrMetallicRoughnessMaterialData data{{}, {
+        {textureName, 5u},
+        {std::string{textureName} + "Coordinates", 0u}
+    }};
+
+    /* Zero is treated same as if there would be no attribute at all */
+    CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(data.commonTextureCoordinates(), 0u);
 }
 
 void PbrMetallicRoughnessMaterialDataTest::noCommonTransformationCoordinates() {

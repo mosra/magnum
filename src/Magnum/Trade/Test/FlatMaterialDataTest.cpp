@@ -46,6 +46,7 @@ class FlatMaterialDataTest: public TestSuite::Tester {
         void texturedBaseColorSingleMatrixCoordinates();
         void texturedDiffuseColorSingleMatrixCoordinates();
         void texturedMismatchedMatrixCoordinates();
+        void texturedImplicitCoordinates();
         void invalidTextures();
 };
 
@@ -59,6 +60,7 @@ FlatMaterialDataTest::FlatMaterialDataTest() {
               &FlatMaterialDataTest::texturedBaseColorSingleMatrixCoordinates,
               &FlatMaterialDataTest::texturedDiffuseColorSingleMatrixCoordinates,
               &FlatMaterialDataTest::texturedMismatchedMatrixCoordinates,
+              &FlatMaterialDataTest::texturedImplicitCoordinates,
               &FlatMaterialDataTest::invalidTextures});
 }
 
@@ -239,6 +241,34 @@ void FlatMaterialDataTest::texturedMismatchedMatrixCoordinates() {
         CORRADE_COMPARE(data.color(), 0xffffff_rgbf);
         CORRADE_COMPARE(data.texture(), 5);
         CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
+        CORRADE_COMPARE(data.textureCoordinates(), 0);
+    }
+}
+
+void FlatMaterialDataTest::texturedImplicitCoordinates() {
+    {
+        FlatMaterialData data{{}, {
+            {MaterialAttribute::BaseColorTexture, 5u},
+            {MaterialAttribute::BaseColorTextureCoordinates, 0u},
+
+            /* This is ignored because it doesn't match the texture */
+            {MaterialAttribute::DiffuseTextureCoordinates, 2u},
+        }};
+
+        CORRADE_VERIFY(data.hasTexture());
+        CORRADE_VERIFY(!data.hasTextureCoordinates());
+        CORRADE_COMPARE(data.textureCoordinates(), 0);
+    } {
+        FlatMaterialData data{{}, {
+            {MaterialAttribute::DiffuseTexture, 5u},
+            {MaterialAttribute::DiffuseTextureCoordinates, 0u},
+
+            /* This is ignored because it doesn't match the texture */
+            {MaterialAttribute::BaseColorTextureCoordinates, 2u},
+        }};
+
+        CORRADE_VERIFY(data.hasTexture());
+        CORRADE_VERIFY(!data.hasTextureCoordinates());
         CORRADE_COMPARE(data.textureCoordinates(), 0);
     }
 }

@@ -47,6 +47,7 @@ class PbrClearCoatMaterialDataTest: public TestSuite::Tester {
         void commonTransformationCoordinatesNoTextures();
         void commonTransformationCoordinatesOneTexture();
         void commonTransformationCoordinatesOneDifferentTexture();
+        void commonCoordinatesImplicit();
         void noCommonTransformationCoordinates();
 };
 
@@ -69,7 +70,8 @@ PbrClearCoatMaterialDataTest::PbrClearCoatMaterialDataTest() {
 
     addInstancedTests({
         &PbrClearCoatMaterialDataTest::commonTransformationCoordinatesOneTexture,
-        &PbrClearCoatMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture},
+        &PbrClearCoatMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture,
+        &PbrClearCoatMaterialDataTest::commonCoordinatesImplicit},
         Containers::arraySize(PbrClearCoatTextureData));
 
     addTests({&PbrClearCoatMaterialDataTest::noCommonTransformationCoordinates});
@@ -396,6 +398,25 @@ void PbrClearCoatMaterialDataTest::commonTransformationCoordinatesOneDifferentTe
 
     CORRADE_VERIFY(!data.hasCommonTextureTransformation());
     CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+}
+
+void PbrClearCoatMaterialDataTest::commonCoordinatesImplicit() {
+    Containers::StringView textureName = PbrClearCoatTextureData[testCaseInstanceId()];
+    setTestCaseDescription(textureName);
+
+    /* The transformation doesn't have this behavior, because there checking an
+       identity is rather expensive */
+
+    PbrClearCoatMaterialData data{{}, {
+        {MaterialLayer::ClearCoat},
+        {textureName, 5u},
+        {std::string{textureName} + "Coordinates", 0u}
+    }, {0, 3}};
+
+    /* Zero is treated same as if there would be no attribute at all */
+    CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(data.commonTextureCoordinates(), 0u);
 }
 
 void PbrClearCoatMaterialDataTest::noCommonTransformationCoordinates() {
