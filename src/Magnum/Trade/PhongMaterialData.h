@@ -301,6 +301,35 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
          */
         bool hasCommonTextureCoordinates() const;
 
+        /**
+         * @brief Whether the material uses array texture layers
+         * @m_since_latest
+         *
+         * Returns @cpp true @ce if any of the
+         * @ref MaterialAttribute::AmbientTextureLayer,
+         * @ref MaterialAttribute::DiffuseTextureLayer,
+         * @ref MaterialAttribute::SpecularTextureLayer,
+         * @ref MaterialAttribute::NormalTextureLayer or
+         * @ref MaterialAttribute::TextureLayer attributes is present and has a
+         * non-zero value, @cpp false @ce otherwise.
+         * @see @ref hasCommonTextureLayer()
+         */
+        bool hasTextureLayer() const;
+
+        /**
+         * @brief Whether the material has a common array texture layer for all textures
+         * @m_since_latest
+         *
+         * Returns @cpp true @ce if, for each texture that is present,
+         * @ref ambientTextureLayer(), @ref diffuseTextureLayer(),
+         * @ref specularTextureLayer() and @ref normalTextureLayer() have the
+         * same value, @cpp false @ce otherwise. In particular, returns
+         * @cpp true @ce also if there's no extra texture coordinate set used
+         * at all. Use @ref hasTextureLayer() to distinguish that case.
+         * @see @ref commonTextureLayer()
+         */
+        bool hasCommonTextureLayer() const;
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Material flags
@@ -377,6 +406,18 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
         #endif
 
         /**
+         * @brief Ambient array texture layer
+         * @m_since_latest
+         *
+         * Convenience access to the @ref MaterialAttribute::AmbientTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has @ref MaterialAttribute::AmbientTexture.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt ambientTextureLayer() const;
+
+        /**
          * @brief Diffuse color
          *
          * Convenience access to the @ref MaterialAttribute::DiffuseColor
@@ -431,6 +472,18 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
             return diffuseTextureCoordinates();
         }
         #endif
+
+        /**
+         * @brief Diffuse array texture layer
+         * @m_since_latest
+         *
+         * Convenience access to the @ref MaterialAttribute::DiffuseTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has @ref MaterialAttribute::DiffuseTexture.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt diffuseTextureLayer() const;
 
         /**
          * @brief Specular color
@@ -503,6 +556,18 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
         #endif
 
         /**
+         * @brief Specular array texture layer
+         * @m_since_latest
+         *
+         * Convenience access to the @ref MaterialAttribute::SpecularTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has a specular texture.
+         * @see @ref hasSpecularTexture()
+         */
+        UnsignedInt specularTextureLayer() const;
+
+        /**
          * @brief Normal texture ID
          * @m_since{2020,06}
          *
@@ -570,6 +635,18 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
         #endif
 
         /**
+         * @brief Normal array texture layer
+         * @m_since_latest
+         *
+         * Convenience access to the @ref MaterialAttribute::NormalTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has @ref MaterialAttribute::NormalTexture.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt normalTextureLayer() const;
+
+        /**
          * @brief Common texture coordinate transformation matrix for all textures
          * @m_since_latest
          *
@@ -608,6 +685,18 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
          * texture is present, returns @cpp 0 @ce.
          */
         UnsignedInt commonTextureCoordinates() const;
+
+        /**
+         * @brief Common array texture layer for all textures
+         * @m_since_latest
+         *
+         * Expects that @ref hasCommonTextureLayer() is @cpp true @ce; returns
+         * a layer that's the same for all of @ref ambientTextureLayer(),
+         * @ref diffuseTextureLayer(), @ref specularTextureLayer() and
+         * @ref normalTextureLayer() where a texture is present. If no texture
+         * is present, returns @cpp 0 @ce.
+         */
+        UnsignedInt commonTextureLayer() const;
 
         /**
          * @brief Shininess

@@ -50,7 +50,8 @@ bool PbrMetallicRoughnessMaterialData::hasNoneRoughnessMetallicTexture() const {
         roughnessTextureSwizzle() == MaterialTextureSwizzle::G &&
         metalnessTextureSwizzle() == MaterialTextureSwizzle::B)) &&
        roughnessTextureMatrix() == metalnessTextureMatrix() &&
-       roughnessTextureCoordinates() == metalnessTextureCoordinates();
+       roughnessTextureCoordinates() == metalnessTextureCoordinates() &&
+       roughnessTextureLayer() == metalnessTextureLayer();
 }
 
 bool PbrMetallicRoughnessMaterialData::hasRoughnessMetallicOcclusionTexture() const {
@@ -69,10 +70,13 @@ bool PbrMetallicRoughnessMaterialData::hasRoughnessMetallicOcclusionTexture() co
 
     const Matrix3 roughnessTextureMatrix = this->roughnessTextureMatrix();
     const UnsignedInt roughnessTextureCoordinates = this->roughnessTextureCoordinates();
+    const UnsignedInt roughnessTextureLayer = this->roughnessTextureLayer();
     return metalnessTextureMatrix() == roughnessTextureMatrix &&
         occlusionTextureMatrix() == roughnessTextureMatrix &&
         metalnessTextureCoordinates() == roughnessTextureCoordinates &&
-        occlusionTextureCoordinates() == roughnessTextureCoordinates;
+        occlusionTextureCoordinates() == roughnessTextureCoordinates &&
+        metalnessTextureLayer() == roughnessTextureLayer &&
+        occlusionTextureLayer() == roughnessTextureLayer;
 }
 
 bool PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture() const {
@@ -91,10 +95,13 @@ bool PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture() co
 
     const Matrix3 occlusionTextureMatrix = this->occlusionTextureMatrix();
     const UnsignedInt occlusionTextureCoordinates = this->occlusionTextureCoordinates();
+    const UnsignedInt occlusionTextureLayer = this->occlusionTextureLayer();
     return roughnessTextureMatrix() == occlusionTextureMatrix &&
         metalnessTextureMatrix() == occlusionTextureMatrix &&
         roughnessTextureCoordinates() == occlusionTextureCoordinates &&
-        metalnessTextureCoordinates() == occlusionTextureCoordinates;
+        metalnessTextureCoordinates() == occlusionTextureCoordinates &&
+        roughnessTextureLayer() == occlusionTextureLayer &&
+        metalnessTextureLayer() == occlusionTextureLayer;
 }
 
 bool PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture() const {
@@ -113,10 +120,13 @@ bool PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture() const
 
     const Matrix3 normalTextureMatrix = this->normalTextureMatrix();
     const UnsignedInt normalTextureCoordinates = this->normalTextureCoordinates();
+    const UnsignedInt normalTextureLayer = this->normalTextureLayer();
     return roughnessTextureMatrix() == normalTextureMatrix &&
         metalnessTextureMatrix() == normalTextureMatrix &&
         roughnessTextureCoordinates() == normalTextureCoordinates &&
-        metalnessTextureCoordinates() == normalTextureCoordinates;
+        metalnessTextureCoordinates() == normalTextureCoordinates &&
+        roughnessTextureLayer() == normalTextureLayer &&
+        metalnessTextureLayer() == normalTextureLayer;
 }
 
 bool PbrMetallicRoughnessMaterialData::hasTextureTransformation() const {
@@ -193,6 +203,43 @@ bool PbrMetallicRoughnessMaterialData::hasCommonTextureCoordinates() const {
     return true;
 }
 
+bool PbrMetallicRoughnessMaterialData::hasTextureLayer() const {
+    return attributeOr(MaterialAttribute::TextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::BaseColorTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::MetalnessTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::RoughnessTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::NormalTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::OcclusionTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::EmissiveTextureLayer, 0u);
+}
+
+bool PbrMetallicRoughnessMaterialData::hasCommonTextureLayer() const {
+    auto check = [](Containers::Optional<UnsignedInt>& layer, UnsignedInt current) {
+        if(!layer) {
+            layer = current;
+            return true;
+        }
+        return layer == current;
+    };
+
+    Containers::Optional<UnsignedInt> layer;
+    /* First one can't fail */
+    if(hasAttribute(MaterialAttribute::BaseColorTexture) && !check(layer, baseColorTextureLayer()))
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    if(hasMetalnessTexture() && !check(layer, metalnessTextureLayer()))
+        return false;
+    if(hasRoughnessTexture() && !check(layer, roughnessTextureLayer()))
+        return false;
+    if(hasAttribute(MaterialAttribute::NormalTexture) && !check(layer, normalTextureLayer()))
+        return false;
+    if(hasAttribute(MaterialAttribute::OcclusionTexture) && !check(layer, occlusionTextureLayer()))
+        return false;
+    if(hasAttribute(MaterialAttribute::EmissiveTexture) && !check(layer, emissiveTextureLayer()))
+        return false;
+
+    return true;
+}
+
 Color4 PbrMetallicRoughnessMaterialData::baseColor() const {
     return attributeOr(MaterialAttribute::BaseColor, 0xffffffff_rgbaf);
 }
@@ -215,6 +262,14 @@ UnsignedInt PbrMetallicRoughnessMaterialData::baseColorTextureCoordinates() cons
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::BaseColorTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
+}
+
+UnsignedInt PbrMetallicRoughnessMaterialData::baseColorTextureLayer() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::BaseColorTexture),
+        "Trade::PbrMetallicRoughnessMaterialData::baseColorTextureLayer(): the material doesn't have a base color texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::BaseColorTextureLayer))
+        return *value;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
 
 Float PbrMetallicRoughnessMaterialData::metalness() const {
@@ -256,6 +311,14 @@ UnsignedInt PbrMetallicRoughnessMaterialData::metalnessTextureCoordinates() cons
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
+UnsignedInt PbrMetallicRoughnessMaterialData::metalnessTextureLayer() const {
+    CORRADE_ASSERT(hasMetalnessTexture(),
+        "Trade::PbrMetallicRoughnessMaterialData::metalnessTextureLayer(): the material doesn't have a metalness texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::MetalnessTextureLayer))
+        return *value;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
+}
+
 Float PbrMetallicRoughnessMaterialData::roughness() const {
     return attributeOr(MaterialAttribute::Roughness, 1.0f);
 }
@@ -295,6 +358,14 @@ UnsignedInt PbrMetallicRoughnessMaterialData::roughnessTextureCoordinates() cons
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
+UnsignedInt PbrMetallicRoughnessMaterialData::roughnessTextureLayer() const {
+    CORRADE_ASSERT(hasRoughnessTexture(),
+        "Trade::PbrMetallicRoughnessMaterialData::roughnessTextureLayer(): the material doesn't have a roughness texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::RoughnessTextureLayer))
+        return *value;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
+}
+
 UnsignedInt PbrMetallicRoughnessMaterialData::normalTexture() const {
     return attribute<UnsignedInt>(MaterialAttribute::NormalTexture);
 }
@@ -325,6 +396,14 @@ UnsignedInt PbrMetallicRoughnessMaterialData::normalTextureCoordinates() const {
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
+}
+
+UnsignedInt PbrMetallicRoughnessMaterialData::normalTextureLayer() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
+        "Trade::PbrMetallicRoughnessMaterialData::normalTextureLayer(): the material doesn't have a normal texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureLayer))
+        return *value;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
 
 UnsignedInt PbrMetallicRoughnessMaterialData::occlusionTexture() const {
@@ -359,6 +438,14 @@ UnsignedInt PbrMetallicRoughnessMaterialData::occlusionTextureCoordinates() cons
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
+UnsignedInt PbrMetallicRoughnessMaterialData::occlusionTextureLayer() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::OcclusionTexture),
+        "Trade::PbrMetallicRoughnessMaterialData::occlusionTextureLayer(): the material doesn't have an occlusion texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::OcclusionTextureLayer))
+        return *value;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
+}
+
 Color3 PbrMetallicRoughnessMaterialData::emissiveColor() const {
     return attributeOr(MaterialAttribute::EmissiveColor, 0x000000_srgbf);
 }
@@ -381,6 +468,14 @@ UnsignedInt PbrMetallicRoughnessMaterialData::emissiveTextureCoordinates() const
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::EmissiveTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
+}
+
+UnsignedInt PbrMetallicRoughnessMaterialData::emissiveTextureLayer() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::EmissiveTexture),
+        "Trade::PbrMetallicRoughnessMaterialData::emissiveTextureLayer(): the material doesn't have an emissive texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::EmissiveTextureLayer))
+        return *value;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
 
 Matrix3 PbrMetallicRoughnessMaterialData::commonTextureMatrix() const {
@@ -417,6 +512,24 @@ UnsignedInt PbrMetallicRoughnessMaterialData::commonTextureCoordinates() const {
     if(hasAttribute(MaterialAttribute::EmissiveTexture))
         return emissiveTextureCoordinates();
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
+}
+
+UnsignedInt PbrMetallicRoughnessMaterialData::commonTextureLayer() const {
+    CORRADE_ASSERT(hasCommonTextureLayer(),
+        "Trade::PbrMetallicRoughnessMaterialData::commonTextureLayer(): the material doesn't have a common array texture layer", {});
+    if(hasAttribute(MaterialAttribute::BaseColorTexture))
+        return baseColorTextureLayer();
+    if(hasMetalnessTexture())
+        return metalnessTextureLayer();
+    if(hasRoughnessTexture())
+        return roughnessTextureLayer();
+    if(hasAttribute(MaterialAttribute::NormalTexture))
+        return normalTextureLayer();
+    if(hasAttribute(MaterialAttribute::OcclusionTexture))
+        return occlusionTextureLayer();
+    if(hasAttribute(MaterialAttribute::EmissiveTexture))
+        return emissiveTextureLayer();
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
 
 }}

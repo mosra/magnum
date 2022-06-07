@@ -43,10 +43,10 @@ class FlatMaterialDataTest: public TestSuite::Tester {
         void texturedBaseColor();
         void texturedDiffuseColor();
         void texturedDefaults();
-        void texturedBaseColorSingleMatrixCoordinates();
-        void texturedDiffuseColorSingleMatrixCoordinates();
-        void texturedMismatchedMatrixCoordinates();
-        void texturedImplicitCoordinates();
+        void texturedBaseColorSingleMatrixCoordinatesLayer();
+        void texturedDiffuseColorSingleMatrixCoordinatesLayer();
+        void texturedMismatchedMatrixCoordinatesLayer();
+        void texturedImplicitCoordinatesLayer();
         void invalidTextures();
 };
 
@@ -57,10 +57,10 @@ FlatMaterialDataTest::FlatMaterialDataTest() {
               &FlatMaterialDataTest::texturedBaseColor,
               &FlatMaterialDataTest::texturedDiffuseColor,
               &FlatMaterialDataTest::texturedDefaults,
-              &FlatMaterialDataTest::texturedBaseColorSingleMatrixCoordinates,
-              &FlatMaterialDataTest::texturedDiffuseColorSingleMatrixCoordinates,
-              &FlatMaterialDataTest::texturedMismatchedMatrixCoordinates,
-              &FlatMaterialDataTest::texturedImplicitCoordinates,
+              &FlatMaterialDataTest::texturedBaseColorSingleMatrixCoordinatesLayer,
+              &FlatMaterialDataTest::texturedDiffuseColorSingleMatrixCoordinatesLayer,
+              &FlatMaterialDataTest::texturedMismatchedMatrixCoordinatesLayer,
+              &FlatMaterialDataTest::texturedImplicitCoordinatesLayer,
               &FlatMaterialDataTest::invalidTextures});
 }
 
@@ -78,6 +78,7 @@ void FlatMaterialDataTest::baseColor() {
     CORRADE_VERIFY(!data.hasTexture());
     CORRADE_VERIFY(!data.hasTextureTransformation());
     CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(!data.hasTextureLayer());
     CORRADE_COMPARE(data.color(), 0xccffbb_rgbf);
 }
 
@@ -92,6 +93,7 @@ void FlatMaterialDataTest::diffuseColor() {
     CORRADE_VERIFY(!data.hasTexture());
     CORRADE_VERIFY(!data.hasTextureTransformation());
     CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(!data.hasTextureLayer());
     CORRADE_COMPARE(data.color(), 0xccffbb_rgbf);
 }
 
@@ -105,6 +107,7 @@ void FlatMaterialDataTest::defaults() {
     CORRADE_VERIFY(!data.hasTexture());
     CORRADE_VERIFY(!data.hasTextureTransformation());
     CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(!data.hasTextureLayer());
     CORRADE_COMPARE(data.color(), 0xffffff_rgbf);
 }
 
@@ -114,21 +117,25 @@ void FlatMaterialDataTest::texturedBaseColor() {
         {MaterialAttribute::BaseColorTexture, 5u},
         {MaterialAttribute::BaseColorTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
         {MaterialAttribute::BaseColorTextureCoordinates, 2u},
+        {MaterialAttribute::BaseColorTextureLayer, 17u},
 
         /* All this is ignored */
         {MaterialAttribute::DiffuseColor, 0x33556600_rgbaf},
         {MaterialAttribute::DiffuseTexture, 6u},
         {MaterialAttribute::DiffuseTextureMatrix, Matrix3::translation({0.5f, 1.0f})},
-        {MaterialAttribute::DiffuseTextureCoordinates, 3u}
+        {MaterialAttribute::DiffuseTextureCoordinates, 3u},
+        {MaterialAttribute::DiffuseTextureLayer, 66u},
     }};
 
     CORRADE_VERIFY(data.hasTexture());
     CORRADE_VERIFY(data.hasTextureTransformation());
     CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasTextureLayer());
     CORRADE_COMPARE(data.color(), 0xccffbb_rgbf);
     CORRADE_COMPARE(data.texture(), 5);
     CORRADE_COMPARE(data.textureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(data.textureCoordinates(), 2);
+    CORRADE_COMPARE(data.textureLayer(), 17);
 }
 
 void FlatMaterialDataTest::texturedDiffuseColor() {
@@ -137,6 +144,7 @@ void FlatMaterialDataTest::texturedDiffuseColor() {
         {MaterialAttribute::DiffuseTexture, 5u},
         {MaterialAttribute::DiffuseTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
         {MaterialAttribute::DiffuseTextureCoordinates, 2u},
+        {MaterialAttribute::DiffuseTextureLayer, 17u},
 
         /* Ignored, as we have a diffuse texture */
         {MaterialAttribute::BaseColor, 0x33556600_rgbaf}
@@ -145,10 +153,12 @@ void FlatMaterialDataTest::texturedDiffuseColor() {
     CORRADE_VERIFY(data.hasTexture());
     CORRADE_VERIFY(data.hasTextureTransformation());
     CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasTextureLayer());
     CORRADE_COMPARE(data.color(), 0xccffbb_rgbf);
     CORRADE_COMPARE(data.texture(), 5);
     CORRADE_COMPARE(data.textureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(data.textureCoordinates(), 2);
+    CORRADE_COMPARE(data.textureLayer(), 17);
 }
 
 void FlatMaterialDataTest::texturedDefaults() {
@@ -159,55 +169,65 @@ void FlatMaterialDataTest::texturedDefaults() {
     CORRADE_VERIFY(data.hasTexture());
     CORRADE_VERIFY(!data.hasTextureTransformation());
     CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(!data.hasTextureLayer());
     CORRADE_COMPARE(data.color(), 0xffffff_rgbf);
     CORRADE_COMPARE(data.texture(), 5);
     CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.textureCoordinates(), 0);
+    CORRADE_COMPARE(data.textureLayer(), 0);
 }
 
-void FlatMaterialDataTest::texturedBaseColorSingleMatrixCoordinates() {
+void FlatMaterialDataTest::texturedBaseColorSingleMatrixCoordinatesLayer() {
     FlatMaterialData data{{}, {
         {MaterialAttribute::BaseColor, 0xccffbbff_rgbaf},
         {MaterialAttribute::BaseColorTexture, 5u},
         {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
         {MaterialAttribute::TextureCoordinates, 2u},
+        {MaterialAttribute::TextureLayer, 17u},
 
         /* This is ignored because it doesn't match the texture */
         {MaterialAttribute::DiffuseTextureMatrix, Matrix3::translation({0.5f, 1.0f})},
-        {MaterialAttribute::DiffuseTextureCoordinates, 3u}
+        {MaterialAttribute::DiffuseTextureCoordinates, 3u},
+        {MaterialAttribute::DiffuseTextureLayer, 66u},
     }};
 
     CORRADE_VERIFY(data.hasTexture());
     CORRADE_VERIFY(data.hasTextureTransformation());
     CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasTextureLayer());
     CORRADE_COMPARE(data.color(), 0xccffbb_rgbf);
     CORRADE_COMPARE(data.texture(), 5);
     CORRADE_COMPARE(data.textureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(data.textureCoordinates(), 2);
+    CORRADE_COMPARE(data.textureLayer(), 17);
 }
 
-void FlatMaterialDataTest::texturedDiffuseColorSingleMatrixCoordinates() {
+void FlatMaterialDataTest::texturedDiffuseColorSingleMatrixCoordinatesLayer() {
     FlatMaterialData data{{}, {
         {MaterialAttribute::DiffuseColor, 0xccffbbff_rgbaf},
         {MaterialAttribute::DiffuseTexture, 5u},
         {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
         {MaterialAttribute::TextureCoordinates, 2u},
+        {MaterialAttribute::TextureLayer, 17u},
 
         /* This is ignored because it doesn't match the texture */
         {MaterialAttribute::BaseColorTextureMatrix, Matrix3::translation({0.5f, 1.0f})},
-        {MaterialAttribute::BaseColorTextureCoordinates, 3u}
+        {MaterialAttribute::BaseColorTextureCoordinates, 3u},
+        {MaterialAttribute::BaseColorTextureLayer, 66u}
     }};
 
     CORRADE_VERIFY(data.hasTexture());
     CORRADE_VERIFY(data.hasTextureTransformation());
     CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasTextureLayer());
     CORRADE_COMPARE(data.color(), 0xccffbb_rgbf);
     CORRADE_COMPARE(data.texture(), 5);
     CORRADE_COMPARE(data.textureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(data.textureCoordinates(), 2);
+    CORRADE_COMPARE(data.textureLayer(), 17);
 }
 
-void FlatMaterialDataTest::texturedMismatchedMatrixCoordinates() {
+void FlatMaterialDataTest::texturedMismatchedMatrixCoordinatesLayer() {
     {
         FlatMaterialData data{{}, {
             {MaterialAttribute::BaseColorTexture, 5u},
@@ -216,15 +236,18 @@ void FlatMaterialDataTest::texturedMismatchedMatrixCoordinates() {
             {MaterialAttribute::DiffuseColor, 0x33556600_rgbaf},
             {MaterialAttribute::DiffuseTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
             {MaterialAttribute::DiffuseTextureCoordinates, 2u},
+            {MaterialAttribute::DiffuseTextureLayer, 17u},
         }};
 
         CORRADE_VERIFY(data.hasTexture());
         CORRADE_VERIFY(!data.hasTextureTransformation());
         CORRADE_VERIFY(!data.hasTextureCoordinates());
+        CORRADE_VERIFY(!data.hasTextureLayer());
         CORRADE_COMPARE(data.color(), 0xffffff_rgbf);
         CORRADE_COMPARE(data.texture(), 5);
         CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
         CORRADE_COMPARE(data.textureCoordinates(), 0);
+        CORRADE_COMPARE(data.textureLayer(), 0);
     } {
         FlatMaterialData data{{}, {
             {MaterialAttribute::DiffuseTexture, 5u},
@@ -233,43 +256,54 @@ void FlatMaterialDataTest::texturedMismatchedMatrixCoordinates() {
             {MaterialAttribute::BaseColor, 0x33556600_rgbaf},
             {MaterialAttribute::BaseColorTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
             {MaterialAttribute::BaseColorTextureCoordinates, 2u},
+            {MaterialAttribute::BaseColorTextureLayer, 17u},
         }};
 
         CORRADE_VERIFY(data.hasTexture());
         CORRADE_VERIFY(!data.hasTextureTransformation());
         CORRADE_VERIFY(!data.hasTextureCoordinates());
+        CORRADE_VERIFY(!data.hasTextureLayer());
         CORRADE_COMPARE(data.color(), 0xffffff_rgbf);
         CORRADE_COMPARE(data.texture(), 5);
         CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
         CORRADE_COMPARE(data.textureCoordinates(), 0);
+        CORRADE_COMPARE(data.textureLayer(), 0);
     }
 }
 
-void FlatMaterialDataTest::texturedImplicitCoordinates() {
+void FlatMaterialDataTest::texturedImplicitCoordinatesLayer() {
     {
         FlatMaterialData data{{}, {
             {MaterialAttribute::BaseColorTexture, 5u},
             {MaterialAttribute::BaseColorTextureCoordinates, 0u},
+            {MaterialAttribute::BaseColorTextureLayer, 0u},
 
             /* This is ignored because it doesn't match the texture */
             {MaterialAttribute::DiffuseTextureCoordinates, 2u},
+            {MaterialAttribute::DiffuseTextureLayer, 17u},
         }};
 
         CORRADE_VERIFY(data.hasTexture());
         CORRADE_VERIFY(!data.hasTextureCoordinates());
+        CORRADE_VERIFY(!data.hasTextureLayer());
         CORRADE_COMPARE(data.textureCoordinates(), 0);
+        CORRADE_COMPARE(data.textureLayer(), 0);
     } {
         FlatMaterialData data{{}, {
             {MaterialAttribute::DiffuseTexture, 5u},
             {MaterialAttribute::DiffuseTextureCoordinates, 0u},
+            {MaterialAttribute::DiffuseTextureLayer, 0u},
 
             /* This is ignored because it doesn't match the texture */
             {MaterialAttribute::BaseColorTextureCoordinates, 2u},
+            {MaterialAttribute::BaseColorTextureLayer, 17u},
         }};
 
         CORRADE_VERIFY(data.hasTexture());
         CORRADE_VERIFY(!data.hasTextureCoordinates());
+        CORRADE_VERIFY(!data.hasTextureLayer());
         CORRADE_COMPARE(data.textureCoordinates(), 0);
+        CORRADE_COMPARE(data.textureLayer(), 0);
     }
 }
 
@@ -285,10 +319,12 @@ void FlatMaterialDataTest::invalidTextures() {
     data.texture();
     data.textureMatrix();
     data.textureCoordinates();
+    data.textureLayer();
     CORRADE_COMPARE(out.str(),
         "Trade::FlatMaterialData::texture(): the material doesn't have a texture\n"
         "Trade::FlatMaterialData::textureMatrix(): the material doesn't have a texture\n"
-        "Trade::FlatMaterialData::textureCoordinates(): the material doesn't have a texture\n");
+        "Trade::FlatMaterialData::textureCoordinates(): the material doesn't have a texture\n"
+        "Trade::FlatMaterialData::textureLayer(): the material doesn't have a texture\n");
 }
 
 }}}}

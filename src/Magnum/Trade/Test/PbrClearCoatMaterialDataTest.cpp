@@ -41,14 +41,14 @@ class PbrClearCoatMaterialDataTest: public TestSuite::Tester {
         void textured();
         void texturedDefaults();
         void texturedExplicitPackedLayerFactorRoughness();
-        void texturedSingleMatrixCoordinates();
-        void texturedBaseMaterialMatrixCoordinates();
+        void texturedSingleMatrixCoordinatesLayer();
+        void texturedBaseMaterialMatrixCoordinatesLayer();
         void invalidTextures();
-        void commonTransformationCoordinatesNoTextures();
-        void commonTransformationCoordinatesOneTexture();
-        void commonTransformationCoordinatesOneDifferentTexture();
-        void commonCoordinatesImplicit();
-        void noCommonTransformationCoordinates();
+        void commonTransformationCoordinatesLayerNoTextures();
+        void commonTransformationCoordinatesLayerOneTexture();
+        void commonTransformationCoordinatesLayerOneDifferentTexture();
+        void commonCoordinatesLayerImplicit();
+        void noCommonTransformationCoordinatesLayer();
 };
 
 const Containers::StringView PbrClearCoatTextureData[] {
@@ -63,18 +63,18 @@ PbrClearCoatMaterialDataTest::PbrClearCoatMaterialDataTest() {
               &PbrClearCoatMaterialDataTest::textured,
               &PbrClearCoatMaterialDataTest::texturedDefaults,
               &PbrClearCoatMaterialDataTest::texturedExplicitPackedLayerFactorRoughness,
-              &PbrClearCoatMaterialDataTest::texturedSingleMatrixCoordinates,
-              &PbrClearCoatMaterialDataTest::texturedBaseMaterialMatrixCoordinates,
+              &PbrClearCoatMaterialDataTest::texturedSingleMatrixCoordinatesLayer,
+              &PbrClearCoatMaterialDataTest::texturedBaseMaterialMatrixCoordinatesLayer,
               &PbrClearCoatMaterialDataTest::invalidTextures,
-              &PbrClearCoatMaterialDataTest::commonTransformationCoordinatesNoTextures});
+              &PbrClearCoatMaterialDataTest::commonTransformationCoordinatesLayerNoTextures});
 
     addInstancedTests({
-        &PbrClearCoatMaterialDataTest::commonTransformationCoordinatesOneTexture,
-        &PbrClearCoatMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture,
-        &PbrClearCoatMaterialDataTest::commonCoordinatesImplicit},
+        &PbrClearCoatMaterialDataTest::commonTransformationCoordinatesLayerOneTexture,
+        &PbrClearCoatMaterialDataTest::commonTransformationCoordinatesLayerOneDifferentTexture,
+        &PbrClearCoatMaterialDataTest::commonCoordinatesLayerImplicit},
         Containers::arraySize(PbrClearCoatTextureData));
 
-    addTests({&PbrClearCoatMaterialDataTest::noCommonTransformationCoordinates});
+    addTests({&PbrClearCoatMaterialDataTest::noCommonTransformationCoordinatesLayer});
 }
 
 using namespace Math::Literals;
@@ -90,6 +90,7 @@ void PbrClearCoatMaterialDataTest::basics() {
 
     CORRADE_VERIFY(!data.hasTextureTransformation());
     CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(!data.hasTextureLayer());
     CORRADE_COMPARE(data.roughness(), 0.7f);
 }
 
@@ -105,6 +106,7 @@ void PbrClearCoatMaterialDataTest::defaults() {
 
     CORRADE_VERIFY(!data.hasTextureTransformation());
     CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(!data.hasTextureLayer());
     CORRADE_COMPARE(data.layerFactor(), 1.0f);
     CORRADE_COMPARE(data.roughness(), 0.0f);
 }
@@ -117,25 +119,30 @@ void PbrClearCoatMaterialDataTest::textured() {
         {MaterialAttribute::RoughnessTextureSwizzle, MaterialTextureSwizzle::A},
         {MaterialAttribute::RoughnessTextureMatrix, Matrix3::translation({2.0f, 1.5f})},
         {MaterialAttribute::RoughnessTextureCoordinates, 6u},
+        {MaterialAttribute::RoughnessTextureLayer, 17u},
         {MaterialAttribute::NormalTexture, 3u},
         {MaterialAttribute::NormalTextureScale, 0.5f},
         {MaterialAttribute::NormalTextureSwizzle, MaterialTextureSwizzle::B},
         {MaterialAttribute::NormalTextureMatrix, Matrix3::translation({0.0f, 0.5f})},
         {MaterialAttribute::NormalTextureCoordinates, 7u},
-    }, {0, 11}};
+        {MaterialAttribute::NormalTextureLayer, 66u},
+    }, {0, 13}};
 
     CORRADE_VERIFY(data.hasTextureTransformation());
     CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasTextureLayer());
     CORRADE_COMPARE(data.roughness(), 0.7f);
     CORRADE_COMPARE(data.roughnessTexture(), 2u);
     CORRADE_COMPARE(data.roughnessTextureSwizzle(), MaterialTextureSwizzle::A);
     CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3::translation({2.0f, 1.5f}));
     CORRADE_COMPARE(data.roughnessTextureCoordinates(), 6u);
+    CORRADE_COMPARE(data.roughnessTextureLayer(), 17u);
     CORRADE_COMPARE(data.normalTexture(), 3u);
     CORRADE_COMPARE(data.normalTextureScale(), 0.5f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::B);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 7u);
+    CORRADE_COMPARE(data.normalTextureLayer(), 66u);
 }
 
 void PbrClearCoatMaterialDataTest::texturedDefaults() {
@@ -147,16 +154,19 @@ void PbrClearCoatMaterialDataTest::texturedDefaults() {
 
     CORRADE_VERIFY(!data.hasTextureTransformation());
     CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(!data.hasTextureLayer());
     CORRADE_COMPARE(data.roughness(), 0.0f);
     CORRADE_COMPARE(data.roughnessTexture(), 2u);
     CORRADE_COMPARE(data.roughnessTextureSwizzle(), MaterialTextureSwizzle::R);
     CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.roughnessTextureCoordinates(), 0u);
+    CORRADE_COMPARE(data.roughnessTextureLayer(), 0u);
     CORRADE_COMPARE(data.normalTexture(), 3u);
     CORRADE_COMPARE(data.normalTextureScale(), 1.0f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::RGB);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.normalTextureCoordinates(), 0u);
+    CORRADE_COMPARE(data.normalTextureLayer(), 0u);
 }
 
 void PbrClearCoatMaterialDataTest::texturedExplicitPackedLayerFactorRoughness() {
@@ -176,6 +186,7 @@ void PbrClearCoatMaterialDataTest::texturedExplicitPackedLayerFactorRoughness() 
         CORRADE_COMPARE(data.roughnessTextureSwizzle(), MaterialTextureSwizzle::G);
         CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3{});
         CORRADE_COMPARE(data.roughnessTextureCoordinates(), 0);
+        CORRADE_COMPARE(data.roughnessTextureLayer(), 0);
 
     /* Explicit parameters for everything, but all the same */
     } {
@@ -185,19 +196,23 @@ void PbrClearCoatMaterialDataTest::texturedExplicitPackedLayerFactorRoughness() 
             {MaterialAttribute::LayerFactorTextureSwizzle, MaterialTextureSwizzle::R},
             {MaterialAttribute::LayerFactorTextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
             {MaterialAttribute::LayerFactorTextureCoordinates, 3u},
+            {MaterialAttribute::LayerFactorTextureLayer, 17u},
             {MaterialAttribute::RoughnessTexture, 2u},
             {MaterialAttribute::RoughnessTextureSwizzle, MaterialTextureSwizzle::G},
             {MaterialAttribute::RoughnessTextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
-            {MaterialAttribute::RoughnessTextureCoordinates, 3u}
-        }, {0, 9}};
+            {MaterialAttribute::RoughnessTextureCoordinates, 3u},
+            {MaterialAttribute::RoughnessTextureLayer, 17u}
+        }, {0, 11}};
         CORRADE_VERIFY(data.hasLayerFactorRoughnessTexture());
         CORRADE_COMPARE(data.layerFactorTexture(), 2);
         CORRADE_COMPARE(data.layerFactorTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
         CORRADE_COMPARE(data.layerFactorTextureCoordinates(), 3);
+        CORRADE_COMPARE(data.layerFactorTextureLayer(), 17);
         CORRADE_COMPARE(data.roughnessTexture(), 2);
         CORRADE_COMPARE(data.roughnessTextureSwizzle(), MaterialTextureSwizzle::G);
         CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
         CORRADE_COMPARE(data.roughnessTextureCoordinates(), 3);
+        CORRADE_COMPARE(data.roughnessTextureLayer(), 17);
 
     /* Different texture ID */
     } {
@@ -251,47 +266,68 @@ void PbrClearCoatMaterialDataTest::texturedExplicitPackedLayerFactorRoughness() 
             {MaterialAttribute::RoughnessTextureCoordinates, 1u}
         }, {0, 5}};
         CORRADE_VERIFY(!data.hasLayerFactorRoughnessTexture());
+
+    /* Unexpected array texture layer */
+    } {
+        PbrClearCoatMaterialData data{{}, {
+            {MaterialLayer::ClearCoat},
+            {MaterialAttribute::LayerFactorTexture, 2u},
+            {MaterialAttribute::LayerFactorTextureLayer, 1u},
+            {MaterialAttribute::RoughnessTexture, 2u},
+            {MaterialAttribute::RoughnessTextureSwizzle, MaterialTextureSwizzle::G},
+        }, {0, 5}};
+        CORRADE_VERIFY(!data.hasLayerFactorRoughnessTexture());
     }
 }
 
-void PbrClearCoatMaterialDataTest::texturedSingleMatrixCoordinates() {
+void PbrClearCoatMaterialDataTest::texturedSingleMatrixCoordinatesLayer() {
     PbrClearCoatMaterialData data{{}, {
         {MaterialLayer::ClearCoat},
         {MaterialAttribute::RoughnessTexture, 2u},
         {MaterialAttribute::NormalTexture, 3u},
         {MaterialAttribute::TextureMatrix, Matrix3::translation({0.0f, 0.5f})},
         {MaterialAttribute::TextureCoordinates, 7u},
-    }, {0, 5}};
+        {MaterialAttribute::TextureLayer, 17u},
+    }, {0, 6}};
 
     CORRADE_VERIFY(data.hasTextureTransformation());
     CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasTextureLayer());
     CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
     CORRADE_COMPARE(data.roughnessTextureCoordinates(), 7u);
+    CORRADE_COMPARE(data.roughnessTextureLayer(), 17u);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 7u);
+    CORRADE_COMPARE(data.normalTextureLayer(), 17u);
 }
 
-void PbrClearCoatMaterialDataTest::texturedBaseMaterialMatrixCoordinates() {
+void PbrClearCoatMaterialDataTest::texturedBaseMaterialMatrixCoordinatesLayer() {
     PbrClearCoatMaterialData data{{}, {
         {MaterialAttribute::TextureMatrix, Matrix3::translation({0.0f, 0.5f})},
         {MaterialAttribute::TextureCoordinates, 7u},
+        {MaterialAttribute::TextureLayer, 17u},
 
         {MaterialLayer::ClearCoat},
         {MaterialAttribute::RoughnessTexture, 2u},
         {MaterialAttribute::NormalTexture, 3u},
-    }, {2, 5}};
+    }, {3, 6}};
 
     CORRADE_VERIFY(data.hasTextureTransformation());
     CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasTextureLayer());
     CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
     CORRADE_COMPARE(data.roughnessTextureCoordinates(), 7u);
+    CORRADE_COMPARE(data.roughnessTextureLayer(), 17u);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 7u);
+    CORRADE_COMPARE(data.normalTextureLayer(), 17u);
 
     CORRADE_VERIFY(data.hasCommonTextureTransformation());
     CORRADE_VERIFY(data.hasCommonTextureCoordinates());
+    CORRADE_VERIFY(data.hasCommonTextureLayer());
     CORRADE_COMPARE(data.commonTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
     CORRADE_COMPARE(data.commonTextureCoordinates(), 7);
+    CORRADE_COMPARE(data.commonTextureLayer(), 17);
 }
 
 void PbrClearCoatMaterialDataTest::invalidTextures() {
@@ -309,55 +345,67 @@ void PbrClearCoatMaterialDataTest::invalidTextures() {
     data.roughnessTextureSwizzle();
     data.roughnessTextureMatrix();
     data.roughnessTextureCoordinates();
+    data.roughnessTextureLayer();
     data.normalTexture();
     data.normalTextureScale();
     data.normalTextureSwizzle();
     data.normalTextureMatrix();
     data.normalTextureCoordinates();
+    data.normalTextureLayer();
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::attribute(): attribute RoughnessTexture not found in layer ClearCoat\n"
         "Trade::PbrClearCoatMaterialData::roughnessTextureSwizzle(): the layer doesn't have a roughness texture\n"
         "Trade::PbrClearCoatMaterialData::roughnessTextureMatrix(): the layer doesn't have a roughness texture\n"
         "Trade::PbrClearCoatMaterialData::roughnessTextureCoordinates(): the layer doesn't have a roughness texture\n"
+        "Trade::PbrClearCoatMaterialData::roughnessTextureLayer(): the layer doesn't have a roughness texture\n"
         "Trade::MaterialData::attribute(): attribute NormalTexture not found in layer ClearCoat\n"
         "Trade::PbrClearCoatMaterialData::normalTextureScale(): the layer doesn't have a normal texture\n"
         "Trade::PbrClearCoatMaterialData::normalTextureSwizzle(): the layer doesn't have a normal texture\n"
         "Trade::PbrClearCoatMaterialData::normalTextureMatrix(): the layer doesn't have a normal texture\n"
-        "Trade::PbrClearCoatMaterialData::normalTextureCoordinates(): the layer doesn't have a normal texture\n");
+        "Trade::PbrClearCoatMaterialData::normalTextureCoordinates(): the layer doesn't have a normal texture\n"
+        "Trade::PbrClearCoatMaterialData::normalTextureLayer(): the layer doesn't have a normal texture\n");
 }
 
-void PbrClearCoatMaterialDataTest::commonTransformationCoordinatesNoTextures() {
+void PbrClearCoatMaterialDataTest::commonTransformationCoordinatesLayerNoTextures() {
     PbrClearCoatMaterialData a{{}, {
         {MaterialLayer::ClearCoat},
     }, {0, 1}};
     CORRADE_VERIFY(a.hasCommonTextureTransformation());
     CORRADE_VERIFY(a.hasCommonTextureCoordinates());
+    CORRADE_VERIFY(a.hasCommonTextureLayer());
     CORRADE_COMPARE(a.commonTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(a.commonTextureCoordinates(), 0);
+    CORRADE_COMPARE(a.commonTextureLayer(), 0);
 
     PbrClearCoatMaterialData b{{}, {
         {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
         {MaterialAttribute::TextureCoordinates, 7u},
+        {MaterialAttribute::TextureLayer, 17u},
 
         {MaterialLayer::ClearCoat}
-    }, {2, 3}};
+    }, {3, 4}};
     CORRADE_VERIFY(b.hasCommonTextureTransformation());
     CORRADE_VERIFY(b.hasCommonTextureCoordinates());
+    CORRADE_VERIFY(b.hasCommonTextureLayer());
     CORRADE_COMPARE(b.commonTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
     CORRADE_COMPARE(b.commonTextureCoordinates(), 7);
+    CORRADE_COMPARE(b.commonTextureLayer(), 17);
 
     PbrClearCoatMaterialData c{{}, {
         {MaterialLayer::ClearCoat},
         {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
         {MaterialAttribute::TextureCoordinates, 7u},
-    }, {0, 3}};
+        {MaterialAttribute::TextureLayer, 17u},
+    }, {0, 4}};
     CORRADE_VERIFY(c.hasCommonTextureTransformation());
     CORRADE_VERIFY(c.hasCommonTextureCoordinates());
+    CORRADE_VERIFY(c.hasCommonTextureLayer());
     CORRADE_COMPARE(c.commonTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
     CORRADE_COMPARE(c.commonTextureCoordinates(), 7);
+    CORRADE_COMPARE(c.commonTextureLayer(), 17);
 }
 
-void PbrClearCoatMaterialDataTest::commonTransformationCoordinatesOneTexture() {
+void PbrClearCoatMaterialDataTest::commonTransformationCoordinatesLayerOneTexture() {
     Containers::StringView textureName = PbrClearCoatTextureData[testCaseInstanceId()];
     setTestCaseDescription(textureName);
 
@@ -365,20 +413,24 @@ void PbrClearCoatMaterialDataTest::commonTransformationCoordinatesOneTexture() {
         /* These shouldn't affect the below */
         {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
         {MaterialAttribute::TextureCoordinates, 3u},
+        {MaterialAttribute::TextureLayer, 22u},
 
         {MaterialLayer::ClearCoat},
         {textureName, 5u},
         {textureName + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
         {textureName + "Coordinates", 17u},
-    }, {2, 6}};
+        {textureName + "Layer", 66u},
+    }, {3, 8}};
 
     CORRADE_VERIFY(data.hasCommonTextureTransformation());
     CORRADE_COMPARE(data.commonTextureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_VERIFY(data.hasCommonTextureCoordinates());
     CORRADE_COMPARE(data.commonTextureCoordinates(), 17u);
+    CORRADE_VERIFY(data.hasCommonTextureLayer());
+    CORRADE_COMPARE(data.commonTextureLayer(), 66u);
 }
 
-void PbrClearCoatMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture() {
+void PbrClearCoatMaterialDataTest::commonTransformationCoordinatesLayerOneDifferentTexture() {
     Containers::StringView textureName = PbrClearCoatTextureData[testCaseInstanceId()];
     setTestCaseDescription(textureName);
 
@@ -387,20 +439,23 @@ void PbrClearCoatMaterialDataTest::commonTransformationCoordinatesOneDifferentTe
            check */
         {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
         {MaterialAttribute::TextureCoordinates, 3u},
+        {MaterialAttribute::TextureLayer, 22u},
 
         {MaterialLayer::ClearCoat},
         {MaterialAttribute::LayerFactorTexture, 2u},
         {MaterialAttribute::RoughnessTexture, 3u},
         {MaterialAttribute::NormalTexture, 5u},
         {textureName + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
-        {textureName + "Coordinates", 17u}
-    }, {2, 8}};
+        {textureName + "Coordinates", 17u},
+        {textureName + "Layer", 66u},
+    }, {3, 10}};
 
     CORRADE_VERIFY(!data.hasCommonTextureTransformation());
     CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+    CORRADE_VERIFY(!data.hasCommonTextureLayer());
 }
 
-void PbrClearCoatMaterialDataTest::commonCoordinatesImplicit() {
+void PbrClearCoatMaterialDataTest::commonCoordinatesLayerImplicit() {
     Containers::StringView textureName = PbrClearCoatTextureData[testCaseInstanceId()];
     setTestCaseDescription(textureName);
 
@@ -410,16 +465,20 @@ void PbrClearCoatMaterialDataTest::commonCoordinatesImplicit() {
     PbrClearCoatMaterialData data{{}, {
         {MaterialLayer::ClearCoat},
         {textureName, 5u},
-        {textureName + "Coordinates", 0u}
+        {textureName + "Coordinates", 0u},
+        {textureName + "Layer", 0u},
     }, {0, 3}};
 
     /* Zero is treated same as if there would be no attribute at all */
     CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(!data.hasTextureLayer());
     CORRADE_VERIFY(data.hasCommonTextureCoordinates());
+    CORRADE_VERIFY(data.hasCommonTextureLayer());
     CORRADE_COMPARE(data.commonTextureCoordinates(), 0u);
+    CORRADE_COMPARE(data.commonTextureLayer(), 0u);
 }
 
-void PbrClearCoatMaterialDataTest::noCommonTransformationCoordinates() {
+void PbrClearCoatMaterialDataTest::noCommonTransformationCoordinatesLayer() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -431,9 +490,10 @@ void PbrClearCoatMaterialDataTest::noCommonTransformationCoordinates() {
         {MaterialAttribute::LayerFactorTextureCoordinates, 3u},
         {MaterialAttribute::RoughnessTexture, 4u},
         {MaterialAttribute::RoughnessTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+        {MaterialAttribute::RoughnessTextureLayer, 22u},
         {MaterialAttribute::NormalTexture, 5u},
         {MaterialAttribute::NormalTextureCoordinates, 17u}
-    }, {0, 8}};
+    }, {0, 9}};
 
     CORRADE_VERIFY(!data.hasCommonTextureTransformation());
     CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
@@ -442,9 +502,11 @@ void PbrClearCoatMaterialDataTest::noCommonTransformationCoordinates() {
     Error redirectError{&out};
     data.commonTextureMatrix();
     data.commonTextureCoordinates();
+    data.commonTextureLayer();
     CORRADE_COMPARE(out.str(),
         "Trade::PbrClearCoatMaterialData::commonTextureMatrix(): the layer doesn't have a common texture coordinate transformation\n"
-        "Trade::PbrClearCoatMaterialData::commonTextureCoordinates(): the layer doesn't have a common texture coordinate set\n");
+        "Trade::PbrClearCoatMaterialData::commonTextureCoordinates(): the layer doesn't have a common texture coordinate set\n"
+        "Trade::PbrClearCoatMaterialData::commonTextureLayer(): the layer doesn't have a common array texture layer\n");
 }
 
 }}}}

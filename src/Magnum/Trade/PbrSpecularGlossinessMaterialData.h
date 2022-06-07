@@ -90,16 +90,20 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
          * is set to @ref MaterialTextureSwizzle::A, and ddditionally
          * @ref MaterialAttribute::SpecularTextureMatrix and
          * @ref MaterialAttribute::GlossinessTextureMatrix are both either not
-         * present or have the same value, and
+         * present or have the same value,
          * @ref MaterialAttribute::SpecularTextureCoordinates and
          * @ref MaterialAttribute::GlossinessTextureCoordinates are both either
-         * not present or have the same value; @cpp false @ce otherwise.
+         * not present or have the same value, and
+         * @ref MaterialAttribute::SpecularTextureLayer and
+         * @ref MaterialAttribute::GlossinessTextureLayer are both either not
+         * present or have the same value; @cpp false @ce otherwise.
          *
          * In other words, if this function returns @cpp true @ce,
-         * @ref specularTexture(), @ref specularTextureMatrix() and
-         * @ref specularTextureCoordinates() return values common for both
-         * specular and glossiness texture, and the two are packed together
-         * with specular occupying the RGB channels and glossiness the alpha.
+         * @ref specularTexture(), @ref specularTextureMatrix(),
+         * @ref specularTextureCoordinates() and @ref specularTextureLayer()
+         * return values common for both specular and glossiness texture, and
+         * the two are packed together with specular occupying the RGB channels
+         * and glossiness the alpha.
          * @see @ref hasSpecularTexture(), @ref hasGlossinessTexture()
          */
         bool hasSpecularGlossinessTexture() const;
@@ -166,6 +170,36 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
         bool hasCommonTextureCoordinates() const;
 
         /**
+         * @brief Whether the material uses array texture layers
+         *
+         * Returns @cpp true @ce if any of the
+         * @ref MaterialAttribute::DiffuseTextureLayer,
+         * @ref MaterialAttribute::SpecularTextureLayer,
+         * @ref MaterialAttribute::GlossinessTextureLayer,
+         * @ref MaterialAttribute::NormalTextureLayer,
+         * @ref MaterialAttribute::OcclusionTextureLayer,
+         * @ref MaterialAttribute::EmissiveTextureLayer or
+         * @ref MaterialAttribute::TextureLayer attributes is present and has a
+         * non-zero value, @cpp false @ce otherwise.
+         * @see @ref hasCommonTextureLayer()
+         */
+        bool hasTextureLayer() const;
+
+        /**
+         * @brief Whether the material has a common array texture layer for all textures
+         *
+         * Returns @cpp true @ce if, for each texture that is present,
+         * @ref diffuseTextureLayer(), @ref specularTextureLayer(),
+         * @ref glossinessTextureLayer(), @ref normalTextureLayer(),
+         * @ref occlusionTextureLayer() and @ref emissiveTextureLayer() have
+         * the same value, @cpp false @ce otherwise. In particular, returns
+         * @cpp true @ce also if there's no array texture layer used at all.
+         * Use @ref hasTextureLayer() to distinguish that case.
+         * @see @ref commonTextureLayer()
+         */
+        bool hasCommonTextureLayer() const;
+
+        /**
          * @brief Diffuse color
          *
          * Convenience access to the @ref MaterialAttribute::DiffuseColor
@@ -206,6 +240,17 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
          * @see @ref hasAttribute()
          */
         UnsignedInt diffuseTextureCoordinates() const;
+
+        /**
+         * @brief Diffuse array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::DiffuseTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has @ref MaterialAttribute::DiffuseTexture.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt diffuseTextureLayer() const;
 
         /**
          * @brief Specular color
@@ -264,6 +309,17 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
         UnsignedInt specularTextureCoordinates() const;
 
         /**
+         * @brief Specular array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::SpecularTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has a specular texture.
+         * @see @ref hasSpecularTexture()
+         */
+        UnsignedInt specularTextureLayer() const;
+
+        /**
          * @brief Glossiness factor
          *
          * Convenience access to the @ref MaterialAttribute::Glossiness
@@ -320,6 +376,17 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
         UnsignedInt glossinessTextureCoordinates() const;
 
         /**
+         * @brief Glossiness array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::GlossinessTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has a glossiness texture.
+         * @see @ref hasGlossinessTexture()
+         */
+        UnsignedInt glossinessTextureLayer() const;
+
+        /**
          * @brief Normal texture ID
          *
          * Available only if @ref MaterialAttribute::NormalTexture is present.
@@ -369,6 +436,17 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
          * @see @ref hasAttribute()
          */
         UnsignedInt normalTextureCoordinates() const;
+
+        /**
+         * @brief Normal array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::NormalTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has @ref MaterialAttribute::NormalTexture.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt normalTextureLayer() const;
 
         /**
          * @brief Occlusion texture ID
@@ -423,6 +501,17 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
         UnsignedInt occlusionTextureCoordinates() const;
 
         /**
+         * @brief Occlusion array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::OcclusionTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has @ref MaterialAttribute::OcclusionTexture.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt occlusionTextureLayer() const;
+
+        /**
          * @brief Emissive color
          *
          * Convenience access to the @ref MaterialAttribute::EmissiveColor
@@ -468,6 +557,17 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
         UnsignedInt emissiveTextureCoordinates() const;
 
         /**
+         * @brief Emissive array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::EmissiveTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the
+         * material has @ref MaterialAttribute::EmissiveTexture.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt emissiveTextureLayer() const;
+
+        /**
          * @brief Common texture coordinate transformation matrix for all textures
          *
          * Expects that @ref hasCommonTextureTransformation() is @cpp true @ce;
@@ -492,6 +592,18 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
          * no texture is present, returns @cpp 0 @ce.
          */
         UnsignedInt commonTextureCoordinates() const;
+
+        /**
+         * @brief Common array texture layer for all textures
+         *
+         * Expects that @ref hasCommonTextureLayer() is @cpp true @ce; returns
+         * a layer that's the same for all of @ref diffuseTextureLayer(),
+         * @ref specularTextureLayer(), @ref glossinessTextureLayer(),
+         * @ref normalTextureLayer(), @ref occlusionTextureLayer() and
+         * @ref emissiveTextureLayer() where a texture is present. If no
+         * texture is present, returns @cpp 0 @ce.
+         */
+        UnsignedInt commonTextureLayer() const;
 };
 
 }}

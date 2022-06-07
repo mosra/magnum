@@ -52,14 +52,14 @@ class PhongMaterialDataTest: public TestSuite::Tester {
         void defaults();
         void textured();
         void texturedDefaults();
-        void texturedSingleMatrixCoordinates();
+        void texturedSingleMatrixCoordinatesLayer();
         void texturedImplicitPackedSpecularGlossiness();
         void invalidTextures();
-        void commonTransformationCoordinatesNoTextures();
-        void commonTransformationCoordinatesOneTexture();
-        void commonTransformationCoordinatesOneDifferentTexture();
-        void commonCoordinatesImplicit();
-        void noCommonTransformationCoordinates();
+        void commonTransformationCoordinatesLayerNoTextures();
+        void commonTransformationCoordinatesLayerOneTexture();
+        void commonTransformationCoordinatesLayerOneDifferentTexture();
+        void commonCoordinatesLayerImplicit();
+        void noCommonTransformationCoordinatesLayer();
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         void debugFlag();
@@ -90,19 +90,20 @@ PhongMaterialDataTest::PhongMaterialDataTest() {
         &PhongMaterialDataTest::defaults,
         &PhongMaterialDataTest::textured,
         &PhongMaterialDataTest::texturedDefaults,
-        &PhongMaterialDataTest::texturedSingleMatrixCoordinates,
+        &PhongMaterialDataTest::texturedSingleMatrixCoordinatesLayer,
         &PhongMaterialDataTest::texturedImplicitPackedSpecularGlossiness,
         &PhongMaterialDataTest::invalidTextures,
-        &PhongMaterialDataTest::commonTransformationCoordinatesNoTextures});
+        &PhongMaterialDataTest::commonTransformationCoordinatesLayerNoTextures});
 
     addInstancedTests({
-        &PhongMaterialDataTest::commonTransformationCoordinatesOneTexture,
-        &PhongMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture,
-        &PhongMaterialDataTest::commonCoordinatesImplicit},
+        &PhongMaterialDataTest::commonTransformationCoordinatesLayerOneTexture,
+        &PhongMaterialDataTest::commonTransformationCoordinatesLayerOneDifferentTexture,
+        &PhongMaterialDataTest::commonCoordinatesLayerImplicit},
         Containers::arraySize(PhongTextureData));
 
     addTests({
-        &PhongMaterialDataTest::noCommonTransformationCoordinates,
+        &PhongMaterialDataTest::noCommonTransformationCoordinatesLayer,
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         &PhongMaterialDataTest::debugFlag,
         &PhongMaterialDataTest::debugFlags
@@ -310,6 +311,7 @@ void PhongMaterialDataTest::basics() {
     CORRADE_VERIFY(!data.hasSpecularTexture());
     CORRADE_VERIFY(!data.hasTextureTransformation());
     CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(!data.hasTextureLayer());
     CORRADE_COMPARE(data.ambientColor(), 0xccffbb_rgbf);
     CORRADE_COMPARE(data.diffuseColor(), 0xebefbf_rgbf);
     CORRADE_COMPARE(data.specularColor(), 0xacabad_rgbf);
@@ -325,6 +327,7 @@ void PhongMaterialDataTest::defaults() {
 
     CORRADE_VERIFY(!data.hasTextureTransformation());
     CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(!data.hasTextureLayer());
     CORRADE_COMPARE(data.ambientColor(), 0x000000_rgbf);
     CORRADE_COMPARE(data.diffuseColor(), 0xffffff_rgbf);
     CORRADE_COMPARE(data.specularColor(), 0xffffff00_rgbaf);
@@ -337,43 +340,52 @@ void PhongMaterialDataTest::textured() {
         {MaterialAttribute::AmbientTexture, 42u},
         {MaterialAttribute::AmbientTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
         {MaterialAttribute::AmbientTextureCoordinates, 2u},
+        {MaterialAttribute::AmbientTextureLayer, 6u},
         {MaterialAttribute::DiffuseTexture, 33u},
         {MaterialAttribute::DiffuseColor, 0xeebbffff_rgbaf},
         {MaterialAttribute::DiffuseTextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
         {MaterialAttribute::DiffuseTextureCoordinates, 3u},
+        {MaterialAttribute::DiffuseTextureLayer, 7u},
         {MaterialAttribute::SpecularColor, 0xacabadff_rgbaf},
         {MaterialAttribute::SpecularTexture, 17u},
         {MaterialAttribute::SpecularTextureSwizzle, MaterialTextureSwizzle::RGBA},
         {MaterialAttribute::SpecularTextureMatrix, Matrix3::scaling({1.0f, 1.0f})},
         {MaterialAttribute::SpecularTextureCoordinates, 4u},
+        {MaterialAttribute::SpecularTextureLayer, 8u},
         {MaterialAttribute::NormalTexture, 0u},
         {MaterialAttribute::NormalTextureScale, 0.5f},
         {MaterialAttribute::NormalTextureSwizzle, MaterialTextureSwizzle::GB},
         {MaterialAttribute::NormalTextureMatrix, Matrix3::scaling({1.0f, 0.5f})},
-        {MaterialAttribute::NormalTextureCoordinates, 5u}
+        {MaterialAttribute::NormalTextureCoordinates, 5u},
+        {MaterialAttribute::NormalTextureLayer, 9u},
     }};
 
     CORRADE_VERIFY(data.hasSpecularTexture());
     CORRADE_VERIFY(data.hasTextureTransformation());
     CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasTextureLayer());
     CORRADE_COMPARE(data.ambientColor(), 0x111111_rgbf);
     CORRADE_COMPARE(data.ambientTexture(), 42);
     CORRADE_COMPARE(data.ambientTextureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(data.ambientTextureCoordinates(), 2);
+    CORRADE_COMPARE(data.ambientTextureLayer(), 6);
     CORRADE_COMPARE(data.diffuseColor(), 0xeebbff_rgbf);
     CORRADE_COMPARE(data.diffuseTexture(), 33);
     CORRADE_COMPARE(data.diffuseTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
     CORRADE_COMPARE(data.diffuseTextureCoordinates(), 3);
+    CORRADE_COMPARE(data.diffuseTextureLayer(), 7);
     CORRADE_COMPARE(data.specularColor(), 0xacabad_rgbf);
     CORRADE_COMPARE(data.specularTexture(), 17);
     CORRADE_COMPARE(data.specularTextureSwizzle(), MaterialTextureSwizzle::RGBA);
     CORRADE_COMPARE(data.specularTextureMatrix(), Matrix3::scaling({1.0f, 1.0f}));
     CORRADE_COMPARE(data.specularTextureCoordinates(), 4);
+    CORRADE_COMPARE(data.specularTextureLayer(), 8);
     CORRADE_COMPARE(data.normalTexture(), 0);
     CORRADE_COMPARE(data.normalTextureScale(), 0.5f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::GB);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::scaling({1.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 5);
+    CORRADE_COMPARE(data.normalTextureLayer(), 9);
 }
 
 void PhongMaterialDataTest::texturedDefaults() {
@@ -387,46 +399,57 @@ void PhongMaterialDataTest::texturedDefaults() {
     CORRADE_VERIFY(data.hasSpecularTexture());
     CORRADE_VERIFY(!data.hasTextureTransformation());
     CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(!data.hasTextureLayer());
     CORRADE_COMPARE(data.ambientColor(), 0xffffffff_rgbaf);
     CORRADE_COMPARE(data.ambientTexture(), 42);
     CORRADE_COMPARE(data.ambientTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.ambientTextureCoordinates(), 0);
+    CORRADE_COMPARE(data.ambientTextureLayer(), 0);
     CORRADE_COMPARE(data.diffuseColor(), 0xffffffff_rgbaf);
     CORRADE_COMPARE(data.diffuseTexture(), 33);
     CORRADE_COMPARE(data.diffuseTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.diffuseTextureCoordinates(), 0);
+    CORRADE_COMPARE(data.diffuseTextureLayer(), 0);
     CORRADE_COMPARE(data.specularColor(), 0xffffff00_rgbaf);
     CORRADE_COMPARE(data.specularTexture(), 17);
     CORRADE_COMPARE(data.specularTextureSwizzle(), MaterialTextureSwizzle::RGB);
     CORRADE_COMPARE(data.specularTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.specularTextureCoordinates(), 0);
+    CORRADE_COMPARE(data.specularTextureLayer(), 0);
     CORRADE_COMPARE(data.normalTexture(), 1);
     CORRADE_COMPARE(data.normalTextureScale(), 1.0f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::RGB);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.normalTextureCoordinates(), 0);
+    CORRADE_COMPARE(data.normalTextureLayer(), 0);
 }
 
-void PhongMaterialDataTest::texturedSingleMatrixCoordinates() {
+void PhongMaterialDataTest::texturedSingleMatrixCoordinatesLayer() {
     PhongMaterialData data{{}, {
         {MaterialAttribute::AmbientTexture, 42u},
         {MaterialAttribute::DiffuseTexture, 33u},
         {MaterialAttribute::SpecularTexture, 17u},
         {MaterialAttribute::NormalTexture, 0u},
         {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 1.0f})},
-        {MaterialAttribute::TextureCoordinates, 2u}
+        {MaterialAttribute::TextureCoordinates, 2u},
+        {MaterialAttribute::TextureLayer, 17u},
     }};
 
     CORRADE_VERIFY(data.hasTextureTransformation());
     CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasTextureLayer());
     CORRADE_COMPARE(data.ambientTextureMatrix(), Matrix3::translation({0.5f, 1.0f}));
     CORRADE_COMPARE(data.ambientTextureCoordinates(), 2);
+    CORRADE_COMPARE(data.ambientTextureLayer(), 17);
     CORRADE_COMPARE(data.diffuseTextureMatrix(), Matrix3::translation({0.5f, 1.0f}));
     CORRADE_COMPARE(data.diffuseTextureCoordinates(), 2);
+    CORRADE_COMPARE(data.diffuseTextureLayer(), 17);
     CORRADE_COMPARE(data.specularTextureMatrix(), Matrix3::translation({0.5f, 1.0f}));
     CORRADE_COMPARE(data.specularTextureCoordinates(), 2);
+    CORRADE_COMPARE(data.specularTextureLayer(), 17);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::translation({0.5f, 1.0f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 2);
+    CORRADE_COMPARE(data.normalTextureLayer(), 17);
 }
 
 void PhongMaterialDataTest::texturedImplicitPackedSpecularGlossiness() {
@@ -435,6 +458,7 @@ void PhongMaterialDataTest::texturedImplicitPackedSpecularGlossiness() {
         {MaterialAttribute::SpecularGlossinessTexture, 17u},
         {MaterialAttribute::SpecularTextureMatrix, Matrix3::scaling({1.0f, 1.0f})},
         {MaterialAttribute::SpecularTextureCoordinates, 4u},
+        {MaterialAttribute::SpecularTextureLayer, 22u},
     }};
 
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -445,11 +469,13 @@ void PhongMaterialDataTest::texturedImplicitPackedSpecularGlossiness() {
     CORRADE_VERIFY(data.hasSpecularTexture());
     CORRADE_VERIFY(data.hasTextureTransformation());
     CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_VERIFY(data.hasTextureLayer());
     CORRADE_COMPARE(data.specularColor(), 0xacabad_rgbf);
     CORRADE_COMPARE(data.specularTexture(), 17);
     CORRADE_COMPARE(data.specularTextureSwizzle(), MaterialTextureSwizzle::RGB);
     CORRADE_COMPARE(data.specularTextureMatrix(), Matrix3::scaling({1.0f, 1.0f}));
     CORRADE_COMPARE(data.specularTextureCoordinates(), 4);
+    CORRADE_COMPARE(data.specularTextureLayer(), 22);
 }
 
 void PhongMaterialDataTest::invalidTextures() {
@@ -464,42 +490,52 @@ void PhongMaterialDataTest::invalidTextures() {
     data.ambientTexture();
     data.ambientTextureMatrix();
     data.ambientTextureCoordinates();
+    data.ambientTextureLayer();
     data.diffuseTexture();
     data.diffuseTextureMatrix();
     data.diffuseTextureCoordinates();
+    data.diffuseTextureLayer();
     data.specularTexture();
     data.specularTextureSwizzle();
     data.specularTextureMatrix();
     data.specularTextureCoordinates();
+    data.specularTextureLayer();
     data.normalTexture();
     data.normalTextureScale();
     data.normalTextureSwizzle();
     data.normalTextureMatrix();
     data.normalTextureCoordinates();
+    data.normalTextureLayer();
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::attribute(): attribute AmbientTexture not found in layer 0\n"
         "Trade::PhongMaterialData::ambientTextureMatrix(): the material doesn't have an ambient texture\n"
         "Trade::PhongMaterialData::ambientTextureCoordinates(): the material doesn't have an ambient texture\n"
+        "Trade::PhongMaterialData::ambientTextureLayer(): the material doesn't have an ambient texture\n"
         "Trade::MaterialData::attribute(): attribute DiffuseTexture not found in layer 0\n"
         "Trade::PhongMaterialData::diffuseTextureMatrix(): the material doesn't have a diffuse texture\n"
         "Trade::PhongMaterialData::diffuseTextureCoordinates(): the material doesn't have a diffuse texture\n"
+        "Trade::PhongMaterialData::diffuseTextureLayer(): the material doesn't have a diffuse texture\n"
         "Trade::PhongMaterialData::specularTexture(): the material doesn't have a specular texture\n"
         "Trade::PhongMaterialData::specularTextureSwizzle(): the material doesn't have a specular texture\n"
         "Trade::PhongMaterialData::specularTextureMatrix(): the material doesn't have a specular texture\n"
         "Trade::PhongMaterialData::specularTextureCoordinates(): the material doesn't have a specular texture\n"
+        "Trade::PhongMaterialData::specularTextureLayer(): the material doesn't have a specular texture\n"
         "Trade::MaterialData::attribute(): attribute NormalTexture not found in layer 0\n"
         "Trade::PhongMaterialData::normalTextureScale(): the material doesn't have a normal texture\n"
         "Trade::PhongMaterialData::normalTextureSwizzle(): the material doesn't have a normal texture\n"
         "Trade::PhongMaterialData::normalTextureMatrix(): the material doesn't have a normal texture\n"
-        "Trade::PhongMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture\n");
+        "Trade::PhongMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture\n"
+        "Trade::PhongMaterialData::normalTextureLayer(): the material doesn't have a normal texture\n");
 }
 
-void PhongMaterialDataTest::commonTransformationCoordinatesNoTextures() {
+void PhongMaterialDataTest::commonTransformationCoordinatesLayerNoTextures() {
     PhongMaterialData a{{}, {}};
     CORRADE_VERIFY(a.hasCommonTextureTransformation());
     CORRADE_VERIFY(a.hasCommonTextureCoordinates());
+    CORRADE_VERIFY(a.hasCommonTextureLayer());
     CORRADE_COMPARE(a.commonTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(a.commonTextureCoordinates(), 0);
+    CORRADE_COMPARE(a.commonTextureLayer(), 0);
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /* textureMatrix() should return the common matrix, if possible, and
@@ -511,12 +547,15 @@ void PhongMaterialDataTest::commonTransformationCoordinatesNoTextures() {
 
     PhongMaterialData b{{}, {
         {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
-        {MaterialAttribute::TextureCoordinates, 7u}
+        {MaterialAttribute::TextureCoordinates, 7u},
+        {MaterialAttribute::TextureLayer, 22u},
     }};
     CORRADE_VERIFY(b.hasCommonTextureTransformation());
     CORRADE_VERIFY(b.hasCommonTextureCoordinates());
+    CORRADE_VERIFY(b.hasCommonTextureLayer());
     CORRADE_COMPARE(b.commonTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
     CORRADE_COMPARE(b.commonTextureCoordinates(), 7);
+    CORRADE_COMPARE(b.commonTextureLayer(), 22);
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /* textureMatrix() should return the common matrix, if possible, and
@@ -527,7 +566,7 @@ void PhongMaterialDataTest::commonTransformationCoordinatesNoTextures() {
     #endif
 }
 
-void PhongMaterialDataTest::commonTransformationCoordinatesOneTexture() {
+void PhongMaterialDataTest::commonTransformationCoordinatesLayerOneTexture() {
     Containers::StringView textureName = PhongTextureData[testCaseInstanceId()];
     setTestCaseDescription(textureName);
 
@@ -535,16 +574,20 @@ void PhongMaterialDataTest::commonTransformationCoordinatesOneTexture() {
         {textureName, 5u},
         {textureName + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
         {textureName + "Coordinates", 17u},
+        {textureName + "Layer", 22u},
 
         /* These shouldn't affect the above */
         {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
-        {MaterialAttribute::TextureCoordinates, 3u}
+        {MaterialAttribute::TextureCoordinates, 3u},
+        {MaterialAttribute::TextureLayer, 66u},
     }};
 
     CORRADE_VERIFY(data.hasCommonTextureTransformation());
     CORRADE_COMPARE(data.commonTextureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_VERIFY(data.hasCommonTextureCoordinates());
     CORRADE_COMPARE(data.commonTextureCoordinates(), 17u);
+    CORRADE_VERIFY(data.hasCommonTextureLayer());
+    CORRADE_COMPARE(data.commonTextureLayer(), 22u);
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /* textureMatrix() should return the common matrix, if possible, and
@@ -555,7 +598,7 @@ void PhongMaterialDataTest::commonTransformationCoordinatesOneTexture() {
     #endif
 }
 
-void PhongMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture() {
+void PhongMaterialDataTest::commonTransformationCoordinatesLayerOneDifferentTexture() {
     Containers::StringView textureName = PhongTextureData[testCaseInstanceId()];
     setTestCaseDescription(textureName);
 
@@ -566,15 +609,18 @@ void PhongMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture()
         {MaterialAttribute::NormalTexture, 5u},
         {textureName + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
         {textureName + "Coordinates", 17u},
+        {textureName + "Layer", 22u},
 
         /* These are used by all textures except the one above, failing the
            check */
         {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
-        {MaterialAttribute::TextureCoordinates, 3u}
+        {MaterialAttribute::TextureCoordinates, 3u},
+        {MaterialAttribute::TextureLayer, 66u},
     }};
 
     CORRADE_VERIFY(!data.hasCommonTextureTransformation());
     CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+    CORRADE_VERIFY(!data.hasCommonTextureLayer());
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /* textureMatrix() should return the common matrix, if possible, and
@@ -585,7 +631,7 @@ void PhongMaterialDataTest::commonTransformationCoordinatesOneDifferentTexture()
     #endif
 }
 
-void PhongMaterialDataTest::commonCoordinatesImplicit() {
+void PhongMaterialDataTest::commonCoordinatesLayerImplicit() {
     Containers::StringView textureName = PhongTextureData[testCaseInstanceId()];
     setTestCaseDescription(textureName);
 
@@ -594,16 +640,20 @@ void PhongMaterialDataTest::commonCoordinatesImplicit() {
 
     PhongMaterialData data{{}, {
         {textureName, 5u},
-        {textureName + "Coordinates", 0u}
+        {textureName + "Coordinates", 0u},
+        {textureName + "Layer", 0u}
     }};
 
     /* Zero is treated same as if there would be no attribute at all */
     CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_VERIFY(!data.hasTextureLayer());
     CORRADE_VERIFY(data.hasCommonTextureCoordinates());
+    CORRADE_VERIFY(data.hasCommonTextureLayer());
     CORRADE_COMPARE(data.commonTextureCoordinates(), 0u);
+    CORRADE_COMPARE(data.commonTextureLayer(), 0u);
 }
 
-void PhongMaterialDataTest::noCommonTransformationCoordinates() {
+void PhongMaterialDataTest::noCommonTransformationCoordinatesLayer() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -614,20 +664,24 @@ void PhongMaterialDataTest::noCommonTransformationCoordinates() {
         {MaterialAttribute::DiffuseTextureCoordinates, 3u},
         {MaterialAttribute::SpecularTexture, 4u},
         {MaterialAttribute::SpecularTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+        {MaterialAttribute::SpecularTextureLayer, 22u},
         {MaterialAttribute::NormalTexture, 5u},
         {MaterialAttribute::NormalTextureCoordinates, 17u}
     }};
 
     CORRADE_VERIFY(!data.hasCommonTextureTransformation());
     CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+    CORRADE_VERIFY(!data.hasCommonTextureLayer());
 
     std::ostringstream out;
     Error redirectError{&out};
     data.commonTextureMatrix();
     data.commonTextureCoordinates();
+    data.commonTextureLayer();
     CORRADE_COMPARE(out.str(),
         "Trade::PhongMaterialData::commonTextureMatrix(): the material doesn't have a common texture coordinate transformation\n"
-        "Trade::PhongMaterialData::commonTextureCoordinates(): the material doesn't have a common texture coordinate set\n");
+        "Trade::PhongMaterialData::commonTextureCoordinates(): the material doesn't have a common texture coordinate set\n"
+        "Trade::PhongMaterialData::commonTextureLayer(): the material doesn't have a common array texture layer\n");
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

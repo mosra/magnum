@@ -92,19 +92,23 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @ref MaterialTextureSwizzle::B, and ddditionally
          * @ref MaterialAttribute::RoughnessTextureMatrix and
          * @ref MaterialAttribute::MetalnessTextureMatrix are both either not
-         * present or have the same value, and
+         * present or have the same value,
          * @ref MaterialAttribute::RoughnessTextureCoordinates and
          * @ref MaterialAttribute::MetalnessTextureCoordinates are both either
-         * not present or have the same value; @cpp false @ce otherwise.
+         * not present or have the same value, and
+         * @ref MaterialAttribute::RoughnessTextureLayer and
+         * @ref MaterialAttribute::MetalnessTextureLayer are both either not
+         * present or have the same value; @cpp false @ce otherwise.
          *
          * In other words, if this function returns @cpp true @ce,
-         * @ref roughnessTexture(), @ref roughnessTextureMatrix() and
-         * @ref roughnessTextureCoordinates() return values common for both
-         * metalness and roughness texture, and the two are packed together
-         * with roughness occupying the G channel and metalness the B channel.
-         * This packing is common in glTF metallic/roughness materials, which
-         * in turn is compatible with how UE4 assets are usually packed.
-         * Original rationale for this [can be seen here](https://github.com/KhronosGroup/glTF/issues/857).
+         * @ref roughnessTexture(), @ref roughnessTextureMatrix(),
+         * @ref roughnessTextureCoordinates() and @ref roughnessTextureLayer()
+         * return values common for both metalness and roughness texture, and
+         * the two are packed together with roughness occupying the G channel
+         * and metalness the B channel. This packing is common in glTF
+         * metallic/roughness materials, which in turn is compatible with how
+         * UE4 assets are usually packed. Original rationale for this
+         * [can be seen here](https://github.com/KhronosGroup/glTF/issues/857).
          *
          * The red and alpha channels are ignored and can be repurposed for
          * other maps such as occlusion or transmission. This check is a subset
@@ -131,21 +135,25 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @ref MaterialAttribute::OcclusionTextureMatrix,
          * @ref MaterialAttribute::RoughnessTextureMatrix and
          * @ref MaterialAttribute::MetalnessTextureMatrix are all other not
-         * present or have the same value, and
+         * present or have the same value,
          * @ref MaterialAttribute::OcclusionTextureCoordinates,
          * @ref MaterialAttribute::RoughnessTextureCoordinates and
          * @ref MaterialAttribute::MetalnessTextureCoordinates are all either
-         * not present or have the same value; @cpp false @ce otherwise.
+         * not present or have the same value, and
+         * @ref MaterialAttribute::OcclusionTextureLayer,
+         * @ref MaterialAttribute::RoughnessTextureLayer and
+         * @ref MaterialAttribute::MetalnessTextureLayer are all either not
+         * present or have the same value; @cpp false @ce otherwise.
          *
          * In other words, if this function returns @cpp true @ce,
-         * @ref occlusionTexture(), @ref occlusionTextureMatrix() and
-         * @ref occlusionTextureCoordinates() return values common for
-         * occlusion, roughness and metalness textures, and the three are
-         * packed together with occlusion occupying the R channel, roughness
-         * the G channel and metalness the B channel. This packing is common in
-         * glTF metallic/roughness materials, which in turn is compatible with
-         * how UE4 assets are usually packed. Original rationale for this [can
-         * be seen here](https://github.com/KhronosGroup/glTF/issues/857),
+         * @ref occlusionTexture(), @ref occlusionTextureMatrix(),
+         * @ref occlusionTextureCoordinates() and @ref occlusionTextureLayer()
+         * return values common for occlusion, roughness and metalness
+         * textures, and the three are packed together with occlusion occupying
+         * the R channel, roughness the G channel and metalness the B channel.
+         * This packing is common in glTF metallic/roughness materials, which
+         * in turn is compatible with how UE4 assets are usually packed.
+         * Original rationale for this [can be seen here](https://github.com/KhronosGroup/glTF/issues/857),
          * there's also a [MSFT_packing_occlusionRoughnessMetallic](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/MSFT_packing_occlusionRoughnessMetallic/README.md)
          * glTF extension using this packing in a more explicit way.
          *
@@ -175,19 +183,23 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @ref MaterialAttribute::RoughnessTextureMatrix,
          * @ref MaterialAttribute::MetalnessTextureMatrix and
          * @ref MaterialAttribute::OcclusionTextureMatrix are all other not
-         * present or have the same value, and
+         * present or have the same value,
          * @ref MaterialAttribute::RoughnessTextureCoordinates,
          * @ref MaterialAttribute::MetalnessTextureCoordinates and
          * @ref MaterialAttribute::OcclusionTextureCoordinates are all either
-         * not present or have the same value; @cpp false @ce otherwise.
+         * not present or have the same value, and
+         * @ref MaterialAttribute::RoughnessTextureLayer,
+         * @ref MaterialAttribute::MetalnessTextureLayer and
+         * @ref MaterialAttribute::OcclusionTextureLayer are all either not
+         * present or have the same value; @cpp false @ce otherwise.
          *
          * In other words, if this function returns @cpp true @ce,
-         * @ref roughnessTexture(), @ref roughnessTextureMatrix() and
-         * @ref roughnessTextureCoordinates() return values common for
-         * roughness, metalness and occlusion textures, and the three are
-         * packed together with roughness occupying the R channel, metalness
-         * the G channel and occlusion the B channel. This check is present in
-         * order to provide support for the [MSFT_packing_occlusionRoughnessMetallic](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/MSFT_packing_occlusionRoughnessMetallic/README.md)
+         * @ref roughnessTexture(), @ref roughnessTextureMatrix(),
+         * @ref roughnessTextureCoordinates() and @ref roughnessTextureLayer()
+         * return values common for roughness, metalness and occlusion
+         * textures, and the three are packed together with roughness occupying
+         * the R channel, metalness the G channel and occlusion the B channel.
+         * This check is present in order to provide support for the [MSFT_packing_occlusionRoughnessMetallic](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/MSFT_packing_occlusionRoughnessMetallic/README.md)
          * glTF extension.
          *
          * The alpha channel is ignored and can be repurposed for other maps
@@ -214,19 +226,24 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @ref MaterialAttribute::NormalTextureMatrix,
          * @ref MaterialAttribute::RoughnessTextureMatrix and
          * @ref MaterialAttribute::MetalnessTextureMatrix are all other not
-         * present or have the same value, and
+         * present or have the same value,
          * @ref MaterialAttribute::NormalTextureCoordinates,
          * @ref MaterialAttribute::RoughnessTextureCoordinates and
          * @ref MaterialAttribute::MetalnessTextureCoordinates are all either
-         * not present or have the same value; @cpp false @ce otherwise.
+         * not present or have the same value, and
+         * @ref MaterialAttribute::NormalTextureLayer,
+         * @ref MaterialAttribute::RoughnessTextureLayer and
+         * @ref MaterialAttribute::MetalnessTextureLayer are all either not
+         * present or have the same value; @cpp false @ce otherwise.
          *
          * In other words, if this function returns @cpp true @ce,
-         * @ref normalTexture(), @ref normalTextureMatrix() and
-         * @ref normalTextureCoordinates() return values common for normal,
-         * roughness and metalness textures, and the three are packed together
-         * with normals occupying the RG channel, roughness the B channel and
-         * metalness the A channel. This check is present in order to provide
-         * support for the [MSFT_packing_normalRoughnessMetallic](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/MSFT_packing_normalRoughnessMetallic/README.md)
+         * @ref normalTexture(), @ref normalTextureMatrix(),
+         * @ref normalTextureCoordinates() and @ref normalTextureLayer() return
+         * values common for normal, roughness and metalness textures, and the
+         * three are packed together with normals occupying the RG channel,
+         * roughness the B channel and metalness the A channel. This check is
+         * present in order to provide support for the
+         * [MSFT_packing_normalRoughnessMetallic](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/MSFT_packing_normalRoughnessMetallic/README.md)
          * glTF extension.
          *
          * @see @ref hasMetalnessTexture(), @ref hasRoughnessTexture(),
@@ -298,6 +315,36 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
         bool hasCommonTextureCoordinates() const;
 
         /**
+         * @brief Whether the material uses array texture layers
+         *
+         * Returns @cpp true @ce if any of the
+         * @ref MaterialAttribute::BaseColorTextureLayer,
+         * @ref MaterialAttribute::MetalnessTextureLayer,
+         * @ref MaterialAttribute::RoughnessTextureLayer,
+         * @ref MaterialAttribute::NormalTextureLayer,
+         * @ref MaterialAttribute::OcclusionTextureLayer,
+         * @ref MaterialAttribute::EmissiveTextureLayer or
+         * @ref MaterialAttribute::TextureLayer attributes is present and has a
+         * non-zero value, @cpp false @ce otherwise.
+         * @see @ref hasCommonTextureLayer()
+         */
+        bool hasTextureLayer() const;
+
+        /**
+         * @brief Whether the material has a common array texture layer for all textures
+         *
+         * Returns @cpp true @ce if, for each texture that is present,
+         * @ref baseColorTextureLayer(), @ref metalnessTextureLayer(),
+         * @ref roughnessTextureLayer(), @ref normalTextureLayer(),
+         * @ref occlusionTextureLayer() and @ref emissiveTextureLayer() have
+         * the same value, @cpp false @ce otherwise. In particular, returns
+         * @cpp true @ce also if there's no array texture layer used at all.
+         * Use @ref hasTextureLayer() to distinguish that case.
+         * @see @ref commonTextureLayer()
+         */
+        bool hasCommonTextureLayer() const;
+
+        /**
          * @brief Base color
          *
          * Convenience access to the @ref MaterialAttribute::BaseColor
@@ -338,6 +385,17 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @see @ref hasAttribute()
          */
         UnsignedInt baseColorTextureCoordinates() const;
+
+        /**
+         * @brief Base color array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::BaseColorTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has @ref MaterialAttribute::BaseColorTexture.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt baseColorTextureLayer() const;
 
         /**
          * @brief Metalness factor
@@ -396,6 +454,17 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
         UnsignedInt metalnessTextureCoordinates() const;
 
         /**
+         * @brief Metalness array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::MetalnessTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has a metalness texture.
+         * @see @ref hasMetalnessTexture()
+         */
+        UnsignedInt metalnessTextureLayer() const;
+
+        /**
          * @brief Roughness factor
          *
          * Convenience access to the @ref MaterialAttribute::Roughness
@@ -452,6 +521,17 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
         UnsignedInt roughnessTextureCoordinates() const;
 
         /**
+         * @brief Roughness array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::RoughnessTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has a roughness texture.
+         * @see @ref hasRoughnessTexture()
+         */
+        UnsignedInt roughnessTextureLayer() const;
+
+        /**
          * @brief Normal texture ID
          *
          * Available only if @ref MaterialAttribute::NormalTexture is present.
@@ -502,6 +582,17 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @see @ref hasAttribute()
          */
         UnsignedInt normalTextureCoordinates() const;
+
+        /**
+         * @brief Normal array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::NormalTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has @ref MaterialAttribute::NormalTexture.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt normalTextureLayer() const;
 
         /**
          * @brief Occlusion texture ID
@@ -556,6 +647,17 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
         UnsignedInt occlusionTextureCoordinates() const;
 
         /**
+         * @brief Occlusion array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::OcclusionTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has @ref MaterialAttribute::OcclusionTexture.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt occlusionTextureLayer() const;
+
+        /**
          * @brief Emissive color
          *
          * Convenience access to the @ref MaterialAttribute::EmissiveColor
@@ -601,6 +703,17 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
         UnsignedInt emissiveTextureCoordinates() const;
 
         /**
+         * @brief Emissive array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::EmissiveTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes. If neither is
+         * present, the default is @cpp 0 @ce. Available only if the material
+         * has @ref MaterialAttribute::EmissiveTexture.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt emissiveTextureLayer() const;
+
+        /**
          * @brief Common texture coordinate transformation matrix for all textures
          *
          * Expects that @ref hasCommonTextureTransformation() is @cpp true @ce;
@@ -625,6 +738,18 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @cpp 0 @ce.
          */
         UnsignedInt commonTextureCoordinates() const;
+
+        /**
+         * @brief Common array texture layer for all textures
+         *
+         * Expects that @ref hasCommonTextureLayer() is @cpp true @ce; returns
+         * a layer that's the same for all of @ref baseColorTextureLayer(),
+         * @ref metalnessTextureLayer(), @ref roughnessTextureLayer(),
+         * @ref normalTextureLayer(), @ref occlusionTextureLayer() and
+         * @ref emissiveTextureLayer() where a texture is present. If no
+         * texture is present, returns @cpp 0 @ce.
+         */
+        UnsignedInt commonTextureLayer() const;
 };
 
 }}

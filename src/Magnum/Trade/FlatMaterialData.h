@@ -103,6 +103,21 @@ class MAGNUM_TRADE_EXPORT FlatMaterialData: public MaterialData {
         bool hasTextureCoordinates() const;
 
         /**
+         * @brief Whether the material uses array texture layers
+         *
+         * Returns @cpp true @ce if the material is textured and a
+         * @ref MaterialAttribute::BaseColorTextureLayer,
+         * @ref MaterialAttribute::DiffuseTextureLayer or
+         * @ref MaterialAttribute::TextureLayer attribute matching the texture
+         * is present and has a non-zero value, @cpp false @ce otherwise. In
+         * particular, if there's for example a
+         * @ref MaterialAttribute::BaseColorTexture but only a
+         * @ref MaterialAttribute::DiffuseTextureLayer, returns @cpp false @ce.
+         * @see @ref textureLayer()
+         */
+        bool hasTextureLayer() const;
+
+        /**
          * @brief Color
          *
          * Convenience access to the @ref MaterialAttribute::BaseColor /
@@ -156,6 +171,21 @@ class MAGNUM_TRADE_EXPORT FlatMaterialData: public MaterialData {
          * @see @ref hasTexture()
          */
         UnsignedInt textureCoordinates() const;
+
+        /**
+         * @brief Array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::DiffuseTextureLayer
+         * / @ref MaterialAttribute::BaseColorTextureLayer /
+         * @ref MaterialAttribute::TextureLayer attributes, picking the one
+         * matching the texture (instead of combining e.g. a
+         * @ref MaterialAttribute::BaseColorTexture with
+         * @ref MaterialAttribute::DiffuseTextureLayer). If no matching
+         * attribute is present, the default is @cpp 0 @ce. Available only if
+         * the material has a texture.
+         * @see @ref hasTexture()
+         */
+        UnsignedInt textureLayer() const;
 };
 
 }}

@@ -491,6 +491,39 @@ UnsignedInt MaterialData::layerFactorTextureCoordinates(const MaterialLayer laye
     return layerFactorTextureCoordinates(string);
 }
 
+UnsignedInt MaterialData::layerFactorTextureLayer(const UnsignedInt layer) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::layerFactorTextureLayer(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    CORRADE_ASSERT(hasAttribute(layer, MaterialAttribute::LayerFactorTexture),
+        "Trade::MaterialData::layerFactorTextureLayer(): layer" << layer << "doesn't have a factor texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(layer, MaterialAttribute::LayerFactorTextureLayer))
+        return *value;
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(layer, MaterialAttribute::TextureLayer))
+        return *value;
+    return attributeOr(0, MaterialAttribute::TextureLayer, 0u);
+}
+
+UnsignedInt MaterialData::layerFactorTextureLayer(const Containers::StringView layer) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::layerFactorTextureLayer(): layer" << layer << "not found", {});
+    CORRADE_ASSERT(hasAttribute(layerId, MaterialAttribute::LayerFactorTexture),
+        "Trade::MaterialData::layerFactorTextureLayer(): layer" << layer << "doesn't have a factor texture", {});
+    /* Not delegating into layerFactorTextureLayer() because we have a
+       different variant of the assert here */
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(layerId, MaterialAttribute::LayerFactorTextureLayer))
+        return *value;
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(layerId, MaterialAttribute::TextureLayer))
+        return *value;
+    return attributeOr(0, MaterialAttribute::TextureLayer, 0u);
+}
+
+UnsignedInt MaterialData::layerFactorTextureLayer(const MaterialLayer layer) const {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string, "Trade::MaterialData::layerFactorTextureLayer(): invalid name" << layer, {});
+    return layerFactorTextureLayer(string);
+}
+
 UnsignedInt MaterialData::attributeCount(const UnsignedInt layer) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::attributeCount(): index" << layer << "out of range for" << layerCount() << "layers", {});

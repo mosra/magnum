@@ -49,6 +49,12 @@ bool FlatMaterialData::hasTextureCoordinates() const {
         attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
+bool FlatMaterialData::hasTextureLayer() const {
+    return (hasAttribute(MaterialAttribute::BaseColorTexture) && attributeOr(MaterialAttribute::BaseColorTextureLayer, 0u)) ||
+        (hasAttribute(MaterialAttribute::DiffuseTexture) && attributeOr(MaterialAttribute::DiffuseTextureLayer, 0u)) ||
+        attributeOr(MaterialAttribute::TextureLayer, 0u);
+}
+
 Color4 FlatMaterialData::color() const {
     /* If the material has a texture, return the color that matches it */
     if(hasAttribute(MaterialAttribute::BaseColorTexture))
@@ -102,6 +108,22 @@ UnsignedInt FlatMaterialData::textureCoordinates() const {
     }
 
     CORRADE_ASSERT_UNREACHABLE("Trade::FlatMaterialData::textureCoordinates(): the material doesn't have a texture", {});
+}
+
+UnsignedInt FlatMaterialData::textureLayer() const {
+    if(hasAttribute(MaterialAttribute::BaseColorTexture)) {
+        if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::BaseColorTextureLayer))
+            return *value;
+        return attributeOr(MaterialAttribute::TextureLayer, 0u);
+    }
+
+    if(hasAttribute(MaterialAttribute::DiffuseTexture)) {
+        if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureLayer))
+            return *value;
+        return attributeOr(MaterialAttribute::TextureLayer, 0u);
+    }
+
+    CORRADE_ASSERT_UNREACHABLE("Trade::FlatMaterialData::textureLayer(): the material doesn't have a texture", {});
 }
 
 }}

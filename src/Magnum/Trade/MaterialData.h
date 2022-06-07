@@ -187,6 +187,16 @@ enum class MaterialAttribute: UnsignedInt {
     AmbientTextureCoordinates,
 
     /**
+     * Ambient texture array layer for Phong materials,
+     * @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
+     * present.
+     * @see @ref PhongMaterialData::ambientTextureLayer()
+     */
+    AmbientTextureLayer,
+
+    /**
      * Diffuse color for Phong or PBR specular/glossiness materials,
      * @ref MaterialAttributeType::Vector4.
      *
@@ -233,6 +243,16 @@ enum class MaterialAttribute: UnsignedInt {
      *      @ref PbrSpecularGlossinessMaterialData::diffuseTextureCoordinates()
      */
     DiffuseTextureCoordinates,
+
+    /**
+     * Diffuse texture array layer for Phong materials,
+     * @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
+     * present.
+     * @see @ref PhongMaterialData::diffuseTextureLayer()
+     */
+    DiffuseTextureLayer,
 
     /**
      * Specular color for Phong or PBR specular/glossiness materials,
@@ -302,6 +322,17 @@ enum class MaterialAttribute: UnsignedInt {
     SpecularTextureCoordinates,
 
     /**
+     * Specular texture array layer for Phong materials,
+     * @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
+     * present.
+     * @see @ref PhongMaterialData::specularTextureLayer(),
+     *      @ref PbrSpecularGlossinessMaterialData::specularTextureLayer()
+     */
+    SpecularTextureLayer,
+
+    /**
      * Shininess value for Phong materials, @ref MaterialAttributeType::Float.
      *
      * @see @ref PhongMaterialData::shininess()
@@ -351,6 +382,17 @@ enum class MaterialAttribute: UnsignedInt {
      *      @ref PbrMetallicRoughnessMaterialData::baseColorTextureCoordinates()
      */
     BaseColorTextureCoordinates,
+
+    /**
+     * Base color texture array layer for PBR metallic/roughness materials,
+     * @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
+     * present.
+     * @see @ref FlatMaterialData::textureLayer(),
+     *      @ref PbrMetallicRoughnessMaterialData::baseColorTextureLayer()
+     */
+    BaseColorTextureLayer,
 
     /**
      * Metalness for PBR metallic/roughness materials,
@@ -417,6 +459,16 @@ enum class MaterialAttribute: UnsignedInt {
     MetalnessTextureCoordinates,
 
     /**
+     * Metalness texture array layer for PBR metallic/roughness materials,
+     * @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
+     * present.
+     * @see @ref PbrMetallicRoughnessMaterialData::metalnessTextureLayer()
+     */
+    MetalnessTextureLayer,
+
+    /**
      * Roughness for PBR metallic/roughness materials,
      * @ref MaterialAttributeType::Float.
      *
@@ -481,6 +533,16 @@ enum class MaterialAttribute: UnsignedInt {
     RoughnessTextureCoordinates,
 
     /**
+     * Roughness texture array layer for PBR metallic/roughness materials,
+     * @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
+     * present.
+     * @see @ref PbrMetallicRoughnessMaterialData::roughnessTextureLayer()
+     */
+    RoughnessTextureLayer,
+
+    /**
      * Combined roughness/metallic texture index for PBR metallic/roughness
      * materials with metalness in the blue channel and roughness in the green
      * channel, @ref MaterialAttributeType::UnsignedInt.
@@ -513,9 +575,10 @@ enum class MaterialAttribute: UnsignedInt {
     NoneRoughnessMetallicTexture,
 
     /* DiffuseColor, DiffuseTexture, DiffuseTextureMatrix,
-       DiffuseTextureCoordinates, SpecularColor, SpecularTexture,
-       SpecularTextureSwizzle, SpecularTextureMatrix,
-       SpecularTextureCoordinates specified above for Phong already */
+       DiffuseTextureCoordinates, DiffuseTextureLayer, SpecularColor,
+       SpecularTexture, SpecularTextureSwizzle, SpecularTextureMatrix,
+       SpecularTextureCoordinates, SpecularTextureLayer specified above for
+       Phong already */
 
     /**
      * Glossiness for PBR specular/glossiness materials,
@@ -576,6 +639,16 @@ enum class MaterialAttribute: UnsignedInt {
      * @see @ref PbrSpecularGlossinessMaterialData::glossinessTextureCoordinates()
      */
     GlossinessTextureCoordinates,
+
+    /**
+     * Metalness texture array layer for PBR specular/glossiness materials,
+     * @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
+     * present.
+     * @see @ref PbrSpecularGlossinessMaterialData::glossinessTextureLayer()
+     */
+    GlossinessTextureLayer,
 
     /**
      * Combined specular/glossiness texture index for PBR specular/glossiness
@@ -688,6 +761,17 @@ enum class MaterialAttribute: UnsignedInt {
     NormalTextureCoordinates,
 
     /**
+     * Normal texture array layer, @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
+     * present.
+     * @see @ref PhongMaterialData::normalTextureLayer(),
+     *      @ref PbrMetallicRoughnessMaterialData::normalTextureLayer(),
+     *      @ref PbrSpecularGlossinessMaterialData::normalTextureLayer()
+     */
+    NormalTextureLayer,
+
+    /**
      * Occlusion texture index,
      * @ref MaterialAttributeType::UnsignedInt.
      *
@@ -755,6 +839,16 @@ enum class MaterialAttribute: UnsignedInt {
     OcclusionTextureCoordinates,
 
     /**
+     * Occlusion texture array layer, @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
+     * present.
+     * @see @ref PbrMetallicRoughnessMaterialData::occlusionTextureLayer(),
+     *      @ref PbrSpecularGlossinessMaterialData::occlusionTextureLayer()
+     */
+    OcclusionTextureLayer,
+
+    /**
      * Emissive color,
      * @ref MaterialAttributeType::Vector3.
      *
@@ -800,6 +894,16 @@ enum class MaterialAttribute: UnsignedInt {
      *      @ref PbrSpecularGlossinessMaterialData::emissiveTextureCoordinates()
      */
     EmissiveTextureCoordinates,
+
+    /**
+     * Emissive texture array layer, @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
+     * present.
+     * @see @ref PbrMetallicRoughnessMaterialData::emissiveTextureLayer(),
+     *      @ref PbrSpecularGlossinessMaterialData::emissiveTextureLayer()
+     */
+    EmissiveTextureLayer,
 
     /**
      * Layer intensity. @ref MaterialAttributeType::Float.
@@ -856,6 +960,17 @@ enum class MaterialAttribute: UnsignedInt {
     LayerFactorTextureCoordinates,
 
     /**
+     * Layer intensity texture array layer,
+     * @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Expected to be contained in additional layers, not the base material.
+     * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
+     * present.
+     * @see @ref MaterialData::layerFactorTextureLayer()
+     */
+    LayerFactorTextureLayer,
+
+    /**
      * Common texture transformation matrix for all textures,
      * @ref MaterialAttributeType::Matrix3x3.
      *
@@ -908,6 +1023,33 @@ enum class MaterialAttribute: UnsignedInt {
      *      @ref FlatMaterialData::textureCoordinates()
      */
     TextureCoordinates,
+
+    /**
+     * Common texture array layer for all textures,
+     * @ref MaterialAttributeType::UnsignedInt.
+     *
+     * @ref MaterialAttribute::AmbientTextureLayer /
+     * @ref MaterialAttribute::DiffuseTextureLayer /
+     * @ref MaterialAttribute::SpecularTextureLayer /
+     * @ref MaterialAttribute::MetalnessTextureLayer /
+     * @ref MaterialAttribute::RoughnessTextureLayer /
+     * @ref MaterialAttribute::GlossinessTextureLayer /
+     * @ref MaterialAttribute::NormalTextureLayer /
+     * @ref MaterialAttribute::OcclusionTextureLayer /
+     * @ref MaterialAttribute::EmissiveTextureLayer /
+     * @ref MaterialAttribute::LayerFactorTextureLayer have a precedence over
+     * this attribute for given texture, if present.
+     * @see @ref PhongMaterialData::hasCommonTextureLayer(),
+     *      @ref PbrMetallicRoughnessMaterialData::hasCommonTextureLayer(),
+     *      @ref PbrSpecularGlossinessMaterialData::hasCommonTextureLayer(),
+     *      @ref PbrClearCoatMaterialData::hasCommonTextureLayer(),
+     *      @ref PhongMaterialData::commonTextureLayer(),
+     *      @ref PbrMetallicRoughnessMaterialData::commonTextureLayer(),
+     *      @ref PbrSpecularGlossinessMaterialData::commonTextureLayer(),
+     *      @ref PbrClearCoatMaterialData::commonTextureLayer(),
+     *      @ref FlatMaterialData::textureLayer()
+     */
+    TextureLayer,
 };
 
 /**
@@ -2051,6 +2193,34 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         UnsignedInt layerFactorTextureCoordinates(Containers::StringView layer) const;
         UnsignedInt layerFactorTextureCoordinates(MaterialLayer layer) const; /**< @overload */
+
+        /**
+         * @brief Factor array texture layer for given layer
+         *
+         * Convenience access to the @ref MaterialAttribute::LayerFactorTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes in given layer or
+         * a @ref MaterialAttribute::TextureLayer attribute in the base
+         * material. If neither is present, the default is @cpp 0 @ce.
+         * Available only if the @ref MaterialAttribute::LayerFactorTexture
+         * attribute is present. The @p layer is expected to be smaller than
+         * @ref layerCount().
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt layerFactorTextureLayer(UnsignedInt layer) const;
+
+        /**
+         * @brief Factor array texture layer for a named layer
+         *
+         * Convenience access to the @ref MaterialAttribute::LayerFactorTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes in given layer or
+         * a @ref MaterialAttribute::TextureLayer attribute in the base
+         * material. If neither is present, the default is @cpp 0 @ce.
+         * Available only if the @ref MaterialAttribute::LayerFactorTexture
+         * attribute is present. The @p layer is expected to exist.
+         * @see @ref hasLayer(), @ref hasAttribute()
+         */
+        UnsignedInt layerFactorTextureLayer(Containers::StringView layer) const;
+        UnsignedInt layerFactorTextureLayer(MaterialLayer layer) const; /**< @overload */
 
         /**
          * @brief Attribute count in given layer

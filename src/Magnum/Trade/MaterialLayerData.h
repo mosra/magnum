@@ -111,6 +111,16 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
         }
 
         /**
+         * @brief Layer factor array texture layer
+         *
+         * Same as calling @ref MaterialData::layerFactorTextureLayer() with
+         * @p layer.
+         */
+        UnsignedInt layerFactorTextureLayer() const {
+            return MaterialData::layerFactorTextureLayer(layer);
+        }
+
+        /**
          * @brief Attribute count in this layer
          *
          * Same as calling @ref MaterialData::attributeCount() with @p layer.
@@ -271,6 +281,7 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
         using MaterialData::layerFactorTextureSwizzle;
         using MaterialData::layerFactorTextureMatrix;
         using MaterialData::layerFactorTextureCoordinates;
+        using MaterialData::layerFactorTextureLayer;
         /* MSVC is so damn unbelievably stupid it's setting my ass on fire.
            https://en.cppreference.com/w/cpp/language/using_declaration says
            that "If the derived class already has a member with the same name,

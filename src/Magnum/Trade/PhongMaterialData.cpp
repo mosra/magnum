@@ -196,6 +196,37 @@ bool PhongMaterialData::hasCommonTextureCoordinates() const {
     return true;
 }
 
+bool PhongMaterialData::hasTextureLayer() const {
+    return attributeOr(MaterialAttribute::AmbientTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::DiffuseTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::SpecularTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::NormalTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::TextureLayer, 0u);
+}
+
+bool PhongMaterialData::hasCommonTextureLayer() const {
+    auto check = [](Containers::Optional<UnsignedInt>& layer, UnsignedInt current) {
+        if(!layer) {
+            layer = current;
+            return true;
+        }
+        return layer == current;
+    };
+
+    Containers::Optional<UnsignedInt> layer;
+    /* First one can't fail */
+    if(hasAttribute(MaterialAttribute::AmbientTexture) && !check(layer, ambientTextureLayer()))
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    if(hasAttribute(MaterialAttribute::DiffuseTexture) && !check(layer, diffuseTextureLayer()))
+        return false;
+    if(hasSpecularTexture() && !check(layer, specularTextureLayer()))
+        return false;
+    if(hasAttribute(MaterialAttribute::NormalTexture) && !check(layer, normalTextureLayer()))
+        return false;
+
+    return true;
+}
+
 Color4 PhongMaterialData::ambientColor() const {
     return attributeOr(MaterialAttribute::AmbientColor,
         hasAttribute(MaterialAttribute::AmbientTexture) ? 0xffffffff_rgbaf : 0x000000ff_rgbaf);
@@ -221,6 +252,14 @@ UnsignedInt PhongMaterialData::ambientTextureCoordinates() const {
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
+UnsignedInt PhongMaterialData::ambientTextureLayer() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::AmbientTexture),
+        "Trade::PhongMaterialData::ambientTextureLayer(): the material doesn't have an ambient texture", {});
+    if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::AmbientTextureLayer))
+        return *set;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
+}
+
 Color4 PhongMaterialData::diffuseColor() const {
     return attributeOr(MaterialAttribute::DiffuseColor, 0xffffffff_rgbaf);
 }
@@ -243,6 +282,14 @@ UnsignedInt PhongMaterialData::diffuseTextureCoordinates() const {
     if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureCoordinates))
         return *set;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
+}
+
+UnsignedInt PhongMaterialData::diffuseTextureLayer() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::DiffuseTexture),
+        "Trade::PhongMaterialData::diffuseTextureLayer(): the material doesn't have a diffuse texture", {});
+    if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureLayer))
+        return *set;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
 
 Color4 PhongMaterialData::specularColor() const {
@@ -284,6 +331,14 @@ UnsignedInt PhongMaterialData::specularTextureCoordinates() const {
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
+UnsignedInt PhongMaterialData::specularTextureLayer() const {
+    CORRADE_ASSERT(hasSpecularTexture(),
+        "Trade::PhongMaterialData::specularTextureLayer(): the material doesn't have a specular texture", {});
+    if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTextureLayer))
+        return *set;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
+}
+
 UnsignedInt PhongMaterialData::normalTexture() const {
     return attribute<UnsignedInt>(MaterialAttribute::NormalTexture);
 }
@@ -314,6 +369,14 @@ UnsignedInt PhongMaterialData::normalTextureCoordinates() const {
     if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureCoordinates))
         return *set;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
+}
+
+UnsignedInt PhongMaterialData::normalTextureLayer() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
+        "Trade::PhongMaterialData::normalTextureLayer(): the material doesn't have a normal texture", {});
+    if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureLayer))
+        return *set;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
 
 Matrix3 PhongMaterialData::commonTextureMatrix() const {
@@ -349,6 +412,20 @@ UnsignedInt PhongMaterialData::commonTextureCoordinates() const {
     if(hasAttribute(MaterialAttribute::NormalTexture))
         return normalTextureCoordinates();
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
+}
+
+UnsignedInt PhongMaterialData::commonTextureLayer() const {
+    CORRADE_ASSERT(hasCommonTextureLayer(),
+        "Trade::PhongMaterialData::commonTextureLayer(): the material doesn't have a common array texture layer", {});
+    if(hasAttribute(MaterialAttribute::AmbientTexture))
+        return ambientTextureLayer();
+    if(hasAttribute(MaterialAttribute::DiffuseTexture))
+        return diffuseTextureLayer();
+    if(hasSpecularTexture())
+        return specularTextureLayer();
+    if(hasAttribute(MaterialAttribute::NormalTexture))
+        return normalTextureLayer();
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
 
 Float PhongMaterialData::shininess() const {

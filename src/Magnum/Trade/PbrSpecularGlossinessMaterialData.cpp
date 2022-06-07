@@ -50,7 +50,8 @@ bool PbrSpecularGlossinessMaterialData::hasSpecularGlossinessTexture() const {
         specularTextureSwizzle() == MaterialTextureSwizzle::RGB &&
         glossinessTextureSwizzle() == MaterialTextureSwizzle::A)) &&
        specularTextureMatrix() == glossinessTextureMatrix() &&
-       specularTextureCoordinates() == glossinessTextureCoordinates();
+       specularTextureCoordinates() == glossinessTextureCoordinates() &&
+       specularTextureLayer() == glossinessTextureLayer();
 }
 
 bool PbrSpecularGlossinessMaterialData::hasTextureTransformation() const {
@@ -127,6 +128,43 @@ bool PbrSpecularGlossinessMaterialData::hasCommonTextureCoordinates() const {
     return true;
 }
 
+bool PbrSpecularGlossinessMaterialData::hasTextureLayer() const {
+    return attributeOr(MaterialAttribute::TextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::DiffuseTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::SpecularTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::GlossinessTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::NormalTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::OcclusionTextureLayer, 0u) ||
+        attributeOr(MaterialAttribute::EmissiveTextureLayer, 0u);
+}
+
+bool PbrSpecularGlossinessMaterialData::hasCommonTextureLayer() const {
+    auto check = [](Containers::Optional<UnsignedInt>& layer, UnsignedInt current) {
+        if(!layer) {
+            layer = current;
+            return true;
+        }
+        return layer == current;
+    };
+
+    Containers::Optional<UnsignedInt> layer;
+    /* First one can't fail */
+    if(hasAttribute(MaterialAttribute::DiffuseTexture) && !check(layer, diffuseTextureLayer()))
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    if(hasSpecularTexture() && !check(layer, specularTextureLayer()))
+        return false;
+    if(hasGlossinessTexture() && !check(layer, glossinessTextureLayer()))
+        return false;
+    if(hasAttribute(MaterialAttribute::NormalTexture) && !check(layer, normalTextureLayer()))
+        return false;
+    if(hasAttribute(MaterialAttribute::OcclusionTexture) && !check(layer, occlusionTextureLayer()))
+        return false;
+    if(hasAttribute(MaterialAttribute::EmissiveTexture) && !check(layer, emissiveTextureLayer()))
+        return false;
+
+    return true;
+}
+
 Color4 PbrSpecularGlossinessMaterialData::diffuseColor() const {
     return attributeOr(MaterialAttribute::DiffuseColor, 0xffffffff_srgbaf);
 }
@@ -149,6 +187,14 @@ UnsignedInt PbrSpecularGlossinessMaterialData::diffuseTextureCoordinates() const
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
+}
+
+UnsignedInt PbrSpecularGlossinessMaterialData::diffuseTextureLayer() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::DiffuseTexture),
+        "Trade::PbrSpecularGlossinessMaterialData::diffuseTextureLayer(): the material doesn't have a diffuse texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureLayer))
+        return *value;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
 
 Color4 PbrSpecularGlossinessMaterialData::specularColor() const {
@@ -190,6 +236,14 @@ UnsignedInt PbrSpecularGlossinessMaterialData::specularTextureCoordinates() cons
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
+UnsignedInt PbrSpecularGlossinessMaterialData::specularTextureLayer() const {
+    CORRADE_ASSERT(hasSpecularTexture(),
+        "Trade::PbrSpecularGlossinessMaterialData::specularTextureLayer(): the material doesn't have a specular texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTextureLayer))
+        return *value;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
+}
+
 Float PbrSpecularGlossinessMaterialData::glossiness() const {
     return attributeOr(MaterialAttribute::Glossiness, 1.0f);
 }
@@ -229,6 +283,14 @@ UnsignedInt PbrSpecularGlossinessMaterialData::glossinessTextureCoordinates() co
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
+UnsignedInt PbrSpecularGlossinessMaterialData::glossinessTextureLayer() const {
+    CORRADE_ASSERT(hasGlossinessTexture(),
+        "Trade::PbrSpecularGlossinessMaterialData::glossinessTextureLayer(): the material doesn't have a glossiness texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::GlossinessTextureLayer))
+        return *value;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
+}
+
 UnsignedInt PbrSpecularGlossinessMaterialData::normalTexture() const {
     return attribute<UnsignedInt>(MaterialAttribute::NormalTexture);
 }
@@ -259,6 +321,14 @@ UnsignedInt PbrSpecularGlossinessMaterialData::normalTextureCoordinates() const 
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
+}
+
+UnsignedInt PbrSpecularGlossinessMaterialData::normalTextureLayer() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
+        "Trade::PbrSpecularGlossinessMaterialData::normalTextureLayer(): the material doesn't have a normal texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureLayer))
+        return *value;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
 
 UnsignedInt PbrSpecularGlossinessMaterialData::occlusionTexture() const {
@@ -293,6 +363,14 @@ UnsignedInt PbrSpecularGlossinessMaterialData::occlusionTextureCoordinates() con
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
+UnsignedInt PbrSpecularGlossinessMaterialData::occlusionTextureLayer() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::OcclusionTexture),
+        "Trade::PbrSpecularGlossinessMaterialData::occlusionTextureLayer(): the material doesn't have an occlusion texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::OcclusionTextureLayer))
+        return *value;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
+}
+
 Color3 PbrSpecularGlossinessMaterialData::emissiveColor() const {
     return attributeOr(MaterialAttribute::EmissiveColor, 0x000000_srgbf);
 }
@@ -315,6 +393,14 @@ UnsignedInt PbrSpecularGlossinessMaterialData::emissiveTextureCoordinates() cons
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::EmissiveTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
+}
+
+UnsignedInt PbrSpecularGlossinessMaterialData::emissiveTextureLayer() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::EmissiveTexture),
+        "Trade::PbrSpecularGlossinessMaterialData::emissiveTextureLayer(): the material doesn't have an emissive texture", {});
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::EmissiveTextureLayer))
+        return *value;
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
 
 Matrix3 PbrSpecularGlossinessMaterialData::commonTextureMatrix() const {
@@ -351,6 +437,24 @@ UnsignedInt PbrSpecularGlossinessMaterialData::commonTextureCoordinates() const 
     if(hasAttribute(MaterialAttribute::EmissiveTexture))
         return emissiveTextureCoordinates();
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
+}
+
+UnsignedInt PbrSpecularGlossinessMaterialData::commonTextureLayer() const {
+    CORRADE_ASSERT(hasCommonTextureLayer(),
+        "Trade::PbrSpecularGlossinessMaterialData::commonTextureLayer(): the material doesn't have a common array texture layer", {});
+    if(hasAttribute(MaterialAttribute::DiffuseTexture))
+        return diffuseTextureLayer();
+    if(hasSpecularTexture())
+        return specularTextureLayer();
+    if(hasGlossinessTexture())
+        return glossinessTextureLayer();
+    if(hasAttribute(MaterialAttribute::NormalTexture))
+        return normalTextureLayer();
+    if(hasAttribute(MaterialAttribute::OcclusionTexture))
+        return occlusionTextureLayer();
+    if(hasAttribute(MaterialAttribute::EmissiveTexture))
+        return emissiveTextureLayer();
+    return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
 
 }}

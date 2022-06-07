@@ -69,17 +69,21 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * @ref MaterialTextureSwizzle::G, and additionally
          * @ref MaterialAttribute::LayerFactorTextureMatrix and
          * @ref MaterialAttribute::RoughnessTextureMatrix are both either not
-         * present or have the same value, and
+         * present or have the same value,
          * @ref MaterialAttribute::LayerFactorTextureCoordinates and
          * @ref MaterialAttribute::RoughnessTextureCoordinates are both either
-         * not present or have the same value; @cpp false @ce otherwise.
+         * not present or have the same value, and
+         * @ref MaterialAttribute::LayerFactorTextureLayer and
+         * @ref MaterialAttribute::RoughnessTextureLayer are both either not
+         * present or have the same value; @cpp false @ce otherwise.
          *
          * In other words, if this function returns @cpp true @ce,
-         * @ref layerFactorTexture(), @ref layerFactorTextureMatrix() and
-         * @ref layerFactorTextureCoordinates() return values common for both
-         * layer factor and roughness texture, and the two are packed together
-         * with layer factor occupying the R channel and roughness the G
-         * channel. This check is present in order to provide support for the
+         * @ref layerFactorTexture(), @ref layerFactorTextureMatrix(),
+         * @ref layerFactorTextureCoordinates() and
+         * @ref layerFactorTextureLayer() return values common for both layer
+         * factor and roughness texture, and the two are packed together with
+         * layer factor occupying the R channel and roughness the G channel.
+         * This check is present in order to provide support for the
          * [KHR_materials_clearcoat](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_clearcoat/README.md)
          * glTF extension.
          * @see @ref hasAttribute()
@@ -143,6 +147,33 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
         bool hasCommonTextureCoordinates() const;
 
         /**
+         * @brief Whether the material uses array texture layers
+         *
+         * Returns @cpp true @ce if any of the
+         * @ref MaterialAttribute::LayerFactorTextureLayer,
+         * @ref MaterialAttribute::RoughnessTextureLayer,
+         * @ref MaterialAttribute::NormalTextureLayer or
+         * @ref MaterialAttribute::TextureLayer attributes are present in this
+         * material or if @ref MaterialAttribute::TextureLayer is present in
+         * the base material, @cpp false @ce otherwise.
+         * @see @ref hasCommonTextureLayer()
+         */
+        bool hasTextureLayer() const;
+
+        /**
+         * @brief Whether the material has a common array texture layer for all textures
+         *
+         * Returns @cpp true @ce if, for each texture that is present,
+         * @ref layerFactorTextureLayer(), @ref roughnessTextureLayer() and
+         * @ref normalTextureLayer() have the same value, @cpp false @ce
+         * otherwise. In particular, returns @cpp true @ce also if there's no
+         * array texture layer used at all. Use @ref hasTextureLayer() to
+         * distinguish that case.
+         * @see @ref commonTextureLayer()
+         */
+        bool hasCommonTextureLayer() const;
+
+        /**
          * @brief Roughness factor
          *
          * Convenience access to the @ref MaterialAttribute::Roughness
@@ -198,6 +229,18 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * @see @ref hasAttribute()
          */
         UnsignedInt roughnessTextureCoordinates() const;
+
+        /**
+         * @brief Roughness array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::RoughnessTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes in this layer or a
+         * @ref MaterialAttribute::TextureLayer attribute in the base material.
+         * If neither is present, the default is @cpp 0 @ce. Available only if
+         * @ref MaterialAttribute::RoughnessTexture is present in this layer.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt roughnessTextureLayer() const;
 
         /**
          * @brief Normal texture ID
@@ -261,6 +304,18 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
         UnsignedInt normalTextureCoordinates() const;
 
         /**
+         * @brief Normal array texture layer
+         *
+         * Convenience access to the @ref MaterialAttribute::NormalTextureLayer
+         * / @ref MaterialAttribute::TextureLayer attributes in this layer or a
+         * @ref MaterialAttribute::TextureLayer attribute in the base material.
+         * If neither is present, the default is @cpp 0 @ce. Available only if
+         * @ref MaterialAttribute::NormalTexture is present in this layer.
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt normalTextureLayer() const;
+
+        /**
          * @brief Common texture coordinate transformation matrix for all textures
          *
          * Expects that @ref hasCommonTextureTransformation() is @cpp true @ce;
@@ -282,6 +337,16 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * texture is present, returns @cpp 0 @ce.
          */
         UnsignedInt commonTextureCoordinates() const;
+
+        /**
+         * @brief Common array texture layer for all textures
+         *
+         * Expects that @ref hasCommonTextureLayer() is @cpp true @ce; returns
+         * a layer that's the same for all of @ref layerFactorTextureLayer(),
+         * @ref roughnessTextureLayer() and @ref normalTextureLayer() where a
+         * texture is present. If no texture is present, returns @cpp 0 @ce.
+         */
+        UnsignedInt commonTextureLayer() const;
 };
 
 }}
