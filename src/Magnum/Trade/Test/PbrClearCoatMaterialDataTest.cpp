@@ -368,8 +368,8 @@ void PbrClearCoatMaterialDataTest::commonTransformationCoordinatesOneTexture() {
 
         {MaterialLayer::ClearCoat},
         {textureName, 5u},
-        {std::string{textureName} + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
-        {std::string{textureName} + "Coordinates", 17u},
+        {textureName + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
+        {textureName + "Coordinates", 17u},
     }, {2, 6}};
 
     CORRADE_VERIFY(data.hasCommonTextureTransformation());
@@ -392,8 +392,8 @@ void PbrClearCoatMaterialDataTest::commonTransformationCoordinatesOneDifferentTe
         {MaterialAttribute::LayerFactorTexture, 2u},
         {MaterialAttribute::RoughnessTexture, 3u},
         {MaterialAttribute::NormalTexture, 5u},
-        {std::string{textureName} + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
-        {std::string{textureName} + "Coordinates", 17u}
+        {textureName + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
+        {textureName + "Coordinates", 17u}
     }, {2, 8}};
 
     CORRADE_VERIFY(!data.hasCommonTextureTransformation());
@@ -410,7 +410,7 @@ void PbrClearCoatMaterialDataTest::commonCoordinatesImplicit() {
     PbrClearCoatMaterialData data{{}, {
         {MaterialLayer::ClearCoat},
         {textureName, 5u},
-        {std::string{textureName} + "Coordinates", 0u}
+        {textureName + "Coordinates", 0u}
     }, {0, 3}};
 
     /* Zero is treated same as if there would be no attribute at all */

@@ -783,8 +783,8 @@ void PbrMetallicRoughnessMaterialDataTest::commonTransformationCoordinatesOneTex
 
     PbrMetallicRoughnessMaterialData data{{}, {
         {textureName, 5u},
-        {std::string{textureName} + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
-        {std::string{textureName} + "Coordinates", 17u},
+        {textureName + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
+        {textureName + "Coordinates", 17u},
 
         /* These shouldn't affect the above */
         {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
@@ -808,8 +808,8 @@ void PbrMetallicRoughnessMaterialDataTest::commonTransformationCoordinatesOneDif
         {MaterialAttribute::NormalTexture, 5u},
         {MaterialAttribute::OcclusionTexture, 6u},
         {MaterialAttribute::EmissiveTexture, 7u},
-        {std::string{textureName} + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
-        {std::string{textureName} + "Coordinates", 17u},
+        {textureName + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
+        {textureName + "Coordinates", 17u},
 
         /* These are used by all textures except the one above, failing the
            check */
@@ -830,7 +830,7 @@ void PbrMetallicRoughnessMaterialDataTest::commonCoordinatesImplicit() {
 
     PbrMetallicRoughnessMaterialData data{{}, {
         {textureName, 5u},
-        {std::string{textureName} + "Coordinates", 0u}
+        {textureName + "Coordinates", 0u}
     }};
 
     /* Zero is treated same as if there would be no attribute at all */
