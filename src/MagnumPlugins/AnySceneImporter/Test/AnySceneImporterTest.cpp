@@ -64,6 +64,9 @@ struct AnySceneImporterTest: TestSuite::Tester {
     void propagateConfigurationUnknown();
     void propagateFileCallback();
 
+    void meshAttributeName();
+    void meshAttributeNameNoFileOpened();
+
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
@@ -108,7 +111,10 @@ AnySceneImporterTest::AnySceneImporterTest() {
               &AnySceneImporterTest::propagateFlags,
               &AnySceneImporterTest::propagateConfiguration,
               &AnySceneImporterTest::propagateConfigurationUnknown,
-              &AnySceneImporterTest::propagateFileCallback});
+              &AnySceneImporterTest::propagateFileCallback,
+
+              &AnySceneImporterTest::meshAttributeName,
+              &AnySceneImporterTest::meshAttributeNameNoFileOpened});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -305,6 +311,31 @@ void AnySceneImporterTest::propagateFileCallback() {
 
     importer->close();
     CORRADE_VERIFY(!importer->isOpened());
+}
+
+void AnySceneImporterTest::meshAttributeName() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "mesh-custom-attribute.gltf")));
+    CORRADE_COMPARE(importer->meshAttributeForName("_TBN"), meshAttributeCustom(2));
+    CORRADE_COMPARE(importer->meshAttributeForName("nonexistent"), MeshAttribute{});
+    CORRADE_COMPARE(importer->meshAttributeName(meshAttributeCustom(2)), "_TBN");
+    CORRADE_COMPARE(importer->meshAttributeName(meshAttributeCustom(3)), "");
+}
+
+void AnySceneImporterTest::meshAttributeNameNoFileOpened() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+
+    CORRADE_COMPARE(importer->meshAttributeForName(""), MeshAttribute{});
+    CORRADE_COMPARE(importer->meshAttributeName(meshAttributeCustom(0)), "");
 }
 
 }}}}

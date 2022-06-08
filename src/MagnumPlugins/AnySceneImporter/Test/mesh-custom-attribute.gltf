@@ -1,0 +1,38 @@
+{
+  "asset": {
+    "version": "2.0"
+  },
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "_TBN": 0
+          }
+        }
+      ]
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5120,
+      "normalized": true,
+      "count": 1,
+      "type": "MAT3"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 36
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 36,
+      "comment": "base64.b64encode(bytes(36))",
+      "uri": "data:application/octet-stream;base64,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    }
+  ]
+}
