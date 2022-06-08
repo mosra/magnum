@@ -592,6 +592,10 @@ See also:
     [mosra/magnum#523](https://github.com/mosra/magnum/issues/523).
 -   `UseEmscripten` is no longer implicitly included on Emscripten as it's not
     needed for anything (see [mosra/magnum#490](https://github.com/mosra/magnum/issues/490))
+-   Fixed an assertion in @relativeref{Trade,AnySceneImporter} when
+    @relativeref{Trade::AbstractImporter,meshAttributeName()} or
+    @relativeref{Trade::AbstractImporter,meshAttributeForName()} was called
+    without a file opened
 -   @ref Trade::ObjImporter "ObjImporter" uses exceptions internally and needs
     an explicit exception-enabling flag when built with Emscripten 1.39.0 and
     newer

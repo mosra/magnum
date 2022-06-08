@@ -146,6 +146,10 @@ Calls to the @ref animation(), @ref scene(), @ref light(), @ref camera(),
 and corresponding count-/name-related functions are then proxied to the
 concrete implementation. The @ref close() function closes and discards the
 internally instantiated plugin; @ref isOpened() works as usual.
+
+While the @ref meshAttributeName() and @ref meshAttributeForName() APIs can
+be called without a file opened, they return an empty string or an invalid
+attribute in that case.
 */
 class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
     public:
