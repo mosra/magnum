@@ -147,9 +147,9 @@ and corresponding count-/name-related functions are then proxied to the
 concrete implementation. The @ref close() function closes and discards the
 internally instantiated plugin; @ref isOpened() works as usual.
 
-While the @ref meshAttributeName() and @ref meshAttributeForName() APIs can
-be called without a file opened, they return an empty string or an invalid
-attribute in that case.
+While the @ref meshAttributeName(), @ref meshAttributeForName(),
+@ref sceneFieldName() and @ref sceneFieldForName() APIs can be called without a
+file opened, they return an empty string or an invalid attribute in that case.
 */
 class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
     public:
@@ -181,6 +181,8 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doSceneName(UnsignedInt id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doObjectName(UnsignedLong id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<SceneData> doScene(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL SceneField doSceneFieldForName(Containers::StringView name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doSceneFieldName(Magnum::UnsignedInt name) override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doLightCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doLightForName(Containers::StringView name) override;

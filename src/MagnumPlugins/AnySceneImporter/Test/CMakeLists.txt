@@ -57,6 +57,7 @@ corrade_add_test(AnySceneImporterTest AnySceneImporterTest.cpp
     FILES
         ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ObjImporter/Test/pointMesh.obj
         mesh-custom-attribute.gltf
+        scene-custom-field.gltf
         triangle.ply)
 target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_ANYSCENEIMPORTER_BUILD_STATIC)

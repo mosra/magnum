@@ -37,6 +37,7 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
+#include "Magnum/Trade/SceneData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
@@ -64,6 +65,8 @@ struct AnySceneImporterTest: TestSuite::Tester {
     void propagateConfigurationUnknown();
     void propagateFileCallback();
 
+    void sceneFieldName();
+    void sceneFieldNameNoFileOpened();
     void meshAttributeName();
     void meshAttributeNameNoFileOpened();
 
@@ -113,6 +116,8 @@ AnySceneImporterTest::AnySceneImporterTest() {
               &AnySceneImporterTest::propagateConfigurationUnknown,
               &AnySceneImporterTest::propagateFileCallback,
 
+              &AnySceneImporterTest::sceneFieldName,
+              &AnySceneImporterTest::sceneFieldNameNoFileOpened,
               &AnySceneImporterTest::meshAttributeName,
               &AnySceneImporterTest::meshAttributeNameNoFileOpened});
 
@@ -311,6 +316,31 @@ void AnySceneImporterTest::propagateFileCallback() {
 
     importer->close();
     CORRADE_VERIFY(!importer->isOpened());
+}
+
+void AnySceneImporterTest::sceneFieldName() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "scene-custom-field.gltf")));
+    CORRADE_COMPARE(importer->sceneFieldForName("radius"), sceneFieldCustom(0));
+    CORRADE_COMPARE(importer->sceneFieldForName("nonexistent"), SceneField{});
+    CORRADE_COMPARE(importer->sceneFieldName(sceneFieldCustom(0)), "radius");
+    CORRADE_COMPARE(importer->sceneFieldName(sceneFieldCustom(3)), "");
+}
+
+void AnySceneImporterTest::sceneFieldNameNoFileOpened() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+
+    CORRADE_COMPARE(importer->sceneFieldForName(""), SceneField{});
+    CORRADE_COMPARE(importer->sceneFieldName(sceneFieldCustom(0)), "");
 }
 
 void AnySceneImporterTest::meshAttributeName() {

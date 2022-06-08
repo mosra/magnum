@@ -192,6 +192,17 @@ Containers::String AnySceneImporter::doSceneName(const UnsignedInt id) { return 
 Containers::String AnySceneImporter::doObjectName(const UnsignedLong id) { return _in->objectName(id); }
 Containers::Optional<SceneData> AnySceneImporter::doScene(const UnsignedInt id) { return _in->scene(id); }
 
+SceneField AnySceneImporter::doSceneFieldForName(const Containers::StringView name) {
+    /* This API can be called even if no file is opened, in that case return
+       an invalid ID */
+    return _in ? _in->sceneFieldForName(name) : SceneField{};
+}
+Containers::String AnySceneImporter::doSceneFieldName(const UnsignedInt name) {
+    /* This API can be called even if no file is opened, in that case return
+       an invalid ID */
+    return _in ? _in->sceneFieldName(sceneFieldCustom(name)) : Containers::String{};
+}
+
 UnsignedInt AnySceneImporter::doLightCount() const { return _in->lightCount(); }
 Int AnySceneImporter::doLightForName(const Containers::StringView name) { return _in->lightForName(name); }
 Containers::String AnySceneImporter::doLightName(const UnsignedInt id) { return _in->lightName(id); }
