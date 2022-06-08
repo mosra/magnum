@@ -276,10 +276,11 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
-    # It crashes with the default setting. Only on GCC, usually when the huge
-    # TradeAbstractImporterTest / TradeMaterialDataTest get involved.
+    # In this case it gets stuck even with 24 jobs. Only on GCC, usually when
+    # the huge TradeAbstractImporterTest / TradeMaterialDataTest get involved.
     # TODO: revisit when we get rid of more STL
-    - cap-ninja-jobs
+    - cap-ninja-jobs:
+        count: 20
     - install-gcc-4_8
     - install-cmake:
         version: "3.4.3"
