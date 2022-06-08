@@ -28,11 +28,11 @@
 set(CMAKE_FOLDER "MagnumPlugins/AnySceneImporter/Test")
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    set(OBJ_FILE pointMesh.obj)
-    set(PLY_FILE triangle.ply)
+    set(OBJIMPORTER_TEST_DIR )
+    set(ANYSCENEIMPORTER_TEST_DIR .)
 else()
-    set(OBJ_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ObjImporter/Test/pointMesh.obj)
-    set(PLY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/triangle.ply)
+    set(ANYSCENEIMPORTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+    set(OBJIMPORTER_TEST_DIR ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ObjImporter/Test)
 endif()
 
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
@@ -55,7 +55,7 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
 corrade_add_test(AnySceneImporterTest AnySceneImporterTest.cpp
     LIBRARIES MagnumTrade
     FILES
-        ../../ObjImporter/Test/pointMesh.obj
+        ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ObjImporter/Test/pointMesh.obj
         triangle.ply)
 target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_ANYSCENEIMPORTER_BUILD_STATIC)

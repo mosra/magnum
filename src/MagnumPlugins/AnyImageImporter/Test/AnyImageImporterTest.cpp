@@ -72,8 +72,8 @@ constexpr struct {
     bool asData;
     const char* messageFunctionName;
 } Load1DData[]{
-    {"KTX2", KTX_1D_FILE, false, "KtxImporter"},
-    {"KTX2 data", KTX_1D_FILE, true, "KtxImporter"},
+    {"KTX2", "1d.ktx2", false, "KtxImporter"},
+    {"KTX2 data", "1d.ktx2", true, "KtxImporter"},
 };
 
 constexpr struct {
@@ -82,8 +82,8 @@ constexpr struct {
     bool asData;
     const char* messageFunctionName;
 } Load2DData[]{
-    {"TGA", TGA_FILE, false, "openFile"},
-    {"TGA data", TGA_FILE, true, "openData"}
+    {"TGA", "rgb.tga", false, "openFile"},
+    {"TGA data", "rgb.tga", true, "openData"}
 };
 
 constexpr struct {
@@ -92,8 +92,8 @@ constexpr struct {
     bool asData;
     const char* messageFunctionName;
 } Load3DData[]{
-    {"KTX2", KTX_3D_FILE, false, "KtxImporter"},
-    {"KTX2 data", KTX_3D_FILE, true, "KtxImporter"},
+    {"KTX2", "3d.ktx2", false, "KtxImporter"},
+    {"KTX2 data", "3d.ktx2", true, "KtxImporter"},
 };
 
 constexpr struct {
@@ -156,8 +156,8 @@ constexpr struct {
     const char* filename;
     bool asData;
 } PropagateConfigurationData[]{
-    {"EXR", EXR_FILE, false},
-    {"EXR data", EXR_FILE, true}
+    {"EXR", "depth32f-custom-channels.exr", false},
+    {"EXR data", "depth32f-custom-channels.exr", true}
 };
 
 AnyImageImporterTest::AnyImageImporterTest() {
@@ -218,10 +218,10 @@ void AnyImageImporterTest::load1D() {
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
 
     if(data.asData) {
-        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(data.filename);
+        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename));
         CORRADE_VERIFY(read);
         CORRADE_VERIFY(importer->openData(*read));
-    } else CORRADE_VERIFY(importer->openFile(data.filename));
+    } else CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename)));
     CORRADE_COMPARE(importer->image1DCount(), 1);
 
     /* Check only size, as it is good enough proof that it is working */
@@ -240,10 +240,10 @@ void AnyImageImporterTest::load2D() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
 
     if(data.asData) {
-        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(data.filename);
+        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename));
         CORRADE_VERIFY(read);
         CORRADE_VERIFY(importer->openData(*read));
-    } else CORRADE_VERIFY(importer->openFile(data.filename));
+    } else CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename)));
     CORRADE_COMPARE(importer->image2DCount(), 1);
 
     /* Check only size, as it is good enough proof that it is working */
@@ -271,10 +271,10 @@ void AnyImageImporterTest::load3D() {
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
 
     if(data.asData) {
-        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(data.filename);
+        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename));
         CORRADE_VERIFY(read);
         CORRADE_VERIFY(importer->openData(*read));
-    } else CORRADE_VERIFY(importer->openFile(data.filename));
+    } else CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename)));
     CORRADE_COMPARE(importer->image3DCount(), 1);
 
     /* Check only size, as it is good enough proof that it is working */
@@ -288,7 +288,7 @@ void AnyImageImporterTest::detect() {
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
-    Containers::String filename = Utility::Path::join(TEST_FILE_DIR, data.filename);
+    Containers::String filename = Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename);
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -354,10 +354,10 @@ void AnyImageImporterTest::propagateFlags() {
     {
         Debug redirectOutput{&out};
         if(data.asData) {
-            Containers::Optional<Containers::Array<char>> read = Utility::Path::read(data.filename);
+            Containers::Optional<Containers::Array<char>> read = Utility::Path::read(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename));
             CORRADE_VERIFY(read);
             CORRADE_VERIFY(importer->openData(*read));
-        } else CORRADE_VERIFY(importer->openFile(data.filename));
+        } else CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename)));
         CORRADE_VERIFY(importer->image2D(0));
     }
     CORRADE_COMPARE(out.str(), Utility::formatString(
@@ -384,10 +384,10 @@ void AnyImageImporterTest::propagateConfiguration() {
     importer->configuration().setValue("depth", "height");
 
     if(data.asData) {
-        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(data.filename);
+        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename));
         CORRADE_VERIFY(read);
         CORRADE_VERIFY(importer->openData(*read));
-    } else CORRADE_VERIFY(importer->openFile(data.filename));
+    } else CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename)));
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
 
@@ -414,10 +414,10 @@ void AnyImageImporterTest::propagateConfigurationUnknown() {
     std::ostringstream out;
     Warning redirectWarning{&out};
     if(data.asData) {
-        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(data.filename);
+        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename));
         CORRADE_VERIFY(read);
         CORRADE_VERIFY(importer->openData(*read));
-    } else CORRADE_VERIFY(importer->openFile(data.filename));
+    } else CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename)));
     CORRADE_COMPARE(out.str(), Utility::formatString("Trade::AnyImageImporter::{}(): option noSuchOption not recognized by TgaImporter\n", data.messageFunctionName));
 }
 
@@ -429,7 +429,7 @@ void AnyImageImporterTest::propagateFileCallback() {
 
     Containers::Array<char> storage;
     importer->setFileCallback([](const std::string&, InputFileCallbackPolicy, Containers::Array<char>& storage) -> Containers::Optional<Containers::ArrayView<const char>> {
-        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(TGA_FILE);
+        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "rgb.tga"));
         CORRADE_VERIFY(data);
         storage = *std::move(data);
         return Containers::ArrayView<const char>{storage};

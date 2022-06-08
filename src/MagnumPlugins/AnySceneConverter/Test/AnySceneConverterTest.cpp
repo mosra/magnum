@@ -118,7 +118,7 @@ void AnySceneConverterTest::convert() {
     CORRADE_VERIFY(converter->convertToFile(mesh, filename));
     /* This file is reused in AnySceneImporter tests, so it's worth to save it
        here */
-    CORRADE_COMPARE_AS(filename, PLY_FILE, TestSuite::Compare::File);
+    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "triangle.ply"), TestSuite::Compare::File);
 }
 
 void AnySceneConverterTest::detect() {
@@ -218,7 +218,7 @@ void AnySceneConverterTest::propagateConfiguration() {
     CORRADE_VERIFY(converter->convertToFile(mesh, filename));
     /* Compare to an expected output to ensure the custom attribute name was
        used */
-    CORRADE_COMPARE_AS(filename, PLY_OBJECTID_FILE, TestSuite::Compare::File);
+    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYSCENECONVERTER_TEST_DIR, "objectid.ply"), TestSuite::Compare::File);
 }
 
 void AnySceneConverterTest::propagateConfigurationUnknown() {

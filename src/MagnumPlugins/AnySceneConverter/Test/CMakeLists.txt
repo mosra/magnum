@@ -28,13 +28,13 @@
 set(CMAKE_FOLDER "MagnumPlugins/AnySceneConverter/Test")
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(ANYSCENECONVERTER_TEST_DIR .)
     set(ANYSCENECONVERTER_TEST_OUTPUT_DIR "write")
-    set(PLY_FILE triangle.ply)
-    set(PLY_OBJECTID_FILE objectid.ply)
+    set(ANYSCENEIMPORTER_TEST_DIR .)
 else()
+    set(ANYSCENECONVERTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     set(ANYSCENECONVERTER_TEST_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-    set(PLY_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnySceneImporter/Test/triangle.ply)
-    set(PLY_OBJECTID_FILE ${CMAKE_CURRENT_SOURCE_DIR}/objectid.ply)
+    set(ANYSCENEIMPORTER_TEST_DIR ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnySceneImporter/Test)
 endif()
 
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
@@ -57,7 +57,7 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
 corrade_add_test(AnySceneConverterTest AnySceneConverterTest.cpp
     LIBRARIES MagnumTrade
     FILES
-        ../../AnySceneImporter/Test/triangle.ply
+        ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnySceneImporter/Test/triangle.ply
         objectid.ply)
 target_include_directories(AnySceneConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_ANYSCENECONVERTER_BUILD_STATIC)

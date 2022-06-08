@@ -446,7 +446,7 @@ void AnyImageConverterTest::convert1D() {
     /* Compare to an expected output to ensure we actually saved the file
        including the metadata. This also doubles as a generator for the 1d.ktx2
        file that AnyImageImporterTest uses. */
-    CORRADE_COMPARE_AS(filename, KTX_1D_FILE, TestSuite::Compare::File);
+    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "1d.ktx2"), TestSuite::Compare::File);
 }
 
 void AnyImageConverterTest::convert2D() {
@@ -482,7 +482,7 @@ void AnyImageConverterTest::convert3D() {
     /* Compare to an expected output to ensure we actually saved the file
        including the metadata. This also doubles as a generator for the
        3d.exr file that AnyImageImporterTest uses. */
-    CORRADE_COMPARE_AS(filename, KTX_3D_FILE, TestSuite::Compare::File);
+    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "3d.ktx2"), TestSuite::Compare::File);
 }
 
 void AnyImageConverterTest::convertCompressed1D() {
@@ -1278,7 +1278,7 @@ void AnyImageConverterTest::propagateConfiguration2D() {
     /* Compare to an expected output to ensure the custom channels names were
        used. This also doubles as a generator for the
        depth32f-custom-channels.exr file that AnyImageImporterTest uses. */
-    CORRADE_COMPARE_AS(filename, EXR_FILE, TestSuite::Compare::File);
+    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "depth32f-custom-channels.exr"), TestSuite::Compare::File);
 }
 
 void AnyImageConverterTest::propagateConfiguration3D() {

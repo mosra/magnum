@@ -28,17 +28,9 @@
 set(CMAKE_FOLDER "MagnumPlugins/AnyImageImporter/Test")
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    set(TEST_FILE_DIR .)
-    set(TGA_FILE rgb.tga)
-    set(KTX_1D_FILE 1d.ktx2)
-    set(KTX_3D_FILE 3d.ktx2)
-    set(EXR_FILE depth32f-custom-channels.exr)
+    set(ANYIMAGEIMPORTER_TEST_DIR .)
 else()
-    set(TEST_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-    set(TGA_FILE ${CMAKE_CURRENT_SOURCE_DIR}/rgb.tga)
-    set(KTX_1D_FILE ${CMAKE_CURRENT_SOURCE_DIR}/1d.ktx2)
-    set(KTX_3D_FILE ${CMAKE_CURRENT_SOURCE_DIR}/3d.ktx2)
-    set(EXR_FILE ${CMAKE_CURRENT_SOURCE_DIR}/depth32f-custom-channels.exr)
+    set(ANYIMAGEIMPORTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see

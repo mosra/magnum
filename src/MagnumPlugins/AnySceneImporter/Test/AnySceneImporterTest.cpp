@@ -68,11 +68,11 @@ struct AnySceneImporterTest: TestSuite::Tester {
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
 
-constexpr struct {
+const struct {
     const char* name;
-    const char* filename;
+    Containers::String filename;
 } LoadData[]{
-    {"OBJ", OBJ_FILE},
+    {"OBJ", Utility::Path::join(OBJIMPORTER_TEST_DIR, "pointMesh.obj")},
 };
 
 constexpr struct {
@@ -146,7 +146,7 @@ void AnySceneImporterTest::loadDeprecatedMeshData() {
         CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
-    CORRADE_VERIFY(importer->openFile(OBJ_FILE));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, "pointMesh.obj")));
 
     /* Check only size, as it is good enough proof that it is working */
 
@@ -202,19 +202,21 @@ void AnySceneImporterTest::propagateFlags() {
     /* Ensure Assimp is used for PLY files and not our StanfordImporter */
     manager.setPreferredPlugins("StanfordImporter", {"AssimpImporter"});
 
+    Containers::String filename = Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "triangle.ply");
+
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
     importer->setFlags(ImporterFlag::Verbose);
 
     std::ostringstream out;
     {
         Debug redirectOutput{&out};
-        CORRADE_VERIFY(importer->openFile(PLY_FILE));
+        CORRADE_VERIFY(importer->openFile(filename));
         CORRADE_VERIFY(importer->mesh(0));
     }
 
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out.str(), Utility::formatString(
         "Trade::AnySceneImporter::openFile(): using StanfordImporter (provided by AssimpImporter)\n"
-        "Trade::AssimpImporter: Info,  T0: Load " PLY_FILE "\n",
+        "Trade::AssimpImporter: Info,  T0: Load {}\n", filename),
         TestSuite::Compare::StringHasPrefix);
 }
 
@@ -229,17 +231,19 @@ void AnySceneImporterTest::propagateConfiguration() {
     /* Ensure Assimp is used for PLY files and not our StanfordImporter */
     manager.setPreferredPlugins("StanfordImporter", {"AssimpImporter"});
 
+    Containers::String filename = Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "triangle.ply");
+
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
 
     {
-        CORRADE_VERIFY(importer->openFile(PLY_FILE));
+        CORRADE_VERIFY(importer->openFile(filename));
 
         Containers::Optional<Trade::MeshData> mesh = importer->mesh(0);
         CORRADE_VERIFY(mesh);
         CORRADE_VERIFY(!mesh->hasAttribute(Trade::MeshAttribute::Normal));
     } {
         importer->configuration().addGroup("postprocess")->setValue("GenNormals", true);
-        CORRADE_VERIFY(importer->openFile(PLY_FILE));
+        CORRADE_VERIFY(importer->openFile(filename));
 
         Containers::Optional<Trade::MeshData> mesh = importer->mesh(0);
         CORRADE_VERIFY(mesh);
@@ -268,7 +272,7 @@ void AnySceneImporterTest::propagateConfigurationUnknown() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(importer->openFile(PLY_FILE));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "triangle.ply")));
     CORRADE_COMPARE(out.str(),
         "Trade::AnySceneImporter::openFile(): option noSuchOption not recognized by AssimpImporter\n"
         "Trade::AnySceneImporter::openFile(): option postprocess/notHere not recognized by AssimpImporter\n"
@@ -283,7 +287,7 @@ void AnySceneImporterTest::propagateFileCallback() {
 
     Containers::Array<char> storage;
     importer->setFileCallback([](const std::string&, InputFileCallbackPolicy, Containers::Array<char>& storage) -> Containers::Optional<Containers::ArrayView<const char>> {
-        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(OBJ_FILE);
+        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(OBJIMPORTER_TEST_DIR, "pointMesh.obj"));
         CORRADE_VERIFY(data);
         storage = *std::move(data);
         return Containers::ArrayView<const char>{storage};

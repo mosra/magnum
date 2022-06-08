@@ -28,9 +28,9 @@
 set(CMAKE_FOLDER "MagnumPlugins/AnyAudioImporter/Test")
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    set(WAV_FILE stereo8.wav)
+    set(WAVAUDIOIMPORTER_TEST_DIR .)
 else()
-    set(WAV_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/WavAudioImporter/Test/stereo8.wav)
+    set(WAVAUDIOIMPORTER_TEST_DIR ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/WavAudioImporter/Test)
 endif()
 
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
@@ -53,7 +53,7 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
 corrade_add_test(AnyAudioImporterTest AnyAudioImporterTest.cpp
     LIBRARIES MagnumAudio
     FILES
-        ../../WavAudioImporter/Test/stereo8.wav)
+        ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/WavAudioImporter/Test/stereo8.wav)
 target_include_directories(AnyAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_ANYAUDIOIMPORTER_BUILD_STATIC)
     target_link_libraries(AnyAudioImporterTest PRIVATE AnyAudioImporter)

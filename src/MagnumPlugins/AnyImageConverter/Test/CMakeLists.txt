@@ -34,14 +34,10 @@ find_package(Threads REQUIRED)
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(ANYIMAGECONVERTER_TEST_OUTPUT_DIR "write")
-    set(KTX_1D_FILE 1d.ktx2)
-    set(KTX_3D_FILE 3d.ktx2)
-    set(EXR_FILE depth32f-custom-channels.exr)
+    set(ANYIMAGEIMPORTER_TEST_DIR .)
 else()
     set(ANYIMAGECONVERTER_TEST_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-    set(KTX_1D_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnyImageImporter/Test/1d.ktx2)
-    set(KTX_3D_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnyImageImporter/Test/3d.ktx2)
-    set(EXR_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnyImageImporter/Test/depth32f-custom-channels.exr)
+    set(ANYIMAGEIMPORTER_TEST_DIR ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnyImageImporter/Test)
 endif()
 
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
@@ -69,9 +65,9 @@ corrade_add_test(AnyImageConverterTest AnyImageConverterTest.cpp
         # now
         Threads::Threads
     FILES
-        ../../AnyImageImporter/Test/1d.ktx2
-        ../../AnyImageImporter/Test/3d.ktx2
-        ../../AnyImageImporter/Test/depth32f-custom-channels.exr)
+        ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnyImageImporter/Test/1d.ktx2
+        ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnyImageImporter/Test/3d.ktx2
+        ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnyImageImporter/Test/depth32f-custom-channels.exr)
 target_include_directories(AnyImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_ANYIMAGECONVERTER_BUILD_STATIC)
     target_link_libraries(AnyImageConverterTest PRIVATE AnyImageConverter)

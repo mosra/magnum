@@ -30,6 +30,7 @@
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Path.h>
 
 #include "Magnum/Audio/AbstractImporter.h"
 
@@ -52,11 +53,11 @@ struct AnyImporterTest: TestSuite::Tester {
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
 
-constexpr struct {
+const struct {
     const char* name;
-    const char* filename;
+    Containers::String filename;
 } LoadData[]{
-    {"WAV", WAV_FILE}
+    {"WAV", Utility::Path::join(WAVAUDIOIMPORTER_TEST_DIR, "stereo8.wav")}
 };
 
 constexpr struct {
@@ -153,7 +154,7 @@ void AnyImporterTest::propagateConfigurationUnknown() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(importer->openFile(WAV_FILE));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(WAVAUDIOIMPORTER_TEST_DIR, "stereo8.wav")));
     CORRADE_COMPARE(out.str(), "Audio::AnyImporter::openFile(): option noSuchOption not recognized by WavAudioImporter\n");
 }
 
