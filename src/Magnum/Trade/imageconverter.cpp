@@ -864,6 +864,10 @@ key=true; configuration subgroups are delimited with /.)")
         (outputDimensions == 1 && outputImages1D.front().isCompressed()) ||
         (outputDimensions == 2 && outputImages2D.front().isCompressed()) ||
         (outputDimensions == 3 && outputImages3D.front().isCompressed());
+    const bool outputIsMultiLevel =
+        outputImages1D.size() > 1 ||
+        outputImages2D.size() > 1 ||
+        outputImages3D.size() > 1;
 
     if(args.isSet("verbose")) {
         Debug d;
@@ -942,6 +946,37 @@ key=true; configuration subgroups are delimited with /.)")
     if(!converter) {
         Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());
         return 2;
+    }
+
+    /* Decide what converter feature we should look for for given dimension
+       count */
+    Trade::ImageConverterFeatures expectedFeatures;
+    if(outputDimensions == 1) {
+        expectedFeatures = outputIsCompressed ?
+            Trade::ImageConverterFeature::ConvertCompressed1DToFile :
+            Trade::ImageConverterFeature::Convert1DToFile;
+    } else if(outputDimensions == 2) {
+        expectedFeatures = outputIsCompressed ?
+            Trade::ImageConverterFeature::ConvertCompressed2DToFile :
+            Trade::ImageConverterFeature::Convert2DToFile;
+    } else if(outputDimensions == 3) {
+        expectedFeatures = outputIsCompressed ?
+            Trade::ImageConverterFeature::ConvertCompressed3DToFile :
+            Trade::ImageConverterFeature::Convert3DToFile;
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+    /** @todo use a sane flag once the feature enum is ... sane */
+    constexpr Trade::ImageConverterFeatures ImageConverterFeatureLevels =
+        Trade::ImageConverterFeature::ConvertLevels1DToFile & ~Trade::ImageConverterFeature::Convert1DToFile;
+    if(outputIsMultiLevel) expectedFeatures |= ImageConverterFeatureLevels;
+    if(!(converter->features() >= expectedFeatures)) {
+        Error err;
+        err << args.value("converter") << "doesn't support";
+        if(outputIsMultiLevel)
+            err << "multi-level";
+        if(outputIsCompressed)
+            err << "compressed";
+        err << outputDimensions << Debug::nospace << "D image to file conversion, only" << converter->features();
+        return 6;
     }
 
     /* Set options, if passed */
