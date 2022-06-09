@@ -925,67 +925,57 @@ key=true; configuration subgroups are delimited with /.)")
             data = outputImages3D.front().data();
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
-        {
-            Trade::Implementation::Duration d{conversionTime};
-            if(!Utility::Path::write(output, data)) return 1;
+        Trade::Implementation::Duration d{conversionTime};
+        if(!Utility::Path::write(output, data)) return 1;
+
+    /* Otherwise convert to a file */
+    } else {
+        /* Load converter plugin */
+        PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
+            args.value("plugin-dir").empty() ? Containers::String{} :
+            Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths().back())};
+        Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
+        if(!converter) {
+            Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());
+            return 2;
         }
 
-        if(args.isSet("profile")) {
-            Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds, conversion"
-                << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(conversionTime).count())/1.0e3f << "seconds";
+        /* Decide what converter feature we should look for for given dimension
+           count */
+        Trade::ImageConverterFeatures expectedFeatures;
+        if(outputDimensions == 1) {
+            expectedFeatures = outputIsCompressed ?
+                Trade::ImageConverterFeature::ConvertCompressed1DToFile :
+                Trade::ImageConverterFeature::Convert1DToFile;
+        } else if(outputDimensions == 2) {
+            expectedFeatures = outputIsCompressed ?
+                Trade::ImageConverterFeature::ConvertCompressed2DToFile :
+                Trade::ImageConverterFeature::Convert2DToFile;
+        } else if(outputDimensions == 3) {
+            expectedFeatures = outputIsCompressed ?
+                Trade::ImageConverterFeature::ConvertCompressed3DToFile :
+                Trade::ImageConverterFeature::Convert3DToFile;
+        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        /** @todo use a sane flag once the feature enum is ... sane */
+        constexpr Trade::ImageConverterFeatures ImageConverterFeatureLevels =
+            Trade::ImageConverterFeature::ConvertLevels1DToFile & ~Trade::ImageConverterFeature::Convert1DToFile;
+        if(outputIsMultiLevel) expectedFeatures |= ImageConverterFeatureLevels;
+        if(!(converter->features() >= expectedFeatures)) {
+            Error err;
+            err << args.value("converter") << "doesn't support";
+            if(outputIsMultiLevel)
+                err << "multi-level";
+            if(outputIsCompressed)
+                err << "compressed";
+            err << outputDimensions << Debug::nospace << "D image to file conversion, only" << converter->features();
+            return 6;
         }
 
-        return 0;
-    }
+        /* Set options, if passed */
+        if(args.isSet("verbose")) converter->addFlags(Trade::ImageConverterFlag::Verbose);
+        Implementation::setOptions(*converter, "AnyImageConverter", args.value("converter-options"));
 
-    /* Load converter plugin */
-    PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
-        args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths().back())};
-    Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
-    if(!converter) {
-        Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());
-        return 2;
-    }
-
-    /* Decide what converter feature we should look for for given dimension
-       count */
-    Trade::ImageConverterFeatures expectedFeatures;
-    if(outputDimensions == 1) {
-        expectedFeatures = outputIsCompressed ?
-            Trade::ImageConverterFeature::ConvertCompressed1DToFile :
-            Trade::ImageConverterFeature::Convert1DToFile;
-    } else if(outputDimensions == 2) {
-        expectedFeatures = outputIsCompressed ?
-            Trade::ImageConverterFeature::ConvertCompressed2DToFile :
-            Trade::ImageConverterFeature::Convert2DToFile;
-    } else if(outputDimensions == 3) {
-        expectedFeatures = outputIsCompressed ?
-            Trade::ImageConverterFeature::ConvertCompressed3DToFile :
-            Trade::ImageConverterFeature::Convert3DToFile;
-    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-    /** @todo use a sane flag once the feature enum is ... sane */
-    constexpr Trade::ImageConverterFeatures ImageConverterFeatureLevels =
-        Trade::ImageConverterFeature::ConvertLevels1DToFile & ~Trade::ImageConverterFeature::Convert1DToFile;
-    if(outputIsMultiLevel) expectedFeatures |= ImageConverterFeatureLevels;
-    if(!(converter->features() >= expectedFeatures)) {
-        Error err;
-        err << args.value("converter") << "doesn't support";
-        if(outputIsMultiLevel)
-            err << "multi-level";
-        if(outputIsCompressed)
-            err << "compressed";
-        err << outputDimensions << Debug::nospace << "D image to file conversion, only" << converter->features();
-        return 6;
-    }
-
-    /* Set options, if passed */
-    if(args.isSet("verbose")) converter->addFlags(Trade::ImageConverterFlag::Verbose);
-    Implementation::setOptions(*converter, "AnyImageConverter", args.value("converter-options"));
-
-    /* Save output file */
-    bool converted;
-    {
+        bool converted;
         Trade::Implementation::Duration d{conversionTime};
         if(outputDimensions == 1)
             converted = convertOneOrMoreImagesToFile(*converter, outputImages1D, output);
@@ -994,10 +984,10 @@ key=true; configuration subgroups are delimited with /.)")
         else if(outputDimensions == 3)
             converted = convertOneOrMoreImagesToFile(*converter, outputImages3D, output);
         else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-    }
-    if(!converted) {
-        Error{} << "Cannot save file" << output;
-        return 5;
+        if(!converted) {
+            Error{} << "Cannot save file" << output;
+            return 5;
+        }
     }
 
     if(args.isSet("profile")) {
