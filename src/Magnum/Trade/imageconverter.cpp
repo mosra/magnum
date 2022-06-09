@@ -69,9 +69,9 @@ information.
 
 @code{.sh}
 magnum-imageconverter [-h|--help] [-I|--importer PLUGIN]
-    [-C|--converter PLUGIN] [--plugin-dir DIR] [--map]
+    [-C|--converter PLUGIN]... [--plugin-dir DIR] [--map]
     [-i|--importer-options key=val,key2=val2,…]
-    [-c|--converter-options key=val,key2=val2,…] [-D|--dimensions N]
+    [-c|--converter-options key=val,key2=val2,…]... [-D|--dimensions N]
     [--image N] [--level N] [--layer N] [--layers] [--levels] [--in-place]
     [--info] [--color on|off|auto] [-v|--verbose] [--profile] [--] input output
 @endcode
@@ -92,7 +92,7 @@ Arguments:
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
-    to pass to the converter
+    to pass to the converter(s)
 -   `-D`, `--dimensions N` --- import and convert image of given dimensions
     (default: `2`)
 -   `--image N` --- image to import (default: `0`)
@@ -121,6 +121,15 @@ accept a comma-separated list of key/value pairs to set in the importer /
 converter plugin configuration. If the `=` character is omitted, it's
 equivalent to saying `key=true`; configuration subgroups are delimited with
 `/`.
+
+It's possible to specify the `-C` / `--converter` option (and correspondingly
+also `-c` / `--converter-options`) multiple times in order to chain more
+converters together. All converters in the chain have to support image-to-image
+conversion, the last converter has to be either `raw` or support either
+image-to-image or image-to-file conversion. If the last converter doesn't
+support conversion to a file, @relativeref{Trade,AnyImageConverter} is used to
+save its output; if no `-C` / `--converter` is specified,
+@relativeref{Trade,AnyImageConverter} is used.
 
 @section magnum-imageconverter-example Usage examples
 
@@ -161,6 +170,16 @@ $ magnum-imageconverter -I AnySceneImporter --info file.gltf
 …
 $ # extract the third image to a PNG file for inspection
 $ magnum-imageconverter -I AnySceneImporter --image 2 file.gltf image.png
+@endcode
+
+Converting a PNG file to a KTX2, block-compressing the data to BC3 using
+@relativeref{Trade,StbDxtImageConverter} and enabling a high-quality output.
+Because the plugin implements image-to-image conversion, the  @relativeref{Trade,AnyImageConverter} plugin is implicitly used after it,
+proxying to @relativeref{Trade,KtxImageConverter} as the `*.ktx2` extension was
+chosen:
+
+@code{.sh}
+magnum-imageconverter image.png -C StbDxtImageConverter -c highQuality image.ktx2
 @endcode
 
 @subsection magnum-imageconverter-example-levels-layers Dealing with image levels and layers
@@ -267,6 +286,17 @@ template<UnsignedInt dimensions> bool convertOneOrMoreImagesToFile(Trade::Abstra
         return convertOneOrMoreImagesToFile<ImageView, dimensions>(converter, outputImages, output);
 }
 
+template<UnsignedInt dimensions> bool convertImages(Trade::AbstractImageConverter& converter, Containers::Array<Trade::ImageData<dimensions>>& images) {
+    CORRADE_INTERNAL_ASSERT(!images.isEmpty());
+    for(Trade::ImageData<dimensions>& image: images) {
+        Containers::Optional<Trade::ImageData<dimensions>> output = converter.convert(image);
+        if(!output) return false;
+        image = *std::move(output);
+    }
+
+    return true;
+}
+
 }
 
 int main(int argc, char** argv) {
@@ -274,13 +304,13 @@ int main(int argc, char** argv) {
     args.addArrayArgument("input").setHelp("input", "input image(s)")
         .addArgument("output").setHelp("output", "output image; ignored if --info is present, disallowed for --in-place")
         .addOption('I', "importer", "AnyImageImporter").setHelp("importer", "image importer plugin", "PLUGIN")
-        .addOption('C', "converter", "AnyImageConverter").setHelp("converter", "image converter plugin", "PLUGIN")
+        .addArrayOption('C', "converter").setHelp("converter", "image converter plugin(s)", "PLUGIN")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
         .addBooleanOption("map").setHelp("map", "memory-map the input for zero-copy import (works only for standalone files)")
         #endif
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
-        .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
+        .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
         .addOption('D', "dimensions", "2").setHelp("dimensions", "import and convert image of given dimensions", "N")
         .addOption("image", "0").setHelp("image", "image to import", "N")
         .addOption("level").setHelp("level", "import given image level instead of all", "N")
@@ -315,7 +345,15 @@ conversion is done and output file doesn't need to be specified.
 The -i / --importer-options and -c / --converter-options arguments accept a
 comma-separated list of key/value pairs to set in the importer / converter
 plugin configuration. If the = character is omitted, it's equivalent to saying
-key=true; configuration subgroups are delimited with /.)")
+key=true; configuration subgroups are delimited with /.
+
+It's possible to specify the -C / --converter option (and correspondingly also
+-c / --converter-options) multiple times in order to chain more converters
+together. All converters in the chain have to support image-to-image
+conversion, the last converter has to be either raw or support either
+image-to-image or image-to-file conversion. If the last converter doesn't
+support conversion to a file, AnyImageConverter is used to save its output; if
+no -C / --converter is specified, AnyImageConverter is used.)")
         .parse(argc, argv);
 
     /* Generic checks */
@@ -355,7 +393,7 @@ key=true; configuration subgroups are delimited with /.)")
         Error{} << "The --layers option can't be combined with --layer.";
         return 1;
     }
-    if(args.isSet("levels") && args.value("converter") == "raw") {
+    if(args.isSet("levels") && args.arrayValueCount("converter") && args.arrayValue("converter", args.arrayValueCount("converter") - 1) == "raw") {
         Error{} << "The --levels option can't be combined with raw data output";
         return 1;
     }
@@ -586,7 +624,7 @@ key=true; configuration subgroups are delimited with /.)")
                 } else {
                     minLevel = 0;
                     maxLevel = importer->image1DLevelCount(image);
-                    if(maxLevel > 1 && (args.isSet("layers") || args.isSet("levels") || args.value("converter") == "raw")) {
+                    if(maxLevel > 1 && (args.isSet("layers") || args.isSet("levels") || (args.arrayValueCount("converter") && args.arrayValue("converter", args.arrayValueCount("converter") - 1) == "raw"))) {
                         Error{} << "Cannot use --layers / --levels or raw output with multi-level input images. Specify --level N to extract just one level from each.";
                         return 1;
                     }
@@ -623,7 +661,7 @@ key=true; configuration subgroups are delimited with /.)")
                 } else {
                     minLevel = 0;
                     maxLevel = importer->image2DLevelCount(image);
-                    if(maxLevel > 1 && (args.isSet("layers") || args.isSet("levels") || args.value("converter") == "raw")) {
+                    if(maxLevel > 1 && (args.isSet("layers") || args.isSet("levels") || (args.arrayValueCount("converter") && args.arrayValue("converter", args.arrayValueCount("converter") - 1) == "raw"))) {
                         Error{} << "Cannot use --layers / --levels or raw output with multi-level input images. Specify --level N to extract just one level from each.";
                         return 1;
                     }
@@ -664,7 +702,7 @@ key=true; configuration subgroups are delimited with /.)")
                 } else {
                     minLevel = 0;
                     maxLevel = importer->image3DLevelCount(image);
-                    if(maxLevel > 1 && (args.isSet("layers") || args.isSet("levels") || args.value("converter") == "raw")) {
+                    if(maxLevel > 1 && (args.isSet("layers") || args.isSet("levels") || (args.arrayValueCount("converter") && args.arrayValue("converter", args.arrayValueCount("converter") - 1) == "raw"))) {
                         Error{} << "Cannot use --layers / --levels or raw output with multi-level input images. Specify --level N to extract just one level from each.";
                         return 1;
                     }
@@ -860,133 +898,210 @@ key=true; configuration subgroups are delimited with /.)")
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
     }
 
-    const bool outputIsCompressed =
-        (outputDimensions == 1 && outputImages1D.front().isCompressed()) ||
-        (outputDimensions == 2 && outputImages2D.front().isCompressed()) ||
-        (outputDimensions == 3 && outputImages3D.front().isCompressed());
     const bool outputIsMultiLevel =
         outputImages1D.size() > 1 ||
         outputImages2D.size() > 1 ||
         outputImages3D.size() > 1;
 
-    if(args.isSet("verbose")) {
-        Debug d;
-        if(args.value("converter") == "raw")
-            d << "Writing raw image data of size";
-        else
-            d << "Saving output of size";
-        d << Debug::packed;
-        if(outputDimensions == 1) {
-            d << outputImages1D.front().size();
-            if(outputImages1D.size() > 1)
-                d << "(and" << outputImages1D.size() - 1 << "more levels)";
-        } else if(outputDimensions == 2) {
-            d << outputImages2D.front().size();
-            if(outputImages2D.size() > 1)
-                d << "(and" << outputImages2D.size() - 1 << "more levels)";
-        } else if(outputDimensions == 3) {
-            d << outputImages3D.front().size();
-            if(outputImages3D.size() > 1)
-                d << "(and" << outputImages3D.size() - 1 << "more levels)";
-        }
-        else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-        d << "and" << (outputIsCompressed ? "compressed format" : "format") << Debug::packed;
-        if(outputDimensions == 1) {
-            if(outputImages1D.front().isCompressed())
-                d << outputImages1D.front().compressedFormat();
-            else d << outputImages1D.front().format();
-        } else if(outputDimensions == 2) {
-            if(outputImages2D.front().isCompressed())
-                d << outputImages2D.front().compressedFormat();
-            else d << outputImages2D.front().format();
-        } else if(outputDimensions == 3) {
-            if(outputImages3D.front().isCompressed())
-                d << outputImages3D.front().compressedFormat();
-            else d << outputImages3D.front().format();
-        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+    /* Assume there's always one passed --converter option less, and the last
+       is implicitly AnyImageConverter. All converters except the last one are
+       expected to support ConvertMesh and the mesh is "piped" from one to the
+       other. If the last converter supports ConvertMeshToFile instead of
+       ConvertMesh, it's used instead of the last implicit AnySceneConverter. */
+    for(std::size_t i = 0, converterCount = args.arrayValueCount("converter"); i <= converterCount; ++i) {
+        const Containers::StringView converterName = i == converterCount ?
+            "AnyImageConverter"_s : args.arrayValue<Containers::StringView>("converter", i);
 
-        if(args.value("converter") != "raw")
-            d << "with" << args.value("converter");
-        d << Debug::nospace << "...";
-    }
+        const bool outputIsCompressed =
+            (outputDimensions == 1 && outputImages1D.front().isCompressed()) ||
+            (outputDimensions == 2 && outputImages2D.front().isCompressed()) ||
+            (outputDimensions == 3 && outputImages3D.front().isCompressed());
 
-    /* Save raw data, if requested. Only for single-level images as the data
-       layout would be messed up otherwise. */
-    if(args.value("converter") == "raw") {
-        Containers::ArrayView<const char> data;
-        if(outputDimensions == 1) {
-            CORRADE_INTERNAL_ASSERT(outputImages1D.size() == 1);
-            data = outputImages1D.front().data();
-        } else if(outputDimensions == 2) {
-            CORRADE_INTERNAL_ASSERT(outputImages2D.size() == 1);
-            data = outputImages2D.front().data();
-        } else if(outputDimensions == 3) {
-            CORRADE_INTERNAL_ASSERT(outputImages3D.size() == 1);
-            data = outputImages3D.front().data();
-        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-
-        Trade::Implementation::Duration d{conversionTime};
-        if(!Utility::Path::write(output, data)) return 1;
-
-    /* Otherwise convert to a file */
-    } else {
         /* Load converter plugin */
         PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
             args.value("plugin-dir").empty() ? Containers::String{} :
             Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths().back())};
-        Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
+        Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(converterName);
         if(!converter) {
             Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());
             return 2;
         }
 
-        /* Decide what converter feature we should look for for given dimension
-           count */
-        Trade::ImageConverterFeatures expectedFeatures;
-        if(outputDimensions == 1) {
-            expectedFeatures = outputIsCompressed ?
-                Trade::ImageConverterFeature::ConvertCompressed1DToFile :
-                Trade::ImageConverterFeature::Convert1DToFile;
-        } else if(outputDimensions == 2) {
-            expectedFeatures = outputIsCompressed ?
-                Trade::ImageConverterFeature::ConvertCompressed2DToFile :
-                Trade::ImageConverterFeature::Convert2DToFile;
-        } else if(outputDimensions == 3) {
-            expectedFeatures = outputIsCompressed ?
-                Trade::ImageConverterFeature::ConvertCompressed3DToFile :
-                Trade::ImageConverterFeature::Convert3DToFile;
-        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-        /** @todo use a sane flag once the feature enum is ... sane */
-        constexpr Trade::ImageConverterFeatures ImageConverterFeatureLevels =
-            Trade::ImageConverterFeature::ConvertLevels1DToFile & ~Trade::ImageConverterFeature::Convert1DToFile;
-        if(outputIsMultiLevel) expectedFeatures |= ImageConverterFeatureLevels;
-        if(!(converter->features() >= expectedFeatures)) {
-            Error err;
-            err << args.value("converter") << "doesn't support";
-            if(outputIsMultiLevel)
-                err << "multi-level";
-            if(outputIsCompressed)
-                err << "compressed";
-            err << outputDimensions << Debug::nospace << "D image to file conversion, only" << converter->features();
-            return 6;
-        }
-
         /* Set options, if passed */
         if(args.isSet("verbose")) converter->addFlags(Trade::ImageConverterFlag::Verbose);
-        Implementation::setOptions(*converter, "AnyImageConverter", args.value("converter-options"));
+        if(i < args.arrayValueCount("converter-options"))
+            Implementation::setOptions(*converter, "AnyImageConverter", args.arrayValue("converter-options", i));
 
-        bool converted;
-        Trade::Implementation::Duration d{conversionTime};
-        if(outputDimensions == 1)
-            converted = convertOneOrMoreImagesToFile(*converter, outputImages1D, output);
-        else if(outputDimensions == 2)
-            converted = convertOneOrMoreImagesToFile(*converter, outputImages2D, output);
-        else if(outputDimensions == 3)
-            converted = convertOneOrMoreImagesToFile(*converter, outputImages3D, output);
-        else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-        if(!converted) {
-            Error{} << "Cannot save file" << output;
-            return 5;
+        /* This is the last --converter (or the implicit AnyImageConverter at
+           the end), output to a file and exit the loop */
+        if(i + 1 >= converterCount && (converter->features() & (
+            Trade::ImageConverterFeature::Convert1DToFile|
+            Trade::ImageConverterFeature::Convert2DToFile|
+            Trade::ImageConverterFeature::Convert3DToFile|
+            Trade::ImageConverterFeature::ConvertCompressed1DToFile|
+            Trade::ImageConverterFeature::ConvertCompressed2DToFile|
+            Trade::ImageConverterFeature::ConvertCompressed3DToFile)))
+        {
+            /* Decide what converter feature we should look for for given
+               dimension count. This has to be redone each iteration, as a
+               converted could have converted an uncompressed image to a
+               compressed one and vice versa. */
+            Trade::ImageConverterFeatures expectedFeatures;
+            if(outputDimensions == 1) {
+                expectedFeatures = outputIsCompressed ?
+                    Trade::ImageConverterFeature::ConvertCompressed1DToFile :
+                    Trade::ImageConverterFeature::Convert1DToFile;
+            } else if(outputDimensions == 2) {
+                expectedFeatures = outputIsCompressed ?
+                    Trade::ImageConverterFeature::ConvertCompressed2DToFile :
+                    Trade::ImageConverterFeature::Convert2DToFile;
+            } else if(outputDimensions == 3) {
+                expectedFeatures = outputIsCompressed ?
+                    Trade::ImageConverterFeature::ConvertCompressed3DToFile :
+                    Trade::ImageConverterFeature::Convert3DToFile;
+            } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+            /** @todo use a sane flag once the feature enum is ... sane */
+            constexpr Trade::ImageConverterFeatures ImageConverterFeatureLevels =
+                Trade::ImageConverterFeature::ConvertLevels1DToFile & ~Trade::ImageConverterFeature::Convert1DToFile;
+            if(outputIsMultiLevel) expectedFeatures |= ImageConverterFeatureLevels;
+            if(!(converter->features() >= expectedFeatures)) {
+                Error err;
+                err << converterName << "doesn't support";
+                if(outputIsMultiLevel)
+                    err << "multi-level";
+                if(outputIsCompressed)
+                    err << "compressed";
+                err << outputDimensions << Debug::nospace << "D image to file conversion, only" << converter->features();
+                return 6;
+            }
+
+            if(args.isSet("verbose")) {
+                Debug d;
+                if(converterName == "raw")
+                    d << "Writing raw image data of size";
+                else
+                    d << "Saving output of size";
+                d << Debug::packed;
+                if(outputDimensions == 1) {
+                    d << outputImages1D.front().size();
+                    if(outputImages1D.size() > 1)
+                        d << "(and" << outputImages1D.size() - 1 << "more levels)";
+                } else if(outputDimensions == 2) {
+                    d << outputImages2D.front().size();
+                    if(outputImages2D.size() > 1)
+                        d << "(and" << outputImages2D.size() - 1 << "more levels)";
+                } else if(outputDimensions == 3) {
+                    d << outputImages3D.front().size();
+                    if(outputImages3D.size() > 1)
+                        d << "(and" << outputImages3D.size() - 1 << "more levels)";
+                }
+                else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+                d << "and" << (outputIsCompressed ? "compressed format" : "format") << Debug::packed;
+                if(outputDimensions == 1) {
+                    if(outputImages1D.front().isCompressed())
+                        d << outputImages1D.front().compressedFormat();
+                    else d << outputImages1D.front().format();
+                } else if(outputDimensions == 2) {
+                    if(outputImages2D.front().isCompressed())
+                        d << outputImages2D.front().compressedFormat();
+                    else d << outputImages2D.front().format();
+                } else if(outputDimensions == 3) {
+                    if(outputImages3D.front().isCompressed())
+                        d << outputImages3D.front().compressedFormat();
+                    else d << outputImages3D.front().format();
+                } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+                if(converterName != "raw")
+                    d << "with" << converterName;
+                d << Debug::nospace << "...";
+            }
+
+            /* Save raw data, if requested. Only for single-level images as the
+               data layout would be messed up otherwise. */
+            if(converterName == "raw") {
+                Containers::ArrayView<const char> data;
+                if(outputDimensions == 1) {
+                    CORRADE_INTERNAL_ASSERT(outputImages1D.size() == 1);
+                    data = outputImages1D.front().data();
+                } else if(outputDimensions == 2) {
+                    CORRADE_INTERNAL_ASSERT(outputImages2D.size() == 1);
+                    data = outputImages2D.front().data();
+                } else if(outputDimensions == 3) {
+                    CORRADE_INTERNAL_ASSERT(outputImages3D.size() == 1);
+                    data = outputImages3D.front().data();
+                } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+                {
+                    Trade::Implementation::Duration d{conversionTime};
+                    if(!Utility::Path::write(output, data)) return 1;
+                }
+
+            /* Convert to a file */
+            } else {
+                bool converted;
+                Trade::Implementation::Duration d{conversionTime};
+                if(outputDimensions == 1)
+                    converted = convertOneOrMoreImagesToFile(*converter, outputImages1D, output);
+                else if(outputDimensions == 2)
+                    converted = convertOneOrMoreImagesToFile(*converter, outputImages2D, output);
+                else if(outputDimensions == 3)
+                    converted = convertOneOrMoreImagesToFile(*converter, outputImages3D, output);
+                else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+                if(!converted) {
+                    Error{} << "Cannot save file" << output;
+                    return 5;
+                }
+            }
+
+            break;
+
+        /* This is not the last converter, expect that it's capable of
+           image-to-image conversion */
+        } else {
+            CORRADE_INTERNAL_ASSERT(i < converterCount);
+            if(converterCount > 1 && args.isSet("verbose"))
+                Debug{} << "Processing (" << Debug::nospace << (i+1) << Debug::nospace << "/" << Debug::nospace << converterCount << Debug::nospace << ") with" << converterName << Debug::nospace << "...";
+
+            /* Decide what converter feature we should look for for given
+               dimension count. This has to be redone each iteration, as a
+               converted could have converted an uncompressed image to a
+               compressed one and vice versa. */
+            Trade::ImageConverterFeature expectedFeature;
+            if(outputDimensions == 1) {
+                expectedFeature = outputIsCompressed ?
+                    Trade::ImageConverterFeature::ConvertCompressed1D :
+                    Trade::ImageConverterFeature::Convert1D;
+            } else if(outputDimensions == 2) {
+                expectedFeature = outputIsCompressed ?
+                    Trade::ImageConverterFeature::ConvertCompressed2D :
+                    Trade::ImageConverterFeature::Convert2D;
+            } else if(outputDimensions == 3) {
+                expectedFeature = outputIsCompressed ?
+                    Trade::ImageConverterFeature::ConvertCompressed3D :
+                    Trade::ImageConverterFeature::Convert3D;
+            } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+            if(!(converter->features() >= expectedFeature)) {
+                Error err;
+                err << converterName << "doesn't support";
+                if(outputIsCompressed)
+                    err << "compressed";
+                err << outputDimensions << Debug::nospace << "D image conversion, only" << converter->features();
+                return 6;
+            }
+
+            bool converted;
+            Trade::Implementation::Duration d{conversionTime};
+            if(outputDimensions == 1)
+                converted = convertImages(*converter, outputImages1D);
+            else if(outputDimensions == 2)
+                converted = convertImages(*converter, outputImages2D);
+            else if(outputDimensions == 3)
+                converted = convertImages(*converter, outputImages3D);
+            else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+            if(!converted) {
+                Error{} << converterName << "cannot convert the image";
+                return 5;
+            }
         }
     }
 
