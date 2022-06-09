@@ -81,8 +81,8 @@ information.
 @section magnum-sceneconverter-usage Usage
 
 @code{.sh}
-magnum-sceneconverter [-h|--help] [-I|--importer IMPORTER]
-    [-I|--converter CONVERTER]... [--plugin-dir DIR] [--map]
+magnum-sceneconverter [-h|--help] [-I|--importer PLUGIN]
+    [-C|--converter PLUGIN]... [--plugin-dir DIR] [--map]
     [--only-attributes N1,N2-N3…] [--remove-duplicates]
     [--remove-duplicates-fuzzy EPSILON]
     [-i|--importer-options key=val,key2=val2,…]
@@ -99,9 +99,9 @@ Arguments:
 -   `input` --- input file
 -   `output` --- output file; ignored if `--info` is present
 -   `-h`, `--help` --- display this help message and exit
--   `-I`, `--importer IMPORTER` --- scene importer plugin (default:
+-   `-I`, `--importer PLUGIN` --- scene importer plugin (default:
     @ref Trade::AnySceneImporter "AnySceneImporter")
--   `-C`, `--converter CONVERTER` --- scene converter plugin(s)
+-   `-C`, `--converter PLUGIN` --- scene converter plugin(s)
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `--map` --- memory-map the input for zero-copy import (works only for
     standalone files)
@@ -244,8 +244,8 @@ int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addArgument("input").setHelp("input", "input file")
         .addArgument("output").setHelp("output", "output file; ignored if --info is present")
-        .addOption('I', "importer", "AnySceneImporter").setHelp("importer", "scene importer plugin")
-        .addArrayOption('C', "converter").setHelp("converter", "scene converter plugin(s)")
+        .addOption('I', "importer", "AnySceneImporter").setHelp("importer", "scene importer plugin", "PLUGIN")
+        .addArrayOption('C', "converter").setHelp("converter", "scene converter plugin(s)", "PLUGIN")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
         .addBooleanOption("map").setHelp("map", "memory-map the input for zero-copy import (works only for standalone files)")
