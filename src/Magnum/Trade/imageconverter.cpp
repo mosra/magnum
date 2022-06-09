@@ -245,7 +245,7 @@ template<UnsignedInt dimensions> bool checkCommonFormatAndSize(const Utility::Ar
     return true;
 }
 
-template<template<UnsignedInt, class> class View, UnsignedInt dimensions> bool convertOneOrMoreImages(Trade::AbstractImageConverter& converter, const Containers::Array<Trade::ImageData<dimensions>>& outputImages, const Containers::StringView output) {
+template<template<UnsignedInt, class> class View, UnsignedInt dimensions> bool convertOneOrMoreImagesToFile(Trade::AbstractImageConverter& converter, const Containers::Array<Trade::ImageData<dimensions>>& outputImages, const Containers::StringView output) {
     Containers::Array<View<dimensions, const char>> views;
     arrayReserve(views, outputImages.size());
     for(const Trade::ImageData<dimensions>& outputImage: outputImages)
@@ -253,7 +253,7 @@ template<template<UnsignedInt, class> class View, UnsignedInt dimensions> bool c
     return converter.convertToFile(views, output);
 }
 
-template<UnsignedInt dimensions> bool convertOneOrMoreImages(Trade::AbstractImageConverter& converter, const Containers::Array<Trade::ImageData<dimensions>>& outputImages, const Containers::StringView output) {
+template<UnsignedInt dimensions> bool convertOneOrMoreImagesToFile(Trade::AbstractImageConverter& converter, const Containers::Array<Trade::ImageData<dimensions>>& outputImages, const Containers::StringView output) {
     /* If there's just one image, convert it using the single-level API.
        Otherwise the multi-level entrypoint would require the plugin to support
        multi-level conversion, and only some file formats have that. */
@@ -262,9 +262,9 @@ template<UnsignedInt dimensions> bool convertOneOrMoreImages(Trade::AbstractImag
 
     CORRADE_INTERNAL_ASSERT(!outputImages.isEmpty());
     if(outputImages.front().isCompressed())
-        return convertOneOrMoreImages<CompressedImageView, dimensions>(converter, outputImages, output);
+        return convertOneOrMoreImagesToFile<CompressedImageView, dimensions>(converter, outputImages, output);
     else
-        return convertOneOrMoreImages<ImageView, dimensions>(converter, outputImages, output);
+        return convertOneOrMoreImagesToFile<ImageView, dimensions>(converter, outputImages, output);
 }
 
 }
@@ -988,11 +988,11 @@ key=true; configuration subgroups are delimited with /.)")
     {
         Trade::Implementation::Duration d{conversionTime};
         if(outputDimensions == 1)
-            converted = convertOneOrMoreImages(*converter, outputImages1D, output);
+            converted = convertOneOrMoreImagesToFile(*converter, outputImages1D, output);
         else if(outputDimensions == 2)
-            converted = convertOneOrMoreImages(*converter, outputImages2D, output);
+            converted = convertOneOrMoreImagesToFile(*converter, outputImages2D, output);
         else if(outputDimensions == 3)
-            converted = convertOneOrMoreImages(*converter, outputImages3D, output);
+            converted = convertOneOrMoreImagesToFile(*converter, outputImages3D, output);
         else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
     }
     if(!converted) {
