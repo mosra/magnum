@@ -860,12 +860,18 @@ key=true; configuration subgroups are delimited with /.)")
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
     }
 
-    {
+    const bool outputIsCompressed =
+        (outputDimensions == 1 && outputImages1D.front().isCompressed()) ||
+        (outputDimensions == 2 && outputImages2D.front().isCompressed()) ||
+        (outputDimensions == 3 && outputImages3D.front().isCompressed());
+
+    if(args.isSet("verbose")) {
         Debug d;
         if(args.value("converter") == "raw")
             d << "Writing raw image data of size";
         else
-            d << "Converting image of size";
+            d << "Saving output of size";
+        d << Debug::packed;
         if(outputDimensions == 1) {
             d << outputImages1D.front().size();
             if(outputImages1D.size() > 1)
@@ -880,7 +886,7 @@ key=true; configuration subgroups are delimited with /.)")
                 d << "(and" << outputImages3D.size() - 1 << "more levels)";
         }
         else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-        d << "and format";
+        d << "and" << (outputIsCompressed ? "compressed format" : "format") << Debug::packed;
         if(outputDimensions == 1) {
             if(outputImages1D.front().isCompressed())
                 d << outputImages1D.front().compressedFormat();
@@ -894,7 +900,10 @@ key=true; configuration subgroups are delimited with /.)")
                 d << outputImages3D.front().compressedFormat();
             else d << outputImages3D.front().format();
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-        d << "to" << output;
+
+        if(args.value("converter") != "raw")
+            d << "with" << args.value("converter");
+        d << Debug::nospace << "...";
     }
 
     /* Save raw data, if requested. Only for single-level images as the data
