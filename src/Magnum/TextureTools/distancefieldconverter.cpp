@@ -69,6 +69,7 @@ namespace Magnum {
 /** @page magnum-distancefieldconverter Distance Field conversion utility
 @brief Converts red channel of an image to distance field representation
 
+@tableofcontents
 @m_footernavigation
 @m_keywords{magnum-distancefieldconverter distancefieldconverter}
 
@@ -86,7 +87,22 @@ add_custom_command(OUTPUT ... COMMAND Magnum::distancefieldconverter ...)
 See @ref building, @ref cmake and the @ref TextureTools namespace for more
 information.
 
-@section magnum-distancefieldconverter-usage Usage
+@note This executable is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
+@section magnum-distancefield-example Example usage
+
+@code{.sh}
+magnum-distancefieldconverter logo-src.png logo.png \
+    --output-size "256 256" --radius 24
+@endcode
+
+This will open monochrome `logo-src.png` image using any plugin that can open
+PNG files and converts it to 256x256 distance field `logo.png` using any plugin
+that can write PNG files.
+
+@section magnum-distancefieldconverter-usage Full usage documentation
 
 @code{.sh}
 magnum-distancefieldconverter [--magnum-...] [-h|--help] [--importer IMPORTER]
@@ -115,20 +131,6 @@ Images with @ref PixelFormat::R8Unorm, @ref PixelFormat::RGB8Unorm or
 The resulting image can be then used with @ref Shaders::DistanceFieldVectorGL
 shader. See also @ref TextureTools::DistanceField for more information about
 the algorithm and parameters.
-
-@section magnum-distancefield-example Example usage
-
-@code{.sh}
-magnum-distancefieldconverter --output-size "256 256" --radius 24 logo-src.png logo.png
-@endcode
-
-This will open monochrome `logo-src.png` image using any plugin that can open
-PNG files and converts it to 256x256 distance field `logo.png` using any plugin
-that can write PNG files.
-
-@note This executable is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
 */
 
 namespace TextureTools {

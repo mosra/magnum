@@ -1,0 +1,24 @@
+[1;37mScene 0:[0m
+  Bound: 2 objects[0;34m @[0;36m UnsignedInt[0m (0.1 kB)
+  Fields:
+   [1;37m Parent[0;34m @[0;36m Int[0m, 2 entries
+   [1;37m ImporterState[0;34m @[0;36m Pointer[0m, 2 entries
+   [1;37m Transformation[0;34m @[0;36m Matrix4x4[0m, 1 entries
+   [1;37m Mesh[0;34m @[0;36m UnsignedInt[0m, 1 entries
+   [1;37m MeshMaterial[0;34m @[0;36m Int[0m, 1 entries
+Total scene data size: 0.1 kB
+[1;37mObject 0[0m (referenced by 1 scenes)[1;37m:[0m
+  Fields:[0;36m Parent[0m,[0;36m ImporterState[0m,[0;36m Transformation[0m
+[1;37mObject 1[0m (referenced by 1 scenes)[1;37m:[0m
+  Fields:[0;36m Parent[0m,[0;36m ImporterState[0m,[0;36m Mesh[0m,[0;36m MeshMaterial[0m
+[1;37mMaterial 0[0m (referenced by 1 objects)[1;37m:[0m[1;33m Red[0m
+  Type:[0;36m PbrMetallicRoughness[0m
+  Base layer:
+   [1;37m BaseColor[0;34m @[0;36m Vector4[0m: [38;2;204;0;0m[48;2;204;0;0m▓▓[0m {0.8, 0, 0, 1}
+   [1;37m Metalness[0;34m @[0;36m Float[0m: 0
+[1;37mMesh 0[0m (referenced by 1 objects)[1;37m:[0m[1;33m Mesh[0m
+  Level 0: 24 vertices[0;34m @[0;36m Triangles[0m (0.6 kB)
+   [1;37m Normal[0;34m @[0;36m Vector3[0m, offset 0, stride 12
+   [1;37m Position[0;34m @[0;36m Vector3[0m, offset 288, stride 12
+    36 indices[0;34m @[0;36m UnsignedShort[0m, offset 0, stride 2 (0.1 kB)
+Total mesh data size: 0.6 kB

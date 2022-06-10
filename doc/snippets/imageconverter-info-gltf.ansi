@@ -1,0 +1,11 @@
+[1;37m2D image 0:[0m[1;33m alpha baseColor[0m
+  Level 0: {1024, 1024}[0;34m @[0m[0;36m RGBA8Unorm[0m (4096.0 kB)
+[1;37m2D image 1:[0m[1;33m alpha metallicRoughness[0m
+  Level 0: {1024, 1024}[0;34m @[0m[0;36m RGB8Unorm[0m (3072.0 kB)
+[1;37m2D image 2:[0m[1;33m interiors baseColor[0m
+  Level 0: {512, 512}[0;34m @[0m[0;36m RGB8Unorm[0m (768.0 kB)
+[1;37m2D image 3:[0m[1;33m interiors emissive[0m
+  Level 0: {512, 512}[0;34m @[0m[0;36m RGB8Unorm[0m (768.0 kB)
+[1;37m2D image 4:[0m[1;33m plastic soft baseColor[0m
+  Level 0: {4096, 4096}[0;34m @[0m[0;36m RGB8Unorm[0m (49152.0 kB)
+…

@@ -61,6 +61,7 @@ namespace Magnum {
 @brief Converts scenes of different formats
 @m_since{2020,06}
 
+@tableofcontents
 @m_footernavigation
 @m_keywords{magnum-sceneconverter sceneconverter}
 
@@ -76,9 +77,53 @@ add_custom_command(OUTPUT ... COMMAND Magnum::sceneconverter ...)
 @endcode
 
 See @ref building and @ref cmake and the @ref Trade namespace for more
-information.
+information. There's also a corresponding @ref magnum-imageconverter "image conversion utility".
 
-@section magnum-sceneconverter-usage Usage
+@section magnum-sceneconverter-example Example usage
+
+Listing contents of a glTF file, implicitly using
+@relativeref{Trade,AnySceneImporter} that delegates to
+@relativeref{Trade,GltfImporter}, @relativeref{Trade,AssimpImporter} or
+@ref file-formats "any other plugin capable of glTF import" depending on what's
+available:
+
+@m_class{m-code-figure}
+
+@parblock
+
+@code{.sh}
+magnum-sceneconverter --info Box.gltf
+@endcode
+
+<b></b>
+
+@m_class{m-nopad}
+
+@include sceneconverter-info.ansi
+
+@endparblock
+
+Converting an OBJ file to a PLY, implicitly using
+@relativeref{Trade,AnySceneConverter} that delegates to
+@relativeref{Trade,StanfordSceneConverter} or
+@ref file-formats "any other plugin capable of PLY export" depending on what's
+available:
+
+@code{.sh}
+magnum-sceneconverter chair.obj chair.ply
+@endcode
+
+Processing an OBJ file with @relativeref{Trade,MeshOptimizerSceneConverter},
+setting @ref Trade-MeshOptimizerSceneConverter-configuration "plugin-specific configuration options"
+to reduce the index count to half, saving as a PLY, with verbose output showing
+the processing stats:
+
+@code{.sh}
+magnum-sceneconverter chair.obj -C MeshOptimizerSceneConverter \
+    -c simplify=true,simplifyTargetIndexCountThreshold=0.5 chair.ply -v
+@endcode
+
+@section magnum-sceneconverter-usage Full usage documentation
 
 @code{.sh}
 magnum-sceneconverter [-h|--help] [-I|--importer PLUGIN]
@@ -171,34 +216,6 @@ scene hierarchy transformation baked in using
 @ref SceneTools::flattenMeshHierarchy3D(). Only attributes that are present in
 the first mesh are taken, if `--only-attributes` is specified as well, the IDs
 reference attributes of the first mesh.
-
-@section magnum-sceneconverter-example Example usage
-
-Printing info about all meshes in a glTF file:
-
-@code{.sh}
-magnum-sceneconverter --info scene.gltf
-@endcode
-
-Converting an OBJ file to a PLY, using @ref Trade::StanfordSceneConverter "StanfordSceneConverter"
-picked by @ref Trade::AnySceneConverter "AnySceneConverter":
-
-@code{.sh}
-magnum-sceneconverter chair.obj chair.ply
-@endcode
-
-Processing an OBJ file with @ref Trade::MeshOptimizerSceneConverter "MeshOptimizerSceneConverter",
-setting @ref Trade-MeshOptimizerSceneConverter-configuration "plugin-specific configuration options"
-to reduce the index count to half, saving as a PLY, with verbose output showing
-the processing stats:
-
-@m_class{m-console-wrap}
-
-@code{.sh}
-magnum-sceneconverter chair.obj --converter MeshOptimizerSceneConverter -c simplify=true,simplifyTargetIndexCountThreshold=0.5 chair.ply -v
-@endcode
-
-@see @ref magnum-imageconverter
 */
 
 }

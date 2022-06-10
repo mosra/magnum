@@ -62,6 +62,7 @@ namespace Magnum {
 @page magnum-fontconverter Font conversion utility
 @brief Converts font to raster one of given atlas size
 
+@tableofcontents
 @m_footernavigation
 @m_keywords{magnum-fontconverter fontconverter}
 
@@ -78,7 +79,27 @@ add_custom_command(OUTPUT ... COMMAND Magnum::fontconverter ...)
 
 See @ref building, @ref cmake and the @ref Text namespace for more information.
 
-@section magnum-fontconverter-usage Usage
+@note This executable is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
+@section magnum-fontconverter-example Example usage
+
+Making raster font from TTF file with default set of characters using
+@ref Text::FreeTypeFont "FreeTypeFont" font plugin and
+@ref Text::MagnumFontConverter "MagnumFontConverter" converter plugin:
+
+@code{.sh}
+magnum-fontconverter DejaVuSans.ttf myfont \
+    --font FreeTypeFont --converter MagnumFontConverter
+@endcode
+
+According to @ref Text::MagnumFontConverter "MagnumFontConverter" plugin
+documentation, this will generate files `myfont.conf` and `myfont.tga` in
+current directory. You can then load and use them via the
+@ref Text::MagnumFont "MagnumFont" plugin.
+
+@section magnum-fontconverter-usage Full usage documentation
 
 @code{.sh}
 magnum-fontconverter [--magnum-...] [-h|--help] --font FONT
@@ -107,25 +128,6 @@ Arguments:
 
 The resulting font files can be then used as specified in the documentation of
 `converter` plugin.
-
-@section magnum-fontconverter-example Example usage
-
-Making raster font from TTF file with default set of characters using
-@ref Text::FreeTypeFont "FreeTypeFont" font plugin and
-@ref Text::MagnumFontConverter "MagnumFontConverter" converter plugin:
-
-@code{.sh}
-magnum-fontconverter --font FreeTypeFont --converter MagnumFontConverter DejaVuSans.ttf myfont
-@endcode
-
-According to @ref Text::MagnumFontConverter "MagnumFontConverter" plugin
-documentation, this will generate files `myfont.conf` and `myfont.tga` in
-current directory. You can then load and use them via the
-@ref Text::MagnumFont "MagnumFont" plugin.
-
-@note This executable is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
 */
 
 namespace Text {

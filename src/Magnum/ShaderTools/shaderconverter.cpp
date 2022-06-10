@@ -42,6 +42,7 @@ namespace Magnum {
 @brief Converts, compiles, optimizes and links shaders of different formats
 @m_since_latest
 
+@tableofcontents
 @m_footernavigation
 @m_keywords{magnum-shaderconverter shaderconverter}
 
@@ -59,7 +60,31 @@ add_custom_command(OUTPUT ... COMMAND Magnum::shaderconverter ...)
 See @ref building, @ref cmake and the @ref ShaderTools namespace for more
 information.
 
-@section magnum-shaderconverter-usage Usage
+@section magnum-shaderconverter-example Example usage
+
+Validate a SPIR-V file for a Vulkan 1.1 target, implicitly using
+@ref ShaderTools::AnyConverter "AnyShaderConverter" that delegates to
+@ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter" or
+@ref file-formats "any other plugin capable of SPIR-V validation" depending on
+what's available:
+
+@code{.sh}
+magnum-shaderconverter --validate --output-version vulkan1.1 shader.spv
+@endcode
+
+Converting a GLSL 4.10 file to a SPIR-V, supplying various preprocessor
+definitions, treating warnings as errors and targeting OpenGL instead of the
+(default) Vulkan, this time delegated to @ref ShaderTools::GlslangConverter "GlslangShaderConverter"
+or @ref file-formats "any other plugin capable of GLSL->SPIR-V conversion"
+depending on what's available:
+
+@code{.sh}
+magnum-shaderconverter phong.frag phong.frag.spv \
+    -DDIFFUSE_TEXTURE -DNORMAL_TEXTURE --warning-as-error \
+    --input-version "410 core" --output-version opengl4.5
+@endcode
+
+@section magnum-shaderconverter-usage Full usage documentation
 
 @code{.sh}
 magnum-shaderconverter [-h|--help] [--validate] [--link]
@@ -146,26 +171,6 @@ Values accepted by `-O` / `--optimize`, `-g` / `--debug-info`, `--input-format`,
 converter-specific, see documentation of a particular converter for more
 information.
 
-@section magnum-shaderconverter-example Example usage
-
-Validate a SPIR-V file for a Vulkan 1.1 target, using
-@ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter" picked by
-@ref ShaderTools::AnyConverter "AnyShaderConverter":
-
-@code{.sh}
-magnum-shaderconverter --validate --output-version vulkan1.1 shader.spv
-@endcode
-
-Converting a GLSL 4.10 file to a SPIR-V, supplying various preprocessor
-definitions, treating warnings as errors and targeting OpenGL instead of the
-(default) Vulkan, using @ref ShaderTools::GlslangConverter "GlslangShaderConverter"
-picked again by @ref ShaderTools::AnyConverter "AnyShaderConverter":
-
-@m_class{m-console-wrap}
-
-@code{.sh}
-magnum-shaderconverter phong.frag -DDIFFUSE_TEXTURE -DNORMAL_TEXTURE --input-version "410 core" --output-version opengl4.5 --warning-as-error phong.frag.spv
-@endcode
 */
 
 }
