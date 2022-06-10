@@ -599,9 +599,113 @@ To be written.
 
 To be written.
 
+@section file-formats-shaders Shader validators, preprocessors, optimizers and linkers
+
+Together with @ref file-formats-shader-converters "shader converters" derived
+from @ref ShaderTools::AbstractConverter.
+
+@m_class{m-row m-container-inflate}
+
+@parblock
+
+@m_class{m-fullwidth m-flat}
+
+<table>
+<tr>
+<th>Format</th>
+<th>Generic plugin alias</th>
+<th>Plugin name</th>
+<th class="m-text-center">Caveats</th>
+<th class="m-text-center">Dependencies</th>
+<th class="m-text-center">License</th>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
+<th>GLSL</th>
+<td>`GlslShaderConverter`</td>
+<td>@ref ShaderTools::GlslangConverter "GlslangShaderConverter"</td>
+<td class="m-text-center m-dim">@ref ShaderTools-GlslangConverter-validation "none"</td>
+<td class="m-text-center m-warning">bundleable</td>
+<td class="m-text-center m-danger">Many</td>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
+<th>SPIR-V</th>
+<td>`SpirvShaderConverter`</td>
+<td>@ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter"</td>
+<td class="m-text-center m-dim">@ref ShaderTools-SpirvToolsConverter-validation "none"</td>
+<td class="m-text-center m-warning">bundleable</td>
+<td class="m-text-center m-success">Apache-2.0</td>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
+<th>SPIR-V assembly</th>
+<td>`SpirvAssemblyShaderConverter`</td>
+<td>@ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter"</td>
+<td class="m-text-center m-dim">@ref ShaderTools-SpirvToolsConverter-validation "none"</td>
+<td class="m-text-center m-warning">bundleable</td>
+<td class="m-text-center m-success">Apache-2.0</td>
+</tr>
+</table>
+
+@endparblock
+
 @section file-formats-shader-converters Shader converters
 
-To be written.
+Together with @ref file-formats-shaders "shader validators, preprocessors, optimizers and linkers"
+derived from @ref ShaderTools::AbstractConverter.
+
+@m_class{m-row m-container-inflate}
+
+@parblock
+
+@m_class{m-fullwidth m-flat}
+
+<table>
+<tr>
+<th>Format</th>
+<th>Generic plugin alias</th>
+<th>Plugin name</th>
+<th class="m-text-center">Caveats</th>
+<th class="m-text-center">Dependencies</th>
+<th class="m-text-center">License</th>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
+<th>GLSL → SPIR-V</th>
+<td>`GlslToSpirvShaderConverter`</td>
+<td>@ref ShaderTools::GlslangConverter "GlslangShaderConverter"</td>
+<td class="m-text-center m-dim">@ref ShaderTools-GlslangConverter-conversion "none"</td>
+<td class="m-text-center m-warning">bundleable</td>
+<td class="m-text-center m-danger">Many</td>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
+<th>SPIR-V → SPIR-V assembly</th>
+<td>`SpirvToSpirvAssemblyShaderConverter`</td>
+<td>@ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter"</td>
+<td class="m-text-center m-dim">@ref ShaderTools-SpirvToolsConverter-conversion "none"</td>
+<td class="m-text-center m-warning">bundleable</td>
+<td class="m-text-center m-success">Apache-2.0</td>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
+<th>SPIR-V assembly → SPIR-V</th>
+<td>`SpirvAssemblyToSpirvShaderConverter`</td>
+<td>@ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter"</td>
+<td class="m-text-center m-dim">@ref ShaderTools-SpirvToolsConverter-conversion "none"</td>
+<td class="m-text-center m-warning">bundleable</td>
+<td class="m-text-center m-success">Apache-2.0</td>
+</tr>
+</table>
+
+@endparblock
 
 @section file-formats-legend Legend
 
