@@ -488,8 +488,8 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     const Trade::SceneField name = scene->fieldName(j);
 
                     if(name == Trade::SceneField::Mesh) for(const Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>& meshMaterial: scene->meshesMaterialsAsArray()) {
-                        if(meshMaterial.first() < meshReferenceCount.size())
-                            ++meshReferenceCount[meshMaterial.first()];
+                        if(meshMaterial.second().first() < meshReferenceCount.size())
+                            ++meshReferenceCount[meshMaterial.second().first()];
                         if(UnsignedInt(meshMaterial.second().second()) < materialReferenceCount.size())
                             ++materialReferenceCount[meshMaterial.second().second()];
                     }
