@@ -67,7 +67,7 @@ Additionally, if you're using Magnum as a CMake subproject, ensure it's enabled
 as it's not built by default:
 
 @code{.cmake}
-set(WITH_OPENGLTESTER ON CACHE BOOL "" FORCE)
+set(WITH_VULKANTESTER ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
