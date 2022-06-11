@@ -16,6 +16,8 @@
 # components, which are:
 #
 #  Containers                   - Containers library
+#  Interconnect                 - Interconnect library
+#  Main                         - Main library
 #  PluginManager                - PluginManager library
 #  TestSuite                    - TestSuite library
 #  Utility                      - Utility library
@@ -590,7 +592,7 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.16)
         #   misleading messages.
         elseif(NOT _component IN_LIST _CORRADE_IMPLICITLY_ENABLED_COMPONENTS)
             string(TOUPPER ${_component} _COMPONENT)
-            list(APPEND _CORRADE_REASON_FAILURE_MESSAGE "${_component} is not built by default. Make sure you enabled WITH_${_COMPONENT} when building Corrade.")
+            list(APPEND _CORRADE_REASON_FAILURE_MESSAGE "${_component} is not built by default. Make sure you enabled CORRADE_WITH_${_COMPONENT} when building Corrade.")
         # Otherwise we have no idea. Better be silent than to print something
         # misleading.
         else()
