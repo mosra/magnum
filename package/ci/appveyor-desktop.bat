@@ -20,9 +20,9 @@ mkdir build && cd build || exit /b
 cmake .. ^
     -DCMAKE_BUILD_TYPE=%CONFIGURATION% ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DWITH_INTERCONNECT=OFF ^
-    -DUTILITY_USE_ANSI_COLORS=ON ^
-    -DBUILD_STATIC=%BUILD_STATIC% ^
+    -DCORRADE_WITH_INTERCONNECT=OFF ^
+    -DCORRADE_UTILITY_USE_ANSI_COLORS=ON ^
+    -DCORRADE_BUILD_STATIC=%BUILD_STATIC% ^
     %COMPILER_EXTRA% -G Ninja || exit /b
 cmake --build . || exit /b
 cmake --build . --target install || exit /b

@@ -12,10 +12,10 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps-native \
-    -DWITH_INTERCONNECT=OFF \
-    -DWITH_PLUGINMANAGER=OFF \
-    -DWITH_TESTSUITE=OFF \
-    -DWITH_UTILITY=OFF \
+    -DCORRADE_WITH_INTERCONNECT=OFF \
+    -DCORRADE_WITH_PLUGINMANAGER=OFF \
+    -DCORRADE_WITH_TESTSUITE=OFF \
+    -DCORRADE_WITH_UTILITY=OFF \
     -G Ninja
 ninja install
 cd ..
@@ -26,11 +26,11 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DBUILD_STATIC=ON \
-    -DTESTSUITE_TARGET_XCTEST=ON \
-    -DWITH_INTERCONNECT=OFF \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DCORRADE_BUILD_STATIC=ON \
+    -DCORRADE_TESTSUITE_TARGET_XCTEST=ON \
+    -DCORRADE_WITH_INTERCONNECT=OFF \
     -G Xcode
 set -o pipefail && cmake --build . --config Release --target install | xcbeautify
 cd ../..
@@ -53,8 +53,8 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_PREFIX_PATH="$HOME/deps" \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DTARGET_GLES2=$TARGET_GLES2 \
     -DWITH_AUDIO=ON \
     -DWITH_VK=OFF \

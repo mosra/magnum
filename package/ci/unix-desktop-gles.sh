@@ -10,7 +10,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DWITH_INTERCONNECT=OFF \
+    -DCORRADE_WITH_INTERCONNECT=OFF \
     -G Ninja
 ninja install
 cd ../..

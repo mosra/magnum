@@ -18,10 +18,10 @@ mkdir build && cd build || exit /b
 cmake .. ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps-native ^
-    -DWITH_INTERCONNECT=OFF ^
-    -DWITH_PLUGINMANAGER=OFF ^
-    -DWITH_TESTSUITE=OFF ^
-    -DWITH_UTILITY=OFF ^
+    -DCORRADE_WITH_INTERCONNECT=OFF ^
+    -DCORRADE_WITH_PLUGINMANAGER=OFF ^
+    -DCORRADE_WITH_TESTSUITE=OFF ^
+    -DCORRADE_WITH_UTILITY=OFF ^
     -G Ninja || exit /b
 cmake --build . --target install || exit /b
 cd .. || exit /b
@@ -31,10 +31,10 @@ mkdir build-rt && cd build-rt || exit /b
 cmake .. ^
     -DCMAKE_SYSTEM_NAME=WindowsStore ^
     -DCMAKE_SYSTEM_VERSION=10.0 ^
-    -DCORRADE_RC_EXECUTABLE=%APPVEYOR_BUILD_FOLDER%/deps-native/bin/corrade-rc.exe ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DWITH_INTERCONNECT=OFF ^
-    -DBUILD_STATIC=ON ^
+    -DCORRADE_RC_EXECUTABLE=%APPVEYOR_BUILD_FOLDER%/deps-native/bin/corrade-rc.exe ^
+    -DCORRADE_WITH_INTERCONNECT=OFF ^
+    -DCORRADE_BUILD_STATIC=ON ^
     -G "%GENERATOR%" -A x64 || exit /b
 cmake --build . --config Release --target install -- /m /v:m || exit /b
 cd .. || exit /b
@@ -46,10 +46,10 @@ mkdir build-rt && cd build-rt || exit /b
 cmake .. ^
     -DCMAKE_SYSTEM_NAME=WindowsStore ^
     -DCMAKE_SYSTEM_VERSION=10.0 ^
-    -DCORRADE_RC_EXECUTABLE=%APPVEYOR_BUILD_FOLDER%/deps-native/bin/corrade-rc.exe ^
     -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DSDL2_LIBRARY_RELEASE=%APPVEYOR_BUILD_FOLDER%/SDL/VisualC-WinRT/UWP_VS2015/X64/Release/SDL-UWP/SDL2.lib ^
     -DSDL2_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/SDL/include ^
+    -DCORRADE_RC_EXECUTABLE=%APPVEYOR_BUILD_FOLDER%/deps-native/bin/corrade-rc.exe ^
     -DWITH_AUDIO=OFF ^
     -DWITH_SDL2APPLICATION=ON ^
     -DWITH_ANYAUDIOIMPORTER=OFF ^
