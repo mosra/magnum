@@ -107,7 +107,7 @@ Vendor extension support:
 
 using namespace Magnum;
 
-int main(const int argc, const char** const argv) {
+int main(const int argc, const char* const* const argv) {
     Utility::Arguments args;
     args.addBooleanOption('s', "short").setHelp("short", "display just essential info and exit")
         .addBooleanOption("extension-strings").setHelp("extension-strings", "list all extension strings provided by the driver (implies --short)")

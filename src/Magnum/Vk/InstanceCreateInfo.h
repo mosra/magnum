@@ -54,7 +54,7 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          * @brief Instance creation flag
          *
          * Wraps @type_vk_keyword{InstanceCreateFlagBits}.
-         * @see @ref Flags, @ref InstanceCreateInfo(Int, const char**, const LayerProperties*, const InstanceExtensionProperties*, Flags)
+         * @see @ref Flags, @ref InstanceCreateInfo(Int, const char* const*, const LayerProperties*, const InstanceExtensionProperties*, Flags)
          */
         enum class Flag: UnsignedInt {
             /* Any magnum-specific flags added here have to be filtered out
@@ -77,7 +77,7 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          * @brief Instance creation flags
          *
          * Type-safe wrapper for @type_vk_keyword{InstanceCreateFlags}.
-         * @see @ref InstanceCreateInfo(Int, const char**, const LayerProperties*, const InstanceExtensionProperties*, Flags)
+         * @see @ref InstanceCreateInfo(Int, const char* const*, const LayerProperties*, const InstanceExtensionProperties*, Flags)
          */
         typedef Containers::EnumSet<Flag> Flags;
 
@@ -110,22 +110,10 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
             Instance instance{argc, argv};
            in which case all these overloads would need to be duplicated on
            Instance as well. */
-        /*implicit*/ InstanceCreateInfo(Int argc, const char** argv, const LayerProperties* layerProperties, const InstanceExtensionProperties* const extensionProperties, Flags flags = {});
+        /*implicit*/ InstanceCreateInfo(Int argc, const char* const* argv, const LayerProperties* layerProperties, const InstanceExtensionProperties* const extensionProperties, Flags flags = {});
 
         /** @overload */
-        /*implicit*/ InstanceCreateInfo(Int argc, char** argv, const LayerProperties* layerProperties, const InstanceExtensionProperties* extensionProperties, Flags flags = {}): InstanceCreateInfo{argc, const_cast<const char**>(argv), layerProperties, extensionProperties, flags} {}
-
-        /** @overload */
-        /*implicit*/ InstanceCreateInfo(Int argc, std::nullptr_t argv, const LayerProperties* layerProperties, const InstanceExtensionProperties* extensionProperties, Flags flags = {}): InstanceCreateInfo{argc, static_cast<const char**>(argv), layerProperties, extensionProperties, flags} {}
-
-        /** @overload */
-        /*implicit*/ InstanceCreateInfo(Int argc, const char** argv, Flags flags = {}): InstanceCreateInfo{argc, argv, nullptr, nullptr, flags} {}
-
-        /** @overload */
-        /*implicit*/ InstanceCreateInfo(Int argc, char** argv, Flags flags = {}): InstanceCreateInfo{argc, argv, nullptr, nullptr, flags} {}
-
-        /** @overload */
-        /*implicit*/ InstanceCreateInfo(Int argc, std::nullptr_t argv, Flags flags = {}): InstanceCreateInfo{argc, argv, nullptr, nullptr, flags} {}
+        /*implicit*/ InstanceCreateInfo(Int argc, const char* const* argv, Flags flags = {}): InstanceCreateInfo{argc, argv, nullptr, nullptr, flags} {}
 
         /** @overload */
         /*implicit*/ InstanceCreateInfo(Flags flags = {}): InstanceCreateInfo{0, nullptr, flags} {}

@@ -870,9 +870,9 @@ class MAGNUM_GL_EXPORT Context {
     #endif
         /* Made protected so it's possible to test the NoCreate constructor and
            also not needed to friend Platform::GLContext. */
-        explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader(Context&));
-        explicit Context(NoCreateT, Utility::Arguments&& args, Int argc, const char** argv, void functionLoader(Context&)): Context{NoCreate, args, argc, argv, functionLoader} {}
-        explicit Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&));
+        explicit Context(NoCreateT, Int argc, const char* const* argv, void functionLoader(Context&));
+        explicit Context(NoCreateT, Utility::Arguments&& args, Int argc, const char* const* argv, void functionLoader(Context&)): Context{NoCreate, args, argc, argv, functionLoader} {}
+        explicit Context(NoCreateT, Utility::Arguments& args, Int argc, const char* const* argv, void functionLoader(Context&));
 
         bool tryCreate(const Configuration& configuration);
         void create(const Configuration& configuration);

@@ -27,6 +27,6 @@
 
 namespace Magnum { namespace Vk { namespace Implementation {
 
-InstanceState::InstanceState(Instance&, Int argc, const char** argv): argc{argc}, argv{argv} {}
+InstanceState::InstanceState(Instance&, Int argc, const char* const* argv): argc{argc}, argv{argv} {}
 
 }}}

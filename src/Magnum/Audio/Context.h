@@ -205,25 +205,13 @@ class MAGNUM_AUDIO_EXPORT Context {
          * Parses command-line arguments, and creates OpenAL context with given
          * configuration.
          */
-        explicit Context(const Configuration& configuration, Int argc, const char** argv): Context(NoCreate, argc, argv) { create(configuration); }
-
-        /** @overload */
-        explicit Context(const Configuration& configuration, Int argc, char** argv): Context(configuration, argc, const_cast<const char**>(argv)) {}
-
-        /** @overload */
-        explicit Context(const Configuration& configuration, Int argc, std::nullptr_t argv): Context(configuration, argc, static_cast<const char**>(argv)) {}
+        explicit Context(const Configuration& configuration, Int argc, const char* const* argv): Context(NoCreate, argc, argv) { create(configuration); }
 
         /** @overload */
         explicit Context(const Configuration& configuration): Context(configuration, 0, nullptr) {}
 
         /** @overload */
-        explicit Context(Int argc, const char** argv);
-
-        /** @overload */
-        explicit Context(Int argc, char** argv): Context(argc, const_cast<const char**>(argv)) {}
-
-        /** @overload */
-        explicit Context(Int argc, std::nullptr_t argv): Context(argc, static_cast<const char**>(argv)) {}
+        explicit Context(Int argc, const char* const* argv);
 
         /** @overload */
         explicit Context(): Context(0, nullptr) {}
@@ -235,13 +223,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * time, for example to do a more involved configuration. Call
          * @ref create() or @ref tryCreate() to create the actual context.
          */
-        explicit Context(NoCreateT, Int argc, const char** argv) noexcept;
-
-        /** @overload */
-        explicit Context(NoCreateT, Int argc, char** argv) noexcept: Context(NoCreate, argc, const_cast<const char**>(argv)) {}
-
-        /** @overload */
-        explicit Context(NoCreateT, Int argc, std::nullptr_t argv) noexcept: Context(NoCreate, argc, static_cast<const char**>(argv)) {}
+        explicit Context(NoCreateT, Int argc, const char* const* argv) noexcept;
 
         /** @overload */
         explicit Context(NoCreateT) noexcept: Context{NoCreate, 0, nullptr} {}

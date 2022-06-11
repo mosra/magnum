@@ -182,9 +182,9 @@ Context& Context::current() {
     return *currentContext;
 }
 
-Context::Context(Int argc, const char** argv): Context(Configuration{}, argc, argv) {}
+Context::Context(const Int argc, const char* const* const argv): Context(Configuration{}, argc, argv) {}
 
-Context::Context(NoCreateT, Int argc, const char** argv) noexcept: _device{}, _context{} {
+Context::Context(NoCreateT, const Int argc, const char* const* const argv) noexcept: _device{}, _context{} {
     Utility::Arguments args{"magnum",
         Utility::Arguments::Flag::IgnoreUnknownOptions};
     args.addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")

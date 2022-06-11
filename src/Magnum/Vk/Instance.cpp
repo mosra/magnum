@@ -56,10 +56,10 @@ struct InstanceCreateInfo::State {
     bool quietLog = false;
     Version version = Version::None;
     Int argc;
-    const char** argv;
+    const char* const* argv;
 };
 
-InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char** const argv, const LayerProperties* const layerProperties, const InstanceExtensionProperties* extensionProperties, const Flags flags): _info{}, _applicationInfo{} {
+InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char* const* const argv, const LayerProperties* const layerProperties, const InstanceExtensionProperties* extensionProperties, const Flags flags): _info{}, _applicationInfo{} {
     Utility::Arguments args = Implementation::arguments();
     args.parse(argc, argv);
 
@@ -364,7 +364,7 @@ template<class T> void Instance::initializeExtensions(const Containers::ArrayVie
     }
 }
 
-void Instance::initialize(const Version version, const Int argc, const char** const argv) {
+void Instance::initialize(const Version version, const Int argc, const char* const* const argv) {
     /* Init version, function pointers */
     _version = version;
     flextVkInitInstance(_handle, &_functionPointers);

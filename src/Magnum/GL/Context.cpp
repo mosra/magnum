@@ -689,9 +689,9 @@ Context& Context::current() {
 
 void Context::makeCurrent(Context* context) { currentContext = context; }
 
-Context::Context(NoCreateT, Int argc, const char** argv, void functionLoader(Context&)): Context{NoCreate, Utility::Arguments{"magnum"}, argc, argv, functionLoader} {}
+Context::Context(NoCreateT, const Int argc, const char* const* const argv, void functionLoader(Context&)): Context{NoCreate, Utility::Arguments{"magnum"}, argc, argv, functionLoader} {}
 
-Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&)): _functionLoader{functionLoader}, _version{Version::None} {
+Context::Context(NoCreateT, Utility::Arguments& args, const Int argc, const char* const* const argv, void functionLoader(Context&)): _functionLoader{functionLoader}, _version{Version::None} {
     /* Parse arguments */
     CORRADE_INTERNAL_ASSERT(args.prefix() == "magnum");
     args.addOption("disable-workarounds").setHelp("disable-workarounds", "driver workarounds to disable\n      (see https://doc.magnum.graphics/magnum/opengl-workarounds.html for detailed info)", "LIST")

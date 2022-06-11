@@ -57,26 +57,20 @@ class GLContext: public GL::Context {
         /**
          * @brief Constructor
          *
-         * Equivalent to calling @ref GLContext(NoCreateT, Int, const char**)
+         * Equivalent to calling @ref GLContext(NoCreateT, Int, const char* const*)
          * followed by @ref create(const Configuration&).
          */
-        explicit GLContext(Int argc, const char** argv, const Configuration& configuration = {}): GLContext{NoCreate, argc, argv} {
+        explicit GLContext(Int argc, const char* const* argv, const Configuration& configuration = {}): GLContext{NoCreate, argc, argv} {
             create(configuration);
         }
-
-        /** @overload */
-        explicit GLContext(Int argc, char** argv, const Configuration& configuration = {}): GLContext{argc, const_cast<const char**>(argv), configuration} {}
-
-        /** @overload */
-        explicit GLContext(Int argc, std::nullptr_t argv, const Configuration& configuration = {}): GLContext{argc, static_cast<const char**>(argv), configuration} {}
 
         /**
          * @brief Default constructor
          *
          * Equivalent to passing @cpp {0, nullptr, configuration} @ce to
-         * @ref GLContext(Int, const char**, const Configuration&). Even if the
-         * command-line options are not propagated, it's still possible to
-         * affect the setup behavior from the environment or by passing a
+         * @ref GLContext(Int, const char* const*, const Configuration&). Even
+         * if the command-line options are not propagated, it's still possible
+         * to affect the setup behavior from the environment or by passing a
          * @relativeref{GL::Context,Configuration} instance. See
          * @ref GL-Context-usage for more information.
          */
@@ -88,26 +82,18 @@ class GLContext: public GL::Context {
          * Parses command-line arguments and sets @ref version() to
          * @ref GL::Version::None, everything else is left in an empty state.
          * Use @ref create() or @ref tryCreate() to create the context.
-         * @see @ref GLContext(Int, const char**, const Configuration&)
+         * @see @ref GLContext(Int, const char* const*, const Configuration&)
          */
-        explicit GLContext(NoCreateT, Int argc, const char** argv):
+        explicit GLContext(NoCreateT, Int argc, const char* const* argv):
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             GL::Context{NoCreate, argc, argv, flextGLInit} {}
             #else
             GL::Context{NoCreate, argc, argv, nullptr} {}
             #endif
 
-        /** @overload */
-        explicit GLContext(NoCreateT, Int argc, char** argv): GLContext{NoCreate, argc, const_cast<const char**>(argv)} {}
-
-        /** @overload */
-        explicit GLContext(NoCreateT, Int argc, std::nullptr_t argv): GLContext{NoCreate, argc, static_cast<const char**>(argv)} {}
-
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Used privately to inject additional command-line arguments */
-        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, char** argv): GLContext{NoCreate, args, argc, const_cast<const char**>(argv)} {}
-        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, std::nullptr_t argv): GLContext{NoCreate, args, argc, static_cast<const char**>(argv)} {}
-        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, const char** argv):
+        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, const char* const* argv):
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             GL::Context{NoCreate, args, argc, argv, flextGLInit} {}
             #else
@@ -119,7 +105,7 @@ class GLContext: public GL::Context {
          * @brief Construct with creation delayed to later
          *
          * Equivalent to passing @cpp {NoCreate, 0, nullptr} @ce to
-         * @ref GLContext(NoCreateT, Int, const char**). Even if the
+         * @ref GLContext(NoCreateT, Int, const char* const*). Even if the
          * command-line options are not propagated, it's still possible to
          * affect the renderer behavior from the environment or by passing
          * a @relativeref{GL::Context,Configuration} instance to @ref create()
@@ -130,14 +116,14 @@ class GLContext: public GL::Context {
         /**
          * @brief Create the context
          *
-         * Meant to be called on a @ref GLContext(NoCreateT, Int, char**) "NoCreate"'d
+         * Meant to be called on a @ref GLContext(NoCreateT, Int, const char* const*) "NoCreate"'d
          * instance. Parses command-line arguments, loads OpenGL function
          * pointers using a platform-specific API, does initial setup, detects
          * available features and enables them throughout the engine. If
          * detected version is unsupported or any other error occurs, a message
          * is printed to output and the application exits. See @ref tryCreate()
          * for an alternative.
-         * @see @ref GLContext(Int, char**, const Configuration&),
+         * @see @ref GLContext(Int, const char* const*, const Configuration&),
          *      @ref GL-Context-usage, @fn_gl{Get} with @def_gl{MAJOR_VERSION},
          *      @def_gl{MINOR_VERSION}, @def_gl{CONTEXT_FLAGS},
          *      @def_gl{NUM_EXTENSIONS}, @fn_gl{GetString} with

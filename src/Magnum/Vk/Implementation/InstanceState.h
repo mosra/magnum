@@ -30,10 +30,10 @@
 namespace Magnum { namespace Vk { namespace Implementation {
 
 struct InstanceState {
-    explicit InstanceState(Instance& instance, Int argc, const char** argv);
+    explicit InstanceState(Instance& instance, Int argc, const char* const* argv);
 
     Int argc;
-    const char** argv;
+    const char* const* argv;
 
     /* There are currently no instance-level extension-dependent code paths.
        Everything is currently in DeviceProperties internals, as
