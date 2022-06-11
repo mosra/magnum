@@ -215,20 +215,6 @@ option(BUILD_TESTS "Build unit tests" OFF)
 cmake_dependent_option(BUILD_GL_TESTS "Build unit tests for OpenGL code" OFF "BUILD_TESTS;TARGET_GL" OFF)
 cmake_dependent_option(BUILD_AL_TESTS "Build unit tests for OpenAL code" ON "BUILD_TESTS;WITH_AUDIO" OFF)
 cmake_dependent_option(BUILD_VK_TESTS "Build unit tests for Vulkan code" OFF "BUILD_TESTS;TARGET_VK" OFF)
-if(BUILD_TESTS)
-    find_package(Corrade REQUIRED TestSuite)
-    if(CORRADE_TARGET_IOS)
-        set(CORRADE_TESTSUITE_BUNDLE_IDENTIFIER_PREFIX "cz.mosra.magnum")
-    endif()
-    enable_testing()
-
-    # For experimental Gradle-less Android APK creation. Only with CMake > 3.7
-    # that has builtin Android support -- Gradle uses 3.6 so this will nicely
-    # work in both cases.
-    if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
-        include(${PROJECT_SOURCE_DIR}/toolchains/modules/UseAndroid.cmake)
-    endif()
-endif()
 
 # OpenGLTester / VulkanTester libraries, built by default only if GL / VK tests
 # are enabled
@@ -302,6 +288,22 @@ if(TARGET_HEADLESS)
 endif()
 if(TARGET_VK)
     set(MAGNUM_TARGET_VK 1)
+endif()
+
+# Testing setup
+if(BUILD_TESTS)
+    find_package(Corrade REQUIRED TestSuite)
+    if(CORRADE_TARGET_IOS)
+        set(CORRADE_TESTSUITE_BUNDLE_IDENTIFIER_PREFIX "cz.mosra.magnum")
+    endif()
+    enable_testing()
+
+    # For experimental Gradle-less Android APK creation. Only with CMake > 3.7
+    # that has builtin Android support -- Gradle uses 3.6 so this will nicely
+    # work in both cases.
+    if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
+        include(${PROJECT_SOURCE_DIR}/toolchains/modules/UseAndroid.cmake)
+    endif()
 endif()
 
 if(WITH_OPENGLTESTER)
