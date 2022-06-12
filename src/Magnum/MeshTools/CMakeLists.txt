@@ -70,7 +70,7 @@ set(MagnumMeshTools_HEADERS
 set(MagnumMeshTools_INTERNAL_HEADERS
     Implementation/Tipsify.h)
 
-if(BUILD_DEPRECATED)
+if(MAGNUM_BUILD_DEPRECATED)
     list(APPEND MagnumMeshTools_GracefulAssert_SRCS
         CombineIndexedArrays.cpp)
     list(APPEND MagnumMeshTools_HEADERS
@@ -78,7 +78,7 @@ if(BUILD_DEPRECATED)
         GenerateFlatNormals.h)
 endif()
 
-if(TARGET_GL)
+if(MAGNUM_TARGET_GL)
     list(APPEND MagnumMeshTools_SRCS
         FullScreenTriangle.cpp)
 
@@ -96,13 +96,13 @@ add_library(MagnumMeshToolsObjects OBJECT
     ${MagnumMeshTools_HEADERS}
     ${MagnumMeshTools_INTERNAL_HEADERS})
 target_include_directories(MagnumMeshToolsObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumMeshToolsObjects PRIVATE "MagnumMeshToolsObjects_EXPORTS")
 endif()
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumMeshToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-if(TARGET_GL)
+if(MAGNUM_TARGET_GL)
     target_include_directories(MagnumMeshToolsObjects PUBLIC $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
 endif()
 
@@ -111,14 +111,14 @@ add_library(MagnumMeshTools ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumMeshToolsObjects>
     ${MagnumMeshTools_GracefulAssert_SRCS})
 set_target_properties(MagnumMeshTools PROPERTIES DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumMeshTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumMeshTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumMeshTools PUBLIC
     Magnum MagnumTrade)
-if(TARGET_GL)
+if(MAGNUM_TARGET_GL)
     target_link_libraries(MagnumMeshTools PUBLIC MagnumGL)
 endif()
 
@@ -128,7 +128,7 @@ install(TARGETS MagnumMeshTools
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumMeshTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/MeshTools)
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumMeshToolsTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMeshToolsObjects>
@@ -136,12 +136,12 @@ if(BUILD_TESTS)
     set_target_properties(MagnumMeshToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumMeshToolsTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumMeshTools_EXPORTS")
-    if(BUILD_STATIC_PIC)
+    if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumMeshToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumMeshToolsTestLib PUBLIC
         Magnum MagnumTrade)
-    if(TARGET_GL)
+    if(MAGNUM_TARGET_GL)
         target_link_libraries(MagnumMeshToolsTestLib PUBLIC MagnumGL)
     endif()
 

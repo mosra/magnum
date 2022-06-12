@@ -29,7 +29,7 @@ set(CMAKE_FOLDER "MagnumPlugins/WavAudioImporter")
 
 find_package(Corrade REQUIRED PluginManager)
 
-if(BUILD_PLUGINS_STATIC AND NOT DEFINED MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC)
+if(MAGNUM_BUILD_PLUGINS_STATIC AND NOT DEFINED MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC)
     set(MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC 1)
 endif()
 
@@ -46,7 +46,7 @@ target_include_directories(WavAudioImporterObjects PUBLIC
 if(NOT MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC)
     target_compile_definitions(WavAudioImporterObjects PRIVATE "WavAudioImporterObjects_EXPORTS")
 endif()
-if(NOT MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(WavAudioImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
@@ -58,7 +58,7 @@ add_plugin(WavAudioImporter
     WavImporter.cpp
     WavImporter.h
     $<TARGET_OBJECTS:WavAudioImporterObjects>)
-if(MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC AND BUILD_STATIC_PIC)
+if(MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC AND MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(WavAudioImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(WavAudioImporter PUBLIC Magnum MagnumAudio)
@@ -79,7 +79,7 @@ if(MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC)
     target_sources(WavAudioImporter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 

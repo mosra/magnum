@@ -50,9 +50,9 @@ benchmarking. Be sure to read its documentation first to have an overview of
 the base features.
 
 This class is built into a separate static library and only if
-`WITH_VULKANTESTER` is enabled when building Magnum. To use it with CMake,
-request the `VulkanTester` component of the `Magnum` package. Derive your test
-class from this class instead of @ref Corrade::TestSuite::Tester and
+`MAGNUM_WITH_VULKANTESTER` is enabled when building Magnum. To use it with
+CMake, request the `VulkanTester` component of the `Magnum` package. Derive
+your test class from this class instead of @ref Corrade::TestSuite::Tester and
 either link to `Magnum::VulkanTester` target or add it to the `LIBRARIES`
 section of the @ref corrade-cmake-add-test "corrade_add_test()" macro:
 

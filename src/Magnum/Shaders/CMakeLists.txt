@@ -27,8 +27,8 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/Shaders")
 
-if(NOT WITH_GL)
-    message(SEND_ERROR "Shaders are available only if WITH_GL is enabled")
+if(NOT MAGNUM_WITH_GL)
+    message(SEND_ERROR "Shaders are available only if MAGNUM_WITH_GL is enabled")
 endif()
 
 corrade_add_resource(MagnumShaders_RESOURCES_GL resources-gl.conf)
@@ -74,7 +74,7 @@ set(MagnumShaders_PRIVATE_HEADERS Implementation/CreateCompatibilityShader.h)
 add_library(MagnumShadersObjects OBJECT
     ${MagnumShaders_SRCS}
     ${MagnumShaders_HEADERS})
-if(BUILD_STATIC)
+if(MAGNUM_BUILD_STATIC)
     # On the static build we're importing the resources manually, so no need to
     # have the implicit initializers as well.
     set_property(SOURCE ${MagnumShaders_RCS} APPEND PROPERTY COMPILE_DEFINITIONS
@@ -84,10 +84,10 @@ endif()
 target_include_directories(MagnumShadersObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumShadersObjects PRIVATE "MagnumShadersObjects_EXPORTS")
 endif()
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumShadersObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
@@ -96,9 +96,9 @@ add_library(MagnumShaders ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumShadersObjects>
     ${MagnumShaders_GracefulAssert_SRCS})
 set_target_properties(MagnumShaders PROPERTIES DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumShaders PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumShaders PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumShaders PUBLIC
@@ -111,7 +111,7 @@ install(TARGETS MagnumShaders
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumShaders_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Shaders)
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumShadersTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumShadersObjects>
@@ -119,7 +119,7 @@ if(BUILD_TESTS)
     set_target_properties(MagnumShadersTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumShadersTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumShaders_EXPORTS")
-    if(BUILD_STATIC_PIC)
+    if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumShadersTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumShadersTestLib PUBLIC

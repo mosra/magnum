@@ -48,10 +48,11 @@ things:
     guaranteed to stay in the codebase for a year at least (or two subsequent
     version releases, whichever is longer) and only then they get removed. To
     make sure you're no longer using any deprecated functionality, it's
-    possible to disable the `BUILD_DEPRECATED` @ref building-features "CMake option"
-    when building Magnum, although for a smoother experience it's recommended
-    to flip this option back on when upgrading. A list of deprecated APIs is
-    maintained @ref changelog-latest-deprecated "in the changelog".
+    possible to disable the `MAGNUM_BUILD_DEPRECATED`
+    @ref building-features "CMake option" when building Magnum, although for a
+    smoother experience it's recommended to flip this option back on when
+    upgrading. A list of deprecated APIs is maintained
+    @ref changelog-latest-deprecated "in the changelog".
 -   In some rare cases, it's impossible to provide a deprecated migration path
     and an API gets changed in a backwards-incompatible manner, directly
     leading to a compile error. Another possibility is that transitive header

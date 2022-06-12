@@ -37,7 +37,7 @@ set_directory_properties(PROPERTIES
     CORRADE_USE_PEDANTIC_FLAGS ON)
 
 # Emscripten needs special flag to use WebGL 2
-if(CORRADE_TARGET_EMSCRIPTEN AND NOT TARGET_GLES2)
+if(CORRADE_TARGET_EMSCRIPTEN AND NOT MAGNUM_TARGET_GLES2)
     # TODO: give me INTERFACE_LINK_OPTIONS or something, please
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
 endif()
@@ -68,11 +68,11 @@ if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_VERSION VERS
     set_target_properties(snippets-Magnum-cpp14 PROPERTIES CORRADE_CXX_STANDARD 14)
 endif()
 
-if(WITH_AUDIO)
+if(MAGNUM_WITH_AUDIO)
     add_library(snippets-MagnumAudio STATIC MagnumAudio.cpp)
     target_link_libraries(snippets-MagnumAudio PRIVATE MagnumAudio)
 
-    if(WITH_SCENEGRAPH)
+    if(MAGNUM_WITH_SCENEGRAPH)
         add_library(snippets-MagnumAudio-scenegraph STATIC
             MagnumAudio-scenegraph.cpp)
         target_link_libraries(snippets-MagnumAudio-scenegraph PRIVATE
@@ -81,7 +81,7 @@ if(WITH_AUDIO)
     endif()
 endif()
 
-if(WITH_GL)
+if(MAGNUM_WITH_GL)
     add_library(snippets-MagnumGL STATIC
         MagnumGL.cpp
         MagnumMeshTools-gl.cpp
@@ -90,20 +90,20 @@ if(WITH_GL)
     target_link_libraries(snippets-MagnumGL PRIVATE MagnumGL)
 endif()
 
-if(WITH_MESHTOOLS)
+if(MAGNUM_WITH_MESHTOOLS)
     add_library(snippets-MagnumMeshTools STATIC
         MagnumMeshTools.cpp
         MagnumMeshTools-gl.cpp)
     target_link_libraries(snippets-MagnumMeshTools PRIVATE MagnumMeshTools)
 endif()
 
-if(WITH_SHADERTOOLS)
+if(MAGNUM_WITH_SHADERTOOLS)
     add_library(snippets-MagnumShaderTools STATIC
         MagnumShaderTools.cpp)
     target_link_libraries(snippets-MagnumShaderTools PRIVATE MagnumShaderTools)
 endif()
 
-if(WITH_TRADE)
+if(MAGNUM_WITH_TRADE)
     add_library(snippets-MagnumTrade STATIC
         plugins.cpp
         MagnumTrade.cpp)
@@ -115,12 +115,12 @@ endif()
 
 find_package(Corrade COMPONENTS TestSuite)
 
-if(WITH_DEBUGTOOLS)
+if(MAGNUM_WITH_DEBUGTOOLS)
     add_library(snippets-MagnumDebugTools STATIC
         MagnumDebugTools.cpp)
     target_link_libraries(snippets-MagnumDebugTools PRIVATE MagnumDebugTools)
 
-    if(BUILD_GL_TESTS AND NOT MAGNUM_TARGET_GLES)
+    if(MAGNUM_BUILD_GL_TESTS AND NOT MAGNUM_TARGET_GLES)
         add_executable(debugtools-frameprofiler debugtools-frameprofiler.cpp)
         target_link_libraries(debugtools-frameprofiler PRIVATE
             MagnumDebugTools MagnumOpenGLTester)
@@ -143,25 +143,25 @@ if(WITH_DEBUGTOOLS)
         target_include_directories(debugtools-compareimage PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     endif()
 
-    if(TARGET_GL)
+    if(MAGNUM_TARGET_GL)
         add_library(snippets-MagnumDebugTools-gl STATIC
             MagnumDebugTools-gl.cpp)
         target_link_libraries(snippets-MagnumDebugTools-gl PRIVATE MagnumDebugTools)
     endif()
 endif()
 
-if(WITH_PRIMITIVES)
+if(MAGNUM_WITH_PRIMITIVES)
     add_library(snippets-MagnumPrimitives STATIC
         MagnumPrimitives.cpp)
     target_link_libraries(snippets-MagnumPrimitives PRIVATE MagnumPrimitives)
 endif()
 
-if(WITH_SCENEGRAPH)
+if(MAGNUM_WITH_SCENEGRAPH)
     add_library(snippets-MagnumSceneGraph STATIC
         MagnumSceneGraph.cpp)
     target_link_libraries(snippets-MagnumSceneGraph PRIVATE MagnumSceneGraph)
 
-    if(WITH_SDL2APPLICATION AND WITH_GL AND WITH_PRIMITIVES AND WITH_SHADERS AND WITH_MESHTOOLS)
+    if(MAGNUM_WITH_SDL2APPLICATION AND MAGNUM_WITH_GL AND MAGNUM_WITH_PRIMITIVES AND MAGNUM_WITH_SHADERS AND MAGNUM_WITH_MESHTOOLS)
         add_library(snippets-MagnumSceneGraph-gl STATIC
             MagnumSceneGraph-gl.cpp)
         target_link_libraries(snippets-MagnumSceneGraph-gl PRIVATE
@@ -174,18 +174,18 @@ if(WITH_SCENEGRAPH)
     endif()
 endif()
 
-if(WITH_SCENETOOLS)
+if(MAGNUM_WITH_SCENETOOLS)
     add_library(snippets-MagnumSceneTools STATIC
         MagnumSceneTools.cpp)
     target_link_libraries(snippets-MagnumSceneTools PRIVATE MagnumSceneTools)
 endif()
 
-if(WITH_VK)
+if(MAGNUM_WITH_VK)
     add_library(snippets-MagnumVk STATIC MagnumVk.cpp)
     target_link_libraries(snippets-MagnumVk PRIVATE MagnumVk)
 endif()
 
-if(WITH_SDL2APPLICATION AND TARGET_GL)
+if(MAGNUM_WITH_SDL2APPLICATION AND MAGNUM_TARGET_GL)
     add_executable(getting-started getting-started.cpp)
     add_executable(getting-started-blue getting-started-blue.cpp)
     target_link_libraries(getting-started PRIVATE MagnumSdl2Application)
@@ -197,16 +197,16 @@ if(WITH_SDL2APPLICATION AND TARGET_GL)
     target_link_libraries(snippets-MagnumPlatform PRIVATE MagnumSdl2Application)
 endif()
 
-if((NOT TARGET_GLES AND WITH_SDL2APPLICATION) OR (TARGET_GLES AND WITH_XEGLAPPLICATION))
+if((NOT MAGNUM_TARGET_GLES AND MAGNUM_WITH_SDL2APPLICATION) OR (MAGNUM_TARGET_GLES AND MAGNUM_WITH_XEGLAPPLICATION))
     add_library(snippets-MagnumPlatform-portability STATIC MagnumPlatform-portability.cpp)
-    if(TARGET_GLES)
+    if(MAGNUM_TARGET_GLES)
         target_link_libraries(snippets-MagnumPlatform-portability PRIVATE MagnumXEglApplication)
     else()
         target_link_libraries(snippets-MagnumPlatform-portability PRIVATE MagnumSdl2Application)
     endif()
 endif()
 
-if(WITH_WINDOWLESSEGLAPPLICATION)
+if(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION)
     add_library(snippets-MagnumPlatform-custom STATIC MagnumPlatform-custom.cpp)
     add_library(snippets-MagnumPlatform-windowless STATIC MagnumPlatform-windowless.cpp)
     add_library(snippets-MagnumPlatform-windowless-custom STATIC MagnumPlatform-windowless-custom.cpp)

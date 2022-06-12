@@ -112,7 +112,7 @@ set(MagnumGL_PRIVATE_HEADERS
     Implementation/TextureState.h)
 
 # Desktop-only stuff
-if(NOT TARGET_GLES)
+if(NOT MAGNUM_TARGET_GLES)
     list(APPEND MagnumGL_SRCS
         PipelineStatisticsQuery.cpp
         RectangleTexture.cpp)
@@ -122,7 +122,7 @@ if(NOT TARGET_GLES)
 endif()
 
 # OpenGL ES 3.0 and WebGL 2.0 stuff
-if(NOT TARGET_GLES2)
+if(NOT MAGNUM_TARGET_GLES2)
     list(APPEND MagnumGL_SRCS
         PrimitiveQuery.cpp
         TextureArray.cpp
@@ -144,7 +144,7 @@ if(NOT TARGET_GLES2)
 endif()
 
 # Desktop and OpenGL ES stuff that is not available in WebGL
-if(NOT TARGET_WEBGL)
+if(NOT MAGNUM_TARGET_WEBGL)
     list(APPEND MagnumGL_SRCS
         DebugOutput.cpp
 
@@ -157,7 +157,7 @@ if(NOT TARGET_WEBGL)
         Implementation/DebugState.h)
 
     # Desktop and OpenGL ES 3.0 stuff that is not available in ES2 and WebGL
-    if(NOT TARGET_GLES2)
+    if(NOT MAGNUM_TARGET_GLES2)
         list(APPEND MagnumGL_SRCS
             BufferTexture.cpp
             CubeMapTextureArray.cpp
@@ -172,7 +172,7 @@ if(NOT TARGET_WEBGL)
 endif()
 
 # Desktop, OpenGL ES and WebGL 2.0 stuff that is not available in WebGL 1.0
-if(NOT (TARGET_WEBGL AND TARGET_GLES2))
+if(NOT (MAGNUM_TARGET_WEBGL AND MAGNUM_TARGET_GLES2))
     list(APPEND MagnumGL_SRCS
         SampleQuery.cpp)
     list(APPEND MagnumGL_HEADERS
@@ -189,10 +189,10 @@ add_library(MagnumGLObjects OBJECT
 # where only our headers will be used
 target_include_directories(MagnumGLObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumGLObjects PRIVATE "MagnumGLObjects_EXPORTS" "FlextGL_EXPORTS")
 endif()
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumGLObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
@@ -207,14 +207,14 @@ add_library(MagnumGL ${SHARED_OR_STATIC}
     ${MagnumGL_FlextGL_SRCS}
     ${MagnumGL_GracefulAssert_SRCS})
 set_target_properties(MagnumGL PROPERTIES DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumGL PRIVATE "FlextGL_EXPORTS")
     set_target_properties(MagnumGL PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumGL PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumGL PUBLIC Magnum)
-if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
+if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
     # If the GLVND library (CMake 3.11+) was found, link to the imported
     # target. Otherwise (and also on all systems except Linux) link to the
     # classic libGL. Can't use OpenGL_OpenGL_FOUND, because that one is set
@@ -226,7 +226,7 @@ if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
     else()
         target_link_libraries(MagnumGL PUBLIC ${OPENGL_gl_LIBRARY})
     endif()
-elseif(TARGET_GLES2)
+elseif(MAGNUM_TARGET_GLES2)
     target_link_libraries(MagnumGL PUBLIC OpenGLES2::OpenGLES2)
 else()
     target_link_libraries(MagnumGL PUBLIC OpenGLES3::OpenGLES3)
@@ -239,9 +239,9 @@ install(TARGETS MagnumGL
 install(FILES ${MagnumGL_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/GL)
 
 # OpenGLTester class
-if(WITH_OPENGLTESTER)
-    if(NOT TARGET_GL)
-        message(SEND_ERROR "OpenGLTester is available only if TARGET_GL is enabled")
+if(MAGNUM_WITH_OPENGLTESTER)
+    if(NOT MAGNUM_TARGET_GL)
+        message(SEND_ERROR "OpenGLTester is available only if MAGNUM_TARGET_GL is enabled")
     endif()
 
     find_package(Corrade REQUIRED TestSuite)
@@ -283,7 +283,7 @@ if(WITH_OPENGLTESTER)
     add_library(Magnum::OpenGLTester ALIAS MagnumOpenGLTester)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumGLTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumGLObjects>
@@ -292,12 +292,12 @@ if(BUILD_TESTS)
     set_target_properties(MagnumGLTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumGLTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumGL_EXPORTS" "FlextGL_EXPORTS")
-    if(BUILD_STATIC_PIC)
+    if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumGLTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumGLTestLib PUBLIC
         Magnum)
-    if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
+    if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
         # If the GLVND library (CMake 3.11+) was found, link to the imported
         # target. Otherwise (and also on all systems except Linux) link to the
         # classic libGL. Can't use OpenGL_OpenGL_FOUND, because that one is set
@@ -309,13 +309,13 @@ if(BUILD_TESTS)
         else()
             target_link_libraries(MagnumGLTestLib PUBLIC ${OPENGL_gl_LIBRARY})
         endif()
-    elseif(TARGET_GLES2)
+    elseif(MAGNUM_TARGET_GLES2)
         target_link_libraries(MagnumGLTestLib PUBLIC OpenGLES2::OpenGLES2)
     else()
         target_link_libraries(MagnumGLTestLib PUBLIC OpenGLES3::OpenGLES3)
     endif()
 
-    if(BUILD_GL_TESTS)
+    if(MAGNUM_BUILD_GL_TESTS)
         add_library(MagnumOpenGLTesterTestLib STATIC
             $<TARGET_OBJECTS:MagnumOpenGLTesterObjects>
             ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details

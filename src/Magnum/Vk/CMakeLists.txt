@@ -157,10 +157,10 @@ add_library(MagnumVkObjects OBJECT
     ${MagnumVk_PRIVATE_HEADERS})
 target_include_directories(MagnumVkObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumVkObjects PRIVATE "MagnumVkObjects_EXPORTS" "FlextVk_EXPORTS")
 endif()
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumVkObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
@@ -170,10 +170,10 @@ add_library(MagnumVk ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumFlextVkObjects>
     ${MagnumVk_GracefulAssert_SRCS})
 set_target_properties(MagnumVk PROPERTIES DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumVk PRIVATE "FlextVk_EXPORTS")
     set_target_properties(MagnumVk PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumVk PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_include_directories(MagnumVk PUBLIC
@@ -189,7 +189,7 @@ install(TARGETS MagnumVk
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumVk_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Vk)
 
-if(WITH_VK_INFO)
+if(MAGNUM_WITH_VK_INFO)
     add_executable(magnum-vk-info vk-info.cpp)
     target_link_libraries(magnum-vk-info PRIVATE MagnumVk)
 
@@ -199,9 +199,9 @@ if(WITH_VK_INFO)
     add_executable(Magnum::vk-info ALIAS magnum-vk-info)
 endif()
 
-if(WITH_VULKANTESTER)
-    if(NOT TARGET_VK)
-        message(SEND_ERROR "VulkanTester is available only if TARGET_VK is enabled")
+if(MAGNUM_WITH_VULKANTESTER)
+    if(NOT MAGNUM_TARGET_VK)
+        message(SEND_ERROR "VulkanTester is available only if MAGNUM_TARGET_VK is enabled")
     endif()
 
     find_package(Corrade REQUIRED TestSuite)
@@ -228,7 +228,7 @@ if(WITH_VULKANTESTER)
     add_library(Magnum::VulkanTester ALIAS MagnumVulkanTester)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumVkTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumVkObjects>
@@ -237,7 +237,7 @@ if(BUILD_TESTS)
     set_target_properties(MagnumVkTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumVkTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumVk_EXPORTS" "FlextVk_EXPORTS")
-    if(BUILD_STATIC_PIC)
+    if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumVkTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumVkTestLib PUBLIC

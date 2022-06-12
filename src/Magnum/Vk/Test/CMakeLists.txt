@@ -29,7 +29,7 @@
 set(CMAKE_FOLDER "Magnum/Vk/Test")
 
 # Inputs to configure.h needed only by Vulkan tests
-if(BUILD_VK_TESTS)
+if(MAGNUM_BUILD_VK_TESTS)
     # Otherwise CMake complains that Corrade::PluginManager is not found, wtf
     find_package(Corrade REQUIRED PluginManager)
 
@@ -44,18 +44,18 @@ if(BUILD_VK_TESTS)
     # Corrade doesn't support dynamic plugins on iOS, this sorta works around
     # that. Should be revisited when updating Travis to newer Xcode (xcode7.3
     # has CMake 3.6).
-    if(NOT BUILD_PLUGINS_STATIC)
-        if(WITH_ANYIMAGEIMPORTER)
+    if(NOT MAGNUM_BUILD_PLUGINS_STATIC)
+        if(MAGNUM_WITH_ANYIMAGEIMPORTER)
             set(ANYIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageImporter>)
         endif()
-        if(WITH_TGAIMPORTER)
+        if(MAGNUM_WITH_TGAIMPORTER)
             set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
         endif()
     endif()
 endif()
 
 # The file is needed by VkShaderTest as well, so it's created always, not just
-# for BUILD_VK_TESTS. First replace ${} variables, then $<> generator
+# for MAGNUM_BUILD_VK_TESTS. First replace ${} variables, then $<> generator
 # expressions.
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
@@ -158,7 +158,7 @@ target_compile_definitions(VkAssertStandardDisabledTest PRIVATE
 
 corrade_add_test(VkVersionTest VersionTest.cpp LIBRARIES MagnumVk)
 
-if(BUILD_VK_TESTS)
+if(MAGNUM_BUILD_VK_TESTS)
     corrade_add_test(VkBufferVkTest BufferVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)
     corrade_add_test(VkCommandBufferVkTest CommandBufferVkTest.cpp LIBRARIES MagnumVulkanTester)
     corrade_add_test(VkCommandPoolVkTest CommandPoolVkTest.cpp LIBRARIES MagnumVulkanTester)
@@ -186,19 +186,19 @@ if(BUILD_VK_TESTS)
             MeshTestFiles/vertexcolor.spv
             MeshTestFiles/vertexcolor.tga)
     target_include_directories(VkMeshVkTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
-    if(BUILD_PLUGINS_STATIC)
-        if(WITH_ANYIMAGEIMPORTER)
+    if(MAGNUM_BUILD_PLUGINS_STATIC)
+        if(MAGNUM_WITH_ANYIMAGEIMPORTER)
             target_link_libraries(VkMeshVkTest PRIVATE AnyImageImporter)
         endif()
-        if(WITH_TGAIMPORTER)
+        if(MAGNUM_WITH_TGAIMPORTER)
             target_link_libraries(VkMeshVkTest PRIVATE TgaImporter)
         endif()
     else()
         # So the plugins get properly built when building the test
-        if(WITH_ANYIMAGEIMPORTER)
+        if(MAGNUM_WITH_ANYIMAGEIMPORTER)
             add_dependencies(VkMeshVkTest AnyImageImporter)
         endif()
-        if(WITH_TGAIMPORTER)
+        if(MAGNUM_WITH_TGAIMPORTER)
             add_dependencies(VkMeshVkTest TgaImporter)
         endif()
     endif()

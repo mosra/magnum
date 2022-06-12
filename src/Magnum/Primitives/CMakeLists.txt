@@ -76,9 +76,9 @@ add_library(MagnumPrimitives ${SHARED_OR_STATIC}
     ${MagnumPrimitives_PRIVATE_HEADERS})
 set_target_properties(MagnumPrimitives PROPERTIES
     DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumPrimitives PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumPrimitives PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumPrimitives PUBLIC
@@ -92,7 +92,7 @@ install(TARGETS MagnumPrimitives
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumPrimitives_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Primitives)
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 

@@ -1041,8 +1041,8 @@ quick, the log is spitting out a lot of info all the time. Possible causes:
     [official API level documentation](https://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels)
     for more information.
 -   The device doesn't support OpenGL ES 3.0 yet. Rebuild Magnum and its
-    dependencies with the `TARGET_GLES2` option enabled. See @ref building-features
-    for more information.
+    dependencies with the `MAGNUM_TARGET_GLES2` option enabled. See
+    @ref building-features for more information.
 -   Loading fails with `ANativeActivity_onCreate` symbol not being found. If
     you are using @ref Platform::AndroidApplication, this issue should be
     prevented, otherwise you need to add `-u ANativeActivity_onCreate` to your

@@ -65,10 +65,10 @@ namespace Magnum {
 @m_footernavigation
 @m_keywords{magnum-sceneconverter sceneconverter}
 
-This utility is built if `WITH_SCENECONVERTER` is enabled when building Magnum.
-To use this utility with CMake, you need to request the `sceneconverter`
-component of the `Magnum` package and use the `Magnum::sceneconverter` target
-for example in a custom command:
+This utility is built if `MAGNUM_WITH_SCENECONVERTER` is enabled when building
+Magnum. To use this utility with CMake, you need to request the
+`sceneconverter` component of the `Magnum` package and use the
+`Magnum::sceneconverter` target for example in a custom command:
 
 @code{.cmake}
 find_package(Magnum REQUIRED imageconverter)

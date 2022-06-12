@@ -56,9 +56,9 @@ but these structs are better suited for compile-time decisions rather than
 @ref Extension instances. See @ref Instance::isExtensionEnabled() for example
 usage.
 
-This library is built if `WITH_VK` is enabled when building Magnum. To use this
-library with CMake, you need to request the `Vk` component of the `Magnum`
-package and link to the `Magnum::Vk` target:
+This library is built if `MAGNUM_WITH_VK` is enabled when building Magnum. To
+use this library with CMake, you need to request the `Vk` component of the
+`Magnum` package and link to the `Magnum::Vk` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Vk)

@@ -78,14 +78,14 @@ a `RIFX` header) are supported, data is converted to machine endian on import.
 
 @section Audio-WavImporter-usage Usage
 
-This plugin is built if `WITH_WAVAUDIOIMPORTER` is enabled when building
+This plugin is built if `MAGNUM_WITH_WAVAUDIOIMPORTER` is enabled when building
 Magnum. To use dynamic plugin, load @cpp "WavAudioImporter" @ce
 via @ref Corrade::PluginManager::Manager.
 
 Additionally, if you're using Magnum as a CMake subproject, do the following:
 
 @code{.cmake}
-set(WITH_WAVAUDIOIMPORTER ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_WAVAUDIOIMPORTER ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
 # So the dynamically loaded plugin gets built implicitly

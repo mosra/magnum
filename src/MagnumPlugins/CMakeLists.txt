@@ -35,50 +35,50 @@ macro(add_plugin plugin_name debug_install_dirs release_install_dirs metadata_fi
     endif()
 endmacro()
 
-if(WITH_ANYAUDIOIMPORTER)
+if(MAGNUM_WITH_ANYAUDIOIMPORTER)
     add_subdirectory(AnyAudioImporter)
 endif()
 
-if(WITH_ANYIMAGEIMPORTER)
+if(MAGNUM_WITH_ANYIMAGEIMPORTER)
     add_subdirectory(AnyImageImporter)
 endif()
 
-if(WITH_ANYIMAGECONVERTER)
+if(MAGNUM_WITH_ANYIMAGECONVERTER)
     add_subdirectory(AnyImageConverter)
 endif()
 
-if(WITH_ANYSCENECONVERTER)
+if(MAGNUM_WITH_ANYSCENECONVERTER)
     add_subdirectory(AnySceneConverter)
 endif()
 
-if(WITH_ANYSCENEIMPORTER)
+if(MAGNUM_WITH_ANYSCENEIMPORTER)
     add_subdirectory(AnySceneImporter)
 endif()
 
-if(WITH_ANYSHADERCONVERTER)
+if(MAGNUM_WITH_ANYSHADERCONVERTER)
     add_subdirectory(AnyShaderConverter)
 endif()
 
-if(WITH_MAGNUMFONT)
+if(MAGNUM_WITH_MAGNUMFONT)
     add_subdirectory(MagnumFont)
 endif()
 
-if(WITH_MAGNUMFONTCONVERTER)
+if(MAGNUM_WITH_MAGNUMFONTCONVERTER)
     add_subdirectory(MagnumFontConverter)
 endif()
 
-if(WITH_OBJIMPORTER)
+if(MAGNUM_WITH_OBJIMPORTER)
     add_subdirectory(ObjImporter)
 endif()
 
-if(WITH_TGAIMAGECONVERTER)
+if(MAGNUM_WITH_TGAIMAGECONVERTER)
     add_subdirectory(TgaImageConverter)
 endif()
 
-if(WITH_TGAIMPORTER)
+if(MAGNUM_WITH_TGAIMPORTER)
     add_subdirectory(TgaImporter)
 endif()
 
-if(WITH_WAVAUDIOIMPORTER)
+if(MAGNUM_WITH_WAVAUDIOIMPORTER)
     add_subdirectory(WavAudioImporter)
 endif()

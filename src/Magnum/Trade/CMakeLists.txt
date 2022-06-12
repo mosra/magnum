@@ -123,10 +123,10 @@ add_library(MagnumTradeObjects OBJECT
 target_include_directories(MagnumTradeObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumTradeObjects PRIVATE "MagnumTradeObjects_EXPORTS")
 endif()
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumTradeObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
@@ -135,9 +135,9 @@ add_library(MagnumTrade ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumTradeObjects>
     ${MagnumTrade_GracefulAssert_SRCS})
 set_target_properties(MagnumTrade PROPERTIES DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumTrade PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumTrade PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumTrade PUBLIC
@@ -150,7 +150,7 @@ install(TARGETS MagnumTrade
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumTrade_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Trade)
 
-if(WITH_IMAGECONVERTER)
+if(MAGNUM_WITH_IMAGECONVERTER)
     set(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
 
@@ -168,7 +168,7 @@ if(WITH_IMAGECONVERTER)
     add_executable(Magnum::imageconverter ALIAS magnum-imageconverter)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumTradeTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumTradeObjects>
@@ -176,7 +176,7 @@ if(BUILD_TESTS)
     target_compile_definitions(MagnumTradeTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumTrade_EXPORTS")
     set_target_properties(MagnumTradeTestLib PROPERTIES DEBUG_POSTFIX "-d")
-    if(BUILD_STATIC_PIC)
+    if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumTradeTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumTradeTestLib

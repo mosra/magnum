@@ -276,7 +276,7 @@ See @ref cmake for more information.
 
 @section Platform-WindowlessIosApplication-usage General usage
 
-This application library is built if `WITH_WINDOWLESSIOSAPPLICATION` is
+This application library is built if `MAGNUM_WITH_WINDOWLESSIOSAPPLICATION` is
 enabled when building Magnum. To use this library from CMake, put [FindEGL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindEGL.cmake)
 into your `modules/` directory, request the `WindowlessIosApplication`
 component of the `Magnum` package and link to the
@@ -299,7 +299,7 @@ Additionally, if you're using Magnum as a CMake subproject, do the following
 library is not built by default:
 
 @code{.cmake}
-set(WITH_WINDOWLESSIOSAPPLICATION ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_WINDOWLESSIOSAPPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 

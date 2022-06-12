@@ -47,8 +47,8 @@ compile-time decisions rather than @ref Extension instances. See
 @ref Context::isExtensionSupported() for example usage.
 
 This library depends on the [OpenAL](https://www.openal.org/) library and is
-built if `WITH_AUDIO` is enabled when building Magnum. To use this library with
-CMake, put [FindOpenAL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenAL.cmake)
+built if `MAGNUM_WITH_AUDIO` is enabled when building Magnum. To use this
+library with CMake, put [FindOpenAL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenAL.cmake)
 into your `modules/` directory, request the `Audio` component of the `Magnum`
 package and link to the `Magnum::Audio` target:
 
@@ -71,7 +71,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON) # needed if building dynamic libraries
 set(LIBTYPE STATIC) # omit or set to SHARED if you want a shared OpenAL library
 add_subdirectory(openal-soft EXCLUDE_FROM_ALL)
 
-set(WITH_AUDIO ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_AUDIO ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 

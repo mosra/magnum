@@ -99,8 +99,8 @@ See @ref cmake for more information.
 @section Platform-GlfwApplication-usage General usage
 
 This application library depends on the [GLFW](http://glfw.org) library and is
-built if `WITH_GLFWAPPLICATION` is enabled when building Magnum. To use this
-library with CMake, put
+built if `MAGNUM_WITH_GLFWAPPLICATION` is enabled when building Magnum. To use
+this library with CMake, put
 [FindGLFW.cmake](https://github.com/mosra/magnum/blob/master/modules/FindGLFW.cmake)
 into your `modules/` directory, request the `GlfwApplication` component of the
 `Magnum` package and link to the `Magnum::GlfwApplication` target:
@@ -126,7 +126,7 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(glfw EXCLUDE_FROM_ALL)
 
-set(WITH_GLFWAPPLICATION ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_GLFWAPPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 

@@ -42,9 +42,9 @@ namespace Magnum { namespace DebugTools {
 
 A collection of predefined color maps for visualization of gradient data.
 
-This library is built if `WITH_DEBUGTOOLS` is enabled when building Magnum. To
-use this library with CMake, request the `DebugTools` component of the `Magnum`
-package and link to the `Magnum::DebugTools` target:
+This library is built if `MAGNUM_WITH_DEBUGTOOLS` is enabled when building
+Magnum. To use this library with CMake, request the `DebugTools` component of
+the `Magnum` package and link to the `Magnum::DebugTools` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED DebugTools)

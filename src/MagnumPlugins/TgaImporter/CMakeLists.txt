@@ -25,7 +25,7 @@
 
 find_package(Corrade REQUIRED PluginManager)
 
-if(BUILD_PLUGINS_STATIC AND NOT DEFINED MAGNUM_TGAIMPORTER_BUILD_STATIC)
+if(MAGNUM_BUILD_PLUGINS_STATIC AND NOT DEFINED MAGNUM_TGAIMPORTER_BUILD_STATIC)
     set(MAGNUM_TGAIMPORTER_BUILD_STATIC 1)
 endif()
 
@@ -40,7 +40,7 @@ add_plugin(TgaImporter
     TgaImporter.cpp
     TgaImporter.h
     TgaHeader.h)
-if(MAGNUM_TGAIMPORTER_BUILD_STATIC AND BUILD_STATIC_PIC)
+if(MAGNUM_TGAIMPORTER_BUILD_STATIC AND MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(TgaImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(TgaImporter PUBLIC MagnumTrade)
@@ -61,7 +61,7 @@ if(MAGNUM_TGAIMPORTER_BUILD_STATIC)
     target_sources(TgaImporter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 

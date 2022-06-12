@@ -47,7 +47,7 @@ set(MagnumText_HEADERS
 
     visibility.h)
 
-if(TARGET_GL)
+if(MAGNUM_TARGET_GL)
     list(APPEND MagnumText_SRCS
         DistanceFieldGlyphCache.cpp
         GlyphCache.cpp
@@ -73,13 +73,13 @@ add_library(MagnumTextObjects OBJECT
 target_include_directories(MagnumTextObjects PUBLIC
     $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
-if(TARGET_GL)
+if(MAGNUM_TARGET_GL)
     target_include_directories(MagnumTextObjects PUBLIC $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
 endif()
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumTextObjects PRIVATE "MagnumTextObjects_EXPORTS")
 endif()
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumTextObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
@@ -88,16 +88,16 @@ add_library(MagnumText ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumTextObjects>
     ${MagnumText_GracefulAssert_SRCS})
 set_target_properties(MagnumText PROPERTIES DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumText PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumText PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumText PUBLIC
     Magnum
     MagnumTextureTools
     Corrade::PluginManager)
-if(TARGET_GL)
+if(MAGNUM_TARGET_GL)
     target_link_libraries(MagnumText PUBLIC MagnumGL)
 endif()
 
@@ -107,9 +107,9 @@ install(TARGETS MagnumText
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumText_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Text)
 
-if(WITH_FONTCONVERTER)
-    if(NOT TARGET_GL)
-        message(SEND_ERROR "magnum-fontconverter is available only if TARGET_GL is enabled")
+if(MAGNUM_WITH_FONTCONVERTER)
+    if(NOT MAGNUM_TARGET_GL)
+        message(SEND_ERROR "magnum-fontconverter is available only if MAGNUM_TARGET_GL is enabled")
     endif()
 
     add_executable(magnum-fontconverter fontconverter.cpp)
@@ -136,7 +136,7 @@ if(WITH_FONTCONVERTER)
             target_link_libraries(magnum-fontconverter PRIVATE MagnumWindowlessWglApplication)
         endif()
     else()
-        message(FATAL_ERROR "magnum-fontconverter is not available on this platform. Set WITH_FONTCONVERTER to OFF to suppress this warning.")
+        message(FATAL_ERROR "magnum-fontconverter is not available on this platform. Set MAGNUM_WITH_FONTCONVERTER to OFF to suppress this warning.")
     endif()
 
     install(TARGETS magnum-fontconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
@@ -145,7 +145,7 @@ if(WITH_FONTCONVERTER)
     add_executable(Magnum::fontconverter ALIAS magnum-fontconverter)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumTextTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumTextObjects>
@@ -153,14 +153,14 @@ if(BUILD_TESTS)
     set_target_properties(MagnumTextTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumTextTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumText_EXPORTS")
-    if(BUILD_STATIC_PIC)
+    if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumTextTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumTextTestLib PUBLIC
         Magnum
         MagnumTextureTools
         Corrade::PluginManager)
-    if(TARGET_GL)
+    if(MAGNUM_TARGET_GL)
         target_link_libraries(MagnumText PUBLIC MagnumGL)
     endif()
 

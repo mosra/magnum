@@ -23,15 +23,15 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-if(NOT TARGET_GL)
+if(NOT MAGNUM_TARGET_GL)
     # TODO: remove (and update all other docs) when we have better
     # createGlyphCache() APIs
-    message(SEND_ERROR "MagnumFont is available only if TARGET_GL is enabled")
+    message(SEND_ERROR "MagnumFont is available only if MAGNUM_TARGET_GL is enabled")
 endif()
 
 find_package(Corrade REQUIRED PluginManager)
 
-if(BUILD_PLUGINS_STATIC AND NOT DEFINED MAGNUM_MAGNUMFONT_BUILD_STATIC)
+if(MAGNUM_BUILD_PLUGINS_STATIC AND NOT DEFINED MAGNUM_MAGNUMFONT_BUILD_STATIC)
     set(MAGNUM_MAGNUMFONT_BUILD_STATIC 1)
 endif()
 
@@ -45,7 +45,7 @@ add_plugin(MagnumFont
     MagnumFont.conf
     MagnumFont.cpp
     MagnumFont.h)
-if(MAGNUM_MAGNUMFONT_BUILD_STATIC AND BUILD_STATIC_PIC)
+if(MAGNUM_MAGNUMFONT_BUILD_STATIC AND MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumFont PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumFont PUBLIC Magnum MagnumText MagnumTrade)
@@ -69,7 +69,7 @@ if(MAGNUM_MAGNUMFONT_BUILD_STATIC)
     target_sources(MagnumFont INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 

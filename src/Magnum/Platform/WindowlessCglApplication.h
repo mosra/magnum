@@ -312,8 +312,8 @@ See @ref cmake for more information.
 
 @section Platform-WindowlessCglApplication-usage General usage
 
-This application library is built if `WITH_WINDOWLESSCGLAPPLICATION` is enabled
-when building Magnum. To use this library from CMake, request the
+This application library is built if `MAGNUM_WITH_WINDOWLESSCGLAPPLICATION` is
+enabled when building Magnum. To use this library from CMake, request the
 `WindowlessCglApplication` component of the `Magnum` package and link to the `Magnum::WindowlessCglApplication` target:
 
 @code{.cmake}
@@ -333,7 +333,7 @@ Additionally, if you're using Magnum as a CMake subproject, do the following
 library is not built by default:
 
 @code{.cmake}
-set(WITH_WINDOWLESSCGLAPPLICATION ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_WINDOWLESSCGLAPPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 

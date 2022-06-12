@@ -88,8 +88,9 @@ together with a troubleshooting guide is available in @ref platforms-android.
 
 @section Platform-AndroidApplication-usage General usage
 
-This application library is built if `WITH_ANDROIDAPPLICATION` is enabled when
-building Magnum. To use this library with CMake, put [FindEGL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindEGL.cmake)
+This application library is built if `MAGNUM_WITH_ANDROIDAPPLICATION` is
+enabled when building Magnum. To use this library with CMake, put
+[FindEGL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindEGL.cmake)
 and [FindOpenGLES2.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenGLES2.cmake) (or
 [FindOpenGLES3.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenGLES3.cmake))
 into your `modules/` directory, request the `AndroidApplication` component of
@@ -112,7 +113,7 @@ Additionally, if you're using Magnum as a CMake subproject, do the following
 library is not built by default:
 
 @code{.cmake}
-set(WITH_ANDROIDAPPLICATION ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_ANDROIDAPPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 

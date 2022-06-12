@@ -25,9 +25,9 @@
 
 add_subdirectory(KHR)
 
-if(NOT TARGET_GLES)
+if(NOT MAGNUM_TARGET_GLES)
     add_subdirectory(GL)
-elseif(TARGET_GLES2)
+elseif(MAGNUM_TARGET_GLES2)
     add_subdirectory(GLES2)
 else()
     add_subdirectory(GLES3)

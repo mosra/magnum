@@ -62,14 +62,14 @@ passed @ref AbstractGlyphCache to support @ref GlyphCacheFeature::ImageDownload.
 
 This plugin depends on the @ref Text library and the
 @ref Trade::TgaImageConverter "TgaImageConverter" plugin. It is built if
-`WITH_MAGNUMFONTCONVERTER` is enabled when building Magnum. To use as a
+`MAGNUM_WITH_MAGNUMFONTCONVERTER` is enabled when building Magnum. To use as a
 dynamic plugin, load @cpp "MagnumFontConverter" @ce via
 @ref Corrade::PluginManager::Manager.
 
 Additionally, if you're using Magnum as a CMake subproject, do the following:
 
 @code{.cmake}
-set(WITH_MAGNUMFONTCONVERTER ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_MAGNUMFONTCONVERTER ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
 # So the dynamically loaded plugin gets built implicitly

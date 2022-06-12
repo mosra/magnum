@@ -147,10 +147,10 @@ target_include_directories(MagnumMathObjects PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_BINARY_DIR}/src
     $<TARGET_PROPERTY:Corrade::Utility,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumMathObjects PRIVATE "MagnumMathObjects_EXPORTS")
 endif()
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumMathObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 # Differs from CMAKE_FOLDER
@@ -165,10 +165,10 @@ target_include_directories(MagnumObjects PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_BINARY_DIR}/src
     $<TARGET_PROPERTY:Corrade::Utility,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumObjects PRIVATE "MagnumObjects_EXPORTS")
 endif()
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
@@ -179,9 +179,9 @@ add_library(Magnum ${SHARED_OR_STATIC}
     ${MagnumMath_GracefulAssert_SRCS}
     ${Magnum_GracefulAssert_SRCS})
 set_target_properties(Magnum PROPERTIES DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(Magnum PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(Magnum PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_include_directories(Magnum PUBLIC
@@ -204,59 +204,59 @@ add_subdirectory(Animation)
 add_subdirectory(Math)
 add_subdirectory(Platform)
 
-if(WITH_AUDIO)
+if(MAGNUM_WITH_AUDIO)
     add_subdirectory(Audio)
 endif()
 
-if(WITH_DEBUGTOOLS)
+if(MAGNUM_WITH_DEBUGTOOLS)
     add_subdirectory(DebugTools)
 endif()
 
-if(WITH_GL)
+if(MAGNUM_WITH_GL)
     add_subdirectory(GL)
 endif()
 
-if(WITH_MESHTOOLS)
+if(MAGNUM_WITH_MESHTOOLS)
     add_subdirectory(MeshTools)
 endif()
 
-if(WITH_PRIMITIVES)
+if(MAGNUM_WITH_PRIMITIVES)
     add_subdirectory(Primitives)
 endif()
 
-if(WITH_SCENEGRAPH)
+if(MAGNUM_WITH_SCENEGRAPH)
     add_subdirectory(SceneGraph)
 endif()
 
-if(WITH_SCENETOOLS)
+if(MAGNUM_WITH_SCENETOOLS)
     add_subdirectory(SceneTools)
 endif()
 
-if(WITH_SHADERS)
+if(MAGNUM_WITH_SHADERS)
     add_subdirectory(Shaders)
 endif()
 
-if(WITH_SHADERTOOLS)
+if(MAGNUM_WITH_SHADERTOOLS)
     add_subdirectory(ShaderTools)
 endif()
 
-if(WITH_TEXT)
+if(MAGNUM_WITH_TEXT)
     add_subdirectory(Text)
 endif()
 
-if(WITH_TEXTURETOOLS)
+if(MAGNUM_WITH_TEXTURETOOLS)
     add_subdirectory(TextureTools)
 endif()
 
-if(WITH_TRADE)
+if(MAGNUM_WITH_TRADE)
     add_subdirectory(Trade)
 endif()
 
-if(WITH_VK)
+if(MAGNUM_WITH_VK)
     add_subdirectory(Vk)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     # Math library with graceful assert for testing
     add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMathObjects>
@@ -283,7 +283,7 @@ if(BUILD_TESTS)
     target_compile_definitions(MagnumTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "Magnum_EXPORTS")
     set_target_properties(MagnumTestLib PROPERTIES DEBUG_POSTFIX "-d")
-    if(BUILD_STATIC_PIC)
+    if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumTestLib PUBLIC Corrade::Utility)

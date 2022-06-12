@@ -39,6 +39,6 @@ add_custom_target(MagnumMathAlgorithms SOURCES ${MagnumMathAlgorithms_HEADERS})
 
 install(FILES ${MagnumMathAlgorithms_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math/Algorithms)
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     add_subdirectory(Test)
 endif()

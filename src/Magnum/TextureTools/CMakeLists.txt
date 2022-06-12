@@ -35,9 +35,9 @@ set(MagnumTextureTools_HEADERS
 
     visibility.h)
 
-if(TARGET_GL)
+if(MAGNUM_TARGET_GL)
     corrade_add_resource(MagnumTextureTools_RCS resources.conf)
-    if(BUILD_STATIC)
+    if(MAGNUM_BUILD_STATIC)
         # On the static build we're importing the resources manually, so no
         # need to have the implicit initializers as well.
         set_property(SOURCE ${MagnumTextureTools_RCS} APPEND PROPERTY
@@ -58,14 +58,14 @@ add_library(MagnumTextureTools ${SHARED_OR_STATIC}
     ${MagnumTextureTools_SRCS}
     ${MagnumTextureTools_HEADERS})
 set_target_properties(MagnumTextureTools PROPERTIES DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumTextureTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumTextureTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumTextureTools PUBLIC
     Magnum)
-if(WITH_GL)
+if(MAGNUM_WITH_GL)
     target_link_libraries(MagnumTextureTools PUBLIC MagnumGL)
 endif()
 
@@ -75,9 +75,9 @@ install(TARGETS MagnumTextureTools
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumTextureTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/TextureTools)
 
-if(WITH_DISTANCEFIELDCONVERTER)
-    if(NOT TARGET_GL)
-        message(SEND_ERROR "magnum-distancefieldconverter is available only if TARGET_GL is enabled")
+if(MAGNUM_WITH_DISTANCEFIELDCONVERTER)
+    if(NOT MAGNUM_TARGET_GL)
+        message(SEND_ERROR "magnum-distancefieldconverter is available only if MAGNUM_TARGET_GL is enabled")
     endif()
 
     add_executable(magnum-distancefieldconverter distancefieldconverter.cpp)
@@ -104,7 +104,7 @@ if(WITH_DISTANCEFIELDCONVERTER)
             target_link_libraries(magnum-distancefieldconverter PRIVATE MagnumWindowlessWglApplication)
         endif()
     else()
-        message(FATAL_ERROR "magnum-distancefieldconverter is not available on this platform. Set WITH_DISTANCEFIELDCONVERTER to OFF to suppress this warning.")
+        message(FATAL_ERROR "magnum-distancefieldconverter is not available on this platform. Set MAGNUM_WITH_DISTANCEFIELDCONVERTER to OFF to suppress this warning.")
     endif()
 
     install(TARGETS magnum-distancefieldconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
@@ -113,7 +113,7 @@ if(WITH_DISTANCEFIELDCONVERTER)
     add_executable(Magnum::distancefieldconverter ALIAS magnum-distancefieldconverter)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 

@@ -76,7 +76,7 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
 add_subdirectory(corrade EXCLUDE_FROM_ALL)
 
 # Add Magnum as a subproject, enable Sdl2Application
-set(WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
 add_subdirectory(src)
@@ -104,7 +104,7 @@ the `SDL2-2.0.10` directory to `CMAKE_PREFIX_PATH`:
 ...
 
 set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/SDL2-2.0.10 ${CMAKE_PREFIX_PATH})
-set(WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
@@ -135,10 +135,10 @@ If you are lucky, you may already have Magnum packages ready for your platform:
 
 If not, follow the full installation guides for @ref building-corrade "Corrade"
 and @ref building "Magnum" to build & install everything; don't forget to
-enable `WITH_SDL2APPLICATION` when building Magnum so the bootstrap project can
-correctly find and use it. This is "the hard way" and it's recommended only if
-you have at least some prior experience with building projects from source
-using CMake.
+enable `MAGNUM_WITH_SDL2APPLICATION` when building Magnum so the bootstrap
+project can correctly find and use it. This is "the hard way" and it's
+recommended only if you have at least some prior experience with building
+projects from source using CMake.
 
 Compared to @ref getting-started-setup-subproject "Option A", you don't need to
 clone the subprojects and modify the `CMakeLists.txt` file, however you'll need
@@ -316,8 +316,9 @@ want to try it with other toolkits such as [GLFW](https://www.glfw.org/) or
 [Qt](https://www.qt.io/) there are similar projects in other branches of the
 [bootstrap repository](https://github.com/mosra/magnum-bootstrap). If you
 download [base-glfw.zip](https://github.com/mosra/magnum-bootstrap/archive/base-glfw.zip), you get a GLFW-based project. It's mostly the same, with only minor
-differences. Enable `WITH_GLFWAPPLICATION` instead of `WITH_SDL2APPLICATION`,
-on Linux or Mac install one of the following packages:
+differences. Enable `MAGNUM_WITH_GLFWAPPLICATION` instead of
+`MAGNUM_WITH_SDL2APPLICATION`, on Linux or Mac install one of the following
+packages:
 
 @code{.sh}
 sudo pacman -S glfw-x11         # on ArchLinux
@@ -333,7 +334,7 @@ or [glfw-3.3.bin.WIN64.zip](https://github.com/glfw/glfw/releases/download/3.3/g
 ...
                                        # or glfw-3.3.bin.WIN32 here
 set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/glfw-3.3.bin.WIN64 ${CMAKE_PREFIX_PATH})
-set(WITH_GLFWAPPLICATION ON)
+set(MAGNUM_WITH_GLFWAPPLICATION ON)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 

@@ -58,10 +58,10 @@ endif()
 #     ${MagnumShaderTools_HEADERS}
 #     ${MagnumShaderTools_PRIVATE_HEADERS})
 # target_include_directories(MagnumShaderToolsObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
-# if(NOT BUILD_STATIC)
+# if(NOT MAGNUM_BUILD_STATIC)
 #     target_compile_definitions(MagnumShaderToolsObjects PRIVATE "MagnumShaderToolsObjects_EXPORTS")
 # endif()
-# if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+# if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
 #     set_target_properties(MagnumShaderToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 # endif()
 
@@ -72,9 +72,9 @@ add_library(MagnumShaderTools ${SHARED_OR_STATIC}
     ${MagnumShaderTools_HEADERS}
     ${MagnumShaderTools_PRIVATE_HEADERS})
 set_target_properties(MagnumShaderTools PROPERTIES DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumShaderTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumShaderTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumShaderTools PUBLIC
@@ -87,7 +87,7 @@ install(TARGETS MagnumShaderTools
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumShaderTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/ShaderTools)
 
-if(WITH_SHADERCONVERTER)
+if(MAGNUM_WITH_SHADERCONVERTER)
     add_executable(magnum-shaderconverter shaderconverter.cpp)
     target_link_libraries(magnum-shaderconverter PRIVATE
         Magnum
@@ -99,7 +99,7 @@ if(WITH_SHADERCONVERTER)
     add_executable(Magnum::shaderconverter ALIAS magnum-shaderconverter)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumShaderToolsTestLib ${SHARED_OR_STATIC}
 #         $<TARGET_OBJECTS:MagnumShaderToolsObjects>
@@ -107,7 +107,7 @@ if(BUILD_TESTS)
     set_target_properties(MagnumShaderToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumShaderToolsTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumShaderTools_EXPORTS")
-    if(BUILD_STATIC_PIC)
+    if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumShaderToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumShaderToolsTestLib PUBLIC

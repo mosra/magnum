@@ -81,7 +81,7 @@ For example:
 @code{.cmake}
 add_subdirectory(corrade EXCLUDE_FROM_ALL) # so only things you use are built
 
-set(WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE) # enable what you need
+set(MAGNUM_WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE) # enable what you need
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
 find_package(Magnum REQUIRED ...) # see below
@@ -123,8 +123,8 @@ is to list them explicitly like shown below, another (but uglier) is to not use
 implicitly.
 
 @code{.cmake}
-set(WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE)
-set(WITH_ANYSCENEIMPORTER ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_ANYSCENEIMPORTER ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
 # So the AnyImageImporter / AnySceneImporter gets built implicitly

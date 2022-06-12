@@ -52,14 +52,14 @@ set_property(TARGET
     MeshToolsSubdivideTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
 
-if(BUILD_DEPRECATED)
+if(MAGNUM_BUILD_DEPRECATED)
     corrade_add_test(MeshToolsCombineIndexedArraysTest CombineIndexedArraysTest.cpp LIBRARIES MagnumMeshToolsTestLib)
     set_property(TARGET
         MeshToolsCombineIndexedArraysTest
         APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
 endif()
 
-if(BUILD_GL_TESTS)
+if(MAGNUM_BUILD_GL_TESTS)
     # Otherwise CMake complains that Corrade::PluginManager is not found
     find_package(Corrade REQUIRED PluginManager)
 
@@ -80,11 +80,11 @@ if(BUILD_GL_TESTS)
     # Corrade doesn't support dynamic plugins on iOS, this sorta works around
     # that. Should be revisited when updating Travis to newer Xcode (xcode7.3
     # has CMake 3.6).
-    if(NOT BUILD_PLUGINS_STATIC)
-        if(WITH_ANYIMAGEIMPORTER)
+    if(NOT MAGNUM_BUILD_PLUGINS_STATIC)
+        if(MAGNUM_WITH_ANYIMAGEIMPORTER)
             set(ANYIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageImporter>)
         endif()
-        if(WITH_TGAIMPORTER)
+        if(MAGNUM_WITH_TGAIMPORTER)
             set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
         endif()
     endif()
@@ -113,19 +113,19 @@ if(BUILD_GL_TESTS)
             CompileTestFiles/textured2D.tga
             CompileTestFiles/textured3D.tga)
     target_include_directories(MeshToolsCompileGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
-    if(BUILD_PLUGINS_STATIC)
-        if(WITH_ANYIMAGEIMPORTER)
+    if(MAGNUM_BUILD_PLUGINS_STATIC)
+        if(MAGNUM_WITH_ANYIMAGEIMPORTER)
             target_link_libraries(MeshToolsCompileGLTest PRIVATE AnyImageImporter)
         endif()
-        if(WITH_TGAIMPORTER)
+        if(MAGNUM_WITH_TGAIMPORTER)
             target_link_libraries(MeshToolsCompileGLTest PRIVATE TgaImporter)
         endif()
     else()
         # So the plugins get properly built when building the test
-        if(WITH_ANYIMAGEIMPORTER)
+        if(MAGNUM_WITH_ANYIMAGEIMPORTER)
             add_dependencies(MeshToolsCompileGLTest AnyImageImporter)
         endif()
-        if(WITH_TGAIMPORTER)
+        if(MAGNUM_WITH_TGAIMPORTER)
             add_dependencies(MeshToolsCompileGLTest TgaImporter)
         endif()
     endif()

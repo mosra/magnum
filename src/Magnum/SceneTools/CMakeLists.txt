@@ -52,10 +52,10 @@ set(MagnumSceneTools_PRIVATE_HEADERS
     #${MagnumSceneTools_HEADERS}
     #${MagnumSceneTools_PRIVATE_HEADERS})
 #target_include_directories(MagnumSceneToolsObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
-#if(NOT BUILD_STATIC)
+#if(NOT MAGNUM_BUILD_STATIC)
     #target_compile_definitions(MagnumSceneToolsObjects PRIVATE "MagnumSceneToolsObjects_EXPORTS")
 #endif()
-#if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+#if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     #set_target_properties(MagnumSceneToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 #endif()
 
@@ -66,9 +66,9 @@ add_library(MagnumSceneTools ${SHARED_OR_STATIC}
     ${MagnumSceneTools_HEADERS}
     ${MagnumSceneTools_PRIVATE_HEADERS})
 set_target_properties(MagnumSceneTools PROPERTIES DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumSceneTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumSceneTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumSceneTools PUBLIC
@@ -81,7 +81,7 @@ install(TARGETS MagnumSceneTools
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumSceneTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/SceneTools)
 
-if(WITH_SCENECONVERTER)
+if(MAGNUM_WITH_SCENECONVERTER)
     add_executable(magnum-sceneconverter sceneconverter.cpp)
     target_link_libraries(magnum-sceneconverter PRIVATE
         Magnum
@@ -95,7 +95,7 @@ if(WITH_SCENECONVERTER)
     add_executable(Magnum::sceneconverter ALIAS magnum-sceneconverter)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumSceneToolsTestLib ${SHARED_OR_STATIC}
         #$<TARGET_OBJECTS:MagnumSceneToolsObjects>
@@ -103,7 +103,7 @@ if(BUILD_TESTS)
     set_target_properties(MagnumSceneToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumSceneToolsTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumSceneTools_EXPORTS")
-    if(BUILD_STATIC_PIC)
+    if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumSceneToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumSceneToolsTestLib PUBLIC

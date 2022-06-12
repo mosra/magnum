@@ -370,8 +370,8 @@ See @ref cmake for more information.
 @section Platform-WindowlessGlxApplication-usage General usage
 
 This application library depends on the **X11** library and is built if
-`WITH_WINDOWLESSGLXAPPLICATION` is enabled when building Magnum. To use this
-library with CMake, you need to request the `WindowlessGlxApplication`
+`MAGNUM_WITH_WINDOWLESSGLXAPPLICATION` is enabled when building Magnum. To use
+this library from CMake, you need to request the `WindowlessGlxApplication`
 component of the `Magnum` package and link to the
 `Magnum::WindowlessGlxApplication` target:
 
@@ -392,7 +392,7 @@ Additionally, if you're using Magnum as a CMake subproject, do the following
 library is not built by default:
 
 @code{.cmake}
-set(WITH_WINDOWLESSGLXAPPLICATION ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_WINDOWLESSGLXAPPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 

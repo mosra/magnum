@@ -80,10 +80,10 @@ add_library(MagnumSceneGraphObjects OBJECT
     ${MagnumSceneGraph_SRCS}
     ${MagnumSceneGraph_HEADERS})
 target_include_directories(MagnumSceneGraphObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumSceneGraphObjects PRIVATE "MagnumSceneGraphObjects_EXPORTS")
 endif()
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumSceneGraphObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
@@ -93,9 +93,9 @@ add_library(MagnumSceneGraph ${SHARED_OR_STATIC}
     ${MagnumSceneGraph_GracefulAssert_SRCS})
 set_target_properties(MagnumSceneGraph PROPERTIES
     DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumSceneGraph PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumSceneGraph PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumSceneGraph Magnum)
@@ -106,7 +106,7 @@ install(TARGETS MagnumSceneGraph
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumSceneGraph_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/SceneGraph)
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumSceneGraphTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumSceneGraphObjects>

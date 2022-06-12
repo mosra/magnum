@@ -722,6 +722,13 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   All @ref building-features "CMake build options" are now prefixed with
+    `MAGNUM_`. For backwards compatibility, unless @ref MAGNUM_BUILD_DEPRECATED
+    is disabled and unless a prefixed option is already set during the initial
+    run, the unprefixed options are still recognized with a warning. In
+    particular, if `BUILD_DEPRECATED` is set but `MAGNUM_BUILD_DEPRECATED` not,
+    the unprefixed options are also recognized. See also
+    [mosra/corrade#139](https://github.com/mosra/corrade/issues/139).
 -   The @cpp Array @ce, @cpp Array1D @ce, @cpp Array2D @ce and
     @cpp Array3D @ce types that were used exclusively for specifying
     @ref SamplerWrapping in various texture APIs are deprecated in favor of

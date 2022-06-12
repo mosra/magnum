@@ -128,7 +128,8 @@ vcpkg install magnum
 Not all features are installed by default; only those that are implicitly
 enabled in @ref building-features together with @ref Platform::Sdl2Application "Sdl2Application".
 To opt-in or opt-out of additional features, you can use the following syntax;
-feature names are simply names of CMake `WITH_*` options but lowercase, e.g.:
+feature names are simply names of CMake `MAGNUM_WITH_*` options but lowercase,
+e.g.:
 
 @code{.bat}
 vcpkg install magnum[glfwapplication,tgaimporter]
@@ -356,7 +357,7 @@ applications) can be built and installed using these four commands:
 mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DWITH_SDL2APPLICATION=ON
+    -DMAGNUM_WITH_SDL2APPLICATION=ON
 make
 make install # sudo may be needed
 @endcode
@@ -451,56 +452,57 @@ By default the engine is built for desktop OpenGL. Using the `TARGET_*` CMake
 options you can target other platforms. Note that some features are
 available for desktop OpenGL only, see @ref requires-gl.
 
--   `TARGET_GL` --- Build libraries with OpenGL interoperability enabled.
-    Enabled by default when `WITH_GL` is enabled. Disabling this will cause
-    other libraries to not depend on the @ref GL library, but doesn't affect
-    the @ref GL library itself.
--   `TARGET_GLES` --- Target OpenGL ES. Available only when `WITH_GL` is
-    enabled.
--   `TARGET_GLES2` --- Target OpenGL ES 2.0 instead of 3.0 and later. Available
-    only when `WITH_GL` is set. Currently enabled by default when `TARGET_GLES`
-    is set.
--   `TARGET_DESKTOP_GLES` --- Target OpenGL ES on desktop, i.e. use OpenGL ES
-    emulation in desktop OpenGL drivers. Available on Linux and Windows, though
-    might not be supported by all drivers. Available only when `WITH_GL` is
-    enabled.
--   `TARGET_HEADLESS` --- Build command-line utilities for use on a headless
-    machine. Basically it means that EGL with no display attachment is being
-    used everywhere instead of platform-specific toolkits like CGL, GLX or WGL.
-    Supported mainly on OpenGL ES drivers. Available only when `WITH_GL` is
-    enabled.
--   `TARGET_VK` --- Build libraries with Vulkan interoperability enabled.
-    Enabled by default when `WITH_VK` is enabled. Disabling this will cause
-    libraries to not depend on the @ref Vk library, but  doesn't affect the
-    @ref Vk library itself.
+-   `MAGNUM_TARGET_GL` --- Build libraries with OpenGL interoperability
+    enabled. Enabled by default when `MAGNUM_WITH_GL` is enabled. Disabling
+    this will cause other libraries to not depend on the @ref GL library, but
+    doesn't affect the @ref GL library itself.
+-   `MAGNUM_TARGET_GLES` --- Target OpenGL ES. Available only when
+    `MAGNUM_WITH_GL` is enabled.
+-   `MAGNUM_TARGET_GLES2` --- Target OpenGL ES 2.0 instead of 3.0 and later.
+    Available only when `MAGNUM_WITH_GL` is enabled. Currently enabled by
+    default when `MAGNUM_TARGET_GLES` is set.
+-   `MAGNUM_TARGET_DESKTOP_GLES` --- Target OpenGL ES on desktop, i.e. use
+    OpenGL ES emulation in desktop OpenGL drivers. Available on Linux and
+    Windows, though might not be supported by all drivers. Available only when
+    `MAGNUM_WITH_GL` is enabled.
+-   `MAGNUM_TARGET_HEADLESS` --- Build command-line utilities for use on a
+    headless machine. Basically it means that EGL with no display attachment is
+    being used everywhere instead of platform-specific toolkits like CGL, GLX
+    or WGL. Supported mainly on OpenGL ES drivers. Available only when
+    `MAGNUM_WITH_GL` is enabled.
+-   `MAGNUM_TARGET_VK` --- Build libraries with Vulkan interoperability
+    enabled. Enabled by default when `MAGNUM_WITH_VK` is enabled. Disabling
+    this will cause libraries to not depend on the @ref Vk library, but doesn't
+    affect the @ref Vk library itself.
 
 By default the engine is built with nearly everything except the @ref Audio
 and @ref Vk libraries, plugins, command-line utilities and application
-libraries (see below). Using the following `WITH_*` CMake options you can
-specify which parts will be built and which not:
+libraries (see below). Using the following `MAGNUM_WITH_*` CMake options you
+can specify which parts will be built and which not:
 
--   `WITH_AUDIO` --- Build the @ref Audio library. Depends on
+-   `MAGNUM_WITH_AUDIO` --- Build the @ref Audio library. Depends on
     [OpenAL](https://www.openal.org/), not enabled by default.
--   `WITH_DEBUGTOOLS` --- Build the @ref DebugTools library.
--   `WITH_GL` --- Build the @ref GL library. Enabled automatically if
-    `WITH_SHADERS` is enabled.
--   `WITH_MESHTOOLS` --- Build the @ref MeshTools library. Enables also
-    building of the Trade library.
--   `WITH_PRIMITIVES` --- Build the @ref Primitives library. Enables also
-    building of the Trade library.
--   `WITH_SCENEGRAPH` --- Build the @ref SceneGraph library
--   `WITH_SCENETOOLS` --- Build the @ref SceneTools library. Enables also
-    building of the Trade library.
--   `WITH_SHADERS` --- Build the @ref Shaders library. Enables also building of
-    the GL library.
--   `WITH_SHADERTOOLS` --- Build the @ref ShaderTools library
--   `WITH_TEXT` --- Build the @ref Text library. Enables also building of
-    the TextureTools library.
--   `WITH_TEXTURETOOLS` --- Build the @ref TextureTools library. Enabled
-    automatically if `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
--   `WITH_TRADE` --- Build the @ref Trade library.
--   `WITH_VK` --- Build the @ref Vk library. Depends on Vulkan, not enabled by
-    default.
+-   `MAGNUM_WITH_DEBUGTOOLS` --- Build the @ref DebugTools library.
+-   `MAGNUM_WITH_GL` --- Build the @ref GL library. Enabled automatically if
+    `MAGNUM_WITH_SHADERS` is enabled.
+-   `MAGNUM_WITH_MESHTOOLS` --- Build the @ref MeshTools library. Enables also
+    building of the @ref Trade library.
+-   `MAGNUM_WITH_PRIMITIVES` --- Build the @ref Primitives library. Enables
+    also building of the @ref Trade library.
+-   `MAGNUM_WITH_SCENEGRAPH` --- Build the @ref SceneGraph library
+-   `MAGNUM_WITH_SCENETOOLS` --- Build the @ref SceneTools library. Enables
+    also building of the @ref Trade library.
+-   `MAGNUM_WITH_SHADERS` --- Build the @ref Shaders library. Enables also
+    building of the @ref GL library.
+-   `MAGNUM_WITH_SHADERTOOLS` --- Build the @ref ShaderTools library
+-   `MAGNUM_WITH_TEXT` --- Build the @ref Text library. Enables also building
+    of the @ref TextureTools library.
+-   `MAGNUM_WITH_TEXTURETOOLS` --- Build the @ref TextureTools library. Enabled
+    automatically if `MAGNUM_WITH_TEXT` or `MAGNUM_WITH_DISTANCEFIELDCONVERTER`
+    is enabled.
+-   `MAGNUM_WITH_TRADE` --- Build the @ref Trade library.
+-   `MAGNUM_WITH_VK` --- Build the @ref Vk library. Depends on Vulkan, not
+    enabled by default.
 
 None of the @ref Platform "application libraries" is built by default (and *you
 need at least one*, unless you are handling platform integration yourself ---
@@ -510,161 +512,173 @@ your platform best. The @ref Platform::Sdl2Application "Sdl2Application"
 library is a good default choice, as it is the most portable --- and if you're
 going to build any of the @ref example-index "examples", you'll need it.
 
--   `WITH_ANDROIDAPPLICATION` --- Build the
+-   `MAGNUM_WITH_ANDROIDAPPLICATION` --- Build the
     @ref Platform::AndroidApplication "AndroidApplication" library. Available
     only on @ref CORRADE_TARGET_ANDROID "Android". Enables also building of the
     GL library.
--   `WITH_EMSCRIPTENAPPLICATION` --- Build the
+-   `MAGNUM_WITH_EMSCRIPTENAPPLICATION` --- Build the
     @ref Platform::EmscriptenApplication "EmscriptenApplication" library.
     Available only on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
--   `WITH_GLFWAPPLICATION` --- Build the
+-   `MAGNUM_WITH_GLFWAPPLICATION` --- Build the
     @ref Platform::GlfwApplication "GlfwApplication" library. Depends on
     [GLFW](http://glfw.org).
--   `WITH_GLXAPPLICATION` --- Build the
+-   `MAGNUM_WITH_GLXAPPLICATION` --- Build the
     @ref Platform::GlxApplication "GlxApplication" library. Depends on **X11**.
-    Requires `TARGET_GL` to be enabled.
--   `WITH_SDL2APPLICATION` --- Build the
+    Requires `MAGNUM_TARGET_GL` to be enabled.
+-   `MAGNUM_WITH_SDL2APPLICATION` --- Build the
     @ref Platform::Sdl2Application "Sdl2Application" library. Depends on
     [SDL2](http://www.libsdl.org).
--   `WITH_XEGLAPPLICATION` --- Build the
+-   `MAGNUM_WITH_XEGLAPPLICATION` --- Build the
     @ref Platform::XEglApplication "XEglApplication" library. Enables also
-    building of the GL library.
--   `WITH_WINDOWLESSCGLAPPLICATION` --- Build the
+    building of the @ref GL library.
+-   `MAGNUM_WITH_WINDOWLESSCGLAPPLICATION` --- Build the
     @ref Platform::WindowlessCglApplication "WindowlessCglApplication" library.
-    Requires `TARGET_GL` to be enabled.
--   `WITH_WINDOWLESSEGLAPPLICATION` --- Build the
+    Requires `MAGNUM_TARGET_GL` to be enabled.
+-   `MAGNUM_WITH_WINDOWLESSEGLAPPLICATION` --- Build the
     @ref Platform::WindowlessEglApplication "WindowlessEglApplication" library.
-    Requires `TARGET_GL` to be enabled.
--   `WITH_WINDOWLESSGLXAPPLICATION` --- Build the
+    Requires `MAGNUM_TARGET_GL` to be enabled.
+-   `MAGNUM_WITH_WINDOWLESSGLXAPPLICATION` --- Build the
     @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication" library.
-    Requires `TARGET_GL` to be enabled.
--   `WITH_WINDOWLESSIOSAPPLICATION` --- Build the
+    Requires `MAGNUM_TARGET_GL` to be enabled.
+-   `MAGNUM_WITH_WINDOWLESSIOSAPPLICATION` --- Build the
     @ref Platform::WindowlessIosApplication "WindowlessIosApplication" library.
-    Requires `TARGET_GL` to be enabled.
--   `WITH_WINDOWLESSWGLAPPLICATION` --- Build the
+    Requires `MAGNUM_TARGET_GL` to be enabled.
+-   `MAGNUM_WITH_WINDOWLESSWGLAPPLICATION` --- Build the
     @ref Platform::WindowlessWglApplication "WindowlessWglApplication" library.
-    Requires `TARGET_GL` to be enabled.
--   `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` --- Build the
+    Requires `MAGNUM_TARGET_GL` to be enabled.
+-   `MAGNUM_WITH_WINDOWLESSWINDOWSEGLAPPLICATION` --- Build the
     @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
-    library. Requires `TARGET_GL` to be enabled.
+    library. Requires `MAGNUM_TARGET_GL` to be enabled.
 
 None of the context libraries is built by default. Similarly to the application
 libraries, they are always built as static. You need them only if you chose to
 not use any of the application libraries above (see @ref platform-custom for
 more information):
 
--   `WITH_CGLCONTEXT` --- Build the CGL context handling library. Requires
-    `TARGET_GL` to be enabled.
--   `WITH_EGLCONTEXT` --- Build the EGL context handling library. Requires
-    `TARGET_GL` to be enabled.
--   `WITH_GLXCONTEXT` --- Build the GLX context handling library. Requires
-    `TARGET_GL` to be enabled.
--   `WITH_WGLCONTEXT` --- Build the WGL context handling library. Requires
-    `TARGET_GL` to be enabled.
+-   `MAGNUM_WITH_CGLCONTEXT` --- Build the CGL context handling library.
+    Requires `MAGNUM_TARGET_GL` to be enabled.
+-   `MAGNUM_WITH_EGLCONTEXT` --- Build the EGL context handling library.
+    Requires `MAGNUM_TARGET_GL` to be enabled.
+-   `MAGNUM_WITH_GLXCONTEXT` --- Build the GLX context handling library.
+    Requires `MAGNUM_TARGET_GL` to be enabled.
+-   `MAGNUM_WITH_WGLCONTEXT` --- Build the WGL context handling library.
+    Requires `MAGNUM_TARGET_GL` to be enabled.
 
 There are also extensions to @ref Corrade::TestSuite::Tester for testing GPU
 code:
 
--   `WITH_OPENGLTESTER` --- The @ref GL::OpenGLTester class. Requires
-    `TARGET_GL` to be enabled; enables building of one of the windowless
+-   `MAGNUM_WITH_OPENGLTESTER` --- The @ref GL::OpenGLTester class. Requires
+    `MAGNUM_TARGET_GL` to be enabled; enables building of one of the windowless
     application libraries based on the target platform.
--   `WITH_VULKANTESTER` --- The @ref Vk::VulkanTester class. Requires
-    `TARGET_VK` to be enabled.
+-   `MAGNUM_WITH_VULKANTESTER` --- The @ref Vk::VulkanTester class. Requires
+    `MAGNUM_TARGET_VK` to be enabled.
 
 Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in a separate plugin repository,
 see @ref building-plugins for more information. None of the plugins is built by
 default.
 
--   `WITH_ANYAUDIOIMPORTER` --- Build the @ref Audio::AnyImporter "AnyAudioImporter"
-    plugin. Enables also building of the @ref Audio library.
--   `WITH_ANYIMAGECONVERTER` --- Build the
+-   `MAGNUM_WITH_ANYAUDIOIMPORTER` --- Build the
+    @ref Audio::AnyImporter "AnyAudioImporter" plugin. Enables also building of
+    the @ref Audio library.
+-   `MAGNUM_WITH_ANYIMAGECONVERTER` --- Build the
     @ref Trade::AnyImageConverter "AnyImageConverter" plugin. Enables also
     building of the @ref Trade library.
--   `WITH_ANYIMAGEIMPORTER` --- Build the @ref Trade::AnyImageImporter "AnyImageImporter"
-    plugin. Enables also building of the @ref Trade library.
--   `WITH_ANYSCENECONVERTER` --- Build the @ref Trade::AnySceneConverter "AnySceneConverter"
-    plugin. Enables also building of the @ref Trade library.
--   `WITH_ANYSCENEIMPORTER` --- Build the @ref Trade::AnySceneImporter "AnySceneImporter"
-    plugin. Enables also building of the @ref Trade library.
--   `WITH_ANYSHADERCONVERTER` --- Build the @ref ShaderTools::AnyConverter "AnyShaderConverter"
-    plugin. Enables also building of the @ref ShaderTools library.
--   `WITH_MAGNUMFONT` --- Build the @ref Text::MagnumFont "MagnumFont" plugin.
-    Enables also building of the @ref Text library and the
-    @ref Trade::TgaImporter "TgaImporter" plugin. Requires `TARGET_GL` to be
-    enabled.
--   `WITH_MAGNUMFONTCONVERTER` --- Build the
+-   `MAGNUM_WITH_ANYIMAGEIMPORTER` --- Build the
+    @ref Trade::AnyImageImporter "AnyImageImporter" plugin. Enables also
+    building of the @ref Trade library.
+-   `MAGNUM_WITH_ANYSCENECONVERTER` --- Build the
+    @ref Trade::AnySceneConverter "AnySceneConverter" plugin. Enables also
+    building of the @ref Trade library.
+-   `MAGNUM_WITH_ANYSCENEIMPORTER` --- Build the
+    @ref Trade::AnySceneImporter "AnySceneImporter" plugin. Enables also
+    building of the @ref Trade library.
+-   `MAGNUM_WITH_ANYSHADERCONVERTER` --- Build the
+    @ref ShaderTools::AnyConverter "AnyShaderConverter" plugin. Enables also
+    building of the @ref ShaderTools library.
+-   `MAGNUM_WITH_MAGNUMFONT` --- Build the @ref Text::MagnumFont "MagnumFont"
+    plugin. Enables also building of the @ref Text library and the
+    @ref Trade::TgaImporter "TgaImporter" plugin. Requires `MAGNUM_TARGET_GL`
+    to be enabled.
+-   `MAGNUM_WITH_MAGNUMFONTCONVERTER` --- Build the
     @ref Text::MagnumFontConverter "MagnumFontConverter" plugin. Enables also
     building of the @ref Text library and the
     @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
--   `WITH_OBJIMPORTER` --- Build the @ref Trade::ObjImporter "ObjImporter"
-    plugin. Enables also building of the @ref Trade library.
--   `WITH_TGAIMPORTER` --- Build the @ref Trade::TgaImporter "TgaImporter"
-    plugin. Enables also building of the @ref Trade library.
--   `WITH_TGAIMAGECONVERTER` --- Build the
+-   `MAGNUM_WITH_OBJIMPORTER` --- Build the
+    @ref Trade::ObjImporter "ObjImporter" plugin. Enables also building of the
+    @ref Trade library.
+-   `MAGNUM_WITH_TGAIMPORTER` --- Build the
+    @ref Trade::TgaImporter "TgaImporter" plugin. Enables also building of the
+    @ref Trade library.
+-   `MAGNUM_WITH_TGAIMAGECONVERTER` --- Build the
     @ref Trade::TgaImageConverter "TgaImageConverter" plugin. Enables also
     building of the @ref Trade library.
--   `WITH_WAVAUDIOIMPORTER` --- Build the @ref Audio::WavImporter "WavAudioImporter"
-    plugin. Enables also building of the @ref Audio library.
+-   `MAGNUM_WITH_WAVAUDIOIMPORTER` --- Build the
+    @ref Audio::WavImporter "WavAudioImporter" plugin. Enables also building of
+    the @ref Audio library.
 
 There are also a few command-line utilities, also all disabled by default:
 
--   `WITH_GL_INFO` --- Build the @ref magnum-gl-info "magnum-gl-info"
+-   `MAGNUM_WITH_GL_INFO` --- Build the @ref magnum-gl-info "magnum-gl-info"
     executable, which provides information about the engine OpenGL
-    capabilities. Requires `TARGET_GL` to be enabled; enables also building of
-    the @ref GL library and one of the windowless application libraries based
-    on the target platform.
--   `WITH_VK_INFO` --- Build the @ref magnum-vk-info "magnum-vk-info"
+    capabilities. Requires `MAGNUM_TARGET_GL` to be enabled; enables also
+    building of the @ref GL library and one of the windowless application
+    libraries based on the target platform.
+-   `MAGNUM_WITH_VK_INFO` --- Build the @ref magnum-vk-info "magnum-vk-info"
     executable, which provides information about the engine Vulkan
-    capabilities. Requires `TARGET_VK` to be enabled; enables also building of
-    the @ref Vk library.
--   `WITH_AL_INFO` --- Build the @ref magnum-al-info "magnum-al-info"
+    capabilities. Requires `MAGNUM_TARGET_VK` to be enabled; enables also
+    building of the @ref Vk library.
+-   `MAGNUM_WITH_AL_INFO` --- Build the @ref magnum-al-info "magnum-al-info"
     executable, which provides information about the engine OpenAL
     capabilities. Enables also building of the @ref Audio library.
--   `WITH_DISTANCEFIELDCONVERTER` --- Build the
+-   `MAGNUM_WITH_DISTANCEFIELDCONVERTER` --- Build the
     @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
     executable for converting black&white images to distance field textures.
-    Available only on desktop GL. Requires `TARGET_GL` to be enabled; enables
-    also building of the @ref TextureTools and @ref GL libraries and one of the
-    windowless application libraries based on the target platform.
--   `WITH_FONTCONVERTER` --- Build the @ref magnum-fontconverter "magnum-fontconverter"
-    executable for converting fonts of different formats. Available only on
-    desktop GL. Requires `TARGET_GL` to be enabled; enables also building of
-    the @ref Text and @ref GL libraries and one of the windowless application
-    libraries based on the target platform.
--   `WITH_IMAGECONVERTER` --- Build the @ref magnum-imageconverter "magnum-imageconverter"
-    executable for converting images of different formats. Enables also
-    building of the @ref Trade library.
--   `WITH_SCENECONVERTER` --- Build the @ref magnum-sceneconverter "magnum-sceneconverter"
-    executable for converting scenes of different formats. Enables also
-    building of the @ref MeshTools and @ref SceneTools library.
--   `WITH_SHADERCONVERTER` --- Build the @ref magnum-shaderconverter "magnum-shaderconverter"
-    executable for converting scenes of different formats. Enables also
-    building of the @ref ShaderTools library.
+    Available only on desktop GL. Requires `MAGNUM_TARGET_GL` to be enabled;
+    enables also building of the @ref TextureTools and @ref GL libraries and
+    one of the windowless application libraries based on the target platform.
+-   `MAGNUM_WITH_FONTCONVERTER` --- Build the
+    @ref magnum-fontconverter "magnum-fontconverter" executable for converting
+    fonts of different formats. Available only on desktop GL. Requires
+    `MAGNUM_TARGET_GL` to be enabled; enables also building of the @ref Text
+    and @ref GL libraries and one of the windowless application libraries based
+    on the target platform.
+-   `MAGNUM_WITH_IMAGECONVERTER` --- Build the
+    @ref magnum-imageconverter "magnum-imageconverter" executable for
+    converting images of different formats. Enables also building of the
+    @ref Trade library.
+-   `MAGNUM_WITH_SCENECONVERTER` --- Build the
+    @ref magnum-sceneconverter "magnum-sceneconverter" executable for
+    converting scenes of different formats. Enables also building of the
+    @ref MeshTools and @ref SceneTools library.
+-   `MAGNUM_WITH_SHADERCONVERTER` --- Build the
+    @ref magnum-shaderconverter "magnum-shaderconverter" executable for
+    converting scenes of different formats. Enables also building of the
+    @ref ShaderTools library.
 
 Options controlling the build:
 
--   `BUILD_STATIC` --- Build all libraries as static. Default is shared, except
-    on platforms such as @ref CORRADE_TARGET_ANDROID "Android" or
+-   `MAGNUM_BUILD_STATIC` --- Build all libraries as static. Default is shared,
+    except on platforms such as @ref CORRADE_TARGET_ANDROID "Android" or
     @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" that don't support dynamic
     linking.
--   `BUILD_STATIC_PIC` --- Build static libraries with position-independent
-    code. Enabled by default when building static libraries, disable if you
-    don't need this feature. On @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
-    this option is always off.
--   `BUILD_STATIC_UNIQUE_GLOBALS` --- Build static libraries in a way that
-    keeps their globals unique even across different shared libraries. Enabled
-    by default for static builds. May introduce additional overhead on some
-    platforms, disable if you will only link static libraries to one final
+-   `MAGNUM_BUILD_STATIC_PIC` --- Build static libraries with
+    position-independent code. Enabled by default when building static
+    libraries, disable if you don't need this feature. On
+    @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this option is always off.
+-   `MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS` --- Build static libraries in a way
+    that keeps their globals unique even across different shared libraries.
+    Enabled by default for static builds. May introduce additional overhead on
+    some platforms, disable if you will only link static libraries to one final
     executable and won't use any dynamic plugins.
--   `BUILD_PLUGINS_STATIC` --- Build plugins as static. By default, plugins are
-    built as dynamic. Independent of the `BUILD_STATIC` option to allow having
-    static libraries with dynamic plugins and vice versa. To some extent it's
-    also possible to have only a subset of plugins built as static --- set
-    `MAGNUM_<PLUGIN>_BUILD_STATIC` for particular plugins to `ON` or `OFF` to
-    override this option.
--   `BUILD_DEPRECATED` --- Include deprecated APIs in the build. Enabled by
-    default to preserve backwards compatibility, disabling it forces you to
+-   `MAGNUM_BUILD_PLUGINS_STATIC` --- Build plugins as static. By default,
+    plugins are built as dynamic. Independent of the `MAGNUM_BUILD_STATIC`
+    option to allow having static libraries with dynamic plugins and vice
+    versa. To some extent it's also possible to have only a subset of plugins
+    built as static --- set `MAGNUM_<PLUGIN>_BUILD_STATIC` for particular
+    plugins to `ON` or `OFF` to override this option.
+-   `MAGNUM_BUILD_DEPRECATED` --- Include deprecated APIs in the build. Enabled
+    by default to preserve backwards compatibility, disabling it forces you to
     update your code whenever there's a breaking API change. It's however
     recommended to have this option disabled when deploying a final application
     as it can result in smaller binaries.
@@ -714,7 +728,7 @@ installed files. The following variables are supported:
     path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
 
 The following variables are deprecated and provided only for backwards
-compatibility if `BUILD_DEPRECATED` isn't disabled.
+compatibility if `MAGNUM_BUILD_DEPRECATED` isn't disabled.
 
 -   `MAGNUM_INCLUDE_INSTALL_PREFIX` --- Overrides location where
     platform-independent include files, CMake scripts and other files are
@@ -743,7 +757,7 @@ command-line option.
 @subsection building-tests Building and running tests
 
 If you want to build also the tests (which are not built by default), enable
-`BUILD_TESTS` in CMake. The tests use Corrade's
+`MAGNUM_BUILD_TESTS` in CMake. The tests use Corrade's
 @ref Corrade::TestSuite "TestSuite" framework and can be run either manually
 (the binaries are located in `Test/` subdirectories in the build directory) or
 using
@@ -759,9 +773,9 @@ The @ref Audio library has tests which require OpenAL to be able to create a
 context. That is the case on most platforms, so they are enabled by default.
 In case it's not possible to have OpenAL context (such as when running
 @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" tests under Node.js), you can
-disable building of them with `BUILD_AL_TESTS`. The tests are suffixed with
-`ALTest` so they can be also selectively included/excluded when running CTest,
-e.g.:
+disable building of them with `MAGNUM_BUILD_AL_TESTS`. The tests are suffixed
+with `ALTest` so they can be also selectively included/excluded when running
+CTest, e.g.:
 
 @code{.sh}
 ctest -E ALTest # run everything except tests requiring OpenAL context
@@ -771,16 +785,16 @@ Platforms which have windowless GL context creation implemented (currently all
 platforms except @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten",
 @ref CORRADE_TARGET_WINDOWS_RT "Windows RT" and
 @ref CORRADE_TARGET_ANDROID "Android") can build also tests for OpenGL
-functionality. You can enable them with `BUILD_GL_TESTS`. All GL tests are
-suffixed with `GLTest` so they can be also selectively included/excluded when
-running CTest, e.g.:
+functionality. You can enable them with `MAGNUM_BUILD_GL_TESTS`. All GL tests
+are suffixed with `GLTest` so they can be also selectively included/excluded
+when running CTest, e.g.:
 
 @code{.sh}
 ctest -R GLTest # run only tests requiring OpenGL context
 @endcode
 
 Tests requiring Vulkan to work are also disabled by default, enable them with
-`BUILD_VK_TESTS`.
+`MAGNUM_BUILD_VK_TESTS`.
 
 @section building-doc Building documentation
 
@@ -805,16 +819,16 @@ solution to build it. Alternatively, you can get an up-to-date version from any
 browser distribution --- both Firefox and all Chromium-based browsers ship with
 it. Put the `libGLESv2`/`libEGL` libraries to a location where CMake can find
 them or set `CMAKE_PREFIX_PATH` accordingly. ANGLE supports only OpenGL ES,
-thus you need to enable `TARGET_GLES`. The engine is built for OpenGL ES 2.0 by
-default, switch to 3.0 by disabling `TARGET_GLES2`.
+thus you need to enable `MAGNUM_TARGET_GLES`. The engine is built for OpenGL ES
+2.0 by default, switch to 3.0 by disabling `MAGNUM_TARGET_GLES2`.
 
 @code{.bat}
 mkdir build-angle && cd build-angle
 cmake .. ^
     -DCMAKE_PREFIX_PATH=<path-to-ANGLE-installation> ^
-    -DTARGET_GLES=ON ^
-    -DTARGET_GLES2=OFF ^
-    -DWITH_SDL2APPLICATION=ON
+    -DMAGNUM_TARGET_GLES=ON ^
+    -DMAGNUM_TARGET_GLES2=OFF ^
+    -DMAGNUM_WITH_SDL2APPLICATION=ON
 cmake --build .
 @endcode
 
@@ -874,8 +888,8 @@ cmake .. ^
     -DCMAKE_SYSTEM_NAME=WindowsStore ^
     -DCMAKE_SYSTEM_VERSION=10 ^
     -DCMAKE_INSTALL_PREFIX="C:/Sys-winrt" ^
-    -DBUILD_STATIC=ON ^
-    -DWITH_SDL2APPLICATION=ON ^
+    -DMAGNUM_BUILD_STATIC=ON ^
+    -DMAGNUM_WITH_SDL2APPLICATION=ON ^
     -G "Visual Studio 14 2015" ..
 cmake --build .
 @endcode
@@ -958,7 +972,7 @@ WebAssembly build. Don't forget to adapt `EMSCRIPTEN_PREFIX` variable in
 `generic/Emscripten*.cmake` to path where Emscripten is installed; you can also
 pass it explicitly on command-line using `-DEMSCRIPTEN_PREFIX`. Default is
 `/usr/lib/emscripten`. Emscripten supports dynamic libraries only to simplify
-porting and they are generally slower, thus `BUILD_STATIC` is implicitly
+porting and they are generally slower, thus `MAGNUM_BUILD_STATIC` is implicitly
 enabled.
 
 Then create build directory and run `cmake` and the build command in it. You
@@ -967,7 +981,7 @@ can omit specifying `CORRADE_RC_EXECUTABLE` if
 through `PATH`.
 
 WebGL 1.0 (GLES 2.0 equivalent) is enabled by default, switch to 2.0 (GLES 3.0
-equivalent) by disabling `TARGET_GLES2`. If you enable one of the
+equivalent) by disabling `MAGNUM_TARGET_GLES2`. If you enable one of the
 @ref magnum-gl-info or @ref magnum-al-info utilities, you can override their
 install location by setting `MAGNUM_DEPLOY_PREFIX` --- putting them for example
 in your webserver root.
@@ -981,7 +995,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
     -DCORRADE_RC_EXECUTABLE=/path/to/corrade-rc \
     -DMAGNUM_DEPLOY_PREFIX=/srv/http/magnum \
-    -DWITH_SDL2APPLICATION=ON
+    -DMAGNUM_WITH_SDL2APPLICATION=ON
 cmake --build .
 @endcode
 
@@ -989,7 +1003,7 @@ Then you can install the library using @cb{.sh} cmake --build . --target install
 to make it available to depending projects.
 
 If you have Node.js installed, you can also build and run unit tests using
-`ctest`. See the `BUILD_TESTS` option @ref building-tests "above".
+`ctest`. See the `MAGNUM_BUILD_TESTS` option @ref building-tests "above".
 
 For ArchLinux there are also prepared package files in `package/archlinux`,
 named `PKGBUILD-emscripten`, `PKGBUILD-emscripten-webgl2`,
@@ -1023,10 +1037,10 @@ You can omit specifying `CORRADE_RC_EXECUTABLE` if
 through `PATH`.
 
 As every application is in its own sandbox, it doesn't make sense to build
-shared libraries (although it is supported). Enable `BUILD_STATIC` to build
-static libraries. Dynamically loaded plugins are not supported on iOS at the
-moment, thus `BUILD_PLUGINS_STATIC` is implicitly enabled. OpenGL ES 2.0 is
-enabled by default, switch to 3.0 by disabling `TARGET_GLES2`.
+shared libraries (although it is supported). Enable `MAGNUM_BUILD_STATIC` to
+build static libraries. Dynamically loaded plugins are not supported on iOS at
+the moment, thus `MAGNUM_BUILD_PLUGINS_STATIC` is implicitly enabled. OpenGL ES
+2.0 is enabled by default, switch to 3.0 by disabling `MAGNUM_TARGET_GLES2`.
 
 @m_class{m-console-wrap}
 
@@ -1038,10 +1052,10 @@ cmake .. \
     -DCMAKE_OSX_ARCHITECTURES="arm64;armv7;armv7s" \
     -DCMAKE_INSTALL_PREFIX=~/ios-libs \
     -DCORRADE_RC_EXECUTABLE=/path/to/corrade-rc \
-    -DBUILD_STATIC=ON \
-    -DBUILD_PLUGINS_STATIC=ON \
-    -DTARGET_GLES2=OFF \
-    -DWITH_SDL2APPLICATION=ON \
+    -DMAGNUM_BUILD_STATIC=ON \
+    -DMAGNUM_BUILD_PLUGINS_STATIC=ON \
+    -DMAGNUM_TARGET_GLES2=OFF \
+    -DMAGNUM_WITH_SDL2APPLICATION=ON \
     -G Xcode
 cmake --build .
 @endcode
@@ -1072,10 +1086,10 @@ Create a build directory and run `cmake` and the build command in it. Set
 ABI. Check the [CMake Android cross-compiling documentation](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling-for-android)
 for further information. You can omit specifying `CORRADE_RC_EXECUTABLE` if
 @ref building-cross-corrade-rc "natively-built corrade-rc" is accessible
-through `PATH`. Note that `BUILD_STATIC` is implicitly enabled, because
+through `PATH`. Note that `MAGNUM_BUILD_STATIC` is implicitly enabled, because
 manually loading all depending shared libraries using JNI would be too
 inconvenient. The engine is built for OpenGL ES 2.0 by default, switch to 3.0
-by disabling `TARGET_GLES2`.
+by disabling `MAGNUM_TARGET_GLES2`.
 
 If you set `CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of the particular
 Android platform sysroot (as shown below), Magnum's buildsystem will also pick
@@ -1114,8 +1128,8 @@ cmake .. \
     -DCMAKE_FIND_ROOT_PATH=/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot \
     -DCMAKE_FIND_LIBRARY_CUSTOM_LIB_SUFFIX=/aarch64-linux-android/24 \
     -DCORRADE_RC_EXECUTABLE=/path/to/corrade-rc \
-    -DTARGET_GLES2=OFF \
-    -DWITH_ANDROIDAPPLICATION=ON
+    -DMAGNUM_TARGET_GLES2=OFF \
+    -DMAGNUM_WITH_ANDROIDAPPLICATION=ON
 cmake --build .
 @endcode
 

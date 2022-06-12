@@ -36,10 +36,10 @@ required to follow them to the point.
 
 @section developers-library Checklist for adding / removing a library
 
-1.  Add a `WITH_LIBRARYNAME` CMake option to:
+1.  Add a `MAGNUM_WITH_LIBRARYNAME` CMake option to:
     -   root `CMakeLists.txt` (if it has some inter-library dependencies,
         update the others / convert them to @cmake cmake_dependent_option() @ce,
-        adding `NOT WITH_LIBRARYNAME` to their condition --- note the
+        adding `NOT MAGNUM_WITH_LIBRARYNAME` to their condition --- note the
         conditions are ANDed so they need to be specified in reverse)
     -   the list in `doc/building.dox` (and similar files in other repos)
 2.  Update `FindMagnum.cmake` (or similar in other repos):
@@ -73,17 +73,17 @@ required to follow them to the point.
     -   verify that target installation is done in proper places (separate
         `RUNTIME` / `LIBRARY` / `ARCHIVE` destinations)
     -   verify that @cmake set_target_properties(MagnumLibraryName PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION}) @ce
-        is done in case `BUILD_STATIC` is *not* set
+        is done in case `MAGNUM_BUILD_STATIC` is *not* set
     -   verify that @cmake set_target_properties(MagnumLibraryName PROPERTIES POSITION_INDEPENDENT_CODE ON) @ce
-        is done in case `BUILD_STATIC_PIC` is set
+        is done in case `MAGNUM_BUILD_STATIC_PIC` is set
     -   verify that @cmake add_library(Magnum::LibraryName ALIAS MagnumLibraryName) @ce
         (or equivalent) is added to make the library visible for CMake
         subprojects
 6.  Create a new `src/Magnum/LibraryName/Test/` directory:
     -   add a `CMakeLists.txt` with pre-populated license header, add your name
         to it
-    -   conditionally @cmake add_subdirectory() @ce it if `BUILD_TESTS` is
-        enabled
+    -   conditionally @cmake add_subdirectory() @ce it if `MAGNUM_BUILD_TESTS`
+        is enabled
 7.  Create a new `src/Magnum/LibraryName/LibraryName.h` header for forward
     declarations (if needed), add a file-level doc block with
     <tt>Forward declarations for the \@ref Magnum::LibraryName namespace</tt>
@@ -95,18 +95,19 @@ required to follow them to the point.
         target name
     -   if the library is combined from an `OBJECT` library, add its name to
         the above @cpp #ifdef @ce as well (and then explicitly add
-        @cmake target_compile_definitions(MagnumLibraryNameObjects PRIVATE "MagnumLibraryNameObjects_EXPORTS") @ce to `CMakeLists.txt` in case `BUILD_STATIC` is not set)
+        @cmake target_compile_definitions(MagnumLibraryNameObjects PRIVATE "MagnumLibraryNameObjects_EXPORTS") @ce
+        to `CMakeLists.txt` in case `MAGNUM_BUILD_STATIC` is not set)
     -   the macro *does not* contain the full namespace path but rather mirrors
         the library *file* name
 9.  Mention the directory and namespace in `doc/namespaces.dox`, basically
     copy-pasting the following from existing documentation:
     -   directory-level doc block referencing the namespace
-    -   namespace-level doc block mentioning the `WITH_LIBRARYNAME` option,
-        dependencies (if any) and a code snippet showing how to use it with
-        CMake
+    -   namespace-level doc block mentioning the `MAGNUM_WITH_LIBRARYNAME`
+        option, dependencies (if any) and a code snippet showing how to use it
+        with CMake
 10. Code and test the rest of the library, see @ref developers-file and
     @ref developers-symbol for more information
-11. Add the `WITH_LIBRARYNAME` option to all files in `package/` directory,
+11. Add the `MAGNUM_WITH_LIBRARYNAME` option to all files in `package/` directory,
     explicitly saying either `ON` or `OFF` based on platform support:
     -   all `package/archlinux/PKGBUILD*` files (and the AUR package(s))
     -   the `package/debian/rules` file (watch out, tabs!)
@@ -214,8 +215,8 @@ Similarly to @ref developers-library except points 2 and 5, with:
         --- for the plugin library it's done automatically inside
         @cmake add_plugin() @ce
     -   verify that @cmake set_target_properties(PluginName PROPERTIES POSITION_INDEPENDENT_CODE ON) @ce
-        is done in case `BUILD_STATIC_PIC` is set
-    -   verify that in case of `BUILD_PLUGINS_STATIC` the
+        is done in case `MAGNUM_BUILD_STATIC_PIC` is set
+    -   verify that in case of `MAGNUM_BUILD_PLUGINS_STATIC` the
         `importStaticPlugin.cpp` file is installed  is set and that an
         *absolute* path to it is added to @cmake target_sources() @ce
     -   verify that @cmake add_library(MagnumPlugins::PluginName ALIAS PluginName) @ce
@@ -270,7 +271,7 @@ inverse --- but usually @ref developers-deprecation "deprecate first".
 
 @section developers-example Checklist for adding / removing an example
 
-1.  Add a `WITH_EXAMPLENAME_EXAMPLE` CMake option to:
+1.  Add a `MAGNUM_WITH_EXAMPLENAME_EXAMPLE` CMake option to:
     -   root `CMakeLists.txt`
     -   the list in `doc/building-examples.dox`
 2.  Add a new `src/example-name` directory, copy up-to-date UNLICENSE headers
@@ -321,7 +322,7 @@ in inverse.
     -   use @cmake corrade_add_test() @ce to add it to tests
     -   if some tests need GL context, add a separate test with `GLTest`
         suffix, wrapping the corresponding @cmake corrade_add_test() @ce in
-        @cmake if(BUILD_GL_TESTS) @ce
+        @cmake if(MAGNUM_BUILD_GL_TESTS) @ce
 6.  Populate the file, see @ref developers-symbol and @ref coding-style for
     more information.
 7.  Mention the new functionality in `doc/changelog.dox` (and similar files in
@@ -459,11 +460,11 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
         disable warnings for library *users*)
     -   a @cmake message(FATAL_ERROR) @ce to corresponding `CMakeLists.txt` in
         case @ref MAGNUM_BUILD_DEPRECATED is not enabled
-    -   a @m_class{m-label m-danger} **deprecated** label next to the `WITH_*`
-        CMake option in the corresponding `doc/building.dox` page and next to
-        the CMake component name in the corresponding `doc/cmake.dox` page
-        (and similar files in other repos), possibly also to all pages that
-        list it (if any)
+    -   a @m_class{m-label m-danger} **deprecated** label next to the
+        `MAGNUM_WITH_*` CMake option in the corresponding `doc/building.dox`
+        page and next to the CMake component name in the corresponding
+        `doc/cmake.dox` page (and similar files in other repos), possibly also
+        to all pages that list it (if any)
 3.  If the library was enabled by default, make it disabled by default. Update
     relevant sections in `doc/building.dox` and `doc/cmake.dox`.
 4.  Include the library component in the corresponding `Find` module component

@@ -44,7 +44,7 @@ endif()
 #   passed via target_link_libraries() etc. without requiring CMake 3.13
 #   https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md#13919-07072020
 #   -- change to that once we drop support for older Emscripten versions
-if(CORRADE_TARGET_EMSCRIPTEN AND CMAKE_VERSION VERSION_LESS 3.13 AND WITH_GL AND NOT TARGET_GLES2)
+if(CORRADE_TARGET_EMSCRIPTEN AND CMAKE_VERSION VERSION_LESS 3.13 AND MAGNUM_WITH_GL AND NOT MAGNUM_TARGET_GLES2)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
 endif()
 

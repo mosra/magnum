@@ -23,12 +23,12 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-if(WITH_AUDIO)
+if(MAGNUM_WITH_AUDIO)
     add_subdirectory(OpenAL)
 endif()
-if(WITH_GL)
+if(MAGNUM_WITH_GL)
     add_subdirectory(OpenGL)
 endif()
-if(WITH_VK)
+if(MAGNUM_WITH_VK)
     add_subdirectory(Vulkan)
 endif()

@@ -29,10 +29,10 @@ set(CMAKE_FOLDER "MagnumExternal/Vulkan")
 
 add_library(MagnumFlextVkObjects OBJECT flextVk.cpp)
 target_include_directories(MagnumFlextVkObjects PUBLIC $<TARGET_PROPERTY:MagnumVk,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumFlextVkObjects PRIVATE "FlextVk_EXPORTS")
 endif()
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumFlextVkObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 

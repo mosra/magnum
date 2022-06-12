@@ -58,7 +58,7 @@ if(NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
 
-if(WITH_SCENEGRAPH)
+if(MAGNUM_WITH_SCENEGRAPH)
     list(APPEND MagnumAudio_HEADERS
         Listener.h
         Playable.h
@@ -78,10 +78,10 @@ target_include_directories(MagnumAudioObjects PUBLIC
     $<TARGET_PROPERTY:OpenAL::OpenAL,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumAudioObjects PRIVATE "MagnumAudioObjects_EXPORTS")
 endif()
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumAudioObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
@@ -91,16 +91,16 @@ add_library(MagnumAudio ${SHARED_OR_STATIC}
     ${MagnumAudio_GracefulAssert_SRCS})
 target_include_directories(MagnumAudio PUBLIC ${OPENAL_INCLUDE_DIR})
 set_target_properties(MagnumAudio PROPERTIES DEBUG_POSTFIX "-d")
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumAudio PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
-elseif(BUILD_STATIC_PIC)
+elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumAudio PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumAudio PUBLIC
     Magnum
     Corrade::PluginManager
     OpenAL::OpenAL)
-if(WITH_SCENEGRAPH)
+if(MAGNUM_WITH_SCENEGRAPH)
     target_link_libraries(MagnumAudio PUBLIC MagnumSceneGraph)
 endif()
 
@@ -130,7 +130,7 @@ endif()
 # Magnum Audio target alias for superprojects
 add_library(Magnum::Audio ALIAS MagnumAudio)
 
-if(WITH_AL_INFO)
+if(MAGNUM_WITH_AL_INFO)
     add_executable(magnum-al-info al-info.cpp)
     target_link_libraries(magnum-al-info PRIVATE MagnumAudio)
 
@@ -168,7 +168,7 @@ if(WITH_AL_INFO)
     add_executable(Magnum::al-info ALIAS magnum-al-info)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumAudioTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumAudioObjects>
@@ -177,14 +177,14 @@ if(BUILD_TESTS)
         "CORRADE_GRACEFUL_ASSERT" "MagnumAudio_EXPORTS")
     target_include_directories(MagnumAudioTestLib PUBLIC ${OPENAL_INCLUDE_DIR})
     set_target_properties(MagnumAudioTestLib PROPERTIES DEBUG_POSTFIX "-d")
-    if(BUILD_STATIC_PIC)
+    if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumAudioTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumAudioTestLib PUBLIC
         Magnum
         Corrade::PluginManager
         OpenAL::OpenAL)
-    if(WITH_SCENEGRAPH)
+    if(MAGNUM_WITH_SCENEGRAPH)
         target_link_libraries(MagnumAudioTestLib PUBLIC MagnumSceneGraph)
     endif()
 

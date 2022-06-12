@@ -25,7 +25,7 @@
 
 find_package(Corrade REQUIRED PluginManager)
 
-if(BUILD_PLUGINS_STATIC AND NOT DEFINED MAGNUM_OBJIMPORTER_BUILD_STATIC)
+if(MAGNUM_BUILD_PLUGINS_STATIC AND NOT DEFINED MAGNUM_OBJIMPORTER_BUILD_STATIC)
     set(MAGNUM_OBJIMPORTER_BUILD_STATIC 1)
 endif()
 
@@ -39,7 +39,7 @@ add_plugin(ObjImporter
     ObjImporter.conf
     ObjImporter.cpp
     ObjImporter.h)
-if(MAGNUM_OBJIMPORTER_BUILD_STATIC AND BUILD_STATIC_PIC)
+if(MAGNUM_OBJIMPORTER_BUILD_STATIC AND MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(ObjImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(ObjImporter PUBLIC MagnumTrade MagnumMeshTools)
@@ -67,7 +67,7 @@ if(MAGNUM_OBJIMPORTER_BUILD_STATIC)
     target_sources(ObjImporter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
 endif()
 
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 

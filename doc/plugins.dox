@@ -117,11 +117,11 @@ time it is actually needed. However, if you need to port to a platform which
 does not support dynamic linking or you simply want to have the plugin loaded
 at all times, you can use static plugins.
 
-The plugins are built as static if the `BUILD_PLUGINS_STATIC` CMake parameter
-is enabled (see @ref building and @ref building-plugins for more information).
-The actual usage in the code is basically the same as above, but you need to
-explicitly find the plugin and link it into the executable. If you use CMake,
-it would look like this:
+The plugins are built as static if the `MAGNUM_BUILD_PLUGINS_STATIC` CMake
+option is enabled (see @ref building and @ref building-plugins for more
+information). The actual usage in the code is basically the same as above, but
+you need to explicitly find the plugin and link it into the executable. If you
+use CMake, it would look like this:
 
 @code{.cmake}
 find_package(MagnumPlugins REQUIRED

@@ -54,9 +54,9 @@ more information.
 
 @section Platform-GlxApplication-usage General usage
 
-This application library depends on the **X11** library and is built if `WITH_GLXAPPLICATION` is enabled when building Magnum. To use this library from
-CMake, request the `GlxApplication` component of the `Magnum` package and link
-to the `Magnum::GlxApplication` target:
+This application library depends on the **X11** library and is built if `MAGNUM_WITH_GLXAPPLICATION` is enabled when building Magnum. To use this
+library with CMake, request the `GlxApplication` component of the `Magnum`
+package and link to the `Magnum::GlxApplication` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED GlxApplication)
@@ -70,7 +70,7 @@ Additionally, if you're using Magnum as a CMake subproject, do the following
 library is not built by default:
 
 @code{.cmake}
-set(WITH_GLXAPPLICATION ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_GLXAPPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 

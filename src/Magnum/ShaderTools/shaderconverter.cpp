@@ -46,8 +46,8 @@ namespace Magnum {
 @m_footernavigation
 @m_keywords{magnum-shaderconverter shaderconverter}
 
-This utility is built if `WITH_SHADERCONVERTER` is enabled when building
-Magnum. To use this utility with CMake, you need to request the
+This utility is built if `MAGNUM_WITH_SHADERCONVERTER` is enabled when
+building Magnum. To use this utility with CMake, you need to request the
 `shaderconverter` component of the `Magnum` package and use the
 `Magnum::shaderconverter` target for example in a custom command:
 

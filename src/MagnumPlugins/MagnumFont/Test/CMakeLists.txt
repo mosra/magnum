@@ -65,7 +65,7 @@ if(CORRADE_BUILD_STATIC AND NOT MAGNUM_MAGNUMFONT_BUILD_STATIC)
     set_target_properties(MagnumFontTest PROPERTIES ENABLE_EXPORTS ON)
 endif()
 
-if(BUILD_GL_TESTS)
+if(MAGNUM_BUILD_GL_TESTS)
     corrade_add_test(MagnumFontGLTest MagnumFontGLTest.cpp
         LIBRARIES MagnumText MagnumTrade MagnumOpenGLTester
         FILES

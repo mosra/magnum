@@ -39,7 +39,8 @@ endif()
 if(POLICY CMP0071)
     cmake_policy(SET CMP0071 NEW)
 endif()
-# Superprojects can use just set(WITH_BLAH ON) without FORCE CACHE on 3.13+
+# Superprojects can use just set(MAGNUM_WITH_BLAH ON) without FORCE CACHE on
+# 3.13+
 if(POLICY CMP0077)
     cmake_policy(SET CMP0077 NEW)
 endif()
@@ -60,129 +61,212 @@ find_package(Corrade REQUIRED Utility)
 
 include(CMakeDependentOption)
 
+# Options that used to be unprefixed. 66 values for 67 option() and
+# cmake_dependent_option() calls, one of which is HUNTER_ENABLED that we don't
+# prefix. New options shouldn't be added to this list.
+set(_MAGNUM_DEPRECATED_UNPREFIXED_OPTIONS
+    WITH_AUDIO
+    WITH_DEBUGTOOLS
+    WITH_GL
+    WITH_MESHTOOLS
+    WITH_PRIMITIVES
+    WITH_SCENEGRAPH
+    WITH_SCENETOOLS
+    WITH_SHADERS
+    WITH_SHADERTOOLS
+    WITH_TEXT
+    WITH_TEXTURETOOLS
+    WITH_TRADE
+    WITH_VK
+    WITH_OPENGLTESTER
+    WITH_VULKANTESTER
+    WITH_ANDROIDAPPLICATION
+    WITH_EMSCRIPTENAPPLICATION
+    WITH_GLXAPPLICATION
+    WITH_GLFWAPPLICATION
+    WITH_SDL2APPLICATION
+    WITH_XEGLAPPLICATION
+    WITH_WINDOWLESSCGLAPPLICATION
+    WITH_WINDOWLESSEGLAPPLICATION
+    WITH_WINDOWLESSGLXAPPLICATION
+    WITH_WINDOWLESSIOSAPPLICATION
+    WITH_WINDOWLESSWGLAPPLICATION
+    WITH_WINDOWLESSWINDOWSEGLAPPLICATION
+    WITH_CGLCONTEXT
+    WITH_EGLCONTEXT
+    WITH_GLXCONTEXT
+    WITH_WGLCONTEXT
+    WITH_GL_INFO
+    WITH_AL_INFO
+    WITH_VK_INFO
+    WITH_FONTCONVERTER
+    WITH_DISTANCEFIELDCONVERTER
+    WITH_IMAGECONVERTER
+    WITH_SCENECONVERTER
+    WITH_SHADERCONVERTER
+    WITH_ANYAUDIOIMPORTER
+    WITH_ANYIMAGECONVERTER
+    WITH_ANYIMAGEIMPORTER
+    WITH_ANYSCENECONVERTER
+    WITH_ANYSCENEIMPORTER
+    WITH_ANYSHADERCONVERTER
+    WITH_MAGNUMFONT
+    WITH_MAGNUMFONTCONVERTER
+    WITH_OBJIMPORTER
+    WITH_TGAIMPORTER
+    WITH_TGAIMAGECONVERTER
+    WITH_WAVAUDIOIMPORTER
+    BUILD_DEPRECATED
+    BUILD_STATIC
+    BUILD_STATIC_PIC
+    BUILD_STATIC_UNIQUE_GLOBALS
+    BUILD_PLUGINS_STATIC
+    BUILD_TESTS
+    BUILD_GL_TESTS
+    BUILD_AL_TESTS
+    BUILD_VK_TESTS
+    TARGET_GL
+    TARGET_GLES
+    TARGET_GLES2
+    TARGET_DESKTOP_GLES
+    TARGET_HEADLESS
+    TARGET_VK)
+# If during the first run (i.e., when the variable isn't in cache yet), check
+# if any of the prefixed options are already set. If so, we assume the user is
+# already switched to the prefixed options and won't accept the deprecated
+# unprefixed options for backwards compatibility. This way it's possible for
+# projects to reuse these variables for other purposes without affecting
+# Magnum in any way.
+if(NOT DEFINED _MAGNUM_ACCEPT_DEPRECATED_UNPREFIXED_OPTIONS)
+    set(_MAGNUM_ACCEPT_DEPRECATED_UNPREFIXED_OPTIONS ON CACHE INTERNAL "")
+    foreach(option ${_MAGNUM_DEPRECATED_UNPREFIXED_OPTIONS})
+        if(DEFINED MAGNUM_${option})
+            set(_MAGNUM_ACCEPT_DEPRECATED_UNPREFIXED_OPTIONS OFF CACHE INTERNAL "")
+            break()
+        endif()
+    endforeach()
+endif()
+
 # If targeting iOS, Android, Emscripten or Windows RT, set explicit OpenGL ES
 # support
 if(NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_WINDOWS_RT)
-    option(TARGET_GLES "Build for OpenGL ES / WebGL" OFF)
+    option(MAGNUM_TARGET_GLES "Build for OpenGL ES / WebGL" OFF)
 else()
-    set(TARGET_GLES ON)
+    set(MAGNUM_TARGET_GLES ON)
 endif()
 
-cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2 / WebGL 1.0" ON "TARGET_GLES" OFF)
-cmake_dependent_option(TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF "TARGET_GLES" OFF)
+cmake_dependent_option(MAGNUM_TARGET_GLES2 "Build for OpenGL ES 2 / WebGL 1.0" ON "MAGNUM_TARGET_GLES" OFF)
+cmake_dependent_option(MAGNUM_TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF "MAGNUM_TARGET_GLES" OFF)
 
 # Magnum GL Info (currently only using GLX/CGL/EGL on *nix, WGL/EGL on Windows
 # and EGL on Emscripten)
 if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS OR CORRADE_TARGET_EMSCRIPTEN)
-    option(WITH_GL_INFO "Build magnum-gl-info utility" OFF)
+    option(MAGNUM_WITH_GL_INFO "Build magnum-gl-info utility" OFF)
 endif()
 
 # Desktop-only utilities
 if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS)
-    cmake_dependent_option(WITH_FONTCONVERTER "Build magnum-fontconverter utility" OFF "NOT TARGET_GLES" OFF)
-    cmake_dependent_option(WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF "NOT TARGET_GLES" OFF)
+    cmake_dependent_option(MAGNUM_WITH_FONTCONVERTER "Build magnum-fontconverter utility" OFF "NOT MAGNUM_TARGET_GLES" OFF)
+    cmake_dependent_option(MAGNUM_WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF "NOT MAGNUM_TARGET_GLES" OFF)
 endif()
 
 # API-independent utilities
-option(WITH_IMAGECONVERTER "Build magnum-imageconverter utility" OFF)
-option(WITH_SCENECONVERTER "Build magnum-sceneconverter utility" OFF)
-option(WITH_SHADERCONVERTER "Build magnum-shaderconverter utility" OFF)
+option(MAGNUM_WITH_IMAGECONVERTER "Build magnum-imageconverter utility" OFF)
+option(MAGNUM_WITH_SCENECONVERTER "Build magnum-sceneconverter utility" OFF)
+option(MAGNUM_WITH_SHADERCONVERTER "Build magnum-shaderconverter utility" OFF)
 
 # Magnum AL Info
-option(WITH_AL_INFO "Build magnum-al-info utility" OFF)
+option(MAGNUM_WITH_AL_INFO "Build magnum-al-info utility" OFF)
 
 # Magnum Vk Info
-option(WITH_VK_INFO "Build magnum-vk-info utility" OFF)
+option(MAGNUM_WITH_VK_INFO "Build magnum-vk-info utility" OFF)
 
 # Plugins
-option(WITH_ANYIMAGEIMPORTER "Build AnyImageImporter plugin" OFF)
-option(WITH_ANYAUDIOIMPORTER "Build AnyAudioImporter plugin" OFF)
-option(WITH_ANYIMAGECONVERTER "Build AnyImageConverter plugin" OFF)
-option(WITH_ANYSCENECONVERTER "Build AnySceneConverter plugin" OFF)
-option(WITH_ANYSCENEIMPORTER "Build AnySceneImporter plugin" OFF)
-option(WITH_ANYSHADERCONVERTER "Build AnyShaderConverter plugin" OFF)
-option(WITH_WAVAUDIOIMPORTER "Build WavAudioImporter plugin" OFF)
-option(WITH_MAGNUMFONT "Build MagnumFont plugin" OFF)
-option(WITH_MAGNUMFONTCONVERTER "Build MagnumFontConverter plugin" OFF)
-option(WITH_OBJIMPORTER "Build ObjImporter plugin" OFF)
-cmake_dependent_option(WITH_TGAIMAGECONVERTER "Build TgaImageConverter plugin" OFF "NOT WITH_MAGNUMFONTCONVERTER" ON)
-cmake_dependent_option(WITH_TGAIMPORTER "Build TgaImporter plugin" OFF "NOT WITH_MAGNUMFONT" ON)
+option(MAGNUM_WITH_ANYIMAGEIMPORTER "Build AnyImageImporter plugin" OFF)
+option(MAGNUM_WITH_ANYAUDIOIMPORTER "Build AnyAudioImporter plugin" OFF)
+option(MAGNUM_WITH_ANYIMAGECONVERTER "Build AnyImageConverter plugin" OFF)
+option(MAGNUM_WITH_ANYSCENECONVERTER "Build AnySceneConverter plugin" OFF)
+option(MAGNUM_WITH_ANYSCENEIMPORTER "Build AnySceneImporter plugin" OFF)
+option(MAGNUM_WITH_ANYSHADERCONVERTER "Build AnyShaderConverter plugin" OFF)
+option(MAGNUM_WITH_WAVAUDIOIMPORTER "Build WavAudioImporter plugin" OFF)
+option(MAGNUM_WITH_MAGNUMFONT "Build MagnumFont plugin" OFF)
+option(MAGNUM_WITH_MAGNUMFONTCONVERTER "Build MagnumFontConverter plugin" OFF)
+option(MAGNUM_WITH_OBJIMPORTER "Build ObjImporter plugin" OFF)
+cmake_dependent_option(MAGNUM_WITH_TGAIMAGECONVERTER "Build TgaImageConverter plugin" OFF "NOT MAGNUM_WITH_MAGNUMFONTCONVERTER" ON)
+cmake_dependent_option(MAGNUM_WITH_TGAIMPORTER "Build TgaImporter plugin" OFF "NOT MAGNUM_WITH_MAGNUMFONT" ON)
 
 # Parts of the library
-cmake_dependent_option(WITH_AUDIO "Build Audio library" OFF "NOT WITH_AL_INFO;NOT WITH_ANYAUDIOIMPORTER;NOT WITH_WAVAUDIOIMPORTER" ON)
-option(WITH_DEBUGTOOLS "Build DebugTools library" ON)
-cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" ON "NOT WITH_OBJIMPORTER;NOT WITH_SCENECONVERTER" ON)
-option(WITH_SCENEGRAPH "Build SceneGraph library" ON)
-cmake_dependent_option(WITH_SCENETOOLS "Build SceneTools library" ON "NOT WITH_SCENECONVERTER" ON)
-option(WITH_SHADERS "Build Shaders library" ON)
-cmake_dependent_option(WITH_SHADERTOOLS "Build ShaderTools library" ON "NOT WITH_SHADERCONVERTER" ON)
-cmake_dependent_option(WITH_TEXT "Build Text library" ON "NOT WITH_FONTCONVERTER;NOT WITH_MAGNUMFONT;NOT WITH_MAGNUMFONTCONVERTER" ON)
-cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT;NOT WITH_DISTANCEFIELDCONVERTER" ON)
-cmake_dependent_option(WITH_TRADE "Build Trade library" ON "NOT WITH_MESHTOOLS;NOT WITH_PRIMITIVES;NOT WITH_SCENETOOLS;NOT WITH_IMAGECONVERTER;NOT WITH_ANYIMAGEIMPORTER;NOT WITH_ANYIMAGECONVERTER;NOT WITH_ANYSCENEIMPORTER;NOT WITH_OBJIMPORTER;NOT WITH_TGAIMAGECONVERTER;NOT WITH_TGAIMPORTER" ON)
-cmake_dependent_option(WITH_GL "Build GL library" ON "NOT WITH_SHADERS;NOT WITH_GL_INFO;NOT WITH_ANDROIDAPPLICATION;NOT WITH_WINDOWLESSIOSAPPLICATION;NOT WITH_CGLCONTEXT;NOT WITH_GLXAPPLICATION;NOT WITH_GLXCONTEXT;NOT WITH_XEGLAPPLICATION;NOT WITH_WINDOWLESSWGLAPPLICATION;NOT WITH_WGLCONTEXT;NOT WITH_WINDOWLESSWINDOWSEGLAPPLICATION;NOT WITH_DISTANCEFIELDCONVERTER" ON)
-option(WITH_PRIMITIVES "Build Primitives library" ON)
+cmake_dependent_option(MAGNUM_WITH_AUDIO "Build Audio library" OFF "NOT MAGNUM_WITH_AL_INFO;NOT MAGNUM_WITH_ANYAUDIOIMPORTER;NOT MAGNUM_WITH_WAVAUDIOIMPORTER" ON)
+option(MAGNUM_WITH_DEBUGTOOLS "Build DebugTools library" ON)
+cmake_dependent_option(MAGNUM_WITH_MESHTOOLS "Build MeshTools library" ON "NOT MAGNUM_WITH_OBJIMPORTER;NOT MAGNUM_WITH_SCENECONVERTER" ON)
+option(MAGNUM_WITH_SCENEGRAPH "Build SceneGraph library" ON)
+cmake_dependent_option(MAGNUM_WITH_SCENETOOLS "Build SceneTools library" ON "NOT WITH_SCENECONVERTER" ON)
+option(MAGNUM_WITH_SHADERS "Build Shaders library" ON)
+cmake_dependent_option(MAGNUM_WITH_SHADERTOOLS "Build ShaderTools library" ON "NOT MAGNUM_WITH_SHADERCONVERTER" ON)
+cmake_dependent_option(MAGNUM_WITH_TEXT "Build Text library" ON "NOT MAGNUM_WITH_FONTCONVERTER;NOT MAGNUM_WITH_MAGNUMFONT;NOT MAGNUM_WITH_MAGNUMFONTCONVERTER" ON)
+cmake_dependent_option(MAGNUM_WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT MAGNUM_WITH_TEXT;NOT MAGNUM_WITH_DISTANCEFIELDCONVERTER" ON)
+cmake_dependent_option(MAGNUM_WITH_TRADE "Build Trade library" ON "NOT MAGNUM_WITH_MESHTOOLS;NOT MAGNUM_WITH_PRIMITIVES;NOT MAGNUM_WITH_SCENETOOLS;NOT MAGNUM_WITH_IMAGECONVERTER;NOT MAGNUM_WITH_ANYIMAGEIMPORTER;NOT MAGNUM_WITH_ANYIMAGECONVERTER;NOT MAGNUM_WITH_ANYSCENEIMPORTER;NOT MAGNUM_WITH_OBJIMPORTER;NOT MAGNUM_WITH_TGAIMAGECONVERTER;NOT MAGNUM_WITH_TGAIMPORTER" ON)
+cmake_dependent_option(MAGNUM_WITH_GL "Build GL library" ON "NOT MAGNUM_WITH_SHADERS;NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_WITH_ANDROIDAPPLICATION;NOT MAGNUM_WITH_WINDOWLESSIOSAPPLICATION;NOT MAGNUM_WITH_CGLCONTEXT;NOT MAGNUM_WITH_GLXAPPLICATION;NOT MAGNUM_WITH_GLXCONTEXT;NOT MAGNUM_WITH_XEGLAPPLICATION;NOT MAGNUM_WITH_WINDOWLESSWGLAPPLICATION;NOT MAGNUM_WITH_WGLCONTEXT;NOT MAGNUM_WITH_WINDOWLESSWINDOWSEGLAPPLICATION;NOT MAGNUM_WITH_DISTANCEFIELDCONVERTER" ON)
+option(MAGNUM_WITH_PRIMITIVES "Build Primitives library" ON)
 
-cmake_dependent_option(TARGET_HEADLESS "Build command-line utilities for use on a headless machines" OFF "WITH_GL" OFF)
-cmake_dependent_option(TARGET_GL "Build libraries with OpenGL interoperability" ON "WITH_GL" OFF)
+cmake_dependent_option(MAGNUM_TARGET_HEADLESS "Build command-line utilities for use on a headless machines" OFF "MAGNUM_WITH_GL" OFF)
+cmake_dependent_option(MAGNUM_TARGET_GL "Build libraries with OpenGL interoperability" ON "MAGNUM_WITH_GL" OFF)
 
 # EGL context and windowless EGL application, available everywhere
-cmake_dependent_option(WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT TARGET_GLES OR TARGET_DESKTOP_GLES OR NOT WITH_GL_INFO;NOT TARGET_HEADLESS" ON)
-option(WITH_EGLCONTEXT "Build EglContext library" OFF)
+cmake_dependent_option(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES OR NOT MAGNUM_WITH_GL_INFO;NOT TARGET_HEADLESS" ON)
+option(MAGNUM_WITH_EGLCONTEXT "Build EglContext library" OFF)
 
 # Vulkan, everywhere except Emscripten
 if(NOT CORRADE_TARGET_EMSCRIPTEN)
-    cmake_dependent_option(WITH_VK "Build Vk library" OFF "NOT WITH_VK_INFO" ON)
-    cmake_dependent_option(TARGET_VK "Build libraries with Vulkan interoperability" ON "WITH_VK" OFF)
+    cmake_dependent_option(MAGNUM_WITH_VK "Build Vk library" OFF "NOT MAGNUM_WITH_VK_INFO" ON)
+    cmake_dependent_option(MAGNUM_TARGET_VK "Build libraries with Vulkan interoperability" ON "MAGNUM_WITH_VK" OFF)
 endif()
 
 # Android-specific application libraries
 if(CORRADE_TARGET_ANDROID)
-    option(WITH_ANDROIDAPPLICATION "Build AndroidApplication library" OFF)
+    option(MAGNUM_WITH_ANDROIDAPPLICATION "Build AndroidApplication library" OFF)
 
 # Emscripten-specific application libraries
 elseif(CORRADE_TARGET_EMSCRIPTEN)
-    option(WITH_EMSCRIPTENAPPLICATION "Build EmscriptenApplication library" OFF)
+    option(MAGNUM_WITH_EMSCRIPTENAPPLICATION "Build EmscriptenApplication library" OFF)
 
 # iOS-specific application libraries
 elseif(CORRADE_TARGET_IOS)
-    option(WITH_WINDOWLESSIOSAPPLICATION "Build WindowlessIosApplication library" OFF)
+    option(MAGNUM_WITH_WINDOWLESSIOSAPPLICATION "Build WindowlessIosApplication library" OFF)
 
 # macOS-specific application libraries
-elseif(CORRADE_TARGET_APPLE AND NOT TARGET_GLES)
-    cmake_dependent_option(WITH_WINDOWLESSCGLAPPLICATION "Build WindowlessCglApplication library" OFF "NOT WITH_GL_INFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
-    option(WITH_CGLCONTEXT "Build CglContext library" OFF)
+elseif(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
+    cmake_dependent_option(MAGNUM_WITH_WINDOWLESSCGLAPPLICATION "Build WindowlessCglApplication library" OFF "NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_WITH_FONTCONVERTER;NOT MAGNUM_WITH_DISTANCEFIELDCONVERTER" ON)
+    option(MAGNUM_WITH_CGLCONTEXT "Build CglContext library" OFF)
 
 # X11 + GLX/EGL-specific application libraries
 elseif(CORRADE_TARGET_UNIX)
-    option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
-    if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
-        cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_GL_INFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
-        option(WITH_GLXCONTEXT "Build GlxContext library" OFF)
+    option(MAGNUM_WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
+    if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
+        cmake_dependent_option(MAGNUM_WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_WITH_FONTCONVERTER;NOT MAGNUM_WITH_DISTANCEFIELDCONVERTER" ON)
+        option(MAGNUM_WITH_GLXCONTEXT "Build GlxContext library" OFF)
     endif()
-    option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF)
+    option(MAGNUM_WITH_XEGLAPPLICATION "Build XEglApplication library" OFF)
 
 # Windows-specific application libraries
 elseif(CORRADE_TARGET_WINDOWS)
-    if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
-        cmake_dependent_option(WITH_WINDOWLESSWGLAPPLICATION "Build WindowlessWglApplication library" OFF "NOT WITH_GL_INFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
-        option(WITH_WGLCONTEXT "Build WglContext library" OFF)
+    if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
+        cmake_dependent_option(MAGNUM_WITH_WINDOWLESSWGLAPPLICATION "Build WindowlessWglApplication library" OFF "NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_WITH_FONTCONVERTER;NOT MAGNUM_WITH_DISTANCEFIELDCONVERTER" ON)
+        option(MAGNUM_WITH_WGLCONTEXT "Build WglContext library" OFF)
     else()
-        cmake_dependent_option(WITH_WINDOWLESSWINDOWSEGLAPPLICATION "Build WindowlessWindowsEglApplication library" OFF "NOT WITH_GL_INFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
+        cmake_dependent_option(MAGNUM_WITH_WINDOWLESSWINDOWSEGLAPPLICATION "Build WindowlessWindowsEglApplication library" OFF "NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_WITH_FONTCONVERTER;NOT MAGNUM_WITH_DISTANCEFIELDCONVERTER" ON)
     endif()
 endif()
 
 # Platform-independent (almost) application libraries
 if(NOT CORRADE_TARGET_ANDROID)
-    option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
+    option(MAGNUM_WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
 endif()
 if(NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_EMSCRIPTEN)
-    option(WITH_GLFWAPPLICATION "Build GlfwApplication library" OFF)
+    option(MAGNUM_WITH_GLFWAPPLICATION "Build GlfwApplication library" OFF)
 endif()
 
-option(BUILD_DEPRECATED "Include deprecated API in the build" ON)
-if(BUILD_DEPRECATED)
-    set(MAGNUM_BUILD_DEPRECATED 1)
-endif()
+option(MAGNUM_BUILD_DEPRECATED "Include deprecated API in the build" ON)
 
 # BUILD_MULTITHREADED got moved to Corrade itself. In case we're building with
 # deprecated features enabled, print a warning in case it's set but Corrade
@@ -199,7 +283,7 @@ endif()
 set(MAGNUM_DEPLOY_PREFIX "."
     CACHE STRING "Prefix where to put final application executables")
 
-option(BUILD_STATIC "Build static libraries (default are shared)" OFF)
+option(MAGNUM_BUILD_STATIC "Build static libraries (default are shared)" OFF)
 # Disable PIC on Emscripten by default (but still allow it to be enabled
 # explicitly if one so desires). Currently causes linker errors related to
 # __memory_base etc.: https://github.com/emscripten-core/emscripten/issues/8761
@@ -208,38 +292,183 @@ if(CORRADE_TARGET_EMSCRIPTEN)
 else()
     set(ON_EXCEPT_EMSCRIPTEN ON)
 endif()
-option(BUILD_STATIC_PIC "Build static libraries and plugins with position-independent code" ${ON_EXCEPT_EMSCRIPTEN})
-cmake_dependent_option(BUILD_STATIC_UNIQUE_GLOBALS "Build static libraries with globals unique across shared libraries" ${ON_EXCEPT_EMSCRIPTEN} "BUILD_STATIC" OFF)
-option(BUILD_PLUGINS_STATIC "Build static plugins (default are dynamic)" OFF)
-option(BUILD_TESTS "Build unit tests" OFF)
-cmake_dependent_option(BUILD_GL_TESTS "Build unit tests for OpenGL code" OFF "BUILD_TESTS;TARGET_GL" OFF)
-cmake_dependent_option(BUILD_AL_TESTS "Build unit tests for OpenAL code" ON "BUILD_TESTS;WITH_AUDIO" OFF)
-cmake_dependent_option(BUILD_VK_TESTS "Build unit tests for Vulkan code" OFF "BUILD_TESTS;TARGET_VK" OFF)
+option(MAGNUM_BUILD_STATIC_PIC "Build static libraries and plugins with position-independent code" ${ON_EXCEPT_EMSCRIPTEN})
+cmake_dependent_option(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS "Build static libraries with globals unique across shared libraries" ${ON_EXCEPT_EMSCRIPTEN} "MAGNUM_BUILD_STATIC" OFF)
+option(MAGNUM_BUILD_PLUGINS_STATIC "Build static plugins (default are dynamic)" OFF)
+option(MAGNUM_BUILD_TESTS "Build unit tests" OFF)
+cmake_dependent_option(MAGNUM_BUILD_GL_TESTS "Build unit tests for OpenGL code" OFF "MAGNUM_BUILD_TESTS;MAGNUM_TARGET_GL" OFF)
+cmake_dependent_option(MAGNUM_BUILD_AL_TESTS "Build unit tests for OpenAL code" ON "MAGNUM_BUILD_TESTS;MAGNUM_WITH_AUDIO" OFF)
+cmake_dependent_option(MAGNUM_BUILD_VK_TESTS "Build unit tests for Vulkan code" OFF "MAGNUM_BUILD_TESTS;MAGNUM_TARGET_VK" OFF)
 
 # OpenGLTester / VulkanTester libraries, built by default only if GL / VK tests
 # are enabled
-cmake_dependent_option(WITH_OPENGLTESTER "Build OpenGLTester library" OFF "NOT BUILD_GL_TESTS" ON)
-cmake_dependent_option(WITH_VULKANTESTER "Build VulkanTester library" OFF "NOT BUILD_VK_TESTS" ON)
+cmake_dependent_option(MAGNUM_WITH_OPENGLTESTER "Build OpenGLTester library" OFF "NOT MAGNUM_BUILD_GL_TESTS" ON)
+cmake_dependent_option(MAGNUM_WITH_VULKANTESTER "Build VulkanTester library" OFF "NOT MAGNUM_BUILD_VK_TESTS" ON)
 
-# Dynamic linking is meaningless on Emscripten and too inconvenient on Android
-if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    set(BUILD_STATIC ON)
-    set(BUILD_PLUGINS_STATIC ON)
-# Dynamic plugins are not working on iOS or Windows RT at the moment
-elseif(CORRADE_TARGET_IOS OR CORRADE_TARGET_WINDOWS_RT)
-    set(BUILD_PLUGINS_STATIC ON)
+# Backwards compatibility for unprefixed CMake options. If the user isn't
+# explicitly using prefixed options in the first run already, accept the
+# unprefixed options, and remember this decision for subsequent runs
+if(NOT DEFINED _MAGNUM_ACCEPT_DEPRECATED_UNPREFIXED_OPTIONS)
+    set(_MAGNUM_ACCEPT_DEPRECATED_UNPREFIXED_OPTIONS ON CACHE INTERNAL "")
 endif()
+# If the user wasn't explicitly using prefixed options in the first run and the
+# MAGNUM_BUILD_DEPRECATED option is not currently disabled (which can get
+# changed subsequently), accept the unprefixed options and print a warning if
+# they're different from the prefixed ones.
+if(_MAGNUM_ACCEPT_DEPRECATED_UNPREFIXED_OPTIONS AND MAGNUM_BUILD_DEPRECATED)
+    # The following variables need extra care -- mirroring what's done in
+    # cmake_dependent_option(), but only the cases that enable a dependency
+    # that is off by default, not cases that hide an option from the GUI when
+    # it's needed by something else or cases that disable and hide the option
+    # from the GUI on unsupported platforms. In other words, if the original
+    # user flag setup didn't make sense before but the option dependency fixed
+    # it, it'll be broken now, but if it made sense, it should keep working.
+    #
+    # Doing this before propagating the unprefixed options to avoid a
+    # false-positive warning when e.g. MAGNUM_BUILD_STATIC_PIC is implicitly ON
+    # but BUILD_STATIC_PIC not yet.
+    if(CORRADE_TARGET_IOS OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_WINDOWS_RT)
+        if(NOT DEFINED TARGET_GLES)
+            set(TARGET_GLES ON)
+        endif()
+    endif()
+    if(TARGET_GLES)
+        if(NOT DEFINED TARGET_GLES2)
+            set(TARGET_GLES2 ON)
+        endif()
+    endif()
+    if(BUILD_STATIC)
+        if(NOT CORRADE_TARGET_EMSCRIPTEN AND NOT DEFINED BUILD_STATIC_PIC)
+            set(BUILD_STATIC_PIC ON)
+        endif()
+        if(NOT CORRADE_TARGET_EMSCRIPTEN AND NOT DEFINED BUILD_STATIC_UNIQUE_GLOBALS)
+            set(BUILD_STATIC_UNIQUE_GLOBALS ON)
+        endif()
+    endif()
+    if(BUILD_TESTS)
+        if(NOT DEFINED BUILD_AL_TESTS)
+            set(BUILD_AL_TESTS ON)
+        endif()
+    endif()
+    if(BUILD_GL_TESTS)
+        if(NOT DEFINED WITH_OPENGLTESTER)
+            set(WITH_OPENGLTESTER ON)
+        endif()
+    endif()
+    if(BUILD_VK_TESTS)
+        if(NOT DEFINED WITH_VULKANTESTER)
+            set(WITH_VULKANTESTER ON)
+        endif()
+    endif()
+    if(WITH_MAGNUMFONTCONVERTER)
+        if(NOT DEFINED WITH_TGAIMAGECONVERTER)
+            set(WITH_TGAIMAGECONVERTER ON)
+        endif()
+    endif()
+    if(WITH_MAGNUMFONT)
+        if(NOT DEFINED WITH_TGAIMPORTER)
+            set(WITH_TGAIMPORTER ON)
+        endif()
+    endif()
+    if(WITH_AL_INFO OR WITH_ANYAUDIOIMPORTER OR WITH_WAVAUDIOIMPORTER)
+        if(NOT DEFINED WITH_AUDIO)
+            set(WITH_AUDIO ON)
+        endif()
+    endif()
+    if(WITH_GL_INFO OR WITH_OPENGLTESTER OR WITH_DISTANCEFIELDCONVERTER)
+        if(CORRADE_TARGET_ANDROID OR CORRADE_TARGET_EMSCRIPTEN)
+            if(NOT DEFINED WITH_WINDOWLESSEGLAPPLICATION)
+                set(WITH_WINDOWLESSEGLAPPLICATION ON)
+            endif()
+        elseif(CORRADE_TARGET_IOS)
+            if(NOT DEFINED WITH_WINDOWLESSIOSAPPLICATION)
+                set(WITH_WINDOWLESSIOSAPPLICATION ON)
+            endif()
+        elseif(CORRADE_TARGET_APPLE AND NOT TARGET_GLES)
+            if(NOT DEFINED WITH_WINDOWLESSCGLAPPLICATION)
+                set(WITH_WINDOWLESSCGLAPPLICATION ON)
+            endif()
+        elseif(CORRADE_TARGET_UNIX)
+            if((NOT TARGET_GLES AND NOT TARGET_HEADLESS) OR TARGET_DESKTOP_GLES)
+                if(NOT DEFINED WITH_WINDOWLESSGLXAPPLICATION)
+                    set(WITH_WINDOWLESSGLXAPPLICATION ON)
+                endif()
+            else()
+                if(NOT DEFINED WITH_WINDOWLESSEGLAPPLICATION)
+                    set(WITH_WINDOWLESSEGLAPPLICATION ON)
+                endif()
+            endif()
+        elseif(CORRADE_TARGET_WINDOWS)
+            if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
+                if(NOT DEFINED WITH_WINDOWLESSWGLAPPLICATION)
+                    set(WITH_WINDOWLESSWGLAPPLICATION ON)
+                endif()
+            else()
+                if(NOT DEFINED WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
+                    set(WITH_WINDOWLESSWINDOWSEGLAPPLICATION ON)
+                endif()
+            endif()
+        endif()
+    endif()
+    if(WITH_VK_INFO OR WITH_VULKANTESTER)
+        if(NOT DEFINED WITH_VK)
+            set(WITH_VK ON)
+        endif()
+    endif()
+    if(WITH_VK)
+        if(NOT DEFINED TARGET_VK)
+            set(TARGET_VK ON)
+        endif()
+    endif()
 
-if(BUILD_STATIC)
-    set(MAGNUM_BUILD_STATIC 1)
-    if(BUILD_STATIC_UNIQUE_GLOBALS)
-        set(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS 1)
+    set(_MAGNUM_WARN_DEPRECATED_UNPREFIXED_OPTION )
+    foreach(option ${_MAGNUM_DEPRECATED_UNPREFIXED_OPTIONS})
+        if(DEFINED ${option})
+            # CMake has no comparison of boolean values (EQUAL returns false if
+            # comparing ON and 1 or OFF and FALSE, STREQUAL also), so we have
+            # to do it this way. Also warn only on the first encountered
+            # variable so people can fix it, reconfigure and go to the next one
+            # that warns.
+            if((${option} AND NOT MAGNUM_${option}) OR
+               (NOT ${option} AND MAGNUM_${option}) AND NOT _MAGNUM_WARN_DEPRECATED_UNPREFIXED_OPTION)
+                set(_MAGNUM_WARN_DEPRECATED_UNPREFIXED_OPTION ${option})
+            endif()
+            set(MAGNUM_${option} ${${option}})
+            # If variables specified on the command line don't match any
+            # options, they're kept in cache but set as UNINITIALIZED, meaning
+            # they don't appear in cmake-gui or ccmake, so there's no way to
+            # fix the warning apart from hand-enditing the CMakeCache.txt or
+            # recreating the build dir. Update their cached type to be BOOL to
+            # make them appear.
+            set(${option} ${${option}} CACHE BOOL "Deprecated, use MAGNUM_${option} instead" FORCE)
+        endif()
+    endforeach()
+
+    if(_MAGNUM_WARN_DEPRECATED_UNPREFIXED_OPTION)
+        # CMake 3.5+ has deprecation warnings enabled by default (which makes
+        # sense), 3.4 not. Use a warning there instead.
+        # TODO: drop when 3.4 is not supported anymore
+        if(CMAKE_VERSION VERSION_LESS 3.5)
+            set(DEPRECATION_OR_WARNING WARNING)
+        else()
+            set(DEPRECATION_OR_WARNING DEPRECATION)
+        endif()
+        message(${DEPRECATION_OR_WARNING} "Unprefixed options such as ${_MAGNUM_WARN_DEPRECATED_UNPREFIXED_OPTION} are deprecated, use MAGNUM_${_MAGNUM_WARN_DEPRECATED_UNPREFIXED_OPTION} instead. Delete the unprefixed variable from CMake cache or set both to the same value to silence this warning.")
     endif()
 endif()
 
+# Dynamic linking is meaningless on Emscripten and too inconvenient on Android
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(MAGNUM_BUILD_STATIC ON)
+    set(MAGNUM_BUILD_PLUGINS_STATIC ON)
+# Dynamic plugins are not working on iOS or Windows RT at the moment
+elseif(CORRADE_TARGET_IOS OR CORRADE_TARGET_WINDOWS_RT)
+    set(MAGNUM_BUILD_PLUGINS_STATIC ON)
+endif()
+
 # Check dependencies
-if(WITH_GL)
-    if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
+if(MAGNUM_WITH_GL)
+    if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
         # OpenGL library preference. Prefer to use GLVND, since that's the
         # better approach nowadays, but allow the users to override it from
         # outside in case it is broken for some reason (Nvidia drivers in
@@ -248,50 +477,40 @@ if(WITH_GL)
             set(OpenGL_GL_PREFERENCE GLVND)
         endif()
         find_package(OpenGL REQUIRED)
-    elseif(TARGET_GLES2)
+    elseif(MAGNUM_TARGET_GLES2)
         find_package(OpenGLES2 REQUIRED)
     else()
         find_package(OpenGLES3 REQUIRED)
     endif()
 else()
-    if(TARGET_GL)
-        message(FATAL_ERROR "WITH_GL is OFF but TARGET_GL is enabled. Hmm.")
-    endif()
+    # Especially now with the backwards compatibility for unprefixed variables
+    # it's easiest to just force-disable all this
+    set(MAGNUM_TARGET_GL OFF)
     # These are implicitly enabled for embedded platforms, disable them all for
     # consistency
-    set(TARGET_GLES OFF)
-    set(TARGET_GLES2 OFF)
-    set(TARGET_DESKTOP_GLES OFF)
+    set(MAGNUM_TARGET_GLES OFF)
+    set(MAGNUM_TARGET_GLES2 OFF)
+    set(MAGNUM_TARGET_DESKTOP_GLES OFF)
 endif()
 
-# Configuration variables (saved later to configure.h)
-if(TARGET_GL)
-    set(MAGNUM_TARGET_GL 1)
+if(NOT MAGNUM_WITH_VK)
+    # Especially now with the backwards compatibility for unprefixed variables
+    # it's easiest to just force-disable this
+    set(MAGNUM_TARGET_VK OFF)
 endif()
-if(TARGET_GLES)
-    set(MAGNUM_TARGET_GLES 1)
-    if(TARGET_GLES2)
-        set(MAGNUM_TARGET_GLES2 1)
-    else()
+
+# Dependent configuration variables
+if(MAGNUM_TARGET_GLES)
+    if(NOT MAGNUM_TARGET_GLES2)
         set(MAGNUM_TARGET_GLES3 1)
     endif()
     if(CORRADE_TARGET_EMSCRIPTEN)
-        set(TARGET_WEBGL 1)
         set(MAGNUM_TARGET_WEBGL 1)
     endif()
-    if(TARGET_DESKTOP_GLES)
-        set(MAGNUM_TARGET_DESKTOP_GLES 1)
-    endif()
-endif()
-if(TARGET_HEADLESS)
-    set(MAGNUM_TARGET_HEADLESS 1)
-endif()
-if(TARGET_VK)
-    set(MAGNUM_TARGET_VK 1)
 endif()
 
 # Testing setup
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     find_package(Corrade REQUIRED TestSuite)
     if(CORRADE_TARGET_IOS)
         set(CORRADE_TESTSUITE_BUNDLE_IDENTIFIER_PREFIX "cz.mosra.magnum")
@@ -306,39 +525,39 @@ if(BUILD_TESTS)
     endif()
 endif()
 
-if(WITH_OPENGLTESTER)
+if(MAGNUM_WITH_OPENGLTESTER)
     if(MAGNUM_TARGET_HEADLESS OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-        set(WITH_WINDOWLESSEGLAPPLICATION ON)
+        set(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION ON)
         set(OPENGLTESTER_APPLICATION MagnumWindowlessEglApplication)
     elseif(CORRADE_TARGET_IOS)
-        set(WITH_WINDOWLESSIOSAPPLICATION ON)
+        set(MAGNUM_WITH_WINDOWLESSIOSAPPLICATION ON)
         set(OPENGLTESTER_APPLICATION MagnumWindowlessIosApplication)
     elseif(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
-        set(WITH_WINDOWLESSCGLAPPLICATION ON)
+        set(MAGNUM_WITH_WINDOWLESSCGLAPPLICATION ON)
         set(OPENGLTESTER_APPLICATION MagnumWindowlessCglApplication)
     elseif(CORRADE_TARGET_UNIX)
         if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
-            set(WITH_WINDOWLESSEGLAPPLICATION ON)
+            set(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION ON)
             set(OPENGLTESTER_APPLICATION MagnumWindowlessEglApplication)
         else()
-            set(WITH_WINDOWLESSGLXAPPLICATION ON)
+            set(MAGNUM_WITH_WINDOWLESSGLXAPPLICATION ON)
             set(OPENGLTESTER_APPLICATION MagnumWindowlessGlxApplication)
         endif()
     elseif(CORRADE_TARGET_WINDOWS)
         if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
-            set(WITH_WINDOWLESSWGLAPPLICATION ON)
+            set(MAGNUM_WITH_WINDOWLESSWGLAPPLICATION ON)
             set(OPENGLTESTER_APPLICATION MagnumWindowlessWglApplication)
         else()
-            set(WITH_WINDOWLESSWINDOWSEGLAPPLICATION ON)
+            set(MAGNUM_WITH_WINDOWLESSWINDOWSEGLAPPLICATION ON)
             set(OPENGLTESTER_APPLICATION MagnumWindowlessWindowsEglApplication)
         endif()
     else()
-        # Assuming this gets hit only if BUILD_GL_TESTS are enabled
-        message(FATAL_ERROR "Cannot run tests for OpenGL code on this platform. Set BUILD_GL_TESTS to OFF to skip building them.")
+        # Assuming this gets hit only if MAGNUM_BUILD_GL_TESTS are enabled
+        message(FATAL_ERROR "Cannot run tests for OpenGL code on this platform. Set MAGNUM_BUILD_GL_TESTS to OFF to skip building them.")
     endif()
 endif()
 
-if(NOT BUILD_STATIC)
+if(NOT MAGNUM_BUILD_STATIC)
     set(SHARED_OR_STATIC SHARED)
 else()
     set(SHARED_OR_STATIC STATIC)
@@ -503,6 +722,6 @@ add_subdirectory(modules)
 add_subdirectory(src)
 
 # Build snippets as part of testing
-if(BUILD_TESTS)
+if(MAGNUM_BUILD_TESTS)
     add_subdirectory(doc/snippets)
 endif()
