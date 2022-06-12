@@ -42,15 +42,7 @@
 
 namespace Corrade { namespace PluginManager {
 
-/* On non-MinGW Windows the instantiations are already marked with extern
-   template. However Clang-CL doesn't propagate the export from the extern
-   template, it seems. */
-#if !defined(CORRADE_TARGET_WINDOWS) || defined(CORRADE_TARGET_MINGW) || defined(CORRADE_TARGET_CLANG_CL)
-#define MAGNUM_AUDIO_EXPORT_HPP MAGNUM_AUDIO_EXPORT
-#else
-#define MAGNUM_AUDIO_EXPORT_HPP
-#endif
-template class MAGNUM_AUDIO_EXPORT_HPP Manager<Magnum::Audio::AbstractImporter>;
+template class MAGNUM_AUDIO_EXPORT Manager<Magnum::Audio::AbstractImporter>;
 
 }}
 
