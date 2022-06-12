@@ -12,6 +12,10 @@ class Magnum < Formula
   depends_on "glfw"
 
   def install
+    # 2020.06 has the options unprefixed, current master has them prefixed.
+    # Options not present in 2020.06 are prefixed always.
+    option_prefix = build.head? ? 'MAGNUM_' : ''
+
     system "mkdir build"
     cd "build" do
       system "cmake",
@@ -27,31 +31,31 @@ class Magnum < Formula
         # plugins and not those from the magnum-plugins package. Please
         # complain to Homebrew about this insane filesystem layout.
         "-DMAGNUM_PLUGINS_DIR=#{HOMEBREW_PREFIX}/lib/magnum",
-        "-DWITH_AUDIO=ON",
-        "-DWITH_GLFWAPPLICATION=ON",
-        "-DWITH_SDL2APPLICATION=ON",
-        "-DWITH_WINDOWLESSCGLAPPLICATION=ON",
-        "-DWITH_CGLCONTEXT=ON",
-        "-DWITH_OPENGLTESTER=ON",
-        "-DWITH_ANYAUDIOIMPORTER=ON",
-        "-DWITH_ANYIMAGECONVERTER=ON",
-        "-DWITH_ANYIMAGEIMPORTER=ON",
-        "-DWITH_ANYSCENECONVERTER=ON",
-        "-DWITH_ANYSCENEIMPORTER=ON",
-        "-DWITH_ANYSHADERCONVERTER=ON",
-        "-DWITH_MAGNUMFONT=ON",
-        "-DWITH_MAGNUMFONTCONVERTER=ON",
-        "-DWITH_OBJIMPORTER=ON",
-        "-DWITH_TGAIMAGECONVERTER=ON",
-        "-DWITH_TGAIMPORTER=ON",
-        "-DWITH_WAVAUDIOIMPORTER=ON",
-        "-DWITH_DISTANCEFIELDCONVERTER=ON",
-        "-DWITH_FONTCONVERTER=ON",
-        "-DWITH_IMAGECONVERTER=ON",
-        "-DWITH_SCENECONVERTER=ON",
-        "-DWITH_SHADERCONVERTER=ON",
-        "-DWITH_GL_INFO=ON",
-        "-DWITH_AL_INFO=ON",
+        "-D#{option_prefix}WITH_AUDIO=ON",
+        "-D#{option_prefix}WITH_GLFWAPPLICATION=ON",
+        "-D#{option_prefix}WITH_SDL2APPLICATION=ON",
+        "-D#{option_prefix}WITH_WINDOWLESSCGLAPPLICATION=ON",
+        "-D#{option_prefix}WITH_CGLCONTEXT=ON",
+        "-D#{option_prefix}WITH_OPENGLTESTER=ON",
+        "-D#{option_prefix}WITH_ANYAUDIOIMPORTER=ON",
+        "-D#{option_prefix}WITH_ANYIMAGECONVERTER=ON",
+        "-D#{option_prefix}WITH_ANYIMAGEIMPORTER=ON",
+        "-D#{option_prefix}WITH_ANYSCENECONVERTER=ON",
+        "-D#{option_prefix}WITH_ANYSCENEIMPORTER=ON",
+        "-DMAGNUM_WITH_ANYSHADERCONVERTER=ON",
+        "-D#{option_prefix}WITH_MAGNUMFONT=ON",
+        "-D#{option_prefix}WITH_MAGNUMFONTCONVERTER=ON",
+        "-D#{option_prefix}WITH_OBJIMPORTER=ON",
+        "-D#{option_prefix}WITH_TGAIMAGECONVERTER=ON",
+        "-D#{option_prefix}WITH_TGAIMPORTER=ON",
+        "-D#{option_prefix}WITH_WAVAUDIOIMPORTER=ON",
+        "-D#{option_prefix}WITH_DISTANCEFIELDCONVERTER=ON",
+        "-D#{option_prefix}WITH_FONTCONVERTER=ON",
+        "-D#{option_prefix}WITH_IMAGECONVERTER=ON",
+        "-D#{option_prefix}WITH_SCENECONVERTER=ON",
+        "-DMAGNUM_WITH_SHADERCONVERTER=ON",
+        "-D#{option_prefix}WITH_GL_INFO=ON",
+        "-D#{option_prefix}WITH_AL_INFO=ON",
         ".."
       system "cmake", "--build", "."
       system "cmake", "--build", ".", "--target", "install"
