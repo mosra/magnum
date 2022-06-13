@@ -24,7 +24,7 @@
 #
 
 # Wrapper for creating given plugin type
-macro(add_plugin plugin_name debug_install_dirs release_install_dirs metadata_file)
+macro(add_plugin plugin_name plugin_folder debug_install_dirs release_install_dirs metadata_file)
     string(TOUPPER ${plugin_name} PLUGIN_NAME)
     if(NOT MAGNUM_${PLUGIN_NAME}_BUILD_STATIC)
         corrade_add_plugin(${plugin_name} "${debug_install_dirs}" "${release_install_dirs}" ${metadata_file} ${ARGN})
@@ -32,6 +32,13 @@ macro(add_plugin plugin_name debug_install_dirs release_install_dirs metadata_fi
     else()
         corrade_add_static_plugin(${plugin_name} "${release_install_dirs}" ${metadata_file} ${ARGN})
         set_target_properties(${plugin_name} ${plugin_name}-dependencies PROPERTIES FOLDER "MagnumPlugins/${plugin_name}")
+    endif()
+    # Modify output location only if all are set, otherwise it makes no sense
+    if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CMAKE_LIBRARY_OUTPUT_DIRECTORY AND CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+        set_target_properties(${plugin_name} PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/magnum$<$<CONFIG:Debug>:-d>/${plugin_folder}
+            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/magnum$<$<CONFIG:Debug>:-d>/${plugin_folder}
+            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/magnum$<$<CONFIG:Debug>:-d>/${plugin_folder})
     endif()
 endmacro()
 
