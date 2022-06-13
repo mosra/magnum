@@ -34,6 +34,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 # MagnumFontConverter plugin
 add_plugin(MagnumFontConverter
+    fontconverters
     "${MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_LIBRARY_INSTALL_DIR}"
     "${MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_LIBRARY_INSTALL_DIR}"
     MagnumFontConverter.conf
@@ -47,13 +48,6 @@ if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFontConverter PUBLIC TgaImageConverter)
 elseif(MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC)
     target_link_libraries(MagnumFontConverter INTERFACE TgaImageConverter)
-endif()
-# Modify output location only if all are set, otherwise it makes no sense
-if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CMAKE_LIBRARY_OUTPUT_DIRECTORY AND CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-    set_target_properties(MagnumFontConverter PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/magnum$<$<CONFIG:Debug>:-d>/fontconverters
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/magnum$<$<CONFIG:Debug>:-d>/fontconverters
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/magnum$<$<CONFIG:Debug>:-d>/fontconverters)
 endif()
 
 install(FILES MagnumFontConverter.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
