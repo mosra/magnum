@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <vector>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
@@ -35,20 +36,20 @@ namespace Magnum { namespace TextureTools { namespace Test { namespace {
 struct AtlasTest: TestSuite::Tester {
     explicit AtlasTest();
 
-    void create();
-    void createPadding();
-    void createEmpty();
-    void createTooSmall();
+    void basic();
+    void padding();
+    void empty();
+    void tooSmall();
 };
 
 AtlasTest::AtlasTest() {
-    addTests({&AtlasTest::create,
-              &AtlasTest::createPadding,
-              &AtlasTest::createEmpty,
-              &AtlasTest::createTooSmall});
+    addTests({&AtlasTest::basic,
+              &AtlasTest::padding,
+              &AtlasTest::empty,
+              &AtlasTest::tooSmall});
 }
 
-void AtlasTest::create() {
+void AtlasTest::basic() {
     std::vector<Range2Di> atlas = TextureTools::atlas({64, 64}, {
         {12, 18},
         {32, 15},
@@ -62,7 +63,7 @@ void AtlasTest::create() {
         Range2Di::fromSize({0, 25}, {23, 25})}));
 }
 
-void AtlasTest::createPadding() {
+void AtlasTest::padding() {
     std::vector<Range2Di> atlas = TextureTools::atlas({64, 64}, {
         {8, 16},
         {28, 13},
@@ -76,12 +77,12 @@ void AtlasTest::createPadding() {
         Range2Di::fromSize({2, 26}, {19, 23})}));
 }
 
-void AtlasTest::createEmpty() {
+void AtlasTest::empty() {
     std::vector<Range2Di> atlas = TextureTools::atlas({}, {});
     CORRADE_VERIFY(atlas.empty());
 }
 
-void AtlasTest::createTooSmall() {
+void AtlasTest::tooSmall() {
     std::ostringstream o;
     Error redirectError{&o};
 

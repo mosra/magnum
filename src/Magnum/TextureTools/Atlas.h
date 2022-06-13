@@ -29,7 +29,7 @@
  * @brief Function @ref Magnum::TextureTools::atlas()
  */
 
-#include <vector>
+#include <Corrade/Utility/StlForwardVector.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector2.h"

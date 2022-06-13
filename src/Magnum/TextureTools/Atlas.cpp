@@ -25,6 +25,8 @@
 
 #include "Atlas.h"
 
+#include <vector>
+
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Range.h"
 
