@@ -65,7 +65,7 @@ elseif(MAGNUM_BUILD_STATIC_PIC)
 endif()
 target_link_libraries(MagnumTextureTools PUBLIC
     Magnum)
-if(MAGNUM_WITH_GL)
+if(MAGNUM_TARGET_GL)
     target_link_libraries(MagnumTextureTools PUBLIC MagnumGL)
 endif()
 
