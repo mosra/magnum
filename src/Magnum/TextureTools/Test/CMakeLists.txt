@@ -27,7 +27,7 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/TextureTools/Test")
 
-corrade_add_test(TextureToolsAtlasTest AtlasTest.cpp LIBRARIES MagnumTextureTools)
+corrade_add_test(TextureToolsAtlasTest AtlasTest.cpp LIBRARIES MagnumTextureToolsTestLib)
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(DISTANCEFIELDGLTEST_FILES_DIR "DistanceFieldGLTestFiles")

@@ -25,8 +25,12 @@
 
 #include <sstream>
 #include <vector>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Math/Range.h"
 #include "Magnum/TextureTools/Atlas.h"
@@ -40,13 +44,56 @@ struct AtlasTest: TestSuite::Tester {
     void padding();
     void empty();
     void tooSmall();
+
+    void arrayPowerOfTwoEmpty();
+    void arrayPowerOfTwoSingleElement();
+    void arrayPowerOfTwoAllSameElements();
+    void arrayPowerOfTwoOneLayer();
+    void arrayPowerOfTwoMoreLayers();
+    void arrayPowerOfTwoWrongLayerSize();
+    void arrayPowerOfTwoWrongSize();
+};
+
+const struct {
+    const char* name;
+    std::size_t order[15];
+} ArrayPowerOfTwoOneLayerData[]{
+    {"sorted",
+        {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}},
+    {"",
+        /* Because there are duplicate sizes, the shuffling needs to preserve
+           the original order of duplicates to match the output */
+        {0, 2, 7, 13, 11, 3, 4, 5, 8, 14, 1, 9, 6, 12, 10}},
+};
+
+const struct {
+    const char* name;
+    Vector2i size;
+    const char* message;
+} ArrayPowerOfTwoWrongSizeData[]{
+    {"non-power-of-two", {128, 127}, "{128, 127}"},
+    {"non-square", {128, 256}, "{128, 256}"},
+    {"zero", {1024, 0}, "{1024, 0}"}
 };
 
 AtlasTest::AtlasTest() {
     addTests({&AtlasTest::basic,
               &AtlasTest::padding,
               &AtlasTest::empty,
-              &AtlasTest::tooSmall});
+              &AtlasTest::tooSmall,
+
+              &AtlasTest::arrayPowerOfTwoEmpty,
+              &AtlasTest::arrayPowerOfTwoSingleElement,
+              &AtlasTest::arrayPowerOfTwoAllSameElements});
+
+    addInstancedTests({&AtlasTest::arrayPowerOfTwoOneLayer},
+        Containers::arraySize(ArrayPowerOfTwoOneLayerData));
+
+    addTests({&AtlasTest::arrayPowerOfTwoMoreLayers});
+
+    addInstancedTests({&AtlasTest::arrayPowerOfTwoWrongLayerSize,
+                       &AtlasTest::arrayPowerOfTwoWrongSize},
+        Containers::arraySize(ArrayPowerOfTwoWrongSizeData));
 }
 
 void AtlasTest::basic() {
@@ -93,6 +140,167 @@ void AtlasTest::tooSmall() {
     }, {2, 1});
     CORRADE_VERIFY(atlas.empty());
     CORRADE_COMPARE(o.str(), "TextureTools::atlas(): requested atlas size Vector(64, 32) is too small to fit 3 Vector(25, 31) textures. Generated atlas will be empty.\n");
+}
+
+void AtlasTest::arrayPowerOfTwoEmpty() {
+    Containers::Pair<Int, Containers::Array<Vector3i>> out = atlasArrayPowerOfTwo({128, 128}, {});
+    CORRADE_COMPARE(out.first(), 0);
+    CORRADE_COMPARE_AS(out.second(), Containers::arrayView<Vector3i>({
+    }), TestSuite::Compare::Container);
+}
+
+void AtlasTest::arrayPowerOfTwoSingleElement() {
+    Containers::Pair<Int, Containers::Array<Vector3i>> out = atlasArrayPowerOfTwo({128, 128}, {{128, 128}});
+    CORRADE_COMPARE(out.first(), 1);
+    CORRADE_COMPARE_AS(out.second(), Containers::arrayView<Vector3i>({
+        {0, 0, 0}
+    }), TestSuite::Compare::Container);
+}
+
+void AtlasTest::arrayPowerOfTwoAllSameElements() {
+    Containers::Pair<Int, Containers::Array<Vector3i>> out = atlasArrayPowerOfTwo({128, 128}, {
+        {64, 64},
+        {64, 64},
+        {64, 64},
+        {64, 64},
+    });
+    CORRADE_COMPARE(out.first(), 1);
+    CORRADE_COMPARE_AS(out.second(), Containers::arrayView<Vector3i>({
+        {0, 0, 0},
+        {64, 0, 0},
+        {0, 64, 0},
+        {64, 64, 0}
+    }), TestSuite::Compare::Container);
+}
+
+void AtlasTest::arrayPowerOfTwoOneLayer() {
+    auto&& data = ArrayPowerOfTwoOneLayerData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    constexpr std::size_t count = Containers::arraySize(ArrayPowerOfTwoOneLayerData->order);
+
+    const Vector2i inputSorted[count]{
+        {1024, 1024},   /*  0 */
+        {1024, 1024},   /*  1 */
+
+        {512, 512},     /*  2 */
+        {512, 512},     /*  3 */
+        {512, 512},     /*  4 */
+        {512, 512},     /*  5 */
+        {512, 512},     /*  6 */
+
+        {256, 256},     /*  7 */
+        {256, 256},     /*  8 */
+        {256, 256},     /*  9 */
+        {256, 256},     /* 10 */
+
+        {128, 128},     /* 11 */
+        {128, 128},     /* 12 */
+
+        {32, 32},       /* 13 */
+        {32, 32}        /* 14 */
+    };
+
+    const Vector3i expectedSorted[count]{
+        {0, 0, 0},
+        {1024, 0, 0},
+
+        {0, 1024, 0},
+        {512, 1024, 0},
+        {0, 1536, 0},
+        {512, 1536, 0},
+        {1024, 1024, 0},
+
+        {1536, 1024, 0},
+        {1792, 1024, 0},
+        {1536, 1280, 0},
+        {1792, 1280, 0},
+
+        {1024, 1536, 0},
+        {1152, 1536, 0},
+
+        {1024, 1664, 0},
+        {1056, 1664, 0}
+    };
+
+    Vector2i input[count];
+    Vector3i expected[count];
+    for(std::size_t i = 0; i != count; ++i) {
+        input[i] = inputSorted[data.order[i]];
+        expected[i] = expectedSorted[data.order[i]];
+    }
+
+    Containers::Pair<Int, Containers::Array<Vector3i>> out = atlasArrayPowerOfTwo({2048, 2048}, input);
+    CORRADE_COMPARE(out.first(), 1);
+    CORRADE_COMPARE_AS(out.second(),
+        Containers::ArrayView<const Vector3i>{expected},
+        TestSuite::Compare::Container);
+}
+
+void AtlasTest::arrayPowerOfTwoMoreLayers() {
+    Containers::Pair<Int, Containers::Array<Vector3i>> out = atlasArrayPowerOfTwo({2048, 2048}, {
+        {2048, 2048},
+
+        {1024, 1024},
+        {1024, 1024},
+        {1024, 1024},
+        {512, 512},
+        {512, 512},
+        {512, 512},
+        {512, 512},
+
+        {512, 512},
+        {256, 256},
+        {256, 256}
+    });
+    CORRADE_COMPARE(out.first(), 3);
+    CORRADE_COMPARE_AS(out.second(), Containers::arrayView<Vector3i>({
+        {0, 0, 0},
+
+        {0, 0, 1},
+        {1024, 0, 1},
+        {0, 1024, 1},
+        {1024, 1024, 1},
+        {1536, 1024, 1},
+        {1024, 1536, 1},
+        {1536, 1536, 1},
+
+        {0, 0, 2},
+        {512, 0, 2},
+        {768, 0, 2}
+    }), TestSuite::Compare::Container);
+}
+
+void AtlasTest::arrayPowerOfTwoWrongLayerSize() {
+    auto&& data = ArrayPowerOfTwoWrongSizeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    atlasArrayPowerOfTwo(data.size, {});
+    CORRADE_COMPARE(out.str(), Utility::formatString("TextureTools::atlasArrayPowerOfTwo(): expected layer size to be a non-zero power-of-two square, got {}\n", data.message));
+}
+
+void AtlasTest::arrayPowerOfTwoWrongSize() {
+    auto&& data = ArrayPowerOfTwoWrongSizeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    atlasArrayPowerOfTwo({256, 256}, {
+        {64, 64},
+        {128, 128},
+        data.size
+    });
+    CORRADE_COMPARE(out.str(), Utility::formatString("TextureTools::atlasArrayPowerOfTwo(): expected size 2 to be a non-zero power-of-two square, got {}\n", data.message));
 }
 
 }}}}

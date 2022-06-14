@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::TextureTools::atlas()
+ * @brief Function @ref Magnum::TextureTools::atlas(), @ref Magnum::TextureTools::atlasArrayPowerOfTwo()
  */
 
 #include <Corrade/Utility/StlForwardVector.h>
@@ -51,6 +51,34 @@ don't overlap. Returned sizes are the same as original sizes, i.e. without the
 padding.
 */
 std::vector<Range2Di> MAGNUM_TEXTURETOOLS_EXPORT atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes, const Vector2i& padding = Vector2i());
+
+/**
+@brief Pack square power-of-two textures into a texture atlas array
+@param layerSize    Size of the texture layer
+@param sizes        Sizes of all textures in the atlas
+@return Total layer count and offsets of all textures in the atlas, with the Z
+    coordinate being the layer index
+@m_since_latest
+
+Both @p layerSize and all items in @p sizes are expected to be non-zero, square
+and power-of-two. With such constraints the packing is optimal with no wasted
+space in all but the last layer. Setting @p layerSize to the size of the
+largest texture in the set will lead to the least wasted space in the last
+layer.
+
+The algorithm first sorts the textures by size using @ref std::stable_sort(),
+which is usually @f$ \mathcal{O}(n \log{} n) @f$, and then performs the actual
+atlasing in a single @f$ \mathcal{O}(n) @f$ operation. Due to the sort
+involved, a temporary allocation holds the sorted array and additionally
+@ref std::stable_sort() performs its own allocation.
+*/
+Containers::Pair<Int, Containers::Array<Vector3i>> MAGNUM_TEXTURETOOLS_EXPORT atlasArrayPowerOfTwo(const Vector2i& layerSize, Containers::ArrayView<const Vector2i> sizes);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+Containers::Pair<Int, Containers::Array<Vector3i>> MAGNUM_TEXTURETOOLS_EXPORT atlasArrayPowerOfTwo(const Vector2i& layerSize, std::initializer_list<Vector2i> sizes);
 
 }}
 

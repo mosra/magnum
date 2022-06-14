@@ -255,6 +255,11 @@ See also:
     @ref ShaderTools::AnyConverter "AnyShaderConverter" plugin and a
     @ref magnum-shaderconverter "magnum-shaderconverter" utility
 
+@subsubsection changelog-latest-new-texturetools TextureTools library
+
+-   New @ref TextureTools::atlasArrayPowerOfTwo() utility for optimal packing
+    of power-of-two textures into a texture atlas array
+
 @subsubsection changelog-latest-new-trade Trade library
 
 -   A new, redesigned @ref Trade::MaterialData class allowing to store custom

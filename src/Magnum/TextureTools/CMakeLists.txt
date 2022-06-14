@@ -27,7 +27,7 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/TextureTools")
 
-set(MagnumTextureTools_SRCS
+set(MagnumTextureTools_GracefulAssert_SRCS
     Atlas.cpp)
 
 set(MagnumTextureTools_HEADERS
@@ -46,7 +46,7 @@ if(MAGNUM_TARGET_GL)
                 "CORRADE_AUTOMATIC_FINALIZER=CORRADE_NOOP")
     endif()
 
-    list(APPEND MagnumTextureTools_SRCS
+    list(APPEND MagnumTextureTools_GracefulAssert_SRCS
         DistanceField.cpp
         ${MagnumTextureTools_RESOURCES})
 
@@ -55,7 +55,7 @@ endif()
 
 # TextureTools library
 add_library(MagnumTextureTools ${SHARED_OR_STATIC}
-    ${MagnumTextureTools_SRCS}
+    ${MagnumTextureTools_GracefulAssert_SRCS}
     ${MagnumTextureTools_HEADERS})
 set_target_properties(MagnumTextureTools PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT MAGNUM_BUILD_STATIC)
@@ -114,6 +114,21 @@ if(MAGNUM_WITH_DISTANCEFIELDCONVERTER)
 endif()
 
 if(MAGNUM_BUILD_TESTS)
+    # Library with graceful assert for testing
+    add_library(MagnumTextureToolsTestLib ${SHARED_OR_STATIC}
+        ${MagnumTextureTools_GracefulAssert_SRCS})
+    set_target_properties(MagnumTextureToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    target_compile_definitions(MagnumTextureToolsTestLib PRIVATE
+        "CORRADE_GRACEFUL_ASSERT" "MagnumTextureTools_EXPORTS")
+    if(MAGNUM_BUILD_STATIC_PIC)
+        set_target_properties(MagnumTextureToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+    target_link_libraries(MagnumTextureToolsTestLib PUBLIC
+        Magnum)
+    if(MAGNUM_TARGET_GL)
+        target_link_libraries(MagnumTextureToolsTestLib PUBLIC MagnumGL)
+    endif()
+
     add_subdirectory(Test)
 endif()
 
