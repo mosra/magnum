@@ -42,7 +42,7 @@
 
 #ifdef MAGNUM_BUILD_STATIC
 static void importTextureToolResources() {
-    CORRADE_RESOURCE_INITIALIZE(MagnumTextureTools_RCS)
+    CORRADE_RESOURCE_INITIALIZE(MagnumTextureTools_RESOURCES)
 }
 #endif
 
