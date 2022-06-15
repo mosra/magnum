@@ -54,9 +54,12 @@ struct AtlasTest: TestSuite::Tester {
     void arrayPowerOfTwoWrongSize();
 };
 
+/* Could make order[15] and then Containers::arraySize(), but then it won't
+   work on MSVC2015 and cause overly complicated code elsewhere */
+constexpr std::size_t ArrayPowerOfTwoOneLayerImageCount = 15;
 const struct {
     const char* name;
-    std::size_t order[15];
+    std::size_t order[ArrayPowerOfTwoOneLayerImageCount];
 } ArrayPowerOfTwoOneLayerData[]{
     {"sorted",
         {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}},
@@ -177,9 +180,7 @@ void AtlasTest::arrayPowerOfTwoOneLayer() {
     auto&& data = ArrayPowerOfTwoOneLayerData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    constexpr std::size_t count = Containers::arraySize(ArrayPowerOfTwoOneLayerData->order);
-
-    const Vector2i inputSorted[count]{
+    const Vector2i inputSorted[ArrayPowerOfTwoOneLayerImageCount]{
         {1024, 1024},   /*  0 */
         {1024, 1024},   /*  1 */
 
@@ -201,7 +202,7 @@ void AtlasTest::arrayPowerOfTwoOneLayer() {
         {32, 32}        /* 14 */
     };
 
-    const Vector3i expectedSorted[count]{
+    const Vector3i expectedSorted[ArrayPowerOfTwoOneLayerImageCount]{
         {0, 0, 0},
         {1024, 0, 0},
 
@@ -223,9 +224,9 @@ void AtlasTest::arrayPowerOfTwoOneLayer() {
         {1056, 1664, 0}
     };
 
-    Vector2i input[count];
-    Vector3i expected[count];
-    for(std::size_t i = 0; i != count; ++i) {
+    Vector2i input[ArrayPowerOfTwoOneLayerImageCount];
+    Vector3i expected[ArrayPowerOfTwoOneLayerImageCount];
+    for(std::size_t i = 0; i != ArrayPowerOfTwoOneLayerImageCount; ++i) {
         input[i] = inputSorted[data.order[i]];
         expected[i] = expectedSorted[data.order[i]];
     }
