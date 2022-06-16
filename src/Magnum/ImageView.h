@@ -410,7 +410,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
         UnsignedInt pixelSize() const { return _pixelSize; }
 
         /** @brief Image size in pixels */
-        constexpr VectorTypeFor<dimensions, Int> size() const { return _size; }
+        constexpr const VectorTypeFor<dimensions, Int>& size() const { return _size; }
 
         /**
          * @brief Image data properties
@@ -484,7 +484,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
         PixelFormat _format;
         UnsignedInt _formatExtra;
         UnsignedInt _pixelSize;
-        Math::Vector<Dimensions, Int> _size;
+        VectorTypeFor<dimensions, Int> _size;
         Containers::ArrayView<Type> _data;
 };
 

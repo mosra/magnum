@@ -364,7 +364,7 @@ template<UnsignedInt dimensions> class Image {
         UnsignedInt pixelSize() const { return _pixelSize; }
 
         /** @brief Image size in pixels */
-        VectorTypeFor<dimensions, Int> size() const { return _size; }
+        const VectorTypeFor<dimensions, Int>& size() const { return _size; }
 
         /**
          * @brief Image data properties
@@ -470,7 +470,7 @@ template<UnsignedInt dimensions> class Image {
         PixelFormat _format;
         UnsignedInt _formatExtra;
         UnsignedInt _pixelSize;
-        Math::Vector<Dimensions, Int> _size;
+        VectorTypeFor<dimensions, Int> _size;
         Containers::Array<char> _data;
 };
 

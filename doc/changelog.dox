@@ -329,6 +329,10 @@ See also:
 -   @ref MeshIndexType was enlarged to 32 bits and can now wrap
     implementation-specific values similar to @ref PixelFormat,
     @ref CompressedPixelFormat, @ref VertexFormat and @ref MeshPrimitive
+-   @ref Image::size(), @ref ImageView::size() as well as
+    @ref Trade::ImageData::size() now return a @cpp const& @ce instead of a
+    value to allow creating a @relativeref{Corrade,Containers::StridedArrayView}
+    slice onto this member.
 
 @subsubsection changelog-latest-changes-debugtools DebugTools library
 
