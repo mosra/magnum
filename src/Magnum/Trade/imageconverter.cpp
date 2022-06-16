@@ -871,18 +871,19 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                 for(std::size_t i = 0; i != images2D.size(); ++i) {
                     /* Diagnostic printed in the import loop above, as here we
                        don't have the filename etc. anymore */
-                    CORRADE_INTERNAL_ASSERT(layer >= images2D[i].size().y());
+                    CORRADE_INTERNAL_ASSERT(layer < images2D[i].size().y());
 
-                    /* release() will set the size to 0, extract it first */
-                    const Int size = images2D[i].size().x();
-
-                    /* Compared to --layers we can just reuse a slice of the
-                       input data without having to allocate any copy */
-                    arrayAppend(outputImages1D, InPlaceInit,
-                        images2D[i].storage().setSkip({0, Int(layer), 0}),
-                        images2D[i].format(),
-                        size,
-                        images2D[i].release());
+                    /* Copy the layer to a newly alllocated image */
+                    /** @todo if the GL-inspired PixelStorage API wasn't CRAP,
+                        we could just reuse the original memory and slice it.
+                        But because Y skip is ignored for 1D images, it just
+                        won't work. Rework once it's in a better shape. */
+                    Trade::ImageData1D copy{PixelStorage{}.setAlignment(1),
+                        images2D[i].format(), images2D[i].formatExtra(),
+                        images2D[i].pixelSize(), images2D[i].size().x(),
+                        Containers::Array<char>{NoInit, std::size_t(images2D[i].size().x()*images2D[i].pixelSize())}};
+                    Utility::copy(images2D[i].pixels()[layer], copy.mutablePixels());
+                    arrayAppend(outputImages1D, std::move(copy));
                 }
 
             } else {
@@ -898,16 +899,21 @@ no -C / --converter is specified, AnyImageConverter is used.)")
             if(!checkCommonFormat(args, images3D)) return 1;
             if(!images3D.front().isCompressed()) {
                 for(std::size_t i = 0; i != images3D.size(); ++i) {
-                    /* release() will set the size to 0, extract it first */
-                    const Vector2i size = images3D[i].size().xy();
+                    /* Diagnostic printed in the import loop above, as here we
+                       don't have the filename etc. anymore */
+                    CORRADE_INTERNAL_ASSERT(layer < images3D[i].size().z());
 
-                    /* Compared to --layers we can just reuse a slice of the
-                       input data without having to allocate any copy */
-                    arrayAppend(outputImages2D, InPlaceInit,
-                        images3D[i].storage().setSkip({0, 0, Int(layer)}),
-                        images3D[i].format(),
-                        size,
-                        images3D[i].release());
+                    /* Copy the layer to a newly alllocated image */
+                    /** @todo if the GL-inspired PixelStorage API wasn't CRAP,
+                        we could just reuse the original memory and slice it.
+                        But because Y skip is ignored for 1D images, it just
+                        won't work. Rework once it's in a better shape. */
+                    Trade::ImageData2D copy{PixelStorage{}.setAlignment(1),
+                        images3D[i].format(), images3D[i].formatExtra(),
+                        images3D[i].pixelSize(), images3D[i].size().xy(),
+                        Containers::Array<char>{NoInit, std::size_t(images3D[i].size().xy().product()*images3D[i].pixelSize())}};
+                    Utility::copy(images3D[i].pixels()[layer], copy.mutablePixels());
+                    arrayAppend(outputImages2D, std::move(copy));
                 }
 
             } else {
