@@ -72,7 +72,7 @@ atlasing in a single @f$ \mathcal{O}(n) @f$ operation. Due to the sort
 involved, a temporary allocation holds the sorted array and additionally
 @ref std::stable_sort() performs its own allocation.
 */
-Containers::Pair<Int, Containers::Array<Vector3i>> MAGNUM_TEXTURETOOLS_EXPORT atlasArrayPowerOfTwo(const Vector2i& layerSize, Containers::ArrayView<const Vector2i> sizes);
+Containers::Pair<Int, Containers::Array<Vector3i>> MAGNUM_TEXTURETOOLS_EXPORT atlasArrayPowerOfTwo(const Vector2i& layerSize, Containers::StridedArrayView1D<const Vector2i> sizes);
 
 /**
  * @overload

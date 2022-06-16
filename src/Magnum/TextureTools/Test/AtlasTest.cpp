@@ -27,6 +27,7 @@
 #include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
