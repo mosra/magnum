@@ -101,7 +101,7 @@ properly smooth normals over the whole area, the tip consists of
 The cone is by default created with radius set to @f$ 1.0 @f$. In order to get
 radius @f$ r @f$, length @f$ l @f$ and preserve correct normals, set
 @p halfLength to @f$ 0.5 \frac{l}{r} @f$ and then scale all positions by
-@f$ r @f$, for example using @ref MeshTools::transformPointsInPlace().
+@f$ r @f$, for example using @ref MeshTools::transform3D().
 @see @ref coneWireframe(), @ref cylinderSolid()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData coneSolid(UnsignedInt rings, UnsignedInt segments, Float halfLength, ConeFlags flags = {});

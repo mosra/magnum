@@ -53,9 +53,10 @@ Example usage:
 
 @snippet MagnumMeshTools.cpp transformVectors
 
-@see @ref transformVectors(), @ref Matrix3::transformVector(),
-    @ref Matrix4::transformVector(), @ref Complex::transformVector(),
-    @ref Quaternion::transformVectorNormalized()
+@see @ref transformVectors(), @ref transform2DInPlace(),
+    @ref transform3DInPlace(), @ref transformTextureCoordinates2DInPlace(),
+    @ref Matrix3::transformVector(), @ref Matrix4::transformVector(),
+    @ref Complex::transformVector(), @ref Quaternion::transformVectorNormalized()
 @todo GPU transform feedback implementation (otherwise this is only bad joke)
 */
 template<class T, class U> void transformVectorsInPlace(const Math::Matrix4<T>& matrix, U&& vectors) {
@@ -82,6 +83,7 @@ template<class T, class U> void transformVectorsInPlace(const Math::Quaternion<T
 
 Returns transformed vectors instead of modifying them in-place. See
 @ref transformVectorsInPlace() for more information.
+@see @ref transform2D(), @ref transform3D(), @ref transformTextureCoordinates2D()
 */
 template<class T, class U> U transformVectors(const T& transformation, U vectors) {
     U result(std::move(vectors));
@@ -105,8 +107,9 @@ Example usage:
 
 @snippet MagnumMeshTools.cpp transformPoints
 
-@see @ref transformPoints(), @ref Matrix3::transformPoint(),
-    @ref Matrix4::transformPoint(),
+@see @ref transformPoints(), @ref transform2DInPlace(),
+    @ref transform3DInPlace(), @ref transformTextureCoordinates2DInPlace(),
+    @ref Matrix3::transformPoint(), @ref Matrix4::transformPoint(),
     @ref DualQuaternion::transformPointNormalized()
 */
 template<class T, class U> void transformPointsInPlace(const Math::Matrix4<T>& matrix, U&& points) {
@@ -133,6 +136,7 @@ template<class T, class U> void transformPointsInPlace(const Math::DualQuaternio
 
 Returns transformed points instead of modifying them in-place. See
 @ref transformPointsInPlace() for more information.
+@see @ref transform2D(), @ref transform3D(), @ref transformTextureCoordinates2D()
 */
 template<class T, class U> U transformPoints(const T& transformation, U vectors) {
     U result(std::move(vectors));

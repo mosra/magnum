@@ -110,7 +110,7 @@ segment are duplicated for texture wrapping.
 The capsule is by default created with radius set to @f$ 1.0 @f$. In order to
 get radius @f$ r @f$, length @f$ l @f$ and preserve correct normals, set
 @p halfLength to @f$ 0.5 \frac{l}{r} @f$ and then scale all positions by
-@f$ r @f$, for example using @ref MeshTools::transformPointsInPlace().
+@f$ r @f$, for example using @ref MeshTools::transform3D().
 @see @ref capsule3DWireframe(), @ref capsule2DWireframe(), @ref cylinderSolid()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData capsule3DSolid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength, CapsuleFlags flags = {});
