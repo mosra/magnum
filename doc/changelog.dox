@@ -769,6 +769,12 @@ See also:
     the canvas and status elements from the JS `Module`. See
     @ref platforms-html5-apps and [mosra/magnum#481](https://github.com/mosra/magnum/pull/481)
     for details.
+-   @cpp pixelSize() @ce, @cpp GL::pixelSize() @ce, @cpp compressedBlockSize() @ce
+    and @cpp compressedBlockDataSize() @ce is deprecated in favor of
+    @ref pixelFormatSize(), @ref GL::pixelFormatSize(),
+    @ref compressedPixelFormatBlockSize() and
+    @ref compressedPixelFormatBlockDataSize() for consistency with similar APIs
+    for @ref VertexFormat and other format enums
 -   Templated variants of @ref DebugTools::bufferData() and
     @ref DebugTools::bufferSubData() are deprecated in favor of the
     non-templated API together with @relativeref{Corrade,Containers::arrayCast()}.
@@ -1001,6 +1007,11 @@ See also:
     is included in affected headers for implicit conversions from/to a
     @ref std::string, but in some cases you may be forced to change the code
     that uses those APIs.
+-   @ref Image, @ref ImageView and @ref Trade::ImageData now look for a
+    @cpp pixelFormatSize() @ce API via ADL instead of @cpp pixelSize() @ce. In
+    case you were passing a custom pixel format enum to the image classes, you
+    have provide a size query function with the new name to make your code
+    compile again.
 -   @ref GL::TextureFormat::SR8 and @ref GL::TextureFormat::SRG8 were present
     on ES2 builds by mistake --- the @gl_extension{EXT,texture_sRGB_R8} and
     @gl_extension{EXT,texture_sRGB_RG8} extensions require OpenGL ES 3.0 at
@@ -1921,9 +1932,9 @@ Released 2019-10-24, tagged as
     @ref PixelFormat::RGB8Srgb and @ref PixelFormat::RGBA8Srgb sRGB pixel
     formats as well as their conversion to corresponding GL/Vulkan formats in
     @ref GL::pixelFormat() and @ref Vk::vkFormat(Magnum::PixelFormat)
--   New @ref compressedBlockSize() and @ref compressedBlockDataSize() utilities
-    for querying parameters of @ref CompressedPixelFormat entries, similar to
-    what @ref pixelSize() is for @ref PixelFormat
+-   New @cpp compressedBlockSize() @ce and @cpp compressedBlockDataSize() @ce
+    utilities for querying parameters of @ref CompressedPixelFormat entries,
+    similar to what @cpp pixelSize() @ce is for @ref PixelFormat
 
 @subsubsection changelog-2019-10-new-audio Audio library
 

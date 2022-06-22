@@ -34,9 +34,9 @@
 
 namespace Magnum {
 
-UnsignedInt pixelSize(const PixelFormat format) {
+UnsignedInt pixelFormatSize(const PixelFormat format) {
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
-        "pixelSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+        "pixelFormatSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
 
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
@@ -115,7 +115,7 @@ UnsignedInt pixelSize(const PixelFormat format) {
     #pragma GCC diagnostic pop
     #endif
 
-    CORRADE_ASSERT_UNREACHABLE("pixelSize(): invalid format" << format, {});
+    CORRADE_ASSERT_UNREACHABLE("pixelFormatSize(): invalid format" << format, {});
 }
 
 namespace {
@@ -176,12 +176,12 @@ constexpr UnsignedShort CompressedBlockData[] {
 
 }
 
-Vector3i compressedBlockSize(const CompressedPixelFormat format) {
+Vector3i compressedPixelFormatBlockSize(const CompressedPixelFormat format) {
     CORRADE_ASSERT(!(UnsignedInt(format) & (1 << 31)),
-        "compressedBlockSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(compressedPixelFormatUnwrap(format)), {});
+        "compressedPixelFormatBlockSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(compressedPixelFormatUnwrap(format)), {});
 
     CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedBlockData),
-        "compressedBlockSize(): invalid format" << format, {});
+        "compressedPixelFormatBlockSize(): invalid format" << format, {});
     const UnsignedInt data = CompressedBlockData[UnsignedInt(format) - 1];
     return {
         (Int(data >> 12) & 0xf) + 1,
@@ -190,12 +190,18 @@ Vector3i compressedBlockSize(const CompressedPixelFormat format) {
     };
 }
 
-UnsignedInt compressedBlockDataSize(const CompressedPixelFormat format) {
+#ifdef MAGNUM_BUILD_DEPRECATED
+Vector3i compressedBlockSize(const CompressedPixelFormat format) {
+    return compressedPixelFormatBlockSize(format);
+}
+#endif
+
+UnsignedInt compressedPixelFormatBlockDataSize(const CompressedPixelFormat format) {
     CORRADE_ASSERT(!(UnsignedInt(format) & (1 << 31)),
-        "compressedBlockDataSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(compressedPixelFormatUnwrap(format)), {});
+        "compressedPixelFormatBlockDataSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(compressedPixelFormatUnwrap(format)), {});
 
     CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedBlockData),
-        "compressedBlockDataSize(): invalid format" << format, {});
+        "compressedPixelFormatBlockDataSize(): invalid format" << format, {});
     return (CompressedBlockData[UnsignedInt(format) - 1] & 0xf) + 1;
 }
 

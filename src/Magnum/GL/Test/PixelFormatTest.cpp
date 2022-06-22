@@ -337,17 +337,17 @@ void PixelFormatTest::mapTextureFormatInvalid() {
 
 void PixelFormatTest::size() {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGB, PixelType::UnsignedByte332), 1);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::RGB, PixelType::UnsignedByte332), 1);
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
-    CORRADE_COMPARE(pixelSize(PixelFormat::StencilIndex, PixelType::UnsignedByte), 1);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::StencilIndex, PixelType::UnsignedByte), 1);
     #endif
-    CORRADE_COMPARE(pixelSize(PixelFormat::DepthComponent, PixelType::UnsignedShort), 2);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGBA, PixelType::UnsignedShort4444), 2);
-    CORRADE_COMPARE(pixelSize(PixelFormat::DepthStencil, PixelType::UnsignedInt248), 4);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGBA, PixelType::UnsignedInt), 4*4);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::DepthComponent, PixelType::UnsignedShort), 2);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::RGBA, PixelType::UnsignedShort4444), 2);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::DepthStencil, PixelType::UnsignedInt248), 4);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::RGBA, PixelType::UnsignedInt), 4*4);
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_COMPARE(pixelSize(PixelFormat::DepthStencil, PixelType::Float32UnsignedInt248Rev), 8);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::DepthStencil, PixelType::Float32UnsignedInt248Rev), 8);
     #endif
 }
 
@@ -358,8 +358,8 @@ void PixelFormatTest::sizeInvalid() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    pixelSize(PixelFormat::DepthStencil, PixelType::Float);
-    CORRADE_COMPARE(out.str(), "GL::pixelSize(): invalid GL::PixelType::Float specified for GL::PixelFormat::DepthStencil\n");
+    pixelFormatSize(PixelFormat::DepthStencil, PixelType::Float);
+    CORRADE_COMPARE(out.str(), "GL::pixelFormatSize(): invalid GL::PixelType::Float specified for GL::PixelFormat::DepthStencil\n");
 }
 
 void PixelFormatTest::mapCompressedFormatTextureFormat() {

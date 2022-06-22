@@ -478,7 +478,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                 Error{} << "Invalid raw pixel format" << args.value("importer");
                 return 4;
             }
-            const UnsignedInt pixelSize = Magnum::pixelSize(format);
+            const UnsignedInt pixelSize = pixelFormatSize(format);
 
             /* Read the file or map it if requested */
             Containers::Array<char> data;

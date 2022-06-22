@@ -72,9 +72,9 @@ describe its layout, with pixel format being one of the values from the generic
 @snippet Magnum.cpp ImageView-usage
 
 On construction, the image view internally calculates pixel size corresponding
-to given pixel format using @ref pixelSize(). This value is needed to check
-that the passed data array is large enough and is also required by most image
-manipulation operations.
+to given pixel format using @ref pixelFormatSize(). This value is needed to
+check that the passed data array is large enough and is also required by most
+image manipulation operations.
 
 It's also possible to create an empty view and assign the memory later. That is
 useful for example in case of multi-buffered video streaming, where each frame
@@ -114,9 +114,9 @@ the @ref GL::PixelFormat and @ref GL::PixelType pair:
 
 @snippet Magnum.cpp ImageView-usage-gl
 
-In such cases, pixel size is calculated using either @cpp pixelSize(T, U) @ce
-or @cpp pixelSize(T) @ce that is found using
-[ADL](https://en.wikipedia.org/wiki/Argument-dependent_name_lookup), with
+In such cases, pixel size is calculated using either
+@cpp pixelFormatSize(T, U) @ce or @cpp pixelFormatSize(T) @ce that is found
+using [ADL](https://en.wikipedia.org/wiki/Argument-dependent_name_lookup), with
 @cpp T @ce and @cpp U @ce corresponding to types of passed arguments. The
 implementation-specific format is wrapped in @ref PixelFormat using
 @ref pixelFormatWrap() and @ref format() returns the wrapped value. In order to
@@ -127,11 +127,11 @@ value is stored verbatim in @ref formatExtra():
 
 @snippet Magnum.cpp ImageView-usage-gl-extract
 
-As a final fallback, types for which the @cpp pixelSize() @ce overload is not
-available can be specified directly together with pixel size. In particular,
-pixel size of @cpp 0 @ce will cause the image to be treated as fully opaque
-data, disabling all slicing operations. The following shows a image view using
-Metal-specific format identifier:
+As a final fallback, types for which the @cpp pixelFormatSize() @ce overload is
+not available can be specified directly together with pixel size. In
+particular, pixel size of @cpp 0 @ce will cause the image to be treated as
+fully opaque data, disabling all slicing operations. The following shows a
+image view using Metal-specific format identifier:
 
 @snippet Magnum.cpp ImageView-usage-metal
 
@@ -220,7 +220,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          *
          * Unlike with @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>),
          * where pixel size is calculated automatically using
-         * @ref pixelSize(PixelFormat), this allows you to specify an
+         * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
          * @ref pixelFormatWrap() internally to wrap @p format in
          * @ref PixelFormat.
@@ -247,7 +247,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          *
          * Unlike with @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&),
          * where pixel size is calculated automatically using
-         * @ref pixelSize(PixelFormat), this allows you to specify an
+         * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
          * @ref pixelFormatWrap() internally to wrap @p format in
          * @ref PixelFormat.
@@ -272,8 +272,8 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param size              Image size
          * @param data              Image data
          *
-         * Uses ADL to find a corresponding @cpp pixelSize(T, U) @ce overload,
-         * then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>)
+         * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
+         * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>)
          * with calculated pixel size.
          */
         template<class U, class V> explicit ImageView(PixelStorage storage, U format, V formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept;
@@ -285,8 +285,8 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param size              Image size
          * @param data              Image data
          *
-         * Uses ADL to find a corresponding @cpp pixelSize(T) @ce overload,
-         * then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>)
+         * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
+         * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>)
          * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
          */
         template<class U> explicit ImageView(PixelStorage storage, U format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept;
@@ -321,8 +321,8 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param formatExtra       Additional pixel format specifier
          * @param size              Image size
          *
-         * Uses ADL to find a corresponding @cpp pixelSize(T, U) @ce overload,
-         * then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&)
+         * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
+         * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&)
          * with calculated pixel size.
          *
          * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
@@ -336,8 +336,8 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param format            Format of pixel data
          * @param size              Image size
          *
-         * Uses ADL to find a corresponding @cpp pixelSize(T) @ce overload,
-         * then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&)
+         * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
+         * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&)
          * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
          *
          * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
@@ -405,7 +405,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
         /**
          * @brief Size of a pixel in bytes
          *
-         * @see @ref pixelSize(PixelFormat)
+         * @see @ref pixelFormatSize()
          */
         UnsignedInt pixelSize() const { return _pixelSize; }
 
@@ -899,22 +899,22 @@ typedef BasicMutableCompressedImageView<2> MutableCompressedImageView2D;
 */
 typedef BasicMutableCompressedImageView<3> MutableCompressedImageView3D;
 
-template<UnsignedInt dimensions, class T> template<class U, class V> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const V formatExtra, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size, data} {
+template<UnsignedInt dimensions, class T> template<class U, class V> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const V formatExtra, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelFormatSizeAdl(format, formatExtra), size, data} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions, class T> template<class U> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, UnsignedInt(format), {}, Implementation::pixelSizeAdl(format), size, data} {
+template<UnsignedInt dimensions, class T> template<class U> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, UnsignedInt(format), {}, Implementation::pixelFormatSizeAdl(format), size, data} {
     static_assert(sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions, class T> template<class U, class V> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const V formatExtra, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size} {
+template<UnsignedInt dimensions, class T> template<class U, class V> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const V formatExtra, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelFormatSizeAdl(format, formatExtra), size} {
     static_assert(sizeof(U) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions, class T> template<class U> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, UnsignedInt(format), {}, Implementation::pixelSizeAdl(format), size} {
+template<UnsignedInt dimensions, class T> template<class U> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, UnsignedInt(format), {}, Implementation::pixelFormatSizeAdl(format), size} {
     static_assert(sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }

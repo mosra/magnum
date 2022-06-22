@@ -64,7 +64,7 @@ template<UnsignedInt dimensions> BufferImage<dimensions>& BufferImage<dimensions
     return *this;
 }
 
-template<UnsignedInt dimensions> UnsignedInt BufferImage<dimensions>::pixelSize() const { return GL::pixelSize(_format, _type); }
+template<UnsignedInt dimensions> UnsignedInt BufferImage<dimensions>::pixelSize() const { return pixelFormatSize(_format, _type); }
 
 template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> BufferImage<dimensions>::dataProperties() const {
     return Magnum::Implementation::imageDataProperties<dimensions>(*this);

@@ -51,7 +51,7 @@ Released 2018-05-01, tagged as
 @subsection changelog-2018-04-new New features
 
 -   New @ref PixelFormat / @ref CompressedPixelFormat enums containing generic
-    API-independent pixel formats, together with @ref pixelSize(),
+    API-independent pixel formats, together with @cpp pixelSize() @ce,
     @ref pixelFormatWrap() / @ref pixelFormatUnwrap(),
     @ref compressedPixelFormatWrap() / @ref compressedPixelFormatUnwrap() and @ref isPixelFormatImplementationSpecific() /
     @ref isCompressedPixelFormatImplementationSpecific() utilities now used by
@@ -252,12 +252,12 @@ Released 2018-05-01, tagged as
     but marked as deprecated. Use either the generic values or
     @ref GL::PixelFormat (together with @ref GL::PixelType) and
     @ref GL::CompressedPixelFormat instead.
--   `PixelStorage::pixelSize()` was deprecated, use @ref GL::pixelSize() or
-    @ref Magnum::pixelSize() instead
+-   `PixelStorage::pixelSize()` was deprecated, use @cpp GL::pixelSize() @ce
+    or @cpp Magnum::pixelSize() @ce instead
 -   `PixelStorage::dataProperties(GL::PixelFormat, GL::PixelSize, const Vector3i&)`
     was deprecated for being too GL-specific, use
     @ref PixelStorage::dataProperties(std::size_t, const Vector3i&) const
-    together with @ref GL::pixelSize() instead
+    together with @cpp GL::pixelSize() @ce instead
 -   `Image*::type()` functions are deprecated as these are too GL-specific. The
     second format specifier is now available through @ref Image::formatExtra(),
     @ref ImageView::formatExtra() and @ref Trade::ImageData::formatExtra()

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::GL::PixelFormat, @ref Magnum::GL::PixelType, @ref Magnum::GL::CompressedPixelFormat, function @ref Magnum::GL::hasPixelFormat(), @ref Magnum::GL::pixelFormat(), @ref Magnum::GL::pixelType(), @ref Magnum::GL::pixelSize(), @ref Magnum::GL::hasCompressedPixelFormat(), @ref Magnum::GL::compressedPixelFormat()
+ * @brief Enum @ref Magnum::GL::PixelFormat, @ref Magnum::GL::PixelType, @ref Magnum::GL::CompressedPixelFormat, function @ref Magnum::GL::hasPixelFormat(), @ref Magnum::GL::pixelFormat(), @ref Magnum::GL::pixelType(), @ref Magnum::GL::pixelFormatSize(), @ref Magnum::GL::hasCompressedPixelFormat(), @ref Magnum::GL::compressedPixelFormat()
  */
 
 #include <Corrade/Utility/Assert.h>
@@ -676,7 +676,7 @@ to query availability of given format.
 MAGNUM_GL_EXPORT PixelFormat pixelFormat(Magnum::PixelFormat format);
 
 /**
-@brief Convert a generic pixel type to OpenGL pixel type
+@brief Convert a generic pixel format to OpenGL pixel type
 
 In case @ref isPixelFormatImplementationSpecific() returns @cpp false @ce for
 @p format, maps it to a corresponding OpenGL pixel type. In case
@@ -694,9 +694,19 @@ MAGNUM_GL_EXPORT PixelType pixelType(Magnum::PixelFormat format, UnsignedInt ext
 /**
 @brief Size of a pixel for given format/type combination in bytes
 
-@see @ref Magnum::pixelSize(), @ref PixelStorage::dataProperties()
+@see @ref Magnum::pixelFormatSize(), @ref PixelStorage::dataProperties()
 */
-MAGNUM_GL_EXPORT UnsignedInt pixelSize(PixelFormat format, PixelType type);
+MAGNUM_GL_EXPORT UnsignedInt pixelFormatSize(PixelFormat format, PixelType type);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+ * @brief @copybrief pixelFormatSize()
+ * @m_deprecated_since_latest Use @ref pixelFormatSize() instead.
+ */
+CORRADE_DEPRECATED("use pixelFormatSize() instead") inline UnsignedInt pixelSize(PixelFormat format, PixelType type) {
+    return pixelFormatSize(format, type);
+}
+#endif
 
 /** @debugoperatorenum{PixelFormat} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, PixelFormat value);

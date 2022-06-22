@@ -109,15 +109,15 @@ void PixelStorageTest::dataProperties() {
     PixelStorage storage;
     storage.setAlignment(1);
 
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::RGBA8Unorm), Vector3i{0}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::RGBA8Unorm), Vector3i{0}),
         (std::pair<Vector3st, Vector3st>{{}, {0, 0, 0}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::RGBA8Unorm), Vector3i{1}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::RGBA8Unorm), Vector3i{1}),
         (std::pair<Vector3st, Vector3st>{{}, {4, 1, 1}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::R8Unorm), {8, 2, 1}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::R8Unorm), {8, 2, 1}),
         (std::pair<Vector3st, Vector3st>{{}, {8, 2, 1}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::R8Unorm), {2, 4, 1}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::R8Unorm), {2, 4, 1}),
         (std::pair<Vector3st, Vector3st>{{}, {2, 4, 1}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::R8Unorm), {2, 4, 6}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::R8Unorm), {2, 4, 6}),
         (std::pair<Vector3st, Vector3st>{{}, {2, 4, 6}}));
 }
 
@@ -126,15 +126,15 @@ void PixelStorageTest::dataPropertiesAlignment() {
     storage.setAlignment(8)
         .setSkip({3, 2, 1});
 
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::RGBA8Unorm), Vector3i{0}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::RGBA8Unorm), Vector3i{0}),
         (std::pair<Vector3st, Vector3st>{{3*4, 0, 0}, {0, 0, 0}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::RGBA8Unorm), Vector3i{1}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::RGBA8Unorm), Vector3i{1}),
         (std::pair<Vector3st, Vector3st>{{12, 16, 8}, {8, 1, 1}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::R8Unorm), {8, 2, 1}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::R8Unorm), {8, 2, 1}),
         (std::pair<Vector3st, Vector3st>{{3, 16, 16}, {8, 2, 1}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::R8Unorm), {2, 4, 1}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::R8Unorm), {2, 4, 1}),
         (std::pair<Vector3st, Vector3st>{{3, 16, 32}, {8, 4, 1}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::R8Unorm), {2, 4, 6}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::R8Unorm), {2, 4, 6}),
         (std::pair<Vector3st, Vector3st>{{3, 16, 32}, {8, 4, 6}}));
 }
 
@@ -144,15 +144,15 @@ void PixelStorageTest::dataPropertiesRowLength() {
         .setRowLength(15)
         .setSkip({3, 7, 0});
 
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::RGBA8Unorm), Vector3i{0}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::RGBA8Unorm), Vector3i{0}),
         (std::pair<Vector3st, Vector3st>{{3*4, 7*15*4, 0}, {0, 0, 0}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::RGBA8Unorm), Vector3i{1}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::RGBA8Unorm), Vector3i{1}),
         (std::pair<Vector3st, Vector3st>{{3*4, 7*15*4, 0}, {60, 1, 1}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::R8Unorm), {4, 2, 1}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::R8Unorm), {4, 2, 1}),
         (std::pair<Vector3st, Vector3st>{{3, 7*16, 0}, {16, 2, 1}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::R8Unorm), {2, 4, 1}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::R8Unorm), {2, 4, 1}),
         (std::pair<Vector3st, Vector3st>{{3, 7*16, 0}, {16, 4, 1}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::R8Unorm), {2, 4, 6}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::R8Unorm), {2, 4, 6}),
         (std::pair<Vector3st, Vector3st>{{3, 7*16, 0}, {16, 4, 6}}));
 }
 
@@ -162,15 +162,15 @@ void PixelStorageTest::dataPropertiesImageHeight() {
         .setImageHeight(128)
         .setSkip({3, 7, 2});
 
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::RGBA8Unorm), Vector3i{0}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::RGBA8Unorm), Vector3i{0}),
         (std::pair<Vector3st, Vector3st>{{3*4, 0, 0}, {0, 0, 0}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::RGBA8Unorm), Vector3i{1}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::RGBA8Unorm), Vector3i{1}),
         (std::pair<Vector3st, Vector3st>{{3*4, 7*1*4, 2*128*1*4}, {4, 128, 1}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::R8Unorm), {4, 2, 1}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::R8Unorm), {4, 2, 1}),
         (std::pair<Vector3st, Vector3st>{{3, 7*1*4, 2*128*4}, {4, 128, 1}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::R8Unorm), {2, 4, 1}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::R8Unorm), {2, 4, 1}),
         (std::pair<Vector3st, Vector3st>{{3, 7*1*2, 2*128*2}, {2, 128, 1}}));
-    CORRADE_COMPARE(storage.dataProperties(pixelSize(PixelFormat::R8Unorm), {2, 4, 6}),
+    CORRADE_COMPARE(storage.dataProperties(pixelFormatSize(PixelFormat::R8Unorm), {2, 4, 6}),
         (std::pair<Vector3st, Vector3st>{{3, 7*1*2, 2*128*2}, {2, 128, 6}}));
 }
 

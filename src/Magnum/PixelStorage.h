@@ -128,7 +128,7 @@ class MAGNUM_EXPORT PixelStorage {
          * and given @p pixelSize. The offset reflects the @ref skip()
          * parameter. Sum of the byte offset vector gives the byte offset of
          * first pixel in the data array.
-         * @see @ref GL::pixelSize()
+         * @see @ref pixelFormatSize(), @ref GL::pixelFormatSize()
          */
         std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties(std::size_t pixelSize, const Vector3i& size) const;
 
@@ -185,7 +185,7 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
          * If set to @cpp 0 @ce for given dimension, size information from
          * particular compressed format is used. Default is @cpp 0 @ce in all
          * dimensions.
-         * @see @ref Magnum::compressedBlockSize()
+         * @see @ref Magnum::compressedPixelFormatBlockSize()
          */
         CompressedPixelStorage& setCompressedBlockSize(const Vector3i& size) {
             _blockSize = size;
@@ -200,7 +200,7 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
          *
          * If set to @cpp 0 @ce, size information from particular compressed
          * format is used. Default is @cpp 0 @ce in all dimensions.
-         * @see @ref Magnum::compressedBlockDataSize()
+         * @see @ref Magnum::compressedPixelFormatBlockDataSize()
          */
         CompressedPixelStorage& setCompressedBlockDataSize(Int size) {
             _blockDataSize = size;
@@ -249,12 +249,12 @@ constexpr PixelStorage::PixelStorage() noexcept: _rowLength{0}, _imageHeight{0},
 
 namespace Implementation {
     /* Used in templated image[view] constructors */
-    template<class T> inline UnsignedInt pixelSizeAdl(T format) {
-        return pixelSize(format);
+    template<class T> inline UnsignedInt pixelFormatSizeAdl(T format) {
+        return pixelFormatSize(format);
     }
 
-    template<class T, class U> inline UnsignedInt pixelSizeAdl(T format, U formatExtra) {
-        return pixelSize(format, formatExtra);
+    template<class T, class U> inline UnsignedInt pixelFormatSizeAdl(T format, U formatExtra) {
+        return pixelFormatSize(format, formatExtra);
     }
 
     /* Used in image query functions */

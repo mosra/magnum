@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::PixelFormat, @ref Magnum::CompressedPixelFormat, function @ref Magnum::pixelSize(), @ref Magnum::isPixelFormatImplementationSpecific(), @ref Magnum::pixelFormatWrap(), @ref Magnum::pixelFormatUnwrap(), @ref Magnum::isCompressedPixelFormatImplementationSpecific(), @ref Magnum::compressedPixelFormatWrap(), @ref Magnum::compressedPixelFormatUnwrap()
+ * @brief Enum @ref Magnum::PixelFormat, @ref Magnum::CompressedPixelFormat, function @ref Magnum::pixelFormatSize(), @ref Magnum::isPixelFormatImplementationSpecific(), @ref Magnum::pixelFormatWrap(), @ref Magnum::pixelFormatUnwrap(), @ref Magnum::compressedPixelFormatBlockSize(), @ref Magnum::compressedPixelFormatBlockDataSize(), @ref Magnum::isCompressedPixelFormatImplementationSpecific(), @ref Magnum::compressedPixelFormatWrap(), @ref Magnum::compressedPixelFormatUnwrap()
  */
 
 #include <Corrade/Utility/Assert.h>
@@ -34,6 +34,10 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
 
 namespace Magnum {
 
@@ -61,8 +65,8 @@ For D3D, corresponds to @m_class{m-doc-external} [DXGI_FORMAT](https://docs.micr
 and import is provided by the @ref Trade::DdsImporter "DdsImporter" plugin; for
 Metal, corresponds to @m_class{m-doc-external} [MTLPixelFormat](https://developer.apple.com/documentation/metal/mtlpixelformat?language=objc).
 See documentation of each value for more information about the mapping.
-@see @ref pixelSize(), @ref CompressedPixelFormat, @ref Image, @ref ImageView,
-    @ref VertexFormat
+@see @ref pixelFormatSize(), @ref CompressedPixelFormat, @ref Image,
+    @ref ImageView, @ref VertexFormat
 */
 enum class PixelFormat: UnsignedInt {
     /* Zero reserved for an invalid format (but not being a named value) */
@@ -768,12 +772,23 @@ enum class PixelFormat: UnsignedInt {
 };
 
 /**
-@brief Size of a pixel
+@brief Pixel format size
+@m_since_latest
 
 Expects that the pixel format is *not* implementation-specific.
-@see @ref isPixelFormatImplementationSpecific(), @ref GL::pixelSize()
+@see @ref isPixelFormatImplementationSpecific(), @ref GL::pixelFormatSize()
 */
-MAGNUM_EXPORT UnsignedInt pixelSize(PixelFormat format);
+MAGNUM_EXPORT UnsignedInt pixelFormatSize(PixelFormat format);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+ * @brief @copybrief pixelFormatSize()
+ * @m_deprecated_since_latest Use @ref pixelFormatSize() instead.
+ */
+MAGNUM_EXPORT CORRADE_DEPRECATED("use pixelFormatSize() instead") inline UnsignedInt pixelSize(PixelFormat format) {
+    return pixelFormatSize(format);
+}
+#endif
 
 /** @debugoperatorenum{PixelFormat} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, PixelFormat value);
@@ -844,8 +859,9 @@ For D3D, corresponds to @m_class{m-doc-external} [DXGI_FORMAT](https://docs.micr
 and import is provided by the @ref Trade::DdsImporter "DdsImporter" plugin; for
 Metal, corresponds to @m_class{m-doc-external} [MTLPixelFormat](https://developer.apple.com/documentation/metal/mtlpixelformat?language=objc).
 See documentation of each value for more information about the mapping.
-@see @ref compressedBlockSize(), @ref compressedBlockDataSize(),
-    @ref PixelFormat, @ref CompressedImage, @ref CompressedImageView
+@see @ref compressedPixelFormatBlockSize(),
+    @ref compressedPixelFormatBlockDataSize(), @ref PixelFormat,
+    @ref CompressedImage, @ref CompressedImageView
 */
 enum class CompressedPixelFormat: UnsignedInt {
     /* Zero reserved for an invalid format (but not being a named value) */
@@ -2322,26 +2338,46 @@ enum class CompressedPixelFormat: UnsignedInt {
 };
 
 /**
-@brief Compressed block size
-@m_since{2019,10}
+@brief Compressed pixel format block size
+@m_since_latest
 
 For 2D formats the Z dimension is always 1. Expects that the pixel format is
 * *not* implementation-specific.
-@see @ref compressedBlockDataSize(),
+@see @ref compressedPixelFormatBlockDataSize(),
     @ref isCompressedPixelFormatImplementationSpecific()
 */
-MAGNUM_EXPORT Vector3i compressedBlockSize(CompressedPixelFormat format);
+MAGNUM_EXPORT Vector3i compressedPixelFormatBlockSize(CompressedPixelFormat format);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+ * @brief @copybrief compressedPixelFormatBlockSize()
+ * @m_deprecated_since_latest Use @ref compressedPixelFormatBlockSize()
+ *      instead.
+ */
+MAGNUM_EXPORT CORRADE_DEPRECATED("use compressedPixelFormatBlockSize() instead") Vector3i compressedBlockSize(CompressedPixelFormat format);
+#endif
 
 /**
-@brief Compressed block data size
-@m_since{2019,10}
+@brief Compressed pixel format block data size
+@m_since_latest
 
 Byte size of each compressed block. Expects that the pixel format is *not*
 implementation-specific.
-@see @ref compressedBlockSize(),
+@see @ref compressedPixelFormatBlockSize(),
     @ref isCompressedPixelFormatImplementationSpecific()
 */
-MAGNUM_EXPORT UnsignedInt compressedBlockDataSize(CompressedPixelFormat format);
+MAGNUM_EXPORT UnsignedInt compressedPixelFormatBlockDataSize(CompressedPixelFormat format);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+ * @brief @copybrief compressedPixelFormatBlockDataSize()
+ * @m_deprecated_since_latest Use @ref compressedPixelFormatBlockDataSize()
+ *      instead.
+ */
+CORRADE_DEPRECATED("use compressedPixelFormatBlockDataSize() instead") inline UnsignedInt compressedBlockDataSize(CompressedPixelFormat format) {
+    return compressedPixelFormatBlockDataSize(format);
+}
+#endif
 
 /** @debugoperatorenum{CompressedPixelFormat} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, CompressedPixelFormat value);

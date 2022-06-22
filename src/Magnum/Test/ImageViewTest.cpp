@@ -140,8 +140,8 @@ namespace GL {
     enum class PixelType { UnsignedShort = 1337 };
     /* Clang -Wmissing-prototypes warns otherwise, even though this is in an
        anonymous namespace */
-    UnsignedInt pixelSize(PixelFormat, PixelType);
-    UnsignedInt pixelSize(PixelFormat format, PixelType type) {
+    UnsignedInt pixelFormatSize(PixelFormat, PixelType);
+    UnsignedInt pixelFormatSize(PixelFormat format, PixelType type) {
         CORRADE_INTERNAL_ASSERT(format == PixelFormat::RGB);
         CORRADE_INTERNAL_ASSERT(type == PixelType::UnsignedShort);
         #ifdef CORRADE_NO_ASSERT
@@ -158,8 +158,8 @@ namespace Vk {
     enum class PixelFormat { R32G32B32F = 42 };
     /* Clang -Wmissing-prototypes warns otherwise, even though this is in an
        anonymous namespace */
-    UnsignedInt pixelSize(PixelFormat);
-    UnsignedInt pixelSize(PixelFormat format) {
+    UnsignedInt pixelFormatSize(PixelFormat);
+    UnsignedInt pixelFormatSize(PixelFormat format) {
         CORRADE_INTERNAL_ASSERT(format == PixelFormat::R32G32B32F);
         #ifdef CORRADE_NO_ASSERT
         static_cast<void>(format);

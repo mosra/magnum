@@ -67,8 +67,8 @@ with storing image size and one of the generic @ref PixelFormat values:
 @snippet Magnum.cpp Image-usage
 
 On construction, the image internally calculates pixel size corresponding to
-given pixel format using @ref pixelSize(). This value is needed to check that
-the passed data array is large enough and is also required by most image
+given pixel format using @ref pixelFormatSize(). This value is needed to check
+that the passed data array is large enough and is also required by most image
 manipulation operations.
 
 It's also possible to create just an image placeholder, storing only the image
@@ -173,7 +173,7 @@ template<UnsignedInt dimensions> class Image {
          *
          * Unlike with @ref Image(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&),
          * where pixel size is calculated automatically using
-         * @ref pixelSize(PixelFormat), this allows you to specify an
+         * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
          * @ref pixelFormatWrap() internally to wrap @p format in
          * @ref PixelFormat.
@@ -198,10 +198,10 @@ template<UnsignedInt dimensions> class Image {
          * @param pixelSize         Size of a pixel in given format, in bytes
          *
          * Unlike with @ref Image(PixelStorage, PixelFormat), where pixel size
-         * is calculated automatically using @ref pixelSize(PixelFormat), this
+         * is calculated automatically using @ref pixelFormatSize(), this
          * allows you to specify an implementation-specific pixel format and
-         * pixel size directly. Uses @ref pixelFormatWrap() internally to
-         * wrap @p format in @ref PixelFormat.
+         * pixel size directly. Uses @ref pixelFormatWrap() internally to wrap
+         * @p format in @ref PixelFormat.
          */
         explicit Image(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize) noexcept;
 
@@ -220,8 +220,8 @@ template<UnsignedInt dimensions> class Image {
          * @param size              Image size
          * @param data              Image data
          *
-         * Uses ADL to find a corresponding @cpp pixelSize(T, U) @ce overload,
-         * then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
+         * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
+         * overload, then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
          * with calculated pixel size.
          */
         template<class T, class U> explicit Image(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept;
@@ -233,8 +233,8 @@ template<UnsignedInt dimensions> class Image {
          * @param size              Image size
          * @param data              Image data
          *
-         * Uses ADL to find a corresponding @cpp pixelSize(T) @ce overload,
-         * then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
+         * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
+         * overload, then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
          * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
          */
         template<class T> explicit Image(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept;
@@ -268,8 +268,8 @@ template<UnsignedInt dimensions> class Image {
          * @param format            Format of pixel data
          * @param formatExtra       Additional pixel format specifier
          *
-         * Uses ADL to find a corresponding @cpp pixelSize(T, U) @ce overload,
-         * then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt)
+         * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
+         * overload, then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt)
          * with calculated pixel size.
          */
         template<class T, class U> /*implicit*/ Image(PixelStorage storage, T format, U formatExtra) noexcept;
@@ -289,8 +289,8 @@ template<UnsignedInt dimensions> class Image {
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          *
-         * Uses ADL to find a corresponding @cpp pixelSize(T) @ce overload,
-         * then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt)
+         * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
+         * overload, then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt)
          * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
          */
         template<class T> /*implicit*/ Image(PixelStorage storage, T format) noexcept;
@@ -359,7 +359,7 @@ template<UnsignedInt dimensions> class Image {
         /**
          * @brief Size of a pixel in bytes
          *
-         * @see @ref pixelSize(PixelFormat)
+         * @see @ref pixelFormatSize()
          */
         UnsignedInt pixelSize() const { return _pixelSize; }
 
@@ -708,22 +708,22 @@ typedef CompressedImage<2> CompressedImage2D;
 /** @brief Three-dimensional compressed image */
 typedef CompressedImage<3> CompressedImage3D;
 
-template<UnsignedInt dimensions> template<class T, class U> inline Image<dimensions>::Image(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size, std::move(data)} {
+template<UnsignedInt dimensions> template<class T, class U> inline Image<dimensions>::Image(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelFormatSizeAdl(format, formatExtra), size, std::move(data)} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T> inline  Image<dimensions>::Image(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{storage, UnsignedInt(format), {}, Implementation::pixelSizeAdl(format), size, std::move(data)} {
+template<UnsignedInt dimensions> template<class T> inline  Image<dimensions>::Image(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{storage, UnsignedInt(format), {}, Implementation::pixelFormatSizeAdl(format), size, std::move(data)} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T, class U> inline Image<dimensions>::Image(const PixelStorage storage, const T format, const U formatExtra) noexcept: Image{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra)} {
+template<UnsignedInt dimensions> template<class T, class U> inline Image<dimensions>::Image(const PixelStorage storage, const T format, const U formatExtra) noexcept: Image{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelFormatSizeAdl(format, formatExtra)} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T> inline Image<dimensions>::Image(const PixelStorage storage, const T format) noexcept: Image{storage, UnsignedInt(format), {}, Implementation::pixelSizeAdl(format)} {
+template<UnsignedInt dimensions> template<class T> inline Image<dimensions>::Image(const PixelStorage storage, const T format) noexcept: Image{storage, UnsignedInt(format), {}, Implementation::pixelFormatSizeAdl(format)} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }

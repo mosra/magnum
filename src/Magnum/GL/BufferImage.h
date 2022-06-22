@@ -61,9 +61,10 @@ and @link GL::PixelType @endlink:
 It's also possible to pass the generic @ref Magnum::PixelFormat to it, however
 the @ref format() and @ref type() queries will always return the GL-specific
 value. On construction, the image internally calculates pixel size
-corresponding to given pixel format using either @ref GL::pixelSize() or
-@ref Magnum::pixelSize(). This value is needed to check that the passed data
-are large enough and also required by most of image manipulation operations.
+corresponding to given pixel format using either @ref GL::pixelFormatSize() or
+@ref Magnum::pixelFormatSize(). This value is needed to check that the passed
+data are large enough and also required by most of image manipulation
+operations.
 
 Besides creating and owning the buffer, you can also pass existing buffer to
 it, for example to use buffer storage and other advanced functionality. The
@@ -275,7 +276,7 @@ template<UnsignedInt dimensions> class BufferImage {
         /**
          * @brief Size of a pixel in bytes
          *
-         * @see @ref Magnum::pixelSize(), @ref GL::pixelSize()
+         * @see @ref Magnum::pixelFormatSize(), @ref GL::pixelFormatSize()
          */
         UnsignedInt pixelSize() const;
 

@@ -172,8 +172,8 @@ void PixelFormatTest::compressedMapping() {
                     CORRADE_COMPARE(Utility::ConfigurationValue<CompressedPixelFormat>::toString(CompressedPixelFormat::format, {}), #format); \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
-                    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::format), (Vector3i{width, height, depth})); \
-                    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::format), size/8); \
+                    CORRADE_COMPARE(compressedPixelFormatBlockSize(CompressedPixelFormat::format), (Vector3i{width, height, depth})); \
+                    CORRADE_COMPARE(compressedPixelFormatBlockDataSize(CompressedPixelFormat::format), size/8); \
                     CORRADE_COMPARE(size % 8, 0); \
                     CORRADE_COMPARE_AS(width, 16, TestSuite::Compare::LessOrEqual); \
                     CORRADE_COMPARE_AS(height, 16, TestSuite::Compare::LessOrEqual); \
@@ -198,14 +198,14 @@ void PixelFormatTest::compressedMapping() {
 }
 
 void PixelFormatTest::size() {
-    CORRADE_COMPARE(pixelSize(PixelFormat::R8I), 1);
-    CORRADE_COMPARE(pixelSize(PixelFormat::R16UI), 2);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGB8Unorm), 3);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGBA8Snorm), 4);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGB16I), 6);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGBA16F), 8);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGB32UI), 12);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGBA32F), 16);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::R8I), 1);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::R16UI), 2);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::RGB8Unorm), 3);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::RGBA8Snorm), 4);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::RGB16I), 6);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::RGBA16F), 8);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::RGB32UI), 12);
+    CORRADE_COMPARE(pixelFormatSize(PixelFormat::RGBA32F), 16);
 }
 
 void PixelFormatTest::sizeInvalid() {
@@ -216,12 +216,12 @@ void PixelFormatTest::sizeInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    pixelSize(PixelFormat{});
-    pixelSize(PixelFormat(0xdead));
+    pixelFormatSize(PixelFormat{});
+    pixelFormatSize(PixelFormat(0xdead));
 
     CORRADE_COMPARE(out.str(),
-        "pixelSize(): invalid format PixelFormat(0x0)\n"
-        "pixelSize(): invalid format PixelFormat(0xdead)\n");
+        "pixelFormatSize(): invalid format PixelFormat(0x0)\n"
+        "pixelFormatSize(): invalid format PixelFormat(0xdead)\n");
 }
 
 void PixelFormatTest::sizeImplementationSpecific() {
@@ -232,20 +232,20 @@ void PixelFormatTest::sizeImplementationSpecific() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    pixelSize(pixelFormatWrap(0xdead));
+    pixelFormatSize(pixelFormatWrap(0xdead));
 
-    CORRADE_COMPARE(out.str(), "pixelSize(): can't determine size of an implementation-specific format 0xdead\n");
+    CORRADE_COMPARE(out.str(), "pixelFormatSize(): can't determine size of an implementation-specific format 0xdead\n");
 }
 
 void PixelFormatTest::compressedBlockSize() {
-    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::Etc2RGB8A1Srgb), (Vector3i{4, 4, 1}));
-    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::Etc2RGB8A1Srgb), 8);
-    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::Astc5x4RGBAUnorm), (Vector3i{5, 4, 1}));
-    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::Astc5x4RGBAUnorm), 16);
-    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::Astc12x10RGBAUnorm), (Vector3i{12, 10, 1}));
-    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::Astc12x10RGBAUnorm), 16);
-    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::PvrtcRGBA2bppUnorm), (Vector3i{8, 4, 1}));
-    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::PvrtcRGBA2bppUnorm), 8);
+    CORRADE_COMPARE(compressedPixelFormatBlockSize(CompressedPixelFormat::Etc2RGB8A1Srgb), (Vector3i{4, 4, 1}));
+    CORRADE_COMPARE(compressedPixelFormatBlockDataSize(CompressedPixelFormat::Etc2RGB8A1Srgb), 8);
+    CORRADE_COMPARE(compressedPixelFormatBlockSize(CompressedPixelFormat::Astc5x4RGBAUnorm), (Vector3i{5, 4, 1}));
+    CORRADE_COMPARE(compressedPixelFormatBlockDataSize(CompressedPixelFormat::Astc5x4RGBAUnorm), 16);
+    CORRADE_COMPARE(compressedPixelFormatBlockSize(CompressedPixelFormat::Astc12x10RGBAUnorm), (Vector3i{12, 10, 1}));
+    CORRADE_COMPARE(compressedPixelFormatBlockDataSize(CompressedPixelFormat::Astc12x10RGBAUnorm), 16);
+    CORRADE_COMPARE(compressedPixelFormatBlockSize(CompressedPixelFormat::PvrtcRGBA2bppUnorm), (Vector3i{8, 4, 1}));
+    CORRADE_COMPARE(compressedPixelFormatBlockDataSize(CompressedPixelFormat::PvrtcRGBA2bppUnorm), 8);
 
     /* The rest tested in compressedMapping() */
 }
@@ -258,16 +258,16 @@ void PixelFormatTest::compressedBlockSizeInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Magnum::compressedBlockSize(CompressedPixelFormat{});
-    Magnum::compressedBlockSize(CompressedPixelFormat(0xdead));
-    compressedBlockDataSize(CompressedPixelFormat{});
-    compressedBlockDataSize(CompressedPixelFormat(0xdead));
+    compressedPixelFormatBlockSize(CompressedPixelFormat{});
+    compressedPixelFormatBlockSize(CompressedPixelFormat(0xdead));
+    compressedPixelFormatBlockDataSize(CompressedPixelFormat{});
+    compressedPixelFormatBlockDataSize(CompressedPixelFormat(0xdead));
 
     CORRADE_COMPARE(out.str(),
-        "compressedBlockSize(): invalid format CompressedPixelFormat(0x0)\n"
-        "compressedBlockSize(): invalid format CompressedPixelFormat(0xdead)\n"
-        "compressedBlockDataSize(): invalid format CompressedPixelFormat(0x0)\n"
-        "compressedBlockDataSize(): invalid format CompressedPixelFormat(0xdead)\n");
+        "compressedPixelFormatBlockSize(): invalid format CompressedPixelFormat(0x0)\n"
+        "compressedPixelFormatBlockSize(): invalid format CompressedPixelFormat(0xdead)\n"
+        "compressedPixelFormatBlockDataSize(): invalid format CompressedPixelFormat(0x0)\n"
+        "compressedPixelFormatBlockDataSize(): invalid format CompressedPixelFormat(0xdead)\n");
 }
 
 void PixelFormatTest::compressedBlockSizeImplementationSpecific() {
@@ -278,12 +278,12 @@ void PixelFormatTest::compressedBlockSizeImplementationSpecific() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Magnum::compressedBlockSize(compressedPixelFormatWrap(0xdead));
-    compressedBlockDataSize(compressedPixelFormatWrap(0xdead));
+    compressedPixelFormatBlockSize(compressedPixelFormatWrap(0xdead));
+    compressedPixelFormatBlockDataSize(compressedPixelFormatWrap(0xdead));
 
     CORRADE_COMPARE(out.str(),
-        "compressedBlockSize(): can't determine size of an implementation-specific format 0xdead\n"
-        "compressedBlockDataSize(): can't determine size of an implementation-specific format 0xdead\n");
+        "compressedPixelFormatBlockSize(): can't determine size of an implementation-specific format 0xdead\n"
+        "compressedPixelFormatBlockDataSize(): can't determine size of an implementation-specific format 0xdead\n");
 }
 
 void PixelFormatTest::isImplementationSpecific() {

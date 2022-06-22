@@ -1564,7 +1564,7 @@ void AbstractTexture::imageImplementationSvga3DSliceBySlice(const GLenum target,
        DSA cleanness is not worth it. */
     /** @todo this will break when we support uploading from buffer offset (i.e. data != nullptr) */
     if(target == GL_TEXTURE_1D_ARRAY && data && size.y() > 1)
-        subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage2DImplementationDefault>(level, {0, 1}, {size.x(), size.y() - 1}, format, type, static_cast<const char*>(data) + std::get<1>(storage.dataProperties(pixelSize(format, type), {size, 1})).x(), storage);
+        subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage2DImplementationDefault>(level, {0, 1}, {size.x(), size.y() - 1}, format, type, static_cast<const char*>(data) + std::get<1>(storage.dataProperties(pixelFormatSize(format, type), {size, 1})).x(), storage);
 }
 #endif
 
@@ -1579,7 +1579,7 @@ template<void(AbstractTexture::*original)(GLint, const Vector2i&, const Vector2i
     /* Upload the data slice by slice only if this is an array texture and we
        are copying from user memory (not from a buffer) */
     if(_target == GL_TEXTURE_1D_ARRAY && data) {
-        const std::size_t stride = std::get<1>(storage.dataProperties(pixelSize(format, type), {size, 1})).x();
+        const std::size_t stride = std::get<1>(storage.dataProperties(pixelFormatSize(format, type), {size, 1})).x();
         for(Int i = 0; i != size.y(); ++i)
             (this->*original)(level, {offset.x(), offset.y() + i}, {size.x(), 1}, format, type, static_cast<const char*>(data) + stride*i, storage);
 
@@ -1637,7 +1637,7 @@ void AbstractTexture::imageImplementationSvga3DSliceBySlice(GLint level, Texture
         #endif
         ) && data && size.z() > 1)
     {
-        subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage3DImplementationDefault>(level, {0, 0, 1}, {size.xy(), size.z() - 1}, format, type, static_cast<const char*>(data) + std::get<1>(storage.dataProperties(pixelSize(format, type), size)).xy().product(), storage);
+        subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage3DImplementationDefault>(level, {0, 0, 1}, {size.xy(), size.z() - 1}, format, type, static_cast<const char*>(data) + std::get<1>(storage.dataProperties(pixelFormatSize(format, type), size)).xy().product(), storage);
     }
 }
 #endif
@@ -1664,7 +1664,7 @@ template<void(AbstractTexture::*original)(GLint, const Vector3i&, const Vector3i
         #endif
         )
     {
-        const std::size_t stride = std::get<1>(storage.dataProperties(pixelSize(format, type), size)).xy().product();
+        const std::size_t stride = std::get<1>(storage.dataProperties(pixelFormatSize(format, type), size)).xy().product();
         for(Int i = 0; i != size.z(); ++i)
             (this->*original)(level, {offset.xy(), offset.z() + i}, {size.xy(), 1}, format, type, static_cast<const char*>(data) + stride*i, storage);
 

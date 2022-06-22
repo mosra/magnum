@@ -30,7 +30,7 @@
 
 namespace Magnum {
 
-template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, format, {},  Magnum::pixelSize(format), size, data} {}
+template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, format, {},  pixelFormatSize(format), size, data} {}
 
 template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, data} {}
 
@@ -46,7 +46,7 @@ template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(co
     #endif
 }
 
-template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, format, {}, Magnum::pixelSize(format), size} {}
+template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, format, {}, pixelFormatSize(format), size} {}
 
 template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, pixelFormatWrap(format), formatExtra, pixelSize, size} {}
 

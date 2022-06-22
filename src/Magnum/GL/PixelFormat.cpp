@@ -122,7 +122,7 @@ TextureFormat textureFormat(const Magnum::PixelFormat format) {
     return out;
 }
 
-UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
+UnsignedInt pixelFormatSize(const PixelFormat format, const PixelType type) {
     std::size_t size = 0;
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
@@ -252,7 +252,7 @@ UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
 
         /* Handled above */
         case PixelFormat::DepthStencil:
-            CORRADE_ASSERT_UNREACHABLE("GL::pixelSize(): invalid" << type << "specified for" << format, 0);
+            CORRADE_ASSERT_UNREACHABLE("GL::pixelFormatSize(): invalid" << type << "specified for" << format, 0);
     }
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
