@@ -42,10 +42,10 @@ namespace Magnum {
 @m_since{2020,06}
 
 Like @ref PixelFormat, but for mesh attributes --- including double-precision
-types and matrices. Can act also as a wrapper for implementation-specific
+formats and matrices. Can act also as a wrapper for implementation-specific
 vertex format values using @ref vertexFormatWrap() and @ref vertexFormatUnwrap().
-Distinction between generic and implementation-specific types can be done using
-@ref isVertexFormatImplementationSpecific().
+Distinction between generic and implementation-specific formats can be done
+using @ref isVertexFormatImplementationSpecific().
 
 In case of OpenGL, corresponds to a tuple of @ref GL::DynamicAttribute::Kind,
 @ref GL::DynamicAttribute::Components and @ref GL::DynamicAttribute::DataType
@@ -67,7 +67,7 @@ See documentation of each value for more information about the mapping.
     @ref Trade::MeshAttribute
 */
 enum class VertexFormat: UnsignedInt {
-    /* Zero reserved for an invalid type (but not being a named value) */
+    /* Zero reserved for an invalid format (but not being a named value) */
 
     /**
      * @ref Float.
@@ -798,7 +798,7 @@ enum class VertexFormat: UnsignedInt {
      * @f$ [-1.0, 1.0] @f$.
      *
      * Same as two @ref VertexFormat::Vector2bNormalized tightly following each
-     * other and bound to consecutive locations. Note that this type doesn't
+     * other and bound to consecutive locations. Note that this format doesn't
      * have the columns four-byte aligned, which may negatively affect
      * performance --- prefer to use
      * @ref VertexFormat::Matrix2x2bNormalizedAligned instead.
@@ -826,7 +826,7 @@ enum class VertexFormat: UnsignedInt {
      * @ref Matrix2x3h.
      *
      * Same as two @ref VertexFormat::Vector3h tightly following each other and
-     * bound to consecutive locations. Note that this type doesn't have the
+     * bound to consecutive locations. Note that this format doesn't have the
      * columns four-byte aligned, which may negatively affect performance on
      * some APIs --- prefer to use @ref VertexFormat::Matrix2x3hAligned
      * instead.
@@ -846,7 +846,7 @@ enum class VertexFormat: UnsignedInt {
      * @f$ [-1.0, 1.0] @f$.
      *
      * Same as two @ref VertexFormat::Vector3bNormalized tightly following each
-     * other and bound to consecutive locations. Note that this type doesn't
+     * other and bound to consecutive locations. Note that this format doesn't
      * have the columns four-byte aligned, which may negatively affect
      * performance --- prefer to use
      * @ref VertexFormat::Matrix2x3bNormalizedAligned instead.
@@ -858,7 +858,7 @@ enum class VertexFormat: UnsignedInt {
      * @f$ [-1.0, 1.0] @f$.
      *
      * Same as two @ref VertexFormat::Vector3sNormalized tightly following each
-     * other and bound to consecutive locations. Note that this type doesn't
+     * other and bound to consecutive locations. Note that this format doesn't
      * have the columns four-byte aligned, which may negatively affect
      * performance --- prefer to use
      * @ref VertexFormat::Matrix2x3sNormalizedAligned instead.
@@ -978,7 +978,7 @@ enum class VertexFormat: UnsignedInt {
      * @f$ [-1.0, 1.0] @f$.
      *
      * Same as three @ref VertexFormat::Vector2bNormalized tightly following
-     * each other and bound to consecutive locations. Note that this type
+     * each other and bound to consecutive locations. Note that this format
      * doesn't have the columns four-byte aligned, which may negatively affect
      * performance --- prefer to use
      * @ref VertexFormat::Matrix3x2bNormalizedAligned instead.
@@ -1006,9 +1006,9 @@ enum class VertexFormat: UnsignedInt {
      * @ref Matrix3x3h.
      *
      * Same as three @ref VertexFormat::Vector3h tightly following each other
-     * and bound to consecutive locations. Note that this type doesn't have the
-     * columns four-byte aligned, which may negatively affect performance on
-     * some APIs --- prefer to use @ref VertexFormat::Matrix3x3hAligned
+     * and bound to consecutive locations. Note that this format doesn't have
+     * the columns four-byte aligned, which may negatively affect performance
+     * on some APIs --- prefer to use @ref VertexFormat::Matrix3x3hAligned
      * instead.
      */
     Matrix3x3h,
@@ -1026,7 +1026,7 @@ enum class VertexFormat: UnsignedInt {
      * @f$ [-1.0, 1.0] @f$.
      *
      * Same as three @ref VertexFormat::Vector3bNormalized tightly following
-     * each other and bound to consecutive locations. Note that this type
+     * each other and bound to consecutive locations. Note that this format
      * doesn't have the columns four-byte aligned, which may negatively affect
      * performance --- prefer to use
      * @ref VertexFormat::Matrix3x3bNormalizedAligned instead.
@@ -1038,7 +1038,7 @@ enum class VertexFormat: UnsignedInt {
      * @f$ [-1.0, 1.0] @f$.
      *
      * Same as three @ref VertexFormat::Vector3sNormalized tightly following
-     * each other and bound to consecutive locations. Note that this type
+     * each other and bound to consecutive locations. Note that this format
      * doesn't have the columns four-byte aligned, which may negatively affect
      * performance --- prefer to use
      * @ref VertexFormat::Matrix3x3sNormalizedAligned instead.
@@ -1158,7 +1158,7 @@ enum class VertexFormat: UnsignedInt {
      * @f$ [-1.0, 1.0] @f$.
      *
      * Same as four @ref VertexFormat::Vector2bNormalized tightly following
-     * each other and bound to consecutive locations. Note that this type
+     * each other and bound to consecutive locations. Note that this format
      * doesn't have the columns four-byte aligned, which may negatively affect
      * performance --- prefer to use
      * @ref VertexFormat::Matrix4x2bNormalizedAligned instead.
@@ -1186,9 +1186,9 @@ enum class VertexFormat: UnsignedInt {
      * @ref Matrix4x3h.
      *
      * Same as four @ref VertexFormat::Vector3h tightly following each other
-     * and bound to consecutive locations. Note that this type doesn't have the
-     * columns four-byte aligned, which may negatively affect performance on
-     * some APIs --- prefer to use @ref VertexFormat::Matrix4x3hAligned
+     * and bound to consecutive locations. Note that this format doesn't have
+     * the columns four-byte aligned, which may negatively affect performance
+     * on some APIs --- prefer to use @ref VertexFormat::Matrix4x3hAligned
      * instead.
      */
     Matrix4x3h,
@@ -1206,7 +1206,7 @@ enum class VertexFormat: UnsignedInt {
      * @f$ [-1.0, 1.0] @f$.
      *
      * Same as four @ref VertexFormat::Vector3bNormalized tightly following
-     * each other and bound to consecutive locations. Note that this type
+     * each other and bound to consecutive locations. Note that this format
      * doesn't have the columns four-byte aligned, which may negatively affect
      * performance --- prefer to use
      * @ref VertexFormat::Matrix4x3bNormalizedAligned instead.
@@ -1218,7 +1218,7 @@ enum class VertexFormat: UnsignedInt {
      * @f$ [-1.0, 1.0] @f$.
      *
      * Same as four @ref VertexFormat::Vector3sNormalized tightly following
-     * each other and bound to consecutive locations. Note that this type
+     * each other and bound to consecutive locations. Note that this format
      * doesn't have the columns four-byte aligned, which may negatively affect
      * performance --- prefer to use
      * @ref VertexFormat::Matrix4x3sNormalizedAligned instead.
@@ -1373,12 +1373,12 @@ MAGNUM_EXPORT UnsignedInt vertexFormatSize(VertexFormat format);
 @brief Component format of given vertex format
 @m_since{2020,06}
 
-The function also removes the normalization aspect from the type --- use
+The function also removes the normalization aspect from the format --- use
 @ref isVertexFormatNormalized() to query that. Returns for example
 @ref VertexFormat::Short for @ref VertexFormat::ShortNormalized or
 @ref VertexFormat::UnsignedByte for @ref VertexFormat::Vector3ub.
-Calling @ref vertexFormatComponentCount() on the return value will always
-give @cpp 1 @ce; calling @ref isVertexFormatNormalized() on the return
+Calling @ref vertexFormatComponentCount() on the returned value will always
+give @cpp 1 @ce; calling @ref isVertexFormatNormalized() on the returned
 value will always give @cpp false @ce.
 @see @ref vertexFormat(VertexFormat, UnsignedInt, bool)
 */
@@ -1388,7 +1388,7 @@ MAGNUM_EXPORT VertexFormat vertexFormatComponentFormat(VertexFormat format);
 @brief Component count of given vertex format
 @m_since{2020,06}
 
-Returns @cpp 1 @ce for scalar types and e.g. @cpp 3 @ce for
+Returns @cpp 1 @ce for scalar formats and e.g. @cpp 3 @ce for
 @ref VertexFormat::Vector3ub.
 @see @ref vertexFormat(VertexFormat, UnsignedInt, bool)
 */
@@ -1398,7 +1398,7 @@ MAGNUM_EXPORT UnsignedInt vertexFormatComponentCount(VertexFormat format);
 @brief Vector count of given vertex format
 @m_since{2020,06}
 
-Returns @cpp 1 @ce for scalar and vector types and e.g. @cpp 3 @ce for
+Returns @cpp 1 @ce for scalar and vector formats and e.g. @cpp 3 @ce for
 @ref VertexFormat::Matrix3x2d.
 */
 MAGNUM_EXPORT UnsignedInt vertexFormatVectorCount(VertexFormat format);
@@ -1407,18 +1407,18 @@ MAGNUM_EXPORT UnsignedInt vertexFormatVectorCount(VertexFormat format);
 @brief Vector stride of given vertex format
 @m_since{2020,06}
 
-Returns type size for scalar and vector types and e.g. @cpp 8 @ce for
+Returns type size for scalar and vector formats and e.g. @cpp 8 @ce for
 @ref VertexFormat::Matrix2x3hAligned (but @cpp 6 @ce for
 @ref VertexFormat::Matrix2x3h).
 */
 MAGNUM_EXPORT UnsignedInt vertexFormatVectorStride(VertexFormat format);
 
 /**
-@brief Component count of given vertex format
+@brief Whether given vertex format is normalized
 @m_since{2020,06}
 
-Returns @cpp true @ce for `*Normalized` types, @cpp false @ce otherwise. In
-particular, floating-point types are *not* treated as normalized, even though
+Returns @cpp true @ce for `*Normalized` formats, @cpp false @ce otherwise. In
+particular, floating-point formats are *not* treated as normalized, even though
 for example colors might commonly have values only in the @f$ [0.0, 1.0] @f$
 range (or normals in the @f$ [-1.0, 1.0] @f$ range).
 @see @ref vertexFormat(VertexFormat, UnsignedInt, bool)
@@ -1431,7 +1431,7 @@ MAGNUM_EXPORT bool isVertexFormatNormalized(VertexFormat format);
 
 Converts @p format to a new format of desired component count and
 normalization. Expects that @p componentCount is not larger than @cpp 4 @ce and
-@p normalized is @cpp true @ce only for 8- and 16-byte integer types.
+@p normalized is @cpp true @ce only for 8- and 16-byte integer formats.
 @see @ref vertexFormatComponentFormat(),
     @ref vertexFormatComponentCount(),
     @ref isVertexFormatNormalized()
@@ -1475,7 +1475,7 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::VertexFormat> {
     /**
      * @brief Read enum value as string
      *
-     * If the value is invalid, returns a zero (invalid) type.
+     * If the value is invalid, returns a zero (invalid) format.
      */
     static Magnum::VertexFormat fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
