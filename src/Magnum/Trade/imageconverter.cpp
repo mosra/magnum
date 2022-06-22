@@ -474,11 +474,11 @@ no -C / --converter is specified, AnyImageConverter is used.)")
 
             /** @todo Any chance to do this without using internal APIs? */
             const PixelFormat format = Utility::ConfigurationValue<PixelFormat>::fromString(args.value("importer").substr(4), {});
-            const UnsignedInt pixelSize = Magnum::pixelSize(format);
             if(format == PixelFormat{}) {
                 Error{} << "Invalid raw pixel format" << args.value("importer");
                 return 4;
             }
+            const UnsignedInt pixelSize = Magnum::pixelSize(format);
 
             /* Read the file or map it if requested */
             Containers::Array<char> data;
