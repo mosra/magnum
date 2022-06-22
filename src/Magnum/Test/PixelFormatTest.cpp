@@ -161,7 +161,10 @@ void PixelFormatTest::compressedMapping() {
         /* Each case verifies:
            - that the entries are ordered by number by comparing a function to
              expected result (so insertion here is done in proper place)
-           - that there was no gap (unhandled value inside the range) */
+           - that there was no gap (unhandled value inside the range)
+           - that the block size table entry matches
+           - that the block data size is whole bytes and at most 16 bytes
+           - that the block size is at most 16x16x16 */
         #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
