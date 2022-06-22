@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::PixelFormat, @ref Magnum::CompressedPixelFormat, function @ref Magnum::pixelFormatSize(), @ref Magnum::isPixelFormatImplementationSpecific(), @ref Magnum::pixelFormatWrap(), @ref Magnum::pixelFormatUnwrap(), @ref Magnum::compressedPixelFormatBlockSize(), @ref Magnum::compressedPixelFormatBlockDataSize(), @ref Magnum::isCompressedPixelFormatImplementationSpecific(), @ref Magnum::compressedPixelFormatWrap(), @ref Magnum::compressedPixelFormatUnwrap()
+ * @brief Enum @ref Magnum::PixelFormat, @ref Magnum::CompressedPixelFormat, function @ref Magnum::pixelFormatSize(), @ref Magnum::pixelFormatChannelFormat(), @ref Magnum::pixelFormatChannelCount(), @ref Magnum::isPixelFormatSrgb(), @ref Magnum::isPixelFormatDepthOrStencil(), @ref Magnum::isPixelFormatImplementationSpecific(), @ref Magnum::pixelFormatWrap(), @ref Magnum::pixelFormatUnwrap(), @ref Magnum::compressedPixelFormatBlockSize(), @ref Magnum::compressedPixelFormatBlockDataSize(), @ref Magnum::isCompressedPixelFormatImplementationSpecific(), @ref Magnum::compressedPixelFormatWrap(), @ref Magnum::compressedPixelFormatUnwrap()
  */
 
 #include <Corrade/Utility/Assert.h>
@@ -65,7 +65,9 @@ For D3D, corresponds to @m_class{m-doc-external} [DXGI_FORMAT](https://docs.micr
 and import is provided by the @ref Trade::DdsImporter "DdsImporter" plugin; for
 Metal, corresponds to @m_class{m-doc-external} [MTLPixelFormat](https://developer.apple.com/documentation/metal/mtlpixelformat?language=objc).
 See documentation of each value for more information about the mapping.
-@see @ref pixelFormatSize(), @ref CompressedPixelFormat, @ref Image,
+@see @ref pixelFormatSize(), @ref pixelFormatChannelFormat(),
+    @ref pixelFormatChannelCount(), @ref isPixelFormatSrgb(),
+    @ref isPixelFormatDepthOrStencil(), @ref CompressedPixelFormat, @ref Image,
     @ref ImageView, @ref VertexFormat
 */
 enum class PixelFormat: UnsignedInt {
@@ -776,9 +778,57 @@ enum class PixelFormat: UnsignedInt {
 @m_since_latest
 
 Expects that the pixel format is *not* implementation-specific.
-@see @ref isPixelFormatImplementationSpecific(), @ref GL::pixelFormatSize()
+@see @ref isPixelFormatImplementationSpecific(), @ref GL::pixelFormatSize(),
+    @ref vertexFormatSize()
 */
 MAGNUM_EXPORT UnsignedInt pixelFormatSize(PixelFormat format);
+
+/**
+@brief Channel format of given pixel format
+@m_since_latest
+
+Returns for example @ref PixelFormat::R8Srgb for
+@ref PixelFormat::RGB8Srgb or @ref PixelFormat::R16F for
+@ref PixelFormat::RG16F. Calling @ref pixelFormatChannelCount() on the returned
+value will always give @cpp 1 @ce. Expects that the pixel format is *not*
+implementation-specific and not a depth/stencil format.
+@see @ref isPixelFormatImplementationSpecific(),
+    @ref isPixelFormatDepthOrStencil(), @ref isPixelFormatSrgb(),
+    @ref vertexFormatComponentFormat()
+*/
+MAGNUM_EXPORT PixelFormat pixelFormatChannelFormat(PixelFormat format);
+
+/**
+@brief Channel count of given pixel format
+@m_since_latest
+
+Returns for example @cpp 1 @ce for @ref PixelFormat::R8Unorm or @cpp 3 @ce for
+@ref PixelFormat::RGB32F. Expects that the pixel format is *not*
+implementation-specific and not a depth/stencil format.
+@see @ref isPixelFormatImplementationSpecific(),
+    @ref isPixelFormatDepthOrStencil(), @ref vertexFormatComponentCount()
+*/
+MAGNUM_EXPORT UnsignedInt pixelFormatChannelCount(PixelFormat format);
+
+/**
+@brief Whether given pixel format is sRGB
+@m_since_latest
+
+Returns @cpp true @ce for `*Srgb` formats, @cpp false @ce otherwise. Expects
+that the pixel format is *not* implementation-specific.
+@see @ref isPixelFormatImplementationSpecific()
+*/
+MAGNUM_EXPORT bool isPixelFormatSrgb(PixelFormat format);
+
+/**
+@brief Whether given pixel format is depth or stenil
+@m_since_latest
+
+Returns @cpp true @ce for `Depth*`, `Stencil*` and combined depth/stencil
+formats, @cpp false @ce otherwise. Expects that the pixel format is *not* implementation-specific.
+@see @ref isPixelFormatImplementationSpecific()
+*/
+MAGNUM_EXPORT bool isPixelFormatDepthOrStencil(PixelFormat format);
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**

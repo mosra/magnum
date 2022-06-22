@@ -1366,6 +1366,7 @@ template<class T = UnsignedInt> constexpr T vertexFormatUnwrap(VertexFormat form
 
 To get size of a single component, call this function on a result of
 @ref vertexFormatComponentFormat().
+@see @ref pixelFormatSize()
 */
 MAGNUM_EXPORT UnsignedInt vertexFormatSize(VertexFormat format);
 
@@ -1380,7 +1381,8 @@ The function also removes the normalization aspect from the format --- use
 Calling @ref vertexFormatComponentCount() on the returned value will always
 give @cpp 1 @ce; calling @ref isVertexFormatNormalized() on the returned
 value will always give @cpp false @ce.
-@see @ref vertexFormat(VertexFormat, UnsignedInt, bool)
+@see @ref vertexFormat(VertexFormat, UnsignedInt, bool),
+    @ref pixelFormatChannelFormat()
 */
 MAGNUM_EXPORT VertexFormat vertexFormatComponentFormat(VertexFormat format);
 
@@ -1390,7 +1392,8 @@ MAGNUM_EXPORT VertexFormat vertexFormatComponentFormat(VertexFormat format);
 
 Returns @cpp 1 @ce for scalar formats and e.g. @cpp 3 @ce for
 @ref VertexFormat::Vector3ub.
-@see @ref vertexFormat(VertexFormat, UnsignedInt, bool)
+@see @ref vertexFormat(VertexFormat, UnsignedInt, bool),
+    @ref pixelFormatChannelCount()
 */
 MAGNUM_EXPORT UnsignedInt vertexFormatComponentCount(VertexFormat format);
 

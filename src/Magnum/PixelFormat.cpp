@@ -118,6 +118,334 @@ UnsignedInt pixelFormatSize(const PixelFormat format) {
     CORRADE_ASSERT_UNREACHABLE("pixelFormatSize(): invalid format" << format, {});
 }
 
+PixelFormat pixelFormatChannelFormat(const PixelFormat format) {
+    CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
+        "pixelFormatChannelFormat(): can't determine channel format of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
+    switch(format) {
+        case PixelFormat::R8Unorm:
+        case PixelFormat::RG8Unorm:
+        case PixelFormat::RGB8Unorm:
+        case PixelFormat::RGBA8Unorm:
+            return PixelFormat::R8Unorm;
+        case PixelFormat::R8Snorm:
+        case PixelFormat::RG8Snorm:
+        case PixelFormat::RGB8Snorm:
+        case PixelFormat::RGBA8Snorm:
+            return PixelFormat::R8Snorm;
+        case PixelFormat::R8Srgb:
+        case PixelFormat::RG8Srgb:
+        case PixelFormat::RGB8Srgb:
+        case PixelFormat::RGBA8Srgb:
+            return PixelFormat::R8Srgb;
+        case PixelFormat::R8UI:
+        case PixelFormat::RG8UI:
+        case PixelFormat::RGB8UI:
+        case PixelFormat::RGBA8UI:
+            return PixelFormat::R8UI;
+        case PixelFormat::R8I:
+        case PixelFormat::RG8I:
+        case PixelFormat::RGB8I:
+        case PixelFormat::RGBA8I:
+            return PixelFormat::R8I;
+        case PixelFormat::R16Unorm:
+        case PixelFormat::RG16Unorm:
+        case PixelFormat::RGB16Unorm:
+        case PixelFormat::RGBA16Unorm:
+            return PixelFormat::R16Unorm;
+        case PixelFormat::R16Snorm:
+        case PixelFormat::RG16Snorm:
+        case PixelFormat::RGB16Snorm:
+        case PixelFormat::RGBA16Snorm:
+            return PixelFormat::R16Snorm;
+        case PixelFormat::R16UI:
+        case PixelFormat::RG16UI:
+        case PixelFormat::RGB16UI:
+        case PixelFormat::RGBA16UI:
+            return PixelFormat::R16UI;
+        case PixelFormat::R16I:
+        case PixelFormat::RG16I:
+        case PixelFormat::RGB16I:
+        case PixelFormat::RGBA16I:
+            return PixelFormat::R16I;
+        case PixelFormat::R32UI:
+        case PixelFormat::RG32UI:
+        case PixelFormat::RGB32UI:
+        case PixelFormat::RGBA32UI:
+            return PixelFormat::R32UI;
+        case PixelFormat::R32I:
+        case PixelFormat::RG32I:
+        case PixelFormat::RGB32I:
+        case PixelFormat::RGBA32I:
+            return PixelFormat::R32I;
+        case PixelFormat::R16F:
+        case PixelFormat::RG16F:
+        case PixelFormat::RGB16F:
+        case PixelFormat::RGBA16F:
+            return PixelFormat::R16F;
+        case PixelFormat::R32F:
+        case PixelFormat::RG32F:
+        case PixelFormat::RGB32F:
+        case PixelFormat::RGBA32F:
+            return PixelFormat::R32F;
+
+        case PixelFormat::Stencil8UI:
+        case PixelFormat::Depth16Unorm:
+        case PixelFormat::Depth24Unorm:
+        case PixelFormat::Depth32F:
+        case PixelFormat::Depth16UnormStencil8UI:
+        case PixelFormat::Depth24UnormStencil8UI:
+        case PixelFormat::Depth32FStencil8UI:
+            CORRADE_ASSERT_UNREACHABLE("pixelFormatChannelFormat(): can't determine channel format of" << format, {});
+    }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
+
+    CORRADE_ASSERT_UNREACHABLE("pixelFormatChannelFormat(): invalid format" << format, {});
+}
+
+UnsignedInt pixelFormatChannelCount(const PixelFormat format) {
+    CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
+        "pixelFormatChannelCount(): can't determine channel count of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
+    switch(format) {
+        case PixelFormat::R8Unorm:
+        case PixelFormat::R8Snorm:
+        case PixelFormat::R8Srgb:
+        case PixelFormat::R8UI:
+        case PixelFormat::R8I:
+        case PixelFormat::R16Unorm:
+        case PixelFormat::R16Snorm:
+        case PixelFormat::R16UI:
+        case PixelFormat::R16I:
+        case PixelFormat::R32UI:
+        case PixelFormat::R32I:
+        case PixelFormat::R16F:
+        case PixelFormat::R32F:
+            return 1;
+        case PixelFormat::RG8Unorm:
+        case PixelFormat::RG8Snorm:
+        case PixelFormat::RG8Srgb:
+        case PixelFormat::RG8UI:
+        case PixelFormat::RG8I:
+        case PixelFormat::RG16Unorm:
+        case PixelFormat::RG16Snorm:
+        case PixelFormat::RG16UI:
+        case PixelFormat::RG16I:
+        case PixelFormat::RG32UI:
+        case PixelFormat::RG32I:
+        case PixelFormat::RG16F:
+        case PixelFormat::RG32F:
+            return 2;
+        case PixelFormat::RGB8Unorm:
+        case PixelFormat::RGB8Snorm:
+        case PixelFormat::RGB8Srgb:
+        case PixelFormat::RGB8UI:
+        case PixelFormat::RGB8I:
+        case PixelFormat::RGB16Unorm:
+        case PixelFormat::RGB16Snorm:
+        case PixelFormat::RGB16UI:
+        case PixelFormat::RGB16I:
+        case PixelFormat::RGB32UI:
+        case PixelFormat::RGB32I:
+        case PixelFormat::RGB16F:
+        case PixelFormat::RGB32F:
+            return 3;
+        case PixelFormat::RGBA8Unorm:
+        case PixelFormat::RGBA8Snorm:
+        case PixelFormat::RGBA8Srgb:
+        case PixelFormat::RGBA8UI:
+        case PixelFormat::RGBA8I:
+        case PixelFormat::RGBA16Unorm:
+        case PixelFormat::RGBA16Snorm:
+        case PixelFormat::RGBA16UI:
+        case PixelFormat::RGBA16I:
+        case PixelFormat::RGBA32UI:
+        case PixelFormat::RGBA32I:
+        case PixelFormat::RGBA16F:
+        case PixelFormat::RGBA32F:
+            return 4;
+        case PixelFormat::Depth16Unorm:
+        case PixelFormat::Depth24Unorm:
+        case PixelFormat::Depth32F:
+        case PixelFormat::Stencil8UI:
+        case PixelFormat::Depth16UnormStencil8UI:
+        case PixelFormat::Depth24UnormStencil8UI:
+        case PixelFormat::Depth32FStencil8UI:
+            CORRADE_ASSERT_UNREACHABLE("pixelFormatChannelCount(): can't determine channel count of" << format, {});
+    }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
+
+    CORRADE_ASSERT_UNREACHABLE("pixelFormatChannelCount(): invalid format" << format, {});
+}
+
+bool isPixelFormatSrgb(const PixelFormat format) {
+    CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
+        "isPixelFormatSrgb(): can't determine colorspace of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
+    switch(format) {
+        case PixelFormat::R8Srgb:
+        case PixelFormat::RG8Srgb:
+        case PixelFormat::RGB8Srgb:
+        case PixelFormat::RGBA8Srgb:
+            return true;
+        case PixelFormat::R8Unorm:
+        case PixelFormat::RG8Unorm:
+        case PixelFormat::RGB8Unorm:
+        case PixelFormat::RGBA8Unorm:
+        case PixelFormat::R8Snorm:
+        case PixelFormat::RG8Snorm:
+        case PixelFormat::RGB8Snorm:
+        case PixelFormat::RGBA8Snorm:
+        case PixelFormat::R8UI:
+        case PixelFormat::RG8UI:
+        case PixelFormat::RGB8UI:
+        case PixelFormat::RGBA8UI:
+        case PixelFormat::R8I:
+        case PixelFormat::RG8I:
+        case PixelFormat::RGB8I:
+        case PixelFormat::RGBA8I:
+        case PixelFormat::R16Unorm:
+        case PixelFormat::RG16Unorm:
+        case PixelFormat::RGB16Unorm:
+        case PixelFormat::RGBA16Unorm:
+        case PixelFormat::R16Snorm:
+        case PixelFormat::RG16Snorm:
+        case PixelFormat::RGB16Snorm:
+        case PixelFormat::RGBA16Snorm:
+        case PixelFormat::R16UI:
+        case PixelFormat::RG16UI:
+        case PixelFormat::RGB16UI:
+        case PixelFormat::RGBA16UI:
+        case PixelFormat::R16I:
+        case PixelFormat::RG16I:
+        case PixelFormat::RGB16I:
+        case PixelFormat::RGBA16I:
+        case PixelFormat::R32UI:
+        case PixelFormat::RG32UI:
+        case PixelFormat::RGB32UI:
+        case PixelFormat::RGBA32UI:
+        case PixelFormat::R32I:
+        case PixelFormat::RG32I:
+        case PixelFormat::RGB32I:
+        case PixelFormat::RGBA32I:
+        case PixelFormat::R16F:
+        case PixelFormat::RG16F:
+        case PixelFormat::RGB16F:
+        case PixelFormat::RGBA16F:
+        case PixelFormat::R32F:
+        case PixelFormat::RG32F:
+        case PixelFormat::RGB32F:
+        case PixelFormat::RGBA32F:
+        case PixelFormat::Depth16Unorm:
+        case PixelFormat::Depth24Unorm:
+        case PixelFormat::Depth32F:
+        case PixelFormat::Stencil8UI:
+        case PixelFormat::Depth16UnormStencil8UI:
+        case PixelFormat::Depth24UnormStencil8UI:
+        case PixelFormat::Depth32FStencil8UI:
+            return false;
+    }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
+
+    CORRADE_ASSERT_UNREACHABLE("isPixelFormatSrgb(): invalid format" << format, {});
+}
+
+bool isPixelFormatDepthOrStencil(const PixelFormat format) {
+    CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
+        "isPixelFormatDepthOrStencil(): can't determine type of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
+    switch(format) {
+        case PixelFormat::R8Unorm:
+        case PixelFormat::RG8Unorm:
+        case PixelFormat::RGB8Unorm:
+        case PixelFormat::RGBA8Unorm:
+        case PixelFormat::R8Snorm:
+        case PixelFormat::RG8Snorm:
+        case PixelFormat::RGB8Snorm:
+        case PixelFormat::RGBA8Snorm:
+        case PixelFormat::R8Srgb:
+        case PixelFormat::RG8Srgb:
+        case PixelFormat::RGB8Srgb:
+        case PixelFormat::RGBA8Srgb:
+        case PixelFormat::R8UI:
+        case PixelFormat::RG8UI:
+        case PixelFormat::RGB8UI:
+        case PixelFormat::RGBA8UI:
+        case PixelFormat::R8I:
+        case PixelFormat::RG8I:
+        case PixelFormat::RGB8I:
+        case PixelFormat::RGBA8I:
+        case PixelFormat::R16Unorm:
+        case PixelFormat::RG16Unorm:
+        case PixelFormat::RGB16Unorm:
+        case PixelFormat::RGBA16Unorm:
+        case PixelFormat::R16Snorm:
+        case PixelFormat::RG16Snorm:
+        case PixelFormat::RGB16Snorm:
+        case PixelFormat::RGBA16Snorm:
+        case PixelFormat::R16UI:
+        case PixelFormat::RG16UI:
+        case PixelFormat::RGB16UI:
+        case PixelFormat::RGBA16UI:
+        case PixelFormat::R16I:
+        case PixelFormat::RG16I:
+        case PixelFormat::RGB16I:
+        case PixelFormat::RGBA16I:
+        case PixelFormat::R32UI:
+        case PixelFormat::RG32UI:
+        case PixelFormat::RGB32UI:
+        case PixelFormat::RGBA32UI:
+        case PixelFormat::R32I:
+        case PixelFormat::RG32I:
+        case PixelFormat::RGB32I:
+        case PixelFormat::RGBA32I:
+        case PixelFormat::R16F:
+        case PixelFormat::RG16F:
+        case PixelFormat::RGB16F:
+        case PixelFormat::RGBA16F:
+        case PixelFormat::R32F:
+        case PixelFormat::RG32F:
+        case PixelFormat::RGB32F:
+        case PixelFormat::RGBA32F:
+            return false;
+        case PixelFormat::Depth16Unorm:
+        case PixelFormat::Depth24Unorm:
+        case PixelFormat::Depth32F:
+        case PixelFormat::Stencil8UI:
+        case PixelFormat::Depth16UnormStencil8UI:
+        case PixelFormat::Depth24UnormStencil8UI:
+        case PixelFormat::Depth32FStencil8UI:
+            return true;
+    }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
+
+    CORRADE_ASSERT_UNREACHABLE("isPixelFormatDepthOrStencil(): invalid format" << format, {});
+}
+
 namespace {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */

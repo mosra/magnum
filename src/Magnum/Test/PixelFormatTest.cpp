@@ -44,6 +44,18 @@ struct PixelFormatTest: TestSuite::Tester {
     void sizeInvalid();
     void sizeImplementationSpecific();
 
+    void channelFormatCount();
+    void channelFormatCountInvalid();
+    void channelFormatCountDepthStencilImplementationSpecific();
+
+    void isSrgb();
+    void isSrgbInvalid();
+    void isSrgbImplementationSpecific();
+
+    void isDepthOrStencil();
+    void isDepthOrStencilInvalid();
+    void isDepthOrStencilImplementationSpecific();
+
     void compressedBlockSize();
     void compressedBlockSizeInvalid();
     void compressedBlockSizeImplementationSpecific();
@@ -81,6 +93,18 @@ PixelFormatTest::PixelFormatTest() {
               &PixelFormatTest::size,
               &PixelFormatTest::sizeInvalid,
               &PixelFormatTest::sizeImplementationSpecific,
+
+              &PixelFormatTest::channelFormatCount,
+              &PixelFormatTest::channelFormatCountInvalid,
+              &PixelFormatTest::channelFormatCountDepthStencilImplementationSpecific,
+
+              &PixelFormatTest::isSrgb,
+              &PixelFormatTest::isSrgbInvalid,
+              &PixelFormatTest::isSrgbImplementationSpecific,
+
+              &PixelFormatTest::isDepthOrStencil,
+              &PixelFormatTest::isDepthOrStencilInvalid,
+              &PixelFormatTest::isDepthOrStencilImplementationSpecific,
 
               &PixelFormatTest::compressedBlockSize,
               &PixelFormatTest::compressedBlockSizeInvalid,
@@ -122,7 +146,9 @@ void PixelFormatTest::mapping() {
         /* Each case verifies:
            - that the entries are ordered by number by comparing a function to
              expected result (so insertion here is done in proper place)
-           - that there was no gap (unhandled value inside the range) */
+           - that there was no gap (unhandled value inside the range)
+           - that channel count times size of a channel equals to size of the
+             format, unless it's a depth/stencil type */
         #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
@@ -133,6 +159,8 @@ void PixelFormatTest::mapping() {
                     CORRADE_COMPARE(Utility::ConfigurationValue<PixelFormat>::toString(PixelFormat::format, {}), #format); \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
+                    if(!isPixelFormatDepthOrStencil(PixelFormat::format)) \
+                        CORRADE_COMPARE(pixelFormatChannelCount(PixelFormat::format)*pixelFormatSize(pixelFormatChannelFormat(PixelFormat::format)), pixelFormatSize(PixelFormat::format)); \
                     ++nextHandled; \
                     continue;
             #include "Magnum/Implementation/pixelFormatMapping.hpp"
@@ -238,6 +266,127 @@ void PixelFormatTest::sizeImplementationSpecific() {
     pixelFormatSize(pixelFormatWrap(0xdead));
 
     CORRADE_COMPARE(out.str(), "pixelFormatSize(): can't determine size of an implementation-specific format 0xdead\n");
+}
+
+void PixelFormatTest::channelFormatCount() {
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::R8Unorm), PixelFormat::R8Unorm);
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::RG8Snorm), PixelFormat::R8Snorm);
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::RGB8Srgb), PixelFormat::R8Srgb);
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::RGBA8UI), PixelFormat::R8UI);
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::RG8I), PixelFormat::R8I);
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::RG16Unorm), PixelFormat::R16Unorm);
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::RGBA16Snorm), PixelFormat::R16Snorm);
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::RG16UI), PixelFormat::R16UI);
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::RGBA16I), PixelFormat::R16I);
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::RGB32UI), PixelFormat::R32UI);
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::RG32I), PixelFormat::R32I);
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::RGB16F), PixelFormat::R16F);
+    CORRADE_COMPARE(pixelFormatChannelFormat(PixelFormat::RGB32F), PixelFormat::R32F);
+
+    CORRADE_COMPARE(pixelFormatChannelCount(PixelFormat::R16UI), 1);
+    CORRADE_COMPARE(pixelFormatChannelCount(PixelFormat::RG8Unorm), 2);
+    CORRADE_COMPARE(pixelFormatChannelCount(PixelFormat::RGB16I), 3);
+    CORRADE_COMPARE(pixelFormatChannelCount(PixelFormat::RGBA16F), 4);
+}
+
+void PixelFormatTest::channelFormatCountInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    pixelFormatChannelFormat(PixelFormat{});
+    pixelFormatChannelFormat(PixelFormat(0xdead));
+    pixelFormatChannelCount(PixelFormat{});
+    pixelFormatChannelCount(PixelFormat(0xdead));
+    CORRADE_COMPARE(out.str(),
+        "pixelFormatChannelFormat(): invalid format PixelFormat(0x0)\n"
+        "pixelFormatChannelFormat(): invalid format PixelFormat(0xdead)\n"
+        "pixelFormatChannelCount(): invalid format PixelFormat(0x0)\n"
+        "pixelFormatChannelCount(): invalid format PixelFormat(0xdead)\n");
+}
+
+void PixelFormatTest::channelFormatCountDepthStencilImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    pixelFormatChannelFormat(pixelFormatWrap(0xdead));
+    pixelFormatChannelFormat(PixelFormat::Depth16Unorm);
+    pixelFormatChannelCount(pixelFormatWrap(0xdead));
+    pixelFormatChannelCount(PixelFormat::Depth16Unorm);
+    CORRADE_COMPARE(out.str(),
+        "pixelFormatChannelFormat(): can't determine channel format of an implementation-specific format 0xdead\n"
+        "pixelFormatChannelFormat(): can't determine channel format of PixelFormat::Depth16Unorm\n"
+        "pixelFormatChannelCount(): can't determine channel count of an implementation-specific format 0xdead\n"
+        "pixelFormatChannelCount(): can't determine channel count of PixelFormat::Depth16Unorm\n");
+}
+
+void PixelFormatTest::isSrgb() {
+    CORRADE_VERIFY(isPixelFormatSrgb(PixelFormat::RG8Srgb));
+    CORRADE_VERIFY(!isPixelFormatSrgb(PixelFormat::RGB16F));
+    CORRADE_VERIFY(!isPixelFormatSrgb(PixelFormat::Stencil8UI));
+}
+
+void PixelFormatTest::isSrgbInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    isPixelFormatSrgb(PixelFormat{});
+    isPixelFormatSrgb(PixelFormat(0xdead));
+    CORRADE_COMPARE(out.str(),
+        "isPixelFormatSrgb(): invalid format PixelFormat(0x0)\n"
+        "isPixelFormatSrgb(): invalid format PixelFormat(0xdead)\n");
+}
+
+void PixelFormatTest::isSrgbImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    isPixelFormatSrgb(pixelFormatWrap(0xdead));
+    CORRADE_COMPARE(out.str(),
+        "isPixelFormatSrgb(): can't determine colorspace of an implementation-specific format 0xdead\n");
+}
+
+void PixelFormatTest::isDepthOrStencil() {
+    CORRADE_VERIFY(!isPixelFormatDepthOrStencil(PixelFormat::RG8Srgb));
+    CORRADE_VERIFY(!isPixelFormatDepthOrStencil(PixelFormat::RGB16F));
+    CORRADE_VERIFY(isPixelFormatDepthOrStencil(PixelFormat::Stencil8UI));
+}
+
+void PixelFormatTest::isDepthOrStencilInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    isPixelFormatDepthOrStencil(PixelFormat{});
+    isPixelFormatDepthOrStencil(PixelFormat(0xdead));
+    CORRADE_COMPARE(out.str(),
+        "isPixelFormatDepthOrStencil(): invalid format PixelFormat(0x0)\n"
+        "isPixelFormatDepthOrStencil(): invalid format PixelFormat(0xdead)\n");
+}
+
+void PixelFormatTest::isDepthOrStencilImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    isPixelFormatDepthOrStencil(pixelFormatWrap(0xdead));
+    CORRADE_COMPARE(out.str(),
+        "isPixelFormatDepthOrStencil(): can't determine type of an implementation-specific format 0xdead\n");
 }
 
 void PixelFormatTest::compressedBlockSize() {
