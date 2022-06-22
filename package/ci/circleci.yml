@@ -5,9 +5,11 @@ orbs:
 
 executors:
   ubuntu-18_04:
+    resource_class: small
     docker:
     - image: ubuntu:bionic-20220427
   xcode-11_5:
+    resource_class: medium # there isn't smaller
     # Molten-vk isn't in (non-updated) Homebrew on the 9.4 or 10.0/1/2 image,
     # have to use 10.3 instead; since 2021-06-08 it refuses to work on 10.14 so
     # have to use 11.2 at least; since 2022-01-20 the oldest 11 image is 11.4.
@@ -16,9 +18,11 @@ executors:
     macos:
       xcode: 11.5
   xcode-11_6:
+    resource_class: medium # there isn't smaller
     macos:
       xcode: 11.6.0
   emscripten1:
+    resource_class: small
     docker:
     # 1.39.0 is the oldest on Docker. Anything before 1.39.2 is useless as emar
     # randomly asserts: https://github.com/emscripten-core/emscripten/pull/9742
@@ -28,6 +32,7 @@ executors:
     # https://github.com/emscripten-core/emscripten/pull/10161
     - image: emscripten/emsdk:1.39.6-upstream
   emscripten2:
+    resource_class: small
     docker:
     # Used by the webgl2 job. 2.0.17 is the first version that exposes
     # glGetBufferSubData() so GLES3 tests can read buffer data without having
@@ -37,9 +42,11 @@ executors:
     # mysteriously disappears. See https://github.com/mosra/magnum/issues/507.
     - image: emscripten/emsdk:2.0.25
   android-29:
+    resource_class: medium # there isn't smaller
     machine:
       image: android:202102-01
   arm64:
+    resource_class: medium # there isn't smaller
     machine:
       image: ubuntu-2004:202101-01
     resource_class: arm.medium
