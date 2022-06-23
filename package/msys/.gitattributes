@@ -1,2 +1,2 @@
-magnum/PKGBUILD text eof=lf
-PKGBUILD text eof=lf
+magnum/PKGBUILD text eol=lf
+PKGBUILD text eol=lf
