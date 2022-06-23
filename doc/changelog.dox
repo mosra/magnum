@@ -644,6 +644,8 @@ See also:
     config-specific `CMAKE_*_OUTPUT_DIRECTORY_<CONFIG>` variables. See
     [mosra/magnum#486](https://github.com/mosra/magnum/issues/486) and
     [mosra/magnum#570](https://github.com/mosra/magnum/pull/570).
+-   Fixed wrong `.gitattributes` option for LF line endings in MSYS PKGBUILDs
+    (see [mosra/magnum#574](https://github.com/mosra/magnum/issues/574))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
