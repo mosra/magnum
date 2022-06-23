@@ -43,133 +43,132 @@
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
-class MaterialDataTest: public TestSuite::Tester {
-    public:
-        explicit MaterialDataTest();
+struct MaterialDataTest: TestSuite::Tester {
+    explicit MaterialDataTest();
 
-        void textureSwizzleComponentCount();
-        void attributeTypeSize();
-        void attributeTypeSizeInvalid();
+    void textureSwizzleComponentCount();
+    void attributeTypeSize();
+    void attributeTypeSizeInvalid();
 
-        void attributeMap();
-        void layerMap();
+    void attributeMap();
+    void layerMap();
 
-        void constructAttributeDefault();
-        void constructAttributeString();
-        void constructAttributeName();
-        void constructAttributeTypeErasedString();
-        void constructAttributeTypeErasedName();
+    void constructAttributeDefault();
+    void constructAttributeString();
+    void constructAttributeName();
+    void constructAttributeTypeErasedString();
+    void constructAttributeTypeErasedName();
 
-        template<class T> void constructAttributeStringConstexpr();
+    template<class T> void constructAttributeStringConstexpr();
 
-        void constructAttributePointer();
-        void constructAttributeMutablePointer();
-        void constructAttributeStringNameStringValue();
-        void constructAttributeNameStringValue();
-        void constructAttributeTextureSwizzle();
-        void constructAttributeLayer();
+    void constructAttributePointer();
+    void constructAttributeMutablePointer();
+    void constructAttributeStringNameStringValue();
+    void constructAttributeNameStringValue();
+    void constructAttributeTextureSwizzle();
+    void constructAttributeLayer();
 
-        void constructAttributeInvalidName();
-        void constructAttributeInvalidLayerName();
-        void constructAttributeWrongTypeForName();
-        void constructAttributeInvalidType();
-        void constructAttributeEmptyName();
-        void constructAttributeEmptyNameString();
-        void constructAttributeTooLarge();
-        void constructAttributeTooLargeString();
-        void constructAttributeTooLargeNameString();
-        void constructAttributeWrongAccessType();
-        void constructAttributeWrongAccessPointerType();
-        void constructAttributeWrongAccessTypeString();
+    void constructAttributeInvalidName();
+    void constructAttributeInvalidLayerName();
+    void constructAttributeWrongTypeForName();
+    void constructAttributeInvalidType();
+    void constructAttributeEmptyName();
+    void constructAttributeEmptyNameString();
+    void constructAttributeTooLarge();
+    void constructAttributeTooLargeString();
+    void constructAttributeTooLargeNameString();
+    void constructAttributeWrongAccessType();
+    void constructAttributeWrongAccessPointerType();
+    void constructAttributeWrongAccessTypeString();
 
-        void construct();
-        void constructEmptyAttribute();
-        void constructDuplicateAttribute();
-        void constructFromImmutableSortedArray();
+    void construct();
+    void constructEmptyAttribute();
+    void constructDuplicateAttribute();
+    void constructFromImmutableSortedArray();
 
-        void constructLayers();
-        void constructLayersNotMonotonic();
-        void constructLayersOffsetOutOfBounds();
+    void constructLayers();
+    void constructLayersNotMonotonic();
+    void constructLayersOffsetOutOfBounds();
 
-        void constructNonOwned();
-        void constructNonOwnedLayers();
-        void constructNonOwnedEmptyAttribute();
-        void constructNonOwnedNotSorted();
-        void constructNonOwnedDuplicateAttribute();
-        void constructNonOwnedLayersNotMonotonic();
-        void constructNonOwnedLayersOffsetOutOfBounds();
-        void constructNonOwnedAttributeFlagOwned();
-        void constructNonOwnedLayerFlagOwned();
+    void constructNonOwned();
+    void constructNonOwnedLayers();
+    void constructNonOwnedEmptyAttribute();
+    void constructNonOwnedNotSorted();
+    void constructNonOwnedDuplicateAttribute();
+    void constructNonOwnedLayersNotMonotonic();
+    void constructNonOwnedLayersOffsetOutOfBounds();
+    void constructNonOwnedAttributeFlagOwned();
+    void constructNonOwnedLayerFlagOwned();
 
-        void constructCopy();
-        void constructMove();
+    void constructCopy();
+    void constructMove();
 
-        void as();
-        void asRvalue();
+    void as();
+    void asRvalue();
 
-        void access();
-        void accessPointer();
-        void accessString();
-        void accessTextureSwizzle();
-        void accessMutable();
-        void accessOptional();
-        void accessOutOfBounds();
-        void accessNotFound();
-        void accessInvalidAttributeName();
-        void accessWrongType();
-        void accessWrongPointerType();
-        void accessWrongTypeString();
+    void access();
+    void accessPointer();
+    void accessString();
+    void accessTextureSwizzle();
+    void accessMutable();
+    void accessOptional();
+    void accessOutOfBounds();
+    void accessNotFound();
+    void accessInvalidAttributeName();
+    void accessWrongType();
+    void accessWrongPointerType();
+    void accessWrongTypeString();
 
-        void accessLayers();
-        void accessLayersDefaults();
-        void accessLayersTextured();
-        void accessLayersTexturedDefault();
-        void accessLayersTexturedSingleMatrixCoordinatesLayer();
-        void accessLayersTexturedBaseMaterialMatrixCoordinatesLayer();
-        void accessLayersInvalidTextures();
+    void accessLayers();
+    void accessLayersDefaults();
+    void accessLayersTextured();
+    void accessLayersTexturedDefault();
+    void accessLayersTexturedSingleMatrixCoordinatesLayer();
+    void accessLayersTexturedBaseMaterialMatrixCoordinatesLayer();
+    void accessLayersInvalidTextures();
 
-        void accessLayerLayerNameInBaseMaterial();
-        void accessLayerEmptyLayer();
-        void accessLayerIndexMutable();
-        void accessLayerNameMutable();
-        void accessLayerStringMutable();
-        void accessLayerIndexOptional();
-        void accessLayerNameOptional();
-        void accessLayerStringOptional();
-        void accessLayerOutOfBounds();
-        void accessLayerNotFound();
-        void accessInvalidLayerName();
-        void accessOutOfBoundsInLayerIndex();
-        void accessOutOfBoundsInLayerString();
-        void accessNotFoundInLayerIndex();
-        void accessNotFoundInLayerString();
-        void accessMutableNotAllowed();
+    void accessLayerLayerNameInBaseMaterial();
+    void accessLayerEmptyLayer();
+    void accessLayerIndexMutable();
+    void accessLayerNameMutable();
+    void accessLayerStringMutable();
+    void accessLayerIndexOptional();
+    void accessLayerNameOptional();
+    void accessLayerStringOptional();
+    void accessLayerOutOfBounds();
+    void accessLayerNotFound();
+    void accessInvalidLayerName();
+    void accessOutOfBoundsInLayerIndex();
+    void accessOutOfBoundsInLayerString();
+    void accessNotFoundInLayerIndex();
+    void accessNotFoundInLayerString();
+    void accessMutableNotAllowed();
 
-        void releaseAttributes();
-        void releaseLayers();
+    void releaseAttributes();
+    void releaseLayers();
 
-        void templateLayerAccess();
-        void templateLayerAccessMutable();
+    void templateLayerAccess();
+    void templateLayerAccessMutable();
 
-        void debugLayer();
-        /* No packed version, as layer name is stored as a string */
-        void debugAttribute();
-        /* No packed version, as attribute name is stored as a string */
-        void debugTextureSwizzle();
-        void debugTextureSwizzlePacked();
-        void debugAttributeType();
-        void debugAttributeTypePacked();
+    void debugLayer();
+    /* No packed version, as layer name is stored as a string */
+    void debugAttribute();
+    /* No packed version, as attribute name is stored as a string */
+    void debugTextureSwizzle();
+    void debugTextureSwizzlePacked();
+    void debugAttributeType();
+    void debugAttributeTypePacked();
 
-        void debugType();
-        void debugTypePacked();
-        void debugTypes();
-        void debugTypesPacked();
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        void debugFlag();
-        void debugFlags();
-        #endif
-        void debugAlphaMode();
-        void debugAlphaModePacked();
+    void debugType();
+    void debugTypePacked();
+    void debugTypes();
+    void debugTypesPacked();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void debugFlag();
+    void debugFlags();
+    #endif
+    void debugAlphaMode();
+    void debugAlphaModePacked();
 };
 
 MaterialDataTest::MaterialDataTest() {

@@ -34,24 +34,23 @@
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
-class ObjectData2DTest: public TestSuite::Tester {
-    public:
-        explicit ObjectData2DTest();
+struct ObjectData2DTest: TestSuite::Tester {
+    explicit ObjectData2DTest();
 
-        void constructEmpty();
-        void constructEmptyTransformations();
-        void constructMesh();
-        void constructMeshTransformations();
-        void constructCamera();
-        void constructCopy();
-        void constructMoveTransformations();
-        void constructMoveMesh();
+    void constructEmpty();
+    void constructEmptyTransformations();
+    void constructMesh();
+    void constructMeshTransformations();
+    void constructCamera();
+    void constructCopy();
+    void constructMoveTransformations();
+    void constructMoveMesh();
 
-        void accessInvalidTransformations();
+    void accessInvalidTransformations();
 
-        void debugType();
-        void debugFlag();
-        void debugFlags();
+    void debugType();
+    void debugFlag();
+    void debugFlags();
 };
 
 CORRADE_IGNORE_DEPRECATED_PUSH

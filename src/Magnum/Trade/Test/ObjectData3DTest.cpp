@@ -34,25 +34,24 @@
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
-class ObjectData3DTest: public TestSuite::Tester {
-    public:
-        explicit ObjectData3DTest();
+struct ObjectData3DTest: TestSuite::Tester {
+    explicit ObjectData3DTest();
 
-        void constructEmpty();
-        void constructEmptyTransformations();
-        void constructMesh();
-        void constructMeshTransformations();
-        void constructCamera();
-        void constructLight();
-        void constructCopy();
-        void constructMoveTransformations();
-        void constructMoveMesh();
+    void constructEmpty();
+    void constructEmptyTransformations();
+    void constructMesh();
+    void constructMeshTransformations();
+    void constructCamera();
+    void constructLight();
+    void constructCopy();
+    void constructMoveTransformations();
+    void constructMoveMesh();
 
-        void accessInvalidTransformations();
+    void accessInvalidTransformations();
 
-        void debugType();
-        void debugFlag();
-        void debugFlags();
+    void debugType();
+    void debugFlag();
+    void debugFlags();
 };
 
 ObjectData3DTest::ObjectData3DTest() {

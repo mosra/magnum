@@ -32,23 +32,22 @@
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
-class PbrClearCoatMaterialDataTest: public TestSuite::Tester {
-    public:
-        explicit PbrClearCoatMaterialDataTest();
+struct PbrClearCoatMaterialDataTest: TestSuite::Tester {
+    explicit PbrClearCoatMaterialDataTest();
 
-        void basics();
-        void defaults();
-        void textured();
-        void texturedDefaults();
-        void texturedExplicitPackedLayerFactorRoughness();
-        void texturedSingleMatrixCoordinatesLayer();
-        void texturedBaseMaterialMatrixCoordinatesLayer();
-        void invalidTextures();
-        void commonTransformationCoordinatesLayerNoTextures();
-        void commonTransformationCoordinatesLayerOneTexture();
-        void commonTransformationCoordinatesLayerOneDifferentTexture();
-        void commonCoordinatesLayerImplicit();
-        void noCommonTransformationCoordinatesLayer();
+    void basics();
+    void defaults();
+    void textured();
+    void texturedDefaults();
+    void texturedExplicitPackedLayerFactorRoughness();
+    void texturedSingleMatrixCoordinatesLayer();
+    void texturedBaseMaterialMatrixCoordinatesLayer();
+    void invalidTextures();
+    void commonTransformationCoordinatesLayerNoTextures();
+    void commonTransformationCoordinatesLayerOneTexture();
+    void commonTransformationCoordinatesLayerOneDifferentTexture();
+    void commonCoordinatesLayerImplicit();
+    void noCommonTransformationCoordinatesLayer();
 };
 
 const Containers::StringView PbrClearCoatTextureData[] {

@@ -34,23 +34,22 @@
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
-class PbrSpecularGlossinessMaterialDataTest: public TestSuite::Tester {
-    public:
-        explicit PbrSpecularGlossinessMaterialDataTest();
+struct PbrSpecularGlossinessMaterialDataTest: TestSuite::Tester {
+    explicit PbrSpecularGlossinessMaterialDataTest();
 
-        void basics();
-        void defaults();
-        void textured();
-        void texturedDefaults();
-        void texturedImplicitPackedSpecularGlossiness();
-        void texturedExplicitPackedSpecularGlossiness();
-        void texturedSingleMatrixCoordinatesLayer();
-        void invalidTextures();
-        void commonTransformationCoordinatesLayerNoTextures();
-        void commonTransformationCoordinatesLayerOneTexture();
-        void commonTransformationCoordinatesLayerOneDifferentTexture();
-        void commonCoordinatesLayerImplicit();
-        void noCommonTransformationCoordinatesLayer();
+    void basics();
+    void defaults();
+    void textured();
+    void texturedDefaults();
+    void texturedImplicitPackedSpecularGlossiness();
+    void texturedExplicitPackedSpecularGlossiness();
+    void texturedSingleMatrixCoordinatesLayer();
+    void invalidTextures();
+    void commonTransformationCoordinatesLayerNoTextures();
+    void commonTransformationCoordinatesLayerOneTexture();
+    void commonTransformationCoordinatesLayerOneDifferentTexture();
+    void commonCoordinatesLayerImplicit();
+    void noCommonTransformationCoordinatesLayer();
 };
 
 const Containers::StringView PbrSpecularGlossinessTextureData[] {

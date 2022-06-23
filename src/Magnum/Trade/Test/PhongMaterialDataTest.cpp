@@ -34,37 +34,36 @@
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
-class PhongMaterialDataTest: public TestSuite::Tester {
-    public:
-        explicit PhongMaterialDataTest();
+struct PhongMaterialDataTest: TestSuite::Tester {
+    explicit PhongMaterialDataTest();
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        void constructDeprecated();
-        void constructDeprecatedTextured();
-        void constructDeprecatedTexturedTextureTransform();
-        void constructDeprecatedTexturedCoordinates();
-        void constructDeprecatedTextureTransformNoTextures();
-        void constructDeprecatedNoTextureTransformationFlag();
-        void constructDeprecatedNoTextureCoordinatesFlag();
-        #endif
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructDeprecated();
+    void constructDeprecatedTextured();
+    void constructDeprecatedTexturedTextureTransform();
+    void constructDeprecatedTexturedCoordinates();
+    void constructDeprecatedTextureTransformNoTextures();
+    void constructDeprecatedNoTextureTransformationFlag();
+    void constructDeprecatedNoTextureCoordinatesFlag();
+    #endif
 
-        void basics();
-        void defaults();
-        void textured();
-        void texturedDefaults();
-        void texturedSingleMatrixCoordinatesLayer();
-        void texturedImplicitPackedSpecularGlossiness();
-        void invalidTextures();
-        void commonTransformationCoordinatesLayerNoTextures();
-        void commonTransformationCoordinatesLayerOneTexture();
-        void commonTransformationCoordinatesLayerOneDifferentTexture();
-        void commonCoordinatesLayerImplicit();
-        void noCommonTransformationCoordinatesLayer();
+    void basics();
+    void defaults();
+    void textured();
+    void texturedDefaults();
+    void texturedSingleMatrixCoordinatesLayer();
+    void texturedImplicitPackedSpecularGlossiness();
+    void invalidTextures();
+    void commonTransformationCoordinatesLayerNoTextures();
+    void commonTransformationCoordinatesLayerOneTexture();
+    void commonTransformationCoordinatesLayerOneDifferentTexture();
+    void commonCoordinatesLayerImplicit();
+    void noCommonTransformationCoordinatesLayer();
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        void debugFlag();
-        void debugFlags();
-        #endif
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void debugFlag();
+    void debugFlags();
+    #endif
 };
 
 const Containers::StringView PhongTextureData[] {

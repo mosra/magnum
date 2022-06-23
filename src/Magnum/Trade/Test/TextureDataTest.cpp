@@ -31,16 +31,15 @@
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
-class TextureDataTest: public TestSuite::Tester {
-    public:
-        explicit TextureDataTest();
+struct TextureDataTest: TestSuite::Tester {
+    explicit TextureDataTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void debugType();
-        void debugTypePacked();
+    void debugType();
+    void debugTypePacked();
 };
 
 TextureDataTest::TextureDataTest() {

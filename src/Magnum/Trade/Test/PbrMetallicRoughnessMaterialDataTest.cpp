@@ -34,26 +34,25 @@
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
-class PbrMetallicRoughnessMaterialDataTest: public TestSuite::Tester {
-    public:
-        explicit PbrMetallicRoughnessMaterialDataTest();
+struct PbrMetallicRoughnessMaterialDataTest: TestSuite::Tester {
+    explicit PbrMetallicRoughnessMaterialDataTest();
 
-        void basics();
-        void defaults();
-        void textured();
-        void texturedDefaults();
-        void texturedImplicitPackedMetallicRoughness();
-        void texturedExplicitPackedMetallicRoughness();
-        void texturedExplicitPackedRoughnessMetallicOcclusion();
-        void texturedExplicitPackedOcclusionRoughnessMetallic();
-        void texturedExplicitPackedNormalRoughnessMetallic();
-        void texturedSingleMatrixCoordinatesLayer();
-        void invalidTextures();
-        void commonTransformationCoordinatesLayerNoTextures();
-        void commonTransformationCoordinatesLayerOneTexture();
-        void commonTransformationCoordinatesLayerOneDifferentTexture();
-        void commonCoordinatesLayerImplicit();
-        void noCommonTransformationCoordinatesLayer();
+    void basics();
+    void defaults();
+    void textured();
+    void texturedDefaults();
+    void texturedImplicitPackedMetallicRoughness();
+    void texturedExplicitPackedMetallicRoughness();
+    void texturedExplicitPackedRoughnessMetallicOcclusion();
+    void texturedExplicitPackedOcclusionRoughnessMetallic();
+    void texturedExplicitPackedNormalRoughnessMetallic();
+    void texturedSingleMatrixCoordinatesLayer();
+    void invalidTextures();
+    void commonTransformationCoordinatesLayerNoTextures();
+    void commonTransformationCoordinatesLayerOneTexture();
+    void commonTransformationCoordinatesLayerOneDifferentTexture();
+    void commonCoordinatesLayerImplicit();
+    void noCommonTransformationCoordinatesLayer();
 };
 
 const Containers::StringView PbrMetallicRoughnessTextureData[] {

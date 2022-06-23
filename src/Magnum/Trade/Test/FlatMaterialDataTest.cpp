@@ -33,21 +33,20 @@
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
-class FlatMaterialDataTest: public TestSuite::Tester {
-    public:
-        explicit FlatMaterialDataTest();
+struct FlatMaterialDataTest: TestSuite::Tester {
+    explicit FlatMaterialDataTest();
 
-        void baseColor();
-        void diffuseColor();
-        void defaults();
-        void texturedBaseColor();
-        void texturedDiffuseColor();
-        void texturedDefaults();
-        void texturedBaseColorSingleMatrixCoordinatesLayer();
-        void texturedDiffuseColorSingleMatrixCoordinatesLayer();
-        void texturedMismatchedMatrixCoordinatesLayer();
-        void texturedImplicitCoordinatesLayer();
-        void invalidTextures();
+    void baseColor();
+    void diffuseColor();
+    void defaults();
+    void texturedBaseColor();
+    void texturedDiffuseColor();
+    void texturedDefaults();
+    void texturedBaseColorSingleMatrixCoordinatesLayer();
+    void texturedDiffuseColorSingleMatrixCoordinatesLayer();
+    void texturedMismatchedMatrixCoordinatesLayer();
+    void texturedImplicitCoordinatesLayer();
+    void invalidTextures();
 };
 
 FlatMaterialDataTest::FlatMaterialDataTest() {
