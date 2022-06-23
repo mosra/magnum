@@ -84,9 +84,10 @@ commands:
     parameters:
       count:
         type: integer
-        # It reports 36 cores and ninja goes with 38 currently, RAM fluctuates
-        # from 3 to 70 GB.
-        default: 24
+        # It reports 36 cores and ninja goes with 38 currently, RAM on the
+        # small resource class is 2 GB. Even 20 jobs is too much.
+        # TODO: revert back to 24 if we go back to medium resource class
+        default: 10
     steps:
     - run:
         name: Query CPU cores, default Ninja parallelism and available RAM, cap jobs
@@ -282,11 +283,7 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
-    # In this case it gets stuck even with 24 jobs. Only on GCC, usually when
-    # the huge TradeAbstractImporterTest / TradeMaterialDataTest get involved.
-    # TODO: revisit when we get rid of more STL
-    - cap-ninja-jobs:
-        count: 20
+    - cap-ninja-jobs
     - install-gcc-4_8
     - install-cmake:
         version: "3.4.3"
@@ -320,11 +317,9 @@ jobs:
     steps:
     - install-base-linux:
         extra: cmake libsdl2-dev libglfw3-dev libvulkan-dev wget unzip
-    # It crashes with the default setting. Only on GCC, usually when the huge
-    # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
-    # get involved.
-    # TODO: revisit when we get rid of more STL
-    - cap-ninja-jobs
+    # 10 still causes a crash/timeout
+    - cap-ninja-jobs:
+        count: 8
     - install-gcc-4_8
     - install-swiftshader-vulkan:
         build: ubuntu-18.04
@@ -344,11 +339,9 @@ jobs:
     steps:
     - install-base-linux:
         extra: libsdl2-dev libglfw3-dev wget unzip
-    # It crashes with the default setting. Only on GCC, usually when the huge
-    # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
-    # get involved.
-    # TODO: revisit when we get rid of more STL
-    - cap-ninja-jobs
+    # 10 still causes a crash/timeout
+    - cap-ninja-jobs:
+        count: 8
     - install-gcc-4_8
     - install-cmake:
         version: "3.4.3"
@@ -370,11 +363,9 @@ jobs:
     steps:
     - install-base-linux:
         extra: libsdl2-dev libglfw3-dev wget unzip
-    # It crashes with the default setting. Only on GCC, usually when the huge
-    # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
-    # get involved.
-    # TODO: revisit when we get rid of more STL
-    - cap-ninja-jobs
+    # 10 still causes a crash/timeout
+    - cap-ninja-jobs:
+        count: 8
     - install-gcc-4_8
     - install-cmake:
         version: "3.4.3"
@@ -397,10 +388,7 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
-    # 24 is not enough, unlike the other GCC-based builds
-    # TODO: revisit when we get rid of more STL
-    - cap-ninja-jobs:
-        count: 20
+    - cap-ninja-jobs
     - install-gcc-4_8
     - install-cmake:
         version: "3.4.3"
@@ -420,10 +408,6 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
-    # It crashes with the default setting. Only on GCC, usually when the huge
-    # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
-    # get involved.
-    # TODO: revisit when we get rid of more STL
     - cap-ninja-jobs
     - install-gcc-4_8
     - install-cmake:
@@ -445,6 +429,9 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libopenal-dev libvulkan-dev
+    # Clang used to not need that much RAM on the medium resource class so the
+    # default was fine, but on the small class it's too much.
+    - cap-ninja-jobs
     - install-clang
     - install-cmake:
         version: "3.4.3"
@@ -465,6 +452,9 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libopenal-dev libvulkan-dev
+    # Clang used to not need that much RAM on the medium resource class so the
+    # default was fine, but on the small class it's too much.
+    - cap-ninja-jobs
     - install-clang
     - install-cmake:
         version: "3.4.3"
@@ -542,7 +532,9 @@ jobs:
       TARGET_GLES2: "ON"
     steps:
     - install-base-linux
-    - cap-ninja-jobs
+    # 10 still causes a crash/timeout
+    - cap-ninja-jobs:
+        count: 8
     - build:
         script: emscripten.sh
 
@@ -553,7 +545,9 @@ jobs:
       TARGET_GLES2: "OFF"
     steps:
     - install-base-linux
-    - cap-ninja-jobs
+    # 10 still causes a crash/timeout
+    - cap-ninja-jobs:
+        count: 8
     - build:
         script: emscripten.sh
 
