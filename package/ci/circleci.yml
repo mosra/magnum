@@ -46,10 +46,9 @@ executors:
     machine:
       image: android:202102-01
   arm64:
-    resource_class: medium # there isn't smaller
+    resource_class: arm.medium # there isn't smaller
     machine:
       image: ubuntu-2004:202101-01
-    resource_class: arm.medium
 
 commands:
   install-base-linux:
