@@ -31,6 +31,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
@@ -51,6 +52,8 @@ struct TgaImageConverterTest: TestSuite::Tester {
     void rgb();
     void rgba();
 
+    void unsupportedMetadata();
+
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImageConverter> _converterManager{"nonexistent"};
     PluginManager::Manager<AbstractImporter> _importerManager{"nonexistent"};
@@ -68,6 +71,15 @@ constexpr struct {
         "Trade::TgaImageConverter::convertToData(): converting from RGBA to BGRA\n"}
 };
 
+const struct {
+    const char* name;
+    ImageFlags2D flags;
+    const char* message;
+} UnsupportedMetadataData[]{
+    {"1D array", ImageFlag2D::Array,
+        "1D array images are unrepresentable in TGA, saving as a regular 2D image"}
+};
+
 TgaImageConverterTest::TgaImageConverterTest() {
     addTests({&TgaImageConverterTest::wrongFormat});
 
@@ -75,6 +87,9 @@ TgaImageConverterTest::TgaImageConverterTest() {
         &TgaImageConverterTest::rgb,
         &TgaImageConverterTest::rgba},
         Containers::arraySize(VerboseData));
+
+    addInstancedTests({&TgaImageConverterTest::unsupportedMetadata},
+        Containers::arraySize(UnsupportedMetadataData));
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -182,6 +197,21 @@ void TgaImageConverterTest::rgba() {
     CORRADE_COMPARE_AS(converted->data(), Containers::arrayView(OriginalDataRGBA),
         TestSuite::Compare::Container);
     CORRADE_COMPARE(out.str(), data.message32);
+}
+
+void TgaImageConverterTest::unsupportedMetadata() {
+    auto&& data = UnsupportedMetadataData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+
+    const char imageData[4]{};
+    ImageView2D image{PixelFormat::RGBA8Unorm, {1, 1}, imageData, data.flags};
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter->convertToData(image));
+    CORRADE_COMPARE(out.str(), Utility::formatString("Trade::TgaImageConverter::convertToData(): {}\n", data.message));
 }
 
 }}}}

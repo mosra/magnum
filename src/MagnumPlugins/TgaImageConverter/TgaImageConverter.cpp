@@ -47,6 +47,11 @@ TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, co
 ImageConverterFeatures TgaImageConverter::doFeatures() const { return ImageConverterFeature::Convert2DToData; }
 
 Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData(const ImageView2D& image) {
+    /* Warn about lost metadata */
+    if(image.flags() & ImageFlag2D::Array) {
+        Warning{} << "Trade::TgaImageConverter::convertToData(): 1D array images are unrepresentable in TGA, saving as a regular 2D image";
+    }
+
     /* Initialize data buffer */
     const auto pixelSize = UnsignedByte(image.pixelSize());
     Containers::Array<char> data{ValueInit, sizeof(Implementation::TgaHeader) + pixelSize*image.size().product()};

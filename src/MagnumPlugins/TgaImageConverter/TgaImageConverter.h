@@ -93,6 +93,10 @@ information.
 
 The output is always uncompressed. If you want to make use of RLE compression
 and have the files smaller, use the @ref StbImageConverter plugin instead.
+
+The TGA file format doesn't have a way to distinguish between 2D and 1D array
+images. If an image has @ref ImageFlag2D::Array set, a warning is printed and
+the file is saved as a regular 2D image.
 */
 class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:
