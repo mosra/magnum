@@ -556,9 +556,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
-         * @ref imageSize(). The storage is not reallocated if it is large
-         * enough to contain the new data --- however if you want to read into
-         * existing memory or *ensure* a reallocation does not happen, use
+         * @ref imageSize(). Flags of @p image get reset to
+         * @ref ImageFlag3D::CubeMap. The storage is not reallocated if it is
+         * large enough to contain the new data --- however if you want to read
+         * into existing memory or *ensure* a reallocation does not happen, use
          * @ref image(Int, const MutableImageView3D&) instead.
          *
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
@@ -595,6 +596,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * Compared to @ref image(Int, Image3D&) the function reads the pixels
          * into the memory provided by @p image, expecting it's not
          * @cpp nullptr @ce and its size is the same as size of given @p level.
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to read a cube map texture to an image marked as 2D array.
          */
         void image(Int level, const MutableImageView3D& image);
 
@@ -623,10 +626,11 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief Read given mip level of a compressed texture to an image
          *
          * Compression format and data size are taken from the texture, image
-         * size is taken using @ref imageSize(). The storage is not reallocated
-         * if it is large enough to contain the new data --- however if you
-         * want to read into existing memory or *ensure* a reallocation does
-         * not happen, use @ref compressedImage(Int, const MutableCompressedImageView3D&)
+         * size is taken using @ref imageSize(). Flags of @p image get reset to
+         * @ref ImageFlag3D::CubeMap. The storage is not reallocated if it is
+         * large enough to contain the new data --- however if you want to read
+         * into existing memory or *ensure* a reallocation does not happen, use
+         * @ref compressedImage(Int, const MutableCompressedImageView3D&)
          * instead.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter} with
          *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE},
@@ -657,6 +661,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * function reads the pixels into the memory provided by @p image,
          * expecting it's not @cpp nullptr @ce, its format is the same as
          * texture format and its size is the same as size of given @p level.
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to read a cube map texture to an image marked as 2D array.
          */
         void compressedImage(Int level, const MutableCompressedImageView3D& image);
 
@@ -688,10 +694,12 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
-         * @ref imageSize(). The storage is not reallocated if it is large
-         * enough to contain the new data --- however if you want to read into
-         * existing memory or *ensure* a reallocation does not happen, use
-         * @ref image(CubeMapCoordinate, Int, const MutableImageView2D&)
+         * @ref imageSize(). Flags of @p image get cleared --- use
+         * @ref image(Int, Image3D&) instead if you want to get an image
+         * annotated with @ref ImageFlag3D::CubeMap. The storage is not
+         * reallocated if it is large enough to contain the new data ---
+         * however if you want to read into existing memory or *ensure* a
+         * reallocation does not happen, use @ref image(CubeMapCoordinate, Int, const MutableImageView2D&)
          * instead.
          *
          * If @gl_extension{ARB,get_texture_sub_image} (part of OpenGL 4.5) is
@@ -727,7 +735,9 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * Compared to @ref image(CubeMapCoordinate, Int, Image2D&) the
          * function reads the pixels into the memory provided by @p image,
          * expecting it's not @cpp nullptr @ce and its size is the same as size
-         * of given @p level.
+         * of given @p level. Any set of @ref ImageFlags is allowed in @p image
+         * --- e.g., it's possible to read a cube map texture face to an image
+         * marked as 1D array.
          */
         void image(CubeMapCoordinate coordinate, Int level, const MutableImageView2D& image);
 
@@ -755,10 +765,13 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief Read given compressed texture mip level and coordinate to an image
          *
          * Compression format and data size are taken from the texture, image
-         * size is taken using @ref imageSize(). The storage is not reallocated
-         * if it is large enough to contain the new data --- however if you
-         * want to read into existing memory or *ensure* a reallocation does
-         * not happen, use @ref compressedImage(CubeMapCoordinate, Int, const MutableCompressedImageView2D&)
+         * size is taken using @ref imageSize(). Flags of @p image get cleared
+         * --- use @ref compressedImage(Int, CompressedImage3D&) instead if you
+         * want to get an image annotated with @ref ImageFlag3D::CubeMap. The
+         * storage is not reallocated if it is large enough to contain the new
+         * data --- however if you want to read into existing memory or
+         * *ensure* a reallocation does not happen, use
+         * @ref compressedImage(CubeMapCoordinate, Int, const MutableCompressedImageView2D&)
          * instead.
          *
          * If @gl_extension{ARB,get_texture_sub_image} (part of OpenGL 4.5) is
@@ -798,6 +811,9 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * the function reads the pixels into the memory provided by @p image,
          * expecting it's not @cpp nullptr @ce, its format is the same as
          * texture format and its size is the same as size of given @p level.
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to read a cube map texture face to an image marked as 1D
+         * array.
          */
         void compressedImage(CubeMapCoordinate coordinate, Int level, const MutableCompressedImageView2D& image);
 
@@ -827,15 +843,22 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         /**
          * @brief Read a range of given texture mip level to an image
          *
-         * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
-         * for more information.
+         * Behavior mostly equivalent to
+         * @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&), see its
+         * documentation for more information. In this case however,
+         * @ref ImageFlags of @p image get set to @ref ImageFlag3D::Array (as
+         * opposed to @ref ImageFlag3D::CubeMap when using
+         * @ref image(Int, Image3D&)).
          * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
          */
         void subImage(Int level, const Range3Di& range, Image3D& image) {
-            AbstractTexture::subImage<3>(level, range, image);
+            /* Would be CubeMap if the whole image was queried, but then we'd
+               have to query the size and compare, which is extra work. So it's
+               Array instead. */
+            AbstractTexture::subImage<3>(level, range, image, ImageFlag3D::Array);
         }
 
         /** @overload
@@ -853,7 +876,9 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * Compared to @ref subImage(Int, const Range3Di&, Image3D&) the
          * function reads the pixels into the memory provided by @p image,
          * expecting it's not @cpp nullptr @ce and its size is the same as
-         * @p range size.
+         * @p range size. Any set of @ref ImageFlags is allowed in @p image ---
+         * e.g., it's possible to read a cube map texture to an image marked as
+         * 2D array.
          */
         void subImage(Int level, const Range3Di& range, const MutableImageView3D& image) {
             AbstractTexture::subImage<3>(level, range, image);
@@ -884,8 +909,12 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         /**
          * @brief Read a range of given compressed texture mip level to an image
          *
-         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
-         * for more information.
+         * Behavior mostly equivalent to
+         * @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&), see its
+         * documentation for more information. In this case however,
+         * @ref ImageFlags of @p image get set to @ref ImageFlag3D::Array (as
+         * opposed to @ref ImageFlag3D::CubeMap when using
+         * @ref compressedImage(Int, CompressedImage3D&)).
          * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
@@ -914,7 +943,9 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * Compared to @ref compressedSubImage(Int, const Range3Di&, CompressedImage3D&)
          * the function reads the pixels into the memory provided by @p image,
          * expecting it's not @cpp nullptr @ce, its format is the same as
-         * texture format and its size is the same as @p range size.
+         * texture format and its size is the same as @p range size. Any set of
+         * @ref ImageFlags is allowed in @p image --- e.g., it's possible to
+         * read a cube map texture to an image marked as 2D array.
          */
         void compressedSubImage(Int level, const Range3Di& range, const MutableCompressedImageView3D& image);
 
@@ -949,7 +980,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief @copybrief Texture::setImage()
          * @return Reference to self (for method chaining)
          *
-         * See @ref Texture::setImage() for more information.
+         * Behavior equivalent to @ref Texture::setImage(), see its
+         * documentation for more information. Any set of @ref ImageFlags is
+         * allowed in @p image --- e.g., it's possible to upload an image
+         * marked as 1D array to a cube map face.
          * @see @ref maxSize()
          * @requires_gles30 Extension @gl_extension{EXT,unpack_subimage}/
          *      @gl_extension{NV,pack_subimage} in OpenGL ES 2.0 if
@@ -995,7 +1029,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief @copybrief Texture::setCompressedImage()
          * @return Reference to self (for method chaining)
          *
-         * See @ref Texture::setCompressedImage() for more information.
+         * Behavior equivalent to @ref Texture::setCompressedImage(), see its
+         * documentation for more information. Any set of @ref ImageFlags is
+         * allowed in @p image --- e.g., it's possible to upload an image
+         * marked as 1D array to a cube map face.
          * @see @ref maxSize()
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
@@ -1055,6 +1092,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
          * not available, the texture is bound before the operation (if not
          * already) and the image is uploaded slice by slice.
+         *
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to upload an image not marked as an array to an array
+         * texture.
          * @see @ref setStorage(), @fn_gl2{TextureSubImage3D,TexSubImage3D},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexSubImage2D}
@@ -1095,6 +1136,9 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *      or compressed @ref Trade::ImageData3D
          * @return Reference to self (for method chaining)
          *
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to upload an image not marked as an array to an array
+         * texture.
          * @see @ref setStorage(), @fn_gl2{CompressedTextureSubImage3D,CompressedTexSubImage3D}
          * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
@@ -1129,7 +1173,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief @copybrief Texture::setSubImage()
          * @return Reference to self (for method chaining)
          *
-         * See @ref Texture::setSubImage() for more information.
+         * Behavior equivalent to @ref Texture::setSubImage(), see its
+         * documentation for more information. Any set of @ref ImageFlags is
+         * allowed in @p image --- e.g., it's possible to upload an image
+         * marked as 1D array to a cube map face.
          * @requires_gles30 Extension @gl_extension{EXT,unpack_subimage}/
          *      @gl_extension{NV,pack_subimage} in OpenGL ES 2.0 if
          *      @ref PixelStorage::rowLength() is set to a non-zero value.
@@ -1162,7 +1209,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief @copybrief Texture::setCompressedSubImage()
          * @return Reference to self (for method chaining)
          *
-         * See @ref Texture::setCompressedSubImage() for more information.
+         * Behavior equivalent to @ref Texture::setCompressedSubImage(), see
+         * its documentation for more information. Any set of @ref ImageFlags
+         * is allowed in @p image --- e.g., it's possible to upload an image
+         * marked as 1D array to a cube map face.
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not

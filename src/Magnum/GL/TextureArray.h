@@ -518,13 +518,15 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /**
          * @brief Read given texture mip level to an image
          *
-         * See @ref Texture::image(Int, Image&) for more information.
+         * Behavior mostly equivalent to @ref Texture::image(Int, Image&), see
+         * its documentation for more information. In this case however,
+         * @ref ImageFlags of @p image get set to @ref ImageFlag3D::Array "ImageFlag*D::Array".
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
          */
         void image(Int level, Image<dimensions+1>& image) {
-            AbstractTexture::image<dimensions+1>(level, image);
+            AbstractTexture::image<dimensions+1>(level, image, ImageFlag<dimensions+1>::Array);
         }
 
         /** @overload
@@ -542,6 +544,9 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * Compared to @ref image(Int, Image<dimensions+1>&) the function reads
          * the pixels into the memory provided by @p image, expecting it's not
          * @cpp nullptr @ce and its size is the same as size of given @p level.
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to read an array texture to an image not marked as an
+         * array.
          */
         void image(Int level, const BasicMutableImageView<dimensions+1>& image) {
             AbstractTexture::image<dimensions+1>(level, image);
@@ -571,8 +576,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /**
          * @brief Read given compressed texture mip level to an image
          *
-         * See @ref Texture::compressedImage(Int, CompressedImage&) for more
-         * information.
+         * Behavior mostly equivalent to
+         * @ref Texture::compressedImage(Int, CompressedImage&), see its
+         * documentation for more information. In this case however,
+         * @ref ImageFlags of @p image get set to @ref ImageFlag3D::Array "ImageFlag*D::Array".
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
@@ -580,7 +587,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      for possible workarounds.
          */
         void compressedImage(Int level, CompressedImage<dimensions+1>& image) {
-            AbstractTexture::compressedImage<dimensions+1>(level, image);
+            AbstractTexture::compressedImage<dimensions+1>(level, image, ImageFlag<dimensions+1>::Array);
         }
 
         /** @overload
@@ -599,6 +606,9 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * the function reads the pixels into the memory provided by @p image,
          * expecting it's not @cpp nullptr @ce, its format is the same as
          * texture format and its size is the same as size of given @p level.
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to read an array texture to an image not marked as an
+         * array.
          */
         void compressedImage(Int level, const BasicMutableCompressedImageView<dimensions+1>& image) {
             AbstractTexture::compressedImage<dimensions+1>(level, image);
@@ -630,15 +640,17 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /**
          * @brief Read a range of given texture mip level to an image
          *
-         * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
-         * for more information.
+         * Behavior mostly equivalent to
+         * @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&), see its
+         * documentation for more information. In this case however,
+         * @ref ImageFlags of @p image get set to @ref ImageFlag3D::Array "ImageFlag*D::Array".
          * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
          */
         void subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, Image<dimensions+1>& image) {
-            AbstractTexture::subImage<dimensions+1>(level, range, image);
+            AbstractTexture::subImage<dimensions+1>(level, range, image, ImageFlag<dimensions+1>::Array);
         }
 
         /** @overload
@@ -656,7 +668,9 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * Compared to @ref subImage(Int, const RangeTypeFor<dimensions+1, Int>&, Image<dimensions+1>&)
          * the function reads the pixels into the memory provided by @p image,
          * expecting it's not @cpp nullptr @ce and its size is the same as
-         * @p range size.
+         * @p range size. Any set of @ref ImageFlags is allowed in @p image ---
+         * e.g., it's possible to read an array texture to an image not marked
+         * as an array.
          */
         void subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, const BasicMutableImageView<dimensions+1>& image) {
             AbstractTexture::subImage<dimensions+1>(level, range, image);
@@ -687,8 +701,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /**
          * @brief Read a range of given compressed texture mip level to an image
          *
-         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
-         * for more information.
+         * Behavior mostly equivalent to
+         * @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&), see its
+         * documentation for more information. In this case however,
+         * @ref ImageFlags of @p image get set to @ref ImageFlag3D::Array "ImageFlag*D::Array".
          * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
@@ -701,7 +717,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      for possible workarounds.
          */
         void compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedImage<dimensions+1>& image) {
-            AbstractTexture::compressedSubImage<dimensions+1>(level, range, image);
+            AbstractTexture::compressedSubImage<dimensions+1>(level, range, image, ImageFlag<dimensions+1>::Array);
         }
 
         /** @overload
@@ -719,7 +735,9 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * Compared to @ref compressedSubImage(Int, const RangeTypeFor<dimensions+1, Int>&, CompressedImage<dimensions+1>&)
          * the function reads the pixels into the memory provided by @p image,
          * expecting it's not @cpp nullptr @ce, its format is the same as
-         * texture format and its size is the same as @p range size.
+         * texture format and its size is the same as @p range size. Any set of
+         * @ref ImageFlags is allowed in @p image --- e.g., it's possible to
+         * read an array texture to an image not marked as an array.
          */
         void compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, const BasicMutableCompressedImageView<dimensions+1>& image) {
             AbstractTexture::compressedSubImage<dimensions+1>(level, range, image);
@@ -758,7 +776,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @brief @copybrief Texture::setImage()
          * @return Reference to self (for method chaining)
          *
-         * See @ref Texture::setImage() for more information.
+         * Behavior equivalent to @ref Texture::setImage(), see its
+         * documentation for more information. Any set of @ref ImageFlags is
+         * allowed in @p image --- e.g., it's possible to upload an image not
+         * marked as an array to an array texture.
          * @see @ref maxSize()
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
@@ -789,7 +810,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @brief @copybrief Texture::setCompressedImage()
          * @return Reference to self (for method chaining)
          *
-         * See @ref Texture::setCompressedImage() for more information.
+         * Behavior equivalent to @ref Texture::setCompressedImage(), see its
+         * documentation for more information. Any set of @ref ImageFlags is
+         * allowed in @p image --- e.g., it's possible to upload an image not
+         * marked as an array to an array texture.
          * @see @ref maxSize()
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
@@ -839,6 +863,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
          * not available, the texture is bound before the operation (if not
          * already).
+         *
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to upload an image not marked as an array to an array
+         * texture.
          * @see @ref setStorage(), @fn_gl{PixelStore}, then
          *      @fn_gl2_keyword{TextureSubImage2D,TexSubImage2D}/
          *      @fn_gl2_keyword{TextureSubImage3D,TexSubImage3D},
@@ -872,6 +900,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
          * not available, the texture is bound before the operation (if not
          * already).
+         *
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to upload an image not marked as an array to an array
+         * texture.
          * @see @ref setStorage(), @fn_gl{PixelStore}, then
          *      @fn_gl2_keyword{CompressedTextureSubImage2D,CompressedTexSubImage2D}/
          *      @fn_gl2_keyword{CompressedTextureSubImage3D,CompressedTexSubImage3D},

@@ -766,9 +766,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
-         * @ref imageSize(). The storage is not reallocated if it is large
-         * enough to contain the new data --- however if you want to read into
-         * existing memory or *ensure* a reallocation does not happen, use
+         * @ref imageSize(). @ref ImageFlags of @p image get cleared. The
+         * storage is not reallocated if it is large enough to contain the new
+         * data --- however if you want to read into existing memory or
+         * *ensure* a reallocation does not happen, use
          * @ref image(Int, const BasicMutableImageView<dimensions>&) instead.
          *
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
@@ -788,7 +789,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      for possible workarounds.
          */
         void image(Int level, Image<dimensions>& image) {
-            AbstractTexture::image<dimensions>(level, image);
+            AbstractTexture::image<dimensions>(level, image, ImageFlags<dimensions>{});
         }
 
         /** @overload
@@ -806,6 +807,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * Compared to @ref image(Int, Image<dimensions>&) the function reads
          * the pixels into the memory provided by @p image, expecting it's not
          * @cpp nullptr @ce and its size is the same as size of given @p level.
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to read a 3D texture to an image marked as 2D array.
          */
         void image(Int level, const BasicMutableImageView<dimensions>& image) {
             AbstractTexture::image<dimensions>(level, image);
@@ -844,10 +847,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param image             Image where to put the compressed data
          *
          * Compression format and data size are taken from the texture, image
-         * size is taken using @ref imageSize(). The storage is not reallocated
-         * if it is large enough to contain the new data --- however if you
-         * want to read into existing memory or *ensure* a reallocation does
-         * not happen, use @ref compressedImage(Int, const BasicMutableCompressedImageView<dimensions>&)
+         * size is taken using @ref imageSize(). @ref ImageFlags of @p image
+         * get cleared. The storage is not reallocated if it is large enough to
+         * contain the new data --- however if you want to read into existing
+         * memory or *ensure* a reallocation does not happen, use
+         * @ref compressedImage(Int, const BasicMutableCompressedImageView<dimensions>&)
          * instead.
          *
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
@@ -871,7 +875,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      for possible workarounds.
          */
         void compressedImage(Int level, CompressedImage<dimensions>& image) {
-            AbstractTexture::compressedImage<dimensions>(level, image);
+            AbstractTexture::compressedImage<dimensions>(level, image, ImageFlags<dimensions>{});
         }
 
         /** @overload
@@ -890,6 +894,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * the function reads the pixels into the memory provided by @p image,
          * expecting it's not @cpp nullptr @ce, its format is the same as
          * texture format and its size is the same as size of given @p level.
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to read a 3D texture to an image marked as 2D array.
          */
         void compressedImage(Int level, const BasicMutableCompressedImageView<dimensions>& image) {
             AbstractTexture::compressedImage<dimensions>(level, image);
@@ -931,9 +937,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param image             Image where to put the data
          *
          * Image parameters like format and type of pixel data are taken from
-         * given image. The storage is not reallocated if it is large enough to
-         * contain the new data --- however if you want to read into existing
-         * memory or *ensure* a reallocation does not happen, use
+         * given image. @ref ImageFlags of @p image get cleared. The storage is
+         * not reallocated if it is large enough to contain the new data ---
+         * however if you want to read into existing memory or *ensure* a
+         * reallocation does not happen, use
          * @ref subImage(Int, const RangeTypeFor<dimensions, Int>&, const BasicMutableImageView<dimensions>&)
          * instead.
          *
@@ -944,7 +951,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image) {
-            AbstractTexture::subImage<dimensions>(level, range, image);
+            AbstractTexture::subImage<dimensions>(level, range, image, ImageFlags<dimensions>{});
         }
 
         /** @overload
@@ -962,7 +969,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * Compared to @ref subImage(Int, const RangeTypeFor<dimensions, Int>&, Image<dimensions>&)
          * the function reads the pixels into the memory provided by @p image,
          * expecting it's not @cpp nullptr @ce and its size is the same as
-         * @p range size.
+         * @p range size. Any set of @ref ImageFlags is allowed in @p image ---
+         * e.g., it's possible to read a 3D texture to an image marked as 2D
+         * array.
          */
         void subImage(Int level, const RangeTypeFor<dimensions, Int>& range, const BasicMutableImageView<dimensions>& image) {
             AbstractTexture::subImage<dimensions>(level, range, image);
@@ -1001,10 +1010,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param range             Range to read
          * @param image             Image where to put the compressed data
          *
-         * Compression format and data size are taken from the texture. The
-         * storage is not reallocated if it is large enough to contain the new
-         * data --- however if you want to read into existing memory or
-         * *ensure* a reallocation does not happen, use
+         * Compression format and data size are taken from the texture.
+         * @ref ImageFlags of @p image get cleared. The storage is not
+         * reallocated if it is large enough to contain the new data ---
+         * however if you want to read into existing memory or *ensure* a
+         * reallocation does not happen, use
          * @ref compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, const BasicMutableCompressedImageView<dimensions>&)
          * instead.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
@@ -1026,7 +1036,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      for possible workarounds.
          */
         void compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>& image) {
-            AbstractTexture::compressedSubImage<dimensions>(level, range, image);
+            AbstractTexture::compressedSubImage<dimensions>(level, range, image, ImageFlags<dimensions>{});
         }
 
         /** @overload
@@ -1044,7 +1054,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * Compared to @ref compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage<dimensions>&)
          * the function reads the pixels into the memory provided by @p image,
          * expecting it's not @cpp nullptr @ce, its format is the same as
-         * texture format and its size is the same as @p range size.
+         * texture format and its size is the same as @p range size. Any set of
+         * @ref ImageFlags is allowed in @p image --- e.g., it's possible to
+         * read a 3D texture to an image marked as 2D array.
          */
         void compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, const BasicMutableCompressedImageView<dimensions>& image) {
             AbstractTexture::compressedSubImage<dimensions>(level, range, image);
@@ -1097,7 +1109,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * equivalent in @gl_extension{ARB,direct_state_access}, thus the texture
          * needs to be bound to some texture unit before the operation.
          *
-         * On OpenGL ES 2.0 and WebGL 1.0, if @ref PixelStorage::skip() is set,
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to upload an image marked as 2D array to a 3D texture. On
+         * OpenGL ES 2.0 and WebGL 1.0, if @ref PixelStorage::skip() is set,
          * the functionality is emulated by adjusting the data pointer.
          * @see @ref maxSize(), @ref Framebuffer::copyImage(), @fn_gl{PixelStore},
          *      then @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
@@ -1158,6 +1172,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * also has no equivalent in @gl_extension{ARB,direct_state_access},
          * thus the texture needs to be bound to some texture unit before the
          * operation.
+         *
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to upload an image marked as 2D array to a 3D texture.
          * @see @ref maxSize(), @fn_gl{PixelStore}, then @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl_keyword{CompressedTexImage1D} /
          *      @fn_gl_keyword{CompressedTexImage2D} /
@@ -1221,7 +1238,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * not available, the texture is bound before the operation (if not
          * already).
          *
-         * On OpenGL ES 2.0 and WebGL 1.0, if @ref PixelStorage::skip() is set,
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to upload an image marked as 2D array to a 3D texture. On
+         * OpenGL ES 2.0 and WebGL 1.0, if @ref PixelStorage::skip() is set,
          * the functionality is emulated by adjusting the data pointer.
          * @see @ref setStorage(), @ref Framebuffer::copySubImage(),
          *      @fn_gl{PixelStore}, @fn_gl2_keyword{TextureSubImage1D,TexSubImage1D} /
@@ -1282,6 +1301,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
          * not available, the texture is bound before the operation (if not
          * already).
+         *
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to upload an image marked as 2D array to a 3D texture.
          * @see @ref setStorage(), @fn_gl{PixelStore},
          *      @fn_gl2_keyword{CompressedTextureSubImage1D,CompressedTexSubImage1D} /
          *      @fn_gl2_keyword{CompressedTextureSubImage2D,CompressedTexSubImage2D} /

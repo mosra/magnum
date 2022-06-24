@@ -373,6 +373,7 @@ void RectangleTextureGLTest::image() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlag2D{});
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
@@ -421,11 +422,13 @@ void RectangleTextureGLTest::imageQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     Containers::Array<char> data{PixelStorageData[testCaseInstanceId()].offset + 2*2*4};
-    MutableImageView2D image{PixelStorageData[testCaseInstanceId()].storage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data};
+    MutableImageView2D image{PixelStorageData[testCaseInstanceId()].storage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data, ImageFlag2D::Array};
     texture.image(image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
@@ -513,6 +516,7 @@ void RectangleTextureGLTest::subImageQuery() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlag2D{});
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
@@ -534,11 +538,13 @@ void RectangleTextureGLTest::subImageQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     Containers::Array<char> data{PixelStorageData[testCaseInstanceId()].offset + 2*2*4};
-    MutableImageView2D image{PixelStorageData[testCaseInstanceId()].storage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data};
+    MutableImageView2D image{PixelStorageData[testCaseInstanceId()].storage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data, ImageFlag2D::Array};
     texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,

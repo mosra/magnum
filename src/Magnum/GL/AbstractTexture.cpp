@@ -1718,7 +1718,7 @@ void AbstractTexture::invalidateSubImageImplementationARB(GLint level, const Vec
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
-template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Image<dimensions>& image) {
+template<UnsignedInt dimensions> void AbstractTexture::image(const GLint level, Image<dimensions>& image, const ImageFlags<dimensions> flags) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
 
@@ -1730,12 +1730,12 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Image<
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
     (this->*Context::current().state().texture.getImageImplementation)(level, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data);
-    image = Image<dimensions>{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data)};
+    image = Image<dimensions>{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data), flags};
 }
 
-template void MAGNUM_GL_EXPORT AbstractTexture::image<1>(GLint, Image<1>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::image<2>(GLint, Image<2>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::image<3>(GLint, Image<3>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::image<1>(GLint, Image<1>&, ImageFlags1D);
+template void MAGNUM_GL_EXPORT AbstractTexture::image<2>(GLint, Image<2>&, ImageFlags2D);
+template void MAGNUM_GL_EXPORT AbstractTexture::image<3>(GLint, Image<3>&, ImageFlags3D);
 
 template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, const BasicMutableImageView<dimensions>& image) {
     #ifndef CORRADE_NO_ASSERT
@@ -1774,7 +1774,7 @@ template void MAGNUM_GL_EXPORT AbstractTexture::image<1>(GLint, BufferImage<1>&,
 template void MAGNUM_GL_EXPORT AbstractTexture::image<2>(GLint, BufferImage<2>&, BufferUsage);
 template void MAGNUM_GL_EXPORT AbstractTexture::image<3>(GLint, BufferImage<3>&, BufferUsage);
 
-template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, CompressedImage<dimensions>& image) {
+template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, CompressedImage<dimensions>& image, const ImageFlags<dimensions> flags) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
 
     /* If the user-provided pixel storage doesn't tell us all properties about
@@ -1798,12 +1798,12 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLi
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
     (this->*Context::current().state().texture.getCompressedImageImplementation)(level, data.size(), data);
-    image = CompressedImage<dimensions>{image.storage(), CompressedPixelFormat(format), size, std::move(data)};
+    image = CompressedImage<dimensions>{image.storage(), CompressedPixelFormat(format), size, std::move(data), flags};
 }
 
-template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<1>(GLint, CompressedImage<1>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<2>(GLint, CompressedImage<2>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<3>(GLint, CompressedImage<3>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<1>(GLint, CompressedImage<1>&, ImageFlags1D);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<2>(GLint, CompressedImage<2>&, ImageFlags2D);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<3>(GLint, CompressedImage<3>&, ImageFlags3D);
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, const BasicMutableCompressedImageView<dimensions>& image) {
     #ifndef CORRADE_NO_ASSERT
@@ -1874,7 +1874,7 @@ template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<1>(GLint, Compre
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<2>(GLint, CompressedBufferImage<2>&, BufferUsage);
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<3>(GLint, CompressedBufferImage<3>&, BufferUsage);
 
-template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image) {
+template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image, const ImageFlags<dimensions> flags) {
     /* Reallocate only if needed */
     const Math::Vector<dimensions, Int> size = range.size();
     const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
@@ -1882,13 +1882,13 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
     if(data.size() < dataSize)
         data = Containers::Array<char>{dataSize};
 
-    image = Image<dimensions>{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data)};
+    image = Image<dimensions>{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data), flags};
     subImage(level, range, BasicMutableImageView<dimensions>(image));
 }
 
-template void MAGNUM_GL_EXPORT AbstractTexture::subImage<1>(GLint, const Range1Di&, Image<1>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::subImage<2>(GLint, const Range2Di&, Image<2>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, Image<3>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::subImage<1>(GLint, const Range1Di&, Image<1>&, ImageFlags1D);
+template void MAGNUM_GL_EXPORT AbstractTexture::subImage<2>(GLint, const Range2Di&, Image<2>&, ImageFlags2D);
+template void MAGNUM_GL_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, Image<3>&, ImageFlags3D);
 
 template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, const BasicMutableImageView<dimensions>& image) {
     CORRADE_ASSERT(image.data().data() != nullptr || !(Math::Vector<dimensions, Int>(range.size()).product()),
@@ -1946,7 +1946,7 @@ template std::size_t MAGNUM_GL_EXPORT AbstractTexture::compressedSubImageSize<1>
 template std::size_t MAGNUM_GL_EXPORT AbstractTexture::compressedSubImageSize<2>(TextureFormat format, const Math::Vector<2, Int>& size);
 template std::size_t MAGNUM_GL_EXPORT AbstractTexture::compressedSubImageSize<3>(TextureFormat format, const Math::Vector<3, Int>& size);
 
-template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>& image) {
+template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>& image, const ImageFlags<dimensions> flags) {
     createIfNotAlready();
 
     const Math::Vector<dimensions, Int> size = range.size();
@@ -1973,12 +1973,12 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
     glGetCompressedTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), data.size(), data);
-    image = CompressedImage<dimensions>{CompressedPixelFormat(format), size, std::move(data)};
+    image = CompressedImage<dimensions>{CompressedPixelFormat(format), size, std::move(data), flags};
 }
 
-template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<1>(GLint, const Range1Di&, CompressedImage<1>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<2>(GLint, const Range2Di&, CompressedImage<2>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<3>(GLint, const Range3Di&, CompressedImage<3>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<1>(GLint, const Range1Di&, CompressedImage<1>&, ImageFlags1D);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<2>(GLint, const Range2Di&, CompressedImage<2>&, ImageFlags2D);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<3>(GLint, const Range3Di&, CompressedImage<3>&, ImageFlags3D);
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, const BasicMutableCompressedImageView<dimensions>& image) {
     CORRADE_ASSERT(image.data().data() != nullptr || !(Math::Vector<dimensions, Int>(range.size()).product()),

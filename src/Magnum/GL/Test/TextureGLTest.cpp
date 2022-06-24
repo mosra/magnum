@@ -1429,6 +1429,7 @@ void TextureGLTest::image1D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlags1D{});
     CORRADE_COMPARE(image.size(), 2);
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
@@ -1477,6 +1478,8 @@ void TextureGLTest::image1DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlags1D{});
     CORRADE_COMPARE(image.size(), 2);
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
@@ -1553,6 +1556,7 @@ void TextureGLTest::subImage1DQuery() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlags1D{});
     CORRADE_COMPARE(image.size(), 2);
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
@@ -1578,6 +1582,8 @@ void TextureGLTest::subImage1DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlags1D{});
     CORRADE_COMPARE(image.size(), 2);
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
@@ -1676,6 +1682,7 @@ void TextureGLTest::image2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlags2D{});
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
@@ -1727,11 +1734,13 @@ void TextureGLTest::image2DQueryView() {
 
     Containers::Array<char> data{PixelStorage2DData[testCaseInstanceId()].offset + 2*2*4};
     MutableImageView2D image{PixelStorage2DData[testCaseInstanceId()].storage,
-        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data};
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data, ImageFlag2D::Array};
     texture.image(0, image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
@@ -1837,6 +1846,7 @@ void TextureGLTest::subImage2DQuery() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlags2D{});
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
@@ -1857,11 +1867,13 @@ void TextureGLTest::subImage2DQueryView() {
 
     Containers::Array<char> data{PixelStorage2DData[testCaseInstanceId()].offset + 2*2*4};
     MutableImageView2D image{PixelStorage2DData[testCaseInstanceId()].storage,
-        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data};
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data, ImageFlag2D::Array};
     texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
@@ -1928,6 +1940,7 @@ void TextureGLTest::compressedImage2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlags2D{});
     CORRADE_COMPARE(image.size(), Vector2i{4});
 
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
@@ -2000,11 +2013,13 @@ void TextureGLTest::compressedImage2DQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     Containers::Array<char> data{CompressedPixelStorage2DData[testCaseInstanceId()].offset + 1*16};
-    MutableCompressedImageView2D image{CompressedPixelStorage2DData[testCaseInstanceId()].storage, CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, data};
+    MutableCompressedImageView2D image{CompressedPixelStorage2DData[testCaseInstanceId()].storage, CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, data, ImageFlag2D::Array};
     texture.compressedImage(0, image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(image.size(), Vector2i{4});
 
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
@@ -2142,6 +2157,7 @@ void TextureGLTest::compressedSubImage2DQuery() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlags2D{});
     CORRADE_COMPARE(image.size(), Vector2i{4});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,
@@ -2167,11 +2183,13 @@ void TextureGLTest::compressedSubImage2DQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     Containers::Array<char> data{CompressedPixelStorage2DData[testCaseInstanceId()].offset + 1*16};
-    MutableCompressedImageView2D image{CompressedPixelStorage2DData[testCaseInstanceId()].storage, CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, data};
+    MutableCompressedImageView2D image{CompressedPixelStorage2DData[testCaseInstanceId()].storage, CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, data, ImageFlag2D::Array};
     texture.compressedSubImage(0, Range2Di::fromSize({4, 0}, Vector2i{4}), image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(image.size(), Vector2i{4});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,
@@ -2235,6 +2253,7 @@ void TextureGLTest::image3D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlags3D{});
     CORRADE_COMPARE(image.size(), Vector3i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage3DData[testCaseInstanceId()].offset),
         PixelStorage3DData[testCaseInstanceId()].data,
@@ -2286,11 +2305,13 @@ void TextureGLTest::image3DQueryView() {
 
     Containers::Array<char> data{PixelStorage3DData[testCaseInstanceId()].offset + 2*2*2*4};
     MutableImageView3D image{PixelStorage3DData[testCaseInstanceId()].storage,
-        PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{2}, data};
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{2}, data, ImageFlag3D::Array};
     texture.image(0, image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag3D::Array);
     CORRADE_COMPARE(image.size(), Vector3i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage3DData[testCaseInstanceId()].offset),
         PixelStorage3DData[testCaseInstanceId()].data,
@@ -2405,6 +2426,7 @@ void TextureGLTest::subImage3DQuery() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlags3D{});
     CORRADE_COMPARE(image.size(), Vector3i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage3DData[testCaseInstanceId()].offset),
         PixelStorage3DData[testCaseInstanceId()].data,
@@ -2425,11 +2447,13 @@ void TextureGLTest::subImage3DQueryView() {
 
     Containers::Array<char> data{PixelStorage3DData[testCaseInstanceId()].offset + 2*2*2*4};
     MutableImageView3D image{PixelStorage3DData[testCaseInstanceId()].storage,
-        PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{2}, data};
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{2}, data, ImageFlag3D::Array};
     texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag3D::Array);
     CORRADE_COMPARE(image.size(), Vector3i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage3DData[testCaseInstanceId()].offset),
         PixelStorage3DData[testCaseInstanceId()].data,
@@ -2492,6 +2516,7 @@ void TextureGLTest::compressedImage3D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlags3D{});
     CORRADE_COMPARE(image.size(), Vector3i{4});
     {
         CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::Mesa) && CompressedPixelStorage3DData[testCaseInstanceId()].storage != CompressedPixelStorage{},
@@ -2564,11 +2589,13 @@ void TextureGLTest::compressedImage3DQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     Containers::Array<char> data{CompressedPixelStorage2DData[testCaseInstanceId()].offset + 64};
-    MutableCompressedImageView3D image{CompressedPixelStorage2DData[testCaseInstanceId()].storage, CompressedPixelFormat::RGBABptcUnorm, Vector3i{4}, data};
+    MutableCompressedImageView3D image{CompressedPixelStorage2DData[testCaseInstanceId()].storage, CompressedPixelFormat::RGBABptcUnorm, Vector3i{4}, data, ImageFlag3D::Array};
     texture.compressedImage(0, image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag3D::Array);
     CORRADE_COMPARE(image.size(), Vector3i{4});
     {
         CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::Mesa) && CompressedPixelStorage3DData[testCaseInstanceId()].storage != CompressedPixelStorage{},
@@ -2741,6 +2768,7 @@ void TextureGLTest::compressedSubImage3DQuery() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlags3D{});
     CORRADE_COMPARE(image.size(), (Vector3i{4}));
 
     {
@@ -2773,11 +2801,13 @@ void TextureGLTest::compressedSubImage3DQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     Containers::Array<char> data{CompressedPixelStorage2DData[testCaseInstanceId()].offset + 64};
-    MutableCompressedImageView3D image{CompressedPixelStorage2DData[testCaseInstanceId()].storage, CompressedPixelFormat::RGBABptcUnorm, Vector3i{4}, data};
+    MutableCompressedImageView3D image{CompressedPixelStorage2DData[testCaseInstanceId()].storage, CompressedPixelFormat::RGBABptcUnorm, Vector3i{4}, data, ImageFlag3D::Array};
     texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 0}, Vector3i{4}), image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag3D::Array);
     CORRADE_COMPARE(image.size(), (Vector3i{4}));
 
     {

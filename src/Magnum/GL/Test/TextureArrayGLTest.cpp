@@ -954,6 +954,7 @@ void TextureArrayGLTest::image1D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
@@ -1002,11 +1003,13 @@ void TextureArrayGLTest::image1DQueryView() {
 
     Containers::Array<char> data{PixelStorage1DData[testCaseInstanceId()].offset + 2*2*4};
     MutableImageView2D image{PixelStorage1DData[testCaseInstanceId()].storage,
-        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data};
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data, ImageFlag2D::Array};
     texture.image(0, image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
@@ -1094,6 +1097,7 @@ void TextureArrayGLTest::subImage1DQuery() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
@@ -1116,11 +1120,13 @@ void TextureArrayGLTest::subImage1DQueryView() {
 
     Containers::Array<char> data{PixelStorage1DData[testCaseInstanceId()].offset + 2*2*4};
     MutableImageView2D image{PixelStorage1DData[testCaseInstanceId()].storage,
-        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data};
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data, ImageFlag2D::Array};
     texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
@@ -1212,6 +1218,7 @@ void TextureArrayGLTest::image2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlag3D::Array);
     CORRADE_COMPARE(image.size(), Vector3i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
@@ -1391,6 +1398,7 @@ void TextureArrayGLTest::subImage2DQuery() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlag3D::Array);
     CORRADE_COMPARE(image.size(), Vector3i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
@@ -1413,11 +1421,13 @@ void TextureArrayGLTest::subImage2DQueryView() {
 
     Containers::Array<char> data{PixelStorage2DData[testCaseInstanceId()].offset + 2*2*2*4};
     MutableImageView3D image{PixelStorage2DData[testCaseInstanceId()].storage,
-        PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{2}, data};
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{2}, data, ImageFlag3D::Array};
     texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag3D::Array);
     CORRADE_COMPARE(image.size(), Vector3i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
@@ -1490,6 +1500,7 @@ void TextureArrayGLTest::compressedImage2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlag3D::Array);
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,
@@ -1741,6 +1752,7 @@ void TextureArrayGLTest::compressedSubImage2DQuery() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(image.flags(), ImageFlag3D::Array);
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,
@@ -1769,11 +1781,13 @@ void TextureArrayGLTest::compressedSubImage2DQueryView() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     Containers::Array<char> data{CompressedPixelStorage2DData[testCaseInstanceId()].offset + 2*16};
-    MutableCompressedImageView3D image{CompressedPixelStorage2DData[testCaseInstanceId()].storage, CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 2}, data};
+    MutableCompressedImageView3D image{CompressedPixelStorage2DData[testCaseInstanceId()].storage, CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 2}, data, ImageFlag3D::Array};
     texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 1}, {4, 4, 2}), image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Doesn't matter what flags are set, they stay untouched */
+    CORRADE_COMPARE(image.flags(), ImageFlag3D::Array);
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,

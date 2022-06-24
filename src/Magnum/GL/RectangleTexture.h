@@ -368,10 +368,11 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         /**
          * @brief Read texture to an image
          *
-         * See @ref Texture::image(Int, Image&) for more information.
+         * Behavior equivalent to @ref Texture::image(Int, Image&), see its
+         * documentation for more information.
          */
         void image(Image2D& image) {
-            AbstractTexture::image<2>(0, image);
+            AbstractTexture::image<2>(0, image, ImageFlags2D{});
         }
 
         /** @overload
@@ -388,7 +389,9 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Compared to @ref image(Image2D&) the function reads the pixels into
          * the memory provided by @p image, expecting it's not @cpp nullptr @ce
-         * and its size is the same as texture size.
+         * and its size is the same as texture size. Any set of @ref ImageFlags
+         * is allowed in @p image --- e.g., it's possible to read a rectangle
+         * texture to an image marked as 1D array.
          */
         void image(const MutableImageView2D& image) {
             AbstractTexture::image<2>(0, image);
@@ -415,13 +418,13 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         /**
          * @brief Read compressed texture to an image
          *
-         * See @ref Texture::compressedImage(Int, CompressedImage&) for more
-         * information.
+         * Behavior equivalent to @ref Texture::compressedImage(Int, CompressedImage&),
+         * see its documentation for more information.
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          */
         void compressedImage(CompressedImage2D& image) {
-            AbstractTexture::compressedImage<2>(0, image);
+            AbstractTexture::compressedImage<2>(0, image, ImageFlags2D{});
         }
 
         /** @overload
@@ -439,7 +442,9 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * Compared to @ref compressedImage(CompressedImage2D&) the function
          * reads the pixels into the memory provided by @p image, expecting
          * it's not @cpp nullptr @ce, its format is the same as texture format
-         * and its size is the same as texture size.
+         * and its size is the same as texture size. Any set of @ref ImageFlags
+         * is allowed in @p image --- e.g., it's possible to read a rectangle
+         * texture to an image marked as 1D array.
          */
         void compressedImage(const MutableCompressedImageView2D& image) {
             AbstractTexture::compressedImage<2>(0, image);
@@ -468,12 +473,12 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         /**
          * @brief Read a texture range to an image
          *
-         * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
-         * for more information.
+         * Behavior equivalent to @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&),
+         * see its documentation for more information.
          * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          */
         void subImage(const Range2Di& range, Image2D& image) {
-            AbstractTexture::subImage<2>(0, range, image);
+            AbstractTexture::subImage<2>(0, range, image, ImageFlags2D{});
         }
 
         /** @overload
@@ -491,6 +496,8 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * Compared to @ref subImage(const Range2Di&, Image2D&) the function
          * reads the pixels into the memory provided by @p image, expecting
          * it's not @cpp nullptr @ce and its size is the same as @p range size.
+         * Any set of @ref ImageFlags is allowed in @p image --- e.g., it's
+         * possible to read a rectangle texture to an image marked as 1D array.
          */
         void subImage(const Range2Di& range, const MutableImageView2D& image) {
             AbstractTexture::subImage<2>(0, range, image);
@@ -518,8 +525,8 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         /**
          * @brief Read a compressed texture range to an image
          *
-         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
-         * for more information.
+         * Behavior equivalent to @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&),
+         * see its documentation for more information.
          * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
@@ -529,7 +536,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *      set to non-zero values
          */
         void compressedSubImage(const Range2Di& range, CompressedImage2D& image) {
-            AbstractTexture::compressedSubImage<2>(0, range, image);
+            AbstractTexture::compressedSubImage<2>(0, range, image, ImageFlags2D{});
         }
 
         /** @overload
@@ -547,7 +554,9 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * Compared to @ref compressedSubImage(const Range2Di&, CompressedImage2D&)
          * the function reads the pixels into the memory provided by @p image,
          * expecting it's not @cpp nullptr @ce, its format is the same as
-         * texture format and its size is the same as @p range size.
+         * texture format and its size is the same as @p range size. Any set of
+         * @ref ImageFlags is allowed in @p image --- e.g., it's possible to
+         * read a rectangle texture to an image marked as 1D array.
          */
         void compressedSubImage(const Range2Di& range, const MutableCompressedImageView2D& image) {
             AbstractTexture::compressedSubImage<2>(0, range, image);
@@ -582,7 +591,10 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @brief @copybrief Texture::setImage()
          * @return Reference to self (for method chaining)
          *
-         * See @ref Texture::setImage() for more information.
+         * Behavior equivalent to @ref Texture::setImage(), see its
+         * documentation for more information. Any set of @ref ImageFlags is
+         * allowed in @p image --- e.g., it's possible to upload an image not
+         * marked as an array to an array texture.
          * @see @ref maxSize()
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
@@ -613,7 +625,10 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @brief @copybrief Texture::setCompressedImage()
          * @return Reference to self (for method chaining)
          *
-         * See @ref Texture::setCompressedImage() for more information.
+         * Behavior equivalent to @ref Texture::setCompressedImage(), see its
+         * documentation for more information. Any set of @ref ImageFlags is
+         * allowed in @p image --- e.g., it's possible to upload an image not
+         * marked as an array to an array texture.
          * @see @ref maxSize()
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
@@ -646,7 +661,10 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @brief @copybrief Texture::setSubImage()
          * @return Reference to self (for method chaining)
          *
-         * See @ref Texture::setSubImage() for more information.
+         * Behavior equivalent to @ref Texture::setSubImage(), see its
+         * documentation for more information. Any set of @ref ImageFlags is
+         * allowed in @p image --- e.g., it's possible to upload an image not
+         * marked as an array to an array texture.
          */
         RectangleTexture& setSubImage(const Vector2i& offset, const ImageView2D& image) {
             DataHelper<2>::setSubImage(*this, 0, offset, image);
@@ -668,7 +686,10 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @brief @copybrief Texture::setCompressedSubImage()
          * @return Reference to self (for method chaining)
          *
-         * See @ref Texture::setCompressedSubImage() for more information.
+         * Behavior equivalent to @ref Texture::setCompressedSubImage(), see
+         * its documentation for more information. Any set of @ref ImageFlags
+         * is allowed in @p image --- e.g., it's possible to upload an image
+         * not marked as an array to an array texture.
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          */
