@@ -82,6 +82,13 @@ format of image queries in graphics APIs:
 Similarly to @ref ImageView, this class supports extra storage parameters.
 See @ref ImageView-usage for more information.
 
+Unlike @ref Image, @ref ImageView and @ref Trade::ImageData, this class doesn't
+support setting @ref ImageFlags. In those, image flags are used mainly to
+distinguish between various image layouts when interfacing with file formats
+and external conversion libraries. The buffer image, however, usually acts as a
+temporary storage for data transfer following OpenGL constraints, and as such
+the annotations aren't as essential.
+
 @see @ref BufferImage1D, @ref BufferImage2D, @ref BufferImage3D
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
@@ -417,6 +424,14 @@ format of image queries in graphics APIs:
 
 Similarly to @ref CompressedImageView, this class supports extra storage
 parameters. See @ref CompressedImageView-usage for more information.
+
+Unlike @ref CompressedImage, @ref CompressedImageView and
+@ref Trade::ImageData, this class doesn't support setting @ref ImageFlags. In
+those, image flags are used mainly to distinguish between various image
+layouts when interfacing with file formats and external conversion libraries.
+The buffer image, however, usually acts as a temporary storage for data
+transfer following OpenGL constraints, and as such the annotations aren't as
+essential.
 
 @see @ref CompressedBufferImage1D, @ref CompressedBufferImage2D,
     @ref CompressedBufferImage3D
