@@ -383,10 +383,11 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * @param image             Image where to put the data
          *
          * Image parameters like format and type of pixel data are taken from
-         * given image. The storage is not reallocated if it is large enough to
-         * contain the new data --- however if you want to read into existing
-         * memory or *ensure* a reallocation does not happen, use
-         * @ref read(const Range2Di&, const MutableImageView2D&) instead.
+         * given image. @ref ImageFlags of @p image get cleared. The storage
+         * is not reallocated if it is large enough to contain the new data
+         * --- however if you want to read into existing memory or *ensure* a
+         * reallocation does not happen, use @ref read(const Range2Di&, const MutableImageView2D&)
+         * instead.
          *
          * On OpenGL ES 2.0 and WebGL 1.0, if @ref PixelStorage::skip() is set,
          * the functionality is emulated by adjusting the data pointer. If
@@ -418,7 +419,9 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * Compared to @ref read(const Range2Di&, Image2D&) the function
          * reads the pixels into the memory provided by @p image, expecting
          * it's not @cpp nullptr @ce and its size is the same as @p rectangle
-         * size.
+         * size. Any set of @ref ImageFlags is allowed in @p image --- e.g.,
+         * it's possible to read a 2D framebuffer to an image marked as 1D
+         * array.
          */
         void read(const Range2Di& rectangle, const MutableImageView2D& image);
 

@@ -376,7 +376,7 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
         data = Containers::Array<char>{dataSize};
 
     /* Replace the storage, proxy to the function taking a view */
-    image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), rectangle.size(), std::move(data)};
+    image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), rectangle.size(), std::move(data), ImageFlags2D{}};
     read(rectangle, MutableImageView2D(image));
 }
 
