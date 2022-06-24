@@ -1402,7 +1402,6 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             Debug{} << "Fuzzy duplicate removal:" << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";
     }
 
-    /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
         Utility::Path::join(args.value("plugin-dir"), Trade::AbstractSceneConverter::pluginSearchPaths().back())};
@@ -1413,6 +1412,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
        other. If the last converter supports ConvertMeshToFile instead of
        ConvertMesh, it's used instead of the last implicit AnySceneConverter. */
     for(std::size_t i = 0, converterCount = args.arrayValueCount("converter"); i <= converterCount; ++i) {
+        /* Load converter plugin */
         const Containers::StringView converterName = i == converterCount ?
             "AnySceneConverter"_s : args.arrayValue<Containers::StringView>("converter", i);
         Containers::Pointer<Trade::AbstractSceneConverter> converter = converterManager.loadAndInstantiate(converterName);
