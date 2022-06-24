@@ -620,7 +620,7 @@ template<UnsignedInt dimensions> class CompressedImage {
         CompressedPixelFormat format() const { return _format; }
 
         /** @brief Image size in pixels */
-        VectorTypeFor<dimensions, Int> size() const { return _size; }
+        const VectorTypeFor<dimensions, Int>& size() const { return _size; }
 
         /**
          * @brief Compressed image data properties
@@ -695,7 +695,7 @@ template<UnsignedInt dimensions> class CompressedImage {
 
         CompressedPixelStorage _storage;
         CompressedPixelFormat _format;
-        Math::Vector<Dimensions, Int> _size;
+        VectorTypeFor<dimensions, Int> _size;
         Containers::Array<char> _data;
 };
 
