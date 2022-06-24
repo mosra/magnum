@@ -965,59 +965,64 @@ no -C / --converter is specified, AnyImageConverter is used.)")
             (outputDimensions == 2 && outputImages2D.front().isCompressed()) ||
             (outputDimensions == 3 && outputImages3D.front().isCompressed());
 
-        /* Load converter plugin */
-        Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(converterName);
-        if(!converter) {
-            Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());
-            return 2;
+        /* Load converter plugin if a raw conversion is not requested */
+        Containers::Pointer<Trade::AbstractImageConverter> converter;
+        if(converterName != "raw"_s) {
+            if(!(converter = converterManager.loadAndInstantiate(converterName))) {
+                Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());
+                return 2;
+            }
+
+            /* Set options, if passed */
+            if(args.isSet("verbose")) converter->addFlags(Trade::ImageConverterFlag::Verbose);
+            if(i < args.arrayValueCount("converter-options"))
+                Implementation::setOptions(*converter, "AnyImageConverter", args.arrayValue("converter-options", i));
         }
 
-        /* Set options, if passed */
-        if(args.isSet("verbose")) converter->addFlags(Trade::ImageConverterFlag::Verbose);
-        if(i < args.arrayValueCount("converter-options"))
-            Implementation::setOptions(*converter, "AnyImageConverter", args.arrayValue("converter-options", i));
-
-        /* This is the last --converter (or the implicit AnyImageConverter at
-           the end), output to a file and exit the loop */
-        if(i + 1 >= converterCount && (converter->features() & (
+        /* This is the last --converter (a raw output, a file-capable converter
+           or the implicit AnyImageConverter at the end), output to a file and
+           exit the loop */
+        if(i + 1 >= converterCount && (converterName == "raw"_s || (converter->features() & (
             Trade::ImageConverterFeature::Convert1DToFile|
             Trade::ImageConverterFeature::Convert2DToFile|
             Trade::ImageConverterFeature::Convert3DToFile|
             Trade::ImageConverterFeature::ConvertCompressed1DToFile|
             Trade::ImageConverterFeature::ConvertCompressed2DToFile|
-            Trade::ImageConverterFeature::ConvertCompressed3DToFile)))
+            Trade::ImageConverterFeature::ConvertCompressed3DToFile))))
         {
             /* Decide what converter feature we should look for for given
                dimension count. This has to be redone each iteration, as a
                converted could have converted an uncompressed image to a
                compressed one and vice versa. */
-            Trade::ImageConverterFeatures expectedFeatures;
-            if(outputDimensions == 1) {
-                expectedFeatures = outputIsCompressed ?
-                    Trade::ImageConverterFeature::ConvertCompressed1DToFile :
-                    Trade::ImageConverterFeature::Convert1DToFile;
-            } else if(outputDimensions == 2) {
-                expectedFeatures = outputIsCompressed ?
-                    Trade::ImageConverterFeature::ConvertCompressed2DToFile :
-                    Trade::ImageConverterFeature::Convert2DToFile;
-            } else if(outputDimensions == 3) {
-                expectedFeatures = outputIsCompressed ?
-                    Trade::ImageConverterFeature::ConvertCompressed3DToFile :
-                    Trade::ImageConverterFeature::Convert3DToFile;
-            } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-            /** @todo use a sane flag once the feature enum is ... sane */
-            constexpr Trade::ImageConverterFeatures ImageConverterFeatureLevels =
-                Trade::ImageConverterFeature::ConvertLevels1DToFile & ~Trade::ImageConverterFeature::Convert1DToFile;
-            if(outputIsMultiLevel) expectedFeatures |= ImageConverterFeatureLevels;
-            if(!(converter->features() >= expectedFeatures)) {
-                Error err;
-                err << converterName << "doesn't support";
-                if(outputIsMultiLevel)
-                    err << "multi-level";
-                if(outputIsCompressed)
-                    err << "compressed";
-                err << outputDimensions << Debug::nospace << "D image to file conversion, only" << converter->features();
-                return 6;
+            if(converterName != "raw"_s) {
+                Trade::ImageConverterFeatures expectedFeatures;
+                if(outputDimensions == 1) {
+                    expectedFeatures = outputIsCompressed ?
+                        Trade::ImageConverterFeature::ConvertCompressed1DToFile :
+                        Trade::ImageConverterFeature::Convert1DToFile;
+                } else if(outputDimensions == 2) {
+                    expectedFeatures = outputIsCompressed ?
+                        Trade::ImageConverterFeature::ConvertCompressed2DToFile :
+                        Trade::ImageConverterFeature::Convert2DToFile;
+                } else if(outputDimensions == 3) {
+                    expectedFeatures = outputIsCompressed ?
+                        Trade::ImageConverterFeature::ConvertCompressed3DToFile :
+                        Trade::ImageConverterFeature::Convert3DToFile;
+                } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+                /** @todo use a sane flag once the feature enum is ... sane */
+                constexpr Trade::ImageConverterFeatures ImageConverterFeatureLevels =
+                    Trade::ImageConverterFeature::ConvertLevels1DToFile & ~Trade::ImageConverterFeature::Convert1DToFile;
+                if(outputIsMultiLevel) expectedFeatures |= ImageConverterFeatureLevels;
+                if(!(converter->features() >= expectedFeatures)) {
+                    Error err;
+                    err << converterName << "doesn't support";
+                    if(outputIsMultiLevel)
+                        err << "multi-level";
+                    if(outputIsCompressed)
+                        err << "compressed";
+                    err << outputDimensions << Debug::nospace << "D image to file conversion, only" << converter->features();
+                    return 6;
+                }
             }
 
             if(args.isSet("verbose")) {
@@ -1103,6 +1108,11 @@ no -C / --converter is specified, AnyImageConverter is used.)")
         /* This is not the last converter, expect that it's capable of
            image-to-image conversion */
         } else {
+            if(converterName == "raw"_s) {
+                Error{} << "Only the very last --converter can be raw";
+                return 1;
+            }
+
             CORRADE_INTERNAL_ASSERT(i < converterCount);
             if(converterCount > 1 && args.isSet("verbose"))
                 Debug{} << "Processing (" << Debug::nospace << (i+1) << Debug::nospace << "/" << Debug::nospace << converterCount << Debug::nospace << ") with" << converterName << Debug::nospace << "...";
