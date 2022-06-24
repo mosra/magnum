@@ -537,6 +537,7 @@ template<UnsignedInt dimensions> bool checkImageValidity(const char* const messa
 
     const PixelFormat format = imageLevels[0].format();
     const UnsignedInt formatExtra = imageLevels[0].formatExtra();
+    const ImageFlags<dimensions> flags = imageLevels[0].flags();
     /* Going through *all* levels although the format assertion is never fired
        in the first iteration in order to properly check also the first one for
        zero size / nullptr. */
@@ -549,6 +550,8 @@ template<UnsignedInt dimensions> bool checkImageValidity(const char* const messa
             messagePrefix << "levels don't have the same format, expected" << format << "but got" << imageLevels[i].format() << "for image" << i, false);
         CORRADE_ASSERT(imageLevels[i].formatExtra() == formatExtra,
             messagePrefix << "levels don't have the same extra format field, expected" << formatExtra << "but got" << imageLevels[i].formatExtra() << "for image" << i, false);
+        CORRADE_ASSERT(imageLevels[i].flags() == flags,
+            messagePrefix << "levels don't have the same flags, expected" << flags << "but got" << imageLevels[i].flags() << "for image" << i, false);
     }
 
     return true;
@@ -559,6 +562,7 @@ template<UnsignedInt dimensions> bool checkImageValidity(const char* const messa
         messagePrefix << "at least one image has to be specified", false);
 
     const CompressedPixelFormat format = imageLevels[0].format();
+    const ImageFlags<dimensions> flags = imageLevels[0].flags();
     /* Going through *all* levels although the format assertion is never fired
        in the first iteration in order to properly check also the first one for
        zero size / nullptr. */
@@ -569,6 +573,8 @@ template<UnsignedInt dimensions> bool checkImageValidity(const char* const messa
             messagePrefix << "can't convert image" << i << "with a nullptr view", false);
         CORRADE_ASSERT(imageLevels[i].format() == format,
             messagePrefix << "levels don't have the same format, expected" << format << "but got" << imageLevels[i].format() << "for image" << i, false);
+        CORRADE_ASSERT(imageLevels[i].flags() == flags,
+            messagePrefix << "levels don't have the same flags, expected" << flags << "but got" << imageLevels[i].flags() << "for image" << i, false);
     }
 
     return true;

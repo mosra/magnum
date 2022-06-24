@@ -142,6 +142,7 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertLevels2DToDataNullptr();
     void convertLevels2DToDataInconsistentFormat();
     void convertLevels2DToDataInconsistentFormatExtra();
+    void convertLevels2DToDataInconsistentFlags();
     void convertLevels3DToDataInvalidImage();
     void convertLevels1DToDataNotImplemented();
     void convertLevels2DToDataNotImplemented();
@@ -165,6 +166,7 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressedLevels2DToDataZeroSize();
     void convertCompressedLevels2DToDataNullptr();
     void convertCompressedLevels2DToDataInconsistentFormat();
+    void convertCompressedLevels2DToDataInconsistentFlags();
     void convertCompressedLevels3DToDataInvalidImage();
     void convertCompressedLevels1DToDataNotImplemented();
     void convertCompressedLevels2DToDataNotImplemented();
@@ -384,6 +386,7 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertLevels2DToDataNullptr,
               &AbstractImageConverterTest::convertLevels2DToDataInconsistentFormat,
               &AbstractImageConverterTest::convertLevels2DToDataInconsistentFormatExtra,
+              &AbstractImageConverterTest::convertLevels2DToDataInconsistentFlags,
               &AbstractImageConverterTest::convertLevels3DToDataInvalidImage,
               &AbstractImageConverterTest::convertLevels1DToDataNotImplemented,
               &AbstractImageConverterTest::convertLevels2DToDataNotImplemented,
@@ -403,6 +406,7 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressedLevels2DToDataZeroSize,
               &AbstractImageConverterTest::convertCompressedLevels2DToDataNullptr,
               &AbstractImageConverterTest::convertCompressedLevels2DToDataInconsistentFormat,
+              &AbstractImageConverterTest::convertCompressedLevels2DToDataInconsistentFlags,
               &AbstractImageConverterTest::convertCompressedLevels3DToDataInvalidImage,
               &AbstractImageConverterTest::convertCompressedLevels1DToDataNotImplemented,
               &AbstractImageConverterTest::convertCompressedLevels2DToDataNotImplemented,
@@ -1986,6 +1990,26 @@ void AbstractImageConverterTest::convertLevels2DToDataInconsistentFormatExtra() 
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): levels don't have the same extra format field, expected 1037 but got 4467 for image 2\n");
 }
 
+void AbstractImageConverterTest::convertLevels2DToDataInconsistentFlags() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+    } converter;
+
+    const char data[16]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData({
+        ImageView2D{PixelFormat::RGBA8Unorm, {2, 2}, data, ImageFlag2D::Array},
+        ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data, ImageFlag2D::Array},
+        ImageView2D{PixelFormat::RGBA8Unorm, {4, 1}, data}
+    });
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): levels don't have the same flags, expected ImageFlag2D::Array but got ImageFlags2D{} for image 2\n");
+}
+
 void AbstractImageConverterTest::convertLevels3DToDataInvalidImage() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -2306,6 +2330,26 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataInconsistentForm
         CompressedImageView2D{CompressedPixelFormat::Bc1RGBASrgb, {4, 4}, data},
     });
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): levels don't have the same format, expected CompressedPixelFormat::Bc1RGBAUnorm but got CompressedPixelFormat::Bc1RGBASrgb for image 2\n");
+}
+
+void AbstractImageConverterTest::convertCompressedLevels2DToDataInconsistentFlags() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+    } converter;
+
+    const char data[16]{};
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.convertToData({
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {8, 4}, data, ImageFlag2D::Array},
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data, ImageFlag2D::Array},
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data},
+    });
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::convertToData(): levels don't have the same flags, expected ImageFlag2D::Array but got ImageFlags2D{} for image 2\n");
 }
 
 void AbstractImageConverterTest::convertCompressedLevels3DToDataInvalidImage() {
