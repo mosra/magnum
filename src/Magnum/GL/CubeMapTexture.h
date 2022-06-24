@@ -557,7 +557,9 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
          * @ref imageSize(). The storage is not reallocated if it is large
-         * enough to contain the new data.
+         * enough to contain the new data --- however if you want to read into
+         * existing memory or *ensure* a reallocation does not happen, use
+         * @ref image(Int, const MutableImageView3D&) instead.
          *
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
          * not available, the texture is bound before the operation (if not
@@ -622,7 +624,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * Compression format and data size are taken from the texture, image
          * size is taken using @ref imageSize(). The storage is not reallocated
-         * if it is large enough to contain the new data.
+         * if it is large enough to contain the new data --- however if you
+         * want to read into existing memory or *ensure* a reallocation does
+         * not happen, use @ref compressedImage(Int, const MutableCompressedImageView3D&)
+         * instead.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter} with
          *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE},
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, @def_gl{TEXTURE_WIDTH},
@@ -684,7 +689,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
          * @ref imageSize(). The storage is not reallocated if it is large
-         * enough to contain the new data.
+         * enough to contain the new data --- however if you want to read into
+         * existing memory or *ensure* a reallocation does not happen, use
+         * @ref image(CubeMapCoordinate, Int, const MutableImageView2D&)
+         * instead.
          *
          * If @gl_extension{ARB,get_texture_sub_image} (part of OpenGL 4.5) is
          * not available, the texture is bound before the operation (if not
@@ -748,7 +756,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * Compression format and data size are taken from the texture, image
          * size is taken using @ref imageSize(). The storage is not reallocated
-         * if it is large enough to contain the new data.
+         * if it is large enough to contain the new data --- however if you
+         * want to read into existing memory or *ensure* a reallocation does
+         * not happen, use @ref compressedImage(CubeMapCoordinate, Int, const MutableCompressedImageView2D&)
+         * instead.
          *
          * If @gl_extension{ARB,get_texture_sub_image} (part of OpenGL 4.5) is
          * not available, the texture is bound before the operation (if not
