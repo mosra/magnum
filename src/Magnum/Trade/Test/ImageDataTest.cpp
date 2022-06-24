@@ -57,7 +57,9 @@ struct ImageDataTest: TestSuite::Tester {
     void constructCompressedImplementationSpecificNotOwnedFlagOwned();
 
     void constructInvalidSize();
+    void constructInvalidCubeMap();
     void constructCompressedInvalidSize();
+    void constructCompressedInvalidCubeMap();
 
     void constructCopy();
 
@@ -127,7 +129,9 @@ ImageDataTest::ImageDataTest() {
               &ImageDataTest::constructCompressedImplementationSpecificNotOwnedFlagOwned,
 
               &ImageDataTest::constructInvalidSize,
+              &ImageDataTest::constructInvalidCubeMap,
               &ImageDataTest::constructCompressedInvalidSize,
+              &ImageDataTest::constructCompressedInvalidCubeMap,
 
               &ImageDataTest::constructCopy,
 
@@ -202,10 +206,11 @@ void ImageDataTest::constructGeneric() {
     {
         auto data = new char[4*4];
         int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
-        ImageData2D a{PixelFormat::RGBA8Unorm, {1, 3}, Containers::Array<char>{data, 4*4}, &state};
+        ImageData2D a{PixelFormat::RGBA8Unorm, {1, 3}, Containers::Array<char>{data, 4*4}, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
         CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.storage().alignment(), 4);
         CORRADE_COMPARE(a.format(), PixelFormat::RGBA8Unorm);
         CORRADE_COMPARE(a.formatExtra(), 0);
@@ -222,10 +227,11 @@ void ImageDataTest::constructGeneric() {
         auto data = new char[3*2];
         int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{PixelStorage{}.setAlignment(1),
-            PixelFormat::R16UI, {1, 3}, Containers::Array<char>{data, 3*2}, &state};
+            PixelFormat::R16UI, {1, 3}, Containers::Array<char>{data, 3*2}, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
         CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), PixelFormat::R16UI);
         CORRADE_COMPARE(a.formatExtra(), 0);
@@ -247,10 +253,11 @@ void ImageDataTest::constructImplementationSpecific() {
         auto data = new char[3*12];
         int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{PixelStorage{}.setAlignment(1),
-            Vk::PixelFormat::R32G32B32F, {1, 3}, Containers::Array<char>{data, 3*12}, &state};
+            Vk::PixelFormat::R32G32B32F, {1, 3}, Containers::Array<char>{data, 3*12}, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
         CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(Vk::PixelFormat::R32G32B32F));
         CORRADE_COMPARE(a.formatExtra(), 0);
@@ -270,10 +277,11 @@ void ImageDataTest::constructImplementationSpecific() {
         auto data = new char[3*6];
         int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{PixelStorage{}.setAlignment(1),
-            GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, &state};
+            GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
         CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
@@ -291,10 +299,11 @@ void ImageDataTest::constructImplementationSpecific() {
     {
         auto data = new char[3*6];
         int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
-        ImageData2D a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {1, 3}, Containers::Array<char>{data, 3*6}, &state};
+        ImageData2D a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {1, 3}, Containers::Array<char>{data, 3*6}, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
         CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
@@ -315,10 +324,11 @@ void ImageDataTest::constructCompressedGeneric() {
         auto data = new char[8];
         int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4},
-            Containers::Array<char>{data, 8}, &state};
+            Containers::Array<char>{data, 8}, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
         CORRADE_VERIFY(a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.compressedStorage().compressedBlockSize(), Vector3i{0});
         CORRADE_COMPARE(a.compressedFormat(), CompressedPixelFormat::Bc1RGBAUnorm);
         CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
@@ -332,10 +342,11 @@ void ImageDataTest::constructCompressedGeneric() {
         int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
             CompressedPixelFormat::Bc1RGBAUnorm, {4, 4},
-            Containers::Array<char>{data, 8}, &state};
+            Containers::Array<char>{data, 8}, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
         CORRADE_VERIFY(a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.compressedStorage().compressedBlockSize(), Vector3i{4});
         CORRADE_COMPARE(a.compressedFormat(), CompressedPixelFormat::Bc1RGBAUnorm);
         CORRADE_COMPARE(a.size(), Vector2i(4, 4));
@@ -354,10 +365,11 @@ void ImageDataTest::constructCompressedImplementationSpecific() {
         int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
         ImageData2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
             GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4},
-            Containers::Array<char>{data, 8}, &state};
+            Containers::Array<char>{data, 8}, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
         CORRADE_VERIFY(a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.compressedStorage().compressedBlockSize(), Vector3i{4});
         CORRADE_COMPARE(a.compressedFormat(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
         CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
@@ -378,10 +390,11 @@ void ImageDataTest::constructGenericNotOwned() {
     {
         char data[4*4];
         int state;
-        ImageData2D a{PixelFormat::RGBA8Unorm, {1, 3}, instanceData.dataFlags, data, &state};
+        ImageData2D a{PixelFormat::RGBA8Unorm, {1, 3}, instanceData.dataFlags, data, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
         CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.storage().alignment(), 4);
         CORRADE_COMPARE(a.format(), PixelFormat::RGBA8Unorm);
         CORRADE_COMPARE(a.formatExtra(), 0);
@@ -400,10 +413,11 @@ void ImageDataTest::constructGenericNotOwned() {
         char data[3*2];
         int state;
         ImageData2D a{PixelStorage{}.setAlignment(1),
-            PixelFormat::R16UI, {1, 3}, instanceData.dataFlags, data, &state};
+            PixelFormat::R16UI, {1, 3}, instanceData.dataFlags, data, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
         CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), PixelFormat::R16UI);
         CORRADE_COMPARE(a.formatExtra(), 0);
@@ -430,10 +444,11 @@ void ImageDataTest::constructImplementationSpecificNotOwned() {
         char data[3*12];
         int state;
         ImageData2D a{PixelStorage{}.setAlignment(1),
-            Vk::PixelFormat::R32G32B32F, {1, 3}, instanceData.dataFlags, data, &state};
+            Vk::PixelFormat::R32G32B32F, {1, 3}, instanceData.dataFlags, data, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
         CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(Vk::PixelFormat::R32G32B32F));
         CORRADE_COMPARE(a.formatExtra(), 0);
@@ -455,10 +470,11 @@ void ImageDataTest::constructImplementationSpecificNotOwned() {
         char data[3*6];
         int state;
         ImageData2D a{PixelStorage{}.setAlignment(1),
-            GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, instanceData.dataFlags, data, &state};
+            GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, instanceData.dataFlags, data, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
         CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
@@ -478,10 +494,11 @@ void ImageDataTest::constructImplementationSpecificNotOwned() {
     {
         char data[3*6];
         int state;
-        ImageData2D a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {1, 3}, instanceData.dataFlags, data, &state};
+        ImageData2D a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {1, 3}, instanceData.dataFlags, data, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
         CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
@@ -507,10 +524,11 @@ void ImageDataTest::constructCompressedGenericNotOwned() {
         char data[8];
         int state;
         ImageData2D a{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4},
-            instanceData.dataFlags, data, &state};
+            instanceData.dataFlags, data, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
         CORRADE_VERIFY(a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.compressedStorage().compressedBlockSize(), Vector3i{0});
         CORRADE_COMPARE(a.compressedFormat(), CompressedPixelFormat::Bc1RGBAUnorm);
         CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
@@ -526,10 +544,11 @@ void ImageDataTest::constructCompressedGenericNotOwned() {
         int state;
         ImageData2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
             CompressedPixelFormat::Bc1RGBAUnorm, {4, 4},
-            instanceData.dataFlags, data, &state};
+            instanceData.dataFlags, data, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
         CORRADE_VERIFY(a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.compressedStorage().compressedBlockSize(), Vector3i{4});
         CORRADE_COMPARE(a.compressedFormat(), CompressedPixelFormat::Bc1RGBAUnorm);
         CORRADE_COMPARE(a.size(), Vector2i(4, 4));
@@ -553,10 +572,11 @@ void ImageDataTest::constructCompressedImplementationSpecificNotOwned() {
         int state;
         ImageData2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
             GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4},
-            instanceData.dataFlags, data, &state};
+            instanceData.dataFlags, data, ImageFlag2D::Array, &state};
 
         CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
         CORRADE_VERIFY(a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
         CORRADE_COMPARE(a.compressedStorage().compressedBlockSize(), Vector3i{4});
         CORRADE_COMPARE(a.compressedFormat(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
         CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
@@ -649,6 +669,24 @@ void ImageDataTest::constructInvalidSize() {
     CORRADE_COMPARE(out.str(), "Trade::ImageData: data too small, got 9 but expected at least 12 bytes\n");
 }
 
+void ImageDataTest::constructInvalidCubeMap() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    ImageData3D{PixelFormat::RGBA8Unorm, {3, 3, 5}, Containers::Array<char>{3*3*5*4}, ImageFlag3D::CubeMap};
+    ImageData3D{PixelFormat::RGBA8Unorm, {3, 4, 6}, Containers::Array<char>{3*4*6*4}, ImageFlag3D::CubeMap};
+    ImageData3D{PixelFormat::RGBA8Unorm, {3, 3, 17}, Containers::Array<char>{3*3*17*4}, ImageFlag3D::CubeMap |ImageFlag3D::Array};
+    ImageData3D{PixelFormat::RGBA8Unorm, {4, 3, 18}, Containers::Array<char>{4*3*18*4}, ImageFlag3D::CubeMap |ImageFlag3D::Array};
+    CORRADE_COMPARE(out.str(),
+        "Trade::ImageData: expected exactly 6 faces for a cube map, got 5\n"
+        "Trade::ImageData: expected square faces for a cube map, got {3, 4}\n"
+        "Trade::ImageData: expected a multiple of 6 faces for a cube map array, got 17\n"
+        "Trade::ImageData: expected square faces for a cube map, got {4, 3}\n");
+}
+
 void ImageDataTest::constructCompressedInvalidSize() {
     CORRADE_EXPECT_FAIL("Size checking for compressed image data is not implemented yet.");
 
@@ -668,6 +706,24 @@ void ImageDataTest::constructCompressedInvalidSize() {
     }
 }
 
+void ImageDataTest::constructCompressedInvalidCubeMap() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    ImageData3D{CompressedPixelFormat::Bc1RGBAUnorm, {3, 3, 5}, Containers::Array<char>{8*5}, ImageFlag3D::CubeMap};
+    ImageData3D{CompressedPixelFormat::Bc1RGBAUnorm, {3, 4, 6}, Containers::Array<char>{8*6}, ImageFlag3D::CubeMap};
+    ImageData3D{CompressedPixelFormat::Bc1RGBAUnorm, {3, 3, 17}, Containers::Array<char>{8*17}, ImageFlag3D::CubeMap |ImageFlag3D::Array};
+    ImageData3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 3, 18}, Containers::Array<char>{8*18}, ImageFlag3D::CubeMap |ImageFlag3D::Array};
+    CORRADE_COMPARE(out.str(),
+        "Trade::ImageData: expected exactly 6 faces for a cube map, got 5\n"
+        "Trade::ImageData: expected square faces for a cube map, got {3, 4}\n"
+        "Trade::ImageData: expected a multiple of 6 faces for a cube map array, got 17\n"
+        "Trade::ImageData: expected square faces for a cube map, got {4, 3}\n");
+}
+
 void ImageDataTest::constructCopy() {
     CORRADE_VERIFY(!std::is_copy_constructible<ImageData2D>{});
     CORRADE_VERIFY(!std::is_copy_assignable<ImageData2D>{});
@@ -677,7 +733,7 @@ void ImageDataTest::constructMoveGeneric() {
     auto data = new char[3*16];
     int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     ImageData2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::RGBA32F, {1, 3}, Containers::Array<char>{data, 3*16}, &state};
+        PixelFormat::RGBA32F, {1, 3}, Containers::Array<char>{data, 3*16}, ImageFlag2D::Array, &state};
     ImageData2D b(std::move(a));
 
     CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
@@ -685,6 +741,7 @@ void ImageDataTest::constructMoveGeneric() {
 
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(!b.isCompressed());
+    CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(b.storage().alignment(), 1);
     CORRADE_COMPARE(b.format(), PixelFormat::RGBA32F);
     CORRADE_COMPARE(b.formatExtra(), 0);
@@ -703,6 +760,7 @@ void ImageDataTest::constructMoveGeneric() {
 
     CORRADE_COMPARE(c.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(!c.isCompressed());
+    CORRADE_COMPARE(c.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(c.storage().alignment(), 1);
     CORRADE_COMPARE(c.format(), PixelFormat::RGBA32F);
     CORRADE_COMPARE(c.formatExtra(), 0);
@@ -720,7 +778,7 @@ void ImageDataTest::constructMoveImplementationSpecific() {
     auto data = new char[3*6];
     int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     ImageData2D a{PixelStorage{}.setAlignment(1),
-        GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, &state};
+        GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, ImageFlag2D::Array, &state};
     ImageData2D b(std::move(a));
 
     CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
@@ -728,6 +786,7 @@ void ImageDataTest::constructMoveImplementationSpecific() {
 
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(!b.isCompressed());
+    CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(b.storage().alignment(), 1);
     CORRADE_COMPARE(b.format(), pixelFormatWrap(GL::PixelFormat::RGB));
     CORRADE_COMPARE(b.formatExtra(), 1337);
@@ -747,6 +806,7 @@ void ImageDataTest::constructMoveImplementationSpecific() {
 
     CORRADE_COMPARE(c.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(!c.isCompressed());
+    CORRADE_COMPARE(c.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(c.storage().alignment(), 1);
     CORRADE_COMPARE(c.format(), pixelFormatWrap(GL::PixelFormat::RGB));
     CORRADE_COMPARE(c.formatExtra(), 1337);
@@ -762,7 +822,7 @@ void ImageDataTest::constructMoveCompressedGeneric() {
     int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     ImageData2D a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-        CompressedPixelFormat::Bc3RGBAUnorm, {4, 4}, Containers::Array<char>{data, 8}, &state};
+        CompressedPixelFormat::Bc3RGBAUnorm, {4, 4}, Containers::Array<char>{data, 8}, ImageFlag2D::Array, &state};
     ImageData2D b{std::move(a)};
 
     CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
@@ -770,6 +830,7 @@ void ImageDataTest::constructMoveCompressedGeneric() {
 
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(b.isCompressed());
+    CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(b.compressedStorage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.compressedFormat(), CompressedPixelFormat::Bc3RGBAUnorm);
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
@@ -786,6 +847,7 @@ void ImageDataTest::constructMoveCompressedGeneric() {
 
     CORRADE_COMPARE(c.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(c.isCompressed());
+    CORRADE_COMPARE(c.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(c.compressedStorage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(c.compressedFormat(), CompressedPixelFormat::Bc3RGBAUnorm);
     CORRADE_COMPARE(c.size(), (Vector2i{4, 4}));
@@ -799,7 +861,7 @@ void ImageDataTest::constructMoveCompressedImplementationSpecific() {
     int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     ImageData2D a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-        GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, &state};
+        GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, ImageFlag2D::Array, &state};
     ImageData2D b{std::move(a)};
 
     CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
@@ -807,6 +869,7 @@ void ImageDataTest::constructMoveCompressedImplementationSpecific() {
 
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(b.isCompressed());
+    CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(b.compressedStorage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.compressedFormat(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
@@ -823,6 +886,7 @@ void ImageDataTest::constructMoveCompressedImplementationSpecific() {
 
     CORRADE_COMPARE(c.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(c.isCompressed());
+    CORRADE_COMPARE(c.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(c.compressedStorage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(c.compressedFormat(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
     CORRADE_COMPARE(c.size(), (Vector2i{4, 4}));
@@ -836,7 +900,7 @@ void ImageDataTest::constructMoveAttachState() {
     /* GCC 11 pointlessly complains that "maybe uninitialized" w/o the {} */
     int stateOld{}, stateNew{};
     ImageData2D a{PixelStorage{}.setAlignment(1),
-        GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, &stateOld};
+        GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, ImageFlag2D::Array, &stateOld};
     ImageData2D b{std::move(a), &stateNew};
 
     CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
@@ -844,6 +908,7 @@ void ImageDataTest::constructMoveAttachState() {
 
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(!b.isCompressed());
+    CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(b.storage().alignment(), 1);
     CORRADE_COMPARE(b.format(), pixelFormatWrap(GL::PixelFormat::RGB));
     CORRADE_COMPARE(b.formatExtra(), 1337);
@@ -860,7 +925,7 @@ void ImageDataTest::constructMoveCompressedAttachState() {
     int stateOld{}, stateNew{};
     ImageData2D a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-        GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, &stateOld};
+        GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, ImageFlag2D::Array, &stateOld};
     ImageData2D b{std::move(a), &stateNew};
 
     CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
@@ -868,6 +933,7 @@ void ImageDataTest::constructMoveCompressedAttachState() {
 
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(b.isCompressed());
+    CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(b.compressedStorage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.compressedFormat(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
@@ -881,9 +947,10 @@ template<class T> void ImageDataTest::toViewGeneric() {
 
     auto data = new char[3*4];
     typename MutabilityTraits<T>::ImageType a{PixelStorage{}.setAlignment(1),
-        PixelFormat::RG16I, {1, 3}, Containers::Array<char>{data, 3*4}};
+        PixelFormat::RG16I, {1, 3}, Containers::Array<char>{data, 3*4}, ImageFlag2D::Array};
     ImageView<2, T> b = a;
 
+    CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(b.storage().alignment(), 1);
     CORRADE_COMPARE(b.format(), PixelFormat::RG16I);
     CORRADE_COMPARE(b.formatExtra(), 0);
@@ -897,9 +964,10 @@ template<class T> void ImageDataTest::toViewImplementationSpecific() {
 
     auto data = new char[3*6];
     typename MutabilityTraits<T>::ImageType a{PixelStorage{}.setAlignment(1),
-        GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}};
+        GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, ImageFlag2D::Array};
     ImageView<2, T> b = a;
 
+    CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(b.storage().alignment(), 1);
     CORRADE_COMPARE(b.format(), pixelFormatWrap(GL::PixelFormat::RGB));
     CORRADE_COMPARE(b.formatExtra(), 1337);
@@ -914,9 +982,10 @@ template<class T> void ImageDataTest::toViewCompressedGeneric() {
     auto data = new char[8];
     typename MutabilityTraits<T>::ImageType a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-        CompressedPixelFormat::Bc1RGBUnorm, {4, 4}, Containers::Array<char>{data, 8}};
+        CompressedPixelFormat::Bc1RGBUnorm, {4, 4}, Containers::Array<char>{data, 8}, ImageFlag2D::Array};
     CompressedImageView<2, T> b = a;
 
+    CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.format(), CompressedPixelFormat::Bc1RGBUnorm);
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
@@ -930,9 +999,10 @@ template<class T> void ImageDataTest::toViewCompressedImplementationSpecific() {
     auto data = new char[8];
     typename MutabilityTraits<T>::ImageType a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-        GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
+        GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, ImageFlag2D::Array};
     CompressedImageView<2, T> b = a;
 
+    CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));

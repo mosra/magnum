@@ -32,6 +32,7 @@
 #include <Corrade/Containers/Array.h>
 
 #include "Magnum/DimensionTraits.h"
+#include "Magnum/ImageFlags.h"
 #include "Magnum/PixelStorage.h"
 #include "Magnum/Trade/Data.h"
 #include "Magnum/Trade/Trade.h"
@@ -115,17 +116,30 @@ template<UnsignedInt dimensions> class ImageData {
          * @param format            Format of pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
+         * @m_since_latest
          *
          * The @p data array is expected to be of proper size for given
-         * parameters.
+         * parameters. For a 3D image, if @p flags contain
+         * @ref ImageFlag3D::CubeMap, the @p size is expected to match its
+         * restrictions.
          *
          * The @ref dataFlags() are implicitly set to a combination of
          * @ref DataFlag::Owned and @ref DataFlag::Mutable. For non-owned data
-         * use the @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, const void*)
+         * use the @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
          * constructor instead.
          */
-        explicit ImageData(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, size, std::move(data), {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct a non-owned uncompressed image data
@@ -134,28 +148,49 @@ template<UnsignedInt dimensions> class ImageData {
          * @param size              Image size
          * @param dataFlags         Data flags
          * @param data              View on image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
-         * @m_since{2020,06}
+         * @m_since_latest
          *
-         * Compared to @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * Compared to @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          * creates an instance that doesn't own the passed data. The
          * @p dataFlags parameter can contain @ref DataFlag::Mutable to
          * indicate the external data can be modified, and is expected to *not*
          * have @ref DataFlag::Owned set.
          */
-        explicit ImageData(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState) noexcept: ImageData{storage, format, size, dataFlags, data, {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct an uncompressed image data
          * @param format            Format of pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
+         * @m_since_latest
          *
-         * Equivalent to calling @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * Equivalent to calling @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          * with default-constructed @ref PixelStorage.
          */
-        explicit ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{format, size, std::move(data), {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct a non-owned uncompressed image data
@@ -163,16 +198,26 @@ template<UnsignedInt dimensions> class ImageData {
          * @param size              Image size
          * @param dataFlags         Data flags
          * @param data              View on image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
-         * @m_since{2020,06}
+         * @m_since_latest
          *
-         * Compared to @ref ImageData(PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * Compared to @ref ImageData(PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          * creates an instance that doesn't own the passed data. The
          * @p dataFlags parameter can contain @ref DataFlag::Mutable to
          * indicate the external data can be modified, and is expected to *not*
          * have @ref DataFlag::Owned set.
          */
-        explicit ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(PixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(PixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState) noexcept: ImageData{format, size, dataFlags, data, {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct an uncompressed image data with implementation-specific pixel format
@@ -182,9 +227,11 @@ template<UnsignedInt dimensions> class ImageData {
          * @param pixelSize         Size of a pixel in given format, in bytes
          * @param size              Image size, in pixels
          * @param data              Image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
+         * @m_since_latest
          *
-         * Unlike with @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*),
+         * Unlike with @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*),
          * where pixel size is calculated automatically using
          * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
@@ -192,19 +239,38 @@ template<UnsignedInt dimensions> class ImageData {
          * @ref Magnum::PixelFormat "PixelFormat".
          *
          * The @p data array is expected to be of proper size for given
-         * parameters. The @ref dataFlags() are implicitly set to a combination
-         * of @ref DataFlag::Owned and @ref DataFlag::Mutable. For non-owned
-         * data use the @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, const void*)
+         * parameters. For a 3D image, if @p flags contain
+         * @ref ImageFlag3D::CubeMap, the @p size is expected to match its
+         * restrictions. The @ref dataFlags() are implicitly set to a
+         * combination of @ref DataFlag::Owned and @ref DataFlag::Mutable. For
+         * non-owned data use the @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
          * constructor instead.
          */
-        explicit ImageData(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
 
         /** @overload
+         * @m_since_latest
          *
          * Equivalent to the above for @p format already wrapped with
          * @ref pixelFormatWrap().
          */
-        explicit ImageData(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, formatExtra, pixelSize, size, std::move(data), {}, importerState} {}
+
+        /**
+         * @overload
+         * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, PixelFormat, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, formatExtra, pixelSize, size, std::move(data), {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct a non-owned uncompressed image data with implementation-specific pixel format
@@ -215,24 +281,41 @@ template<UnsignedInt dimensions> class ImageData {
          * @param size              Image size, in pixels
          * @param dataFlags         Data flags
          * @param data              View on image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
-         * @m_since{2020,06}
+         * @m_since_latest
          *
-         * Compared to @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * Compared to @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          * creates an instance that doesn't own the passed data. The
          * @p dataFlags parameter can contain @ref DataFlag::Mutable to
          * indicate the external data can be modified, and is expected to *not*
          * have @ref DataFlag::Owned set.
          */
-        explicit ImageData(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
 
         /** @overload
-         * @m_since{2020,06}
+         * @m_since_latest
          *
          * Equivalent to the above for @p format already wrapped with
          * @ref pixelFormatWrap().
          */
-        explicit ImageData(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState) noexcept: ImageData{storage, format, formatExtra, pixelSize, size, dataFlags, data, {}, importerState} {}
+
+        /**
+         * @overload
+         * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, PixelFormat, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState) noexcept: ImageData{storage, format, formatExtra, pixelSize, size, dataFlags, data, {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct an uncompressed image data with implementation-specific pixel format
@@ -241,13 +324,24 @@ template<UnsignedInt dimensions> class ImageData {
          * @param formatExtra       Additional pixel format specifier
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
+         * @m_since_latest
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
-         * overload, then calls @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * overload, then calls @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          * with calculated pixel size.
          */
-        template<class T, class U> explicit ImageData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        template<class T, class U> explicit ImageData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        template<class T, class U> explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, formatExtra, size, std::move(data), {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct a non-owned uncompressed image data with implementation-specific pixel format
@@ -257,16 +351,26 @@ template<UnsignedInt dimensions> class ImageData {
          * @param size              Image size
          * @param dataFlags         Data flags
          * @param data              View on image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
-         * @m_since{2020,06}
+         * @m_since_latest
          *
-         * Compared to @ref ImageData(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * Compared to @ref ImageData(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          * creates an instance that doesn't own the passed data. The
          * @p dataFlags parameter can contain @ref DataFlag::Mutable to
          * indicate the external data can be modified, and is expected to *not*
          * have @ref DataFlag::Owned set.
          */
-        template<class T, class U> explicit ImageData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+        template<class T, class U> explicit ImageData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        template<class T, class U> explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState) noexcept: ImageData{storage, format, formatExtra, size, dataFlags, data, {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct an uncompressed image data with implementation-specific pixel format
@@ -274,13 +378,24 @@ template<UnsignedInt dimensions> class ImageData {
          * @param format            Format of pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
+         * @m_since_latest
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
-         * overload, then calls @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * overload, then calls @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
          */
-        template<class T> explicit ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        template<class T> explicit ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(PixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        template<class T> explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, size, std::move(data), {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct a non-owned uncompressed image data with implementation-specific pixel format
@@ -289,16 +404,26 @@ template<UnsignedInt dimensions> class ImageData {
          * @param size              Image size
          * @param dataFlags         Data flags
          * @param data              view on image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
-         * @m_since{2020,06}
+         * @m_since_latest
          *
-         * Compared to @ref ImageData(PixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * Compared to @ref ImageData(PixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          * creates an instance that doesn't own the passed data. The
          * @p dataFlags parameter can contain @ref DataFlag::Mutable to
          * indicate the external data can be modified, and is expected to *not*
          * have @ref DataFlag::Owned set.
          */
-        template<class T> explicit ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+        template<class T> explicit ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(PixelStorage, T, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, T, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        template<class T> explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState) noexcept: ImageData{storage, format, size, dataFlags, data, {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct a compressed image data
@@ -306,9 +431,20 @@ template<UnsignedInt dimensions> class ImageData {
          * @param format            Format of compressed pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
+         * @m_since_latest
          */
-        explicit ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, size, std::move(data), {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct a non-owned compressed image data
@@ -317,28 +453,49 @@ template<UnsignedInt dimensions> class ImageData {
          * @param size              Image size
          * @param dataFlags         Data flags
          * @param data              View on image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
-         * @m_since{2020,06}
+         * @m_since_latest
          *
-         * Compared to @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * Compared to @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          * creates an instance that doesn't own the passed data. The
          * @p dataFlags parameter can contain @ref DataFlag::Mutable to
          * indicate the external data can be modified, and is expected to *not*
          * have @ref DataFlag::Owned set.
          */
-        explicit ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState) noexcept: ImageData{storage, format, size, dataFlags, data, {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct a compressed image data
          * @param format            Format of compressed pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
+         * @m_since_latest
          *
-         * Equivalent to calling @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * Equivalent to calling @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          * with default-constructed @ref CompressedPixelStorage.
          */
-        explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{format, size, std::move(data), {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct a non-owned compressed image data
@@ -346,16 +503,26 @@ template<UnsignedInt dimensions> class ImageData {
          * @param size              Image size
          * @param dataFlags         Data flags
          * @param data              View on image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
-         * @m_since{2020,06}
+         * @m_since_latest
          *
-         * Compared to @ref ImageData(CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * Compared to @ref ImageData(CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          * creates an instance that doesn't own the passed data. The
          * @p dataFlags parameter can contain @ref DataFlag::Mutable to
          * indicate the external data can be modified, and is expected to *not*
          * have @ref DataFlag::Owned set.
          */
-        explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState) noexcept: ImageData{format, size, dataFlags, data, {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct a compressed image data
@@ -363,12 +530,26 @@ template<UnsignedInt dimensions> class ImageData {
          * @param format            Format of compressed pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
+         * @m_since_latest
          *
          * Uses @ref compressedPixelFormatWrap() internally to convert
          * @p format to @ref CompressedPixelFormat.
+         *
+         * For a 3D image, if @p flags contain @ref ImageFlag3D::CubeMap, the
+         * @p size is expected to match its restrictions.
          */
-        template<class T> explicit ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        template<class T> explicit ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(CompressedPixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(CompressedPixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        template<class T> explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, size, std::move(data), {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct a non-owned compressed image data
@@ -377,16 +558,26 @@ template<UnsignedInt dimensions> class ImageData {
          * @param size              Image size
          * @param dataFlags         Data flags
          * @param data              View on image data
+         * @param flags             Image layout flags
          * @param importerState     Importer-specific state
-         * @m_since{2020,06}
+         * @m_since_latest
          *
-         * Compared to @ref ImageData(CompressedPixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * Compared to @ref ImageData(CompressedPixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          * creates an instance that doesn't own the passed data. The
          * @p dataFlags parameter can contain @ref DataFlag::Mutable to
          * indicate the external data can be modified, and is expected to *not*
          * have @ref DataFlag::Owned set.
          */
-        template<class T> explicit ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+        template<class T> explicit ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief ImageData(CompressedPixelStorage, T, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         * @m_deprecated_since_latest Use @ref ImageData(CompressedPixelStorage, T, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         *      instead.
+         */
+        template<class T> explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState) noexcept: ImageData{storage, format, size, dataFlags, data, {}, importerState} {}
+        #endif
 
         /**
          * @brief Construct from existing data with attached importer state
@@ -457,6 +648,12 @@ template<UnsignedInt dimensions> class ImageData {
          * @see @ref isCompressed(), @ref dataFlags()
          */
         /*implicit*/ operator BasicMutableCompressedImageView<dimensions>();
+
+        /**
+         * @brief Layout flags
+         * @m_since_latest
+         */
+        ImageFlags<dimensions> flags() const { return _flags; }
 
         /**
          * @brief Storage of pixel data
@@ -677,12 +874,13 @@ template<UnsignedInt dimensions> class ImageData {
         friend AbstractImporter;
         friend AbstractImageConverter;
 
-        explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags, const void* importerState = nullptr) noexcept;
 
-        explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+        explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags, const void* importerState = nullptr) noexcept;
 
         DataFlags _dataFlags;
         bool _compressed;
+        ImageFlags<dimensions> _flags;
         union {
             PixelStorage _storage;
             CompressedPixelStorage _compressedStorage;
@@ -707,32 +905,32 @@ typedef ImageData<2> ImageData2D;
 /** @brief Three-dimensional image data */
 typedef ImageData<3> ImageData3D;
 
-template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), UnsignedInt(formatExtra), Magnum::Implementation::pixelFormatSizeAdl(format, formatExtra), size, std::move(data), importerState} {
+template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), UnsignedInt(formatExtra), Magnum::Implementation::pixelFormatSizeAdl(format, formatExtra), size, std::move(data), flags, importerState} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), UnsignedInt(formatExtra), Magnum::Implementation::pixelFormatSizeAdl(format, formatExtra), size, dataFlags, data, importerState} {
+template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), UnsignedInt(formatExtra), Magnum::Implementation::pixelFormatSizeAdl(format, formatExtra), size, dataFlags, data, flags, importerState} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), {}, Magnum::Implementation::pixelFormatSizeAdl(format), size, std::move(data), importerState} {
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), {}, Magnum::Implementation::pixelFormatSizeAdl(format), size, std::move(data), flags, importerState} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), {}, Magnum::Implementation::pixelFormatSizeAdl(format), size, dataFlags, data, importerState} {
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), {}, Magnum::Implementation::pixelFormatSizeAdl(format), size, dataFlags, data, flags, importerState} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), size, std::move(data), importerState} {
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), size, std::move(data), flags, importerState} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), size, dataFlags, data, importerState} {
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), size, dataFlags, data, flags, importerState} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }

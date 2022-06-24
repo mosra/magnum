@@ -29,6 +29,7 @@ set(CMAKE_FOLDER "Magnum/Test")
 
 corrade_add_test(FileCallbackTest FileCallbackTest.cpp LIBRARIES Magnum)
 corrade_add_test(ImageTest ImageTest.cpp LIBRARIES MagnumTestLib)
+corrade_add_test(ImageFlagsTest ImageFlagsTest.cpp LIBRARIES Magnum)
 corrade_add_test(ImageViewTest ImageViewTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(MeshTest MeshTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(PixelFormatTest PixelFormatTest.cpp LIBRARIES MagnumTestLib)

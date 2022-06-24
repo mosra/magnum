@@ -6980,7 +6980,7 @@ void AbstractImporterTest::image1D() {
             return {};
         }
         Containers::Optional<ImageData1D> doImage1D(UnsignedInt id, UnsignedInt level) override {
-            if(id == 7 && level == 2) return ImageData1D{PixelFormat::RGBA8Unorm, {}, {}, &state};
+            if(id == 7 && level == 2) return ImageData1D{PixelFormat::RGBA8Unorm, {}, {}, ImageFlags1D{}, &state};
             return {};
         }
     } importer;
@@ -7302,7 +7302,7 @@ void AbstractImporterTest::image2D() {
             return {};
         }
         Containers::Optional<ImageData2D> doImage2D(UnsignedInt id, UnsignedInt level) override {
-            if(id == 7 && level == 2) return ImageData2D{PixelFormat::RGBA8Unorm, {}, {}, &state};
+            if(id == 7 && level == 2) return ImageData2D{PixelFormat::RGBA8Unorm, {}, {}, ImageFlags2D{}, &state};
             return {};
         }
     } importer;
@@ -7624,7 +7624,7 @@ void AbstractImporterTest::image3D() {
             return {};
         }
         Containers::Optional<ImageData3D> doImage3D(UnsignedInt id, UnsignedInt level) override {
-            if(id == 7 && level == 2) return ImageData3D{PixelFormat::RGBA8Unorm, {}, {}, &state};
+            if(id == 7 && level == 2) return ImageData3D{PixelFormat::RGBA8Unorm, {}, {}, ImageFlags3D{}, &state};
             return {};
         }
     } importer;

@@ -30,11 +30,11 @@
 
 namespace Magnum {
 
-template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, format, {},  pixelFormatSize(format), size, data} {}
+template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: ImageView{storage, format, {},  pixelFormatSize(format), size, data, flags} {}
 
-template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, data} {}
+template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: ImageView{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, data, flags} {}
 
-template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _size{size}, _data{reinterpret_cast<Type*>(data.data()), data.size()} {
+template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _flags{flags}, _size{size}, _data{reinterpret_cast<Type*>(data.data()), data.size()} {
     #ifdef MAGNUM_BUILD_DEPRECATED
     #ifndef CORRADE_NO_ASSERT
     if(size.product() && !_data && !_data.size())
@@ -44,13 +44,20 @@ template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(co
     #else
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "ImageView: data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
     #endif
+    #ifndef CORRADE_NO_ASSERT
+    Implementation::checkImageFlagsForSize("ImageView:", flags, size);
+    #endif
 }
 
-template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, format, {}, pixelFormatSize(format), size} {}
+template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: ImageView{storage, format, {}, pixelFormatSize(format), size, flags} {}
 
-template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, pixelFormatWrap(format), formatExtra, pixelSize, size} {}
+template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: ImageView{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, flags} {}
 
-template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _size{size}, _data{nullptr} {}
+template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _flags{flags}, _size{size}, _data{nullptr} {
+    #ifndef CORRADE_NO_ASSERT
+    Implementation::checkImageFlagsForSize("ImageView:", flags, size);
+    #endif
+}
 
 template<UnsignedInt dimensions, class T> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> ImageView<dimensions, T>::dataProperties() const {
     return Implementation::imageDataProperties<dimensions>(*this);
@@ -66,13 +73,21 @@ template<UnsignedInt dimensions, class T> auto ImageView<dimensions, T>::pixels(
     return Implementation::imagePixelView<dimensions, Type>(*this, data());
 }
 
-template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: _storage{storage}, _format{format}, _size{size}, _data{reinterpret_cast<Type*>(data.data()), data.size()} {}
+template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _flags{flags}, _size{size}, _data{reinterpret_cast<Type*>(data.data()), data.size()} {
+    #ifndef CORRADE_NO_ASSERT
+    Implementation::checkImageFlagsForSize("CompressedImageView:", flags, size);
+    #endif
+}
 
-template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size) noexcept: _storage{storage}, _format{format}, _size{size} {}
+template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _flags{flags}, _size{size} {
+    #ifndef CORRADE_NO_ASSERT
+    Implementation::checkImageFlagsForSize("CompressedImageView:", flags, size);
+    #endif
+}
 
-template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: CompressedImageView{storage, compressedPixelFormatWrap(format), size, data} {}
+template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, compressedPixelFormatWrap(format), size, data, flags} {}
 
-template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size) noexcept: CompressedImageView{storage, compressedPixelFormatWrap(format), size} {}
+template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, compressedPixelFormatWrap(format), size, flags} {}
 
 template<UnsignedInt dimensions, class T> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> CompressedImageView<dimensions, T>::dataProperties() const {
     return Implementation::compressedImageDataProperties<dimensions>(*this);

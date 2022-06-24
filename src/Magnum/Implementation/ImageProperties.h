@@ -29,9 +29,26 @@
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Magnum.h"
+#ifndef CORRADE_NO_ASSERT
+#include "Magnum/ImageFlags.h"
+#endif
 #include "Magnum/DimensionTraits.h"
 
 namespace Magnum { namespace Implementation {
+
+/* Used in *Image and Compressed*Image constructors */
+#ifndef CORRADE_NO_ASSERT
+inline void checkImageFlagsForSize(const char*, const ImageFlags1D, const Math::Vector<1, Int>&) {}
+inline void checkImageFlagsForSize(const char*, const ImageFlags2D, const Vector2i&) {}
+inline void checkImageFlagsForSize(const char* const prefix, const ImageFlags3D flags, const Vector3i& size) {
+    CORRADE_ASSERT(!(flags & ImageFlag3D::CubeMap) || size.x() == size.y(),
+        prefix << "expected square faces for a cube map, got" << Debug::packed << size.xy(), );
+    CORRADE_ASSERT(!(flags & ImageFlag3D::CubeMap) || (flags & ImageFlag3D::Array) || size.z() == 6,
+        prefix << "expected exactly 6 faces for a cube map, got" << size.z(), );
+    CORRADE_ASSERT(!(flags >= (ImageFlag3D::CubeMap|ImageFlag3D::Array)) || size.z() % 6 == 0,
+        prefix << "expected a multiple of 6 faces for a cube map array, got" << size.z(), );
+}
+#endif
 
 /* Used in *Image::dataProperties() */
 template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>> imageDataProperties(const T& image) {

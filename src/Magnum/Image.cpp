@@ -31,12 +31,15 @@
 
 namespace Magnum {
 
-template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{storage, format, {}, pixelFormatSize(format), size, std::move(data)} {}
+template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: Image{storage, format, {}, pixelFormatSize(format), size, std::move(data), flags} {}
 
-template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, std::move(data)} {}
+template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: Image{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, std::move(data), flags} {}
 
-template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _size{size}, _data{std::move(data)} {
+template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _flags{flags}, _size{size}, _data{std::move(data)} {
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "Image: data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
+    #ifndef CORRADE_NO_ASSERT
+    Implementation::checkImageFlagsForSize("Image:", flags, size);
+    #endif
 }
 
 template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format) noexcept: Image{storage, format, {}, pixelFormatSize(format)} {}
@@ -45,7 +48,7 @@ template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage sto
 
 template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _data{} {}
 
-template<UnsignedInt dimensions> Image<dimensions>::Image(Image<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _formatExtra{std::move(other._formatExtra)}, _pixelSize{std::move(other._pixelSize)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
+template<UnsignedInt dimensions> Image<dimensions>::Image(Image<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _formatExtra{std::move(other._formatExtra)}, _pixelSize{std::move(other._pixelSize)}, _flags{std::move(other._flags)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
     other._size = {};
 }
 
@@ -55,17 +58,18 @@ template<UnsignedInt dimensions> Image<dimensions>& Image<dimensions>::operator=
     swap(_format, other._format);
     swap(_formatExtra, other._formatExtra);
     swap(_pixelSize, other._pixelSize);
+    swap(_flags, other._flags);
     swap(_size, other._size);
     swap(_data, other._data);
     return *this;
 }
 
 template<UnsignedInt dimensions> Image<dimensions>::operator BasicMutableImageView<dimensions>() {
-    return BasicMutableImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
+    return BasicMutableImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size, _data, _flags};
 }
 
 template<UnsignedInt dimensions> Image<dimensions>::operator BasicImageView<dimensions>() const {
-    return BasicImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
+    return BasicImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size, _data, _flags};
 }
 
 template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> Image<dimensions>::dataProperties() const {
@@ -86,13 +90,17 @@ template<UnsignedInt dimensions> Containers::Array<char> Image<dimensions>::rele
     return data;
 }
 
-template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: _storage{storage}, _format{format}, _size{size}, _data{std::move(data)} {}
+template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _flags{flags}, _size{size}, _data{std::move(data)} {
+    #ifndef CORRADE_NO_ASSERT
+    Implementation::checkImageFlagsForSize("CompressedImage:", flags, size);
+    #endif
+}
 
-template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: CompressedImage{storage, compressedPixelFormatWrap(format), size, std::move(data)} {}
+template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: CompressedImage{storage, compressedPixelFormatWrap(format), size, std::move(data), flags} {}
 
 template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage) noexcept: _storage{storage}, _format{} {}
 
-template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(CompressedImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _size{std::move(other._size)}, _data{std::move(other._data)}
+template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(CompressedImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _flags{other._flags}, _size{std::move(other._size)}, _data{std::move(other._data)}
 {
     other._size = {};
 }
@@ -101,17 +109,18 @@ template<UnsignedInt dimensions> CompressedImage<dimensions>& CompressedImage<di
     using std::swap;
     swap(_storage, other._storage);
     swap(_format, other._format);
+    swap(_flags, other._flags);
     swap(_size, other._size);
     swap(_data, other._data);
     return *this;
 }
 
 template<UnsignedInt dimensions> CompressedImage<dimensions>::operator BasicMutableCompressedImageView<dimensions>() {
-    return BasicMutableCompressedImageView<dimensions>{_storage, _format, _size, _data};
+    return BasicMutableCompressedImageView<dimensions>{_storage, _format, _size, _data, _flags};
 }
 
 template<UnsignedInt dimensions> CompressedImage<dimensions>::operator BasicCompressedImageView<dimensions>() const {
-    return BasicCompressedImageView<dimensions>{_storage, _format, _size, _data};
+    return BasicCompressedImageView<dimensions>{_storage, _format, _size, _data, _flags};
 }
 
 template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> CompressedImage<dimensions>::dataProperties() const {

@@ -335,6 +335,9 @@ See also:
     @ref CompressedImageView::size() as well as @ref Trade::ImageData::size()
     now return a @cpp const& @ce instead of a value to allow creating a
     @relativeref{Corrade,Containers::StridedArrayView} slice onto this member.
+-   @ref Image, @ref CompressedImage, @ref ImageView, @ref CompressedImageView
+    as well as @ref Trade::ImageData are now able to annotate array, cube map
+    and cube map array images using @ref ImageFlags
 
 @subsubsection changelog-latest-changes-debugtools DebugTools library
 
@@ -916,6 +919,11 @@ See also:
     changed to have input first and output second, for consistency with other
     interfaces, together with a switch to @ref Containers::StringView. The
     original signature is marked as deprecated.
+-   Due to introduction of @ref ImageFlags, @ref Trade::ImageData constructors
+    that were taking @cpp const void* importerState @ce as the last parameter
+    are now deprecated in favor of constructors that take @ref ImageFlags *and*
+    `importerState`. Code that wasn't passing the `importerState` parameter
+    isn't affected by this change.
 -   @cpp Trade::TextureData::Type @ce was deprecated in favor of
     @ref Trade::TextureType that is much less annoying to type, in addition
     @cpp Trade::TextureData::Type::Cube @ce was deprecated in favor of

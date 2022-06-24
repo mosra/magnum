@@ -1226,6 +1226,13 @@ template<class T> class CORRADE_DEPRECATED("use Math::Vector3 or Containers::Arr
 
 enum class InputFileCallbackPolicy: UnsignedByte;
 
+enum class ImageFlag1D: UnsignedShort;
+enum class ImageFlag2D: UnsignedShort;
+enum class ImageFlag3D: UnsignedShort;
+typedef Containers::EnumSet<ImageFlag1D> ImageFlags1D;
+typedef Containers::EnumSet<ImageFlag2D> ImageFlags2D;
+typedef Containers::EnumSet<ImageFlag3D> ImageFlags3D;
+
 template<UnsignedInt> class Image;
 typedef Image<1> Image1D;
 typedef Image<2> Image2D;

@@ -32,6 +32,7 @@
 #include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/DimensionTraits.h"
+#include "Magnum/ImageFlags.h"
 #include "Magnum/PixelStorage.h"
 #include "Magnum/Math/Vector3.h"
 
@@ -171,43 +172,51 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param format            Format of pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          *
          * The @p data array is expected to be of proper size for given
-         * parameters.
+         * parameters. For a 3D image, if @p flags contain
+         * @ref ImageFlag3D::CubeMap, the @p size is expected to match its
+         * restrictions.
          */
-        explicit ImageView(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept;
+        explicit ImageView(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Constructor
          * @param format            Format of pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          *
-         * Equivalent to calling @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>)
+         * Equivalent to calling @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
          * with default-constructed @ref PixelStorage.
          */
-        explicit ImageView(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept: ImageView{{}, format, size, data} {}
+        explicit ImageView(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept: ImageView{{}, format, size, data, flags} {}
 
         /**
          * @brief Construct an empty view
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param size              Image size
+         * @param flags             Image layout flags
          *
          * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
-         * assign a memory view to the image.
+         * assign a memory view to the image. For a 3D image, if @p flags
+         * contain @ref ImageFlag3D::CubeMap, the @p size is expected to match
+         * its restrictions.
          */
-        explicit ImageView(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size) noexcept;
+        explicit ImageView(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Construct an empty view
          * @param format            Format of pixel data
          * @param size              Image size
+         * @param flags             Image layout flags
          *
-         * Equivalent to calling @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&)
+         * Equivalent to calling @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
          * with default-constructed @ref PixelStorage.
          */
-        explicit ImageView(PixelFormat format, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{{}, format, size} {}
+        explicit ImageView(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept: ImageView{{}, format, size, flags} {}
 
         /**
          * @brief Construct an image view with implementation-specific pixel format
@@ -217,8 +226,9 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param pixelSize         Size of a pixel in given format, in bytes
          * @param size              Image size, in pixels
          * @param data              Image data
+         * @param flags             Image layout flags
          *
-         * Unlike with @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>),
+         * Unlike with @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>),
          * where pixel size is calculated automatically using
          * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
@@ -226,16 +236,18 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @ref PixelFormat.
          *
          * The @p data array is expected to be of proper size for given
-         * parameters.
+         * parameters. For a 3D image, if @p flags contain
+         * @ref ImageFlag3D::CubeMap, the @p size is expected to match its
+         * restrictions.
          */
-        explicit ImageView(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept;
+        explicit ImageView(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
 
         /** @overload
          *
          * Equivalent to the above for @p format already wrapped with
          * @ref pixelFormatWrap().
          */
-        explicit ImageView(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept;
+        explicit ImageView(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Construct an empty view with implementation-specific pixel format
@@ -244,8 +256,9 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param formatExtra       Additional pixel format specifier
          * @param pixelSize         Size of a pixel in given format, in bytes
          * @param size              Image size, in pixels
+         * @param flags             Image layout flags
          *
-         * Unlike with @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&),
+         * Unlike with @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>),
          * where pixel size is calculated automatically using
          * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
@@ -253,16 +266,18 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @ref PixelFormat.
          *
          * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
-         * assign a memory view to the image.
+         * assign a memory view to the image. For a 3D image, if @p flags
+         * contain @ref ImageFlag3D::CubeMap, the @p size is expected to match
+         * its restrictions.
          */
-        explicit ImageView(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size) noexcept;
+        explicit ImageView(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept;
 
         /** @overload
          *
          * Equivalent to the above for @p format already wrapped with
          * @ref pixelFormatWrap().
          */
-        explicit ImageView(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size) noexcept;
+        explicit ImageView(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Construct an image view with implementation-specific pixel format
@@ -271,12 +286,13 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param formatExtra       Additional pixel format specifier
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
-         * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>)
+         * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
          * with calculated pixel size.
          */
-        template<class U, class V> explicit ImageView(PixelStorage storage, U format, V formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept;
+        template<class U, class V> explicit ImageView(PixelStorage storage, U format, V formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Construct an image view with implementation-specific pixel format
@@ -284,12 +300,13 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param format            Format of pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
-         * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>)
+         * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
          * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
          */
-        template<class U> explicit ImageView(PixelStorage storage, U format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept;
+        template<class U> explicit ImageView(PixelStorage storage, U format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Construct an image view with implementation-specific pixel format
@@ -297,22 +314,24 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param formatExtra       Additional pixel format specifier
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          *
-         * Equivalent to calling @ref ImageView(PixelStorage, U, V, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>)
+         * Equivalent to calling @ref ImageView(PixelStorage, U, V, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
          * with default-constructed @ref PixelStorage.
          */
-        template<class U, class V> explicit ImageView(U format, V formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept: ImageView{{}, format, formatExtra, size, data} {}
+        template<class U, class V> explicit ImageView(U format, V formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept: ImageView{{}, format, formatExtra, size, data, flags} {}
 
         /**
          * @brief Construct an image view with implementation-specific pixel format
          * @param format            Format of pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          *
-         * Equivalent to calling @ref ImageView(PixelStorage, U, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>)
+         * Equivalent to calling @ref ImageView(PixelStorage, U, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
          * with default-constructed @ref PixelStorage.
          */
-        template<class U> explicit ImageView(U format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept: ImageView{{}, format, size, data} {}
+        template<class U> explicit ImageView(U format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept: ImageView{{}, format, size, data, flags} {}
 
         /**
          * @brief Construct an empty view with implementation-specific pixel format
@@ -320,63 +339,79 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param format            Format of pixel data
          * @param formatExtra       Additional pixel format specifier
          * @param size              Image size
+         * @param flags             Image layout flags
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
-         * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&)
+         * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
          * with calculated pixel size.
          *
          * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
          * assign a memory view to the image.
          */
-        template<class U, class V> explicit ImageView(PixelStorage storage, U format, V formatExtra, const VectorTypeFor<dimensions, Int>& size) noexcept;
+        template<class U, class V> explicit ImageView(PixelStorage storage, U format, V formatExtra, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Construct an empty view with implementation-specific pixel format
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param size              Image size
+         * @param flags             Image layout flags
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
-         * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&)
+         * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
          * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
          *
          * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
          * assign a memory view to the image.
          */
-        template<class U> explicit ImageView(PixelStorage storage, U format, const VectorTypeFor<dimensions, Int>& size) noexcept;
+        template<class U> explicit ImageView(PixelStorage storage, U format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Construct an empty view with implementation-specific pixel format
          * @param format            Format of pixel data
          * @param formatExtra       Additional pixel format specifier
          * @param size              Image size
+         * @param flags             Image layout flags
          *
-         * Equivalent to calling @ref ImageView(PixelStorage, U, V, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>)
+         * Equivalent to calling @ref ImageView(PixelStorage, U, V, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
          * with default-constructed @ref PixelStorage.
          */
-        template<class U, class V> explicit ImageView(U format, V formatExtra, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{{}, format, formatExtra, size} {}
+        template<class U, class V> explicit ImageView(U format, V formatExtra, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept: ImageView{{}, format, formatExtra, size, flags} {}
 
         /**
          * @brief Construct an empty view with implementation-specific pixel format
          * @param format            Format of pixel data
          * @param size              Image size
+         * @param flags             Image layout flags
          *
-         * Equivalent to calling @ref ImageView(PixelStorage, U, const VectorTypeFor<dimensions, Int>&)
+         * Equivalent to calling @ref ImageView(PixelStorage, U, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
          * with default-constructed @ref PixelStorage.
          */
-        template<class U> explicit ImageView(U format, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{{}, format, size} {}
+        template<class U> explicit ImageView(U format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept: ImageView{{}, format, size, flags} {}
 
         /**
          * @brief Construct from a view of lower dimension count
          * @m_since{2019,10}
+         *
+         * Size in the new dimension(s) is set to @cpp 1 @ce. Original image
+         * flags are preserved, except for @ref ImageFlag2D::Array when
+         * constructing a 3D image from a 2D image (i.e., a 1D array image), as
+         * there's no concept of 2D arrays of 1D images. Use the @p flags
+         * parameter to add arbitrary other flags.
          */
-        template<UnsignedInt otherDimensions, class = typename std::enable_if<(otherDimensions < dimensions)>::type> /*implicit*/ ImageView(const ImageView<otherDimensions, T>& other) noexcept;
+        template<UnsignedInt otherDimensions, class = typename std::enable_if<(otherDimensions < dimensions)>::type> /*implicit*/ ImageView(const ImageView<otherDimensions, T>& other, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Convert a mutable view to a const one
          * @m_since{2019,10}
          */
         template<class U, class = typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value>::type> /*implicit*/ ImageView(const ImageView<dimensions, U>& other) noexcept;
+
+        /**
+         * @brief Layout flags
+         * @m_since_latest
+         */
+        ImageFlags<dimensions> flags() const { return _flags; }
 
         /** @brief Storage of pixel data */
         PixelStorage storage() const { return _storage; }
@@ -484,6 +519,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
         PixelFormat _format;
         UnsignedInt _formatExtra;
         UnsignedInt _pixelSize;
+        ImageFlags<dimensions> _flags;
         VectorTypeFor<dimensions, Int> _size;
         Containers::ArrayView<Type> _data;
 };
@@ -668,40 +704,49 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          * @param format            Format of compressed pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
+         *
+         * For a 3D image, if @p flags contain @ref ImageFlag3D::CubeMap, the
+         * @p size is expected to match its restrictions.
          */
-        explicit CompressedImageView(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept;
+        explicit CompressedImageView(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Constructor
          * @param format            Format of compressed pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          *
-         * Equivalent to calling @ref CompressedImageView(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>)
+         * Equivalent to calling @ref CompressedImageView(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
          * with default-constructed @ref CompressedPixelStorage.
          */
-        explicit CompressedImageView(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept: CompressedImageView{{}, format, size, data} {}
+        explicit CompressedImageView(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept: CompressedImageView{{}, format, size, data, flags} {}
 
         /**
          * @brief Construct an empty view
          * @param storage           Storage of compressed pixel data
          * @param format            Format of compressed pixel data
          * @param size              Image size
+         * @param flags             Image layout flags
          *
          * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
-         * assign a memory view to the image.
+         * assign a memory view to the image. For a 3D image, if @p flags
+         * contain @ref ImageFlag3D::CubeMap, the @p size is expected to match
+         * its restrictions.
          */
-        explicit CompressedImageView(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size) noexcept;
+        explicit CompressedImageView(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Construct an empty view
          * @param format            Format of compressed pixel data
          * @param size              Image size
+         * @param flags             Image layout flags
          *
-         * Equivalent to calling @ref CompressedImageView(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&)
+         * Equivalent to calling @ref CompressedImageView(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
          * with default-constructed @ref CompressedPixelStorage.
          */
-        explicit CompressedImageView(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size) noexcept: CompressedImageView{{}, format, size} {}
+        explicit CompressedImageView(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept: CompressedImageView{{}, format, size, flags} {}
 
         /**
          * @brief Construct an image view with implementation-specific format
@@ -709,57 +754,79 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          * @param format            Format of compressed pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          *
          * Uses @ref compressedPixelFormatWrap() internally to convert
          * @p format to @ref CompressedPixelFormat.
+         *
+         * For a 3D image, if @p flags contain @ref ImageFlag3D::CubeMap, the
+         * @p size is expected to match its restrictions.
          */
-        template<class U> explicit CompressedImageView(CompressedPixelStorage storage, U format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept;
+        template<class U> explicit CompressedImageView(CompressedPixelStorage storage, U format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Construct an image view with implementation-specific format
          * @param format            Format of compressed pixel data
          * @param size              Image size
          * @param data              Image data
+         * @param flags             Image layout flags
          *
-         * Equivalent to calling @ref CompressedImageView(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>)
+         * Equivalent to calling @ref CompressedImageView(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
          * with default-constructed @ref CompressedPixelStorage.
          */
-        template<class U> explicit CompressedImageView(U format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept: CompressedImageView{{}, format, size, data} {}
+        template<class U> explicit CompressedImageView(U format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept: CompressedImageView{{}, format, size, data, flags} {}
 
         /**
          * @brief Construct an empty view with implementation-specific format
          * @param storage           Storage of compressed pixel data
          * @param format            Format of compressed pixel data
          * @param size              Image size
+         * @param flags             Image layout flags
          *
          * Uses @ref compressedPixelFormatWrap() internally to convert
-         * @p format to @ref CompressedPixelFormat. Data pointer is set to
-         * @cpp nullptr @ce, call @ref setData() to assign a memory view to the
-         * image.
+         * @p format to @ref CompressedPixelFormat.
+         *
+         * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
+         * assign a memory view to the image. For a 3D image, if @p flags
+         * contain @ref ImageFlag3D::CubeMap, the @p size is expected to match
+         * its restrictions.
          */
-        template<class U> explicit CompressedImageView(CompressedPixelStorage storage, U format, const VectorTypeFor<dimensions, Int>& size) noexcept;
+        template<class U> explicit CompressedImageView(CompressedPixelStorage storage, U format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Construct an empty view with implementation-specific format
          * @param format            Format of compressed pixel data
          * @param size              Image size
+         * @param flags             Image layout flags
          *
-         * Equivalent to calling @ref CompressedImageView(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&)
+         * Equivalent to calling @ref CompressedImageView(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
          * with default-constructed @ref CompressedPixelStorage.
          */
-        template<class U> explicit CompressedImageView(U format, const VectorTypeFor<dimensions, Int>& size) noexcept: CompressedImageView{{}, format, size} {}
+        template<class U> explicit CompressedImageView(U format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept: CompressedImageView{{}, format, size, flags} {}
 
         /**
          * @brief Construct from a view of lower dimension count
          * @m_since{2019,10}
+         *
+         * Size in the new dimension(s) is set to @cpp 1 @ce. Original image
+         * flags are preserved, except for @ref ImageFlag2D::Array when
+         * constructing a 3D image from a 2D image (i.e., a 1D array image), as
+         * there's no concept of 2D arrays of 1D images. Use the @p flags
+         * parameter to add arbitrary other flags.
          */
-        template<UnsignedInt otherDimensions, class = typename std::enable_if<(otherDimensions < dimensions)>::type> /*implicit*/ CompressedImageView(const CompressedImageView<otherDimensions, T>& other) noexcept;
+        template<UnsignedInt otherDimensions, class = typename std::enable_if<(otherDimensions < dimensions)>::type> /*implicit*/ CompressedImageView(const CompressedImageView<otherDimensions, T>& other, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Convert a mutable view to a const one
          * @m_since{2019,10}
          */
         template<class U, class = typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value>::type> /*implicit*/ CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept;
+
+        /**
+         * @brief Layout flags
+         * @m_since_latest
+         */
+        ImageFlags<dimensions> flags() const { return _flags; }
 
         /** @brief Storage of compressed pixel data */
         CompressedPixelStorage storage() const { return _storage; }
@@ -817,11 +884,12 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
 
         /* To be made public once block size and block data size are stored
            together with the image */
-        explicit CompressedImageView(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data) noexcept;
-        explicit CompressedImageView(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size) noexcept;
+        explicit CompressedImageView(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags) noexcept;
+        explicit CompressedImageView(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags) noexcept;
 
         CompressedPixelStorage _storage;
         CompressedPixelFormat _format;
+        ImageFlags<dimensions> _flags;
         VectorTypeFor<dimensions, Int> _size;
         Containers::ArrayView<Type> _data;
 };
@@ -899,47 +967,61 @@ typedef BasicMutableCompressedImageView<2> MutableCompressedImageView2D;
 */
 typedef BasicMutableCompressedImageView<3> MutableCompressedImageView3D;
 
-template<UnsignedInt dimensions, class T> template<class U, class V> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const V formatExtra, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelFormatSizeAdl(format, formatExtra), size, data} {
+template<UnsignedInt dimensions, class T> template<class U, class V> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const V formatExtra, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: ImageView{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelFormatSizeAdl(format, formatExtra), size, data, flags} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions, class T> template<class U> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, UnsignedInt(format), {}, Implementation::pixelFormatSizeAdl(format), size, data} {
+template<UnsignedInt dimensions, class T> template<class U> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: ImageView{storage, UnsignedInt(format), {}, Implementation::pixelFormatSizeAdl(format), size, data, flags} {
     static_assert(sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions, class T> template<class U, class V> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const V formatExtra, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelFormatSizeAdl(format, formatExtra), size} {
+template<UnsignedInt dimensions, class T> template<class U, class V> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const V formatExtra, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: ImageView{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelFormatSizeAdl(format, formatExtra), size, flags} {
     static_assert(sizeof(U) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions, class T> template<class U> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, UnsignedInt(format), {}, Implementation::pixelFormatSizeAdl(format), size} {
+template<UnsignedInt dimensions, class T> template<class U> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: ImageView{storage, UnsignedInt(format), {}, Implementation::pixelFormatSizeAdl(format), size, flags} {
     static_assert(sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT /* it complains otherwise. why? don't know, don't want to know */
-template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, class> ImageView<dimensions, T>::ImageView(const ImageView<otherDimensions, T>& other) noexcept: _storage{other._storage}, _format{other._format}, _formatExtra{other._formatExtra}, _pixelSize{other._pixelSize}, _size{Math::Vector<dimensions, Int>::pad(other._size, 1)}, _data{other._data} {}
+template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, class> ImageView<dimensions, T>::ImageView(const ImageView<otherDimensions, T>& other, const ImageFlags<dimensions> flags) noexcept:
+    _storage{other._storage},
+    _format{other._format},
+    _formatExtra{other._formatExtra},
+    _pixelSize{other._pixelSize},
+    /* Removing the Array bit and transferring the rest, as documented */
+    _flags{ImageFlag<dimensions>(UnsignedShort(other._flags)&~UnsignedShort(ImageFlag2D::Array))|flags},
+    _size{Math::Vector<dimensions, Int>::pad(other._size, 1)},
+    _data{other._data} {}
 #endif
 
-template<UnsignedInt dimensions, class T> template<class U, class> ImageView<dimensions, T>::ImageView(const ImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _formatExtra{other._formatExtra}, _pixelSize{other._pixelSize}, _size{other._size}, _data{other._data} {}
+template<UnsignedInt dimensions, class T> template<class U, class> ImageView<dimensions, T>::ImageView(const ImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _formatExtra{other._formatExtra}, _pixelSize{other._pixelSize}, _flags{other._flags}, _size{other._size}, _data{other._data} {}
 
-template<UnsignedInt dimensions, class T> template<class U> inline  CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: CompressedImageView{storage, UnsignedInt(format), size, data} {
+template<UnsignedInt dimensions, class T> template<class U> inline  CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, UnsignedInt(format), size, data, flags} {
     static_assert(sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions, class T> template<class U> inline CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size) noexcept: CompressedImageView{storage, UnsignedInt(format), size} {
+template<UnsignedInt dimensions, class T> template<class U> inline CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, UnsignedInt(format), size, flags} {
     static_assert(sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT /* it complains otherwise. why? don't know, don't want to know */
-template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, class> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedImageView<otherDimensions, T>& other) noexcept: _storage{other._storage}, _format{other._format}, _size{Math::Vector<dimensions, Int>::pad(other._size, 1)}, _data{other._data} {}
+template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, class> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedImageView<otherDimensions, T>& other, const ImageFlags<dimensions> flags) noexcept:
+    _storage{other._storage},
+    _format{other._format},
+    /* Removing the Array bit and transferring the rest, as documented */
+    _flags{ImageFlag<dimensions>(UnsignedShort(other._flags)&~UnsignedShort(ImageFlag2D::Array))|flags},
+    _size{Math::Vector<dimensions, Int>::pad(other._size, 1)},
+    _data{other._data} {}
 #endif
 
-template<UnsignedInt dimensions, class T> template<class U, class> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _size{other._size}, _data{other._data} {}
+template<UnsignedInt dimensions, class T> template<class U, class> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _flags{other._flags}, _size{other._size}, _data{other._data} {}
 
 }
 
