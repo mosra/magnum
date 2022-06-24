@@ -947,6 +947,10 @@ no -C / --converter is specified, AnyImageConverter is used.)")
         outputImages2D.size() > 1 ||
         outputImages3D.size() > 1;
 
+    PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths().back())};
+
     /* Assume there's always one passed --converter option less, and the last
        is implicitly AnyImageConverter. All converters except the last one are
        expected to support ConvertMesh and the mesh is "piped" from one to the
@@ -962,9 +966,6 @@ no -C / --converter is specified, AnyImageConverter is used.)")
             (outputDimensions == 3 && outputImages3D.front().isCompressed());
 
         /* Load converter plugin */
-        PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
-            args.value("plugin-dir").empty() ? Containers::String{} :
-            Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths().back())};
         Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(converterName);
         if(!converter) {
             Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());
