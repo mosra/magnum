@@ -391,7 +391,7 @@ Derived from @ref Trade::AbstractImageConverter.
 <th rowspan="2">PNG<br/>(`*.png`)</th>
 <td rowspan="2">`PngImageConverter`</td>
 <td>@ref Trade::PngImageConverter "PngImageConverter"</td>
-<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center m-dim">@ref Trade-PngImageConverter-behavior "none"</td>
 <td class="m-text-center m-warning">external, tiny</td>
 <td class="m-text-center m-success">libPNG</td>
 </tr>
