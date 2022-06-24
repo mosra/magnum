@@ -157,6 +157,8 @@ template<UnsignedInt dimensions> class Image {
          * layout flags are empty. Move over a non-empty instance to make it
          * useful.
          */
+        /* No ImageFlags parameter here as this constructor is mainly used to
+           query GL textures, and there the flags are forcibly reset */
         /*implicit*/ Image(PixelStorage storage, PixelFormat format) noexcept;
 
         /**
@@ -166,6 +168,8 @@ template<UnsignedInt dimensions> class Image {
          * Equivalent to calling @ref Image(PixelStorage, PixelFormat)
          * with default-constructed @ref PixelStorage.
          */
+        /* No ImageFlags parameter here as this constructor is mainly used to
+           query GL textures, and there the flags are forcibly reset */
         /*implicit*/ Image(PixelFormat format) noexcept: Image{{}, format} {}
 
         /**
@@ -212,6 +216,8 @@ template<UnsignedInt dimensions> class Image {
          * pixel size directly. Uses @ref pixelFormatWrap() internally to wrap
          * @p format in @ref PixelFormat.
          */
+        /* No ImageFlags parameter here as this constructor is mainly used to
+           query GL textures, and there the flags are forcibly reset */
         explicit Image(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize) noexcept;
 
         /** @overload
@@ -219,6 +225,8 @@ template<UnsignedInt dimensions> class Image {
          * Equivalent to the above for @p format already wrapped with
          * @ref pixelFormatWrap().
          */
+        /* No ImageFlags parameter here as this constructor is mainly used to
+           query GL textures, and there the flags are forcibly reset */
         explicit Image(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize) noexcept;
 
         /**
@@ -285,6 +293,8 @@ template<UnsignedInt dimensions> class Image {
          * overload, then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt)
          * with calculated pixel size.
          */
+        /* No ImageFlags parameter here as this constructor is mainly used to
+           query GL textures, and there the flags are forcibly reset */
         template<class T, class U> /*implicit*/ Image(PixelStorage storage, T format, U formatExtra) noexcept;
 
         /**
@@ -295,6 +305,8 @@ template<UnsignedInt dimensions> class Image {
          * Equivalent to calling @ref Image(PixelStorage, T, U) with
          * default-constructed @ref PixelStorage.
          */
+        /* No ImageFlags parameter here as this constructor is mainly used to
+           query GL textures, and there the flags are forcibly reset */
         template<class T, class U> /*implicit*/ Image(T format, U formatExtra) noexcept: Image{{}, format, formatExtra} {}
 
         /**
@@ -306,6 +318,8 @@ template<UnsignedInt dimensions> class Image {
          * overload, then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt)
          * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
          */
+        /* No ImageFlags parameter here as this constructor is mainly used to
+           query GL textures, and there the flags are forcibly reset */
         template<class T> /*implicit*/ Image(PixelStorage storage, T format) noexcept;
 
         /**
@@ -606,6 +620,8 @@ template<UnsignedInt dimensions> class CompressedImage {
          * data layout flags are empty. Move over a non-empty instance to make
          * it useful.
          */
+        /* No ImageFlags parameter here as this constructor is mainly used to
+           query GL textures, and there the flags are forcibly reset */
         /*implicit*/ CompressedImage(CompressedPixelStorage storage) noexcept;
 
         /**
