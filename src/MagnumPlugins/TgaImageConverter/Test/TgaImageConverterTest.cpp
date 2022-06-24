@@ -30,7 +30,7 @@
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
 
