@@ -257,13 +257,14 @@ using namespace Containers::Literals;
 
 namespace {
 
-template<UnsignedInt dimensions> bool checkCommonFormat(const Utility::Arguments& args, const Containers::Array<Trade::ImageData<dimensions>>& images) {
+template<UnsignedInt dimensions> bool checkCommonFormatFlags(const Utility::Arguments& args, const Containers::Array<Trade::ImageData<dimensions>>& images) {
     CORRADE_INTERNAL_ASSERT(!images.isEmpty());
     const bool compressed = images.front().isCompressed();
     PixelFormat format{};
     CompressedPixelFormat compressedFormat{};
     if(!compressed) format = images.front().format();
     else compressedFormat = images.front().compressedFormat();
+    ImageFlags<dimensions> flags = images.front().flags();
     for(std::size_t i = 1; i != images.size(); ++i) {
         if(images[i].isCompressed() != compressed ||
            (!compressed && images[i].format() != format) ||
@@ -282,13 +283,17 @@ template<UnsignedInt dimensions> bool checkCommonFormat(const Utility::Arguments
                 e << format;
             return false;
         }
+        if(images[i].flags() != flags) {
+            Error{} << "Images have different flags," << args.arrayValue("input", i) << "has" << images[i].flags() << Debug::nospace << ", expected" << flags;
+            return false;
+        }
     }
 
     return true;
 }
 
 template<UnsignedInt dimensions> bool checkCommonFormatAndSize(const Utility::Arguments& args, const Containers::Array<Trade::ImageData<dimensions>>& images) {
-    if(!checkCommonFormat(args, images)) return false;
+    if(!checkCommonFormatFlags(args, images)) return false;
 
     CORRADE_INTERNAL_ASSERT(!images.isEmpty());
     Math::Vector<dimensions, Int> size = images.front().size();
@@ -866,7 +871,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
 
             /* There can be multiple input levels, and a layer should get
                extracted from each level, forming a multi-level image again */
-            if(!checkCommonFormat(args, images2D)) return 1;
+            if(!checkCommonFormatFlags(args, images2D)) return 1;
             if(!images2D.front().isCompressed()) {
                 for(std::size_t i = 0; i != images2D.size(); ++i) {
                     /* Diagnostic printed in the import loop above, as here we
@@ -896,7 +901,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
 
             /* There can be multiple input levels, and a layer should get
                extracted from each level, forming a multi-level image again */
-            if(!checkCommonFormat(args, images3D)) return 1;
+            if(!checkCommonFormatFlags(args, images3D)) return 1;
             if(!images3D.front().isCompressed()) {
                 for(std::size_t i = 0; i != images3D.size(); ++i) {
                     /* Diagnostic printed in the import loop above, as here we
@@ -928,15 +933,15 @@ no -C / --converter is specified, AnyImageConverter is used.)")
        --levels is set or if the (single) input image is multi-level. */
     } else {
         if(dimensions == 1) {
-            if(!checkCommonFormat(args, images1D)) return 1;
+            if(!checkCommonFormatFlags(args, images1D)) return 1;
             outputDimensions = 1;
             outputImages1D = std::move(images1D);
         } else if(dimensions == 2) {
-            if(!checkCommonFormat(args, images2D)) return 1;
+            if(!checkCommonFormatFlags(args, images2D)) return 1;
             outputDimensions = 2;
             outputImages2D = std::move(images2D);
         } else if(dimensions == 3) {
-            if(!checkCommonFormat(args, images3D)) return 1;
+            if(!checkCommonFormatFlags(args, images3D)) return 1;
             outputDimensions = 3;
             outputImages3D = std::move(images3D);
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
