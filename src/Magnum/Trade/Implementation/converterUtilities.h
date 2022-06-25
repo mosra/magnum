@@ -48,6 +48,17 @@ struct Duration {
         std::chrono::high_resolution_clock::time_point _t;
 };
 
+union ImageInfoFlags {
+    /* Wow, C++, YOU FUCKING SUCK, how is this not the implicit behavior?!! */
+    ImageInfoFlags(ImageFlags1D flags): one{flags} {}
+    ImageInfoFlags(ImageFlags2D flags): two{flags} {}
+    ImageInfoFlags(ImageFlags3D flags): three{flags} {}
+
+    ImageFlags1D one;
+    ImageFlags2D two;
+    ImageFlags3D three;
+};
+
 struct ImageInfo {
     UnsignedInt image, level;
     bool compressed;
@@ -56,6 +67,7 @@ struct ImageInfo {
     Vector3i size;
     std::size_t dataSize;
     Trade::DataFlags dataFlags;
+    ImageInfoFlags flags;
     Containers::String name;
 };
 
@@ -83,6 +95,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                 Vector3i::pad(image->size()),
                 image->data().size(),
                 image->dataFlags(),
+                ImageInfoFlags{image->flags()},
                 j ? "" : importer.image1DName(i));
         }
     }
@@ -108,6 +121,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                 Vector3i::pad(image->size()),
                 image->data().size(),
                 image->dataFlags(),
+                ImageInfoFlags{image->flags()},
                 j ? "" : name);
         }
     }
@@ -133,6 +147,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                 image->size(),
                 image->data().size(),
                 image->dataFlags(),
+                ImageInfoFlags{image->flags()},
                 j ? "" : name);
         }
     }

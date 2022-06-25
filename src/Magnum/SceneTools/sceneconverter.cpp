@@ -1276,8 +1276,15 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     << info.name << Debug::resetColor;
                 d << Debug::newline;
             }
-            d << "  Level" << info.level << Debug::nospace << ":"
-                << Debug::packed;
+            d << "  Level" << info.level << Debug::nospace << ":";
+            if(info.flags.one) {
+                d << Debug::packed << Debug::color(Debug::Color::Cyan);
+                if(info.size.z()) d << info.flags.three;
+                else if(info.size.y()) d << info.flags.two;
+                else d << info.flags.one;
+                d << Debug::resetColor;
+            }
+            d << Debug::packed;
             if(info.size.z()) d << info.size;
             else if(info.size.y()) d << info.size.xy();
             else d << Math::Vector<1, Int>(info.size.x());
