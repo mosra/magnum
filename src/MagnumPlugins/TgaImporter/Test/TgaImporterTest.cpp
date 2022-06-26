@@ -258,6 +258,7 @@ void TgaImporterTest::color24() {
         image = importer->image2D(0);
     }
     CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->flags(), ImageFlags2D{});
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::RGB8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
@@ -284,6 +285,7 @@ void TgaImporterTest::color24Rle() {
         image = importer->image2D(0);
     }
     CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->flags(), ImageFlags2D{});
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::RGB8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
@@ -316,6 +318,7 @@ void TgaImporterTest::color32() {
         image = importer->image2D(0);
     }
     CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->flags(), ImageFlags2D{});
     CORRADE_COMPARE(image->storage().alignment(), 4);
     CORRADE_COMPARE(image->format(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
@@ -352,6 +355,7 @@ void TgaImporterTest::color32Rle() {
         image = importer->image2D(0);
     }
     CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->flags(), ImageFlags2D{});
     CORRADE_COMPARE(image->storage().alignment(), 4);
     CORRADE_COMPARE(image->format(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
@@ -375,6 +379,7 @@ void TgaImporterTest::grayscale8() {
 
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->flags(), ImageFlags2D{});
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
@@ -402,6 +407,7 @@ void TgaImporterTest::grayscale8Rle() {
 
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->flags(), ImageFlags2D{});
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
@@ -445,6 +451,7 @@ void TgaImporterTest::openMemory() {
 
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->flags(), ImageFlags2D{});
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::RGB8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
